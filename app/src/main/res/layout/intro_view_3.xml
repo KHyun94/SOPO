@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/MAIN_WHITE">
+
+    <TextView
+        android:id="@+id/tv_maintext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="간편 입력 택배예약을 해보세요."
+        android:textSize="35sp"
+        android:textStyle="bold"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tv_subtext"
+        android:layout_marginLeft="20sp" />
+
+    <TextView
+        android:id="@+id/tv_subtext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="\n앱에서 필요한 정보를 등록 후 간편히 예약을 해보세요!"
+        android:textSize="15sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginLeft="20sp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

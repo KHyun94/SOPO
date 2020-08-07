@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="msg"
+            type="String" />
+
+        <variable
+            name="onToastClickListener"
+            type="android.view.View.OnClickListener" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_toast_rounded"
+        android:elevation="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <ImageView
+            android:id="@+id/iv_alert"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:background="@drawable/alert"
+            android:backgroundTint="@color/MAIN_WHITE" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/iv_alert"
+            android:padding="10sp"
+            android:text="@{msg}"
+            android:textColor="@color/MAIN_WHITE"
+            android:textSize="20sp" />
+
+
+        <ImageView
+            android:id="@+id/iv_clear"
+            android:layout_width="20sp"
+            android:layout_height="20sp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10sp"
+            android:background="@drawable/btn_clear"
+            android:backgroundTint="@color/MAIN_WHITE"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="50sp" />
+
+
+    </RelativeLayout>
+
+</layout>

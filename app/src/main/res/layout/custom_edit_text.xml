@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="80sp"
+    android:orientation="vertical"
+    android:paddingVertical="10sp">
+
+    <RelativeLayout
+        android:id="@+id/layout_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="10sp"
+        android:layout_marginBottom="10sp">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="5sp"
+            android:paddingBottom="5sp"
+            android:text="이메일"
+            android:textColor="@color/FOCUS_OFF"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="parent" />
+
+        <ImageView
+            android:id="@+id/iv_description_mark"
+            android:layout_width="16sp"
+            android:layout_height="16sp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5sp"
+            android:layout_toLeftOf="@+id/tv_description_text"
+            android:background="@drawable/alert"
+            android:backgroundTint="@color/FOCUS_OFF"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_description_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:paddingTop="5sp"
+            android:paddingEnd="10sp"
+            android:paddingBottom="5sp"
+            android:text="등록된 이메일이 아닙니다."
+            android:textColor="@color/FOCUS_OFF"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/layout_body"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="10sp">
+
+        <EditText
+            android:id="@+id/et_input_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:lines="1"
+            android:singleLine="true"
+            android:textSize="20sp"
+            android:textColorHint="@color/FOCUS_OFF" />
+
+        <ImageView
+            android:id="@+id/iv_right_mark"
+            android:layout_width="20sp"
+            android:layout_height="20sp"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/correct"
+            android:visibility="gone" />
+
+        <View
+            android:id="@+id/v_underline"
+            android:layout_width="match_parent"
+            android:layout_height="0.2sp"
+            android:layout_below="@+id/et_input_text"
+            android:background="@color/FOCUS_OFF" />
+    </RelativeLayout>
+
+</LinearLayout>
