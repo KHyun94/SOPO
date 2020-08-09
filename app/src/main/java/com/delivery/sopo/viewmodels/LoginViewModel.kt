@@ -180,6 +180,8 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
     {
         if (!v.hasFocus())
             v.requestFocus()
+        else
+            validateResult.value = onCheckValidate()
 
         if (validateResult.value?.result == true)
         {

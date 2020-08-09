@@ -384,6 +384,8 @@ class SignUpViewModel : ViewModel()
     {
         if(!v.hasFocus())
             v.requestFocus()
+        else
+            validateResult.value = onCheckValidate()
 
         if(validateResult.value?.result == true){
             signUpWithFirebase(this.email.value!!, this.pwd.value!!)
