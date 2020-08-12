@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="COLOR_MAIN_BLUE">#5C94FF</color>
+
+    <color name="COLOR_GRAY_100">#F1F1F4</color>
     <color name="COLOR_GRAY_200">#E8E8ED</color>
     <color name="COLOR_GRAY_400">#B5B5BF</color>
 

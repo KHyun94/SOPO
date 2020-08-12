@@ -54,7 +54,6 @@ object CustomEditTextBindingAdapter {
         return v.et_input_text.text.toString()
     }
 
-    // ---------------------------------------------------------------------------------------------
     @JvmStatic
     @BindingAdapter("setDescriptionText")
     fun bindCustomEditTextDescriptionText(
@@ -92,15 +91,5 @@ object CustomEditTextBindingAdapter {
         ce.setOnFocusChangeListener{
             cb.invoke(type, it)
         }
-    }
-
-    @JvmStatic
-    @BindingAdapter("setClearFocus")
-    fun bindCustomEditTextClearFocus(
-        ce: CustomEditText,
-        isClear:Boolean
-    ){
-        if(isClear)
-            ce.et_input_text.clearFocus()
     }
 }

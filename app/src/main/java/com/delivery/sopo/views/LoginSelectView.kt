@@ -203,7 +203,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                     userRepo.setRegisterDate(it.data?.regDt!!)
                     userRepo.setStatus(it.data?.status!!)
 
-                    startActivity(Intent(parentActivity, LoginView::class.java))
+                    startActivity(Intent(parentActivity, MainView::class.java))
                     finish()
                 } else {
                     GeneralDialog(
