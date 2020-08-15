@@ -2,6 +2,7 @@ package com.delivery.sopo.bindings
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
@@ -61,9 +62,15 @@ object CustomEditTextBindingAdapter
     //----------------------------------------------------------------------------------------------
 
     @JvmStatic
-    @BindingAdapter("content")
-    fun setCustomEtViewBlock(v: CustomEditText, bool: Boolean) {
-       v.et_input_text.isEnabled = bool
+    @BindingAdapter("customEnable")
+    fun setCustomEtViewBlock(v: CustomEditText, isBlock: Boolean) {
+       v.et_input_text.isEnabled = isBlock
+    }
+
+    @JvmStatic
+    @BindingAdapter("customOnClickListener")
+    fun setCustomEtViewClickListener(v: CustomEditText, listener: View.OnClickListener) {
+        v.et_input_text.setOnClickListener(listener)
     }
 
     @JvmStatic
