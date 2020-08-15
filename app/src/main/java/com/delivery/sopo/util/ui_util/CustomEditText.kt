@@ -50,17 +50,17 @@ class CustomEditText : LinearLayout {
             text = typedArray?.getString(R.styleable.CustomEditText_text)
             title = typedArray?.getString(R.styleable.CustomEditText_title)
             hint = typedArray?.getString(R.styleable.CustomEditText_hint)
-            descriptionText = typedArray?.getString(R.styleable.CustomEditText_description_text)
+            descriptionText = typedArray?.getString(R.styleable.CustomEditText_descriptionText)
             inputType = typedArray?.getInt(
                 R.styleable.CustomEditText_android_inputType,
                 EditorInfo.TYPE_CLASS_TEXT
             )
             nonFocusColor = typedArray?.getColor(
-                R.styleable.CustomEditText_non_focus_color,
+                R.styleable.CustomEditText_nonFocusColor,
                 resources.getColor(R.color.FOCUS_OFF)
             )
             focusColor = typedArray?.getColor(
-                R.styleable.CustomEditText_focus_color,
+                R.styleable.CustomEditText_focusColor,
                 resources.getColor(R.color.FOCUS_ON)
             )
         }

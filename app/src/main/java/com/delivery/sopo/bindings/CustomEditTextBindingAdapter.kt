@@ -1,47 +1,50 @@
 package com.delivery.sopo.bindings
 
 import android.text.Editable
-import android.text.TextUtils
 import android.text.TextWatcher
-import android.util.Log
-import android.view.View
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
-import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.util.ui_util.CustomEditText
-import com.delivery.sopo.util.fun_util.ValidateUtil
 import kotlinx.android.synthetic.main.custom_edit_text.view.*
 
-object CustomEditTextBindingAdapter {
+object CustomEditTextBindingAdapter
+{
 
     // 커스텀 뷰 two-binding
     @JvmStatic
     @BindingAdapter("content")
-    fun setCustomEtView(v: CustomEditText, content: String?) {
+    fun setCustomEtView(v: CustomEditText, text: String?)
+    {
         val old = v.et_input_text.text.toString()
-        if (old != content) {
-            v.et_input_text.setText(content)
+        if (old != text)
+        {
+            v.et_input_text.setText(text)
         }
     }
 
     @JvmStatic
     @BindingAdapter("contentAttrChanged")
-    fun setCustomEtInverseBindingListener(v: CustomEditText, listener: InverseBindingListener?) {
+    fun setCustomEtInverseBindingListener(v: CustomEditText, listener: InverseBindingListener?)
+    {
         v.et_input_text.addTextChangedListener(
-            object : TextWatcher {
+            object : TextWatcher
+            {
                 override fun beforeTextChanged(
                     charSequence: CharSequence,
                     i: Int,
                     i1: Int,
                     i2: Int
-                ) {
+                )
+                {
                 }
 
-                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
+                override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int)
+                {
                 }
 
-                override fun afterTextChanged(editable: Editable) {
+                override fun afterTextChanged(editable: Editable)
+                {
                     listener?.onChange()
                 }
             }
@@ -50,45 +53,58 @@ object CustomEditTextBindingAdapter {
 
     @JvmStatic
     @InverseBindingAdapter(attribute = "content", event = "contentAttrChanged")
-    fun getContent(v: CustomEditText): String {
+    fun getContent(v: CustomEditText): String
+    {
         return v.et_input_text.text.toString()
     }
 
+    //----------------------------------------------------------------------------------------------
+
     @JvmStatic
-    @BindingAdapter("setDescriptionText")
+    @BindingAdapter("content")
+    fun setCustomEtViewBlock(v: CustomEditText, bool: Boolean) {
+       v.et_input_text.isEnabled = bool
+    }
+
+    @JvmStatic
+    @BindingAdapter("descriptionText")
     fun bindCustomEditTextDescriptionText(
         ce: CustomEditText,
-        text:String
-    ){
+        text: String
+    )
+    {
         ce.setTvDescriptionText(text)
     }
 
     @JvmStatic
-    @BindingAdapter("setDescriptionVisible")
+    @BindingAdapter("descriptionVisible")
     fun bindCustomEditTextDescriptionVisible(
         ce: CustomEditText,
-        viewType:Int
-    ){
+        viewType: Int
+    )
+    {
         ce.setDescriptionVisible(viewType)
     }
 
     @JvmStatic
-    @BindingAdapter("setMarkVisible")
+    @BindingAdapter("markVisible")
     fun bindCustomEditTextMarkVisible(
         ce: CustomEditText,
-        viewType:Int
-    ){
+        viewType: Int
+    )
+    {
         ce.setMarkVisible(viewType)
     }
 
     @JvmStatic
-    @BindingAdapter("type","setCustomFocusChangeListener")
+    @BindingAdapter("type", "customFocusChangeListener")
     fun bindCustomFocusChangeListener(
         ce: CustomEditText,
-        type:String,
+        type: String,
         cb: ((String, Boolean) -> Unit)
-    ) {
-        ce.setOnFocusChangeListener{
+    )
+    {
+        ce.setOnFocusChangeListener {
             cb.invoke(type, it)
         }
     }

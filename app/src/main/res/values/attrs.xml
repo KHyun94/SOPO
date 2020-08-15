@@ -3,10 +3,10 @@
     <declare-styleable name="CustomEditText">
         <attr name="text" format="string"/>
         <attr name="title" format="string"/>
-        <attr name="description_text" format="string"/>
+        <attr name="descriptionText" format="string"/>
         <attr name="hint" format="string"/>
         <attr name="android:inputType"/>
-        <attr name="non_focus_color" format="color"/>
-        <attr name="focus_color" format="color"/>
+        <attr name="nonFocusColor" format="color"/>
+        <attr name="focusColor" format="color"/>
     </declare-styleable>
 </resources>

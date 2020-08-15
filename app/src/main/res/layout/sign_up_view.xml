@@ -51,10 +51,10 @@
                 android:inputType="textEmailAddress"
                 app:content="@={vm.email}"
                 app:hint="@string/EMAIL"
-                app:setCustomFocusChangeListener="@{vm.callback}"
-                app:setDescriptionText="@{vm.emailValidateText}"
-                app:setDescriptionVisible="@{vm.isEmailErrorVisible()}"
-                app:setMarkVisible="@{vm.isEmailCorVisible()}"
+                app:customFocusChangeListener="@{vm.callback}"
+                app:descriptionText="@{vm.emailValidateText}"
+                app:descriptionVisible="@{vm.isEmailErrorVisible()}"
+                app:markVisible="@{vm.isEmailCorVisible()}"
                 app:title="@string/EMAIL"
                 app:type="@{InfoConst.EMAIL}" />
 
@@ -65,10 +65,10 @@
                 android:inputType="textPassword"
                 app:content="@={vm.pwd}"
                 app:hint="@string/PASSWORD"
-                app:setCustomFocusChangeListener="@{vm.callback}"
-                app:setDescriptionText="@{vm.pwdValidateText}"
-                app:setDescriptionVisible="@{vm.isPwdErrorVisible()}"
-                app:setMarkVisible="@{vm.isPwdCorVisible()}"
+                app:customFocusChangeListener="@{vm.callback}"
+                app:descriptionText="@{vm.pwdValidateText}"
+                app:descriptionVisible="@{vm.isPwdErrorVisible()}"
+                app:markVisible="@{vm.isPwdCorVisible()}"
                 app:title="@string/PASSWORD"
                 app:type="@{InfoConst.PASSWORD}" />
 
@@ -79,10 +79,10 @@
                 android:inputType="textPassword"
                 app:content="@={vm.rePwd}"
                 app:hint="@string/RE_PASSWORD"
-                app:setCustomFocusChangeListener="@{vm.callback}"
-                app:setDescriptionText="@{vm.rePwdValidateText}"
-                app:setDescriptionVisible="@{vm.isRePwdErrorVisible()}"
-                app:setMarkVisible="@{vm.isRePwdCorVisible()}"
+                app:customFocusChangeListener="@{vm.callback}"
+                app:descriptionText="@{vm.rePwdValidateText}"
+                app:descriptionVisible="@{vm.isRePwdErrorVisible()}"
+                app:markVisible="@{vm.isRePwdCorVisible()}"
                 app:title="@string/RE_PASSWORD"
                 app:type="@{InfoConst.RE_PASSWORD}" />
 

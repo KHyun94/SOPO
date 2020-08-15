@@ -5,6 +5,7 @@
 
     <color name="COLOR_GRAY_100">#F1F1F4</color>
     <color name="COLOR_GRAY_200">#E8E8ED</color>
+    <color name="COLOR_GRAY_300">#D5D5DC</color>
     <color name="COLOR_GRAY_400">#B5B5BF</color>
 
     <color name="PRIMARY_100">#DDDFEE</color>

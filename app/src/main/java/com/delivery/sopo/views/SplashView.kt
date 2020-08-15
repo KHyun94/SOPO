@@ -141,6 +141,7 @@ class SplashView : BasicView<SplashViewBinding>(
                             null,
                             Pair("네", { it ->
                                 it.dismiss()
+                                Log.d(TAG,"TESTESTSETSETS")
                                 userRepo.removeUserRepo()
                                 startActivity(Intent(parentActivity, IntroView::class.java))
                                 finish()

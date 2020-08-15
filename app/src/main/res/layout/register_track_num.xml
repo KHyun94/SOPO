@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
@@ -9,12 +9,49 @@
             type="com.delivery.sopo.viewmodels.registesrs.RegisterViewModel" />
     </data>
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".views.registers.RegisterTrackNum">
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="25sp"
+            android:text="운송장 등록"
+            android:textColor="@color/MAIN_BLACK"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.9" />
 
 
-    </FrameLayout>
+
+            <com.delivery.sopo.util.ui_util.CustomEditText
+                android:id="@+id/custom_et_track_num"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25sp"
+                app:layout_constraintTop_toBottomOf="@id/tv_title"
+                android:layout_marginHorizontal="25sp"
+                app:hint="운송장 번호를 입력해주세요."
+                app:title="운송장 번호" />
+
+            <com.delivery.sopo.util.ui_util.CustomEditText
+                android:id="@+id/custom_et_delivery_co"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/custom_et_track_num"
+                android:layout_marginHorizontal="25sp"
+                app:hint="여기를 눌러 배송사를 선택해주세요."
+                app:title="배송사" />
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

@@ -21,7 +21,7 @@
             android:paddingTop="5sp"
             android:paddingBottom="5sp"
             android:text="이메일"
-            android:textColor="@color/FOCUS_OFF"
+            android:textColor="@color/MAIN_BLACK"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="parent"
@@ -36,7 +36,7 @@
             android:layout_marginRight="5sp"
             android:layout_toLeftOf="@+id/tv_description_text"
             android:background="@drawable/alert"
-            android:backgroundTint="@color/FOCUS_OFF"
+            android:backgroundTint="@color/MAIN_BLACK"
             android:visibility="gone" />
 
         <TextView
@@ -70,7 +70,7 @@
             android:lines="1"
             android:singleLine="true"
             android:textSize="20sp"
-            android:textColorHint="@color/FOCUS_OFF" />
+            android:textColorHint="@color/COLOR_GRAY_300" />
 
         <ImageView
             android:id="@+id/iv_right_mark"
@@ -85,7 +85,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.2sp"
             android:layout_below="@+id/et_input_text"
-            android:background="@color/FOCUS_OFF" />
+            android:background="@color/COLOR_GRAY_200" />
     </RelativeLayout>
 
 </LinearLayout>
