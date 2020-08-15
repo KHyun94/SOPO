@@ -48,7 +48,6 @@ object FragmentManager
             }
             BACK_FRAGMENT ->
             {
-
                 Log.d(TAG, "Back Fragment")
                 transaction.run {
                     hide(getCurrentFragment(list!!)!!)

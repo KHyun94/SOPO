@@ -1,4 +1,4 @@
-package com.delivery.sopo.views
+package com.delivery.sopo.views.lookups
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

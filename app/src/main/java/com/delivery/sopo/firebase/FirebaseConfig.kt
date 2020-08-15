@@ -1,4 +1,4 @@
-package com.tcodevice.card.tada.firebase
+package com.delivery.sopo.firebase
 
 import com.google.firebase.remoteconfig.BuildConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig

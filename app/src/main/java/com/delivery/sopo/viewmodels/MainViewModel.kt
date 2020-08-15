@@ -31,8 +31,7 @@ class MainViewModel : ViewModel()
             when(tab.position){
                 0 -> currentTabName.value = FragmentConst.FRAGMENT_REGISTER
                 1 -> currentTabName.value = FragmentConst.FRAGMENT_LOOKUP
-                2 -> currentTabName.value = FragmentConst.FRAGMENT_BOOK
-                3 -> currentTabName.value = FragmentConst.FRAGMENT_MY_INFO
+                2 -> currentTabName.value = FragmentConst.FRAGMENT_MY_MENU
                 else -> currentTabName.value = ""
             }
 
