@@ -13,7 +13,7 @@
         <ImageView
             android:layout_width="50sp"
             android:layout_height="50sp"
-            android:background="@color/FOCUS_ON" />
+            android:background="@color/COLOR_MAIN_BLUE" />
 
     </LinearLayout>
 

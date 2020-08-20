@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="img"
+            type="Integer" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/iv_img"
+            android:layout_width="88sp"
+            android:layout_height="88sp"
+            android:layout_margin="10sp"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            setImage="@{img}"/>
+
+    </LinearLayout>
+
+</layout>

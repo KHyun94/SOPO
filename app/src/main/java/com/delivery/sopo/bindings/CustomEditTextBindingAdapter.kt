@@ -2,6 +2,7 @@ package com.delivery.sopo.bindings
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
@@ -11,6 +12,7 @@ import kotlinx.android.synthetic.main.custom_edit_text.view.*
 
 object CustomEditTextBindingAdapter
 {
+    val TAG = "LOG.SOPO.BindingAdapter"
 
     // 커스텀 뷰 two-binding
     @JvmStatic
@@ -60,18 +62,6 @@ object CustomEditTextBindingAdapter
     }
 
     //----------------------------------------------------------------------------------------------
-
-    @JvmStatic
-    @BindingAdapter("customEnable")
-    fun setCustomEtViewBlock(v: CustomEditText, isBlock: Boolean) {
-       v.et_input_text.isEnabled = isBlock
-    }
-
-    @JvmStatic
-    @BindingAdapter("customOnClickListener")
-    fun setCustomEtViewClickListener(v: CustomEditText, listener: View.OnClickListener) {
-        v.et_input_text.setOnClickListener(listener)
-    }
 
     @JvmStatic
     @BindingAdapter("descriptionText")

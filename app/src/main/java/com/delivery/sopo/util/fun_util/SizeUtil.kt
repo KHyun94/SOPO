@@ -21,4 +21,10 @@ object SizeUtil {
             TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics
         ).toInt()
     }
+
+    fun changeSpToPx(context: Context, sp: Float): Int {
+        return TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_SP, sp, context.resources.displayMetrics
+        ).toInt()
+    }
 }

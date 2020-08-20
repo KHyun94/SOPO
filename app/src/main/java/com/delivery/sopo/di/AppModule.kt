@@ -5,7 +5,7 @@ import com.delivery.sopo.repository.UserRepo
 import com.delivery.sopo.shared.SharedPref
 import com.delivery.sopo.shared.SharedPrefHelper
 import com.delivery.sopo.viewmodels.*
-import com.delivery.sopo.viewmodels.menus.MyMenuViewModel
+import com.delivery.sopo.viewmodels.registesrs.RegisterViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -30,5 +30,6 @@ val appModule = module {
     viewModel { SignUpViewModel() }
     viewModel { LoginSelectViewModel() }
     viewModel { MainViewModel() }
-    viewModel { MyMenuViewModel(get()) }
+    // merge할 때 지우고 붙여넣어야함
+    viewModel { RegisterViewModel() }
 }

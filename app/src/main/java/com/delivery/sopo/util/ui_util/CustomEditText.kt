@@ -1,17 +1,23 @@
 package com.delivery.sopo.util.ui_util
 
 import android.content.Context
+import android.text.InputType
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import com.delivery.sopo.R
+import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.util.fun_util.SizeUtil
 import kotlinx.android.synthetic.main.custom_edit_text.view.*
 
 
 class CustomEditText : LinearLayout {
+
+    private val TAG = "LOG.SOPO.CustomEt"
 
     private var text: String? = null
     private var title: String? = null
@@ -23,7 +29,7 @@ class CustomEditText : LinearLayout {
 
     private var focusChangeColor = resources.getColor(R.color.FOCUS_OFF)
     private var underLineWidth: Int = ViewGroup.LayoutParams.MATCH_PARENT
-    private var underLineHeight: Int = 1
+    private var underLineHeight: Int = SizeUtil.changeSpToPx(SOPOApp.INSTANCE, 2.0f)
 
     constructor(context: Context?) : super(context) {
         initSetting(context, null)
@@ -75,10 +81,8 @@ class CustomEditText : LinearLayout {
         et_input_text.setOnFocusChangeListener { view, focus ->
 
             if (focus) {
-                underLineHeight = 3
                 focusChangeColor = focusColor ?: resources.getColor(R.color.FOCUS_ON)
             } else {
-                underLineHeight = 1
                 focusChangeColor = nonFocusColor ?: resources.getColor(R.color.FOCUS_OFF)
             }
 
@@ -130,10 +134,8 @@ class CustomEditText : LinearLayout {
         et_input_text.setOnFocusChangeListener { v, b ->
 
             if (b) {
-                underLineHeight = 3
                 focusChangeColor = focusColor ?: resources.getColor(R.color.FOCUS_ON)
             } else {
-                underLineHeight = 1
                 focusChangeColor = nonFocusColor ?: resources.getColor(R.color.FOCUS_OFF)
             }
 

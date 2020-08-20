@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="20sp"
             android:background="@drawable/border_round_white_btn"
-            android:backgroundTint="@color/FOCUS_ON"
+            android:backgroundTint="@color/COLOR_MAIN_BLUE"
             android:gravity="center"
             android:padding="20sp"
             android:text="확인"

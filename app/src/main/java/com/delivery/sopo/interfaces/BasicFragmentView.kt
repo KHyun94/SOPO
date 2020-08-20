@@ -23,6 +23,8 @@ abstract class BasicFragmentView<T : ViewDataBinding>(@LayoutRes val layoutRes: 
     {
         binding = DataBindingUtil.inflate(inflater, layoutRes, container, false)
         binding.lifecycleOwner = this
+        bindView()
+        setObserver()
         return binding.root
     }
 

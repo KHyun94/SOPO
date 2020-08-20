@@ -2,13 +2,9 @@ package com.delivery.sopo.views
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.FragmentConst.FRAGMENT_LOOKUP
-import com.delivery.sopo.consts.FragmentConst.FRAGMENT_MY_MENU
-import com.delivery.sopo.consts.FragmentConst.FRAGMENT_REGISTER
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.interfaces.BasicView
@@ -75,17 +71,19 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         binding.vm?.currentTabName?.observe(this@MainView, Observer {
             when (it)
             {
-                FRAGMENT_REGISTER ->
+                FragmentType.REGISTER_STEP1.NAME ->
                 {
-                    FragmentManager.move(this@MainView, FragmentType.REGISTER, frame_container.id)
-//                    Log.d(TAG, FRAGMENT_REGISTER)
+                    FragmentManager.move(this@MainView, FragmentType.REGISTER_STEP1, frame_container.id)
                 }
-                FRAGMENT_LOOKUP ->
+                FragmentType.REGISTER_STEP2.NAME ->
+                {
+                    FragmentManager.move(this@MainView, FragmentType.REGISTER_STEP2, frame_container.id)
+                }
+                FragmentType.LOOKUP.NAME ->
                 {
                     FragmentManager.move(this@MainView, FragmentType.LOOKUP, frame_container.id)
-//                    Log.d(TAG, FRAGMENT_LOOKUP)
                 }
-                FRAGMENT_MY_MENU ->
+                FragmentType.MY_MENU.NAME ->
                 {
                     FragmentManager.move(this@MainView, FragmentType.MY_MENU, frame_container.id)
                 }
