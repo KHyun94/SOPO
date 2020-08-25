@@ -6,14 +6,11 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.*
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
-import com.delivery.sopo.GeneralDialog
 import com.delivery.sopo.R
-import com.delivery.sopo.R.layout.detail_permission_item
 import kotlinx.android.synthetic.main.permission_dialog.view.*
 
 typealias OnClickListener = (agree: PermissionDialog) -> Unit

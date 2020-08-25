@@ -48,6 +48,7 @@ class SOPOApp : Application() {
 
         auth = FirebaseAuth.getInstance()
         auth.setLanguageCode("kr")
+
         //카카오톡 로그인 API 초기화
         if (kakaoSDKAdapter == null)
             kakaoSDKAdapter = KakaoSDKAdapter()
@@ -56,16 +57,14 @@ class SOPOApp : Application() {
 
         /** 카카오 토큰 만료시 갱신을 시켜준다**/
         if (Session.getCurrentSession().isOpenable()) {
-            Session.getCurrentSession().checkAndImplicitOpen();
+            Session.getCurrentSession().checkAndImplicitOpen()
         } else {
-            Log.e(TAG, "2:토큰 : " + Session.getCurrentSession().getTokenInfo().getAccessToken());
             accessToken = Session.getCurrentSession().tokenInfo
         }
 
+
         // FCM TOKEN
-
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
-
             Log.d(TAG, "토큰 발행: " + task.result!!.token)
         }
     }

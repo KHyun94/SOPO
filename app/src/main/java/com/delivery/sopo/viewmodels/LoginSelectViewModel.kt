@@ -27,8 +27,6 @@ class LoginSelectViewModel : ViewModel() {
         loginType.value = "SIGN_UP"
     }
     fun onKakaoLoginClicked() {
-
-
         loginType.value = "KAKAO_LOGIN"
     }
 

@@ -10,8 +10,18 @@ class SharedPrefHelper(private val sharedPref: SharedPref, private val context: 
     private val DEVICE_INFO = "USER_DEVICE_INFO"
     private val PRIVATE_API_PWD = "USER_API_PWD"
     private val JOIN_TYPE = "JOIN_TYPE"
+    private val USER_ID = "USER_ID"
     private val REGISTER_DATE = "REGISTER_DATE"
     private val STATUS = "STATUS"
+    private val SNS_UID = "SNS_UID"
+
+    fun getUserId():String?{
+        return sharedPref.getString(USER_ID, "")
+    }
+
+    fun setUserId(userId: String){
+        sharedPref.setString(USER_ID, userId)
+    }
 
     fun getUserEmail(): String? {
         return sharedPref.getString(USER_EMAIL, "")
@@ -60,4 +70,13 @@ class SharedPrefHelper(private val sharedPref: SharedPref, private val context: 
     fun setStatus(status: Int){
         sharedPref.setInt(STATUS, status)
     }
+
+    fun getSNSUId(): String? {
+        return sharedPref.getString(SNS_UID, "0000000000")
+    }
+
+    fun setSNSUId(uid: String){
+        sharedPref.setString(SNS_UID, uid)
+    }
+
 }

@@ -2,14 +2,12 @@ package com.delivery.sopo.views
 
 import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.Observer
-import com.delivery.sopo.GeneralDialog
+import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.databinding.SignUpViewBinding
 import com.delivery.sopo.interfaces.BasicView
-import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.viewmodels.SignUpViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel

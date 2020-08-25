@@ -1,45 +1,55 @@
 package com.delivery.sopo.views
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.Observer
-import com.delivery.sopo.GeneralDialog
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.consts.JoinTypeConst
 import com.delivery.sopo.databinding.LoginSelectViewBinding
 import com.delivery.sopo.enums.ResponseCode
-import com.delivery.sopo.extentions.getCommonMessage
+import com.delivery.sopo.firebase.FirebaseUserManagement
 import com.delivery.sopo.interfaces.BasicView
+import com.delivery.sopo.models.APIResult
+import com.delivery.sopo.models.LoginResult
 import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.NetworkManager.getUserAPI
+import com.delivery.sopo.networks.NetworkManager.publicRetro
+import com.delivery.sopo.networks.UserAPI
 import com.delivery.sopo.repository.UserRepo
 import com.delivery.sopo.util.fun_util.CodeUtil
 import com.delivery.sopo.util.fun_util.OtherUtil
+import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.viewmodels.LoginSelectViewModel
-import com.google.android.gms.tasks.OnCompleteListener
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
 import com.kakao.usermgmt.response.MeV2Response
 import com.kakao.util.exception.KakaoException
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.schedulers.Schedulers.io
 import kotlinx.android.synthetic.main.login_select_view.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_view)
 {
-
-    private val userRepo : UserRepo by inject()
+    private val userRepo: UserRepo by inject()
 
     private val loginSelectVM: LoginSelectViewModel by viewModel()
     private var sessionCallback: ISessionCallback? = null
+
+    var email = ""
+    var deviceInfo = ""
+    var kakaoUserId = ""
+    var firebaseUserId = ""
 
     init
     {
         TAG += this.javaClass.simpleName
         parentActivity = this@LoginSelectView
+        deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE)
     }
 
     override fun bindView()
@@ -51,8 +61,6 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
     override fun setObserver()
     {
         loginSelectVM.loginType.observe(this, Observer {
-
-            Log.d(TAG, "클릭 이벤트: $it")
 
             when (it)
             {
@@ -86,72 +94,10 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                             binding.vm?.requestMe {
                                 if (it is MeV2Response)
                                 {
-                                    Log.d(TAG, "카카오 정보: ${it.id}, ${it.kakaoAccount.email}")
+                                    email = it.kakaoAccount.email
+                                    kakaoUserId = it.id.toString()
 
-                                    val kakaoEmail = it.kakaoAccount.email
-
-                                    getUserAPI().requestCustomToken(
-                                        deviceInfo = OtherUtil.getDeviceID(this@LoginSelectView),
-                                        email = kakaoEmail,
-                                        joinType = "kakao",
-                                        userId = it.id.toString()
-                                    )
-                                        .subscribeOn(io())
-                                        .subscribe(
-                                            {
-                                                if (it.code == ResponseCode.SUCCESS.CODE)
-                                                {
-                                                    val token = it.data!!
-                                                    SOPOApp.auth.signInWithCustomToken(token)
-                                                        .addOnCompleteListener {
-                                                            if (it.isSuccessful)
-                                                            {
-                                                                Log.d(TAG, "토큰 로그인 성공")
-                                                                SOPOApp.auth.currentUser?.updateEmail(kakaoEmail)
-                                                                requestKakaoLogin(email = kakaoEmail, token = token)
-                                                            }
-                                                            else
-                                                            {
-                                                                GeneralDialog(
-                                                                    parentActivity,
-                                                                    "오류",
-                                                                    it.exception.getCommonMessage(this@LoginSelectView),
-                                                                    null,
-                                                                    Pair("네", { it ->
-                                                                        it.dismiss()
-                                                                    })
-                                                                ).show(
-                                                                    supportFragmentManager.beginTransaction(),
-                                                                    "TAG"
-                                                                )
-                                                            }
-                                                        }
-                                                }
-                                                else
-                                                {
-                                                    GeneralDialog(
-                                                        parentActivity,
-                                                        "오류",
-                                                        CodeUtil.returnCodeMsg(it.code),
-                                                        null,
-                                                        Pair("네", { it ->
-                                                            it.dismiss()
-                                                        })
-                                                    ).show(
-                                                        supportFragmentManager.beginTransaction(),
-                                                        "TAG"
-                                                    )
-                                                }
-
-                                                Log.d(TAG, "카카오 토큰: $it")
-
-
-
-                                            },
-                                            {
-                                                Log.d(TAG, "카카오 토큰 에러: $it")
-                                            }
-                                        )
+                                    requestKakaoCustomToken(email = email, uid = kakaoUserId)
 
                                 }
                                 else
@@ -175,64 +121,284 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
         })
     }
 
-    private fun firebaseTokenLogin(token: String)
+    fun requestKakaoCustomToken(email: String, uid: String)
     {
-        SOPOApp.auth.signInWithCustomToken(token)
-            .addOnCompleteListener(parentActivity!!, OnCompleteListener {
-                Log.d(TAG, "커스텀 토큰 로그인")
-                val user = SOPOApp.auth.currentUser
-                Log.d(TAG, "${user?.email}")
+        this.email = email
+
+        NetworkManager.publicRetro.create(UserAPI::class.java)
+            .requestCustomToken(
+                email = email,
+                deviceInfo = deviceInfo,
+                joinType = JoinTypeConst.KAKAO,
+                userId = uid
+            ).enqueue(object : Callback<APIResult<String?>>
+            {
+                override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
+                {
+                    GeneralDialog(
+                        act = parentActivity,
+                        title = "오류",
+                        msg = t.message.toString(),
+                        detailMsg = null,
+                        rHandler = Pair(
+                            first = "네",
+                            second = { it ->
+                                it.dismiss()
+                            })
+                    ).show(supportFragmentManager, "tag")
+                }
+
+                override fun onResponse(
+                    call: Call<APIResult<String?>>,
+                    response: Response<APIResult<String?>>
+                )
+                {
+                    val httpStatusCode = response.code()
+
+                    val result = response.body()
+
+                    when (httpStatusCode)
+                    {
+                        200 ->
+                        {
+                            if (result?.code == ResponseCode.SUCCESS.CODE)
+                            {
+                                val customToken = result.data as String
+
+                                FirebaseUserManagement.firebaseCustomTokenLogin(token = customToken)
+                                    .addOnCompleteListener {
+
+                                        Log.d(TAG, "kakao ${it.result.user?.email}")
+
+                                        firebaseUserId = it.result?.user?.uid!!
+
+
+                                        it.result?.user?.updateEmail(email)
+                                            ?.addOnCompleteListener {
+
+                                                Log.d(TAG, "Firebase!!!!!!!!!!!!${firebaseUserId}")
+
+
+                                                requestKakaoLogin(
+                                                    email = email,
+                                                    deviceInfo = deviceInfo,
+                                                    kakaoUserId = kakaoUserId,
+                                                    uid = firebaseUserId
+                                                )
+                                            }
+
+
+
+                                    }
+                            }
+                            else
+                            {
+                                Log.d(TAG, "error code ${result?.code}")
+
+                                GeneralDialog(
+                                    act = parentActivity,
+                                    title = "알림",
+                                    msg = CodeUtil.returnCodeMsg(result?.code),
+                                    detailMsg = null,
+                                    rHandler = Pair(
+                                        first = "네",
+                                        second = { it ->
+                                            it.dismiss()
+                                        })
+                                ).show(supportFragmentManager, "tag")
+                            }
+                        }
+                        else ->
+                        {
+                            Log.d(TAG, "error code ${result?.code}")
+
+                            GeneralDialog(
+                                act = parentActivity,
+                                title = "오류",
+                                msg = CodeUtil.returnCodeMsg(result?.code),
+                                detailMsg = null,
+                                rHandler = Pair(
+                                    first = "네",
+                                    second = { it ->
+                                        it.dismiss()
+                                    })
+                            ).show(supportFragmentManager, "tag")
+                        }
+
+                    }
+
+                }
+
+            })
+
+    }
+
+    fun requestKakaoLogin(email: String, deviceInfo: String, kakaoUserId: String, uid: String)
+    {
+        publicRetro.create(UserAPI::class.java)
+            .requestKakaoLogin(
+                email = email,
+                deviceInfo = deviceInfo,
+                kakaoUserId = kakaoUserId,
+                uid = uid
+            ).enqueue(object : Callback<APIResult<Any?>>
+            {
+                override fun onFailure(call: Call<APIResult<Any?>>, t: Throwable)
+                {
+                }
+
+                override fun onResponse(
+                    call: Call<APIResult<Any?>>,
+                    response: Response<APIResult<Any?>>
+                )
+                {
+                    val httpStatusCode = response.code()
+
+                    val result = response.body()
+
+                    when (httpStatusCode)
+                    {
+
+                        ResponseCode.SUCCESS.HTTP_STATUS ->
+                        {
+                            when (result?.code)
+                            {
+                                ResponseCode.SUCCESS.CODE ->
+                                {
+                                    val gson = Gson()
+
+                                    val type = object : TypeToken<LoginResult?>() {}.type
+
+                                    val reader = gson.toJson(result.data)
+
+                                    val user = gson.fromJson<LoginResult>(reader, type)
+
+                                    userRepo.setEmail(email = user.userName)
+                                    userRepo.setApiPwd(pwd = user.password)
+                                    userRepo.setDeviceInfo(info = deviceInfo)
+                                    userRepo.setJoinType(joinType = JoinTypeConst.KAKAO)
+                                    userRepo.setRegisterDate(user.regDt)
+                                    userRepo.setStatus(user.status)
+                                    userRepo.setSNSUId(kakaoUserId)
+
+                                    startActivity(Intent(parentActivity, MainView::class.java))
+                                    finish()
+                                }
+                                ResponseCode.ALREADY_LOGGED_IN.CODE ->
+                                {
+                                    val jwtToken = result.data as String
+
+                                    GeneralDialog(
+                                        act = parentActivity,
+                                        title = "알림",
+                                        msg = ResponseCode.ALREADY_LOGGED_IN.MSG,
+                                        detailMsg = null,
+                                        rHandler = Pair(
+                                            first = "네",
+                                            second = { it ->
+                                                it.dismiss()
+                                                updateDeviceInfo(jwtToken = jwtToken, email = email)
+                                            })
+                                    ).show(supportFragmentManager, "tag")
+                                }
+                                else ->
+                                {
+                                    GeneralDialog(
+                                        act = parentActivity,
+                                        title = "오류",
+                                        msg = CodeUtil.returnCodeMsg(result?.code),
+                                        detailMsg = null,
+                                        rHandler = Pair(
+                                            first = "네",
+                                            second = { it ->
+                                                it.dismiss()
+                                            })
+                                    ).show(supportFragmentManager, "tag")
+                                }
+                            }
+                        }
+                        else ->
+                        {
+                            GeneralDialog(
+                                act = parentActivity,
+                                title = "알림",
+                                msg = CodeUtil.returnCodeMsg(result?.code),
+                                detailMsg = null,
+                                rHandler = Pair(
+                                    first = "네",
+                                    second = { it ->
+                                        it.dismiss()
+                                    })
+                            ).show(supportFragmentManager, "tag")
+
+                        }
+                    }
+
+                }
+
             })
     }
 
-
-    fun requestKakaoLogin(email: String, token: String)
+    fun updateDeviceInfo(email: String, jwtToken: String)
     {
-        getUserAPI()
-            .requestKakaoLogin(email = email, token = token)
-            .subscribeOn(io())
-            .subscribe({
-                Log.d(TAG, "$it")
-
-                if(it.code == ResponseCode.SUCCESS.CODE)
+        publicRetro.create(UserAPI::class.java)
+            .requestUpdateDeviceInfo(
+                email = email,
+                jwtToken = jwtToken
+            ).enqueue(object : Callback<APIResult<String?>>
+            {
+                override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
                 {
-                    userRepo.setEmail(email = it.data?.userName!!)
-                    userRepo.setApiPwd(pwd = it.data?.password!!)
-                    userRepo.setDeviceInfo(info = OtherUtil.getDeviceID(this@LoginSelectView))
-                    userRepo.setJoinType(joinType = "kakao")
-                    userRepo.setRegisterDate(it.data?.regDt!!)
-                    userRepo.setStatus(it.data?.status!!)
-
-                    startActivity(Intent(parentActivity, MainView::class.java))
-                    finish()
-                } else {
                     GeneralDialog(
-                        parentActivity,
-                        "오류",
-                        CodeUtil.returnCodeMsg(it.code),
-                        null,
-                        Pair("네", { it ->
-                            it.dismiss()
-                        })
-                    ).show(
-                        supportFragmentManager.beginTransaction(),
-                        "TAG"
-                    )
+                        act = parentActivity,
+                        title = "오류",
+                        msg = CodeUtil.returnCodeMsg(t.message),
+                        detailMsg = null,
+                        rHandler = Pair(
+                            first = "네",
+                            second = { it -> it.dismiss() })
+                    ).show(supportFragmentManager, "tag")
                 }
-            }, {
-                GeneralDialog(
-                    parentActivity,
-                    "오류",
-                    it.message!!,
-                    null,
-                    Pair("네", { it ->
-                        it.dismiss()
-                    })
-                ).show(
-                    supportFragmentManager.beginTransaction(),
-                    "TAG"
+
+                override fun onResponse(
+                    call: Call<APIResult<String?>>,
+                    response: Response<APIResult<String?>>
                 )
-            })
+                {
+                    val httpStatusCode = response.code()
+
+                    val result = response.body()
+
+                    when (httpStatusCode)
+                    {
+                        200 ->
+                        {
+                            requestKakaoLogin(
+                                email = email,
+                                deviceInfo = deviceInfo,
+                                kakaoUserId = kakaoUserId,
+                                uid = firebaseUserId
+                            )
+                        }
+                        else ->
+                        {
+                            GeneralDialog(
+                                act = parentActivity,
+                                title = "오류",
+                                msg = CodeUtil.returnCodeMsg(result?.code),
+                                detailMsg = null,
+                                rHandler = Pair(
+                                    first = "네",
+                                    second = { it -> it.dismiss() })
+                            ).show(supportFragmentManager, "tag")
+                        }
+                    }
+
+                }
+
+            }
+            )
+
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)

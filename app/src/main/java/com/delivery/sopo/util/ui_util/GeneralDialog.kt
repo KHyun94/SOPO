@@ -1,4 +1,4 @@
-package com.delivery.sopo
+package com.delivery.sopo.util.ui_util
 
 import android.app.ActionBar
 import android.app.Activity
@@ -10,10 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
+import com.delivery.sopo.R
 import com.delivery.sopo.util.fun_util.SizeUtil
 import kotlinx.android.synthetic.main.general_dialog.view.*
 
-typealias OnClickListener = (agree: GeneralDialog) -> Unit
+typealias OnAgreeClickListener = (agree: GeneralDialog) -> Unit
 
 class GeneralDialog : DialogFragment {
 
@@ -23,8 +24,8 @@ class GeneralDialog : DialogFragment {
     private var msg: String? = null
     private var detailMsg: String? = null
 
-    private var onRightClickListener: Pair<String, OnClickListener?>? = null
-    private var onLeftClickListener: Pair<String, OnClickListener?>? = null
+    private var onRightClickListener: Pair<String, OnAgreeClickListener?>? = null
+    private var onLeftClickListener: Pair<String, OnAgreeClickListener?>? = null
 
     private lateinit var layoutView: View
 
@@ -33,7 +34,7 @@ class GeneralDialog : DialogFragment {
         title: String,
         msg: String,
         detailMsg: String?,
-        rHandler: Pair<String, OnClickListener?>
+        rHandler: Pair<String, OnAgreeClickListener?>
     ) : super() {
         this.parentActivity = act
         this.title = title
@@ -47,8 +48,8 @@ class GeneralDialog : DialogFragment {
         title: String,
         msg: String,
         detailMsg: String?,
-        rHandler: Pair<String, OnClickListener?>,
-        lHandler: Pair<String, OnClickListener?>
+        rHandler: Pair<String, OnAgreeClickListener?>,
+        lHandler: Pair<String, OnAgreeClickListener?>
     ) : super() {
         this.parentActivity = act
         this.title = title
@@ -98,7 +99,7 @@ class GeneralDialog : DialogFragment {
         if (onLeftClickListener != null)
             layoutView.btn_left.text = onLeftClickListener?.first
         else {
-            layoutView.btn_left.text = "아니오"
+//            layoutView.btn_left.text = "아니오"
             layoutView.btn_left.visibility = View.GONE
         }
 

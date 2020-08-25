@@ -64,6 +64,16 @@ class UserRepo(private val shared: SharedPrefHelper)
         shared.setJoinType(joinType)
     }
 
+    fun getSNSUId(): String?
+    {
+        return shared.getSNSUId()
+    }
+
+    fun setSNSUId(uid: String)
+    {
+        shared.setSNSUId(uid)
+    }
+
     fun removeUserRepo()
     {
         setEmail("")

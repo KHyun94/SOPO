@@ -7,16 +7,27 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst
+import com.delivery.sopo.consts.JoinTypeConst
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.extentions.commonMessageResId
 import com.delivery.sopo.firebase.FirebaseUserManagement
+import com.delivery.sopo.models.APIResult
+import com.delivery.sopo.models.LoginResult
 import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.networks.NetworkManager
+import com.delivery.sopo.networks.UserAPI
 import com.delivery.sopo.repository.UserRepo
+import com.delivery.sopo.util.fun_util.CodeUtil
 import com.delivery.sopo.util.fun_util.OtherUtil
 import com.delivery.sopo.util.fun_util.ValidateUtil
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers.io
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.google.gson.stream.JsonReader
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.io.StringReader
+
 
 class LoginViewModel(val userRepo: UserRepo) : ViewModel()
 {
@@ -25,6 +36,7 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
 
     var email = MutableLiveData<String>()
     var pwd = MutableLiveData<String>()
+    var uid = ""
 
     var emailValidateText = MutableLiveData<String>()
     var pwdValidateText = MutableLiveData<String>()
@@ -193,11 +205,15 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
                         if (SOPOApp.auth.currentUser?.isEmailVerified!!)
                         {
                             Log.d(TAG, "Auth Email")
+
+                            uid = it.result?.user?.uid!!
+
                             requestLogin(
-                                email.value.toString(),
-                                pwd.value.toString(),
-                                OtherUtil.getDeviceID(SOPOApp.INSTANCE),
-                                "self"
+                                email = email.value.toString(),
+                                pwd = pwd.value.toString(),
+                                deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE),
+                                joinType = "self",
+                                uid = uid
                             )
                         }
                         else
@@ -237,47 +253,170 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
         }
     }
 
-    private fun requestLogin(email: String, pwd: String, deviceInfo: String, joinType: String)
+    fun authJwtToken(jwtToken: String)
     {
-        Log.d(TAG, "info $deviceInfo")
+        NetworkManager.publicRetro.create(UserAPI::class.java)
+            .requestUpdateDeviceInfo(
+                email = email.value.toString(),
+                jwtToken = jwtToken
+            ).enqueue(object : Callback<APIResult<String?>>
+            {
+                override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
+                {
+                    TODO("Not yet implemented")
+                }
 
-        NetworkManager.getUserAPI().run {
-            requestSelfLogin(
+                override fun onResponse(
+                    call: Call<APIResult<String?>>,
+                    response: Response<APIResult<String?>>
+                )
+                {
+                    val httpStatusCode = response.code()
+
+                    val result = response.body()
+
+                    when (httpStatusCode)
+                    {
+                        200 ->
+                        {
+                            if (result?.code == ResponseCode.SUCCESS.CODE)
+                            {
+                                requestLogin(
+                                    email = email.value.toString(),
+                                    pwd = pwd.value.toString(),
+                                    deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE),
+                                    joinType = JoinTypeConst.SELF,
+                                    uid = uid
+                                )
+                            }
+                            else
+                            {
+                                validateResult.value =
+                                    ValidateResult(
+                                        false,
+                                        CodeUtil.returnCodeMsg(result?.code),
+                                        jwtToken,
+                                        InfoConst.CUSTOM_DIALOG
+                                    )
+                            }
+                        }
+                        else ->
+                        {
+                            validateResult.value =
+                                ValidateResult(
+                                    false,
+                                    CodeUtil.returnCodeMsg(result?.code),
+                                    jwtToken,
+                                    InfoConst.CUSTOM_DIALOG
+                                )
+                        }
+                    }
+
+                }
+
+            })
+    }
+
+    private fun requestLogin(
+        email: String,
+        pwd: String,
+        deviceInfo: String,
+        joinType: String,
+        uid: String
+    )
+    {
+        NetworkManager.publicRetro.create(UserAPI::class.java)
+            .requestSelfLogin(
                 email = email,
                 pwd = pwd,
                 deviceInfo = deviceInfo,
-                joinType = joinType
-            )
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(io())
-                .subscribe(
-                    {
-                        Log.d(TAG, "성공: $it")
+                joinType = joinType,
+                uid = uid
+            ).enqueue(object : Callback<APIResult<Any?>>
+            {
+                override fun onFailure(call: Call<APIResult<Any?>>, t: Throwable)
+                {
+                    validateResult.value =
+                        ValidateResult(false, t.message!!, 1, InfoConst.CUSTOM_DIALOG)
+                }
 
-                        if (it.code == ResponseCode.SUCCESS.CODE)
-                        {
-                            validateResult.value =
-                                ValidateResult(true, it.message, it, InfoConst.NON_SHOW)
-
-                            userRepo.setEmail(email = it.data?.userName!!)
-                            userRepo.setApiPwd(pwd = it.data?.password!!)
-                            userRepo.setDeviceInfo(info = deviceInfo)
-                            userRepo.setJoinType(joinType = joinType)
-                            userRepo.setRegisterDate(it.data?.regDt!!)
-                            userRepo.setStatus(it.data?.status!!)
-                        }
-                        else
-                        {
-                            validateResult.value =
-                                ValidateResult(false, it.message, it, InfoConst.CUSTOM_DIALOG)
-                        }
-
-                    },
-                    {
-                        Log.d(TAG, "실패: $it")
-                        validateResult.value = ValidateResult(false, it.toString(), it, InfoConst.CUSTOM_DIALOG)
-                    }
+                override fun onResponse(
+                    call: Call<APIResult<Any?>>,
+                    response: Response<APIResult<Any?>>
                 )
-        }
+                {
+                    val httpStatusCode = response.code()
+
+                    val result = response.body()
+
+                    when (httpStatusCode)
+                    {
+                        200 ->
+                        {
+                            when (result?.code)
+                            {
+                                ResponseCode.SUCCESS.CODE ->
+                                {
+                                    Log.d(TAG, "What the fuck ${result.data.toString()}")
+                                    val gson = Gson()
+
+                                    val type = object : TypeToken<LoginResult?>() {}.type
+
+                                    val reader = gson.toJson(result.data)
+
+                                    val user = gson.fromJson<LoginResult>(reader, type)
+
+                                    userRepo.setEmail(email = user.userName)
+                                    userRepo.setApiPwd(pwd = user.password)
+                                    userRepo.setDeviceInfo(info = deviceInfo)
+                                    userRepo.setJoinType(joinType = joinType)
+                                    userRepo.setRegisterDate(user.regDt)
+                                    userRepo.setStatus(user.status)
+
+                                    validateResult.value =
+                                        ValidateResult(
+                                            true,
+                                            result.message,
+                                            result,
+                                            InfoConst.NON_SHOW
+                                        )
+                                }
+                                ResponseCode.ALREADY_LOGGED_IN.CODE ->
+                                {
+                                    val jwtToken = result.data as String
+
+                                    validateResult.value =
+                                        ValidateResult(
+                                            false,
+                                            CodeUtil.returnCodeMsg(result.code),
+                                            jwtToken,
+                                            InfoConst.CUSTOM_DIALOG
+                                        )
+                                }
+                                else ->
+                                {
+                                    validateResult.value =
+                                        ValidateResult(
+                                            false,
+                                            CodeUtil.returnCodeMsg(result?.code),
+                                            null,
+                                            InfoConst.CUSTOM_DIALOG
+                                        )
+                                }
+                            }
+                        }
+                        else ->
+                        {
+                            validateResult.value =
+                                ValidateResult(
+                                    false,
+                                    CodeUtil.returnCodeMsg(result?.code!!),
+                                    null,
+                                    InfoConst.CUSTOM_DIALOG
+                                )
+                        }
+                    }
+                }
+            })
     }
 }
