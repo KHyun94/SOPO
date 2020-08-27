@@ -64,6 +64,15 @@ class UserRepo(private val shared: SharedPrefHelper)
         shared.setJoinType(joinType)
     }
 
+    fun getAppPassword(): String{
+        return shared.getAppPassword() ?: ""
+    }
+
+    fun setAppPassword(password: String){
+        shared.setAppPassword(password)
+    }
+
+
     fun removeUserRepo()
     {
         setEmail("")

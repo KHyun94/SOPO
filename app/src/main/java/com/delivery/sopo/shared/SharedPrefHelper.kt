@@ -12,6 +12,7 @@ class SharedPrefHelper(private val sharedPref: SharedPref, private val context: 
     private val JOIN_TYPE = "JOIN_TYPE"
     private val REGISTER_DATE = "REGISTER_DATE"
     private val STATUS = "STATUS"
+    private val APP_PASSWORD = "APP_PASSWORD"
 
     fun getUserEmail(): String? {
         return sharedPref.getString(USER_EMAIL, "")
@@ -59,5 +60,13 @@ class SharedPrefHelper(private val sharedPref: SharedPref, private val context: 
 
     fun setStatus(status: Int){
         sharedPref.setInt(STATUS, status)
+    }
+
+    fun getAppPassword(): String? {
+        return sharedPref.getString(APP_PASSWORD, "")
+    }
+
+    fun setAppPassword(password: String){
+        sharedPref.setString(APP_PASSWORD, password)
     }
 }

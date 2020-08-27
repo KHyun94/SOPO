@@ -7,6 +7,8 @@
     <color name="COLOR_GRAY_200">#E8E8ED</color>
     <color name="COLOR_GRAY_300">#D5D5DC</color>
     <color name="COLOR_GRAY_400">#B5B5BF</color>
+    <color name="COLOR_GRAY_600">#747480</color>
+    <color name="COLOR_GRAY_800">#3B3B46</color>
 
     <color name="PRIMARY_100">#DDDFEE</color>
     <color name="PRIMARY_600">#2A3382</color>
@@ -18,7 +20,11 @@
 
     <color name="MAIN_WHITE">#ffffff</color>
     <color name="MAIN_BLACK">#000000</color>
+    <color name="MAIN_NAVY">#0C2E6F</color>
+    <color name="MAIN_RED">#FF7777</color>
     <color name="LIGHT_GREY">#d3d3d3</color>
+    <color name="LIGHT_BLUE">#CC5C94FF</color>
+
 
     <color name="FOCUS_OFF">#A8AFCC</color>
     <color name="FOCUS_ON">#363FAF</color>
