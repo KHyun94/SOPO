@@ -11,7 +11,7 @@
             type="com.delivery.sopo.viewmodels.registesrs.RegisterViewModel" />
     </data>
 
-    <FrameLayout
+       <FrameLayout
         android:id="@+id/frame_register"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

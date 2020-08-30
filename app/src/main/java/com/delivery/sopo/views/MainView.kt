@@ -51,7 +51,6 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                         Log.d(TAG, it)
                     },
                     {
-
                         Log.d(TAG, it.message)
                     }
                 )

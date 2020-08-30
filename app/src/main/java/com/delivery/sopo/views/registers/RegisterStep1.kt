@@ -12,10 +12,8 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.databinding.RegisterStep1Binding
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.util.fun_util.ClipboardUtil
-import com.delivery.sopo.util.fun_util.OtherUtil
 import com.delivery.sopo.util.ui_util.FragmentManager
 import com.delivery.sopo.viewmodels.registesrs.RegisterViewModel
-import com.delivery.sopo.views.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegisterStep1 : Fragment()
@@ -23,31 +21,55 @@ class RegisterStep1 : Fragment()
     private lateinit var binding: RegisterStep1Binding
     private val registerVm: RegisterViewModel by viewModel()
 
+    private var waybilNum : String? = null
+    private var courier : String? = null
+
+    fun newInstance(waybilNum:String?, courier:String?) : RegisterStep1 {
+
+        val registerStep1 = RegisterStep1()
+
+        val args = Bundle()
+        args.putString("waybilNum", waybilNum)
+        args.putString("courier", courier)
+
+        registerStep1.arguments = args
+        return registerStep1
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+
+        if(arguments != null){
+            waybilNum = arguments!!.getString("waybilNum")?:""
+            courier = arguments!!.getString("courier")?:""
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View?
     {
-        // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater, R.layout.register_step1, container, false)
         binding.vm = registerVm
         binding.lifecycleOwner = this
 
         setObserve()
 
+        if(waybilNum != null && waybilNum!!.isNotEmpty()){
+            binding.vm.trackNumStr.value = waybilNum
+        }
+
+        if(courier != null && courier!!.isNotEmpty()){
+            binding.vm.courier.value = courier
+        }
+
         return binding.root
     }
 
     fun setObserve()
     {
-//        binding.vm?.hideKeyboard?.observe(this, Observer {
-//            if (it != null && it)
-//            {
-//                OtherUtil.hideKeyboardSoft(activity as MainView)
-//                binding.vm?.hideKeyboard?.value = false
-//            }
-//        })
-
         binding.vm?.trackNumStr?.observe(this, Observer {
             if (it.isNotEmpty())
             {
@@ -56,18 +78,8 @@ class RegisterStep1 : Fragment()
         })
 
         binding.vm?.moveFragment?.observe(this, Observer {
-            when (it.NAME)
+            when (it)
             {
-                FragmentType.REGISTER_STEP1.NAME ->
-                {
-                    FragmentManager.move(
-                        activity!!,
-                        FragmentType.REGISTER_STEP1,
-                        RegisterMainFrame.viewId
-                    )
-                }
-
-
                 FragmentType.REGISTER_STEP2.NAME ->
                 {
                     FragmentManager.move(
@@ -75,8 +87,13 @@ class RegisterStep1 : Fragment()
                         FragmentType.REGISTER_STEP2,
                         RegisterMainFrame.viewId
                     )
+                    binding.vm?.moveFragment?.value = ""
                 }
             }
+        })
+
+        binding.vm?.courier?.observe(this, Observer {
+            val courier = it
         })
     }
 

@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
         <import type="com.delivery.sopo.consts.InfoConst" />
 
         <variable
@@ -13,8 +15,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        onTouchListener="@{vm.onTouchHideKeyboard()}">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/tv_title"
@@ -30,19 +31,18 @@
             app:layout_constraintTop_toBottomOf="parent"
             app:layout_constraintVertical_bias="0.9" />
 
-
         <com.delivery.sopo.util.ui_util.CustomEditText
             android:id="@+id/custom_et_track_num"
+            content="@={vm.trackNumStr}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="25sp"
             android:layout_marginTop="25sp"
-            content="@={vm.trackNumStr}"
+            app:customFocusChangeListener="@{vm.callback}"
             app:hint="운송장 번호를 입력해주세요."
             app:layout_constraintTop_toBottomOf="@id/tv_title"
-            app:customFocusChangeListener="@{vm.callback}"
-            app:type="@{InfoConst.REGISTER_TRACK_NUM}"
-            app:title="운송장 번호" />
+            app:title="운송장 번호"
+            app:type="@{InfoConst.REGISTER_TRACK_NUM}" />
 
         <LinearLayout
             android:id="@+id/custom_et_delivery_co"
@@ -83,14 +83,24 @@
                 android:onClick="@{()->vm.onMoveStep2Clicked()}"
                 android:paddingHorizontal="10sp">
 
+                <ImageView
+                    android:id="@+id/iv_courier"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginRight="6dp"
+                    android:visibility="@{(vm.courier.length() > 0)?View.VISIBLE:View.GONE}" />
+
                 <TextView
                     android:id="@+id/et_input_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_toEndOf="@+id/iv_courier"
                     android:background="@null"
                     android:hint="클릭하여 배송사를 선택해주세요."
                     android:lines="1"
                     android:singleLine="true"
+                    android:text="@{vm.trackNumStr}"
                     android:textColorHint="@color/COLOR_GRAY_300"
                     android:textSize="20sp" />
 
@@ -108,30 +118,30 @@
             android:layout_width="match_parent"
             android:layout_height="60sp"
             android:layout_marginHorizontal="25sp"
+            android:layout_marginTop="50sp"
             android:background="@drawable/border_all_rounded"
             android:backgroundTint="@color/COLOR_GRAY_100"
             android:gravity="center"
-            app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co"
-            android:layout_marginTop="50sp"
-            android:orientation="horizontal"
             android:onClick="@{()->vm.onPasteClicked()}"
-            android:visibility="@{(vm.clipboardStr.length() > 0)?View.VISIBLE:View.GONE}">
+            android:orientation="horizontal"
+            android:visibility="@{(vm.clipboardStr.length() > 0)?View.VISIBLE:View.GONE}"
+            app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co">
 
             <TextView
                 android:id="@+id/tv_clipboard_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqa_han_sans_regular"
                 android:text="@={vm.clipboardStr}"
                 android:textColor="@color/COLOR_MAIN_BLUE"
-                android:fontFamily="@font/spoqa_han_sans_regular"
                 android:textSize="14sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqa_han_sans_regular"
                 android:text="로 등록하기"
                 android:textColor="@color/COLOR_MAIN_BLUE"
-                android:fontFamily="@font/spoqa_han_sans_regular"
                 android:textSize="14sp" />
 
         </LinearLayout>

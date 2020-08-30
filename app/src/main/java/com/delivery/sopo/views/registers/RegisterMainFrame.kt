@@ -23,8 +23,7 @@ class RegisterMainFrame : Fragment()
         savedInstanceState: Bundle?
     ): View?
     {
-        // Inflate the layout for this fragment
-        binding = DataBindingUtil.inflate(inflater, R.layout.register_main_frame, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.register_main_frame, container, true)
         binding.vm = registerVm
         binding.lifecycleOwner = this
 

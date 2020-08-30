@@ -1,5 +1,6 @@
 package com.delivery.sopo.util.ui_util
 
+import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import com.delivery.sopo.enums.FragmentType
@@ -14,7 +15,8 @@ object FragmentManager
 
     fun move(activity: FragmentActivity, type: FragmentType, viewId: Int)
     {
-        val transaction = activity.supportFragmentManager.beginTransaction()
+        val fm = activity.supportFragmentManager
+        val transaction = fm.beginTransaction()
         transaction.run {
             replace(viewId, type.FRAGMENT, type.NAME)
             addToBackStack(null)
@@ -38,10 +40,10 @@ object FragmentManager
         }
     }
 
-    fun back(activity: FragmentActivity)
-    {
+    fun remove(activity: FragmentActivity){
         val fm = activity.supportFragmentManager
-        fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        fm.popBackStack()
+//        FragmentType.REGISTER_STEP1.NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE
     }
 
 //    fun move(act: AppCompatActivity, type: FragmentType, viewId: Int)

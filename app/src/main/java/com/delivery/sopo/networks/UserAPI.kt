@@ -138,7 +138,7 @@ interface UserAPI
     ): Observable<APIResult<Boolean>>
 
     @FormUrlEncoded
-    @PATCH("/api/v1/sopoMainBackEnd/user/{email}/firebase/token")
+    @PATCH("/api/v1/sopoMainBackEnd/user/{email}/firebase/fcm-token")
     @Headers("Accept: application/json")
     fun updateFCMToken(
         @Path("email") email: String,
