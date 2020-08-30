@@ -1,65 +1,44 @@
 package com.delivery.sopo.views.menus
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.MyMenuViewBinding
-import com.delivery.sopo.interfaces.BasicFragmentView
 import com.delivery.sopo.viewmodels.menus.MyMenuViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-class MyMenuView : BasicFragmentView<MyMenuViewBinding>(R.layout.my_menu_view)
+class MyMenuView : Fragment()
 {
     private val myMenuVm : MyMenuViewModel by viewModel()
 
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    lateinit var binding: MyMenuViewBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View?
     {
-        // Inflate the layout for this fragment
+        binding = DataBindingUtil.inflate(inflater, R.layout.my_menu_view, container, false)
+        binding.vm = myMenuVm
+        binding.lifecycleOwner = this
+
+        setObserver()
         return binding.root
     }
 
-    companion object
+
+    fun bindView()
     {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MyMenuView().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+
     }
 
-    override fun bindView()
-    {
-        binding.vm = myMenuVm
-        binding.executePendingBindings()
-    }
-
-    override fun setObserver()
+    fun setObserver()
     {
     }
 }

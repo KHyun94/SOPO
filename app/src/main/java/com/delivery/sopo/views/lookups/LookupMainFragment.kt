@@ -14,10 +14,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [LookupMain.newInstance] factory method to
+ * Use the [LookupMainFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class LookupMain : Fragment()
+class LookupMainFragment : Fragment()
 {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
@@ -49,12 +49,12 @@ class LookupMain : Fragment()
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment LookupMain.
+         * @return A new instance of fragment LookupMainFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            LookupMain().apply {
+            LookupMainFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

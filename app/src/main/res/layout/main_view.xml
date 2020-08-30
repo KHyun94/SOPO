@@ -4,7 +4,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.MainViewModel" />
@@ -15,37 +14,24 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <FrameLayout
-            android:id="@+id/frame_container"
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/vp_main"
             android:layout_width="match_parent"
             android:layout_height="0sp"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            setAdapter="@{vm.adapter}"
+            setCurrentItem="@{vm.currItem}"
+            addOnPageChangeListener="@{vm.pageChangeListener}"
+            android:background="@color/MAIN_WHITE"
+            />
 
         <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tablayout_bottom"
+            android:id="@+id/tablayout_bottom_tab"
             android:layout_width="match_parent"
             android:layout_height="60sp"
-            app:tabIndicatorColor="@android:color/transparent"
             android:background="@drawable/border_top_colored_gray"
-            setTabSelectedListener="@{vm.listener}">
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/ic_main_tap_register"
-                android:backgroundTint="@color/COLOR_MAIN_BLUE"/>
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/ic_main_tap_lookup" />
-
-            <com.google.android.material.tabs.TabItem
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:icon="@drawable/ic_main_tap_my" />
-
-        </com.google.android.material.tabs.TabLayout>
+            app:tabIndicatorColor="@android:color/transparent"
+            setupWithViewPager="@{vpMain}"/>
 
     </LinearLayout>
 

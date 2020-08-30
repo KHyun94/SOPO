@@ -83,7 +83,7 @@
         <View
             android:id="@+id/v_underline"
             android:layout_width="match_parent"
-            android:layout_height="0.2sp"
+            android:layout_height="2sp"
             android:layout_below="@+id/et_input_text"
             android:background="@color/COLOR_GRAY_200" />
     </RelativeLayout>

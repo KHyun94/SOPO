@@ -63,11 +63,11 @@ class CustomEditText : LinearLayout {
             )
             nonFocusColor = typedArray?.getColor(
                 R.styleable.CustomEditText_nonFocusColor,
-                resources.getColor(R.color.FOCUS_OFF)
+                resources.getColor(R.color.COLOR_GRAY_200)
             )
             focusColor = typedArray?.getColor(
                 R.styleable.CustomEditText_focusColor,
-                resources.getColor(R.color.FOCUS_ON)
+                resources.getColor(R.color.COLOR_MAIN_BLUE)
             )
         }
 

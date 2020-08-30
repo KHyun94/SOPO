@@ -1,37 +1,41 @@
 package com.delivery.sopo.views.registers
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import com.delivery.sopo.R
-import com.delivery.sopo.databinding.RegisterDeliveryCoBinding
-import com.delivery.sopo.databinding.RegisterTrackNumBinding
+import com.delivery.sopo.databinding.RegisterMainFrameBinding
+import com.delivery.sopo.enums.FragmentType
+import com.delivery.sopo.util.ui_util.FragmentManager
 import com.delivery.sopo.viewmodels.registesrs.RegisterViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class RegisterDeliveryCo : Fragment()
+class RegisterMainFrame : Fragment()
 {
-    private lateinit var binding : RegisterDeliveryCoBinding
+    private lateinit var binding: RegisterMainFrameBinding
     private val registerVm: RegisterViewModel by viewModel()
-
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View?
     {
-        binding = DataBindingUtil.inflate(inflater, R.layout.register_delivery_co, container, false)
+        // Inflate the layout for this fragment
+        binding = DataBindingUtil.inflate(inflater, R.layout.register_main_frame, container, false)
         binding.vm = registerVm
         binding.lifecycleOwner = this
 
+        viewId = binding.frameRegister.id
+
+        FragmentManager.move(this.activity!!, FragmentType.REGISTER_STEP1, viewId)
+
         return binding.root
+    }
+
+    companion object{
+        var viewId : Int = 0
     }
 }

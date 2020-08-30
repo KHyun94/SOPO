@@ -1,14 +1,19 @@
 package com.delivery.sopo.viewmodels.registesrs
 
-import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.View.OnTouchListener
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.models.TestCor
 import com.delivery.sopo.util.adapters.GridRvAdapter
+import com.delivery.sopo.util.fun_util.SingleLiveEvent
+import com.delivery.sopo.util.ui_util.FragmentManager
 import com.delivery.sopo.util.ui_util.GridSpacingItemDecoration
+import com.delivery.sopo.viewmodels.FocusChangeCallback
+
 
 class RegisterViewModel : ViewModel()
 {
@@ -44,22 +49,55 @@ class RegisterViewModel : ViewModel()
         TestCor("USPS", R.drawable.usps_post_color, R.drawable.usps_post_gray)
     )
 
+    var trackNumStr = MutableLiveData<String>()
+
+    // 가져온 클립보드 문자열
+    var clipboardStr = SingleLiveEvent<String>()
+
+    var hideKeyboard = SingleLiveEvent<Boolean>()
+
+    var moveFragment = MutableLiveData<FragmentType>()
+
     val adapter: GridRvAdapter = GridRvAdapter(list)
     val decoration = GridSpacingItemDecoration(3, 10, true)
     val rowCnt = 3
 
-    var moveFragment = MutableLiveData<String>()
-
-
-
-     fun onMoveClicked()
+    init
     {
-        moveFragment.value = FragmentType.REGISTER_STEP2.NAME
+        trackNumStr.value = ""
+        clipboardStr.value = ""
+        hideKeyboard.value = false
+    }
+
+    var callback: FocusChangeCallback = FocusChangeCallback@{ type, focus ->
+        hideKeyboard.value = !focus
+    }
+
+    fun onTouchHideKeyboard(): View.OnTouchListener
+    {
+        return OnTouchListener{ view, event ->
+            if (event.action == MotionEvent.ACTION_DOWN)
+            {
+                hideKeyboard.value = true
+            }
+            false
+        }
+    }
+
+    fun onMoveStep2Clicked()
+    {
+        moveFragment.value = FragmentType.REGISTER_STEP2
     }
 
     fun onClearClicked()
     {
-//        moveFragment.value = FragmentType.REGISTER_STEP1.NAME
+        moveFragment.value = FragmentManager.currentFragment1st
+    }
+
+    fun onPasteClicked()
+    {
+        trackNumStr.value = clipboardStr.value
+        clipboardStr.call()
     }
 
 }
