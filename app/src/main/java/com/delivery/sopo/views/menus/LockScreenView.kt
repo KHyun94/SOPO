@@ -91,7 +91,6 @@ class LockScreenView : BasicView<LockScreenViewBinding>(R.layout.lock_screen_vie
                     finish()
                 }
             }
-
         })
     }
 

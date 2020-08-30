@@ -1,17 +1,15 @@
 package com.delivery.sopo.views
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.Observer
-import com.delivery.sopo.GeneralDialog
+import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.databinding.LoginSelectViewBinding
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.extentions.getCommonMessage
 import com.delivery.sopo.interfaces.BasicView
-import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.NetworkManager.getUserAPI
 import com.delivery.sopo.repository.UserRepo
 import com.delivery.sopo.util.fun_util.CodeUtil
@@ -22,7 +20,6 @@ import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
 import com.kakao.usermgmt.response.MeV2Response
 import com.kakao.util.exception.KakaoException
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.schedulers.Schedulers.io
 import kotlinx.android.synthetic.main.login_select_view.*
 import org.koin.android.ext.android.inject

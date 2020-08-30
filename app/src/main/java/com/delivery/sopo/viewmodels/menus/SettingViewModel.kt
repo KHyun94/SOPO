@@ -1,6 +1,5 @@
 package com.delivery.sopo.viewmodels.menus
 
-import android.util.Log
 import androidx.lifecycle.*
 import com.delivery.sopo.repository.UserRepo
 
@@ -8,6 +7,12 @@ class SettingViewModel(private val userRepo: UserRepo) : ViewModel() , Lifecycle
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     var isSecuritySetting = MutableLiveData<Boolean>()
+    var testval = MutableLiveData<Int>()
+
+    init
+    {
+        testval.value = 0
+    }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onLifeCycleResume(){
@@ -26,4 +31,10 @@ class SettingViewModel(private val userRepo: UserRepo) : ViewModel() , Lifecycle
             isSecuritySetting.value = !isSecurity
         }
     }
+
+    fun showTestDialog(){
+        val value = testval.value ?: 0
+        testval.value = value + 1
+    }
+
 }

@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import com.delivery.sopo.GeneralDialog
+import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.PermissionConst

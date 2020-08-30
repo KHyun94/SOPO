@@ -5,6 +5,7 @@ import com.delivery.sopo.shared.SharedPref
 import com.delivery.sopo.shared.SharedPrefHelper
 import com.delivery.sopo.viewmodels.*
 import com.delivery.sopo.viewmodels.menus.LockScreenViewModel
+import com.delivery.sopo.viewmodels.menus.NoticeViewModel
 import com.delivery.sopo.viewmodels.menus.SettingViewModel
 import com.delivery.sopo.viewmodels.registesrs.RegisterViewModel
 import org.koin.android.ext.koin.androidApplication
@@ -33,6 +34,8 @@ val appModule = module {
     viewModel { MainViewModel() }
     viewModel { LockScreenViewModel() }
     viewModel { SettingViewModel(get()) }
+    viewModel { NoticeViewModel() }
+
     // merge할 때 지우고 붙여넣어야함
     viewModel { RegisterViewModel() }
 }

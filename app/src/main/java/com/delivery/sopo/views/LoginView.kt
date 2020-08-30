@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.Observer
-import com.delivery.sopo.GeneralDialog
+import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst

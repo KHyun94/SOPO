@@ -6,17 +6,14 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.*
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
-import com.delivery.sopo.GeneralDialog
 import com.delivery.sopo.R
-import com.delivery.sopo.R.layout.detail_permission_item
 import kotlinx.android.synthetic.main.permission_dialog.view.*
 
-typealias OnClickListener = (agree: PermissionDialog) -> Unit
+//typealias OnClickListener = (agree: PermissionDialog) -> Unit
 
 class PermissionDialog : DialogFragment {
 
@@ -24,7 +21,7 @@ class PermissionDialog : DialogFragment {
 
     private var title: String? = null
 
-    private var onOkClickListener: OnClickListener? = null
+    private var onOkClickListener: ((agree: PermissionDialog) -> Unit)? = null
 
     private lateinit var layoutView: View
 
@@ -32,7 +29,7 @@ class PermissionDialog : DialogFragment {
 
     constructor(
         act: Activity,
-        handler: OnClickListener
+        handler: ((agree: PermissionDialog) -> Unit)
     ) : super() {
         this.parentActivity = act
         this.onOkClickListener = handler

@@ -1,4 +1,4 @@
-package com.delivery.sopo
+package com.delivery.sopo.util.ui_util
 
 import android.app.ActionBar
 import android.app.Activity
@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
+import com.delivery.sopo.R
 import com.delivery.sopo.util.fun_util.SizeUtil
 import kotlinx.android.synthetic.main.general_dialog.view.*
 

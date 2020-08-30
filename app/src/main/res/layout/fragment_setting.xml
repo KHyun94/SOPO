@@ -43,6 +43,7 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="horizontal"
+        android:onClick="@{()->vm.showTestDialog()}"
         app:layout_constraintTop_toBottomOf="@+id/v_dividerLine1"
         >
         <TextView

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.delivery.sopo.R
+import com.delivery.sopo.views.menus.NoticeFragment
 import com.delivery.sopo.views.menus.SettingFragment
 import kotlinx.android.synthetic.main.fragment_base.*
 
@@ -29,7 +30,7 @@ class MenuView : AppCompatActivity()
     }
 
     private fun loadData() {
-        appBarTitle = "설 정"
+        appBarTitle = "설정"
     }
 
     private fun setView() {
