@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="ltr"
+    android:padding="15dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_notice_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="left"
+        android:gravity="center|left"
+        android:textColor="@color/MAIN_BLACK"
+        android:textSize="20sp"
+        android:fontFamily="@font/spoqa_han_sans_light"
+        tools:text="공지사항 1"
+        />
+    <TextView
+        android:id="@+id/tv_notice_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_gravity="left"
+        android:gravity="left"
+        android:text=""
+        android:textColor="@color/MAIN_BLACK"
+        android:textSize="15sp"
+        android:fontFamily="@font/spoqa_han_sans_thin"
+        tools:text="2020/08/19"
+        />
+
+</LinearLayout>

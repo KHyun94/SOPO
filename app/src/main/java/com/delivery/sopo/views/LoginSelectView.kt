@@ -3,6 +3,7 @@ package com.delivery.sopo.views
 import android.content.Intent
 import android.util.Log
 import androidx.lifecycle.Observer
+import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.JoinTypeConst
@@ -18,7 +19,6 @@ import com.delivery.sopo.networks.UserAPI
 import com.delivery.sopo.repository.UserRepo
 import com.delivery.sopo.util.fun_util.CodeUtil
 import com.delivery.sopo.util.fun_util.OtherUtil
-import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.viewmodels.LoginSelectViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

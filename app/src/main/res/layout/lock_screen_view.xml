@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.delivery.sopo.viewmodels.menus.LockScreenViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintlayout_setting"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white">
+
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:fontFamily="@font/spoqa_han_sans_bold"
+            android:text="잠금 비밀번호 설정"
+            android:textColor="@color/COLOR_GRAY_800"
+            android:textSize="25dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_errorComment"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/spoqa_han_sans_bold"
+            android:text="비밀번호가 일치하지 않습니다."
+            android:textColor="@color/MAIN_RED"
+            android:textSize="12dp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_guideComment"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
+        <TextView
+            android:id="@+id/tv_guideComment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dp"
+            android:fontFamily="@font/spoqa_han_sans_bold"
+            android:text="어플 실행 비밀번호를 입력해 주세요."
+            android:textColor="@color/COLOR_GRAY_600"
+            android:textSize="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+        <EditText
+            android:visibility="visible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:maxLength="4"
+            android:text="@{vm.lockPassword}"
+            app:layout_constraintBottom_toTopOf="@+id/grid_numPad"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_guideComment">
+
+            <EditText
+                android:id="@+id/et_firstPassword"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:background="@drawable/ic_lock_edittext_off"
+                />
+
+            <EditText
+                android:id="@+id/et_secondPassword"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_lock_edittext_off"
+                />
+
+            <EditText
+                android:id="@+id/et_thirdPassword"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_lock_edittext_off"
+                />
+
+            <EditText
+                android:id="@+id/et_fourthPassword"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_lock_edittext_off"
+                />
+        </LinearLayout>
+
+        <GridLayout
+            android:id="@+id/grid_numPad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="1"
+            android:background="?attr/selectableItemBackground"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_1"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:gravity="center"
+                    android:text="1"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    android:textSize="20dp"
+                    android:background="@drawable/ripple_drawable"
+                    android:onClick="@{() -> vm.setlockPassword(1)}"
+                    />
+
+
+                <Button
+                    android:id="@+id/btn_2"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:gravity="center"
+                    android:text="2"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    android:textSize="20dp"
+                    android:background="@drawable/ripple_drawable"
+                    android:onClick="@{() -> vm.setlockPassword(2)}"
+                    />
+
+                <Button
+                    android:id="@+id/btn_3"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="start"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:gravity="center"
+                    android:text="3"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    android:textSize="20dp"
+                    android:background="@drawable/ripple_drawable"
+                    android:onClick="@{() -> vm.setlockPassword(3)}"
+                    />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_4"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:gravity="center"
+                    android:text="4"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    android:textSize="20dp"
+                    android:background="@drawable/ripple_drawable"
+                    android:onClick="@{() -> vm.setlockPassword(4)}"
+                    />
+
+
+                <Button
+                    android:id="@+id/btn_5"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:gravity="center"
+                    android:text="5"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    android:textSize="20dp"
+                    android:background="@drawable/ripple_drawable"
+                    android:onClick="@{() -> vm.setlockPassword(5)}"
+                    />
+
+                <Button
+                    android:id="@+id/btn_6"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="start"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:gravity="center"
+                    android:text="6"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    android:textSize="20dp"
+                    android:background="@drawable/ripple_drawable"
+                    android:onClick="@{() -> vm.setlockPassword(6)}"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_7"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:gravity="center"
+                    android:text="7"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    android:textSize="20dp"
+                    android:background="@drawable/ripple_drawable"
+                    android:onClick="@{() -> vm.setlockPassword(7)}"
+                    />
+
+
+                <Button
+                    android:id="@+id/btn_8"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:gravity="center"
+                    android:text="8"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    android:textSize="20dp"
+                    android:background="@drawable/ripple_drawable"
+                    android:onClick="@{() -> vm.setlockPassword(8)}"
+                    />
+
+                <Button
+                    android:id="@+id/btn_9"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="start"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:gravity="center"
+                    android:text="9"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    android:textSize="20dp"
+                    android:background="@drawable/ripple_drawable"
+                    android:onClick="@{() -> vm.setlockPassword(9)}"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:gravity="center"
+                    android:text="1"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    android:textSize="20dp"
+                    android:visibility="invisible" />
+
+
+                <Button
+                    android:id="@+id/btn_0"
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:gravity="center"
+                    android:text="0"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    android:textSize="20dp"
+                    android:background="@drawable/ripple_drawable"
+                    android:onClick="@{() -> vm.setlockPassword(0)}"
+                    />
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="70dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="@drawable/ripple_drawable"
+                    android:onClick="@{()->vm.eraselockPassword()}"
+                    >
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_row="0"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:background="@drawable/ic_erase_btn"
+                        android:fontFamily="@font/spoqa_han_sans_bold"
+                        android:textSize="20dp"
+                        />
+                </RelativeLayout>
+            </LinearLayout>
+        </GridLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="vm"
+            type="com.delivery.sopo.viewmodels.menus.NoticeViewModel" />
+    </data>
+<LinearLayout
+    android:id="@+id/constraintlayout_setting"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@android:color/white">
+
+    <ExpandableListView
+        android:id="@+id/expandablelist_notice"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layoutDirection="rtl"
+        />
+
+</LinearLayout>
+</layout>

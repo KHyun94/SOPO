@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.NavigatorConst
@@ -20,7 +21,6 @@ import com.delivery.sopo.networks.UserAPI
 import com.delivery.sopo.repository.UserRepo
 import com.delivery.sopo.util.fun_util.CodeUtil
 import com.delivery.sopo.util.fun_util.OtherUtil
-import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.util.ui_util.PermissionDialog
 import com.delivery.sopo.viewmodels.SplashViewModel
 import com.tbruyelle.rxpermissions2.RxPermissions

@@ -3,12 +3,12 @@ package com.delivery.sopo.views
 import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
+import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.databinding.LoginViewBinding
 import com.delivery.sopo.interfaces.BasicView
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
-import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.viewmodels.LoginViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

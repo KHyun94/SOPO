@@ -14,11 +14,11 @@ class SharedPrefHelper(private val sharedPref: SharedPref, private val context: 
     private val REGISTER_DATE = "REGISTER_DATE"
     private val STATUS = "STATUS"
     private val SNS_UID = "SNS_UID"
+    private val APP_PASSWORD = "APP_PASSWORD"
 
     fun getUserId():String?{
         return sharedPref.getString(USER_ID, "")
     }
-
     fun setUserId(userId: String){
         sharedPref.setString(USER_ID, userId)
     }
@@ -79,4 +79,11 @@ class SharedPrefHelper(private val sharedPref: SharedPref, private val context: 
         sharedPref.setString(SNS_UID, uid)
     }
 
+    fun getAppPassword(): String? {
+        return sharedPref.getString(APP_PASSWORD, "")
+    }
+
+    fun setAppPassword(password: String){
+        sharedPref.setString(APP_PASSWORD, password)
+    }
 }

@@ -13,7 +13,7 @@ import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
 import kotlinx.android.synthetic.main.permission_dialog.view.*
 
-typealias OnClickListener = (agree: PermissionDialog) -> Unit
+//typealias OnClickListener = (agree: PermissionDialog) -> Unit
 
 class PermissionDialog : DialogFragment {
 
@@ -21,7 +21,7 @@ class PermissionDialog : DialogFragment {
 
     private var title: String? = null
 
-    private var onOkClickListener: OnClickListener? = null
+    private var onOkClickListener: ((agree: PermissionDialog) -> Unit)? = null
 
     private lateinit var layoutView: View
 
@@ -29,7 +29,7 @@ class PermissionDialog : DialogFragment {
 
     constructor(
         act: Activity,
-        handler: OnClickListener
+        handler: ((agree: PermissionDialog) -> Unit)
     ) : super() {
         this.parentActivity = act
         this.onOkClickListener = handler

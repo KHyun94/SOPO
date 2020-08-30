@@ -74,6 +74,15 @@ class UserRepo(private val shared: SharedPrefHelper)
         shared.setSNSUId(uid)
     }
 
+    fun getAppPassword(): String{
+        return shared.getAppPassword() ?: ""
+    }
+
+    fun setAppPassword(password: String){
+        shared.setAppPassword(password)
+    }
+
+
     fun removeUserRepo()
     {
         setEmail("")

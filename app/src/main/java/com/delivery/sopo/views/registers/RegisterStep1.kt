@@ -58,11 +58,11 @@ class RegisterStep1 : Fragment()
         setObserve()
 
         if(waybilNum != null && waybilNum!!.isNotEmpty()){
-            binding.vm.trackNumStr.value = waybilNum
+            binding.vm!!.trackNumStr.value = waybilNum
         }
 
         if(courier != null && courier!!.isNotEmpty()){
-            binding.vm.courier.value = courier
+            binding.vm!!.courier.value = courier
         }
 
         return binding.root
