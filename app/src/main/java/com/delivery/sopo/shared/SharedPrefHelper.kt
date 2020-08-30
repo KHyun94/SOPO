@@ -1,8 +1,6 @@
 package com.delivery.sopo.shared
 
 import android.content.Context
-import com.delivery.sopo.shared.SharedPref
-import com.google.gson.annotations.SerializedName
 
 class SharedPrefHelper(private val sharedPref: SharedPref, private val context: Context) {
 
