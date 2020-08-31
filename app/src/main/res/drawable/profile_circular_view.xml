@@ -6,5 +6,5 @@
     android:layout_width="100dp">
 
     <solid
-        android:color="@color/COLOR_MAIN_BLUE"/>
+        android:color="@color/COLOR_MAIN_BLUE_700"/>
 </shape>

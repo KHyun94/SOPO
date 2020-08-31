@@ -108,7 +108,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:background="@color/COLOR_MAIN_BLUE"
+                android:background="@color/COLOR_MAIN_BLUE_700"
                 android:layout_gravity="center_horizontal"
                 />
             <TextView
@@ -117,7 +117,7 @@
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/spoqa_han_sans_regular"
                 android:text="배송 완료"
-                android:textColor="@color/COLOR_MAIN_BLUE"
+                android:textColor="@color/COLOR_MAIN_BLUE_700"
                 />
 
         </LinearLayout>
@@ -149,7 +149,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:background="@color/COLOR_MAIN_BLUE"
+                android:background="@color/COLOR_MAIN_BLUE_700"
                 android:layout_gravity="center_horizontal"
                 />
             <TextView
@@ -158,7 +158,7 @@
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/spoqa_han_sans_regular"
                 android:text="배송 중"
-                android:textColor="@color/COLOR_MAIN_BLUE"
+                android:textColor="@color/COLOR_MAIN_BLUE_700"
                 />
 
         </LinearLayout>
@@ -188,7 +188,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="3dp"
-                android:background="@color/COLOR_MAIN_BLUE"
+                android:background="@color/COLOR_MAIN_BLUE_700"
                 />
             <TextView
                 android:layout_width="wrap_content"
@@ -196,7 +196,7 @@
                 android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/spoqa_han_sans_regular"
                 android:text="곧 도착"
-                android:textColor="@color/COLOR_MAIN_BLUE"
+                android:textColor="@color/COLOR_MAIN_BLUE_700"
                 />
 
         </LinearLayout>

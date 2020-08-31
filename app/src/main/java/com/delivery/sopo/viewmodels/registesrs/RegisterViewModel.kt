@@ -51,11 +51,13 @@ class RegisterViewModel : ViewModel()
     // 가져온 클립보드 문자열
     var clipboardStr = SingleLiveEvent<String>()
 
-    var courier = MutableLiveData<String>()
+    var courier = MutableLiveData<CourierType>()
 
     var hideKeyboard = SingleLiveEvent<Boolean>()
 
     var moveFragment = MutableLiveData<String>()
+
+    val errorMsg = MutableLiveData<String>()
 
     val adapter: GridRvAdapter = GridRvAdapter(courierList)
     val decoration = GridSpacingItemDecoration(3, 10, true)
@@ -73,9 +75,12 @@ class RegisterViewModel : ViewModel()
         hideKeyboard.value = !focus
     }
 
-    fun getCourierType(courier:String?) : CourierType?{
-        for(c in courierList){
-            if(courier == c.name){
+    fun getCourierType(courier: String?): CourierType?
+    {
+        for (c in courierList)
+        {
+            if (courier == c.name)
+            {
                 return c
             }
         }
@@ -84,6 +89,19 @@ class RegisterViewModel : ViewModel()
     }
 
     fun onMoveStep2Clicked()
+    {
+        if (trackNumStr.value!!.length > 10)
+        {
+            if (courier.value == null || courier.value!!.name.isEmpty())
+                moveFragment.value = FragmentType.REGISTER_STEP2.NAME
+        }
+        else
+        {
+            errorMsg.value = "운송장 번호를 입력해주세요."
+        }
+    }
+
+    fun onReselectClicked()
     {
         moveFragment.value = FragmentType.REGISTER_STEP2.NAME
     }

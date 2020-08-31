@@ -13,7 +13,7 @@ object TabBindingAdapter
     @BindingAdapter("setTabSelectedListener")
     fun bindTabLayoutSelectListener(view:TabLayout, listener: OnTabSelectedListener){
         view.addOnTabSelectedListener(listener)
-        view.getTabAt(0)!!.icon!!.setTint(SOPOApp.INSTANCE.resources.getColor(R.color.COLOR_MAIN_BLUE))
+        view.getTabAt(0)!!.icon!!.setTint(SOPOApp.INSTANCE.resources.getColor(R.color.COLOR_MAIN_BLUE_700))
     }
 
 

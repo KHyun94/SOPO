@@ -29,7 +29,9 @@ class RegisterMainFrame : Fragment()
 
         viewId = binding.frameRegister.id
 
-        FragmentManager.move(this.activity!!, FragmentType.REGISTER_STEP1, viewId)
+//        FragmentType.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance("11111111111", "CJ대한통운")
+
+        FragmentManager.move(this.activity!!,FragmentType.REGISTER_STEP1, viewId)
 
         return binding.root
     }

@@ -191,7 +191,7 @@
         android:layout_marginRight="30dp"
         android:fontFamily="@font/spoqa_han_sans_regular"
         android:text="비밀번호 변경"
-        android:textColor="@color/COLOR_MAIN_BLUE"
+        android:textColor="@color/COLOR_MAIN_BLUE_700"
         android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="@+id/toggleBtn"
         app:layout_constraintEnd_toEndOf="parent"
