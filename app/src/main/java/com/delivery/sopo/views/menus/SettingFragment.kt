@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentSettingBinding
 import com.delivery.sopo.extentions.launchActivitiy
+import com.delivery.sopo.util.ui_util.OtherFaqDialog
 import com.delivery.sopo.util.ui_util.SelectNotifyKindDialog
 import com.delivery.sopo.viewmodels.menus.SettingViewModel
 import kotlinx.android.synthetic.main.fragment_setting.*
@@ -82,6 +83,8 @@ class SettingFragment : Fragment(){
     private fun showtestDialog(){
 
 //        NotDisturbTimeDialog(act = requireActivity()).show(requireActivity().supportFragmentManager, "NotDisturbTimeDialog")
-        SelectNotifyKindDialog(act = requireActivity()).show(requireActivity().supportFragmentManager, "SelectNotifyKindDialog")
+//        SelectNotifyKindDialog(act = requireActivity()).show(requireActivity().supportFragmentManager, "SelectNotifyKindDialog")
+        OtherFaqDialog(act = requireActivity()).show(requireActivity().supportFragmentManager, "OtherFaqDialog")
+
     }
 }

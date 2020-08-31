@@ -87,6 +87,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:background="@drawable/ic_lock_edittext_off"
+                android:enabled="false"
                 />
 
             <EditText
@@ -96,6 +97,7 @@
                 android:layout_marginRight="15dp"
                 android:layout_weight="1"
                 android:background="@drawable/ic_lock_edittext_off"
+                android:enabled="false"
                 />
 
             <EditText
@@ -105,6 +107,7 @@
                 android:layout_marginRight="15dp"
                 android:layout_weight="1"
                 android:background="@drawable/ic_lock_edittext_off"
+                android:enabled="false"
                 />
 
             <EditText
@@ -113,6 +116,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:background="@drawable/ic_lock_edittext_off"
+                android:enabled="false"
                 />
         </LinearLayout>
 
