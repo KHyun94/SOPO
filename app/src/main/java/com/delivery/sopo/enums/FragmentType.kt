@@ -6,7 +6,7 @@ import com.delivery.sopo.views.menus.MyMenuView
 import com.delivery.sopo.views.registers.RegisterStep2
 import com.delivery.sopo.views.registers.RegisterStep1
 
-enum class FragmentType(val tabNo: Int, val NAME: String, val FRAGMENT: Fragment)
+enum class FragmentType(val tabNo: Int, val NAME: String, var FRAGMENT: Fragment)
 {
     REGISTER_STEP1(0, "FRAGMENT_REGISTER_STEP1", RegisterStep1()),
     REGISTER_STEP2(0, "FRAGMENT_REGISTER_STEP2", RegisterStep2()),

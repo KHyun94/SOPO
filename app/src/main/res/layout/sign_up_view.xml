@@ -126,7 +126,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
             android:background="@drawable/border_round_white_btn"
-            android:backgroundTint="@color/COLOR_MAIN_BLUE"
+            android:backgroundTint="@color/COLOR_MAIN_BLUE_700"
             android:onClick="@{()->vm.onSignUpClicked(btnSignUp)}"
             android:paddingHorizontal="50dp"
             android:text="@string/DO_SIGN_UP"

@@ -1,8 +1,7 @@
 package com.delivery.sopo.util.ui_util
 
-import android.util.Log
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
 import com.delivery.sopo.enums.FragmentType
 
 object FragmentManager
@@ -40,7 +39,8 @@ object FragmentManager
         }
     }
 
-    fun remove(activity: FragmentActivity){
+    fun remove(activity: FragmentActivity)
+    {
         val fm = activity.supportFragmentManager
         fm.popBackStack()
 //        FragmentType.REGISTER_STEP1.NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE

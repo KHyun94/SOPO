@@ -21,6 +21,7 @@
             android:paddingTop="5sp"
             android:paddingBottom="5sp"
             android:text="이메일"
+            android:fontFamily="@font/spoqa_han_sans_regular"
             android:textColor="@color/MAIN_BLACK"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -70,6 +71,7 @@
             android:lines="1"
             android:singleLine="true"
             android:textSize="20sp"
+            android:paddingBottom="7sp"
             android:textColorHint="@color/COLOR_GRAY_300" />
 
         <ImageView

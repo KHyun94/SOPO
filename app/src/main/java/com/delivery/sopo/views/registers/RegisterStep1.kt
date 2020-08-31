@@ -12,6 +12,7 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.databinding.RegisterStep1Binding
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.util.fun_util.ClipboardUtil
+import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.FragmentManager
 import com.delivery.sopo.viewmodels.registesrs.RegisterViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -21,28 +22,18 @@ class RegisterStep1 : Fragment()
     private lateinit var binding: RegisterStep1Binding
     private val registerVm: RegisterViewModel by viewModel()
 
-    private var waybilNum : String? = null
-    private var courier : String? = null
+    private var waybilNum: String? = null
+    private var courier: String? = null
 
-    fun newInstance(waybilNum:String?, courier:String?) : RegisterStep1 {
-
-        val registerStep1 = RegisterStep1()
-
-        val args = Bundle()
-        args.putString("waybilNum", waybilNum)
-        args.putString("courier", courier)
-
-        registerStep1.arguments = args
-        return registerStep1
-    }
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
 
-        if(arguments != null){
-            waybilNum = arguments!!.getString("waybilNum")?:""
-            courier = arguments!!.getString("courier")?:""
+        if (arguments != null)
+        {
+            waybilNum = arguments!!.getString("waybilNum") ?: ""
+            courier = arguments!!.getString("courier") ?: ""
         }
     }
 
@@ -57,12 +48,14 @@ class RegisterStep1 : Fragment()
 
         setObserve()
 
-        if(waybilNum != null && waybilNum!!.isNotEmpty()){
+        if (waybilNum != null && waybilNum!!.isNotEmpty())
+        {
             binding.vm!!.trackNumStr.value = waybilNum
         }
 
-        if(courier != null && courier!!.isNotEmpty()){
-            binding.vm!!.courier.value = courier
+        if (courier != null && courier!!.isNotEmpty())
+        {
+            binding.vm!!.courier.value = binding.vm!!.getCourierType(courier)
         }
 
         return binding.root
@@ -74,6 +67,14 @@ class RegisterStep1 : Fragment()
             if (it.isNotEmpty())
             {
                 binding.vm?.clipboardStr?.value = ""
+            }
+        })
+
+        binding.vm!!.errorMsg.observe(this, Observer {
+            if (!it.isNullOrEmpty())
+            {
+                CustomAlertMsg.floatingUpperSnackBAr(this.context!!, it, true)
+                binding.vm!!.errorMsg.value = ""
             }
         })
 
@@ -112,4 +113,19 @@ class RegisterStep1 : Fragment()
         }
     }
 
+    companion object
+    {
+        fun newInstance(waybilNum: String?, courier: String?): RegisterStep1
+        {
+
+            val registerStep1 = RegisterStep1()
+
+            val args = Bundle()
+            args.putString("waybilNum", waybilNum)
+            args.putString("courier", courier)
+
+            registerStep1.arguments = args
+            return registerStep1
+        }
+    }
 }

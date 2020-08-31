@@ -91,7 +91,7 @@
             android:layout_marginHorizontal="25sp"
             android:layout_marginTop="20sp"
             android:background="@drawable/border_round_white_btn"
-            android:backgroundTint="@color/COLOR_MAIN_BLUE"
+            android:backgroundTint="@color/COLOR_MAIN_BLUE_700"
             android:focusableInTouchMode="true"
             android:paddingHorizontal="50dp"
             android:text="@string/DO_LOGIN"
