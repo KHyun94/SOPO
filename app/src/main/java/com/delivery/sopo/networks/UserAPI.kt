@@ -142,7 +142,7 @@ interface UserAPI
     @Headers("Accept: application/json")
     fun updateFCMToken(
         @Path("email") email: String,
-        @Field("firebaseToken") firebaseToken: String
+        @Field("fcmToken") fcmToken: String
     ): Single<String>
 
 }

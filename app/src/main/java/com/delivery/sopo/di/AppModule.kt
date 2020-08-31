@@ -4,10 +4,7 @@ import com.delivery.sopo.repository.UserRepo
 import com.delivery.sopo.shared.SharedPref
 import com.delivery.sopo.shared.SharedPrefHelper
 import com.delivery.sopo.viewmodels.*
-import com.delivery.sopo.viewmodels.menus.MyMenuViewModel
-import com.delivery.sopo.viewmodels.menus.LockScreenViewModel
-import com.delivery.sopo.viewmodels.menus.NoticeViewModel
-import com.delivery.sopo.viewmodels.menus.SettingViewModel
+import com.delivery.sopo.viewmodels.menus.*
 import com.delivery.sopo.viewmodels.registesrs.RegisterViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -37,6 +34,7 @@ val appModule = module {
     viewModel { LockScreenViewModel() }
     viewModel { SettingViewModel(get()) }
     viewModel { NoticeViewModel() }
+    viewModel { NotDisturbTimeViewModel() }
 
     // merge할 때 지우고 붙여넣어야함
     viewModel { RegisterViewModel() }

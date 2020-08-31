@@ -20,21 +20,19 @@
         <activity android:name=".views.MainView"/>
         <activity android:name=".views.SignUpClear" />
         <activity android:name=".views.LoginSelectView"/>
-        <activity android:name=".views.SplashView">
+        <activity android:name=".views.SplashView"/>
+        <activity android:name=".views.menus.LockScreenView"/>
+        <activity android:name=".views.MenuView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".views.menus.LockScreenView"/>
-        <activity android:name=".views.MenuView"/>
         <activity android:name=".views.IntroView" />
-        <activity android:name=".views.LoginView">
-        </activity>
+        <activity android:name=".views.LoginView"/>
         <activity android:name=".views.SignUpView"/>
-
         <service
-            android:name=".services.MyFirebaseMessagingService"
+            android:name=".services.FirebaseService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -47,7 +45,6 @@
                 <action android:name="com.parse.push.intent.OPEN" />
             </intent-filter>
         </service>
-
         <meta-data
             android:name="firebase_messaging_auto_init_enabled"
             android:value="false" />
@@ -58,5 +55,4 @@
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/KAKAO_API_KEY" />
     </application>
-
 </manifest>

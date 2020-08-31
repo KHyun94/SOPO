@@ -2,14 +2,9 @@ package com.delivery.sopo
 
 import android.app.Application
 import android.content.Context
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
-import android.util.Base64
 import android.util.Log
 import com.delivery.sopo.di.appModule
-import com.delivery.sopo.services.MyFirebaseMessagingService
 import com.delivery.sopo.thirdpartyapi.KakaoSDKAdapter
-import com.delivery.sopo.thirdpartyapi.SessionCallback
 import com.delivery.sopo.util.fun_util.OtherUtil
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -19,8 +14,6 @@ import com.kakao.auth.Session
 import com.kakao.auth.authorization.accesstoken.AccessToken
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 
 class SOPOApp : Application() {
 

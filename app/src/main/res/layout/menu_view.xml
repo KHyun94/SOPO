@@ -320,10 +320,9 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="35dp"
             android:layout_gravity="center_vertical"
-            android:background="@drawable/ic_24_info"
-            />
+            android:layout_marginLeft="35dp"
+            android:background="@drawable/ic_24_terms" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

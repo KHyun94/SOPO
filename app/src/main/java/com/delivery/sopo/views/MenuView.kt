@@ -4,8 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.delivery.sopo.R
-import com.delivery.sopo.views.menus.NoticeFragment
-import com.delivery.sopo.views.menus.SettingFragment
+import com.delivery.sopo.views.menus.NotDisturbTimeFragment
 import kotlinx.android.synthetic.main.fragment_base.*
 
 class MenuView : AppCompatActivity()
@@ -26,11 +25,11 @@ class MenuView : AppCompatActivity()
     }
 
     private fun gotoView() {
-            move(menuView, SettingFragment(), 0)
+            move(menuView, NotDisturbTimeFragment(), 0)
     }
 
     private fun loadData() {
-        appBarTitle = "설정"
+        appBarTitle = "방해금지 시간대 설정"
     }
 
     private fun setView() {

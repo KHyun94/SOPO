@@ -1,22 +1,19 @@
 package com.delivery.sopo.views.menus
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.view.Window
-import android.widget.TabHost
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentSettingBinding
 import com.delivery.sopo.extentions.launchActivitiy
-import com.delivery.sopo.util.ui_util.NotDisturbTimeDialog
+import com.delivery.sopo.util.ui_util.SelectNotifyKindDialog
 import com.delivery.sopo.viewmodels.menus.SettingViewModel
 import kotlinx.android.synthetic.main.fragment_setting.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -76,8 +73,7 @@ class SettingFragment : Fragment(){
         })
 
         binding.vm!!.testval.observe(this, Observer {
-            if (it > 0)
-            {
+            if (it > 0){
                 showtestDialog()
             }
         })
@@ -85,31 +81,7 @@ class SettingFragment : Fragment(){
 
     private fun showtestDialog(){
 
-        NotDisturbTimeDialog(act = requireActivity()) { dialog ->
-            dialog.dismiss()
-        }.show(requireActivity().supportFragmentManager, "testTag")
-
-//        val dialog = Dialog(requireContext())
-//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-//        dialog.setContentView(R.layout.set_not_disturb_time_dialog)
-//        dialog.setTitle("Title...")
-//
-//        val tabs = dialog.findViewById(R.id.tabhost) as TabHost
-//
-//        tabs.setup()
-//        tabs.currentTab = 0
-//
-//        val tabpage1 = tabs.newTabSpec("one")
-//        tabpage1.setContent(R.id.scrollView02)
-//        tabpage1.setIndicator("one")
-//
-//        val tabpage2 = tabs.newTabSpec("two")
-//        tabpage2.setContent(R.id.scrollView01)
-//        tabpage2.setIndicator("two")
-//
-//        tabs.addTab(tabpage1)
-//        tabs.addTab(tabpage2)
-//
-//        dialog.show()
+//        NotDisturbTimeDialog(act = requireActivity()).show(requireActivity().supportFragmentManager, "NotDisturbTimeDialog")
+        SelectNotifyKindDialog(act = requireActivity()).show(requireActivity().supportFragmentManager, "SelectNotifyKindDialog")
     }
 }

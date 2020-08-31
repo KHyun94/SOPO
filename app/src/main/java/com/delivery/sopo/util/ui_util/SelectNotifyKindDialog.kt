@@ -9,11 +9,13 @@ import android.view.*
 import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
 import com.google.android.material.tabs.TabLayout.*
+import kotlinx.android.synthetic.main.select_notify_kind_dialog.view.*
 import kotlinx.android.synthetic.main.set_not_disturb_time_dialog.*
 import kotlinx.android.synthetic.main.set_not_disturb_time_dialog.view.*
+import kotlinx.android.synthetic.main.set_not_disturb_time_dialog.view.tv_cancelBtn
 
 
-class NotDisturbTimeDialog : DialogFragment {
+class SelectNotifyKindDialog : DialogFragment {
 
     private var parentActivity: Activity
     private lateinit var layoutView: View
@@ -28,52 +30,16 @@ class NotDisturbTimeDialog : DialogFragment {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        layoutView = inflater.inflate(R.layout.set_not_disturb_time_dialog, container, false)
+        layoutView = inflater.inflate(R.layout.select_notify_kind_dialog, container, false)
         setSetting()
-
-        val tabs = layoutView.tabs
-        tabs.addTab(tabs.newTab().setText("시작"))
-        tabs.addTab(tabs.newTab().setText("종료"))
-
-        tabs.addOnTabSelectedListener(object: OnTabSelectedListener{
-            override fun onTabSelected(tab: Tab?)
-            {
-                when(tabs.selectedTabPosition){
-                    0 -> {
-                        constraint_start.visibility = VISIBLE
-                        constraint_end.visibility = INVISIBLE
-                    }
-                    1 -> {
-                        constraint_start.visibility = INVISIBLE
-                        constraint_end.visibility = VISIBLE
-                    }
-                }
-            }
-
-            override fun onTabUnselected(tab: Tab?)
-            {
-            }
-
-            override fun onTabReselected(tab: Tab?)
-            {
-            }
-
-        })
-
         setClickEvent()
 
         return layoutView
     }
 
     private fun setClickEvent(){
-
-        layoutView.tv_cancelBtn.setOnClickListener {
-            Log.d(TAG, "Ok button")
+        layoutView.tv_close.setOnClickListener {
             dismiss()
-        }
-
-        layoutView.tv_okBtn.setOnClickListener {
-            Log.d(TAG, "Ok button")
         }
     }
 

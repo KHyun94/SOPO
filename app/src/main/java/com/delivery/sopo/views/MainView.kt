@@ -20,7 +20,6 @@ import org.koin.android.ext.android.inject
 class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 {
     lateinit var mainVm: MainViewModel
-//    private val mainVm: MainViewModel by inject()
     private val userRepo: UserRepo by inject()
 
     private var transaction: FragmentTransaction? = null
@@ -34,9 +33,10 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+        firebaseTmpFun()
     }
 
-    fun firebaseTmpFun()
+    private fun firebaseTmpFun()
     {
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
 
