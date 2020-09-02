@@ -141,7 +141,7 @@ interface UserAPI
     @PATCH("/api/v1/sopoMainBackEnd/user/{email}/firebase/fcm-token")
     @Headers("Accept: application/json")
     fun updateFCMToken(
-        @Path("email") email: String,
+        @Path("email") email : String,
         @Field("fcmToken") fcmToken: String
     ): Single<String>
 

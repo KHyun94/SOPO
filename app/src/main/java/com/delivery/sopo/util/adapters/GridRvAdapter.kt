@@ -8,11 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ItemImgBinding
-import com.delivery.sopo.models.CourierType
+import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.util.adapters.GridRvAdapter.GridRvViewHolder
 import kotlinx.android.synthetic.main.item_img.view.*
 
-class GridRvAdapter(private val items: ArrayList<CourierType>) :
+class GridRvAdapter(private val items: ArrayList<CourierItem>) :
     RecyclerView.Adapter<GridRvViewHolder>()
 {
     lateinit var binding: ItemImgBinding
@@ -59,7 +59,7 @@ class GridRvAdapter(private val items: ArrayList<CourierType>) :
     inner class GridRvViewHolder(binding: ItemImgBinding) : RecyclerView.ViewHolder(binding.root)
     {
 
-        fun onBind(item: CourierType)
+        fun onBind(item: CourierItem)
         {
             Log.d("LOG.SOPO", "vh -> $item")
             binding.setVariable(BR.img, item.nonClickRes)

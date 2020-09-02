@@ -20,14 +20,14 @@
         <activity android:name=".views.MainView"/>
         <activity android:name=".views.SignUpClear" />
         <activity android:name=".views.LoginSelectView"/>
-        <activity android:name=".views.SplashView"/>
-        <activity android:name=".views.menus.LockScreenView"/>
-        <activity android:name=".views.MenuView">
+        <activity android:name=".views.SplashView">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".views.menus.LockScreenView"/>
+        <activity android:name=".views.MenuView"/>
         <activity android:name=".views.IntroView" />
         <activity android:name=".views.LoginView"/>
         <activity android:name=".views.SignUpView"/>

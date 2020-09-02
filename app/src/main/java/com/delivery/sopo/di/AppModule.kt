@@ -1,11 +1,12 @@
 package com.delivery.sopo.di
 
 import com.delivery.sopo.repository.UserRepo
-import com.delivery.sopo.shared.SharedPref
-import com.delivery.sopo.shared.SharedPrefHelper
+import com.delivery.sopo.database.shared.SharedPref
+import com.delivery.sopo.database.shared.SharedPrefHelper
 import com.delivery.sopo.viewmodels.*
 import com.delivery.sopo.viewmodels.menus.*
-import com.delivery.sopo.viewmodels.registesrs.RegisterViewModel
+import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
+import com.delivery.sopo.viewmodels.registesrs.RegisterStep2ViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -18,7 +19,10 @@ val appModule = module {
     }
 
     single {
-        SharedPrefHelper(get(), androidApplication())
+        SharedPrefHelper(
+            get(),
+            androidApplication()
+        )
     }
 
     single {
@@ -37,5 +41,6 @@ val appModule = module {
     viewModel { NotDisturbTimeViewModel() }
 
     // merge할 때 지우고 붙여넣어야함
-    viewModel { RegisterViewModel() }
+    viewModel { RegisterStep1ViewModel() }
+    viewModel { RegisterStep2ViewModel() }
 }

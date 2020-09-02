@@ -9,18 +9,19 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.databinding.RegisterStep1Binding
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.util.fun_util.ClipboardUtil
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.FragmentManager
-import com.delivery.sopo.viewmodels.registesrs.RegisterViewModel
+import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegisterStep1 : Fragment()
 {
     private lateinit var binding: RegisterStep1Binding
-    private val registerVm: RegisterViewModel by viewModel()
+    private val registerStep1Vm: RegisterStep1ViewModel by viewModel()
 
     private var waybilNum: String? = null
     private var courier: String? = null
@@ -43,7 +44,7 @@ class RegisterStep1 : Fragment()
     ): View?
     {
         binding = DataBindingUtil.inflate(inflater, R.layout.register_step1, container, false)
-        binding.vm = registerVm
+        binding.vm = registerStep1Vm
         binding.lifecycleOwner = this
 
         setObserve()
@@ -67,6 +68,20 @@ class RegisterStep1 : Fragment()
             if (it.isNotEmpty())
             {
                 binding.vm?.clipboardStr?.value = ""
+
+                if (it.length > 8)
+                {
+                    RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, it, 1) {
+                        if (it != null && it.size > 0)
+                        {
+                            binding.vm!!.courier.postValue(it.get(0))
+                        }
+                    }
+                }
+                else
+                {
+                    binding.vm!!.courier.value = null
+                }
             }
         })
 
@@ -83,6 +98,8 @@ class RegisterStep1 : Fragment()
             {
                 FragmentType.REGISTER_STEP2.NAME ->
                 {
+                    FragmentType.REGISTER_STEP2.FRAGMENT = RegisterStep2.newInstance(binding.vm!!.trackNumStr.value)
+
                     FragmentManager.move(
                         activity!!,
                         FragmentType.REGISTER_STEP2,
