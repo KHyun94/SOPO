@@ -109,6 +109,33 @@ object NetworkManager
         return mRetrofit.create(UserAPI::class.java)
     }
 
+    fun getPrivateParcelAPI(id: String, pwd: String): ParcelAPI
+    {
+        val basicAuthInterceptor = BasicAuthInterceptor(id, pwd)
+        val httpLoggingInterceptor = HttpLoggingInterceptor()
+        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+
+        mOKHttpClient = OkHttpClient().newBuilder().apply {
+            addInterceptor(httpLoggingInterceptor)
+            addInterceptor(basicAuthInterceptor)
+            connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+            writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+            readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+        }.build()
+
+        val gson = GsonBuilder()
+        gson.setLenient()
+
+        mRetrofit = Retrofit.Builder()
+            .baseUrl(NetworkConst.API_URL)
+            .client(mOKHttpClient)
+            .addConverterFactory(GsonConverterFactory.create(gson.create()))
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
+
+        return mRetrofit.create(ParcelAPI::class.java)
+    }
+
 
     fun getUserAPI(): UserAPI
     {

@@ -60,7 +60,7 @@
             android:layout_width="10sp"
             android:layout_height="10sp"
             android:layout_marginLeft="5sp"
-            android:background="@drawable/down_arrow"
+            android:src="@drawable/ic_down_arrow"
             android:backgroundTint="#80808080"
             app:layout_constraintBottom_toTopOf="@+id/tv_expand_layout"
             app:layout_constraintLeft_toRightOf="@+id/tv_expand_layout"

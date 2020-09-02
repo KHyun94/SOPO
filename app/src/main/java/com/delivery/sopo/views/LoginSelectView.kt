@@ -13,6 +13,7 @@ import com.delivery.sopo.firebase.FirebaseUserManagement
 import com.delivery.sopo.interfaces.BasicView
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.LoginResult
+import com.delivery.sopo.networks.LoginAPI
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.NetworkManager.publicRetro
 import com.delivery.sopo.networks.UserAPI
@@ -235,7 +236,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
     fun requestKakaoLogin(email: String, deviceInfo: String, kakaoUserId: String, uid: String)
     {
-        publicRetro.create(UserAPI::class.java)
+        publicRetro.create(LoginAPI::class.java)
             .requestKakaoLogin(
                 email = email,
                 deviceInfo = deviceInfo,

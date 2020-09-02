@@ -112,7 +112,7 @@ class GeneralDialog : DialogFragment {
 
             if (layoutView.layout_detail.visibility == View.VISIBLE) {
                 layoutView.layout_detail.visibility = View.GONE
-                layoutView.iv_arrow.setBackgroundResource(R.drawable.down_arrow)
+                layoutView.iv_arrow.setBackgroundResource(R.drawable.ic_down_arrow)
             } else {
                 layoutView.layout_detail.visibility = View.VISIBLE
                 layoutView.iv_arrow.setBackgroundResource(R.drawable.up_arrow)
