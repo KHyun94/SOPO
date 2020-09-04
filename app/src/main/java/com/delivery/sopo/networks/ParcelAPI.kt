@@ -33,5 +33,5 @@ interface ParcelAPI
     @Headers("Accept: application/json")
     fun getParcelsAsync(
         @Path("email") email: String
-    ): Call<APIResult<List<Parcel>?>>
+    ): Call<APIResult<MutableList<Parcel>?>>
 }

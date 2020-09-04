@@ -10,14 +10,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.DeliveryStatus
+import com.delivery.sopo.models.inquiry.InquiryListData
 import com.delivery.sopo.models.parcel.Parcel
 import kotlinx.android.synthetic.main.inquiry_list_registered_item.view.*
 
 
-class RegisteredSopoListAdapter(private var list: List<Parcel>?) : RecyclerView.Adapter<RegisteredSopoListAdapter.ViewHolder>()
+class RegisteredSopoListAdapter(private var list: MutableList<InquiryListData>?) : RecyclerView.Adapter<RegisteredSopoListAdapter.ViewHolder>()
 {
     // 아이템 뷰를 저장하는 뷰홀더 클래스.
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
+    private var isRomovable = false
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -34,7 +36,6 @@ class RegisteredSopoListAdapter(private var list: List<Parcel>?) : RecyclerView.
         val context = parent.context
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = inflater.inflate(R.layout.inquiry_list_registered_item, parent, false)
-
         return ViewHolder(view)
     }
 
@@ -44,7 +45,7 @@ class RegisteredSopoListAdapter(private var list: List<Parcel>?) : RecyclerView.
         if(list == null) {
             return
         }
-        val data: Parcel = list?.get(position)!!
+        val data: Parcel = list!![position].parcel
 
         when(data.deliveryStatus){
             //상품 준비중
@@ -79,17 +80,17 @@ class RegisteredSopoListAdapter(private var list: List<Parcel>?) : RecyclerView.
         holder.tvParcelDate.text = data.auditDte.substring(0, data.auditDte.indexOf("T"))
     }
 
-    fun setParcel(parcel: List<Parcel>) {
-
-        Log.d(TAG, "In setParcel !!")
-        this.list = parcel
+    fun setRemovable(flag: Boolean){
+        isRomovable = flag
         notifyDataSetChanged()
-        Log.d(TAG, "After notifyDataSetChanged !!")
     }
 
-    override fun getItemCount(): Int
-    {
-        Log.d(TAG, "@@ ==> getItemCount : ${list?.size}")
+    fun setDataList(parcel: MutableList<InquiryListData>){
+        this.list = parcel
+        notifyDataSetChanged()
+    }
+
+    override fun getItemCount(): Int {
         return list?.size ?: 0
     }
 }

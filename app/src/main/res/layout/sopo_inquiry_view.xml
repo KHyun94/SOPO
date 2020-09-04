@@ -28,10 +28,11 @@
         />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/image_inquiry_popup_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="16dp"
+        android:padding="10dp"
         android:src="@drawable/ic_24_meatball"
         app:layout_constraintBottom_toBottomOf="@+id/tv_title"
         app:layout_constraintEnd_toEndOf="parent"
@@ -216,7 +217,7 @@
 
                 <LinearLayout
                     android:id="@+id/linear_more_view_parent"
-                    android:visibility="visible"
+                    android:visibility="invisible"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -232,12 +233,14 @@
                         android:onClick="@{()->vm.showMoreView()}"
                         >
                         <ImageView
+                            android:id="@+id/image_arrow"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:src="@drawable/ic_down_arrow"
+                            android:background="@drawable/ic_down_arrow"
                             />
                         <TextView
+                            android:id="@+id/tv_more_view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"

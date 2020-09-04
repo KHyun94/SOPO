@@ -16,7 +16,7 @@ import java.lang.RuntimeException
 class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
-    val parcelList: MutableLiveData<List<Parcel>?> = MutableLiveData()
+    val parcelList: MutableLiveData<MutableList<Parcel>?> = MutableLiveData()
     val isMoreView = MutableLiveData<Boolean>()
 
     init{
@@ -31,7 +31,8 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
     }
 
     fun showMoreView(){
-        isMoreView.value = true
+        val isMoreViewValue = isMoreView.value
+        isMoreView.value = isMoreViewValue?.let { !it }
     }
 
     private fun getAllParcelList(){
@@ -46,10 +47,10 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
 
                 NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
                     .getParcelsAsync(email = userRepo.getEmail())
-                    .enqueue(object : Callback<APIResult<List<Parcel>?>>{
+                    .enqueue(object : Callback<APIResult<MutableList<Parcel>?>>{
                         override fun onResponse(
-                            call: Call<APIResult<List<Parcel>?>>,
-                            response: Response<APIResult<List<Parcel>?>>
+                            call: Call<APIResult<MutableList<Parcel>?>>,
+                            response: Response<APIResult<MutableList<Parcel>?>>
                         )
                         {
                             val code = response.code()
@@ -79,7 +80,7 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
                             }
                         }
 
-                        override fun onFailure(call: Call<APIResult<List<Parcel>?>>, t: Throwable)
+                        override fun onFailure(call: Call<APIResult<MutableList<Parcel>?>>, t: Throwable)
                         {
                             Log.d(TAG,"[getAllParcelList] ==> onFailure, ${t.localizedMessage}")
                         }
