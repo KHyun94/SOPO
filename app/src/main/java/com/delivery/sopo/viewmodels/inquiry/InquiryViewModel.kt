@@ -1,6 +1,7 @@
 package com.delivery.sopo.viewmodels.inquiry
 
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.*
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.parcel.Parcel
@@ -18,10 +19,15 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     val parcelList: MutableLiveData<MutableList<Parcel>?> = MutableLiveData()
     val isMoreView = MutableLiveData<Boolean>()
+    val isRemovable = MutableLiveData<Boolean>()
+    var cntOfSelectedItem = MutableLiveData<Int>()
+
 
     init{
         getAllParcelList()
+        cntOfSelectedItem.value = 0
         isMoreView.value = false
+        isRemovable.value = false
 //        postParcel("한성 GK993B", "kr.cjlogistics", "633505672612")
 //        postParcel("토체티 듀가드 저소음 적축", "kr.cjlogistics", "633603780622")
 //        postParcel("노트북 파우치", "kr.cjlogistics", "632830166566")
@@ -30,9 +36,23 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
 //        postParcel("LG U+ 알뜰 유심", "kr.epost", "6865402221740")
     }
 
-    fun showMoreView(){
-        val isMoreViewValue = isMoreView.value
-        isMoreView.value = isMoreViewValue?.let { !it }
+    fun setRemovable(flag: Boolean){
+        isRemovable.value = flag
+    }
+
+    fun setMoreView(flag: Boolean){
+        isMoreView.value = flag
+    }
+
+    fun toggleMoreView(){
+        isMoreView.value?.let {
+            setMoreView(!it)
+        }
+    }
+
+    fun cancelRemoveItem(){
+        cntOfSelectedItem.value = 0
+        setRemovable(false)
     }
 
     private fun getAllParcelList(){
@@ -129,4 +149,5 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
             }
         }
     }
+
 }

@@ -1,55 +1,89 @@
 package com.delivery.sopo.views.inquiry
 
-import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
+import com.delivery.sopo.databinding.InquiryListSoonItemBinding
 import com.delivery.sopo.models.inquiry.InquiryListData
-import com.delivery.sopo.models.parcel.Parcel
 import kotlinx.android.synthetic.main.inquiry_list_soon_item.view.*
 
 
-class SoonArrivalListAdapter(private var list: MutableList<InquiryListData>?) : RecyclerView.Adapter<SoonArrivalListAdapter.ViewHolder>()
+class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, lifecycleOwner: LifecycleOwner,
+                             private var list: MutableList<InquiryListData>) : RecyclerView.Adapter<SoonArrivalListAdapter.ViewHolder>()
 {
     // 아이템 뷰를 저장하는 뷰홀더 클래스.
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     private val limitOfItem = 2
     private var isMoreView = false
-    var isRomovable = false
+    private var isRemovable = false
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        internal var tvParcelName: TextView = itemView.tv_parcel_name
-        internal var tvParcelDate: TextView = itemView.tv_parcel_date
+    init {
+        cntOfSelectedItem.observe(lifecycleOwner, Observer {
+            Log.d(TAG,"[2] @@ => $it")
+        })
+
+    }
+
+    class ViewHolder(private val binding: InquiryListSoonItemBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        val inquiryBinding = binding
+
+        fun bind(inquiryListData: InquiryListData){
+            binding.apply {
+                soonInquiryData = inquiryListData
+            }
+        }
     }
 
     // onCreateViewHolder() - 아이템 뷰를 위한 뷰홀더 객체 생성하여 리턴.
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder
-    {
-        return ViewHolder((parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
-                            .inflate(R.layout.inquiry_list_soon_item, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val viewHolder = ViewHolder(
+            DataBindingUtil.inflate(
+                LayoutInflater.from(parent.context),
+                R.layout.inquiry_list_soon_item,
+                parent,
+                false
+            )
+        )
+        return viewHolder
     }
 
     // onBindViewHolder() - position에 해당하는 데이터를 뷰홀더의 아이템뷰에 표시.
     override fun onBindViewHolder(holder: ViewHolder, position: Int)
     {
-        if(list == null) {
-            return
+        val inquiryListData = list[position]
+
+        holder.apply{
+            bind(inquiryListData)
+            itemView.tag = inquiryListData
+        }
+        holder.inquiryBinding.root.cv_parent.setOnClickListener{
+
+            if(isRemovable && !inquiryListData.isSelected){
+                inquiryListData.isSelected = true
+                cntOfSelectedItem.value = (cntOfSelectedItem.value ?: 0) + 1
+            }
+            else if (isRemovable && inquiryListData.isSelected){
+                inquiryListData.isSelected = false
+                cntOfSelectedItem.value = (cntOfSelectedItem.value ?: 0) - 1
+            }
+            else{
+                Log.d(TAG, "2122")
+            }
         }
 
-        val data: Parcel = list!![position].parcel
-
-        holder.tvParcelName.text = data.parcelAlias
-        holder.tvParcelDate.text = data.auditDte.substring(0, data.auditDte.indexOf("T"))
     }
 
     fun setRemovable(flag: Boolean){
-        isRomovable = flag
+        isRemovable = flag
         notifyDataSetChanged()
     }
-
 
     fun setDataList(parcel: MutableList<InquiryListData>) {
         this.list = parcel

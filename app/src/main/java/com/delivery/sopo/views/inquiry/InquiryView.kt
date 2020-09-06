@@ -18,18 +18,21 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view)
 {
-    private val soonArrivalListAdapter = SoonArrivalListAdapter(null)
-    private val registeredSopoListAdapter = RegisteredSopoListAdapter(null)
 
     private val inquiryVM: InquiryViewModel by viewModel()
+    private lateinit var soonArrivalListAdapter: SoonArrivalListAdapter
+    private val registeredSopoListAdapter = RegisteredSopoListAdapter(null)
 
     init {
         TAG += this.javaClass.simpleName
         parentActivity = this@InquiryView
     }
 
+
     override fun bindView() {
+
         binding.vm = inquiryVM
+        soonArrivalListAdapter = SoonArrivalListAdapter(inquiryVM.cntOfSelectedItem, this, mutableListOf())
         binding.recyclerviewSoonArrival.adapter = soonArrivalListAdapter
         binding.recyclerviewSoonArrival.layoutManager = LinearLayoutManager(this)
 
@@ -37,9 +40,9 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
         binding.recyclerviewRegisteredParcel.layoutManager = LinearLayoutManager(this)
         binding.executePendingBindings()
 
+        initViewSetting()
         image_inquiry_popup_menu.setOnClickListener {
             showListPopupWindow(it)
-//            showPopupMenu(it)
         }
     }
 
@@ -48,34 +51,25 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
             parcelList ->
 
             parcelList?.let{
-                soonArrivalListAdapter.setDataList(parcelList.filter { parcel ->
+
+                val listdata =parcelList.filter { parcel ->
                     // 리스트 중 오직 '배송출발'일 경우만 해당 adapter로 넘긴다.
                     parcel.deliveryStatus == DeliveryStatus.OUT_FOR_DELIVERY
                 }.also {
-                    when(it.size){
-                        0 -> {
-                            constraint_soon_arrival.visibility = View.GONE
-                            linear_more_view_parent.visibility = View.GONE
-                        }
-                        1-> {
-                            constraint_soon_arrival.visibility = View.VISIBLE
-                            linear_more_view_parent.visibility = View.INVISIBLE
-                        }
-                        2-> {
-                            constraint_soon_arrival.visibility = View.VISIBLE
-                            linear_more_view_parent.visibility = View.INVISIBLE
-                        }
-                        else -> {
-                            constraint_soon_arrival.visibility = View.VISIBLE
-                            linear_more_view_parent.visibility = View.VISIBLE
-                        }
-                    }
+                    // 화면 세팅
+                    viewSettingForSoonArrivalList(it.size)
                 }.map{
                     InquiryListData(parcel = it)
-                } as MutableList<InquiryListData>)
+                } as MutableList<InquiryListData>
+                soonArrivalListAdapter.setDataList(listdata)
+
+
                 registeredSopoListAdapter.setDataList(parcelList.filter { parcel ->
                     // 리스트 중 오직 '배송출발'과 '배송도착'이 아닐 경우만 해당 adapter로 넘긴다.
                     parcel.deliveryStatus != DeliveryStatus.OUT_FOR_DELIVERY && parcel.deliveryStatus != DeliveryStatus.DELIVERED
+                }.also {
+                    // 화면 세팅
+                    viewSettingForRegisteredList(it.size)
                 }.map {
                     InquiryListData(parcel = it)
                 } as MutableList<InquiryListData>)
@@ -96,6 +90,29 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
                 image_arrow.setBackgroundResource(R.drawable.ic_down_arrow)
             }
         })
+
+        inquiryVM.cntOfSelectedItem.observe(this, Observer{
+            if(it > 0){
+                constraint_delete.visibility = View.INVISIBLE
+                constraint_delete_select.visibility = View.VISIBLE
+            }
+            else if(it == 0){
+                constraint_delete.visibility = View.VISIBLE
+                constraint_delete_select.visibility = View.INVISIBLE
+            }
+        })
+
+        inquiryVM.isRemovable.observe(this, Observer {
+            if(it){
+                soonArrivalListAdapter.setRemovable(true)
+                viewSettingforPopupMenuDelete()
+            }
+            else{
+                inquiryVM.setMoreView(false)
+                viewSettingforPopupMenuDelete_Cancel()
+            }
+        })
+
     }
 
     private fun showListPopupWindow(anchorView: View){
@@ -115,8 +132,8 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
             parent, view, position, id ->
             when(position){
                 0 -> {
-                    constraint_select.visibility = View.INVISIBLE
-                    constraint_delete.visibility = View.VISIBLE
+                    inquiryVM.setRemovable(true)
+                    inquiryVM.setMoreView(true)
                 }
                 1 -> {
                     Log.d(TAG, "1111")
@@ -145,5 +162,58 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
             false
         })
         popupMenu.show()
+    }
+
+    private fun initViewSetting(){
+        tv_title.visibility = View.VISIBLE
+        constraint_soon_arrival.visibility = View.VISIBLE
+        linear_more_view_parent.visibility = View.INVISIBLE
+        constraint_select.visibility = View.VISIBLE
+        constraint_delete.visibility = View.GONE
+        constraint_delete_select.visibility = View.GONE
+        image_inquiry_popup_menu.visibility = View.VISIBLE
+        image_inquiry_popup_menu_close.visibility = View.GONE
+    }
+
+    private fun viewSettingForSoonArrivalList(listSize: Int){
+        when(listSize){
+            0 -> {
+                constraint_soon_arrival.visibility = View.GONE
+                linear_more_view_parent.visibility = View.GONE
+            }
+            1-> {
+                constraint_soon_arrival.visibility = View.VISIBLE
+                linear_more_view_parent.visibility = View.INVISIBLE
+            }
+            2-> {
+                constraint_soon_arrival.visibility = View.VISIBLE
+                linear_more_view_parent.visibility = View.INVISIBLE
+            }
+            else -> {
+                constraint_soon_arrival.visibility = View.VISIBLE
+                linear_more_view_parent.visibility = View.VISIBLE
+            }
+        }
+    }
+    private fun viewSettingForRegisteredList(listSize: Int){
+        //TODO : 작성해야함
+    }
+
+    private fun viewSettingforPopupMenuDelete(){
+        tv_title.visibility = View.INVISIBLE
+        constraint_select.visibility = View.INVISIBLE
+        constraint_delete.visibility = View.VISIBLE
+        image_inquiry_popup_menu.visibility = View.INVISIBLE
+        image_inquiry_popup_menu_close.visibility = View.VISIBLE
+        linear_more_view_parent.visibility = View.INVISIBLE
+    }
+
+    private fun viewSettingforPopupMenuDelete_Cancel(){
+        tv_title.visibility = View.VISIBLE
+        constraint_select.visibility = View.VISIBLE
+        constraint_delete.visibility = View.GONE
+        image_inquiry_popup_menu.visibility = View.VISIBLE
+        image_inquiry_popup_menu_close.visibility = View.INVISIBLE
+        linear_more_view_parent.visibility = View.VISIBLE
     }
 }
