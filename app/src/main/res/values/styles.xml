@@ -1,5 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
+    <style name="PopupMenuListView" parent="@style/Widget.AppCompat.ListView.DropDown">
+        <item name="android:divider">@color/COLOR_GRAY_100</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
+
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
@@ -12,6 +17,7 @@
         <item name="windowNoTitle">true</item>
         <item name="android:statusBarColor">@color/MAIN_WHITE</item>
         <item name="android:windowLightStatusBar"  tools:targetApi="23">true</item>
+        <item name="android:dropDownListViewStyle">@style/PopupMenuListView</item>
     </style>
 
     <style name="SopoRadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">

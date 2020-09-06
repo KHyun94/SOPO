@@ -14,6 +14,7 @@ import com.delivery.sopo.firebase.FirebaseUserManagement
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.LoginResult
 import com.delivery.sopo.models.ValidateResult
+import com.delivery.sopo.networks.LoginAPI
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.UserAPI
 import com.delivery.sopo.repository.UserRepo
@@ -325,7 +326,7 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
         uid: String
     )
     {
-        NetworkManager.publicRetro.create(UserAPI::class.java)
+        NetworkManager.publicRetro.create(LoginAPI::class.java)
             .requestSelfLogin(
                 email = email,
                 pwd = pwd,

@@ -15,22 +15,24 @@
     <color name="COLOR_GRAY_800">#3B3B46</color>
     <color name="COLOR_GRAY_900">#1E1E25</color>
 
-    <color name="COLOR_MAIN_50">#DCF3FF</color>
-    <color name="COLOR_MAIN_100">#B7DDFF</color>
+    <color name="COLOR_MAIN_50">#EFF2F9</color>
+    <color name="COLOR_MAIN_100">#DCE7FC</color>
     <color name="COLOR_MAIN_200">#91CAFF</color>
-    <color name="COLOR_MAIN_300">#6BB4FF</color>
+    <color name="COLOR_MAIN_300">#ADC2EA</color>
     <color name="COLOR_MAIN_400">#56A1FF</color>
-    <color name="COLOR_MAIN_500">#4992FE</color>
+    <color name="COLOR_MAIN_500">#4A93FF</color>
     <color name="COLOR_MAIN_600">#4783EE</color>
-    <color name="COLOR_MAIN_700">#4771DA</color>
+    <color name="COLOR_MAIN_700">#5C94FF</color>
     <color name="COLOR_MAIN_800">#41607C</color>
-    <color name="COLOR_MAIN_900">#3B40A7</color>
+    <color name="COLOR_MAIN_900">#0C2E6F</color>
 
 
     <color name="PRIMARY_100">#DDDFEE</color>
     <color name="PRIMARY_500">#4A93FF</color>
     <color name="PRIMARY_600">#2A3382</color>
     <color name="PRIMARY_700">#050D51</color>
+    <color name="PRIMARY_800">#424242</color>
+
 
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
@@ -51,4 +53,8 @@
     <color name="test">#ece6cc</color>
 
     <color name="NOT_DISTURB_TIME_TEXT">#92929E</color>
+    <color name="FAQ_EMAIL_LAYOUT">#F0F2F7</color>
+    <color name="SOPO_INQUERY_SELECTED">#424242</color>
+
+
 </resources>

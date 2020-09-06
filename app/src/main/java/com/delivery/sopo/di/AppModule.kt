@@ -4,6 +4,7 @@ import com.delivery.sopo.repository.UserRepo
 import com.delivery.sopo.shared.SharedPref
 import com.delivery.sopo.shared.SharedPrefHelper
 import com.delivery.sopo.viewmodels.*
+import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.menus.*
 import com.delivery.sopo.viewmodels.registesrs.RegisterViewModel
 import org.koin.android.ext.koin.androidApplication
@@ -35,6 +36,7 @@ val appModule = module {
     viewModel { SettingViewModel(get()) }
     viewModel { NoticeViewModel() }
     viewModel { NotDisturbTimeViewModel() }
+    viewModel { InquiryViewModel(get()) }
 
     // merge할 때 지우고 붙여넣어야함
     viewModel { RegisterViewModel() }

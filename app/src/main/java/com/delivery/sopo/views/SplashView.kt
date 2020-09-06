@@ -16,6 +16,7 @@ import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.interfaces.BasicView
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.LoginResult
+import com.delivery.sopo.networks.LoginAPI
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.UserAPI
 import com.delivery.sopo.repository.UserRepo
@@ -122,7 +123,7 @@ class SplashView : BasicView<SplashViewBinding>(
 
         val firebaseUser = SOPOApp.auth.currentUser
 
-        NetworkManager.privateRetro.create(UserAPI::class.java)
+        NetworkManager.privateRetro.create(LoginAPI::class.java)
             .requestAutoLogin(
                 OtherUtil.getDeviceID(SOPOApp.INSTANCE),
                 userRepo.getJoinType(),
