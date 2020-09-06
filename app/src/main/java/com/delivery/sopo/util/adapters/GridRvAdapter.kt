@@ -12,9 +12,16 @@ import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.util.adapters.GridRvAdapter.GridRvViewHolder
 import kotlinx.android.synthetic.main.item_img.view.*
 
-class GridRvAdapter(private val items: ArrayList<CourierItem>) :
-    RecyclerView.Adapter<GridRvViewHolder>()
+class GridRvAdapter :
+    RecyclerView.Adapter<GridRvViewHolder>
 {
+    private var items: ArrayList<CourierItem>?
+
+    constructor(items: ArrayList<CourierItem>?) : super()
+    {
+        this.items = items
+    }
+
     lateinit var binding: ItemImgBinding
 
     var TAG = "LOG.SOPO.GridRvAdapter"
@@ -28,17 +35,20 @@ class GridRvAdapter(private val items: ArrayList<CourierItem>) :
 
     override fun onBindViewHolder(holder: GridRvViewHolder, position: Int)
     {
-        val selectItem = items[position]
+        if(items != null){
+            val selectItem = items!!.get(position)
 
-        holder.onBind(selectItem)
+            holder.onBind(selectItem)
 
-        holder.itemView.iv_img.setOnClickListener {
+            binding.ivImg.setOnClickListener {
 
-            Log.d(TAG, "click ${selectItem}")
-
-            it.setBackgroundResource(selectItem.clickRes)
+            }
         }
+    }
 
+    fun setItems(list: ArrayList<CourierItem>)
+    {
+        this.items = list
     }
 
     override fun getItemId(position: Int): Long
@@ -53,7 +63,7 @@ class GridRvAdapter(private val items: ArrayList<CourierItem>) :
 
     override fun getItemCount(): Int
     {
-        return items.size
+        return items?.size?:0
     }
 
     inner class GridRvViewHolder(binding: ItemImgBinding) : RecyclerView.ViewHolder(binding.root)
@@ -65,5 +75,8 @@ class GridRvAdapter(private val items: ArrayList<CourierItem>) :
             binding.setVariable(BR.img, item.nonClickRes)
         }
 
+        fun onClick(item: CourierItem){
+            binding.setVariable(BR.img, item.clickRes)
+        }
     }
 }

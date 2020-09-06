@@ -31,8 +31,6 @@ class RegisterStep2 : Fragment()
         if (arguments != null)
         {
             waybilNum = arguments!!.getString("waybilNum") ?: ""
-
-            Log.d(TAG, "Way Back Home => ${waybilNum}")
         }
     }
 
@@ -42,22 +40,12 @@ class RegisterStep2 : Fragment()
     ): View?
     {
         binding = DataBindingUtil.inflate(inflater, R.layout.register_step2, container, false)
-
-        registerStep2Vm.trackNumStr.value = waybilNum
-
         binding.vm = registerStep2Vm
         binding.lifecycleOwner = this
 
-
-        Log.d(TAG, "Way Back Home 2 => ${binding.vm!!.trackNumStr.value}")
-//        if (waybilNum != null && waybilNum!!.isNotEmpty())
-//        {
-//            binding.vm!!.trackNumStr.value = waybilNum
-//        }
+        binding.vm!!.initAdapter(waybilNum = waybilNum?:"")
 
         setObserve()
-
-        Log.d(TAG, "vm =>> ${binding.vm?.trackNumStr?.value}")
 
         return binding.root
     }

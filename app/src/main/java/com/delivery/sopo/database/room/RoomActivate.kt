@@ -29,251 +29,278 @@ object RoomActivate
                 {
                     val courierList = listOf<CourierEntity>(
                         CourierEntity(
-                            0,
-                            "우체국 택배",
-                            13,
-                            13,
-                            1.0,
-                            ic_color_korean,
-                            ic_gray_korean,
-                            ic_color_korean
+                            courierNo = 0,
+                            courierName = "우체국 택배",
+                            minLen = 13,
+                            maxLen = 13,
+                            priority = 1.0,
+                            clickRes = ic_color_korean,
+                            nonClickRes = ic_gray_korean,
+                            iconRes = ic_color_korean
                         ),
                         CourierEntity(
-                            0,
-                            "CJ대한통운",
-                            10,
-                            13,
-                            1.0,
-                            ic_color_daehan,
-                            ic_gray_daehan,
-                            ic_color_daehan
+                            courierNo = 0,
+                            courierName = "CJ대한통운",
+                            minLen = 10,
+                            maxLen = 10,
+                            priority = 1.0,
+                            clickRes = ic_color_daehan,
+                            nonClickRes = ic_gray_daehan,
+                            iconRes = ic_color_daehan
                         ),
                         CourierEntity(
-                            0,
-                            "로젠택배",
-                            11,
-                            11,
-                            1.0,
-                            ic_color_logen,
-                            ic_gray_logen,
-                            ic_color_logen
+                            courierNo = 0,
+                            courierName = "로젠택배",
+                            minLen = 11,
+                            maxLen = 11,
+                            priority = 1.0,
+                            clickRes = ic_color_logen,
+                            nonClickRes = ic_gray_logen,
+                            iconRes = ic_color_logen
                         ),
                         CourierEntity(
-                            0,
-                            "한진택배",
-                            10,
-                            12,
-                            1.0,
-                            ic_color_hanjin,
-                            ic_gray_hanjin,
-                            ic_color_hanjin
+                            courierNo = 0,
+                            courierName = "한진택배",
+                            minLen = 10,
+                            maxLen = 12,
+                            priority = 1.0,
+                            clickRes = ic_color_hanjin,
+                            nonClickRes = ic_gray_hanjin,
+                            iconRes = ic_color_hanjin
                         ),
                         CourierEntity(
-                            0,
-                            "DHL",
-                            10,
-                            10,
-                            1.0,
-                            ic_color_dhl,
-                            ic_gray_dhl,
-                            ic_color_dhl
+                            courierNo = 0,
+                            courierName = "DHL",
+                            minLen = 10,
+                            maxLen = 10,
+                            priority = 1.0,
+                            clickRes = ic_color_dhl,
+                            nonClickRes = ic_gray_dhl,
+                            iconRes = ic_color_dhl
                         ),
                         CourierEntity(
-                            0,
-                            "천일택배",
-                            11,
-                            11,
-                            1.0,
-                            ic_color_chunil,
-                            ic_gray_chunil,
-                            ic_color_chunil
+                            courierNo = 0,
+                            courierName = "천일택배",
+                            minLen = 11,
+                            maxLen = 11,
+                            priority = 1.0,
+                            clickRes = ic_color_chunil,
+                            nonClickRes = ic_gray_chunil,
+                            iconRes = ic_color_chunil
                         ),
                         CourierEntity(
-                            0,
-                            "CU 편의점택배",
-                            10,
-                            12,
-                            1.0,
-                            ic_color_daeshin,
-                            ic_gray_daeshin,
-                            ic_color_daeshin
+                            courierNo = 0,
+                            courierName = "CU 편의점택배",
+                            minLen = 10,
+                            maxLen = 12,
+                            priority = 1.0,
+                            clickRes = ic_color_daeshin,
+                            nonClickRes = ic_gray_daeshin,
+                            iconRes = ic_color_daeshin
                         ),
                         CourierEntity(
-                            0,
-                            "대신택배",
-                            13,
-                            13,
-                            1.0,
-                            ic_color_daehan,
-                            ic_gray_daehan,
-                            ic_color_daehan
+                            courierNo = 0,
+                            courierName = "대신택배",
+                            minLen = 13,
+                            maxLen = 13,
+                            priority = 1.0,
+                            clickRes = ic_color_daeshin,
+                            nonClickRes = ic_gray_daeshin,
+                            iconRes = ic_color_daeshin
                         ),
 //                        CourierEntity(0, "한의사랑택배", 13, 13, 1.0, ic_color_ha, ic_gray_dhl, ic_color_dhl),
                         CourierEntity(
-                            0,
-                            "합동택배",
-                            9,
-                            16,
-                            1.0,
-                            ic_color_habdong,
-                            ic_gray_habdong,
-                            ic_color_habdong
+                            courierNo = 0,
+                            courierName = "합동택배",
+                            minLen = 9,
+                            maxLen = 16,
+                            priority = 1.0,
+                            clickRes = ic_color_habdong,
+                            nonClickRes = ic_gray_habdong,
+                            iconRes = ic_color_habdong
                         ),
                         CourierEntity(
-                            0,
-                            "일양로지스",
-                            9,
-                            11,
-                            1.0,
-                            ic_color_ilyang,
-                            ic_gray_ilyang,
-                            ic_color_ilyang
+                            courierNo = 0,
+                            courierName = "일양로지스",
+                            minLen = 9,
+                            maxLen = 11,
+                            priority = 1.0,
+                            clickRes = ic_color_ilyang,
+                            nonClickRes = ic_gray_ilyang,
+                            iconRes = ic_color_ilyang
                         ),
                         CourierEntity(
-                            0,
-                            "경동택배",
-                            9,
-                            16,
-                            1.0,
-                            ic_color_gyungdong,
-                            ic_gray_gyungdong,
-                            ic_color_gyungdong
+                            courierNo = 0,
+                            courierName = "경동택배",
+                            minLen = 9,
+                            maxLen = 16,
+                            priority = 1.0,
+                            clickRes = ic_color_gyungdong,
+                            nonClickRes = ic_gray_gyungdong,
+                            iconRes = ic_color_gyungdong
                         ),
                         CourierEntity(
-                            0,
-                            "건영택배",
-                            10,
-                            10,
-                            1.0,
-                            ic_color_gunyoung,
-                            ic_gray_gunyoung,
-                            ic_color_gunyoung
+                            courierNo = 0,
+                            courierName = "건영택배",
+                            minLen = 10,
+                            maxLen = 10,
+                            priority = 1.0,
+                            clickRes = ic_color_gunyoung,
+                            nonClickRes = ic_gray_gunyoung,
+                            iconRes = ic_color_gunyoung
                         ),
                         CourierEntity(
-                            0,
-                            "롯데택배",
-                            12,
-                            12,
-                            1.0,
-                            ic_color_lotte,
-                            ic_gray_lotte,
-                            ic_color_lotte
+                            courierNo = 0,
+                            courierName = "롯데택배",
+                            minLen = 12,
+                            maxLen = 12,
+                            priority = 1.0,
+                            clickRes = ic_color_lotte,
+                            nonClickRes = ic_gray_lotte,
+                            iconRes = ic_color_lotte
                         ),
                         CourierEntity(
-                            0,
-                            "EMS",
-                            13,
-                            13,
-                            1.0,
-                            ic_color_ems,
-                            ic_gray_ems,
-                            ic_color_ems
-                        ),
-                        CourierEntity(0, "TNT", 8, 9, 1.0, ic_color_tnt, ic_gray_tnt, ic_color_tnt),
-                        CourierEntity(
-                            0,
-                            "Fedex",
-                            12,
-                            12,
-                            1.0,
-                            ic_color_fedex,
-                            ic_gray_fedex,
-                            ic_color_fedex
+                            courierNo = 0,
+                            courierName = "EMS",
+                            minLen = 13,
+                            maxLen = 13,
+                            priority = 1.0,
+                            clickRes = ic_color_ems,
+                            nonClickRes = ic_gray_ems,
+                            iconRes = ic_color_ems
                         ),
                         CourierEntity(
-                            0,
-                            "USPS",
-                            10,
-                            22,
-                            1.0,
-                            ic_color_usps,
-                            ic_gray_usps,
-                            ic_color_usps
+                            courierNo = 0,
+                            courierName = "TNT",
+                            minLen = 8,
+                            maxLen = 9,
+                            priority = 1.0,
+                            clickRes = ic_color_tnt,
+                            nonClickRes = ic_gray_tnt,
+                            iconRes = ic_color_tnt
+                        ),
+                        CourierEntity(
+                            courierNo = 0,
+                            courierName = "Fedex",
+                            minLen = 12,
+                            maxLen = 12,
+                            priority = 1.0,
+                            clickRes = ic_color_fedex,
+                            nonClickRes = ic_gray_fedex,
+                            iconRes = ic_color_fedex
+                        ),
+                        CourierEntity(
+                            courierNo = 0,
+                            courierName = "USPS",
+                            minLen = 10,
+                            maxLen = 22,
+                            priority = 1.0,
+                            clickRes = ic_color_usps,
+                            nonClickRes = ic_gray_usps,
+                            iconRes = ic_color_usps
                         ),
 
                         //미확정
                         CourierEntity(
-                            0,
-                            "Sagawa",
-                            0,
-                            0,
-                            1.0,
-                            ic_color_sagawa,
-                            ic_gray_sagawa,
-                            ic_color_sagawa
+                            courierNo = 0,
+                            courierName = "Sagawa",
+                            minLen = 0,
+                            maxLen = 0,
+                            priority = 1.0,
+                            clickRes = ic_color_sagawa,
+                            nonClickRes = ic_gray_sagawa,
+                            iconRes = ic_color_sagawa
                         ),
                         CourierEntity(
-                            0,
-                            "Kuroneko Yamato",
-                            0,
-                            0,
-                            1.0,
-                            ic_color_yamato,
-                            ic_gray_yamato,
-                            ic_color_yamato
+                            courierNo = 0,
+                            courierName = "Kuroneko Yamato",
+                            minLen = 0,
+                            maxLen = 0,
+                            priority = 1.0,
+                            clickRes = ic_color_yamato,
+                            nonClickRes = ic_gray_yamato,
+                            iconRes = ic_color_yamato
                         ),
                         CourierEntity(
-                            0,
-                            "Japan Post",
-                            0,
-                            0,
-                            1.0,
-                            ic_color_japan,
-                            ic_gray_japan,
-                            ic_color_japan
+                            courierNo = 0,
+                            courierName = "Japan Post",
+                            minLen = 0,
+                            maxLen = 0,
+                            priority = 1.0,
+                            clickRes = ic_color_japan,
+                            nonClickRes = ic_gray_japan,
+                            iconRes = ic_color_japan
                         ),
                         CourierEntity(
-                            0,
-                            "GS Postbox 택배",
-                            0,
-                            0,
-                            1.0,
-                            ic_color_gs,
-                            ic_gray_gs,
-                            ic_color_gs
+                            courierNo = 0,
+                            courierName = "GS Postbox 택배",
+                            minLen = 0,
+                            maxLen = 0,
+                            priority = 1.0,
+                            clickRes = ic_color_gs,
+                            nonClickRes = ic_gray_gs,
+                            iconRes = ic_color_gs
                         ),
                         CourierEntity(
-                            0,
-                            "CWAY (Woori Express)",
-                            0,
-                            0,
-                            1.0,
-                            ic_color_cway,
-                            ic_gray_cway,
-                            ic_color_cway
+                            courierNo = 0,
+                            courierName = "CWAY (Woori Express)",
+                            minLen = 0,
+                            maxLen = 0,
+                            priority = 1.0,
+                            clickRes = ic_color_cway,
+                            nonClickRes = ic_gray_cway,
+                            iconRes = ic_color_cway
                         ),
                         CourierEntity(
-                            0,
-                            "홈픽",
-                            0,
-                            0,
-                            1.0,
-                            ic_color_homepick,
-                            ic_gray_homepick,
-                            ic_color_homepick
+                            courierNo = 0,
+                            courierName = "홈픽",
+                            minLen = 0,
+                            maxLen = 0,
+                            priority = 1.0,
+                            clickRes = ic_color_homepick,
+                            nonClickRes = ic_gray_homepick,
+                            iconRes = ic_color_homepick
                         ),
                         CourierEntity(
-                            0,
-                            "한서호남택배",
-                            0,
-                            0,
-                            1.0,
-                            ic_color_hanseohonam,
-                            ic_gray_hanseohonam,
-                            ic_color_hanseohonam
+                            courierNo = 0,
+                            courierName = "한서호남택배",
+                            minLen = 0,
+                            maxLen = 0,
+                            priority = 1.0,
+                            clickRes = ic_color_hanseohonam,
+                            nonClickRes = ic_gray_hanseohonam,
+                            iconRes = ic_color_hanseohonam
                         ),
-                        CourierEntity(0, "SLX", 0, 0, 1.0, ic_color_slx, ic_gray_slx, ic_color_slx),
                         CourierEntity(
-                            0,
-                            "성원글로벌카고",
-                            0,
-                            0,
-                            1.0,
-                            ic_color_sungone,
-                            ic_gray_sungone,
-                            ic_color_sungone
+                            courierNo = 0,
+                            courierName = "SLX",
+                            minLen = 0,
+                            maxLen = 0,
+                            priority = 1.0,
+                            clickRes = ic_color_slx,
+                            nonClickRes = ic_gray_slx,
+                            iconRes = ic_color_slx
                         ),
-                        CourierEntity(0, "UPS", 0, 0, 1.0, ic_color_ups, ic_gray_ups, ic_color_ups)
+                        CourierEntity(
+                            courierNo = 0,
+                            courierName = "성원글로벌카고",
+                            minLen = 0,
+                            maxLen = 0,
+                            priority = 1.0,
+                            clickRes = ic_color_sungone,
+                            nonClickRes = ic_gray_sungone,
+                            iconRes = ic_color_sungone
+                        ),
+                        CourierEntity(
+                            courierNo = 0,
+                            courierName = "UPS",
+                            minLen = 0,
+                            maxLen = 0,
+                            priority = 1.0,
+                            clickRes = ic_color_ups,
+                            nonClickRes = ic_gray_ups,
+                            iconRes = ic_color_ups
+                        )
                     )
 
                     roomDBHelper.courierDao().insert(courierList)
@@ -437,12 +464,43 @@ object RoomActivate
                     }
                 }
 
+                when (returnList.size)
+                {
+                    0 ->
+                    {
+                        returnList =
+                            roomDBHelper.courierDao()
+                                .getWithLen(len = mergeNum.length, cnt = cnt) as MutableList<CourierItem>
+                    }
+                    1 ->
+                    {
+                        val addList = roomDBHelper.courierDao()
+                            .getWithLenAndCondition1(
+                                len = mergeNum.length,
+                                param1 = returnList.get(0).courierName,
+                                cnt = cnt
+                            ) as MutableList<CourierItem>
 
-                returnList =
-                    roomDBHelper.courierDao()
-                        .getWithLen(mergeNum.length, cnt) as MutableList<CourierItem>
+                        returnList.addAll(addList)
+                    }
+                    2 ->
+                    {
+                        val addList = roomDBHelper.courierDao()
+                            .getWithLenAndCondition2(
+                                len = mergeNum.length,
+                                param1 = returnList.get(0).courierName,
+                                param2 = returnList.get(1).courierName,
+                                cnt = cnt
+                            ) as MutableList<CourierItem>
 
-                for (c in returnList) Log.d("LOG.SOPO", "===> $c")
+                        returnList.addAll(addList)
+                    }
+                }
+
+                Log.d(TAG, "All size => $cnt")
+
+                for(c in returnList)
+                    Log.d(TAG, "All row => $c")
 
                 callback.invoke(returnList)
             }).start()
