@@ -3,24 +3,22 @@ package com.delivery.sopo.util.adapters
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ItemImgBinding
 import com.delivery.sopo.models.CourierItem
+import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.adapters.GridRvAdapter.GridRvViewHolder
 import kotlinx.android.synthetic.main.item_img.view.*
 
-class GridRvAdapter :
-    RecyclerView.Adapter<GridRvViewHolder>
+class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
+    RecyclerView.Adapter<GridRvViewHolder>()
 {
-    private var items: ArrayList<CourierItem>?
-
-    constructor(items: ArrayList<CourierItem>?) : super()
-    {
-        this.items = items
-    }
+    var beforePos = -1
 
     lateinit var binding: ItemImgBinding
 
@@ -33,22 +31,30 @@ class GridRvAdapter :
         return GridRvViewHolder(binding)
     }
 
+
     override fun onBindViewHolder(holder: GridRvViewHolder, position: Int)
     {
-        if(items != null){
+        if (items != null)
+        {
             val selectItem = items!!.get(position)
 
             holder.onBind(selectItem)
 
-            binding.ivImg.setOnClickListener {
+            holder.itemView.iv_img.setOnClickListener {
 
+                val res = if(selectItem.isSelect) selectItem.item.nonClickRes else selectItem.item.clickRes
+
+                Glide.with(holder.itemView.iv_img.context)
+                    .load(res)
+                    .into(holder.itemView.iv_img as ImageView)
+
+                items!![position].isSelect = !selectItem.isSelect
             }
         }
-    }
-
-    fun setItems(list: ArrayList<CourierItem>)
-    {
-        this.items = list
+        else
+        {
+            Log.d(TAG, "no item")
+        }
     }
 
     override fun getItemId(position: Int): Long
@@ -63,20 +69,15 @@ class GridRvAdapter :
 
     override fun getItemCount(): Int
     {
-        return items?.size?:0
+        return items?.size ?: 0
     }
 
     inner class GridRvViewHolder(binding: ItemImgBinding) : RecyclerView.ViewHolder(binding.root)
     {
-
-        fun onBind(item: CourierItem)
+        fun onBind(selectItem : SelectItem<CourierItem>)
         {
-            Log.d("LOG.SOPO", "vh -> $item")
-            binding.setVariable(BR.img, item.nonClickRes)
-        }
-
-        fun onClick(item: CourierItem){
-            binding.setVariable(BR.img, item.clickRes)
+            Log.d("LOG.SOPO", "vh -> $selectItem")
+            binding.setVariable(BR.img, selectItem.item.nonClickRes)
         }
     }
 }

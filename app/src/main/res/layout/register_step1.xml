@@ -43,6 +43,7 @@
             app:customFocusChangeListener="@{vm.callback}"
             app:hint="운송장 번호를 입력해주세요."
             app:layout_constraintTop_toBottomOf="@id/tv_title"
+            app:statusType="@{vm.waybilNoStatusType}"
             app:title="운송장 번호"
             app:type="@{InfoConst.REGISTER_TRACK_NUM}" />
 

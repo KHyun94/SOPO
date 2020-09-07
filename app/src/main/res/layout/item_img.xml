@@ -4,8 +4,8 @@
 
     <data>
         <variable
-            name="vm"
-            type="com.delivery.sopo.viewmodels.registesrs.RegisterAdapterViewModel" />
+            name="img"
+            type="Integer" />
     </data>
 
     <LinearLayout

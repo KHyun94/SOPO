@@ -69,12 +69,23 @@ class RegisterStep1 : Fragment()
             {
                 binding.vm?.clipboardStr?.value = ""
 
+                if (it.isNotEmpty())
+                {
+                    binding.vm!!.waybilNoStatusType.value = 1
+
+                }
+                else
+                {
+                    binding.vm!!.waybilNoStatusType.value = -1
+                }
+
                 if (it.length > 8)
                 {
+
                     RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, it, 1) {
-                        if (it != null && it.size > 0)
+                        if (it != null && it.isNotEmpty())
                         {
-                            binding.vm!!.courier.postValue(it.get(0))
+                            binding.vm!!.courier.postValue(it[0])
                         }
                     }
                 }
@@ -98,7 +109,8 @@ class RegisterStep1 : Fragment()
             {
                 FragmentType.REGISTER_STEP2.NAME ->
                 {
-                    FragmentType.REGISTER_STEP2.FRAGMENT = RegisterStep2.newInstance(binding.vm!!.trackNumStr.value)
+                    FragmentType.REGISTER_STEP2.FRAGMENT =
+                        RegisterStep2.newInstance(binding.vm!!.trackNumStr.value)
 
                     FragmentManager.move(
                         activity!!,

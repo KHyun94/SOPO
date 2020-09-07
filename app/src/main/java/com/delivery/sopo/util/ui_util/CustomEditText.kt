@@ -1,7 +1,6 @@
 package com.delivery.sopo.util.ui_util
 
 import android.content.Context
-import android.text.InputType
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -15,7 +14,8 @@ import com.delivery.sopo.util.fun_util.SizeUtil
 import kotlinx.android.synthetic.main.custom_edit_text.view.*
 
 
-class CustomEditText : LinearLayout {
+class CustomEditText : LinearLayout
+{
 
     private val TAG = "LOG.SOPO.CustomEt"
 
@@ -27,15 +27,19 @@ class CustomEditText : LinearLayout {
     private var nonFocusColor: Int? = null
     private var focusColor: Int? = null
 
-    private var focusChangeColor = resources.getColor(R.color.FOCUS_OFF)
+    private var focusChangeColor = resources.getColor(R.color.COLOR_GRAY_200)
     private var underLineWidth: Int = ViewGroup.LayoutParams.MATCH_PARENT
     private var underLineHeight: Int = SizeUtil.changeSpToPx(SOPOApp.INSTANCE, 2.0f)
 
-    constructor(context: Context?) : super(context) {
+    private var completeUnderLineColor = resources.getColor(R.color.COLOR_MAIN_RED_700)
+
+    constructor(context: Context?) : super(context)
+    {
         initSetting(context, null)
     }
 
-    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs) {
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    {
         initSetting(context, attrs)
     }
 
@@ -43,14 +47,17 @@ class CustomEditText : LinearLayout {
         context,
         attrs,
         defStyleAttr
-    ) {
+    )
+    {
         initSetting(context, attrs)
     }
 
-    private fun initSetting(context: Context?, attrs: AttributeSet?) {
+    private fun initSetting(context: Context?, attrs: AttributeSet?)
+    {
         val view = View.inflate(context, R.layout.custom_edit_text, this)
 
-        if (attrs != null) {
+        if (attrs != null)
+        {
             val typedArray =
                 context?.obtainStyledAttributes(attrs, R.styleable.CustomEditText, 0, 0)
             text = typedArray?.getString(R.styleable.CustomEditText_text)
@@ -80,10 +87,13 @@ class CustomEditText : LinearLayout {
 
         et_input_text.setOnFocusChangeListener { view, focus ->
 
-            if (focus) {
-                focusChangeColor = focusColor ?: resources.getColor(R.color.FOCUS_ON)
-            } else {
-                focusChangeColor = nonFocusColor ?: resources.getColor(R.color.FOCUS_OFF)
+            focusChangeColor = if (focus)
+            {
+                focusColor ?: resources.getColor(R.color.FOCUS_ON)
+            }
+            else
+            {
+                nonFocusColor ?: resources.getColor(R.color.FOCUS_OFF)
             }
 
             val lp = RelativeLayout.LayoutParams(
@@ -97,46 +107,58 @@ class CustomEditText : LinearLayout {
         }
     }
 
-    fun setTitle(title: String) {
+    fun setTitle(title: String)
+    {
         tv_title.text = title
     }
 
-    fun getTitle(): String {
+    fun getTitle(): String
+    {
         return tv_title.text.toString()
     }
 
-    fun setText(text: String) {
+    fun setText(text: String)
+    {
         et_input_text.setText(text)
     }
 
-    fun getText(): String {
+    fun getText(): String
+    {
         return et_input_text.text.toString()
     }
 
-    fun setTvDescriptionText(err: String) {
+    fun setTvDescriptionText(err: String)
+    {
         tv_description_text.text = err
     }
 
-    fun setDescriptionVisible(visibleStatus: Int) {
+    fun setDescriptionVisible(visibleStatus: Int)
+    {
         iv_description_mark.visibility = visibleStatus
         tv_description_text.visibility = visibleStatus
     }
 
-    fun setMarkVisible(visibleStatus: Int) {
+    fun setMarkVisible(visibleStatus: Int)
+    {
         iv_right_mark.visibility = visibleStatus
     }
 
-    fun setHint(hint: String) {
+    fun setHint(hint: String)
+    {
         et_input_text.hint = hint
     }
 
-    fun setOnFocusChangeListener(cb: (Boolean) -> Unit) {
+    fun setOnFocusChangeListener(cb: (Boolean) -> Unit)
+    {
         et_input_text.setOnFocusChangeListener { v, b ->
 
-            if (b) {
-                focusChangeColor = focusColor ?: resources.getColor(R.color.FOCUS_ON)
-            } else {
-                focusChangeColor = nonFocusColor ?: resources.getColor(R.color.FOCUS_OFF)
+            focusChangeColor = if (b)
+            {
+                focusColor ?: resources.getColor(R.color.COLOR_MAIN_BLUE_700)
+            }
+            else
+            {
+                nonFocusColor ?: resources.getColor(R.color.COLOR_GRAY_200)
             }
 
             val lp = RelativeLayout.LayoutParams(
@@ -144,11 +166,48 @@ class CustomEditText : LinearLayout {
             )
 
             lp.addRule(RelativeLayout.BELOW, et_input_text.id)
-            v_underline.layoutParams = lp
-            v_underline.setBackgroundColor(focusChangeColor)
+            v_underline.run {
+                layoutParams = lp
+                setBackgroundColor(focusChangeColor)
+            }
             tv_title.setTextColor(focusChangeColor)
 
             cb.invoke(b)
         }
+    }
+
+    fun updateStatusColor(type: Int)
+    {
+        when (type)
+        {
+            0 ->
+            {
+                Log.d(TAG, "Red")
+                tv_title.setTextColor(resources.getColor(R.color.COLOR_MAIN_RED_500))
+                v_underline.setBackgroundResource(R.color.COLOR_MAIN_RED_500)
+            }
+            1 ->
+            {
+                Log.d(TAG, "Blue")
+                tv_title.setTextColor(resources.getColor(R.color.COLOR_MAIN_BLUE_700))
+                v_underline.setBackgroundResource(R.color.COLOR_MAIN_BLUE_700)
+
+            }
+            2 ->
+            {
+
+                Log.d(TAG, "Black")
+                tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
+                v_underline.setBackgroundResource(R.color.MAIN_BLACK)
+            }
+            else ->
+            {
+                Log.d(TAG, "Black & Gray")
+                tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
+                v_underline.setBackgroundResource(R.color.COLOR_GRAY_200)
+            }
+        }
+
+
     }
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -42,7 +41,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginTop="50sp"
             app:layout_constrainedHeight="true"
             app:layout_constraintTop_toBottomOf="@id/tv_title">
@@ -54,10 +53,9 @@
                 android:layout_gravity="center_horizontal"
                 app:gridRvAdapter="@{vm.adapter}"
                 app:gridSpan="@{vm.rowCnt}"
-                app:layoutManager="@{vm.decoration}" />
+                app:layoutManager="@{vm.decoration}"/>
 
         </LinearLayout>
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

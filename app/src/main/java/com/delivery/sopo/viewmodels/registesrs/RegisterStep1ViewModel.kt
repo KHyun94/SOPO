@@ -28,6 +28,7 @@ class RegisterStep1ViewModel : ViewModel()
 
     var courier = MutableLiveData<CourierItem>()
 
+    var waybilNoStatusType = MutableLiveData<Int>()
     var hideKeyboard = SingleLiveEvent<Boolean>()
 
     var moveFragment = MutableLiveData<String>()
@@ -40,6 +41,7 @@ class RegisterStep1ViewModel : ViewModel()
         trackNumStr.value = ""
         clipboardStr.value = ""
         hideKeyboard.value = false
+        waybilNoStatusType.value = -1
     }
 
     var callback: FocusChangeCallback = FocusChangeCallback@{ type, focus ->
@@ -48,14 +50,7 @@ class RegisterStep1ViewModel : ViewModel()
 
     fun getCourierType(courier: String?): CourierItem?
     {
-        for (c in courierList)
-        {
-            if (courier == c.courierName)
-            {
-                return c
-            }
-        }
-
+        for (c in courierList) if (courier == c.courierName) return c
         return null
     }
 

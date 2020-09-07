@@ -6,6 +6,7 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.models.CourierItem
+import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.adapters.GridRvAdapter
 import com.delivery.sopo.util.fun_util.SingleLiveEvent
 import com.delivery.sopo.util.ui_util.FragmentManager
@@ -42,8 +43,17 @@ class RegisterStep2ViewModel : ViewModel()
         trackNumStr.value = waybilNum
 
         RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, waybilNum, RoomActivate.rowCnt) {
+
+            val itemList = arrayListOf<SelectItem<CourierItem>>()
+
             courierList = it as ArrayList<CourierItem>
-            adapter.postValue(GridRvAdapter(items = courierList))
+
+            for(item in courierList)
+            {
+                itemList.add(SelectItem(item, false))
+            }
+
+            adapter.postValue(GridRvAdapter(items = itemList))
         }
     }
 

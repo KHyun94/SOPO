@@ -3,7 +3,6 @@ package com.delivery.sopo.bindings
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.View
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
@@ -94,7 +93,7 @@ object CustomEditTextBindingAdapter
     }
 
     @JvmStatic
-    @BindingAdapter("type", "customFocusChangeListener")
+    @BindingAdapter("type","customFocusChangeListener")
     fun bindCustomFocusChangeListener(
         ce: CustomEditText,
         type: String,
@@ -104,5 +103,14 @@ object CustomEditTextBindingAdapter
         ce.setOnFocusChangeListener {
             cb.invoke(type, it)
         }
+    }
+
+    @JvmStatic
+    @BindingAdapter("statusType")
+    fun bindUpdateStatusColor(
+        ce: CustomEditText,
+        statusType: Int)
+    {
+        ce.updateStatusColor(statusType)
     }
 }

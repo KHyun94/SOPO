@@ -22,11 +22,9 @@ import com.delivery.sopo.util.fun_util.OtherUtil
 import com.delivery.sopo.util.fun_util.ValidateUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.google.gson.stream.JsonReader
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.StringReader
 
 
 class LoginViewModel(val userRepo: UserRepo) : ViewModel()
@@ -47,12 +45,16 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
     var isEmailCorVisible = MutableLiveData<Int>()
     var isPwdCorVisible = MutableLiveData<Int>()
 
+    var emailStatusType = MutableLiveData<Int>()
+    var pwdStatusType = MutableLiveData<Int>()
+
     var validateResult = MutableLiveData<ValidateResult<Any?>>()
 
     init
     {
         email.value = ""
         pwd.value = ""
+
         isEmailErrorVisible.value = View.GONE
         isPwdErrorVisible.value = View.GONE
 
@@ -61,6 +63,9 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
 
         emailValidateText.value = "이메일을 입력해주세요."
         pwdValidateText.value = "비밀번호를 입력해주세요."
+
+        emailStatusType.value = -1
+        pwdStatusType.value = -1
     }
 
     private fun setVisibleState(type: String, errorState: Int, corState: Int)
@@ -81,6 +86,7 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
     }
 
     var callback: FocusChangeCallback = FocusChangeCallback@{ type, focus ->
+
         if (focus)
         {
             setVisibleState(type = type, errorState = View.GONE, corState = View.GONE)
@@ -93,6 +99,7 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
                 {
                     if (TextUtils.isEmpty(email.value))
                     {
+                        emailStatusType.value = 0
                         emailValidateText.value = "이메일을 입력해주세요."
                         setVisibleState(
                             type = type,
@@ -107,6 +114,7 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
 
                     if (isValidate)
                     {
+                        emailStatusType.value = 1
                         setVisibleState(
                             type = InfoConst.EMAIL,
                             errorState = View.GONE,
@@ -115,6 +123,7 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
                     }
                     else
                     {
+                        emailStatusType.value = 0
                         emailValidateText.value = "이메일 형식을 확인해주세요."
                         setVisibleState(
                             type = type,
@@ -128,6 +137,7 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
                 {
                     if (TextUtils.isEmpty(pwd.value))
                     {
+                        pwdStatusType.value = 0
                         pwdValidateText.value = "비밀번호를 입력해주세요."
                         setVisibleState(
                             type = type,
@@ -144,10 +154,12 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
 
                     if (isValidate)
                     {
+                        pwdStatusType.value = 1
                         setVisibleState(type, View.GONE, View.VISIBLE)
                     }
                     else
                     {
+                        pwdStatusType.value = 0
                         pwdValidateText.value = "비밀번호 형식을 확인해주세요."
                         setVisibleState(type, View.VISIBLE, View.GONE)
                     }
@@ -163,7 +175,7 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
         if (isEmailCorVisible.value != View.VISIBLE)
         {
             Log.d(TAG, "Validate Fail Email ")
-
+            emailStatusType.value = 0
             return ValidateResult(
                 result = false,
                 msg = emailValidateText.value.toString(),
@@ -176,7 +188,7 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
         {
 
             Log.d(TAG, "Validate Fail PWD ")
-
+            pwdStatusType.value = 0
             return ValidateResult(
                 result = false,
                 msg = pwdValidateText.value.toString(),
@@ -360,7 +372,8 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
                                     Log.d(TAG, "What the fuck ${result.data.toString()}")
                                     val gson = Gson()
 
-                                    val type = object : TypeToken<LoginResult?>() {}.type
+                                    val type = object : TypeToken<LoginResult?>()
+                                    {}.type
 
                                     val reader = gson.toJson(result.data)
 
