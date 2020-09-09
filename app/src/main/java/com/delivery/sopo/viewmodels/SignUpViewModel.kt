@@ -44,6 +44,10 @@ class SignUpViewModel : ViewModel()
     var isPwdCorVisible = MutableLiveData<Int>()
     var isRePwdCorVisible = MutableLiveData<Int>()
 
+    var emailStatusType = MutableLiveData<Int>()
+    var pwdStatusType = MutableLiveData<Int>()
+    var rePwdStatusType = MutableLiveData<Int>()
+
     var validateResult = MutableLiveData<ValidateResult<Any?>>()
     var isAgree = MutableLiveData<Boolean>()
 
@@ -66,6 +70,10 @@ class SignUpViewModel : ViewModel()
         emailValidateText.value = "이메일을 입력해주세요."
         pwdValidateText.value = "비밀번호를 입력해주세요."
         rePwdValidateText.value = "비밀번호 확인을 입력해주세요."
+
+        emailStatusType.value = -1
+        pwdStatusType.value = -1
+        rePwdStatusType.value = -1
 
         validateResult.value = ValidateResult(false, "회원정보를 입력해주세요!!", null, InfoConst.NON_SHOW)
 
@@ -117,6 +125,7 @@ class SignUpViewModel : ViewModel()
                     // 이메일 란이 공백일 때
                     if (TextUtils.isEmpty(email.value))
                     {
+                        emailStatusType.value = 0
                         emailValidateText.value = "이메일을 입력해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
                         validateResult.value = onCheckValidate()
@@ -140,6 +149,7 @@ class SignUpViewModel : ViewModel()
                         }
                         else
                         {
+                            emailStatusType.value = 1
                             setVisibleState(
                                 type = InfoConst.EMAIL,
                                 errorState = GONE,
@@ -149,6 +159,7 @@ class SignUpViewModel : ViewModel()
                     }
                     else
                     {
+                        emailStatusType.value = 0
                         Log.d(TAG, "PLZ Check Email Validate")
                         emailValidateText.value = "이메일 형식을 확인해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
@@ -164,6 +175,7 @@ class SignUpViewModel : ViewModel()
                     // 비밀번호 란이 공백일 때
                     if (TextUtils.isEmpty(pwd.value))
                     {
+                        pwdStatusType.value = 0
 
                         Log.d(TAG, "pwd is empty")
 
@@ -179,20 +191,27 @@ class SignUpViewModel : ViewModel()
 
                     if (isValidate)
                     {
+                        pwdStatusType.value = 1
                         setVisibleState(type, GONE, VISIBLE)
 
                         // 유효성 통과 시 비밀번호 확인 체크
                         if (pwd.value == rePwd.value)
+                        {
+                            pwdStatusType.value = 1
+                            rePwdStatusType.value = 1
                             setVisibleState(InfoConst.RE_PASSWORD, GONE, VISIBLE)
+                        }
                     }
                     else
                     {
+                        pwdStatusType.value = 0
                         pwdValidateText.value = "비밀번호 형식을 확인해주세요."
                         setVisibleState(type, VISIBLE, GONE)
 
                         // 비밀번호 일치 검사
                         if (rePwd.value!!.isNotEmpty())
                         {
+                            rePwdStatusType.value = 0
                             rePwdValidateText.value = "비밀번호가 일치하지 않습니다."
                             setVisibleState(InfoConst.RE_PASSWORD, VISIBLE, GONE)
                         }
@@ -207,10 +226,10 @@ class SignUpViewModel : ViewModel()
                     // 비밀번호가 최소 1자리 이상일 때
                     if (pwd.value!!.isNotEmpty())
                     {
-
                         // 비밀번호 확인 란이 공백일 때
                         if (TextUtils.isEmpty(rePwd.value))
                         {
+                            rePwdStatusType.value = 0
                             rePwdValidateText.value = "비밀번호 확인을 입력해주세요."
                             setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
                             validateResult.value = onCheckValidate()
@@ -223,17 +242,26 @@ class SignUpViewModel : ViewModel()
 
                         if (isPwdValidate && pwd.value == rePwd.value)
                         {
+                            rePwdStatusType.value = 1
                             // 비밀번호 유효성이 true일 때 비밀번호가 일치하는지
                             setVisibleState(InfoConst.RE_PASSWORD, GONE, VISIBLE)
                         }
                         else if (!isRePwdValidate)
                         {
+                            if (isPwdValidate)
+                                pwdStatusType.value = 1
+                            else
+                                pwdStatusType.value = 0
+
+                            rePwdStatusType.value = 0
                             // 비밀번호 확인의 유효성이 false 일 때
                             rePwdValidateText.value = "비밀번호 형식을 확인해주세요."
                             setVisibleState(InfoConst.RE_PASSWORD, VISIBLE, GONE)
                         }
                         else
                         {
+                            pwdStatusType.value = 0
+                            rePwdStatusType.value = 0
                             // 비밀번호가 일치하지 않을 때
                             rePwdValidateText.value = "비밀번호가 일치하지 않습니다."
                             setVisibleState(InfoConst.RE_PASSWORD, VISIBLE, GONE)
@@ -245,12 +273,15 @@ class SignUpViewModel : ViewModel()
 
                         if (!TextUtils.isEmpty(rePwd.value) && !isRePwdValidate)
                         {
+                            rePwdStatusType.value = 0
                             // 비밀번호 확인의 유효성이 false일 때
                             rePwdValidateText.value = "비밀번호 확인의 형식을 확인해주세요."
                             setVisibleState(InfoConst.RE_PASSWORD, VISIBLE, GONE)
                         }
                         else if (isRePwdValidate)
                         {
+                            pwdStatusType.value = 1
+                            rePwdStatusType.value = 0
                             // 비밀번호 확인의 유효성이 true, 비밀번호 란이 공백일 때
                             rePwdValidateText.value = "첫번째 비밀번호를 입력해주세요."
                             setVisibleState(InfoConst.RE_PASSWORD, VISIBLE, GONE)
@@ -269,7 +300,7 @@ class SignUpViewModel : ViewModel()
         if (isEmailCorVisible.value != VISIBLE)
         {
             Log.d(TAG, "Validate Fail Email ")
-
+            emailStatusType.value = 0
             return ValidateResult(
                 result = false,
                 msg = emailValidateText.value.toString(),
@@ -281,6 +312,7 @@ class SignUpViewModel : ViewModel()
         if (isPwdCorVisible.value != VISIBLE)
         {
 
+            pwdStatusType.value = 0
             Log.d(TAG, "Validate Fail PWD ")
 
             return ValidateResult(
@@ -294,6 +326,7 @@ class SignUpViewModel : ViewModel()
         if (isRePwdCorVisible.value != VISIBLE)
         {
 
+            rePwdStatusType.value = 0
             Log.d(TAG, "Validate Fail PWD ")
 
             return ValidateResult(
@@ -342,6 +375,7 @@ class SignUpViewModel : ViewModel()
                         // isDuplicate가 false일 때 사용 가능 이메일
                         if (!isDuplicate)
                         {
+                            emailStatusType.value = 1
                             setVisibleState(
                                 type = InfoConst.EMAIL,
                                 errorState = GONE,
@@ -351,6 +385,7 @@ class SignUpViewModel : ViewModel()
                         }
                         else
                         {
+                            emailStatusType.value = 0
                             isDuplicate = true
                             emailValidateText.value = "중복된 이메일입니다."
                             setVisibleState(
@@ -382,18 +417,24 @@ class SignUpViewModel : ViewModel()
 
     fun onSignUpClicked(v: View)
     {
-        if(!v.hasFocus())
+        if (!v.hasFocus())
             v.requestFocus()
         else
             validateResult.value = onCheckValidate()
 
-        if(validateResult.value?.result == true){
+        if (validateResult.value?.result == true)
+        {
             signUpWithFirebase(this.email.value!!, this.pwd.value!!)
-        } else {
+        }
+        else
+        {
 
-            val type = if(validateResult.value?.showType == InfoConst.CUSTOM_DIALOG){
+            val type = if (validateResult.value?.showType == InfoConst.CUSTOM_DIALOG)
+            {
                 InfoConst.CUSTOM_DIALOG
-            } else {
+            }
+            else
+            {
                 InfoConst.CUSTOM_TOAST_MSG
             }
 

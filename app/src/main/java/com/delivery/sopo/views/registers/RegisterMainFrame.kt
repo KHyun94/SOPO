@@ -10,13 +10,13 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterMainFrameBinding
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.util.ui_util.FragmentManager
-import com.delivery.sopo.viewmodels.registesrs.RegisterViewModel
+import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegisterMainFrame : Fragment()
 {
     private lateinit var binding: RegisterMainFrameBinding
-    private val registerVm: RegisterViewModel by viewModel()
+    private val registerStep1Vm: RegisterStep1ViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,7 +24,7 @@ class RegisterMainFrame : Fragment()
     ): View?
     {
         binding = DataBindingUtil.inflate(inflater, R.layout.register_main_frame, container, true)
-        binding.vm = registerVm
+        binding.vm = registerStep1Vm
         binding.lifecycleOwner = this
 
         viewId = binding.frameRegister.id

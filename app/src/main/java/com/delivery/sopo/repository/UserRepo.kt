@@ -1,6 +1,6 @@
 package com.delivery.sopo.repository
 
-import com.delivery.sopo.shared.SharedPrefHelper
+import com.delivery.sopo.database.shared.SharedPrefHelper
 
 class UserRepo(private val shared: SharedPrefHelper)
 {

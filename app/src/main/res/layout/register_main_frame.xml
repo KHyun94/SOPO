@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.registesrs.RegisterViewModel" />
+            type="com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel" />
     </data>
 
        <FrameLayout

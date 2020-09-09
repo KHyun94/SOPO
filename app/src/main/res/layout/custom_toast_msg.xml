@@ -28,8 +28,7 @@
             android:layout_height="20dp"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
-            android:background="@drawable/alert"
-            android:backgroundTint="@color/MAIN_WHITE" />
+            android:background="@drawable/ic_red_alert" />
 
         <TextView
             android:layout_width="match_parent"

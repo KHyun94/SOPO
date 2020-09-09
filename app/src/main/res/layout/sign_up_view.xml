@@ -15,10 +15,10 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-       >
+        android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="25sp"
@@ -35,54 +35,57 @@
             android:id="@+id/layout_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10sp"
             android:layout_marginHorizontal="25sp"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
             app:layout_constraintVertical_bias="0.6">
 
             <com.delivery.sopo.util.ui_util.CustomEditText
                 android:id="@+id/text_test"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
+                android:layout_marginBottom="3dp"
                 android:inputType="textEmailAddress"
                 app:content="@={vm.email}"
-                app:hint="@string/EMAIL"
                 app:customFocusChangeListener="@{vm.callback}"
                 app:descriptionText="@{vm.emailValidateText}"
                 app:descriptionVisible="@{vm.isEmailErrorVisible()}"
+                app:hint="@string/EMAIL"
                 app:markVisible="@{vm.isEmailCorVisible()}"
+                app:statusType="@{vm.emailStatusType}"
                 app:title="@string/EMAIL"
                 app:type="@{InfoConst.EMAIL}" />
 
             <com.delivery.sopo.util.ui_util.CustomEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
+                android:layout_marginVertical="3dp"
                 android:inputType="textPassword"
                 app:content="@={vm.pwd}"
-                app:hint="@string/PASSWORD"
                 app:customFocusChangeListener="@{vm.callback}"
                 app:descriptionText="@{vm.pwdValidateText}"
                 app:descriptionVisible="@{vm.isPwdErrorVisible()}"
+                app:hint="@string/PASSWORD"
                 app:markVisible="@{vm.isPwdCorVisible()}"
+                app:statusType="@{vm.pwdStatusType}"
                 app:title="@string/PASSWORD"
                 app:type="@{InfoConst.PASSWORD}" />
 
             <com.delivery.sopo.util.ui_util.CustomEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
+                android:layout_marginVertical="3dp"
                 android:inputType="textPassword"
                 app:content="@={vm.rePwd}"
-                app:hint="@string/RE_PASSWORD"
                 app:customFocusChangeListener="@{vm.callback}"
                 app:descriptionText="@{vm.rePwdValidateText}"
                 app:descriptionVisible="@{vm.isRePwdErrorVisible()}"
+                app:hint="@string/RE_PASSWORD"
                 app:markVisible="@{vm.isRePwdCorVisible()}"
+                app:statusType="@{vm.rePwdStatusType}"
                 app:title="@string/RE_PASSWORD"
                 app:type="@{InfoConst.RE_PASSWORD}" />
 
@@ -105,8 +108,7 @@
                 android:layout_width="25sp"
                 android:layout_height="25sp"
                 android:layout_margin="10sp"
-                android:background="@drawable/circle"
-                android:backgroundTint="@color/LIGHT_GREY" />
+                android:background="@drawable/ic_gray_checked" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -124,9 +126,12 @@
             android:id="@+id/btn_sign_up"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="25sp"
             android:layout_marginTop="40dp"
             android:background="@drawable/border_round_white_btn"
             android:backgroundTint="@color/COLOR_MAIN_BLUE_700"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
             android:onClick="@{()->vm.onSignUpClicked(btnSignUp)}"
             android:paddingHorizontal="50dp"
             android:text="@string/DO_SIGN_UP"
@@ -134,10 +139,7 @@
             android:textSize="16sp"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_agreement"
-            android:layout_marginHorizontal="25sp"
-            android:focusable="true"
-            android:focusableInTouchMode="true"/>
+            app:layout_constraintTop_toBottomOf="@+id/layout_agreement" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

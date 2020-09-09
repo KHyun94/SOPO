@@ -12,18 +12,26 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterStep2Binding
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.util.ui_util.FragmentManager
-import com.delivery.sopo.viewmodels.registesrs.RegisterViewModel
+import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
+import com.delivery.sopo.viewmodels.registesrs.RegisterStep2ViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegisterStep2 : Fragment()
 {
     val TAG = "LOG.SOPO"
     private lateinit var binding: RegisterStep2Binding
-    private val registerVm: RegisterViewModel by viewModel()
+    private val registerStep2Vm: RegisterStep2ViewModel by viewModel()
+
+    private var waybilNum: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+
+        if (arguments != null)
+        {
+            waybilNum = arguments!!.getString("waybilNum") ?: ""
+        }
     }
 
     override fun onCreateView(
@@ -32,12 +40,12 @@ class RegisterStep2 : Fragment()
     ): View?
     {
         binding = DataBindingUtil.inflate(inflater, R.layout.register_step2, container, false)
-        binding.vm = registerVm
+        binding.vm = registerStep2Vm
         binding.lifecycleOwner = this
 
-        setObserve()
+        binding.vm!!.initAdapter(waybilNum = waybilNum?:"")
 
-        Log.d(TAG, "vm =>> ${binding.vm?.trackNumStr?.value}")
+        setObserve()
 
         return binding.root
     }
@@ -59,6 +67,20 @@ class RegisterStep2 : Fragment()
                 }
             }
         })
+    }
+
+    companion object
+    {
+        fun newInstance(waybilNum: String?): RegisterStep2
+        {
+            val registerStep2 = RegisterStep2()
+
+            val args = Bundle()
+            args.putString("waybilNum", waybilNum)
+
+            registerStep2.arguments = args
+            return registerStep2
+        }
     }
 
 }
