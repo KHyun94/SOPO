@@ -122,7 +122,7 @@
             android:text="@string/IS_RIGHT_COURIER"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:textColor="@color/COLOR_MAIN_RED_700"
+            android:textColor="@color/COLOR_MAIN_RED_500"
             android:visibility="@{vm.courier.name.length() > 0 ? View.VISIBLE : View.GONE}"
             app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co"
             app:layout_constraintRight_toLeftOf="parent"

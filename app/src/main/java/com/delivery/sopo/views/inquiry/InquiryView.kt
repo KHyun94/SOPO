@@ -5,6 +5,7 @@ import android.view.ContextThemeWrapper
 import android.view.View
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.delivery.sopo.R
@@ -21,7 +22,7 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
 
     private val inquiryVM: InquiryViewModel by viewModel()
     private lateinit var soonArrivalListAdapter: SoonArrivalListAdapter
-    private val registeredSopoListAdapter = RegisteredSopoListAdapter(null)
+    private lateinit var registeredSopoListAdapter: RegisteredSopoListAdapter
 
     init {
         TAG += this.javaClass.simpleName
@@ -32,12 +33,15 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
     override fun bindView() {
 
         binding.vm = inquiryVM
+
         soonArrivalListAdapter = SoonArrivalListAdapter(inquiryVM.cntOfSelectedItem, this, mutableListOf())
         binding.recyclerviewSoonArrival.adapter = soonArrivalListAdapter
         binding.recyclerviewSoonArrival.layoutManager = LinearLayoutManager(this)
 
+        registeredSopoListAdapter = RegisteredSopoListAdapter(inquiryVM.cntOfSelectedItem, this, mutableListOf())
         binding.recyclerviewRegisteredParcel.adapter = registeredSopoListAdapter
         binding.recyclerviewRegisteredParcel.layoutManager = LinearLayoutManager(this)
+
         binding.executePendingBindings()
 
         initViewSetting()
@@ -93,24 +97,47 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
 
         inquiryVM.cntOfSelectedItem.observe(this, Observer{
             if(it > 0){
-                constraint_delete.visibility = View.INVISIBLE
-                constraint_delete_select.visibility = View.VISIBLE
+//                constraint_delete_select.visibility = View.VISIBLE
+                constraint_delete_final.visibility = View.VISIBLE
+//                tv_delete_title.visibility = View.VISIBLE
             }
             else if(it == 0){
-                constraint_delete.visibility = View.VISIBLE
-                constraint_delete_select.visibility = View.INVISIBLE
+//                constraint_delete_select.visibility = View.INVISIBLE
+                constraint_delete_final.visibility = View.GONE
+//                tv_delete_title.visibility = View.GONE
             }
+
+            if(it == inquiryVM.parcelList.value?.size){
+                image_is_all_checked.setBackgroundResource(R.drawable.ic_checked_red)
+                tv_is_all_checked.setTextColor(ContextCompat.getColor(this, R.color.MAIN_RED))
+            }
+            else{
+                image_is_all_checked.setBackgroundResource(R.drawable.ic_checked_gray)
+                tv_is_all_checked.setTextColor(ContextCompat.getColor(this, R.color.COLOR_GRAY_400))
+            }
+
         })
 
         inquiryVM.isRemovable.observe(this, Observer {
             if(it){
                 soonArrivalListAdapter.setRemovable(true)
+                registeredSopoListAdapter.setRemovable(true)
                 viewSettingforPopupMenuDelete()
             }
             else{
+                soonArrivalListAdapter.setRemovable(false)
+                soonArrivalListAdapter.cancelRemoveItem()
+                registeredSopoListAdapter.setRemovable(false)
+                registeredSopoListAdapter.cancelRemoveItem()
+
                 inquiryVM.setMoreView(false)
                 viewSettingforPopupMenuDelete_Cancel()
             }
+        })
+
+        inquiryVM.isSelectAll.observe(this, Observer{
+                soonArrivalListAdapter.setSelectAll(it)
+                registeredSopoListAdapter.setSelectAll(it)
         })
 
     }
@@ -169,10 +196,11 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
         constraint_soon_arrival.visibility = View.VISIBLE
         linear_more_view_parent.visibility = View.INVISIBLE
         constraint_select.visibility = View.VISIBLE
-        constraint_delete.visibility = View.GONE
         constraint_delete_select.visibility = View.GONE
         image_inquiry_popup_menu.visibility = View.VISIBLE
         image_inquiry_popup_menu_close.visibility = View.GONE
+        constraint_delete_final.visibility = View.GONE
+        tv_delete_title.visibility = View.GONE
     }
 
     private fun viewSettingForSoonArrivalList(listSize: Int){
@@ -202,18 +230,20 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
     private fun viewSettingforPopupMenuDelete(){
         tv_title.visibility = View.INVISIBLE
         constraint_select.visibility = View.INVISIBLE
-        constraint_delete.visibility = View.VISIBLE
         image_inquiry_popup_menu.visibility = View.INVISIBLE
         image_inquiry_popup_menu_close.visibility = View.VISIBLE
         linear_more_view_parent.visibility = View.INVISIBLE
+        constraint_delete_select.visibility = View.VISIBLE
+        tv_delete_title.visibility = View.VISIBLE
     }
 
     private fun viewSettingforPopupMenuDelete_Cancel(){
         tv_title.visibility = View.VISIBLE
         constraint_select.visibility = View.VISIBLE
-        constraint_delete.visibility = View.GONE
         image_inquiry_popup_menu.visibility = View.VISIBLE
         image_inquiry_popup_menu_close.visibility = View.INVISIBLE
         linear_more_view_parent.visibility = View.VISIBLE
+        tv_delete_title.visibility = View.GONE
+        constraint_delete_select.visibility = View.GONE
     }
 }

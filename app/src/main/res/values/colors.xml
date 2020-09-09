@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="COLOR_MAIN_RED_700">#FF7777</color>
+    <color name="COLOR_MAIN_RED_100">#FFEBEB</color>
+    <color name="COLOR_MAIN_RED_500">#FF7777</color>
 
     <color name="COLOR_MAIN_BLUE_700">#5C94FF</color>
 

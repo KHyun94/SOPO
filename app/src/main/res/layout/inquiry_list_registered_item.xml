@@ -1,106 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layout_background"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layoutDirection="ltr"
-    android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.cardview.widget.CardView
+    <data>
+        <variable
+            name="registeredInquiryData"
+            type="com.delivery.sopo.models.inquiry.InquiryListData" />
+    </data>
+
+    <LinearLayout
+        android:id="@+id/layout_background"
         android:layout_width="match_parent"
-        android:layout_height="90dp"
-        app:cardBackgroundColor="@color/MAIN_WHITE"
-        app:cardCornerRadius="15dp"
-        app:cardUseCompatPadding="true"
-        app:cardElevation="3dp"
-        >
-        <LinearLayout
-            android:id="@+id/linear_delivery_status"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:weightSum="1"
-            >
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraint_delivery_status_front"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:background="@color/COLOR_GRAY_400"
-                android:layout_weight="0.2"
-                >
+        android:layout_height="wrap_content"
+        android:layoutDirection="ltr"
+        android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_registered_parent"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            app:cardBackgroundColor="@color/MAIN_WHITE"
+            app:cardCornerRadius="15dp"
+            app:cardUseCompatPadding="true"
+            app:cardElevation="3dp"
+            >
+            <LinearLayout
+                android:id="@+id/linear_delivery_status"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="1"
+                >
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraint_delivery_status_front"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/COLOR_GRAY_400"
+                    android:layout_weight="0.2"
+                    >
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:id="@+id/image_delivery_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            tools:background="@drawable/ic_parcel_status_before"
+                            />
+                        <TextView
+                            android:id="@+id/tv_delivery_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/spoqa_han_sans_bold"
+                            android:textColor="@color/MAIN_WHITE"
+                            android:textSize="10sp"
+                            tools:text="상품인수" />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraint_delivery_status_front_delete"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/COLOR_MAIN_RED_100"
+                    android:layout_weight="0.2"
+                    tools:visibility="gone"
+                    >
 
                     <ImageView
-                        android:id="@+id/image_delivery_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        tools:background="@drawable/ic_parcel_status_before"
-                        />
-                    <TextView
-                        android:id="@+id/tv_delivery_status"
+                        android:src="@drawable/ic_checked_red"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraint_delivery_status_back"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.8"
+                    tools:visibility="visible"
+                    >
+
+                    <LinearLayout
+                        android:id="@+id/linear_sopo_item"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="2dp"
-                        android:fontFamily="@font/spoqa_han_sans_bold"
-                        android:textColor="@color/MAIN_WHITE"
-                        android:textSize="10sp"
-                        tools:text="상품인수" />
-                </LinearLayout>
+                        android:orientation="vertical"
+                        android:layout_marginLeft="20dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        >
 
+                        <TextView
+                            android:id="@+id/tv_registered_parcel_name"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/spoqa_han_sans_bold"
+                            android:text="@{registeredInquiryData.parcel.parcelAlias}"
+                            android:textColor="@color/COLOR_GRAY_800"
+                            android:textSize="12sp"
+                            tools:text="갤럭시 버즈 플러스 화이트"
+                            />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                        <TextView
+                            android:id="@+id/tv_registered_parcel_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/spoqa_han_sans_light"
+                            android:text="@{registeredInquiryData.parcel.auditDte}"
+                            android:textColor="@color/COLOR_GRAY_800"
+                            android:textSize="10sp"
+                            tools:text="2020/08/31"
+                            />
+                    </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.8">
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraint_delivery_status_back_delete"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.8"
+                    android:background="@color/COLOR_MAIN_RED_100"
+                    tools:visibility="gone"
+                    >
 
-                <LinearLayout
-                    android:id="@+id/linear_sopo_item"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginLeft="20dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:id="@+id/tv_registered_parcel_name"
+                    <LinearLayout
+                        android:id="@+id/linear_sopo_item_delete"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/spoqa_han_sans_bold"
-                        android:text=""
-                        android:textColor="@color/COLOR_GRAY_800"
-                        android:textSize="12sp"
-                        tools:text="갤럭시 버즈 플러스 화이트" />
+                        android:orientation="vertical"
+                        android:layout_marginLeft="20dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
-                        android:id="@+id/tv_registered_parcel_date"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/spoqa_han_sans_light"
-                        android:text=""
-                        android:textColor="@color/COLOR_GRAY_800"
-                        android:textSize="10sp"
-                        tools:text="2020/08/31" />
+                        <TextView
+                            android:id="@+id/tv_registered_parcel_name_delete"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/spoqa_han_sans_bold"
+                            android:text="@{registeredInquiryData.parcel.parcelAlias}"
+                            android:textColor="@color/COLOR_MAIN_RED_500"
+                            android:textSize="12sp"
+                            tools:text="갤럭시 버즈 플러스 화이트"
+                            />
 
-                </LinearLayout>
+                        <TextView
+                            android:id="@+id/tv_registered_parcel_date_delete"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/spoqa_han_sans_light"
+                            android:text="@{registeredInquiryData.parcel.auditDte}"
+                            android:textColor="@color/COLOR_MAIN_RED_500"
+                            android:textSize="10sp"
+                            tools:text="2020/08/31"
+                            />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </LinearLayout>
+                    </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
-</LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+
+</layout>

@@ -20,6 +20,7 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
     val parcelList: MutableLiveData<MutableList<Parcel>?> = MutableLiveData()
     val isMoreView = MutableLiveData<Boolean>()
     val isRemovable = MutableLiveData<Boolean>()
+    val isSelectAll = MutableLiveData<Boolean>()
     var cntOfSelectedItem = MutableLiveData<Int>()
 
 
@@ -28,6 +29,7 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
         cntOfSelectedItem.value = 0
         isMoreView.value = false
         isRemovable.value = false
+        isSelectAll.value = false
 //        postParcel("한성 GK993B", "kr.cjlogistics", "633505672612")
 //        postParcel("토체티 듀가드 저소음 적축", "kr.cjlogistics", "633603780622")
 //        postParcel("노트북 파우치", "kr.cjlogistics", "632830166566")
@@ -44,9 +46,20 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
         isMoreView.value = flag
     }
 
+    fun setSelectAll(flag: Boolean){
+        isSelectAll.value = flag
+    }
+
+
     fun toggleMoreView(){
         isMoreView.value?.let {
             setMoreView(!it)
+        }
+    }
+
+    fun toggleSelectAll(){
+        isSelectAll.value?.let {
+            setSelectAll(!it)
         }
     }
 
