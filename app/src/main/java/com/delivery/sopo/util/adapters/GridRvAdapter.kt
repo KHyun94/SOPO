@@ -42,7 +42,8 @@ class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
 
             holder.itemView.iv_img.setOnClickListener {
 
-                val res = if(selectItem.isSelect) selectItem.item.nonClickRes else selectItem.item.clickRes
+                val res =
+                    if (selectItem.isSelect) selectItem.item.nonClickRes else selectItem.item.clickRes
 
                 Glide.with(holder.itemView.iv_img.context)
                     .load(res)
@@ -74,10 +75,29 @@ class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
 
     inner class GridRvViewHolder(binding: ItemImgBinding) : RecyclerView.ViewHolder(binding.root)
     {
-        fun onBind(selectItem : SelectItem<CourierItem>)
+        fun onBind(selectItem: SelectItem<CourierItem>)
         {
             Log.d("LOG.SOPO", "vh -> $selectItem")
             binding.setVariable(BR.img, selectItem.item.nonClickRes)
         }
+
+        fun onReverseSelectStatus()
+        {
+            val pos = adapterPosition
+            if (pos != RecyclerView.NO_POSITION)
+            {
+                val item = items!![pos]
+
+                for (i in items!!)
+                {
+                    if(i.hashCode() == item.hashCode())
+                    {
+                        Log.d(TAG, "")
+                    }
+                }
+
+            }
+        }
+
     }
 }
