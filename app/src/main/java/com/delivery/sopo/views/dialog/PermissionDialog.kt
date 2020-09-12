@@ -1,4 +1,4 @@
-package com.delivery.sopo.util.ui_util
+package com.delivery.sopo.views.dialog
 
 import android.app.Activity
 import android.graphics.Color

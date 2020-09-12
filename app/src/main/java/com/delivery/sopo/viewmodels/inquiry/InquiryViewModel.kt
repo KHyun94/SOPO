@@ -1,9 +1,10 @@
 package com.delivery.sopo.viewmodels.inquiry
 
 import android.util.Log
-import android.view.View
 import androidx.lifecycle.*
 import com.delivery.sopo.models.APIResult
+import com.delivery.sopo.models.dto.DeleteParcelsDTO
+import com.delivery.sopo.models.inquiry.InquiryListData
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
@@ -68,6 +69,14 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
         setRemovable(false)
     }
 
+    fun removeItem(selectedData: MutableList<ParcelId>) {
+        for (selectedItem in selectedData){
+            Log.d(TAG, "regDt : ${selectedItem.regDt}")
+            Log.d(TAG, "uid : ${selectedItem.parcelUid}")
+        }
+        deleteParcel(selectedData)
+    }
+
     private fun getAllParcelList(){
 
         val ioScope = CoroutineScope(Dispatchers.IO)
@@ -120,6 +129,36 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
                     })
             }
         }
+    }
+
+    private fun deleteParcel(list: MutableList<ParcelId>){
+        NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
+            .deleteParcels(email = userRepo.getEmail(),
+                            parcelIds = DeleteParcelsDTO(list))
+                                .enqueue(object : Callback<APIResult<String?>>
+                            {
+                                override fun onResponse(
+                                    call: Call<APIResult<String?>>,
+                                    response: Response<APIResult<String?>>
+                                )
+                                {
+                                    val code = response.code()
+                                    Log.d(TAG, "상태 코드 : $code")
+
+                                    when(code){
+                                        200 -> {
+
+                                        }
+                                        400 -> {
+                                            Log.d(TAG, "#### : $code")
+                                        }
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<APIResult<String?>>, t: Throwable) {
+                                    Log.d(TAG,"[deleteParcel] ==> onFailure, ${t.localizedMessage}")
+                                }
+                            })
     }
 
     private fun postParcel(parcelAlias: String, trackCompany: String, trackNum: String){

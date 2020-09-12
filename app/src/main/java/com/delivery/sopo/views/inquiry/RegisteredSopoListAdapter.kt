@@ -14,6 +14,7 @@ import com.delivery.sopo.consts.DeliveryStatus
 import com.delivery.sopo.databinding.InquiryListRegisteredItemBinding
 import com.delivery.sopo.models.inquiry.InquiryListData
 import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.ParcelId
 import kotlinx.android.synthetic.main.inquiry_list_registered_item.view.*
 import kotlinx.android.synthetic.main.inquiry_list_soon_item.view.*
 
@@ -155,6 +156,26 @@ class RegisteredSopoListAdapter(private val cntOfSelectedItem: MutableLiveData<I
             cntOfSelectedItem.value = 0
             notifyDataSetChanged()
         }
+    }
+
+    fun getSelectedListData(): List<ParcelId>
+    {
+        return list.filter {
+            it.isSelected
+        }.map {
+            it.parcel.parcelId
+        }
+    }
+
+    fun getList(): MutableList<InquiryListData> {
+        return list
+    }
+
+    fun deleteSelectedParcel(){
+        list.removeIf {
+            it.isSelected
+        }
+        notifyDataSetChanged()
     }
 
     private fun viewSettingForSelected(binding: InquiryListRegisteredItemBinding){

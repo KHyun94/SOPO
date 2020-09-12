@@ -1,28 +1,25 @@
-package com.delivery.sopo.util.ui_util
+package com.delivery.sopo.views.dialog
 
 import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
-import com.google.android.material.tabs.TabLayout.*
-import kotlinx.android.synthetic.main.select_notify_kind_dialog.view.*
-import kotlinx.android.synthetic.main.set_not_disturb_time_dialog.*
-import kotlinx.android.synthetic.main.set_not_disturb_time_dialog.view.*
-import kotlinx.android.synthetic.main.set_not_disturb_time_dialog.view.tv_cancelBtn
+import kotlinx.android.synthetic.main.confirm_delete_dialog.view.*
 
 
-class SelectNotifyKindDialog : DialogFragment {
+class ConfirmDeleteDialog : DialogFragment {
 
     private var parentActivity: Activity
     private lateinit var layoutView: View
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
+    private var onOkClickListener: ((agree: ConfirmDeleteDialog) -> Unit)? = null
 
-    constructor(act: Activity) : super() {
+    constructor(act: Activity, handler: (agree: ConfirmDeleteDialog) -> Unit) : super() {
         this.parentActivity = act
+        onOkClickListener = handler
     }
 
     override fun onCreateView(
@@ -30,7 +27,7 @@ class SelectNotifyKindDialog : DialogFragment {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        layoutView = inflater.inflate(R.layout.select_notify_kind_dialog, container, false)
+        layoutView = inflater.inflate(R.layout.confirm_delete_dialog, container, false)
         setSetting()
         setClickEvent()
 
@@ -38,10 +35,17 @@ class SelectNotifyKindDialog : DialogFragment {
     }
 
     private fun setClickEvent(){
-        layoutView.tv_close.setOnClickListener {
+
+        layoutView.tv_delete.setOnClickListener {
+
+            onOkClickListener?.invoke(this)
+        }
+
+        layoutView.tv_cancel.setOnClickListener {
             dismiss()
         }
     }
+
 
     private fun setSetting() {
         isCancelable = true

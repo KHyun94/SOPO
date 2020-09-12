@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.InquiryListSoonItemBinding
 import com.delivery.sopo.models.inquiry.InquiryListData
+import com.delivery.sopo.models.parcel.ParcelId
 import kotlinx.android.synthetic.main.inquiry_list_soon_item.view.*
 
 
@@ -114,6 +115,19 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
         }
     }
 
+    fun getSelectedListData(): List<ParcelId>
+    {
+        return list.filter {
+            it.isSelected
+        }.map {
+            it.parcel.parcelId
+        }
+    }
+
+    fun getList(): MutableList<InquiryListData>
+    {
+        return list
+    }
 
     private fun viewSettingForSelected(binding: InquiryListSoonItemBinding){
         binding.root.constraint_item_part.visibility = View.GONE
@@ -144,6 +158,12 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
         notifyDataSetChanged()
     }
 
+    fun deleteSelectedParcel(){
+        list.removeIf {
+            it.isSelected
+        }
+        notifyDataSetChanged()
+    }
 
     override fun getItemCount(): Int
     {

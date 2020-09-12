@@ -14,21 +14,24 @@ import com.delivery.sopo.databinding.SopoInquiryViewBinding
 import com.delivery.sopo.interfaces.BasicView
 import com.delivery.sopo.models.inquiry.InquiryListData
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
+import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
 import kotlinx.android.synthetic.main.sopo_inquiry_view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.stream.Collectors
+import java.util.stream.Stream
 
-class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view)
-{
+class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view) {
 
     private val inquiryVM: InquiryViewModel by viewModel()
     private lateinit var soonArrivalListAdapter: SoonArrivalListAdapter
     private lateinit var registeredSopoListAdapter: RegisteredSopoListAdapter
+    private var soonArrivalList: MutableList<InquiryListData> = mutableListOf()
+    private var registeredSopoList: MutableList<InquiryListData> = mutableListOf()
 
     init {
         TAG += this.javaClass.simpleName
         parentActivity = this@InquiryView
     }
-
 
     override fun bindView() {
 
@@ -45,6 +48,7 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
         binding.executePendingBindings()
 
         initViewSetting()
+        setListener()
         image_inquiry_popup_menu.setOnClickListener {
             showListPopupWindow(it)
         }
@@ -56,7 +60,7 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
 
             parcelList?.let{
 
-                val listdata =parcelList.filter { parcel ->
+                val filteredSoonArrivalList =parcelList.filter { parcel ->
                     // 리스트 중 오직 '배송출발'일 경우만 해당 adapter로 넘긴다.
                     parcel.deliveryStatus == DeliveryStatus.OUT_FOR_DELIVERY
                 }.also {
@@ -65,10 +69,11 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
                 }.map{
                     InquiryListData(parcel = it)
                 } as MutableList<InquiryListData>
-                soonArrivalListAdapter.setDataList(listdata)
+                soonArrivalList = filteredSoonArrivalList
+                soonArrivalListAdapter.setDataList(filteredSoonArrivalList)
 
 
-                registeredSopoListAdapter.setDataList(parcelList.filter { parcel ->
+                val filteredRegisteredSopoList = parcelList.filter { parcel ->
                     // 리스트 중 오직 '배송출발'과 '배송도착'이 아닐 경우만 해당 adapter로 넘긴다.
                     parcel.deliveryStatus != DeliveryStatus.OUT_FOR_DELIVERY && parcel.deliveryStatus != DeliveryStatus.DELIVERED
                 }.also {
@@ -76,7 +81,9 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
                     viewSettingForRegisteredList(it.size)
                 }.map {
                     InquiryListData(parcel = it)
-                } as MutableList<InquiryListData>)
+                } as MutableList<InquiryListData>
+                registeredSopoList = filteredRegisteredSopoList
+                registeredSopoListAdapter.setDataList(filteredRegisteredSopoList)
             }
         })
 
@@ -97,14 +104,10 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
 
         inquiryVM.cntOfSelectedItem.observe(this, Observer{
             if(it > 0){
-//                constraint_delete_select.visibility = View.VISIBLE
                 constraint_delete_final.visibility = View.VISIBLE
-//                tv_delete_title.visibility = View.VISIBLE
             }
             else if(it == 0){
-//                constraint_delete_select.visibility = View.INVISIBLE
                 constraint_delete_final.visibility = View.GONE
-//                tv_delete_title.visibility = View.GONE
             }
 
             if(it == inquiryVM.parcelList.value?.size){
@@ -174,6 +177,36 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
         listPopupWindow.show()
     }
 
+    private fun setListener(){
+
+        constraint_delete_final.setOnClickListener {
+            ConfirmDeleteDialog(parentActivity){
+                dialog ->
+
+                val selectedDataSoon = soonArrivalListAdapter.getSelectedListData()
+                val selectedDataRegister = registeredSopoListAdapter.getSelectedListData()
+                val selectedData = Stream.of(selectedDataSoon, selectedDataRegister).flatMap { it.stream() }
+                    .collect(Collectors.toList())
+
+                inquiryVM.removeItem(selectedData)
+
+                soonArrivalListAdapter.deleteSelectedParcel()
+                soonArrivalList = soonArrivalListAdapter.getList()
+
+                registeredSopoListAdapter.deleteSelectedParcel()
+                registeredSopoList = registeredSopoListAdapter.getList()
+
+                viewSettingForSoonArrivalList(soonArrivalList.size)
+                viewSettingForRegisteredList(registeredSopoList.size)
+
+                inquiryVM.cancelRemoveItem()
+                dialog.dismiss()
+            }
+                .show(supportFragmentManager, "ConfirmDeleteDialog")
+        }
+    }
+
+
     private fun showPopupMenu(v: View){
         val context = ContextThemeWrapper(this, R.style.PopupMenuListView)
         val popupMenu = PopupMenu(context, v)
@@ -194,7 +227,8 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
     private fun initViewSetting(){
         tv_title.visibility = View.VISIBLE
         constraint_soon_arrival.visibility = View.VISIBLE
-        linear_more_view_parent.visibility = View.INVISIBLE
+        linear_more_view_parent.visibility = View.GONE
+        v_more_view.visibility = View.GONE
         constraint_select.visibility = View.VISIBLE
         constraint_delete_select.visibility = View.GONE
         image_inquiry_popup_menu.visibility = View.VISIBLE
@@ -208,18 +242,22 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
             0 -> {
                 constraint_soon_arrival.visibility = View.GONE
                 linear_more_view_parent.visibility = View.GONE
+                v_more_view.visibility = View.GONE
             }
             1-> {
                 constraint_soon_arrival.visibility = View.VISIBLE
-                linear_more_view_parent.visibility = View.INVISIBLE
+                linear_more_view_parent.visibility = View.GONE
+                v_more_view.visibility = View.INVISIBLE
             }
             2-> {
                 constraint_soon_arrival.visibility = View.VISIBLE
-                linear_more_view_parent.visibility = View.INVISIBLE
+                linear_more_view_parent.visibility = View.GONE
+                v_more_view.visibility = View.INVISIBLE
             }
             else -> {
                 constraint_soon_arrival.visibility = View.VISIBLE
                 linear_more_view_parent.visibility = View.VISIBLE
+                v_more_view.visibility = View.GONE
             }
         }
     }
@@ -232,7 +270,8 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
         constraint_select.visibility = View.INVISIBLE
         image_inquiry_popup_menu.visibility = View.INVISIBLE
         image_inquiry_popup_menu_close.visibility = View.VISIBLE
-        linear_more_view_parent.visibility = View.INVISIBLE
+        linear_more_view_parent.visibility = View.GONE
+        v_more_view.visibility = View.INVISIBLE
         constraint_delete_select.visibility = View.VISIBLE
         tv_delete_title.visibility = View.VISIBLE
     }
@@ -242,8 +281,10 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
         constraint_select.visibility = View.VISIBLE
         image_inquiry_popup_menu.visibility = View.VISIBLE
         image_inquiry_popup_menu_close.visibility = View.INVISIBLE
-        linear_more_view_parent.visibility = View.VISIBLE
         tv_delete_title.visibility = View.GONE
         constraint_delete_select.visibility = View.GONE
+
+        viewSettingForSoonArrivalList(soonArrivalList.size)
+        viewSettingForRegisteredList(registeredSopoList.size)
     }
 }

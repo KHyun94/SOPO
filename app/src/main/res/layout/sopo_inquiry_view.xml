@@ -269,7 +269,11 @@
                                 android:textSize="14sp" />
                         </LinearLayout>
                     </LinearLayout>
-
+                    <View
+                        android:id="@+id/v_more_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        />
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/constraint_registered_arrival"
                         android:layout_width="match_parent"
