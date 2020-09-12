@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.views.lookups.LookupMainFragment
 import com.delivery.sopo.views.menus.MyMenuView
+import com.delivery.sopo.views.menus.SettingFragment
 import com.delivery.sopo.views.registers.RegisterMainFrame
 
 class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
@@ -27,7 +28,7 @@ class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
     {
         tab1stFragment = RegisterMainFrame()
         tab2ndFragment = LookupMainFragment()
-        tab3rdFragment = MyMenuView()
+        tab3rdFragment = SettingFragment()
 
         currentFragment = tab1stFragment
     }
