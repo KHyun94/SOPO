@@ -38,7 +38,7 @@ class MainViewModel(var contract: MainActivityContract) : ViewModel()
         currentTabName.value = FragmentType.REGISTER_STEP1.NAME
 
         current1stTabName.value = FragmentType.REGISTER_STEP1.NAME
-        current2ndTabName.value = FragmentType.LOOKUP.NAME
+        current2ndTabName.value = FragmentType.INQUIRY.NAME
         current3rdTabName.value = FragmentType.MY_MENU.NAME
     }
 

@@ -1,17 +1,20 @@
 package com.delivery.sopo.views.inquiry
 
+import android.annotation.SuppressLint
+import android.os.Bundle
 import android.util.Log
-import android.view.ContextThemeWrapper
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.DeliveryStatus
 import com.delivery.sopo.databinding.SopoInquiryViewBinding
-import com.delivery.sopo.interfaces.BasicView
 import com.delivery.sopo.models.inquiry.InquiryListData
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
@@ -20,32 +23,30 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
-class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view) {
+class InquiryView: Fragment() {
 
+    private lateinit var binding: SopoInquiryViewBinding
     private val inquiryVM: InquiryViewModel by viewModel()
     private lateinit var soonArrivalListAdapter: SoonArrivalListAdapter
     private lateinit var registeredSopoListAdapter: RegisteredSopoListAdapter
     private var soonArrivalList: MutableList<InquiryListData> = mutableListOf()
     private var registeredSopoList: MutableList<InquiryListData> = mutableListOf()
+    private val TAG = this.javaClass.simpleName
+//    private val inquiryFragmentContext = requireActivity()
 
-    init {
-        TAG += this.javaClass.simpleName
-        parentActivity = this@InquiryView
+    @SuppressLint("SourceLockedOrientationActivity")
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        binding = SopoInquiryViewBinding.inflate(inflater, container, false)
+        viewBinding()
+        setObserver()
+
+
+        return binding.root
     }
 
-    override fun bindView() {
-
-        binding.vm = inquiryVM
-
-        soonArrivalListAdapter = SoonArrivalListAdapter(inquiryVM.cntOfSelectedItem, this, mutableListOf())
-        binding.recyclerviewSoonArrival.adapter = soonArrivalListAdapter
-        binding.recyclerviewSoonArrival.layoutManager = LinearLayoutManager(this)
-
-        registeredSopoListAdapter = RegisteredSopoListAdapter(inquiryVM.cntOfSelectedItem, this, mutableListOf())
-        binding.recyclerviewRegisteredParcel.adapter = registeredSopoListAdapter
-        binding.recyclerviewRegisteredParcel.layoutManager = LinearLayoutManager(this)
-
-        binding.executePendingBindings()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
+        super.onViewCreated(view, savedInstanceState)
 
         initViewSetting()
         setListener()
@@ -54,7 +55,23 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
         }
     }
 
-    override fun setObserver(){
+    private fun viewBinding() {
+
+        binding.vm = inquiryVM
+        binding.lifecycleOwner = this
+        soonArrivalListAdapter = SoonArrivalListAdapter(inquiryVM.cntOfSelectedItem, this, mutableListOf())
+        binding.recyclerviewSoonArrival.adapter = soonArrivalListAdapter
+        binding.recyclerviewSoonArrival.layoutManager = LinearLayoutManager(requireActivity())
+
+        registeredSopoListAdapter = RegisteredSopoListAdapter(inquiryVM.cntOfSelectedItem, this, mutableListOf())
+        binding.recyclerviewRegisteredParcel.adapter = registeredSopoListAdapter
+        binding.recyclerviewRegisteredParcel.layoutManager = LinearLayoutManager(requireActivity())
+
+        binding.executePendingBindings()
+
+    }
+
+    private fun setObserver(){
         inquiryVM.parcelList.observe(this, Observer {
             parcelList ->
 
@@ -110,15 +127,14 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
                 constraint_delete_final.visibility = View.GONE
             }
 
-            if(it == inquiryVM.parcelList.value?.size){
+            if(it == (soonArrivalList.size + registeredSopoList.size) && it != 0){
                 image_is_all_checked.setBackgroundResource(R.drawable.ic_checked_red)
-                tv_is_all_checked.setTextColor(ContextCompat.getColor(this, R.color.MAIN_RED))
+                tv_is_all_checked.setTextColor(ContextCompat.getColor(requireActivity(), R.color.MAIN_RED))
             }
             else{
                 image_is_all_checked.setBackgroundResource(R.drawable.ic_checked_gray)
-                tv_is_all_checked.setTextColor(ContextCompat.getColor(this, R.color.COLOR_GRAY_400))
+                tv_is_all_checked.setTextColor(ContextCompat.getColor(requireActivity(), R.color.COLOR_GRAY_400))
             }
-
         })
 
         inquiryVM.isRemovable.observe(this, Observer {
@@ -147,16 +163,16 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
 
     private fun showListPopupWindow(anchorView: View){
 
-        val listPopupWindow = ListPopupWindow(this).apply {
+        val listPopupWindow = ListPopupWindow(requireActivity()).apply {
             this.width = 600
-            this.setBackgroundDrawable(parentActivity.getDrawable(R.drawable.border_all_rounded_no_storke))
+            this.setBackgroundDrawable(requireActivity().getDrawable(R.drawable.border_all_rounded_no_storke))
         }
 
         listPopupWindow.anchorView = anchorView
-        val menu = PopupMenu(this, anchorView).menu
-        menuInflater.inflate(R.menu.inquiry_popup_menu, menu)
+        val menu = PopupMenu(requireActivity(), anchorView).menu
+        requireActivity().menuInflater.inflate(R.menu.inquiry_popup_menu, menu)
 
-        val listPopupWindowAdapter = InquiryListPopupWindowAdapter(this, menu)
+        val listPopupWindowAdapter = InquiryListPopupWindowAdapter(requireActivity(), menu)
         listPopupWindow.setAdapter(listPopupWindowAdapter)
         listPopupWindow.setOnItemClickListener{
             parent, view, position, id ->
@@ -180,7 +196,7 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
     private fun setListener(){
 
         constraint_delete_final.setOnClickListener {
-            ConfirmDeleteDialog(parentActivity){
+            ConfirmDeleteDialog(requireActivity()){
                 dialog ->
 
                 val selectedDataSoon = soonArrivalListAdapter.getSelectedListData()
@@ -202,26 +218,8 @@ class InquiryView : BasicView<SopoInquiryViewBinding>(R.layout.sopo_inquiry_view
                 inquiryVM.cancelRemoveItem()
                 dialog.dismiss()
             }
-                .show(supportFragmentManager, "ConfirmDeleteDialog")
+                .show(requireActivity().supportFragmentManager, "ConfirmDeleteDialog")
         }
-    }
-
-
-    private fun showPopupMenu(v: View){
-        val context = ContextThemeWrapper(this, R.style.PopupMenuListView)
-        val popupMenu = PopupMenu(context, v)
-        menuInflater.inflate(R.menu.inquiry_popup_menu, popupMenu.menu)
-        popupMenu.setOnMenuItemClickListener(PopupMenu.OnMenuItemClickListener {
-
-            when(it.itemId){
-                R.id.delete_item ->{
-                    Log.d(TAG, "!!!!!!!!!!!!!!!!")
-                }
-            }
-
-            false
-        })
-        popupMenu.show()
     }
 
     private fun initViewSetting(){

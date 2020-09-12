@@ -7,7 +7,7 @@ import com.delivery.sopo.enums.FragmentType
 object FragmentManager
 {
     var currentFragment1st = FragmentType.REGISTER_STEP1
-    var currentFragment2nd = FragmentType.LOOKUP
+    var currentFragment2nd = FragmentType.INQUIRY
     var currentFragment3rd = FragmentType.MY_MENU
 
     private val TAG = "LOG.SOPO.FragmentM"
