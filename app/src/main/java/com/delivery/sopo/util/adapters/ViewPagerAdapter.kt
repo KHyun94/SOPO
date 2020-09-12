@@ -32,6 +32,11 @@ class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
         currentFragment = tab1stFragment
     }
 
+
+    override fun getPageTitle(position: Int): CharSequence?
+    {
+        return super.getPageTitle(position)
+    }
     override fun getItem(position: Int): Fragment
     {
         Log.d(TAG, "pos => ${position}")

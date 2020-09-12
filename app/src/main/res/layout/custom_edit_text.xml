@@ -11,17 +11,17 @@
         android:id="@+id/layout_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="10sp"
-        android:layout_marginBottom="10sp">
+        android:layout_marginBottom="10sp"
+        android:paddingHorizontal="10sp">
 
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/spoqa_han_sans_regular"
             android:paddingTop="5sp"
             android:paddingBottom="5sp"
             android:text="이메일"
-            android:fontFamily="@font/spoqa_han_sans_regular"
             android:textColor="@color/MAIN_BLACK"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -36,8 +36,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="5sp"
             android:layout_toLeftOf="@+id/tv_description_text"
-            android:background="@drawable/alert"
-            android:backgroundTint="@color/MAIN_BLACK"
+            android:background="@drawable/ic_red_alert"
             android:visibility="gone" />
 
         <TextView
@@ -50,7 +49,7 @@
             android:paddingEnd="10sp"
             android:paddingBottom="5sp"
             android:text="등록된 이메일이 아닙니다."
-            android:textColor="@color/FOCUS_OFF"
+            android:textColor="@color/COLOR_MAIN_RED_500"
             android:textSize="12sp"
             android:textStyle="bold"
             android:visibility="gone" />
@@ -67,19 +66,21 @@
             android:id="@+id/et_input_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="5sp"
             android:background="@null"
             android:lines="1"
-            android:singleLine="true"
-            android:textSize="20sp"
             android:paddingBottom="7sp"
-            android:textColorHint="@color/COLOR_GRAY_300" />
+            android:singleLine="true"
+            android:textColorHint="@color/COLOR_GRAY_300"
+            android:textSize="20sp" />
 
         <ImageView
             android:id="@+id/iv_right_mark"
             android:layout_width="20sp"
             android:layout_height="20sp"
             android:layout_alignParentEnd="true"
-            android:background="@drawable/correct"
+            android:layout_marginEnd="5sp"
+            android:background="@drawable/ic_blue_ok"
             android:visibility="gone" />
 
         <View

@@ -18,6 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="0sp"
             android:layout_weight="1"
+            setupWithViewPager="@{tablayoutBottomTab}"
             setAdapter="@{vm.adapter}"
             setCurrentItem="@{vm.currItem}"
             addOnPageChangeListener="@{vm.pageChangeListener}"
@@ -29,8 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="60sp"
             android:background="@drawable/border_top_colored_gray"
-            app:tabIndicatorColor="@android:color/transparent"
-            setupWithViewPager="@{vpMain}"/>
+            app:tabIndicatorColor="@android:color/transparent" />
 
     </LinearLayout>
 

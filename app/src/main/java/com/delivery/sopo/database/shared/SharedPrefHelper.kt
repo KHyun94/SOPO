@@ -1,4 +1,4 @@
-package com.delivery.sopo.shared
+package com.delivery.sopo.database.shared
 
 import android.content.Context
 

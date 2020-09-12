@@ -18,6 +18,7 @@
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="25sp"
@@ -35,25 +36,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="25sp"
+            android:layout_marginTop="50sp"
             android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
             app:layout_constraintVertical_bias="0.68">
 
             <com.delivery.sopo.util.ui_util.CustomEditText
-                android:id="@+id/text_test"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
+                android:layout_marginBottom="5sp"
                 android:inputType="textEmailAddress"
                 app:content="@={vm.email}"
-                app:hint="@string/EMAIL"
                 app:customFocusChangeListener="@{vm.callback}"
                 app:descriptionText="@{vm.emailValidateText}"
                 app:descriptionVisible="@{vm.isEmailErrorVisible()}"
+                app:hint="@string/EMAIL"
                 app:markVisible="@{vm.isEmailCorVisible()}"
+                app:statusType="@{vm.emailStatusType}"
                 app:title="@string/EMAIL"
                 app:type="@{InfoConst.EMAIL}" />
 
@@ -63,11 +64,12 @@
                 android:layout_marginVertical="10dp"
                 android:inputType="textPassword"
                 app:content="@={vm.pwd}"
-                app:hint="@string/PASSWORD"
                 app:customFocusChangeListener="@{vm.callback}"
                 app:descriptionText="@{vm.pwdValidateText}"
                 app:descriptionVisible="@{vm.isPwdErrorVisible()}"
+                app:hint="@string/PASSWORD"
                 app:markVisible="@{vm.isPwdCorVisible()}"
+                app:statusType="@{vm.pwdStatusType}"
                 app:title="@string/PASSWORD"
                 app:type="@{InfoConst.PASSWORD}" />
 
@@ -93,11 +95,11 @@
             android:background="@drawable/border_round_white_btn"
             android:backgroundTint="@color/COLOR_MAIN_BLUE_700"
             android:focusableInTouchMode="true"
+            android:onClick="@{()->vm.onLoginClicked(btnLogin)}"
             android:paddingHorizontal="50dp"
             android:text="@string/DO_LOGIN"
             android:textColor="@color/MAIN_WHITE"
             android:textSize="16sp"
-            android:onClick="@{()->vm.onLoginClicked(btnLogin)}"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_find_pwd" />
