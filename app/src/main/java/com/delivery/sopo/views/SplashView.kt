@@ -18,11 +18,10 @@ import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.LoginResult
 import com.delivery.sopo.networks.LoginAPI
 import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.UserAPI
 import com.delivery.sopo.repository.UserRepo
 import com.delivery.sopo.util.fun_util.CodeUtil
 import com.delivery.sopo.util.fun_util.OtherUtil
-import com.delivery.sopo.util.ui_util.PermissionDialog
+import com.delivery.sopo.views.dialog.PermissionDialog
 import com.delivery.sopo.viewmodels.SplashViewModel
 import com.tbruyelle.rxpermissions2.RxPermissions
 import org.koin.android.ext.android.inject

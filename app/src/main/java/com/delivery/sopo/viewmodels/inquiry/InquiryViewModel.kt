@@ -1,9 +1,10 @@
 package com.delivery.sopo.viewmodels.inquiry
 
 import android.util.Log
-import android.view.View
 import androidx.lifecycle.*
 import com.delivery.sopo.models.APIResult
+import com.delivery.sopo.models.dto.DeleteParcelsDTO
+import com.delivery.sopo.models.inquiry.InquiryListData
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
@@ -20,6 +21,7 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
     val parcelList: MutableLiveData<MutableList<Parcel>?> = MutableLiveData()
     val isMoreView = MutableLiveData<Boolean>()
     val isRemovable = MutableLiveData<Boolean>()
+    val isSelectAll = MutableLiveData<Boolean>()
     var cntOfSelectedItem = MutableLiveData<Int>()
 
 
@@ -28,6 +30,7 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
         cntOfSelectedItem.value = 0
         isMoreView.value = false
         isRemovable.value = false
+        isSelectAll.value = false
 //        postParcel("한성 GK993B", "kr.cjlogistics", "633505672612")
 //        postParcel("토체티 듀가드 저소음 적축", "kr.cjlogistics", "633603780622")
 //        postParcel("노트북 파우치", "kr.cjlogistics", "632830166566")
@@ -44,15 +47,34 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
         isMoreView.value = flag
     }
 
+    fun setSelectAll(flag: Boolean){
+        isSelectAll.value = flag
+    }
+
+
     fun toggleMoreView(){
         isMoreView.value?.let {
             setMoreView(!it)
         }
     }
 
+    fun toggleSelectAll(){
+        isSelectAll.value?.let {
+            setSelectAll(!it)
+        }
+    }
+
     fun cancelRemoveItem(){
         cntOfSelectedItem.value = 0
         setRemovable(false)
+    }
+
+    fun removeItem(selectedData: MutableList<ParcelId>) {
+        for (selectedItem in selectedData){
+            Log.d(TAG, "regDt : ${selectedItem.regDt}")
+            Log.d(TAG, "uid : ${selectedItem.parcelUid}")
+        }
+        deleteParcel(selectedData)
     }
 
     private fun getAllParcelList(){
@@ -107,6 +129,36 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
                     })
             }
         }
+    }
+
+    private fun deleteParcel(list: MutableList<ParcelId>){
+        NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
+            .deleteParcels(email = userRepo.getEmail(),
+                            parcelIds = DeleteParcelsDTO(list))
+                                .enqueue(object : Callback<APIResult<String?>>
+                            {
+                                override fun onResponse(
+                                    call: Call<APIResult<String?>>,
+                                    response: Response<APIResult<String?>>
+                                )
+                                {
+                                    val code = response.code()
+                                    Log.d(TAG, "상태 코드 : $code")
+
+                                    when(code){
+                                        200 -> {
+
+                                        }
+                                        400 -> {
+                                            Log.d(TAG, "#### : $code")
+                                        }
+                                    }
+                                }
+
+                                override fun onFailure(call: Call<APIResult<String?>>, t: Throwable) {
+                                    Log.d(TAG,"[deleteParcel] ==> onFailure, ${t.localizedMessage}")
+                                }
+                            })
     }
 
     private fun postParcel(parcelAlias: String, trackCompany: String, trackNum: String){

@@ -1,6 +1,7 @@
 package com.delivery.sopo.networks
 
 import com.delivery.sopo.models.APIResult
+import com.delivery.sopo.models.dto.DeleteParcelsDTO
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import kotlinx.coroutines.Deferred
@@ -34,4 +35,15 @@ interface ParcelAPI
     fun getParcelsAsync(
         @Path("email") email: String
     ): Call<APIResult<MutableList<Parcel>?>>
+
+//    @FormUrlEncoded
+//    @DELETE("api/v1/sopoMainBackEnd/delivery/{email}/delete-parcels")
+    @HTTP(method = "DELETE", path = "api/v1/sopoMainBackEnd/delivery/{email}/parcels", hasBody = true)
+    @Headers("Accept: application/json")
+    fun deleteParcels(
+        @Path("email") email: String,
+        @Body parcelIds: DeleteParcelsDTO
+    ): Call<APIResult<String?>>
+
+
 }

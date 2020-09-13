@@ -1,20 +1,16 @@
-package com.delivery.sopo.util.ui_util
+package com.delivery.sopo.views.dialog
 
 import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
-import com.google.android.material.tabs.TabLayout.*
-import kotlinx.android.synthetic.main.other_faq_dialog.view.*
-import kotlinx.android.synthetic.main.set_not_disturb_time_dialog.*
-import kotlinx.android.synthetic.main.set_not_disturb_time_dialog.view.*
+import kotlinx.android.synthetic.main.select_notify_kind_dialog.view.*
 
 
-class OtherFaqDialog : DialogFragment {
+class SelectNotifyKindDialog : DialogFragment {
 
     private var parentActivity: Activity
     private lateinit var layoutView: View
@@ -29,7 +25,7 @@ class OtherFaqDialog : DialogFragment {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        layoutView = inflater.inflate(R.layout.other_faq_dialog, container, false)
+        layoutView = inflater.inflate(R.layout.select_notify_kind_dialog, container, false)
         setSetting()
         setClickEvent()
 
@@ -37,12 +33,10 @@ class OtherFaqDialog : DialogFragment {
     }
 
     private fun setClickEvent(){
-
         layoutView.tv_close.setOnClickListener {
             dismiss()
         }
     }
-
 
     private fun setSetting() {
         isCancelable = true
