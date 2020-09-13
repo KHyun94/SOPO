@@ -123,7 +123,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/spoqa_han_sans_light"
-                            android:text="@{String.o registeredInquiryData.parcel.auditDte}"
+                            android:text="@{registeredInquiryData.parcel.auditDte}"
                             android:textColor="@color/COLOR_GRAY_800"
                             android:textSize="10sp"
                             tools:text="2020/08/31"
