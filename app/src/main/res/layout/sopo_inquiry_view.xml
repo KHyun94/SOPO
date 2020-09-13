@@ -86,8 +86,8 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="80dp"
+                    android:layout_height="35dp"
                     android:layout_gravity="center"
                     android:layout_marginRight="15dp"
                     android:background="@drawable/border_all_rounded_light_black"
@@ -96,8 +96,8 @@
                     android:textSize="14sp" />
 
                 <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="80dp"
+                    android:layout_height="35dp"
                     android:layout_gravity="center"
                     android:background="@drawable/border_all_rounded_color_gray_400"
                     android:text="배송 완료"
