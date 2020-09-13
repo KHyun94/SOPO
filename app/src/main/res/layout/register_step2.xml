@@ -11,7 +11,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/COLOR_GRAY_50">
 
         <TextView
             android:id="@+id/tv_title"
@@ -44,6 +45,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="50sp"
             app:layout_constrainedHeight="true"
+            android:layout_marginHorizontal="15sp"
             app:layout_constraintTop_toBottomOf="@id/tv_title">
 
             <androidx.recyclerview.widget.RecyclerView

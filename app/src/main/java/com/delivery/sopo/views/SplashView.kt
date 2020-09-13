@@ -22,6 +22,7 @@ import com.delivery.sopo.networks.UserAPI
 import com.delivery.sopo.repository.UserRepo
 import com.delivery.sopo.util.fun_util.CodeUtil
 import com.delivery.sopo.util.fun_util.OtherUtil
+import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.util.ui_util.PermissionDialog
 import com.delivery.sopo.viewmodels.SplashViewModel
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -46,7 +47,6 @@ class SplashView : BasicView<SplashViewBinding>(
         TAG += this.javaClass.simpleName
         parentActivity = this@SplashView
         Log.d(TAG, "What is $TAG")
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -207,7 +207,6 @@ class SplashView : BasicView<SplashViewBinding>(
                 }
 
             })
-
 
 //        NetworkManager.getPrivateUserAPI(userRepo.getEmail(), userRepo.getApiPwd())
 //            .requestAutoLogin(userRepo.getDeviceInfo(), userRepo.getJoinType(), null)

@@ -12,6 +12,8 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.databinding.RegisterStep1Binding
 import com.delivery.sopo.enums.FragmentType
+import com.delivery.sopo.models.CourierItem
+import com.delivery.sopo.models.RegisterCourierData
 import com.delivery.sopo.util.fun_util.ClipboardUtil
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.FragmentManager
@@ -24,8 +26,7 @@ class RegisterStep1 : Fragment()
     private val registerStep1Vm: RegisterStep1ViewModel by viewModel()
 
     private var waybilNum: String? = null
-    private var courier: String? = null
-
+    private var courier: CourierItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -34,7 +35,7 @@ class RegisterStep1 : Fragment()
         if (arguments != null)
         {
             waybilNum = arguments!!.getString("waybilNum") ?: ""
-            courier = arguments!!.getString("courier") ?: ""
+            courier = arguments!!.getSerializable("courier") as CourierItem ?: null
         }
     }
 
@@ -51,12 +52,12 @@ class RegisterStep1 : Fragment()
 
         if (waybilNum != null && waybilNum!!.isNotEmpty())
         {
-            binding.vm!!.trackNumStr.value = waybilNum
+            binding.vm!!.waybilNum.value = waybilNum
         }
 
-        if (courier != null && courier!!.isNotEmpty())
+        if (courier != null)
         {
-            binding.vm!!.courier.value = binding.vm!!.getCourierType(courier)
+            binding.vm!!.courier.value = courier
         }
 
         return binding.root
@@ -64,7 +65,7 @@ class RegisterStep1 : Fragment()
 
     fun setObserve()
     {
-        binding.vm?.trackNumStr?.observe(this, Observer {
+        binding.vm?.waybilNum?.observe(this, Observer {
             if (it.isNotEmpty())
             {
                 binding.vm?.clipboardStr?.value = ""
@@ -81,7 +82,6 @@ class RegisterStep1 : Fragment()
 
                 if (it.length > 8)
                 {
-
                     RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, it, 1) {
                         if (it != null && it.isNotEmpty())
                         {
@@ -110,11 +110,29 @@ class RegisterStep1 : Fragment()
                 FragmentType.REGISTER_STEP2.NAME ->
                 {
                     FragmentType.REGISTER_STEP2.FRAGMENT =
-                        RegisterStep2.newInstance(binding.vm!!.trackNumStr.value)
+                        RegisterStep2.newInstance(
+                            binding.vm!!.waybilNum.value,
+                            binding.vm!!.courier.value
+                        )
 
                     FragmentManager.move(
                         activity!!,
                         FragmentType.REGISTER_STEP2,
+                        RegisterMainFrame.viewId
+                    )
+                    binding.vm?.moveFragment?.value = ""
+                }
+                FragmentType.REGISTER_STEP3.NAME ->
+                {
+                    FragmentType.REGISTER_STEP3.FRAGMENT =
+                        RegisterStep3.newInstance(
+                            binding.vm!!.waybilNum.value,
+                            binding.vm!!.courier.value
+                        )
+
+                    FragmentManager.move(
+                        activity!!,
+                        FragmentType.REGISTER_STEP3,
                         RegisterMainFrame.viewId
                     )
                     binding.vm?.moveFragment?.value = ""
@@ -134,7 +152,7 @@ class RegisterStep1 : Fragment()
         // todo 등록된 택배 운송장 번호와 비교해서 clipboard text와 같거나 운송장 번호 et에 등록 중이면 아래 로직 생략
         val text = ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE)
 
-        val isRegister = binding.vm?.trackNumStr?.value.isNullOrEmpty()
+        val isRegister = binding.vm?.waybilNum?.value.isNullOrEmpty()
 
         if (!(text.isEmpty() || !isRegister))
         {
@@ -144,14 +162,14 @@ class RegisterStep1 : Fragment()
 
     companion object
     {
-        fun newInstance(waybilNum: String?, courier: String?): RegisterStep1
+        fun newInstance(waybilNum:String?, courier:CourierItem?): RegisterStep1
         {
-
             val registerStep1 = RegisterStep1()
 
             val args = Bundle()
+
             args.putString("waybilNum", waybilNum)
-            args.putString("courier", courier)
+            args.putSerializable("courier", courier)
 
             registerStep1.arguments = args
             return registerStep1

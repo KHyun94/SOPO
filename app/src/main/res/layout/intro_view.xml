@@ -7,37 +7,76 @@
     android:orientation="vertical"
     tools:context=".views.IntroView">
 
-    <com.delivery.sopo.util.ui_util.IntroIndicator
-        android:id="@+id/indicator"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_weight="5"
-        android:gravity="center"
-        android:layout_marginTop="50sp"/>
-
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="0sp"
-        android:layout_weight="82" />
+        android:layout_weight="90" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0sp"
-        android:layout_weight="13">
-
-        <Button
-            android:id="@+id/btn_login"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="20sp"
-            android:text="@string/INTRO_NEXT_BTN"
-            android:textColor="@color/MAIN_WHITE"
-            android:textSize="16sp"
-            android:background="@drawable/border_round_main_btn"
-            android:visibility="invisible" />
-    </LinearLayout>
+            android:layout_height="0sp"
+            android:layout_weight="10"
+            android:background="@color/COLOR_MAIN_BLUE_50">
+
+            <TextView
+                android:id="@+id/tv_skip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/COLOR_MAIN_BLUE_700"
+                android:text="건너뛰기"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:layout_marginStart="30sp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentStart="true"/>
+
+            <com.delivery.sopo.util.ui_util.IntroIndicator
+                android:id="@+id/indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true" />
+
+            <ImageView
+                android:id="@+id/iv_next_page"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/COLOR_MAIN_BLUE_700"
+                android:background="@drawable/ic_next_btn"
+                android:textSize="14sp"
+                android:layout_marginEnd="30sp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"/>
+            <!--            <Button-->
+<!--                android:id="@+id/btn_login"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:layout_margin="20sp"-->
+<!--                android:text="@string/INTRO_NEXT_BTN"-->
+<!--                android:textColor="@color/MAIN_WHITE"-->
+<!--                android:textSize="16sp"-->
+<!--                android:background="@drawable/border_round_main_btn"-->
+<!--                android:visibility="invisible" />-->
+        </RelativeLayout>
+
+
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0sp"-->
+<!--        android:layout_weight="13">-->
+
+<!--        <Button-->
+<!--            android:id="@+id/btn_login"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:layout_margin="20sp"-->
+<!--            android:text="@string/INTRO_NEXT_BTN"-->
+<!--            android:textColor="@color/MAIN_WHITE"-->
+<!--            android:textSize="16sp"-->
+<!--            android:background="@drawable/border_round_main_btn"-->
+<!--            android:visibility="invisible" />-->
+<!--    </LinearLayout>-->
 
 </LinearLayout>

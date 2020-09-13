@@ -13,7 +13,7 @@
         <ImageView
             android:layout_width="50sp"
             android:layout_height="50sp"
-            android:background="@color/COLOR_MAIN_BLUE_700" />
+            android:background="@drawable/ic_tmp_oval" />
 
     </LinearLayout>
 
@@ -27,9 +27,9 @@
             android:layout_height="wrap_content"
             android:padding="2sp"
             android:text="테스트 권한 이름"
-            android:textColor="@color/MAIN_BLACK"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textColor="@color/COLOR_GRAY_800"
+            android:fontFamily="@font/spoqa_han_sans_bold"
+            android:textSize="12sp" />
 
 
         <TextView
@@ -37,7 +37,8 @@
             android:layout_height="wrap_content"
             android:padding="2sp"
             android:text="권한 설명"
-            android:textSize="15sp" />
+            android:textSize="12sp"
+            android:textColor="@color/COLOR_GRAY_500" />
 
     </LinearLayout>
 

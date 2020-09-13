@@ -29,7 +29,7 @@ object ViewPagerBindingAdapter
 
         tl.setupWithViewPager(vp)
 
-        tl.getTabAt(0)!!.setIcon(R.drawable.ic_non_clicked_tap_register)
+        tl.getTabAt(0)!!.setIcon(R.drawable.ic_clicked_tap_register)
         tl.getTabAt(1)!!.setIcon(R.drawable.ic_non_clicked_tap_lookup)
         tl.getTabAt(2)!!.setIcon(R.drawable.ic_non_clicked_tap_my)
 

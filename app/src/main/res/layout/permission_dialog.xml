@@ -8,10 +8,9 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20sp"
-        android:layout_marginTop="20sp"
-        android:layout_marginBottom="30sp"
-        android:paddingHorizontal="10sp">
+        android:layout_marginHorizontal="25sp"
+        android:layout_marginTop="35sp"
+        android:layout_marginBottom="30sp">
 
         <TextView
             android:id="@+id/tv_title"
@@ -19,8 +18,9 @@
             android:layout_height="wrap_content"
             android:gravity="start"
             android:text="쾌적한 앱 사용을 위해\n설정해주세요."
-            android:textColor="#093E66"
-            android:textSize="30sp" />
+            android:fontFamily="@font/spoqa_han_sans_regular"
+            android:textColor="@color/COLOR_GRAY_800"
+            android:textSize="21sp" />
 
     </LinearLayout>
 
@@ -28,13 +28,14 @@
         android:id="@+id/layout_permission_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginHorizontal="25sp">
         <include
             android:id="@+id/include_permission_1st"
             layout="@layout/detail_permission_item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="70sp"
+
             android:layout_marginVertical="10sp" />
 
         <include
@@ -43,7 +44,6 @@
             layout="@layout/detail_permission_item"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="70sp"
             android:layout_marginVertical="10sp" />
     </LinearLayout>
 
