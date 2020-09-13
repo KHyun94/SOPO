@@ -45,7 +45,6 @@ class SplashView : BasicView<SplashViewBinding>(
         TAG += this.javaClass.simpleName
         parentActivity = this@SplashView
         Log.d(TAG, "What is $TAG")
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -206,7 +205,6 @@ class SplashView : BasicView<SplashViewBinding>(
                 }
 
             })
-
 
 //        NetworkManager.getPrivateUserAPI(userRepo.getEmail(), userRepo.getApiPwd())
 //            .requestAutoLogin(userRepo.getDeviceInfo(), userRepo.getJoinType(), null)

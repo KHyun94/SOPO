@@ -9,7 +9,6 @@ class SplashViewModel(
     private val userRepo: UserRepo
 ) : ViewModel()
 {
-
     var navigator = MutableLiveData<String>()
 
     init

@@ -1,7 +1,10 @@
 package com.delivery.sopo.viewmodels.registesrs
 
+import android.view.View
+import android.widget.ImageView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.bumptech.glide.Glide
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.enums.FragmentType
@@ -16,20 +19,17 @@ class RegisterStep2ViewModel : ViewModel()
 {
     val TAG = "LOG.SOPO.RegisterVm"
 
-    private var courierList = arrayListOf<CourierItem>()
-
-    var trackNumStr = MutableLiveData<String>()
-
-    var courier = MutableLiveData<CourierItem>()
-
-    var hideKeyboard = SingleLiveEvent<Boolean>()
-
+    var courierList = arrayListOf<CourierItem>()
+    val itemList = arrayListOf<SelectItem<CourierItem>>()
+    var selectedItem = MutableLiveData<SelectItem<CourierItem>?>()
+    var waybilNum = MutableLiveData<String>()
     var moveFragment = MutableLiveData<String>()
+    var hideKeyboard = SingleLiveEvent<Boolean>()
 
     val errorMsg = MutableLiveData<String>()
 
     var adapter =  MutableLiveData<GridRvAdapter>()
-    val decoration = GridSpacingItemDecoration(3, 10, true)
+    val decoration = GridSpacingItemDecoration(3, 48, true)
     val rowCnt = 3
 
     init
@@ -38,35 +38,23 @@ class RegisterStep2ViewModel : ViewModel()
         hideKeyboard.value = false
     }
 
-    fun initAdapter(waybilNum: String)
+    fun initAdapter(_waybilNum: String)
     {
-        trackNumStr.value = waybilNum
+        if(itemList.size <= 0)
+        {
+            waybilNum.value = _waybilNum
 
-        RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, waybilNum, RoomActivate.rowCnt) {
+            RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, waybilNum.value!!, RoomActivate.rowCnt) {
 
-            val itemList = arrayListOf<SelectItem<CourierItem>>()
+                courierList = it as ArrayList<CourierItem>
 
-            courierList = it as ArrayList<CourierItem>
+                for(item in courierList)
+                {
+                    itemList.add(SelectItem(item, false))
+                }
 
-            for(item in courierList)
-            {
-                itemList.add(SelectItem(item, false))
+                adapter.postValue(GridRvAdapter(items = itemList))
             }
-
-            adapter.postValue(GridRvAdapter(items = itemList))
-        }
-    }
-
-    fun onMoveStep2Clicked()
-    {
-        if (trackNumStr.value!!.length > 10)
-        {
-            if (courier.value == null || courier.value!!.courierName.isEmpty())
-                moveFragment.value = FragmentType.REGISTER_STEP2.NAME
-        }
-        else
-        {
-            errorMsg.value = "운송장 번호를 입력해주세요."
         }
     }
 

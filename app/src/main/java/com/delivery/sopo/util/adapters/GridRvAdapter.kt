@@ -2,6 +2,7 @@ package com.delivery.sopo.util.adapters
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
@@ -18,7 +19,17 @@ import kotlinx.android.synthetic.main.item_img.view.*
 class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
     RecyclerView.Adapter<GridRvViewHolder>()
 {
-    var beforePos = -1
+    interface OnItemClickListener<T>
+    {
+        fun onItemClicked(v: View, pos : Int, item: T)
+    }
+
+    var mListener: OnItemClickListener<List<SelectItem<CourierItem>>>? = null
+
+    fun setOnItemClickListener(listener: OnItemClickListener<List<SelectItem<CourierItem>>>)
+    {
+        this.mListener = listener
+    }
 
     lateinit var binding: ItemImgBinding
 
@@ -36,21 +47,9 @@ class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
     {
         if (items != null)
         {
-            val selectItem = items!!.get(position)
-
+            Log.d(TAG, "$position")
+            val selectItem = items!![position]
             holder.onBind(selectItem)
-
-            holder.itemView.iv_img.setOnClickListener {
-
-                val res =
-                    if (selectItem.isSelect) selectItem.item.nonClickRes else selectItem.item.clickRes
-
-                Glide.with(holder.itemView.iv_img.context)
-                    .load(res)
-                    .into(holder.itemView.iv_img as ImageView)
-
-                items!![position].isSelect = !selectItem.isSelect
-            }
         }
         else
         {
@@ -75,29 +74,31 @@ class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
 
     inner class GridRvViewHolder(binding: ItemImgBinding) : RecyclerView.ViewHolder(binding.root)
     {
-        fun onBind(selectItem: SelectItem<CourierItem>)
-        {
-            Log.d("LOG.SOPO", "vh -> $selectItem")
-            binding.setVariable(BR.img, selectItem.item.nonClickRes)
-        }
+        var beforeItem : SelectItem<CourierItem>? = null
 
-        fun onReverseSelectStatus()
+        init
         {
-            val pos = adapterPosition
-            if (pos != RecyclerView.NO_POSITION)
-            {
-                val item = items!![pos]
-
-                for (i in items!!)
+            binding.ivImg.setOnClickListener {
+                val pos = adapterPosition
+                
+                if(pos != RecyclerView.NO_POSITION)
                 {
-                    if(i.hashCode() == item.hashCode())
+                    if(mListener != null)
                     {
-                        Log.d(TAG, "")
+                        mListener!!.onItemClicked(it, pos, items!!)
+                        beforeItem = items!![pos]
                     }
                 }
-
             }
         }
 
+        fun onBind(selectItem: SelectItem<CourierItem>)
+        {
+            Log.d("LOG.SOPO", "vh -> $selectItem")
+            if(selectItem.isSelect)
+                binding.setVariable(BR.img, selectItem.item.clickRes)
+            else
+                binding.setVariable(BR.img, selectItem.item.nonClickRes)
+        }
     }
 }

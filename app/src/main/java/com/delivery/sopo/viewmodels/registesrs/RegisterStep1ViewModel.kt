@@ -21,7 +21,7 @@ class RegisterStep1ViewModel : ViewModel()
 
     private val courierList = mutableListOf<CourierItem>()
 
-    var trackNumStr = MutableLiveData<String>()
+    var waybilNum = MutableLiveData<String>()
 
     // 가져온 클립보드 문자열
     var clipboardStr = SingleLiveEvent<String>()
@@ -38,7 +38,7 @@ class RegisterStep1ViewModel : ViewModel()
     init
     {
         moveFragment.value = ""
-        trackNumStr.value = ""
+        waybilNum.value = ""
         clipboardStr.value = ""
         hideKeyboard.value = false
         waybilNoStatusType.value = -1
@@ -56,7 +56,7 @@ class RegisterStep1ViewModel : ViewModel()
 
     fun onMoveStep2Clicked()
     {
-        if (trackNumStr.value!!.length > 8)
+        if (waybilNum.value!!.length > 8)
         {
             if (courier.value == null || courier.value!!.courierName.isEmpty())
                 moveFragment.value = FragmentType.REGISTER_STEP2.NAME
@@ -67,9 +67,14 @@ class RegisterStep1ViewModel : ViewModel()
         }
     }
 
+    fun onMoveStep3Clicked()
+    {
+        moveFragment.value = FragmentType.REGISTER_STEP3.NAME
+    }
+
     fun onReselectClicked()
     {
-        if (trackNumStr.value!!.length > 8)
+        if (waybilNum.value!!.length > 8)
         {
             if (courier.value != null && !courier.value!!.courierName.isEmpty())
                 moveFragment.value = FragmentType.REGISTER_STEP2.NAME
@@ -82,7 +87,7 @@ class RegisterStep1ViewModel : ViewModel()
 
     fun onPasteClicked()
     {
-        trackNumStr.value = clipboardStr.value
+        waybilNum.value = clipboardStr.value
         clipboardStr.call()
     }
 

@@ -12,6 +12,7 @@
     <color name="COLOR_GRAY_200">#E8E8ED</color>
     <color name="COLOR_GRAY_300">#D5D5DC</color>
     <color name="COLOR_GRAY_400">#B5B5BF</color>
+    <color name="COLOR_GRAY_500">#92929E</color>
     <color name="COLOR_GRAY_600">#747480</color>
     <color name="COLOR_GRAY_700">#585865</color>
     <color name="COLOR_GRAY_800">#3B3B46</color>
@@ -57,6 +58,7 @@
     <color name="NOT_DISTURB_TIME_TEXT">#92929E</color>
     <color name="FAQ_EMAIL_LAYOUT">#F0F2F7</color>
     <color name="SOPO_INQUERY_SELECTED">#424242</color>
+    <color name="COLOR_MAIN_BLUE_50">#EFF2F9</color>
 
 
 </resources>
