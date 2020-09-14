@@ -23,5 +23,7 @@ data class Parcel(
     @SerializedName("arrivalDte")
     val arrivalDte: String?,
     @SerializedName("auditDte")
-    val auditDte: String
+    val auditDte: String,
+    @SerializedName("status")
+    val status: Int?
 )

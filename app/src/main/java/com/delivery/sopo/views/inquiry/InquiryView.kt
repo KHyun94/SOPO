@@ -11,11 +11,14 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.DeliveryStatus
 import com.delivery.sopo.databinding.SopoInquiryViewBinding
 import com.delivery.sopo.models.inquiry.InquiryListData
+import com.delivery.sopo.viewmodels.MainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
 import kotlinx.android.synthetic.main.sopo_inquiry_view.*
@@ -25,21 +28,26 @@ import java.util.stream.Stream
 
 class InquiryView: Fragment() {
 
-    private lateinit var binding: SopoInquiryViewBinding
     private val inquiryVM: InquiryViewModel by viewModel()
+
+    private lateinit var binding: SopoInquiryViewBinding
     private lateinit var soonArrivalListAdapter: SoonArrivalListAdapter
     private lateinit var registeredSopoListAdapter: RegisteredSopoListAdapter
     private var soonArrivalList: MutableList<InquiryListData> = mutableListOf()
     private var registeredSopoList: MutableList<InquiryListData> = mutableListOf()
     private val TAG = this.javaClass.simpleName
-//    private val inquiryFragmentContext = requireActivity()
+    private val mainVm: MainViewModel by lazy {
+                    ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory {
+                        override fun <T : ViewModel?> create(modelClass: Class<T>): T =
+                            MainViewModel() as T
+                    }).get(MainViewModel::class.java)
+                }
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = SopoInquiryViewBinding.inflate(inflater, container, false)
         viewBinding()
         setObserver()
-
 
         return binding.root
     }
@@ -58,6 +66,7 @@ class InquiryView: Fragment() {
     private fun viewBinding() {
 
         binding.vm = inquiryVM
+
         binding.lifecycleOwner = this
         soonArrivalListAdapter = SoonArrivalListAdapter(inquiryVM.cntOfSelectedItem, this, mutableListOf())
         binding.recyclerviewSoonArrival.adapter = soonArrivalListAdapter
@@ -77,7 +86,7 @@ class InquiryView: Fragment() {
 
             parcelList?.let{
 
-                val filteredSoonArrivalList =parcelList.filter { parcel ->
+                val filteredSoonArrivalList = parcelList.filter { parcel ->
                     // 리스트 중 오직 '배송출발'일 경우만 해당 adapter로 넘긴다.
                     parcel.deliveryStatus == DeliveryStatus.OUT_FOR_DELIVERY
                 }.also {
@@ -150,6 +159,7 @@ class InquiryView: Fragment() {
                 registeredSopoListAdapter.cancelRemoveItem()
 
                 inquiryVM.setMoreView(false)
+                mainVm.setTabLayoutVisiblity(View.VISIBLE)
                 viewSettingforPopupMenuDelete_Cancel()
             }
         })
@@ -177,10 +187,13 @@ class InquiryView: Fragment() {
         listPopupWindow.setOnItemClickListener{
             parent, view, position, id ->
             when(position){
+                //삭제하기
                 0 -> {
                     inquiryVM.setRemovable(true)
                     inquiryVM.setMoreView(true)
+                    mainVm.setTabLayoutVisiblity(View.GONE)
                 }
+                // 새로고침
                 1 -> {
                     Log.d(TAG, "1111")
                 }
