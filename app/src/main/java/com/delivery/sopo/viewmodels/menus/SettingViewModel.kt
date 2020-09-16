@@ -1,7 +1,7 @@
 package com.delivery.sopo.viewmodels.menus
 
 import androidx.lifecycle.*
-import com.delivery.sopo.repository.UserRepo
+import com.delivery.sopo.repository.local.UserRepo
 
 class SettingViewModel(private val userRepo: UserRepo) : ViewModel() , LifecycleObserver
 {

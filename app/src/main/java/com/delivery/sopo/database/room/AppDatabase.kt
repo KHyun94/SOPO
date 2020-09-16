@@ -6,13 +6,15 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.delivery.sopo.models.dao.CourierDao
+import com.delivery.sopo.models.dao.ParcelDao
 import com.delivery.sopo.models.entity.CourierEntity
 import com.delivery.sopo.models.entity.ParcelEntity
 
 @Database(entities = arrayOf(CourierEntity::class, ParcelEntity::class), version = 1)
 abstract class AppDatabase : RoomDatabase()
 {
-    abstract fun courierDao():CourierDao
+    abstract fun courierDao(): CourierDao
+    abstract fun parcelDao(): ParcelDao
 
     companion object
     {

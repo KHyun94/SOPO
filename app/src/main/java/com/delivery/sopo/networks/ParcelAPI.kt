@@ -30,20 +30,28 @@ interface ParcelAPI
         @Query("regDt") regDt: String
     ): Call<APIResult<String?>>
 
-    @GET("api/v1/sopoMainBackEnd/delivery/{email}/parcels")
-    @Headers("Accept: application/json")
-    fun getParcelsAsync(
-        @Path("email") email: String
-    ): Call<APIResult<MutableList<Parcel>?>>
 
-//    @FormUrlEncoded
-//    @DELETE("api/v1/sopoMainBackEnd/delivery/{email}/delete-parcels")
+    // 배송중 & 곧 도착 리스트 가져오는 api
+    @GET("api/v1/sopoMainBackEnd/delivery/{email}/parcels/ongoing")
+    @Headers("Accept: application/json")
+    suspend fun getParcelsOngoing(
+        @Path("email") email: String
+    ): APIResult<MutableList<Parcel>?>
+
+    // '배송완료' 리스트 가져오는 api
+    @GET("api/v1/sopoMainBackEnd/delivery/{email}/parcels/complete")
+    @Headers("Accept: application/json")
+    suspend fun getParcelsComplete(
+        @Path("email") email: String
+    ): APIResult<MutableList<Parcel>?>
+
+
     @HTTP(method = "DELETE", path = "api/v1/sopoMainBackEnd/delivery/{email}/parcels", hasBody = true)
     @Headers("Accept: application/json")
-    fun deleteParcels(
+    suspend fun deleteParcels(
         @Path("email") email: String,
         @Body parcelIds: DeleteParcelsDTO
-    ): Call<APIResult<String?>>
+    ): APIResult<String?>
 
 
 }

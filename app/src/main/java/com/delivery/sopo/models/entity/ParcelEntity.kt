@@ -67,12 +67,5 @@ data class ParcelEntity(
         name = "STATUS",
         typeAffinity = ColumnInfo.INTEGER
     )
-    var status: Int,
-    @ColumnInfo(
-        name = "CONFIRM",
-        typeAffinity = ColumnInfo.INTEGER
-    )
-    var confirm: Int
-    //TODO: 서버에서 이미 삭제되었는데 confirm에 반영이 안되어있어서 다시 앱에서 서버로 삭제요청을 보낸다면?
-
+    var status: Int
 )

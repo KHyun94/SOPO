@@ -17,7 +17,7 @@ import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.networks.LoginAPI
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.UserAPI
-import com.delivery.sopo.repository.UserRepo
+import com.delivery.sopo.repository.local.UserRepo
 import com.delivery.sopo.util.fun_util.CodeUtil
 import com.delivery.sopo.util.fun_util.OtherUtil
 import com.delivery.sopo.util.fun_util.ValidateUtil

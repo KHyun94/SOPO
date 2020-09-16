@@ -1,8 +1,10 @@
 package com.delivery.sopo.di
 
-import com.delivery.sopo.repository.UserRepo
+import com.delivery.sopo.database.room.AppDatabase
+import com.delivery.sopo.repository.local.UserRepo
 import com.delivery.sopo.database.shared.SharedPref
 import com.delivery.sopo.database.shared.SharedPrefHelper
+import com.delivery.sopo.repository.remote.RemoteParcelRepoImpl
 import com.delivery.sopo.viewmodels.*
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.menus.*
@@ -31,6 +33,14 @@ val appModule = module {
         UserRepo(get())
     }
 
+    single{
+        AppDatabase.getInstance(get())
+    }
+
+    single {
+        RemoteParcelRepoImpl(get(), get())
+    }
+
     viewModel { SplashViewModel(get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { SignUpViewModel() }
@@ -41,7 +51,7 @@ val appModule = module {
     viewModel { SettingViewModel(get()) }
     viewModel { NoticeViewModel() }
     viewModel { NotDisturbTimeViewModel() }
-    viewModel { InquiryViewModel(get()) }
+    viewModel { InquiryViewModel(get(), get()) }
 
     // merge할 때 지우고 붙여넣어야함
     viewModel { RegisterStep1ViewModel() }

@@ -1,7 +1,6 @@
 package com.delivery.sopo.views
 
 import android.content.Intent
-import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.Observer
 import com.delivery.sopo.util.ui_util.GeneralDialog
@@ -18,10 +17,9 @@ import com.delivery.sopo.networks.LoginAPI
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.NetworkManager.publicRetro
 import com.delivery.sopo.networks.UserAPI
-import com.delivery.sopo.repository.UserRepo
+import com.delivery.sopo.repository.local.UserRepo
 import com.delivery.sopo.util.fun_util.CodeUtil
 import com.delivery.sopo.util.fun_util.OtherUtil
-import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.LoginSelectViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

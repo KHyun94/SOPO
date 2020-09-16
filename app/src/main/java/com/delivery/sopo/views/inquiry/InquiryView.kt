@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.DeliveryStatus
 import com.delivery.sopo.databinding.SopoInquiryViewBinding
+import com.delivery.sopo.models.dto.Resource
 import com.delivery.sopo.models.inquiry.InquiryListData
 import com.delivery.sopo.viewmodels.MainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
@@ -28,6 +29,8 @@ import java.util.stream.Stream
 
 class InquiryView: Fragment() {
 
+    private val TAG = this.javaClass.simpleName
+
     private val inquiryVM: InquiryViewModel by viewModel()
 
     private lateinit var binding: SopoInquiryViewBinding
@@ -35,7 +38,6 @@ class InquiryView: Fragment() {
     private lateinit var registeredSopoListAdapter: RegisteredSopoListAdapter
     private var soonArrivalList: MutableList<InquiryListData> = mutableListOf()
     private var registeredSopoList: MutableList<InquiryListData> = mutableListOf()
-    private val TAG = this.javaClass.simpleName
     private val mainVm: MainViewModel by lazy {
                     ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory {
                         override fun <T : ViewModel?> create(modelClass: Class<T>): T =
@@ -81,46 +83,58 @@ class InquiryView: Fragment() {
     }
 
     private fun setObserver(){
-        inquiryVM.parcelList.observe(this, Observer {
-            parcelList ->
+        inquiryVM.parcelList.observe(this, Observer{
+            when(it.status){
+                Resource.Status.SUCCESS -> {
+                    val sopoList = it.data ?: mutableListOf()
 
-            parcelList?.let{
+                    val filteredSoonArrivalList = sopoList.filter { parcel ->
+                        // 리스트 중 오직 '배송출발'일 경우만 해당 adapter로 넘긴다.
+                        parcel.deliveryStatus == DeliveryStatus.OUT_FOR_DELIVERY
+                    }.also {
+                        // 화면 세팅
+                        filteredItemList ->
+                        viewSettingForSoonArrivalList(filteredItemList.size)
+                    }.map{
+                        filteredItem ->
+                        InquiryListData(parcel = filteredItem)
+                    } as MutableList<InquiryListData>
+                    soonArrivalList = filteredSoonArrivalList
+                    soonArrivalListAdapter.setDataList(filteredSoonArrivalList)
 
-                val filteredSoonArrivalList = parcelList.filter { parcel ->
-                    // 리스트 중 오직 '배송출발'일 경우만 해당 adapter로 넘긴다.
-                    parcel.deliveryStatus == DeliveryStatus.OUT_FOR_DELIVERY
-                }.also {
-                    // 화면 세팅
-                    viewSettingForSoonArrivalList(it.size)
-                }.map{
-                    InquiryListData(parcel = it)
-                } as MutableList<InquiryListData>
-                soonArrivalList = filteredSoonArrivalList
-                soonArrivalListAdapter.setDataList(filteredSoonArrivalList)
+                    val filteredRegisteredSopoList = sopoList.filter { parcel ->
+                        // 리스트 중 오직 '배송출발'과 '배송도착'이 아닐 경우만 해당 adapter로 넘긴다.
+                        parcel.deliveryStatus != DeliveryStatus.OUT_FOR_DELIVERY && parcel.deliveryStatus != DeliveryStatus.DELIVERED
+                    }.also {
+                        // 화면 세팅
+                        filteredItemList ->
+                        viewSettingForRegisteredList(filteredItemList.size)
+                    }.map {
+                            filteredItem ->
+                            InquiryListData(parcel = filteredItem)
+                    } as MutableList<InquiryListData>
+                    registeredSopoList = filteredRegisteredSopoList
+                    registeredSopoListAdapter.setDataList(filteredRegisteredSopoList)
+                }
+                Resource.Status.ERROR -> {
+                    Log.e(TAG, "[ERROR] => ${it.message}")
+                }
+                else -> {
 
-
-                val filteredRegisteredSopoList = parcelList.filter { parcel ->
-                    // 리스트 중 오직 '배송출발'과 '배송도착'이 아닐 경우만 해당 adapter로 넘긴다.
-                    parcel.deliveryStatus != DeliveryStatus.OUT_FOR_DELIVERY && parcel.deliveryStatus != DeliveryStatus.DELIVERED
-                }.also {
-                    // 화면 세팅
-                    viewSettingForRegisteredList(it.size)
-                }.map {
-                    InquiryListData(parcel = it)
-                } as MutableList<InquiryListData>
-                registeredSopoList = filteredRegisteredSopoList
-                registeredSopoListAdapter.setDataList(filteredRegisteredSopoList)
+                }
             }
         })
 
         inquiryVM.isMoreView.observe(this, Observer{
             if(it){
+                Log.d(TAG, "isMoreView is True")
                 soonArrivalListAdapter.isFullListItem(true)
                 linear_more_view.visibility = View.VISIBLE
                 tv_more_view.text = ""
                 image_arrow.setBackgroundResource(R.drawable.ic_up_arrow)
             }
             else{
+                Log.d(TAG, "isMoreView is false")
                 soonArrivalListAdapter.isFullListItem(false)
                 linear_more_view.visibility = View.VISIBLE
                 tv_more_view.text = "더 보기"
@@ -132,6 +146,7 @@ class InquiryView: Fragment() {
             if(it > 0){
                 constraint_delete_final.visibility = View.VISIBLE
             }
+            // 삭제하기 취소를 눌렀을때 및 초기화 상태
             else if(it == 0){
                 constraint_delete_final.visibility = View.GONE
             }
@@ -219,14 +234,14 @@ class InquiryView: Fragment() {
 
                 inquiryVM.removeItem(selectedData)
 
-                soonArrivalListAdapter.deleteSelectedParcel()
-                soonArrivalList = soonArrivalListAdapter.getList()
-
-                registeredSopoListAdapter.deleteSelectedParcel()
-                registeredSopoList = registeredSopoListAdapter.getList()
-
-                viewSettingForSoonArrivalList(soonArrivalList.size)
-                viewSettingForRegisteredList(registeredSopoList.size)
+//                soonArrivalListAdapter.deleteSelectedParcel()
+//                soonArrivalList = soonArrivalListAdapter.getList()
+//
+//                registeredSopoListAdapter.deleteSelectedParcel()
+//                registeredSopoList = registeredSopoListAdapter.getList()
+//
+//                viewSettingForSoonArrivalList(soonArrivalList.size)
+//                viewSettingForRegisteredList(registeredSopoList.size)
 
                 inquiryVM.cancelRemoveItem()
                 dialog.dismiss()
