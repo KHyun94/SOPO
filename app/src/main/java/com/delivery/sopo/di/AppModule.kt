@@ -36,15 +36,14 @@ val appModule = module {
     viewModel { SignUpViewModel() }
     viewModel { LoginSelectViewModel() }
     viewModel { MyMenuViewModel(get()) }
-    viewModel { MainViewModel() }
+    viewModel { MainViewModel(get()) }
     viewModel { LockScreenViewModel() }
     viewModel { SettingViewModel(get()) }
     viewModel { NoticeViewModel() }
     viewModel { NotDisturbTimeViewModel() }
     viewModel { InquiryViewModel(get()) }
 
-    // merge할 때 지우고 붙여넣어야함
     viewModel { RegisterStep1ViewModel() }
     viewModel { RegisterStep2ViewModel() }
-    viewModel { RegisterStep3ViewModel() }
+    viewModel { RegisterStep3ViewModel(get()) }
 }

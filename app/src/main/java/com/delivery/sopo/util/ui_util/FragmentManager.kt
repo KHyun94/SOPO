@@ -46,6 +46,27 @@ object FragmentManager
 //        FragmentType.REGISTER_STEP1.NAME, FragmentManager.POP_BACK_STACK_INCLUSIVE
     }
 
+    // 작업이 옳은 프로세스로 진행되었을 때 프래그먼트 스택을 초기화시키고 다른 화면으로 이동하는 함수
+    fun initFragment(
+        activity: FragmentActivity,
+        viewId: Int,
+        currentFragment: Fragment,
+        nextFragment: Fragment,
+        nextFragmentTag: String?
+    )
+    {
+        val fm = activity.supportFragmentManager
+        var transaction = fm.beginTransaction()
+
+        transaction.run {
+            addToBackStack(null)
+            remove(currentFragment)
+            replace(viewId, nextFragment, nextFragmentTag)
+            addToBackStack(null)
+            commit()
+        }
+    }
+
 //    fun move(act: AppCompatActivity, type: FragmentType, viewId: Int)
 //    {
 //        if (fm == null)

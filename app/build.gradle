@@ -36,6 +36,9 @@ android {
 }
 
 dependencies {
+
+    def work_version = "2.3.4"
+
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.2.0'
@@ -116,6 +119,9 @@ dependencies {
 
     //RxPermission
     implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.8.1@aar'
+
+    // optional - GCMNetworkManager support
+    implementation "androidx.work:work-gcm:$work_version"
 
 //    //Logging 
 //    implementation 'com.bugfender.sdk:android:2.+'

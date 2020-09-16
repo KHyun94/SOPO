@@ -1,6 +1,7 @@
 package com.delivery.sopo.views.registers
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,8 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterStep3Binding
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.models.CourierItem
+import com.delivery.sopo.util.ui_util.FragmentManager
+import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep3ViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -57,24 +60,41 @@ class RegisterStep3 : Fragment()
         return binding.root
     }
 
-    fun setObserve()
+    private fun setObserve()
     {
         binding.vm!!.isRevise.observe(this, Observer {
-            if(it != null && it)
+            if (it != null && it)
             {
-                val fm = activity!!.supportFragmentManager
-                var tran = fm.beginTransaction()
-
                 FragmentType.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(waybilNum, courier)
 
-                tran.addToBackStack(null)
-                    .remove(this@RegisterStep3)
-                    .replace(RegisterMainFrame.viewId, FragmentType.REGISTER_STEP1.FRAGMENT, FragmentType.REGISTER_STEP1.NAME)
-                    .addToBackStack(null)
-                    .commit()
+                FragmentManager.initFragment(
+                    activity = activity!!,
+                    viewId = RegisterMainFrame.viewId,
+                    currentFragment = this@RegisterStep3,
+                    nextFragment = FragmentType.REGISTER_STEP1.FRAGMENT,
+                    nextFragmentTag = FragmentType.REGISTER_STEP3.NAME
+                )
 
                 binding.vm!!.isRevise.call()
             }
+        })
+
+        binding.vm!!.errorMsg.observe(this, Observer {
+            if(it != null && it.length > 0)
+            {
+                GeneralDialog(
+                    act = activity!!,
+                    title = "오류",
+                    msg = it,
+                    detailMsg = null,
+                    rHandler = Pair(
+                        first = "네",
+                        second = { it ->
+                            it.dismiss()
+                        })
+                ).show(activity!!.supportFragmentManager, "tag")
+            }
+
         })
     }
 

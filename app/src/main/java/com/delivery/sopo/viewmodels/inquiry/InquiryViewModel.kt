@@ -170,7 +170,7 @@ class InquiryViewModel(private val userRepo: UserRepo) : ViewModel()
                 Log.d(TAG, "password : ${userRepo.getApiPwd()}")
 
                 NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
-                    .postParcel(email = userRepo.getEmail(),
+                    .registerParcel(email = userRepo.getEmail(),
                                 parcelAlias = parcelAlias,
                                 trackCompany = trackCompany,
                                 trackNum = trackNum)

@@ -3,7 +3,7 @@ package com.delivery.sopo.enums
 enum class ResponseCode(val CODE: String, val MSG: String, val HTTP_STATUS: Int) {
     SUCCESS("0000", "SUCCESS", 200),
     ALREADY_LOGGED_IN("0010", "다른 디바이스에 로그인되어있습니다.\n계속 진행을 할까요?", 200),
-    VALIDATION_ERROR("VA01","", 400),
+    VALIDATION_ERROR("VA01","지원하지 않는 택배사입니다.\n다시 한번 확인해주세요.", 400),
     KAKAO_SIMPLE_FAIL("KA00", "Fail to join by kakao", 400),
     KAKAO_SIMPLE_ALREADY_USE_EMAIL("KA01", "Already use that email", 400),
     KAKAO_SIMPLE_NOT_VERIFYED_USER("KA02", "Can not verify kakao user", 400),

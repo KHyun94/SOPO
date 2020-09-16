@@ -80,12 +80,6 @@ class RegisterStep2 : Fragment()
             }
         })
 
-        binding.vm!!.selectedItem.observe(this, Observer {
-            if(it !=null && it.isSelect){
-                binding.vm!!.moveFragment.value = FragmentType.REGISTER_STEP3.NAME
-            }
-        })
-
         binding.vm!!.adapter.observe(this, Observer {
             it?.setOnItemClickListener(object :
                 GridRvAdapter.OnItemClickListener<List<SelectItem<CourierItem>>>
@@ -98,16 +92,13 @@ class RegisterStep2 : Fragment()
                     {
                         item.isSelect = true
 
-                        Log.d(TAG, "클릭 $item")
-
                         Glide
                             .with(v.context)
                             .load(item.item.clickRes)
                             .into(v as ImageView)
-                            .waitForLayout()
 
                         binding.vm!!.selectedItem.value = item
-//                        binding.vm!!.moveFragment.value = FragmentType.REGISTER_STEP3.NAME
+                        binding.vm!!.moveFragment.value = FragmentType.REGISTER_STEP3.NAME
                     }
                     else
                     {

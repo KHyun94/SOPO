@@ -11,12 +11,15 @@ import com.delivery.sopo.R
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.databinding.MainViewBinding
+import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.interfaces.BasicView
 import com.delivery.sopo.models.entity.CourierEntity
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.UserAPI
 import com.delivery.sopo.repository.UserRepo
 import com.delivery.sopo.util.adapters.ViewPagerAdapter
+import com.delivery.sopo.util.ui_util.CustomProgressBar
+import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.viewmodels.MainViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.iid.FirebaseInstanceId
@@ -32,7 +35,6 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     lateinit var viewPagerAdapter: ViewPagerAdapter
     lateinit var pageChangeListener: ViewPager.OnPageChangeListener
     private val userRepo: UserRepo by inject()
-
 
     private var transaction: FragmentTransaction? = null
 
@@ -51,6 +53,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         RoomActivate.initCourierDB(this@MainView)
         updateFCMToken()
         init()
+
     }
     private fun init(){
         viewpagerSetting()
@@ -147,11 +150,30 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     override fun setObserver()
     {
-        mainVm.tabLayoutVisibility.observe(this, Observer {
+        binding.vm!!.tabLayoutVisibility.observe(this, Observer {
             when(it){
                 View.VISIBLE -> tablayout_bottom_tab.visibility = View.VISIBLE
                 View.INVISIBLE -> tablayout_bottom_tab.visibility = View.INVISIBLE
                 View.GONE -> tablayout_bottom_tab.visibility = View.GONE
+            }
+        })
+
+        binding.vm!!.errorMsg.observe(this, Observer {
+            if(it != null && it.isNotEmpty())
+            {
+                GeneralDialog(
+                    act = parentActivity,
+                    title = "에러",
+                   msg = it,
+                    detailMsg = null,
+                    rHandler = Pair(
+                        first = "네",
+                        second = { it ->
+                            userRepo.removeUserRepo()
+                            it.dismiss()
+                            finish()
+                        })
+                ).show(supportFragmentManager, "tag")
             }
         })
     }

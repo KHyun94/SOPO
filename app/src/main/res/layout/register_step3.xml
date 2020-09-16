@@ -21,14 +21,13 @@
         android:layout_height="match_parent">
 
         <TextView
+            style="@style/H2"
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="25sp"
             android:text="등록정보 확인"
             android:textColor="@color/MAIN_BLACK"
-            android:textSize="40sp"
-            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="parent"
@@ -64,21 +63,20 @@
                 android:orientation="vertical">
 
                 <TextView
+                    style="@style/H5"
                     android:id="@+id/tv_courier"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{vm.courier.courierName}"
-                    android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="13sp" />
+                    android:textColor="@color/COLOR_GRAY_800" />
 
                 <TextView
+                    style="@style/H3"
                     android:id="@+id/tv_waybil_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/spoqa_han_sans_bold"
                     android:text="@{vm.waybilNum}"
-                    android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="17sp" />
+                    android:textColor="@color/COLOR_GRAY_800" />
             </LinearLayout>
 
             <LinearLayout
@@ -90,13 +88,11 @@
                 android:onClick="@{() -> vm.onReviseClicked()}">
 
                 <TextView
+                    style="@style/H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/spoqa_han_sans_bold"
                     android:text="수정하기"
                     android:textColor="@color/COLOR_MAIN_BLUE_700"
-                    android:textSize="15sp"
-                    android:letterSpacing="-0.04"
                     android:paddingHorizontal="5sp"/>
 
             </LinearLayout>
@@ -122,15 +118,13 @@
                 android:paddingHorizontal="10sp">
 
                 <TextView
+                    style="@style/H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/spoqa_han_sans_regular"
                     android:paddingTop="5sp"
                     android:paddingBottom="5sp"
                     android:text="물품명"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
                     app:layout_constraintBottom_toTopOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="parent" />
@@ -144,17 +138,18 @@
                 android:paddingHorizontal="10sp">
 
                 <EditText
+                    style="@style/H4"
                     android:id="@+id/et_input_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5sp"
                     android:background="@null"
                     android:lines="1"
+                    android:text="@={vm.alias}"
                     android:hint="물품명"
-                    android:paddingBottom="7sp"
+                    android:paddingBottom="5sp"
                     android:singleLine="true"
-                    android:textColorHint="@color/COLOR_GRAY_300"
-                    android:textSize="20sp" />
+                    android:textColorHint="@color/COLOR_GRAY_300" />
 
                 <View
                     android:id="@+id/v_underline"
@@ -175,15 +170,15 @@
             android:backgroundTint="@color/COLOR_MAIN_BLUE_700"
             android:gravity="center"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/layout_alias">
+            app:layout_constraintTop_toBottomOf="@id/layout_alias"
+            android:onClick="@{()->vm.onRegisterClicked()}">
 
             <TextView
+                style="@style/H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqa_han_sans_regular"
-                android:text="다음으로"
-                android:textColor="@color/MAIN_WHITE"
-                android:textSize="14sp" />
+                android:text="등록하기"
+                android:textColor="@color/MAIN_WHITE" />
 
         </LinearLayout>
 

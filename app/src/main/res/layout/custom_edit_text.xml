@@ -60,14 +60,14 @@
         android:paddingHorizontal="10sp">
 
         <EditText
-            style="@style/H2"
+            style="@style/H3"
             android:id="@+id/et_input_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="5sp"
             android:background="@null"
             android:lines="1"
-            android:paddingBottom="7sp"
+            android:paddingBottom="5sp"
             android:singleLine="true"
             android:textColorHint="@color/COLOR_GRAY_300" />
 
