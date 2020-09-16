@@ -6,7 +6,7 @@ import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.models.entity.CourierEntity
 
 @Dao
-interface CourierDAO
+interface CourierDao
 {
     @Query("SELECT * FROM COURIER")
     fun getAll() : List<CourierEntity>
