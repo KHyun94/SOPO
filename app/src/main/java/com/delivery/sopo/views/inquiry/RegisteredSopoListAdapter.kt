@@ -125,18 +125,18 @@ class RegisteredSopoListAdapter(private val cntOfSelectedItem: MutableLiveData<I
 
     fun setRemovable(flag: Boolean){
         isRemovable = flag
+
+        if(!isRemovable){
+            for(item in list){
+                item.isSelected = false
+            }
+        }
         notifyDataSetChanged()
     }
 
     fun setDataList(parcel: MutableList<InquiryListData>){
         this.list = parcel
         notifyDataSetChanged()
-    }
-
-    fun cancelRemoveItem(){
-        for(item in list){
-            item.isSelected = false
-        }
     }
 
     fun setSelectAll(flag: Boolean){
@@ -193,6 +193,10 @@ class RegisteredSopoListAdapter(private val cntOfSelectedItem: MutableLiveData<I
     }
 
     override fun getItemCount(): Int {
+        return list.size
+    }
+
+    fun getListSize(): Int{
         return list.size
     }
 }

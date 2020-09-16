@@ -60,7 +60,7 @@
             android:layout_marginEnd="16dp"
             android:padding="10dp"
             android:src="@drawable/ic_24_x_black"
-            android:onClick="@{() -> vm.cancelRemoveItem()}"
+            android:onClick="@{() -> vm.closeRemoveView()}"
             app:layout_constraintBottom_toBottomOf="@+id/tv_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_title"

@@ -1,4 +1,4 @@
-package com.delivery.sopo.repository.local
+package com.delivery.sopo.repository.shared
 
 import com.delivery.sopo.database.shared.SharedPrefHelper
 

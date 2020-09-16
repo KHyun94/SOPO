@@ -1,10 +1,10 @@
 package com.delivery.sopo.di
 
 import com.delivery.sopo.database.room.AppDatabase
-import com.delivery.sopo.repository.local.UserRepo
+import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.database.shared.SharedPref
 import com.delivery.sopo.database.shared.SharedPrefHelper
-import com.delivery.sopo.repository.remote.RemoteParcelRepoImpl
+import com.delivery.sopo.repository.ParcelRepoImpl
 import com.delivery.sopo.viewmodels.*
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.menus.*
@@ -38,7 +38,7 @@ val appModule = module {
     }
 
     single {
-        RemoteParcelRepoImpl(get(), get())
+        ParcelRepoImpl(get(), get())
     }
 
     viewModel { SplashViewModel(get()) }

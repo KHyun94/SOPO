@@ -18,7 +18,7 @@ import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.LoginResult
 import com.delivery.sopo.networks.LoginAPI
 import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.repository.local.UserRepo
+import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.fun_util.CodeUtil
 import com.delivery.sopo.util.fun_util.OtherUtil
 import com.delivery.sopo.views.dialog.PermissionDialog

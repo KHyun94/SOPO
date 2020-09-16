@@ -90,13 +90,6 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
         }
     }
 
-    fun cancelRemoveItem(){
-        for(item in list){
-            item.isSelected = false
-        }
-    }
-
-
     fun setSelectAll(flag: Boolean){
         if(flag){
             for(item in list){
@@ -146,6 +139,11 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
 
     fun setRemovable(flag: Boolean){
         isRemovable = flag
+        if(!isRemovable){
+            for(item in list){
+                item.isSelected = false
+            }
+        }
         notifyDataSetChanged()
     }
 
@@ -171,7 +169,7 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
 
     override fun getItemCount(): Int
     {
-        return list?.let {
+        return list.let {
             if(it.size > limitOfItem && !isMoreView){
                 limitOfItem
             }
@@ -179,5 +177,9 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
                 it.size
             }
         }
+    }
+
+    fun getListSize(): Int{
+        return list.size
     }
 }

@@ -9,8 +9,8 @@ import com.delivery.sopo.models.entity.ParcelEntity
 @Dao
 interface ParcelDao
 {
-    @Query("SELECT * FROM PARCEL WHERE STATUS <> 0")
-    suspend fun getAll() : List<ParcelEntity>
+    @Query("SELECT * FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS <> 'delivered'")
+    suspend fun getOngoingData() : List<ParcelEntity>
 
     @Query("SELECT * FROM PARCEL WHERE STATUS = 3")
     suspend fun getBeDeletedData() : List<ParcelEntity>

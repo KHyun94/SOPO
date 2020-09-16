@@ -12,7 +12,7 @@ import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.interfaces.BasicView
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.UserAPI
-import com.delivery.sopo.repository.local.UserRepo
+import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.adapters.ViewPagerAdapter
 import com.delivery.sopo.viewmodels.MainViewModel
 import com.google.android.material.tabs.TabLayout

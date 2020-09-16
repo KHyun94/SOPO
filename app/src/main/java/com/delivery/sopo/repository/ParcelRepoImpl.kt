@@ -1,31 +1,27 @@
-package com.delivery.sopo.repository.remote
+package com.delivery.sopo.repository
 
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.dto.DeleteParcelsDTO
-import com.delivery.sopo.models.entity.ParcelEntity
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.repository.ParcelRepository
-import com.delivery.sopo.repository.local.UserRepo
-import java.util.stream.Collector
+import com.delivery.sopo.repository.shared.UserRepo
 import java.util.stream.Collectors
 
 
-class RemoteParcelRepoImpl(private val userRepo: UserRepo,
-                            private val appDatabase: AppDatabase): ParcelRepository {
+class ParcelRepoImpl(private val userRepo: UserRepo,
+                     private val appDatabase: AppDatabase): ParcelRepository {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
     override suspend fun getRemoteParcels(): MutableList<Parcel>? = NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd()).getParcelsOngoing(email = userRepo.getEmail()).data
 
-    override suspend fun getLocalParcels(): MutableList<Parcel>? = appDatabase.parcelDao().getAll().map(ParcelMapper::entityToObject) as MutableList<Parcel>
+    override suspend fun getLocalParcels(): MutableList<Parcel>? = appDatabase.parcelDao().getOngoingData().map(ParcelMapper::entityToObject) as MutableList<Parcel>
 
     override suspend fun saveLocalParcels(parcelList: List<Parcel>) {
         appDatabase.parcelDao().insert(parcelList.map(ParcelMapper::objectToEntity))
     }
-
 
     override suspend fun deleteRemoteParcels(): APIResult<String?> {
         val beDeletedData = appDatabase.parcelDao().getBeDeletedData()
