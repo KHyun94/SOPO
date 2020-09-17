@@ -13,70 +13,41 @@
         android:layout_height="0sp"
         android:layout_weight="90" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="0sp"
-            android:layout_weight="10"
-            android:background="@color/COLOR_MAIN_BLUE_50">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0sp"
+        android:layout_weight="10"
+        android:background="@color/COLOR_MAIN_BLUE_50">
 
-            <TextView
-                android:id="@+id/tv_skip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/COLOR_MAIN_BLUE_700"
-                android:text="건너뛰기"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:layout_marginStart="30sp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentStart="true"/>
+        <TextView
+            style="@style/H4"
+            android:id="@+id/tv_skip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="30sp"
+            android:padding="10sp"
+            android:text="@string/INTRO_SKIP"
+            android:textColor="@color/COLOR_MAIN_BLUE_700" />
 
-            <com.delivery.sopo.util.ui_util.IntroIndicator
-                android:id="@+id/indicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
+        <com.delivery.sopo.util.ui_util.IntroIndicator
+            android:id="@+id/indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
 
-            <ImageView
-                android:id="@+id/iv_next_page"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/COLOR_MAIN_BLUE_700"
-                android:background="@drawable/ic_next_btn"
-                android:textSize="14sp"
-                android:layout_marginEnd="30sp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"/>
-            <!--            <Button-->
-<!--                android:id="@+id/btn_login"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:layout_margin="20sp"-->
-<!--                android:text="@string/INTRO_NEXT_BTN"-->
-<!--                android:textColor="@color/MAIN_WHITE"-->
-<!--                android:textSize="16sp"-->
-<!--                android:background="@drawable/border_round_main_btn"-->
-<!--                android:visibility="invisible" />-->
-        </RelativeLayout>
+        <ImageView
+            android:id="@+id/iv_next_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="30sp"
+            android:background="@drawable/ic_next_btn"
+            android:padding="10sp"
+            android:textColor="@color/COLOR_MAIN_BLUE_700" />
 
-
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0sp"-->
-<!--        android:layout_weight="13">-->
-
-<!--        <Button-->
-<!--            android:id="@+id/btn_login"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:layout_margin="20sp"-->
-<!--            android:text="@string/INTRO_NEXT_BTN"-->
-<!--            android:textColor="@color/MAIN_WHITE"-->
-<!--            android:textSize="16sp"-->
-<!--            android:background="@drawable/border_round_main_btn"-->
-<!--            android:visibility="invisible" />-->
-<!--    </LinearLayout>-->
+    </RelativeLayout>
 
 </LinearLayout>

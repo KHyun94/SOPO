@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
@@ -40,6 +41,18 @@ class IntroView : AppCompatActivity()
             override fun onPageSelected(pos: Int)
             {
                 numOfPage = pos
+
+                // 인트로 마지막 페이지에서 건너뛰기 Gone 처리
+                if (pos < viewPager.adapter!!.count - 1)
+                {
+                    tv_skip.visibility = View.VISIBLE
+                }
+                else
+                {
+                    tv_skip.visibility = View.GONE
+                }
+
+
                 indicator.selectDot(pos)
             }
         })

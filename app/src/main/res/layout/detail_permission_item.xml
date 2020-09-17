@@ -2,17 +2,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
 
     <LinearLayout
-        android:layout_width="50sp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="20sp">
+        android:layout_marginEnd="20sp">
 
         <ImageView
-            android:layout_width="50sp"
-            android:layout_height="50sp"
+            android:layout_width="37sp"
+            android:layout_height="37sp"
+            android:layout_gravity="center"
             android:background="@drawable/ic_tmp_oval" />
 
     </LinearLayout>
@@ -23,21 +24,19 @@
         android:orientation="vertical">
 
         <TextView
+            style="@style/H5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="2sp"
             android:text="테스트 권한 이름"
-            android:textColor="@color/COLOR_GRAY_800"
             android:fontFamily="@font/spoqa_han_sans_bold"
-            android:textSize="12sp" />
+            android:textColor="@color/COLOR_GRAY_800" />
 
 
         <TextView
+            style="@style/H5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="2sp"
             android:text="권한 설명"
-            android:textSize="12sp"
             android:textColor="@color/COLOR_GRAY_500" />
 
     </LinearLayout>
