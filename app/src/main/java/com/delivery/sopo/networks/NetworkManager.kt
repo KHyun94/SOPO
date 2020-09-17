@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit
 
 object NetworkManager
 {
-
     private val CONNECT_TIMEOUT: Long = 15
     private val WRITE_TIMEOUT: Long = 15
     private val READ_TIMEOUT: Long = 15

@@ -9,7 +9,6 @@ object ImageBindingAdapter
     @JvmStatic
     @BindingAdapter("setImage")
     fun bindTabLayoutSelectListener(view: ImageView, res:Int){
-
         Glide.with(view.context)
             .load(res)
             .into(view)

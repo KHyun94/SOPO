@@ -203,6 +203,45 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
                 filteredItem ->
                 InquiryListData(parcel = filteredItem)
         } as MutableList<InquiryListData>
+//    private fun postParcel(parcelAlias: String, trackCompany: String, trackNum: String){
+//
+//        val ioScope = CoroutineScope(Dispatchers.IO)
+//        ioScope.launch {
+//            withContext(Dispatchers.IO){
+//                Log.d(TAG, "email : ${userRepo.getEmail()}")
+//                Log.d(TAG, "password : ${userRepo.getApiPwd()}")
+//
+//                NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
+//                    .registerParcel(email = userRepo.getEmail(),
+//                                parcelAlias = parcelAlias,
+//                                trackCompany = trackCompany,
+//                                trackNum = trackNum)
+//                    .enqueue(object : Callback<APIResult<ParcelId?>>{
+//                        override fun onResponse(
+//                            call: Call<APIResult<ParcelId?>>,
+//                            response: Response<APIResult<ParcelId?>>
+//                        )
+//                        {
+//                            val code = response.code()
+//                            Log.d(TAG, "상태 코드 : $code")
+//
+//                            when(code){
+//                                201 -> {
+//                                    Log.d(TAG,"[postParcel] onResponse : ${response.body()}")
+//                                }
+//                                400 -> {
+//
+//                                }
+//                            }
+//                        }
+//
+//                        override fun onFailure(call: Call<APIResult<ParcelId?>>, t: Throwable)
+//                        {
+//                            Log.d(TAG,"[postParcel] onFailure, ${t.localizedMessage}")
+//                        }
+//                    })
+//            }
+//        }
     }
 
 }

@@ -40,13 +40,16 @@ class InquiryView: Fragment() {
     private lateinit var binding: SopoInquiryViewBinding
     private lateinit var soonArrivalListAdapter: SoonArrivalListAdapter
     private lateinit var registeredSopoListAdapter: RegisteredSopoListAdapter
+    private var soonArrivalList: MutableList<InquiryListData> = mutableListOf()
+    private var registeredSopoList: MutableList<InquiryListData> = mutableListOf()
 
-    private val mainVm: MainViewModel by lazy {
-                                    ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory {
-                                        override fun <T : ViewModel?> create(modelClass: Class<T>): T =
-                                            MainViewModel() as T
-                                    }).get(MainViewModel::class.java)
-                                }
+    private val mainVm : MainViewModel by viewModel()
+//    private val mainVm: MainViewModel by lazy {
+//                    ViewModelProvider(requireActivity(), object : ViewModelProvider.Factory {
+//                        override fun <T : ViewModel?> create(modelClass: Class<T>): T =
+//                            MainViewModel() as T
+//                    }).get(MainViewModel::class.java)
+//                }
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {

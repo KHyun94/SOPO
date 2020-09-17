@@ -1,6 +1,7 @@
 package com.delivery.sopo.views
 
 import android.content.Intent
+import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.Observer
 import com.delivery.sopo.util.ui_util.GeneralDialog
@@ -20,6 +21,7 @@ import com.delivery.sopo.networks.UserAPI
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.fun_util.CodeUtil
 import com.delivery.sopo.util.fun_util.OtherUtil
+import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.LoginSelectViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -46,11 +48,20 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
     var kakaoUserId = ""
     var firebaseUserId = ""
 
+    var progressBar : CustomProgressBar? = null
+
     init
     {
         TAG += this.javaClass.simpleName
         parentActivity = this@LoginSelectView
         deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+
+        progressBar = CustomProgressBar(this@LoginSelectView)
     }
 
     override fun bindView()
@@ -70,7 +81,6 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                     startActivity(
                         Intent(parentActivity, LoginView::class.java)
                     )
-                    finish()
                 }
 
                 "SIGN_UP" ->
@@ -78,11 +88,9 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                     startActivity(
                         Intent(parentActivity, SignUpView::class.java)
                     )
-                    finish()
                 }
                 "KAKAO_LOGIN" ->
                 {
-
                     btn_kakao_login.performClick()
 
                     if (Session.getCurrentSession() != null)
@@ -95,11 +103,12 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                             binding.vm?.requestMe {
                                 if (it is MeV2Response)
                                 {
+                                    progressBar!!.onStartDialog()
+
                                     email = it.kakaoAccount.email
                                     kakaoUserId = it.id.toString()
 
                                     requestKakaoCustomToken(email = email, uid = kakaoUserId)
-
                                 }
                                 else
                                 {
@@ -136,6 +145,8 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
             {
                 override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
                 {
+                    progressBar!!.onCloseDialog()
+
                     GeneralDialog(
                         act = parentActivity,
                         title = "오류",
@@ -154,6 +165,8 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                     response: Response<APIResult<String?>>
                 )
                 {
+
+
                     val httpStatusCode = response.code()
 
                     val result = response.body()
@@ -191,6 +204,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                             }
                             else
                             {
+                                progressBar!!.onCloseDialog()
                                 Log.d(TAG, "error code ${result?.code}")
 
                                 GeneralDialog(
@@ -208,6 +222,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                         }
                         else ->
                         {
+                            progressBar!!.onCloseDialog()
                             Log.d(TAG, "error code ${result?.code}")
 
                             GeneralDialog(
@@ -243,6 +258,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
             {
                 override fun onFailure(call: Call<APIResult<Any?>>, t: Throwable)
                 {
+                    progressBar!!.onCloseDialog()
                 }
 
                 override fun onResponse(
@@ -250,6 +266,8 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                     response: Response<APIResult<Any?>>
                 )
                 {
+                    progressBar!!.onCloseDialog()
+
                     val httpStatusCode = response.code()
 
                     val result = response.body()
@@ -407,6 +425,12 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
+
+    override fun onBackPressed()
+    {
+        super.onBackPressed()
+    }
+
 
     override fun onDestroy()
     {
