@@ -77,7 +77,44 @@ class SignUpViewModel : ViewModel()
 
         validateResult.value = ValidateResult(false, "회원정보를 입력해주세요!!", null, InfoConst.NON_SHOW)
 
-        isAgree.value = true
+        isAgree.value = false
+    }
+
+    fun onAgreeClicked()
+    {
+        val currentStatus = isAgree.value
+        isAgree.value = !currentStatus!!
+    }
+
+    fun onSignUpClicked(v: View)
+    {
+        if (!v.hasFocus())
+            v.requestFocus()
+        else
+            validateResult.value = onCheckValidate()
+
+        if (validateResult.value?.result == true)
+        {
+            signUpWithFirebase(this.email.value!!, this.pwd.value!!)
+        }
+        else
+        {
+
+            val type = if (validateResult.value?.showType == InfoConst.CUSTOM_DIALOG)
+            {
+                InfoConst.CUSTOM_DIALOG
+            }
+            else
+            {
+                InfoConst.CUSTOM_TOAST_MSG
+            }
+
+            validateResult.value?.showType = type
+            val tmp = validateResult.value
+            validateResult.value = tmp
+        }
+
+        Log.d(TAG, "SignUp Click!!!!!!!!!!!!!")
     }
 
     // EditText 유효성 검사 가시성
@@ -413,37 +450,6 @@ class SignUpViewModel : ViewModel()
                 )
         }
 
-    }
-
-    fun onSignUpClicked(v: View)
-    {
-        if (!v.hasFocus())
-            v.requestFocus()
-        else
-            validateResult.value = onCheckValidate()
-
-        if (validateResult.value?.result == true)
-        {
-            signUpWithFirebase(this.email.value!!, this.pwd.value!!)
-        }
-        else
-        {
-
-            val type = if (validateResult.value?.showType == InfoConst.CUSTOM_DIALOG)
-            {
-                InfoConst.CUSTOM_DIALOG
-            }
-            else
-            {
-                InfoConst.CUSTOM_TOAST_MSG
-            }
-
-            validateResult.value?.showType = type
-            val tmp = validateResult.value
-            validateResult.value = tmp
-        }
-
-        Log.d(TAG, "SignUp Click!!!!!!!!!!!!!")
     }
 
     fun signUpWithFirebase(email: String, pwd: String)

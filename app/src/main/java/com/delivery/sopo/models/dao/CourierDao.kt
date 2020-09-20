@@ -18,13 +18,23 @@ interface CourierDao
     fun getWithName(name : String) : List<CourierEntity>
 
     @Query("SELECT courierName, courierCode, clickRes, nonClickRes, iconRes FROM COURIER WHERE minLen <= :len AND maxLen >= :len ORDER BY priority DESC LIMIT :cnt")
-    fun getWithLen(len:Int, cnt : Int) : List<CourierItem>
+    suspend fun getWithLen(len:Int, cnt : Int) : List<CourierItem?>
 
     @Query("SELECT courierName, courierCode, clickRes, nonClickRes, iconRes FROM COURIER WHERE minLen <= :len AND maxLen >= :len AND courierName != :param1 ORDER BY priority DESC LIMIT :cnt")
-    fun getWithLenAndCondition1(len:Int, param1:String, cnt : Int) : List<CourierItem>
+    suspend fun getWithLenAndCondition1(len:Int, param1:String, cnt : Int) : List<CourierItem?>
 
     @Query("SELECT courierName, courierCode, clickRes, nonClickRes, iconRes FROM COURIER WHERE minLen <= :len AND maxLen >= :len AND courierName != :param1 AND courierName != :param2 ORDER BY priority DESC LIMIT :cnt")
-    fun getWithLenAndCondition2(len:Int, param1:String, param2:String, cnt : Int) : List<CourierItem>
+    suspend fun getWithLenAndCondition2(len:Int, param1:String, param2:String, cnt : Int) : List<CourierItem?>
+
+    @Query("SELECT courierName, courierCode, clickRes, nonClickRes, iconRes FROM COURIER WHERE NOT(minLen <= :len AND maxLen >= :len) ORDER BY priority DESC LIMIT :cnt")
+    suspend fun getWithoutLen(len:Int, cnt : Int) : List<CourierItem?>
+
+    @Query("SELECT courierName, courierCode, clickRes, nonClickRes, iconRes FROM COURIER WHERE NOT(minLen <= :len AND maxLen >= :len) AND courierName != :param1 ORDER BY priority DESC LIMIT :cnt")
+    suspend fun getWithoutLenAndCondition1(len:Int, param1:String, cnt : Int) : List<CourierItem?>
+
+    @Query("SELECT courierName, courierCode, clickRes, nonClickRes, iconRes FROM COURIER WHERE NOT(minLen <= :len AND maxLen >= :len) AND courierName != :param1 AND courierName != :param2 ORDER BY priority DESC LIMIT :cnt")
+    suspend fun getWithoutLenAndCondition2(len:Int, param1:String, param2:String, cnt : Int) : List<CourierItem?>
+
 
     @Insert(onConflict = REPLACE)
     fun insert(courierEntity: CourierEntity)

@@ -8,9 +8,20 @@ object ImageBindingAdapter
 {
     @JvmStatic
     @BindingAdapter("setImage")
-    fun bindTabLayoutSelectListener(view: ImageView, res:Int){
+    fun bindSetterImage(view: ImageView, res:Int){
         Glide.with(view.context)
             .load(res)
+            .into(view)
+    }
+
+    @JvmStatic
+    @BindingAdapter("isClick", "trueRes", "falseRes")
+    fun bindSetterSelectedImage(view: ImageView, isClick : Boolean, trueRes:Int, falseRes:Int){
+
+        val selectRes = if(isClick) trueRes else falseRes
+
+        Glide.with(view.context)
+            .load(selectRes)
             .into(view)
     }
 

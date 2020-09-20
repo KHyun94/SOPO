@@ -5,23 +5,35 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.signature.ObjectKey
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ItemImgBinding
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.adapters.GridRvAdapter.GridRvViewHolder
-import kotlinx.android.synthetic.main.item_img.view.*
 
 class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
     RecyclerView.Adapter<GridRvViewHolder>()
 {
+    var isClicked = MutableLiveData<Boolean>()
+    var paste: Pair<View, SelectItem<CourierItem>>? = null
+
+    init
+    {
+        isClicked.value = false
+    }
+
     interface OnItemClickListener<T>
     {
-        fun onItemClicked(v: View, pos : Int, item: T)
+        fun onItemClicked(v: View, pos: Int, item: T)
     }
 
     var mListener: OnItemClickListener<List<SelectItem<CourierItem>>>? = null
@@ -42,9 +54,9 @@ class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
         return GridRvViewHolder(binding)
     }
 
-
     override fun onBindViewHolder(holder: GridRvViewHolder, position: Int)
     {
+
         if (items != null)
         {
             Log.d(TAG, "$position")
@@ -74,19 +86,64 @@ class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
 
     inner class GridRvViewHolder(binding: ItemImgBinding) : RecyclerView.ViewHolder(binding.root)
     {
-        var beforeItem : SelectItem<CourierItem>? = null
-
         init
         {
             binding.ivImg.setOnClickListener {
-                val pos = adapterPosition
-                
-                if(pos != RecyclerView.NO_POSITION)
+
+                val requestOptions = RequestOptions()
+                requestOptions.diskCacheStrategy(DiskCacheStrategy.NONE)
+                requestOptions.skipMemoryCache(false)
+                requestOptions.signature(ObjectKey(System.currentTimeMillis()))
+
+                if (paste != null)
                 {
-                    if(mListener != null)
+                    Log.d(TAG, "Paste => $paste")
+                    val layout = paste!!.first as LinearLayout
+
+                    (paste!!.first as LinearLayout).setBackgroundResource(R.drawable.border_non_click_img)
+
+                    paste!!.second.isSelect = false
+
+                    Glide.with(layout.getChildAt(0).context)
+                        .load(paste!!.second.item.nonClickRes)
+                        .apply(requestOptions)
+                        .into(layout.getChildAt(0) as ImageView)
+                }
+
+                val pos = adapterPosition
+
+                val item = items!![pos]
+
+                if (pos != RecyclerView.NO_POSITION)
+                {
+                    if (mListener != null)
                     {
+                        if (item.isSelect)
+                        {
+                            Glide.with(binding.ivImg.context)
+                                .load(item.item.nonClickRes)
+                                .apply(requestOptions)
+                                .into(binding.ivImg)
+
+                            item.isSelect = false
+                        }
+                        else
+                        {
+                            Glide.with(binding.ivImg.context)
+                                .load(item.item.clickRes)
+                                .apply(requestOptions)
+                                .into(binding.ivImg)
+
+                            item.isSelect = true
+                        }
+
+                        binding.isClick = item.isSelect
+
                         mListener!!.onItemClicked(it, pos, items!!)
-                        beforeItem = items!![pos]
+
+                        paste = Pair(binding.layoutItem, item)
+
+                        Log.d(TAG, "item ===> $item")
                     }
                 }
             }
@@ -94,11 +151,16 @@ class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
 
         fun onBind(selectItem: SelectItem<CourierItem>)
         {
-            Log.d("LOG.SOPO", "vh -> $selectItem")
-            if(selectItem.isSelect)
+            if (selectItem.isSelect)
+            {
                 binding.setVariable(BR.img, selectItem.item.clickRes)
+                binding.setVariable(BR.isClick, selectItem.isSelect)
+            }
             else
+            {
                 binding.setVariable(BR.img, selectItem.item.nonClickRes)
+                binding.setVariable(BR.isClick, selectItem.isSelect)
+            }
         }
     }
 }

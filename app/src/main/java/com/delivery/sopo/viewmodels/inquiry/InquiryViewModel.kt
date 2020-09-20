@@ -43,21 +43,21 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
     // 화면에 전체 아이템의 노출 여부
     private val _isMoreView = MutableLiveData<Boolean>()
     val isMoreView: LiveData<Boolean>
-            get() = _isMoreView
+        get() = _isMoreView
 
     // 리스트 뷰들 아이템들을 '삭제'할 수 있는지 여부
     private val _isRemovable = MutableLiveData<Boolean>()
     val isRemovable: LiveData<Boolean>
-            get() = _isRemovable
+        get() = _isRemovable
 
     // '전체선택' 되었는지 여부
     private val _isSelectAll = MutableLiveData<Boolean>()
     val isSelectAll: LiveData<Boolean>
-            get() = _isSelectAll
+        get() = _isSelectAll
 
     private val _screenStatus = MutableLiveData<ScreenStatus>()
     val screenStatus: LiveData<ScreenStatus>
-            get() = _screenStatus
+        get() = _screenStatus
 
     // '삭제하기'에서 선택된 아이템의 개수
     var cntOfSelectedItem = MutableLiveData<Int>()
@@ -78,7 +78,7 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
 //        postParcel("에비앙 330ML", "kr.lotte", "307842100985")
 //        postParcel("아몬드 초코볼", "kr.cjlogistics", "633027402291")
 //        postParcel("클렌징", "kr.cjlogistics", "381315501434")
-//        postParcel("블루라운지 킥플립", "kr.cjlogistics", "	632601736701")
+//        postParcel("블루라운지 킥플립", "kr.cjlogistics", "   632601736701")
 //        postParcel("손목 받침대", "kr.logen", "97783126932")
     }
 
@@ -276,12 +276,12 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
     // '곧 도착' 리스트의 데이터를 filter로 걸러 세팅한다.
     private fun setSoonList(parcelList: MutableList<Parcel>){
         _soonList.value = parcelList.filter { parcel ->
-                            // 리스트 중 오직 '배송출발'일 경우만 해당 adapter로 넘긴다.
-                            parcel.deliveryStatus == DeliveryStatus.OUT_FOR_DELIVERY
-                        }.map {
-                                filteredItem ->
-                                InquiryListData(parcel = filteredItem)
-                        } as MutableList<InquiryListData>
+            // 리스트 중 오직 '배송출발'일 경우만 해당 adapter로 넘긴다.
+            parcel.deliveryStatus == DeliveryStatus.OUT_FOR_DELIVERY
+        }.map {
+                filteredItem ->
+            InquiryListData(parcel = filteredItem)
+        } as MutableList<InquiryListData>
     }
 
     // '등록된 택배' 리스트의 데이터를 filter로 걸러 세팅한다.
@@ -291,7 +291,7 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
             parcel.deliveryStatus != DeliveryStatus.OUT_FOR_DELIVERY && parcel.deliveryStatus != DeliveryStatus.DELIVERED
         }.map {
                 filteredItem ->
-                InquiryListData(parcel = filteredItem)
+            InquiryListData(parcel = filteredItem)
         } as MutableList<InquiryListData>
     }
 
@@ -303,7 +303,7 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
             parcel.deliveryStatus == DeliveryStatus.DELIVERED
         }.map {
                 filteredItem ->
-                InquiryListData(parcel = filteredItem)
+            InquiryListData(parcel = filteredItem)
         } as MutableList<InquiryListData>
     }
 

@@ -1,6 +1,7 @@
 package com.delivery.sopo.views.registers
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,18 +13,24 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.databinding.RegisterStep1Binding
 import com.delivery.sopo.enums.FragmentType
+import com.delivery.sopo.interfaces.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
-import com.delivery.sopo.models.RegisterCourierData
+import com.delivery.sopo.repository.CourierRepolmpl
 import com.delivery.sopo.util.fun_util.ClipboardUtil
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.FragmentManager
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
+import com.delivery.sopo.views.MainView
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegisterStep1 : Fragment()
 {
+    private lateinit var parentView : MainView
+
     private lateinit var binding: RegisterStep1Binding
     private val registerStep1Vm: RegisterStep1ViewModel by viewModel()
+    private val courierRepolmpl: CourierRepolmpl by inject()
 
     private var waybilNum: String? = null
     private var courier: CourierItem? = null
@@ -60,6 +67,22 @@ class RegisterStep1 : Fragment()
             binding.vm!!.courier.value = courier
         }
 
+        parentView = activity as MainView
+
+        parentView.setOnBackPressListener(object : OnMainBackPressListener{
+            override fun onBackPressed()
+            {
+                Log.d("LOG.SOPO", "OnBackPressed")
+
+                parentView.moveTaskToBack(true);						// 태스크를 백그라운드로 이동
+                parentView.finishAndRemoveTask();						// 액티비티 종료 + 태스크 리스트에서 지우기
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+
+        })
+
+
+
         return binding.root
     }
 
@@ -82,12 +105,14 @@ class RegisterStep1 : Fragment()
 
                 if (it.length > 8)
                 {
-                    RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, it, 1) {
-                        if (it != null && it.isNotEmpty())
-                        {
-                            binding.vm!!.courier.postValue(it[0])
-                        }
+                    val result = RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, it, 1, courierRepolmpl)
+
+                    if(result != null && result.size > 0)
+                    {
+                        binding.vm!!.courier.postValue(result[0])
                     }
+
+
                 }
                 else
                 {
@@ -162,7 +187,7 @@ class RegisterStep1 : Fragment()
 
     companion object
     {
-        fun newInstance(waybilNum:String?, courier:CourierItem?): RegisterStep1
+        fun newInstance(waybilNum: String?, courier: CourierItem?): RegisterStep1
         {
             val registerStep1 = RegisterStep1()
 

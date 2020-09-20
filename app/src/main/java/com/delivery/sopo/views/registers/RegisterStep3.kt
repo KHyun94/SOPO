@@ -11,14 +11,18 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterStep3Binding
 import com.delivery.sopo.enums.FragmentType
+import com.delivery.sopo.interfaces.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.util.ui_util.FragmentManager
 import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep3ViewModel
+import com.delivery.sopo.views.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegisterStep3 : Fragment()
 {
+    private lateinit var parentView : MainView
+
     private lateinit var binding: RegisterStep3Binding
     private val registerStep3Vm: RegisterStep3ViewModel by viewModel()
 
@@ -41,6 +45,8 @@ class RegisterStep3 : Fragment()
         savedInstanceState: Bundle?
     ): View?
     {
+        parentView = activity as MainView
+
         binding = DataBindingUtil.inflate(inflater, R.layout.register_step3, container, false)
         binding.vm = registerStep3Vm
         binding.lifecycleOwner = this
@@ -56,6 +62,16 @@ class RegisterStep3 : Fragment()
         }
 
         setObserve()
+
+        parentView.setOnBackPressListener(object : OnMainBackPressListener
+        {
+            override fun onBackPressed()
+            {
+                Log.d("LOG.SOPO", "OnBackPressed task 2")
+                FragmentManager.remove(activity!!)
+            }
+
+        })
 
         return binding.root
     }

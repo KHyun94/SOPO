@@ -4,6 +4,7 @@ import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.database.shared.SharedPref
 import com.delivery.sopo.database.shared.SharedPrefHelper
+import com.delivery.sopo.repository.CourierRepolmpl
 import com.delivery.sopo.repository.ParcelRepoImpl
 import com.delivery.sopo.viewmodels.*
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
@@ -38,6 +39,10 @@ val appModule = module {
     }
 
     single {
+        CourierRepolmpl(get())
+    }
+
+    single {
         ParcelRepoImpl(get(), get())
     }
 
@@ -54,6 +59,6 @@ val appModule = module {
     viewModel { InquiryViewModel(get(), get()) }
 
     viewModel { RegisterStep1ViewModel() }
-    viewModel { RegisterStep2ViewModel() }
+    viewModel { RegisterStep2ViewModel(get()) }
     viewModel { RegisterStep3ViewModel(get()) }
 }

@@ -3,6 +3,7 @@ package com.delivery.sopo.viewmodels.registesrs
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.CourierItem
@@ -12,6 +13,7 @@ import com.delivery.sopo.networks.ParcelAPI
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.fun_util.CodeUtil
 import com.delivery.sopo.util.fun_util.SingleLiveEvent
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,58 +43,69 @@ class RegisterStep3ViewModel(
     // '등록하기' Button Click event
     fun onRegisterClicked()
     {
-        NetworkManager.privateRetro
-            .create(ParcelAPI::class.java)
-            .registerParcel(
-                email = userRepo.getEmail(),
-                parcelAlias = alias.value,
-                trackCompany = courier.value!!.courierCode,
-//                trackCompany = "에러일으킬 용도!!!",
-                trackNum = waybilNum.value!!
-            )
-            .enqueue(object : Callback<APIResult<ParcelId?>>
-            {
-                override fun onFailure(call: Call<APIResult<ParcelId?>>, t: Throwable)
-                {
-                    TODO("Not yet implemented")
-                }
 
-                override fun onResponse(
-                    call: Call<APIResult<ParcelId?>>,
-                    response: Response<APIResult<ParcelId?>>
+        viewModelScope.launch {
+            NetworkManager.privateRetro
+                .create(ParcelAPI::class.java)
+                .registerParcel(
+                    email = userRepo.getEmail(),
+                    parcelAlias = alias.value?:"Default",
+                    trackCompany = courier.value!!.courierCode ,
+                    trackNum = waybilNum.value!!
                 )
+                .enqueue(object : Callback<APIResult<ParcelId?>>
                 {
-                    val httpStatusCode = response.code()
-
-                    val result = response.body()
-
-                    Log.d("LOG.SOPO", "뭐지? $httpStatusCode")
-                    Log.d("LOG.SOPO", "뭐지? $result")
-                    Log.d("LOG.SOPO", "뭐지? ${courier.value}")
-                    Log.d("LOG.SOPO", "뭐지? ${waybilNum.value}")
-
-                    // http status code 200
-                    when (httpStatusCode)
+                    override fun onFailure(call: Call<APIResult<ParcelId?>>, t: Throwable)
                     {
-                        201 ->
-                        {
-                            // if it work completely, we should pare in response header - location(api end point)which recently registered parcel date
-                            val headers = response.headers()
+                        TODO("Not yet implemented")
+                    }
 
-                            for(head in headers)
+                    override fun onResponse(
+                        call: Call<APIResult<ParcelId?>>,
+                        response: Response<APIResult<ParcelId?>>
+                    )
+                    {
+                        val httpStatusCode = response.code()
+
+                        val result = response.body()
+
+                        Log.d("LOG.SOPO", "뭐지? $httpStatusCode")
+                        Log.d("LOG.SOPO", "뭐지? $result")
+                        Log.d("LOG.SOPO", "뭐지? ${courier.value}")
+                        Log.d("LOG.SOPO", "뭐지? ${waybilNum.value}")
+
+                        // http status code 200
+                        when (httpStatusCode)
+                        {
+                            201 ->
                             {
-                                Log.d("LOG.SOPO", "Header ${head}")
+                                Log.d("LOG.SOPO", "등록 성공!!!!")
                             }
+                            else ->
+                            {
+                                val msg = if(result == null)
+                                {
+                                    Log.d("LOG.SOPO", "등록 null")
+                                    "결과 null"
+                                }
+                                else if(result.code == null)
+                                {
+                                    Log.d("LOG.SOPO", "등록 Code null")
+                                    "코드 null"
+                                }
+                                else
+                                {
+                                    Log.d("LOG.SOPO", "등록 Code ${result.code}")
+                                    CodeUtil.returnCodeMsg(result.code)
+                                }
 
-                        }
-                        else ->
-                        {
-                            Log.d("LOG.SOPO", "왓이즈 코드 ${result!!.code}")
+                                errorMsg.value = msg
 
-                            errorMsg.value = CodeUtil.returnCodeMsg(result!!.code) ?: "널이야"
+                            }
                         }
                     }
-                }
-            })
+                })
+        }
+
     }
 }

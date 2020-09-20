@@ -40,24 +40,19 @@
             app:layout_constraintTop_toBottomOf="parent"
             app:layout_constraintVertical_bias="0.879" />
 
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_select_co"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="50sp"
-            app:layout_constrainedHeight="true"
+            android:layout_gravity="center_horizontal"
             android:layout_marginHorizontal="15sp"
-            app:layout_constraintTop_toBottomOf="@id/tv_title">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_select_co"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                app:gridRvAdapter="@{vm.adapter}"
-                app:gridSpan="@{vm.rowCnt}"
-                app:layoutManager="@{vm.decoration}"/>
-
-        </LinearLayout>
+            android:layout_marginVertical="50sp"
+            android:paddingBottom="130sp"
+            app:gridRvAdapter="@{vm.adapter}"
+            app:gridSpan="@{vm.rowCnt}"
+            app:layoutManager="@{vm.decoration}"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintTop_toBottomOf="@id/tv_title" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

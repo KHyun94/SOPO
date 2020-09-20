@@ -9,13 +9,12 @@ import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.databinding.MainViewBinding
-import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.interfaces.BasicView
+import com.delivery.sopo.interfaces.OnMainBackPressListener
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.UserAPI
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.adapters.ViewPagerAdapter
-import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.viewmodels.MainViewModel
 import com.google.android.material.tabs.TabLayout
@@ -23,11 +22,18 @@ import com.google.firebase.iid.FirebaseInstanceId
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers.io
 import kotlinx.android.synthetic.main.main_view.*
+import kotlinx.android.synthetic.main.tap_item.view.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 {
+    var onMainBackPressListener : OnMainBackPressListener? = null
+
+    fun setOnBackPressListener(listenerMain: OnMainBackPressListener){
+        this.onMainBackPressListener = listenerMain
+    }
+
     private val mainVm: MainViewModel by viewModel()
     lateinit var viewPagerAdapter: ViewPagerAdapter
     lateinit var pageChangeListener: ViewPager.OnPageChangeListener
@@ -52,62 +58,84 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         init()
 
     }
-    private fun init(){
+
+    private fun init()
+    {
         viewpagerSetting()
         tabLayoutSetting()
     }
 
-    private fun tabLayoutSetting(){
-        tablayout_bottom_tab.setupWithViewPager(vp_main)
-        tablayout_bottom_tab.getTabAt(0)!!.setIcon(R.drawable.ic_clicked_tap_register)
-        tablayout_bottom_tab.getTabAt(1)!!.setIcon(R.drawable.ic_non_clicked_tap_lookup)
-        tablayout_bottom_tab.getTabAt(2)!!.setIcon(R.drawable.ic_non_clicked_tap_my)
+    private fun tabSetting(v : View)
+    {
+        // layout을 dynamic 처리해서 넣도록 수정
+        (v as TabLayout).getTabAt(0)!!.setCustomView(R.layout.tap_item)
+        v.getTabAt(0)!!.customView!!.iv_tab.setBackgroundResource(R.drawable.ic_clicked_tap_register)
 
-        tablayout_bottom_tab.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener
-        {
-            override fun onTabSelected(tab: TabLayout.Tab?)
-            {
-                val res = when (tab!!.position)
-                {
-                    0 -> R.drawable.ic_clicked_tap_register
-                    1 -> R.drawable.ic_clicked_tap_lookup
-                    2 -> R.drawable.ic_clicked_tap_my
-                    else -> R.drawable.ic_clicked_tap_register
-                }
+        v.getTabAt(1)!!.setCustomView(R.layout.tap_item)
+        v.getTabAt(1)!!.customView!!.iv_tab.setBackgroundResource(R.drawable.ic_non_clicked_tap_lookup)
 
-                tab.setIcon(res)
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?)
-            {
-                val res = when (tab!!.position)
-                {
-                    0 -> R.drawable.ic_non_clicked_tap_register
-                    1 -> R.drawable.ic_non_clicked_tap_lookup
-                    2 -> R.drawable.ic_non_clicked_tap_my
-                    else -> R.drawable.ic_non_clicked_tap_register
-                }
-
-                tab.setIcon(res)
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab?)
-            {
-            }
-        })
+        v.getTabAt(2)!!.setCustomView(R.layout.tap_item)
+        v.getTabAt(2)!!.customView!!.iv_tab.setBackgroundResource(R.drawable.ic_non_clicked_tap_my)
     }
 
-    private fun viewpagerSetting(){
+    private fun tabLayoutSetting()
+    {
+        val tb = tablayout_bottom_tab
+
+        tb.run {
+            setupWithViewPager(vp_main)
+            tabSetting(this)
+            addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener
+            {
+                override fun onTabSelected(tab: TabLayout.Tab?)
+                {
+                    val res = when (tab!!.position)
+                    {
+                        0 -> R.drawable.ic_clicked_tap_register
+                        1 -> R.drawable.ic_clicked_tap_lookup
+                        2 -> R.drawable.ic_clicked_tap_my
+                        else -> R.drawable.ic_clicked_tap_register
+                    }
+
+                    tab.customView!!.iv_tab.setBackgroundResource(res)
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab?)
+                {
+                    val res = when (tab!!.position)
+                    {
+                        0 -> R.drawable.ic_non_clicked_tap_register
+                        1 -> R.drawable.ic_non_clicked_tap_lookup
+                        2 -> R.drawable.ic_non_clicked_tap_my
+                        else -> R.drawable.ic_non_clicked_tap_register
+                    }
+
+                    tab.customView!!.iv_tab.setBackgroundResource(res)
+                }
+
+                override fun onTabReselected(tab: TabLayout.Tab?)
+                {
+                }
+            })
+        }
+    }
+
+    private fun viewpagerSetting()
+    {
         viewPagerAdapter = ViewPagerAdapter(supportFragmentManager, 3)
-        pageChangeListener = object : ViewPager.OnPageChangeListener {
+        pageChangeListener = object : ViewPager.OnPageChangeListener
+        {
 
-            override fun onPageScrollStateChanged(p0: Int) {
+            override fun onPageScrollStateChanged(p0: Int)
+            {
             }
 
-            override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {
+            override fun onPageScrolled(p0: Int, p1: Float, p2: Int)
+            {
             }
 
-            override fun onPageSelected(p0: Int) {
+            override fun onPageSelected(p0: Int)
+            {
             }
         }
 
@@ -148,7 +176,8 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     override fun setObserver()
     {
         binding.vm!!.tabLayoutVisibility.observe(this, Observer {
-            when(it){
+            when (it)
+            {
                 View.VISIBLE -> tablayout_bottom_tab.visibility = View.VISIBLE
                 View.INVISIBLE -> tablayout_bottom_tab.visibility = View.INVISIBLE
                 View.GONE -> tablayout_bottom_tab.visibility = View.GONE
@@ -156,12 +185,12 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         })
 
         binding.vm!!.errorMsg.observe(this, Observer {
-            if(it != null && it.isNotEmpty())
+            if (it != null && it.isNotEmpty())
             {
                 GeneralDialog(
                     act = parentActivity,
                     title = "에러",
-                   msg = it,
+                    msg = it,
                     detailMsg = null,
                     rHandler = Pair(
                         first = "네",
@@ -173,5 +202,11 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                 ).show(supportFragmentManager, "tag")
             }
         })
+    }
+
+    override fun onBackPressed()
+    {
+        onMainBackPressListener!!.onBackPressed()
+//        super.onBackPressed()
     }
 }
