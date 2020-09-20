@@ -13,7 +13,7 @@ interface ParcelAPI
     @FormUrlEncoded
     @POST("api/v1/sopoMainBackEnd/delivery/{email}/parcel")
     @Headers("Accept: application/json")
-    fun registerParcel(
+    suspend fun registerParcel(
         @Path("email") email: String,
         @Field("parcelAlias") parcelAlias: String?,
         @Field("trackCompany") trackCompany: String,

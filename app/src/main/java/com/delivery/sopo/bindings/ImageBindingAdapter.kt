@@ -26,7 +26,7 @@ object ImageBindingAdapter
     }
 
     @JvmStatic
-    @BindingAdapter("setImage")
+    @BindingAdapter("setImageAsGif")
     fun bindSetterGif(view: ImageView, res:Int){
         Glide.with(view.context)
             .asGif()

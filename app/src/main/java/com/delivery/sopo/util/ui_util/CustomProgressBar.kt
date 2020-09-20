@@ -53,11 +53,11 @@ class CustomProgressBar(private val act: AppCompatActivity) : DialogFragment()
     }
 
     private fun setGiFImage(v:View){
-        Glide
-            .with(v.iv_loading.context)
-            .asGif()
-            .load(R.drawable.ic_loading)
-            .into(v.iv_loading)
+//        Glide
+//            .with(v.iv_loading.context)
+//            .asGif()
+//            .load(R.drawable.ic_loading)
+//            .into(v.iv_loading)
 
     }
 

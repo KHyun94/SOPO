@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <variable
+            name="isClick"
+            type="Boolean" />
+
         <variable
             name="img"
             type="Integer" />
@@ -14,18 +18,19 @@
         android:gravity="center">
 
         <LinearLayout
+            android:id="@+id/layout_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/border_non_click_img">
+            android:background="@{isClick?@drawable/border_click_img:@drawable/border_non_click_img}">
 
             <ImageView
                 android:id="@+id/iv_img"
+                app:setImage="@{img}"
                 android:layout_width="88sp"
                 android:layout_height="88sp"
                 android:layout_margin="10sp"
-                android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
-                setImage="@{img}"/>
+                android:scaleType="fitCenter" />
 
         </LinearLayout>
 

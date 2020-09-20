@@ -4,8 +4,12 @@ import android.content.Context
 import android.util.Log
 import com.delivery.sopo.R
 import com.delivery.sopo.R.drawable.*
+import com.delivery.sopo.extentions.removeSpace
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.models.entity.CourierEntity
+import com.delivery.sopo.repository.CourierRepolmpl
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 object RoomActivate
 {
@@ -314,7 +318,6 @@ object RoomActivate
                             iconRes = ic_color_ups
                         )
                     )
-
                     roomDBHelper.courierDao().insert(courierList)
                 }
             }).start()
@@ -330,213 +333,248 @@ object RoomActivate
         context: Context,
         waybilNum: String,
         cnt: Int,
-        callback: Function1<List<CourierItem>?, Unit>
-    )
+        courierRepolmpl: CourierRepolmpl
+    ): MutableList<CourierItem?>?
     {
         roomDBHelper = AppDatabase.getInstance(context = context)
 
         try
         {
-            Thread(Runnable {
-                var returnList = mutableListOf<CourierItem>()
+            var returnList: MutableList<CourierItem?>? = mutableListOf<CourierItem?>()
 
-                // - ㅐor _ 삭제 버젼
-                var mergeNum = ""
+            runBlocking {
+                launch {
 
-                var front: String = ""
-                var middle: String = ""
-                var back: String = ""
+                    val _waybilNum = waybilNum.removeSpace()
+                    // - ㅐor _ 삭제 버젼
+                    var mergeNum = ""
 
-                var parserList = arrayListOf<String>()
+                    var front: String = ""
+                    var middle: String = ""
+                    var back: String = ""
 
-                when
-                {
-                    waybilNum.contains('-') ->
+                    var parserList = arrayListOf<String>()
+
+                    when
                     {
-                        parserList = waybilNum.split('-') as ArrayList<String>
-                    }
-                    waybilNum.contains('_') ->
-                    {
-                        parserList = waybilNum.split('_') as ArrayList<String>
-                    }
-                    else ->
-                    {
-                        parserList.add(waybilNum)
-                    }
-                }
-
-                when (parserList.size)
-                {
-                    1 ->
-                    {
-                        mergeNum = parserList[0]
-                    }
-                    2 ->
-                    {
-                        front = parserList[0]
-                        back = parserList[1]
-
-                        if (front.length == 6 && back.length == 7)
+                        _waybilNum.contains('-') ->
                         {
-                            // 우체국 반환
-
-                            returnList.add(
-                                CourierItem(
-                                    courierName = "우체국 택배", courierCode = "",
-                                    clickRes = R.drawable.ic_color_korean,
-                                    nonClickRes = R.drawable.ic_gray_korean,
-                                    iconRes = R.drawable.ic_color_korean
-                                )
-                            )
+                            Log.d(TAG, "waybil ${_waybilNum}")
+                            parserList = _waybilNum.split('-') as ArrayList<String>
                         }
-                        else
+                        _waybilNum.contains('_') ->
                         {
-                            mergeNum = front + back
+                            parserList = _waybilNum.split('_') as ArrayList<String>
+                        }
+                        else ->
+                        {
+                            parserList.add(_waybilNum)
                         }
                     }
-                    3 ->
-                    {
-                        front = parserList[0]
-                        middle = parserList[1]
-                        back = parserList[2]
 
-                        if (front.length == 3 && middle.length == 4 && back.length == 4)
+                    when (parserList.size)
+                    {
+                        1 ->
                         {
-                            //로젠 택배
-                            returnList.add(
-                                CourierItem(
-                                    courierName = "로젠택배", courierCode = "",
-                                    clickRes = R.drawable.ic_color_logen,
-                                    nonClickRes = R.drawable.ic_gray_logen,
-                                    iconRes = R.drawable.ic_color_logen
-                                )
-                            )
+                            mergeNum = parserList[0].removeSpace()
                         }
-                        else if (front.length == 4 && middle.length == 3 && back.length == 6)
+                        2 ->
                         {
-                            // 경동 택배
-                            returnList.add(
-                                CourierItem(
-                                    courierName = "경동택배", courierCode = "",
-                                    clickRes = R.drawable.ic_color_gyungdong,
-                                    nonClickRes = R.drawable.ic_gray_gyungdong,
-                                    iconRes = R.drawable.ic_color_gyungdong
+                            front = parserList[0]
+                            back = parserList[1]
+
+                            if (front.length == 6 && back.length == 7)
+                            {
+                                // 우체국 반환
+                                returnList!!.add(
+                                    CourierItem(
+                                        courierName = "우체국 택배", courierCode = "",
+                                        clickRes = R.drawable.ic_color_korean,
+                                        nonClickRes = R.drawable.ic_gray_korean,
+                                        iconRes = R.drawable.ic_color_korean
+                                    )
                                 )
-                            )
+                            }
+                            else
+                            {
+                                mergeNum = front + back
+                            }
                         }
-                        else if (front.length == 4 && middle.length == 4 && back.length == 4)
+                        3 ->
                         {
-                            //롯데 or CU 편의점 택배
-                            returnList.add(
-                                CourierItem(
-                                    courierName = "CU 편의점 택배", courierCode = "kr.cupost",
-                                    clickRes = R.drawable.ic_color_cu,
-                                    nonClickRes = R.drawable.ic_gray_cu,
-                                    iconRes = R.drawable.ic_color_cu
+                            front = parserList[0]
+                            middle = parserList[1]
+                            back = parserList[2]
+
+                            for (i in parserList)
+                            {
+                                Log.d(TAG, "$i -=> ${i.length}")
+                            }
+
+                            if (front.length == 3 && middle.length == 4 && back.length - 1 == 4)
+                            {
+                                //로젠 택배
+                                returnList!!.add(
+                                    CourierItem(
+                                        courierName = "로젠택배", courierCode = "",
+                                        clickRes = R.drawable.ic_color_logen,
+                                        nonClickRes = R.drawable.ic_gray_logen,
+                                        iconRes = R.drawable.ic_color_logen
+                                    )
                                 )
-                            )
-                            returnList.add(
-                                CourierItem(
-                                    courierName = "롯데택배", courierCode = "kr.lotte",
-                                    clickRes = R.drawable.ic_color_lotte,
-                                    nonClickRes = R.drawable.ic_gray_lotte,
-                                    iconRes = R.drawable.ic_color_lotte
+                            }
+                            else if (front.length == 4 && middle.length == 3 && back.length - 1 == 6)
+                            {
+                                // 경동 택배
+                                returnList!!.add(
+                                    CourierItem(
+                                        courierName = "경동택배", courierCode = "",
+                                        clickRes = R.drawable.ic_color_gyungdong,
+                                        nonClickRes = R.drawable.ic_gray_gyungdong,
+                                        iconRes = R.drawable.ic_color_gyungdong
+                                    )
                                 )
-                            )
+                            }
+                            else if (front.length == 4 && middle.length == 4 && back.length - 1 == 4)
+                            {
+                                Log.d(TAG, "cu or 롯데 $front - $middle - $back")
+                                //롯데 or CU 편의점 택배
+                                returnList!!.add(
+                                    CourierItem(
+                                        courierName = "CU 편의점 택배", courierCode = "kr.cupost",
+                                        clickRes = R.drawable.ic_color_cu,
+                                        nonClickRes = R.drawable.ic_gray_cu,
+                                        iconRes = R.drawable.ic_color_cu
+                                    )
+                                )
+                                returnList!!.add(
+                                    CourierItem(
+                                        courierName = "롯데택배", courierCode = "kr.lotte",
+                                        clickRes = R.drawable.ic_color_lotte,
+                                        nonClickRes = R.drawable.ic_gray_lotte,
+                                        iconRes = R.drawable.ic_color_lotte
+                                    )
+                                )
+                            }
+                            else
+                            {
+                                mergeNum = front + middle + back
+                            }
                         }
-                        else
+                        else ->
                         {
-                            mergeNum = front + middle + back
+                            mergeNum = parserList[0]
                         }
                     }
-                    else ->
-                    {
-                        mergeNum = parserList[0]
-                    }
-                }
 
-                // 문자열이 포함되어 있을 때
-                if (!isDigit(mergeNum))
-                {
-                    // 문자열 부분 포함
-                    if (mergeNum.length == 13)
+                    // 문자열이 포함되어 있을 때
+                    if (!isDigit(mergeNum))
                     {
-                        // EMS
-                        front = mergeNum.substring(0, 2)
-                        middle = mergeNum.substring(2, 11)
-                        back = mergeNum.substring(11)
-
-                        if (isUpper(front) && isDigit(middle) && isUpper(back))
+                        // 문자열 부분 포함
+                        if (mergeNum.length == 13)
                         {
-                            returnList.add(
-                                CourierItem(
-                                    courierName = "EMS", courierCode = "un.upu.ems",
-                                    clickRes = R.drawable.ic_color_ems,
-                                    nonClickRes = R.drawable.ic_gray_ems,
-                                    iconRes = R.drawable.ic_color_ems
+                            // EMS
+                            front = mergeNum.substring(0, 2)
+                            middle = mergeNum.substring(2, 11)
+                            back = mergeNum.substring(11)
+
+                            if (isUpper(front) && isDigit(middle) && isUpper(back))
+                            {
+                                returnList!!.add(
+                                    CourierItem(
+                                        courierName = "EMS", courierCode = "un.upu.ems",
+                                        clickRes = R.drawable.ic_color_ems,
+                                        nonClickRes = R.drawable.ic_gray_ems,
+                                        iconRes = R.drawable.ic_color_ems
+                                    )
                                 )
-                            )
-                            returnList.add(
-                                CourierItem(
-                                    courierName = "USPS", courierCode = "us.usps",
-                                    clickRes = R.drawable.ic_color_usps,
-                                    nonClickRes = R.drawable.ic_gray_usps,
-                                    iconRes = R.drawable.ic_color_usps
+                                returnList!!.add(
+                                    CourierItem(
+                                        courierName = "USPS", courierCode = "us.usps",
+                                        clickRes = R.drawable.ic_color_usps,
+                                        nonClickRes = R.drawable.ic_gray_usps,
+                                        iconRes = R.drawable.ic_color_usps
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
-                }
 
-                when (returnList.size)
-                {
-                    0 ->
+                    when (returnList!!.size)
                     {
-                        returnList =
-                            roomDBHelper.courierDao()
-                                .getWithLen(
+                        0 ->
+                        {
+                            returnList =
+                                courierRepolmpl.getWithLen(
                                     len = mergeNum.length,
                                     cnt = cnt
-                                ) as MutableList<CourierItem>
-                    }
-                    1 ->
-                    {
-                        val addList = roomDBHelper.courierDao()
-                            .getWithLenAndCondition1(
-                                len = mergeNum.length,
-                                param1 = returnList.get(0).courierName,
-                                cnt = cnt
-                            ) as MutableList<CourierItem>
+                                )
 
-                        returnList.addAll(addList)
-                    }
-                    2 ->
-                    {
-                        val addList = roomDBHelper.courierDao()
-                            .getWithLenAndCondition2(
-                                len = mergeNum.length,
-                                param1 = returnList.get(0).courierName,
-                                param2 = returnList.get(1).courierName,
-                                cnt = cnt
-                            ) as MutableList<CourierItem>
+                            returnList!!.addAll(
+                                courierRepolmpl.getWithoutLen(
+                                    len = mergeNum.length,
+                                    cnt = cnt
+                                ) as Collection<CourierItem>
+                            )
 
-                        returnList.addAll(addList)
+
+                        }
+                        1 ->
+                        {
+                            returnList!!.addAll(
+                                courierRepolmpl.getWithLenAndCondition1(
+                                    len = mergeNum.length,
+                                    param1 = returnList!!.get(0)!!.courierName,
+                                    cnt = cnt
+                                ) as Collection<CourierItem>
+                            )
+
+
+                            returnList!!.addAll(
+                                courierRepolmpl.getWithoutLenAndCondition1(
+                                    len = mergeNum.length,
+                                    param1 = returnList!!.get(0)!!.courierName,
+                                    cnt = cnt
+                                ) as Collection<CourierItem>
+                            )
+
+
+                        }
+                        2 ->
+                        {
+                            returnList!!.addAll(
+                                courierRepolmpl.getWithLenAndCondition2(
+                                    len = mergeNum.length,
+                                    param1 = returnList!!.get(0)!!.courierName,
+                                    param2 = returnList!!.get(1)!!.courierName,
+                                    cnt = cnt
+                                ) as Collection<CourierItem?>
+                            )
+
+                            returnList!!.addAll(
+                                courierRepolmpl.getWithoutLenAndCondition2(
+                                    len = mergeNum.length,
+                                    param1 = returnList!!.get(0)!!.courierName,
+                                    param2 = returnList!!.get(1)!!.courierName,
+                                    cnt = cnt
+                                ) as Collection<CourierItem?>
+                            )
+                        }
                     }
                 }
+            }
 
-                Log.d(TAG, "All size => $cnt")
+            for (i in returnList!!)
+            {
+                Log.d(TAG, "택배사 $i")
+            }
 
-                for (c in returnList)
-                    Log.d(TAG, "All row => $c")
-
-                callback.invoke(returnList)
-            }).start()
-            // room으로 길이 검색
-            return
+            return returnList
         }
         catch (e: Exception)
         {
-            callback.invoke(null)
+//            callback.invoke(null)
+            return null
         }
     }
 
