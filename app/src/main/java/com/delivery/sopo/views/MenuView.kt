@@ -4,8 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.delivery.sopo.R
-import com.delivery.sopo.views.menus.NotDisturbTimeFragment
-import com.delivery.sopo.views.menus.SettingFragment
+import com.delivery.sopo.views.menus.MenuFragment
 import kotlinx.android.synthetic.main.fragment_base.*
 
 class MenuView : AppCompatActivity()
@@ -26,7 +25,7 @@ class MenuView : AppCompatActivity()
     }
 
     private fun gotoView() {
-            move(menuView, SettingFragment(), 0)
+            move(menuView, MenuFragment(), 0)
     }
 
     private fun loadData() {

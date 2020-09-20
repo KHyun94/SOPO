@@ -1,5 +1,6 @@
 package com.delivery.sopo.di
 
+import androidx.appcompat.view.menu.MenuView
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.database.shared.SharedPref
@@ -57,6 +58,7 @@ val appModule = module {
     viewModel { NoticeViewModel() }
     viewModel { NotDisturbTimeViewModel() }
     viewModel { InquiryViewModel(get(), get()) }
+    viewModel { MenuViewModel(get()) }
 
     viewModel { RegisterStep1ViewModel() }
     viewModel { RegisterStep2ViewModel(get()) }
