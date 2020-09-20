@@ -42,9 +42,10 @@ interface ParcelAPI
     @GET("api/v1/sopoMainBackEnd/delivery/{email}/parcels/complete")
     @Headers("Accept: application/json")
     suspend fun getParcelsComplete(
-        @Path("email") email: String
+        @Path("email") email: String,
+        @Query("page") page: Int,
+        @Query("inquiryDate") inquiryDate: String
     ): APIResult<MutableList<Parcel>?>
-
 
     @HTTP(method = "DELETE", path = "api/v1/sopoMainBackEnd/delivery/{email}/parcels", hasBody = true)
     @Headers("Accept: application/json")

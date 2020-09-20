@@ -1,13 +1,16 @@
 package com.delivery.sopo.repository
 
 import com.delivery.sopo.database.room.AppDatabase
+import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.dto.DeleteParcelsDTO
+import com.delivery.sopo.models.entity.ParcelEntity
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.shared.UserRepo
+import java.lang.RuntimeException
 import java.util.stream.Collectors
 
 
@@ -15,15 +18,31 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
                      private val appDatabase: AppDatabase): ParcelRepository {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
-    override suspend fun getRemoteParcels(): MutableList<Parcel>? = NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd()).getParcelsOngoing(email = userRepo.getEmail()).data
+    override suspend fun getRemoteOngoingParcels(): MutableList<Parcel>? = NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd()).getParcelsOngoing(email = userRepo.getEmail()).data
 
-    override suspend fun getLocalParcels(): MutableList<Parcel>? = appDatabase.parcelDao().getOngoingData().map(ParcelMapper::entityToObject) as MutableList<Parcel>
+    override suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<Parcel>? = NetworkManager
+                                                                                                        .getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
+                                                                                                        .getParcelsComplete(email = userRepo.getEmail(), page = page, inquiryDate = inquiryDate).data
 
-    override suspend fun saveLocalParcels(parcelList: List<Parcel>) {
+    override suspend fun getLocalParcelById(regDt: String, parcelUid: String): ParcelEntity? {
+        return appDatabase.parcelDao().getById(regDt,parcelUid)
+    }
+
+    override suspend fun getLocalOngoingParcels(): MutableList<Parcel>? = appDatabase.parcelDao().getOngoingData().map(ParcelMapper::entityToObject) as MutableList<Parcel>
+
+    override suspend fun saveLocalOngoingParcels(parcelList: List<Parcel>) {
         appDatabase.parcelDao().insert(parcelList.map(ParcelMapper::objectToEntity))
     }
 
-    override suspend fun deleteRemoteParcels(): APIResult<String?> {
+    override suspend fun saveLocalOngoingParcel(parcel: ParcelEntity) {
+        appDatabase.parcelDao().insert(parcel)
+    }
+
+    override suspend fun updateLocalOngoingParcel(parcel: ParcelEntity) {
+        appDatabase.parcelDao().update(parcel)
+    }
+
+    override suspend fun deleteRemoteOngoingParcels(): APIResult<String?> {
         val beDeletedData = appDatabase.parcelDao().getBeDeletedData()
         //TODO: beDeletedData가 0일때는?
         return NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd()).deleteParcels(email = userRepo.getEmail(),
@@ -31,9 +50,9 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
         )
     }
 
-    override suspend fun deleteLocalParcelsStep1(parcelIdList: List<ParcelId>) {
+    override suspend fun deleteLocalOngoingParcelsStep1(parcelIdList: List<ParcelId>) {
         for(parcelId in parcelIdList){
-            val parcelEntity = appDatabase.parcelDao().getById(parcelId.regDt, parcelId.parcelUid)
+            val parcelEntity = appDatabase.parcelDao().getById(parcelId.regDt, parcelId.parcelUid) ?: throw RuntimeException("deleteLocalOngoingParcelsStep1 process cannot permit null object")
             parcelEntity.apply {
                 this.status = 3
             }
@@ -41,7 +60,7 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
         }
     }
 
-    override suspend fun deleteLocalParcelsStep2() {
+    override suspend fun deleteLocalOngoingParcelsStep2() {
         val beDeletedData = appDatabase.parcelDao().getBeDeletedData().stream().
         map{
             it.status  = 0

@@ -52,8 +52,6 @@ class InquiryListPopupWindowAdapter(private val ctx: Context,
 //            }
 //
 //        }
-
-
         return view
     }
 }

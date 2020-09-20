@@ -12,11 +12,14 @@ interface ParcelDao
     @Query("SELECT * FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS <> 'delivered'")
     suspend fun getOngoingData() : List<ParcelEntity>
 
+    @Query("SELECT * FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS = 'delivered'")
+    suspend fun getCompleteData() : List<ParcelEntity>
+
     @Query("SELECT * FROM PARCEL WHERE STATUS = 3")
     suspend fun getBeDeletedData() : List<ParcelEntity>
 
     @Query("SELECT * FROM PARCEL WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
-    suspend fun getById(regDt: String, parcelUid: String) : ParcelEntity
+    suspend fun getById(regDt: String, parcelUid: String) : ParcelEntity?
 
     @Insert(onConflict = REPLACE)
     fun insert(parcelEntity: ParcelEntity)

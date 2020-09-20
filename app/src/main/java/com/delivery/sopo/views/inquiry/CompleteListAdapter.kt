@@ -10,15 +10,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
-import com.delivery.sopo.databinding.InquiryListSoonItemBinding
+import com.delivery.sopo.bindings.CustomEditTextBindingAdapter.TAG
+import com.delivery.sopo.databinding.InquiryListCompleteItemBinding
 import com.delivery.sopo.models.inquiry.InquiryListData
 import com.delivery.sopo.models.parcel.ParcelId
-import kotlinx.android.synthetic.main.inquiry_list_soon_item.view.*
+import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import java.util.stream.Stream
 
-// TODO : 리스트뷰 어덥터 단일화(REFACTORING)
-class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, lifecycleOwner: LifecycleOwner,
-                             private var list: MutableList<InquiryListData>) : RecyclerView.Adapter<SoonArrivalListAdapter.ViewHolder>()
+
+class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, lifecycleOwner: LifecycleOwner,
+                          private var list: MutableList<InquiryListData>) : RecyclerView.Adapter<CompleteListAdapter.ViewHolder>()
 {
     // 아이템 뷰를 저장하는 뷰홀더 클래스.
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
@@ -32,13 +33,13 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
         })
     }
 
-    class ViewHolder(private val binding: InquiryListSoonItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(private val binding: InquiryListCompleteItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
         val inquiryBinding = binding
 
         fun bind(inquiryListData: InquiryListData){
             binding.apply {
-                soonInquiryData = inquiryListData
+                completeInquiryData = inquiryListData
             }
         }
     }
@@ -48,7 +49,7 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
         return ViewHolder(
             DataBindingUtil.inflate(
                 LayoutInflater.from(parent.context),
-                R.layout.inquiry_list_soon_item,
+                R.layout.inquiry_list_complete_item,
                 parent,
                 false
             )
@@ -59,6 +60,7 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
     override fun onBindViewHolder(holder: ViewHolder, position: Int)
     {
         val inquiryListData = list[position]
+
 
         holder.apply{
             bind(inquiryListData)
@@ -73,6 +75,8 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
         }
 
         holder.inquiryBinding.root.cv_parent.setOnClickListener{
+
+            Log.d(TAG, "isSelect : ${inquiryListData.isSelected} && isRemovable : $isRemovable")
 
             if(isRemovable && !inquiryListData.isSelected){
                 inquiryListData.isSelected = true
@@ -118,22 +122,25 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
         }
     }
 
-    fun getList(): MutableList<InquiryListData> {
+    fun getList(): MutableList<InquiryListData>
+    {
         return list
     }
 
-    private fun viewSettingForSelected(binding: InquiryListSoonItemBinding){
-        binding.root.constraint_item_part.visibility = View.GONE
-        binding.root.constraint_delivery_status.visibility = View.GONE
-        binding.root.constraint_item_part_delete.visibility = View.VISIBLE
-        binding.root.constraint_delivery_status_delete.visibility = View.VISIBLE
+    private fun viewSettingForSelected(binding: InquiryListCompleteItemBinding){
+        Log.d(TAG, "viewSettingForSelected")
+        binding.root.constraint_item_part_complete.visibility = View.GONE
+        binding.root.constraint_date_complete.visibility = View.GONE
+        binding.root.constraint_item_part_delete_complete.visibility = View.VISIBLE
+        binding.root.constraint_delivery_status_front_complete.visibility = View.VISIBLE
     }
 
-    private fun viewInitialize(binding: InquiryListSoonItemBinding){
-        binding.root.constraint_item_part.visibility = View.VISIBLE
-        binding.root.constraint_delivery_status.visibility = View.VISIBLE
-        binding.root.constraint_item_part_delete.visibility = View.GONE
-        binding.root.constraint_delivery_status_delete.visibility = View.GONE
+    private fun viewInitialize(binding: InquiryListCompleteItemBinding){
+        Log.d(TAG, "viewInitialize")
+        binding.root.constraint_item_part_complete.visibility = View.VISIBLE
+        binding.root.constraint_date_complete.visibility = View.VISIBLE
+        binding.root.constraint_item_part_delete_complete.visibility = View.GONE
+        binding.root.constraint_delivery_status_front_complete.visibility = View.GONE
     }
 
     fun setRemovable(flag: Boolean){
@@ -168,14 +175,7 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
 
     override fun getItemCount(): Int
     {
-        return list.let {
-            if(it.size > limitOfItem && !isMoreView){
-                limitOfItem
-            }
-            else {
-                it.size
-            }
-        }
+        return list.size
     }
 
     fun getListSize(): Int{

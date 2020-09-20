@@ -5,14 +5,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="com.delivery.sopo.R" />
         <variable
-            name="soonInquiryData"
+            name="completeInquiryData"
             type="com.delivery.sopo.models.inquiry.InquiryListData" />
     </data>
 
     <LinearLayout
-        android:id="@+id/layout_background"
+        android:id="@+id/layout_background_complete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layoutDirection="ltr"
@@ -28,22 +27,20 @@
             app:cardElevation="3dp"
             >
             <LinearLayout
+                android:id="@+id/linear_item_complete"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
                 android:weightSum="1"
                 >
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraint_delivery_status"
+                    android:id="@+id/constraint_date_complete"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:background="@color/COLOR_MAIN_700"
+                    android:background="@color/MAIN_WHITE"
                     android:layout_weight="0.2"
-                    tools:visibility="visible"
                     >
-
                     <LinearLayout
-                        android:id="@+id/linear_delivery_status_departure"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
@@ -52,30 +49,38 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
-                        <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:layout_marginBottom="-10dp"
-                            android:layout_gravity="center"
-                            app:setImageAsGif="@{R.drawable.start_delivery}" />
                         <TextView
-                            android:id="@+id/tv_delivery_status_departure"
+                            android:id="@+id/tv_day_complete"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginTop="2dp"
-                            android:fontFamily="@font/spoqa_han_sans_bold"
-                            android:textColor="@color/MAIN_WHITE"
-                            android:textSize="10sp"
-                            android:text="배송출발"
+                            android:gravity="center"
+                            android:textSize="14sp"
+                            android:textColor="@color/COLOR_MAIN_BLUE_700"
+                            android:text="@{completeInquiryData.dayOfWeek}"
+                            tools:text="금"
+                            />
+                        <TextView
+                            android:id="@+id/tv_date_complete"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:textColor="@color/COLOR_MAIN_BLUE_700"
+                            android:textSize="14sp"
+                            android:text="@{completeInquiryData.dateOfMonth + ``}"
+                            tools:text="12일"
                             />
                     </LinearLayout>
-
-
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/COLOR_GRAY_100"
+                    />
+
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraint_delivery_status_delete"
+                    android:id="@+id/constraint_delivery_status_front_complete"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:background="@color/COLOR_MAIN_RED_100"
@@ -95,7 +100,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraint_item_part"
+                    android:id="@+id/constraint_item_part_complete"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.8"
@@ -103,40 +108,42 @@
                     >
 
                     <LinearLayout
-                        android:id="@+id/linear_sopo_item"
+                        android:id="@+id/linear_sopo_item_complete"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:layout_marginLeft="20dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        app:layout_constraintTop_toTopOf="parent"
+                        >
 
                         <TextView
-                            android:id="@+id/tv_parcel_name"
+                            android:id="@+id/tv_complete_parcel_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/spoqa_han_sans_bold"
-                            android:text="@{soonInquiryData.parcel.parcelAlias}"
+                            android:text="@{completeInquiryData.parcel.parcelAlias}"
                             android:textColor="@color/COLOR_GRAY_800"
                             android:textSize="12sp"
-                            tools:text="갤럭시 버즈 플러스 화이트" />
+                            tools:text="갤럭시 버즈 플러스 화이트"
+                            />
 
                         <TextView
-                            android:id="@+id/tv_parcel_date"
+                            android:id="@+id/tv_complete_parcel_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/spoqa_han_sans_light"
-                            android:text="@{soonInquiryData.parcel.auditDte}"
+                            android:text="@{completeInquiryData.parcel.auditDte}"
                             android:textColor="@color/COLOR_GRAY_800"
                             android:textSize="10sp"
-                            tools:text="2020/08/31" />
-
+                            tools:text="2020/08/31"
+                            />
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
+                
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraint_item_part_delete"
+                    android:id="@+id/constraint_item_part_delete_complete"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.8"
@@ -145,6 +152,7 @@
                     >
 
                     <LinearLayout
+                        android:id="@+id/linear_sopo_item_delete_complete"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
@@ -154,28 +162,29 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
+                            android:id="@+id/tv_complete_parcel_name_delete_complete"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/spoqa_han_sans_bold"
-                            android:text="@{soonInquiryData.parcel.parcelAlias}"
+                            android:text="@{completeInquiryData.parcel.parcelAlias}"
                             android:textColor="@color/COLOR_MAIN_RED_500"
                             android:textSize="12sp"
-                            tools:text="갤럭시 버즈 플러스 화이트" />
+                            tools:text="갤럭시 버즈 플러스 화이트"
+                            />
 
                         <TextView
+                            android:id="@+id/tv_complete_parcel_date_delete_complete"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/spoqa_han_sans_light"
-                            android:text="@{soonInquiryData.parcel.auditDte}"
+                            android:text="@{completeInquiryData.parcel.auditDte}"
                             android:textColor="@color/COLOR_MAIN_RED_500"
                             android:textSize="10sp"
-                            tools:text="2020/08/31" />
-
+                            tools:text="2020/08/31"
+                            />
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
             </LinearLayout>
         </androidx.cardview.widget.CardView>
     </LinearLayout>
 </layout>
-
