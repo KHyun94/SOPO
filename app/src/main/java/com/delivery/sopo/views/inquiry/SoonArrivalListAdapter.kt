@@ -12,14 +12,14 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.InquiryListSoonItemBinding
-import com.delivery.sopo.models.inquiry.InquiryListData
+import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.ParcelId
 import kotlinx.android.synthetic.main.inquiry_list_soon_item.view.*
 import java.util.stream.Stream
 
 // TODO : 리스트뷰 어덥터 단일화(REFACTORING)
 class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, lifecycleOwner: LifecycleOwner,
-                             private var list: MutableList<InquiryListData>) : RecyclerView.Adapter<SoonArrivalListAdapter.ViewHolder>()
+                             private var list: MutableList<InquiryListItem>) : RecyclerView.Adapter<SoonArrivalListAdapter.ViewHolder>()
 {
     // 아이템 뷰를 저장하는 뷰홀더 클래스.
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
@@ -29,7 +29,6 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
 
     init {
         cntOfSelectedItem.observe(lifecycleOwner, Observer {
-            Log.d(TAG,"[2] @@ => $it")
         })
     }
 
@@ -37,9 +36,9 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
 
         val inquiryBinding = binding
 
-        fun bind(inquiryListData: InquiryListData){
+        fun bind(inquiryListItem: InquiryListItem){
             binding.apply {
-                soonInquiryData = inquiryListData
+                soonInquiryData = inquiryListItem
             }
         }
     }
@@ -119,7 +118,7 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
         }
     }
 
-    fun getList(): MutableList<InquiryListData> {
+    fun getList(): MutableList<InquiryListItem> {
         return list
     }
 
@@ -149,7 +148,7 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
         notifyDataSetChanged()
     }
 
-    fun setDataList(parcel: MutableList<InquiryListData>) {
+    fun setDataList(parcel: MutableList<InquiryListItem>) {
         this.list = parcel
         Stream.of(parcel).map {
             it
@@ -159,13 +158,6 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
 
     fun isFullListItem(isFull : Boolean){
         this.isMoreView = isFull
-        notifyDataSetChanged()
-    }
-
-    fun deleteSelectedParcel(){
-        list.removeIf {
-            it.isSelected
-        }
         notifyDataSetChanged()
     }
 

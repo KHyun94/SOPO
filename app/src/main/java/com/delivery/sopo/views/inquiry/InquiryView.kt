@@ -108,6 +108,7 @@ class InquiryView: Fragment() {
     }
 
     private fun setObserver(){
+
         inquiryVM.soonList.observe(this, Observer {
             // '곧 도착' 리스트의 아이템의 개수에 따른 화면 세팅
             viewSettingForSoonArrivalList(it.size)
@@ -120,7 +121,7 @@ class InquiryView: Fragment() {
             registeredSopoListAdapter.setDataList(it)
         })
 
-        // 배송완료 리스
+        // 배송완료 리스트.
         inquiryVM.completeList.observe(this, Observer {
             completeListAdapter.setDataList(it)
         })
@@ -191,6 +192,18 @@ class InquiryView: Fragment() {
                     )
                     constraint_complete_parent.visibility = GONE
                     constraint_month_spinner.visibility = GONE
+
+                    // 만약 배송 중 리스트의 아이템의 개수가 0개라면 Empty View를 보여줘야한다.
+//                    if(inquiryVM.getOngoingListSize() == 0){
+//                        linear_ongoing_parent.visibility = GONE
+//                        constraint_complete_parent.visibility = GONE
+//                        linear_empty_view.visibility = VISIBLE
+//                    }
+//                    else{
+//                        linear_ongoing_parent.visibility = VISIBLE
+//                        constraint_complete_parent.visibility = VISIBLE
+//                        linear_empty_view.visibility = GONE
+//                    }
                 }
                 // '배송 완료' 화면
                 ScreenStatus.COMPLETE ->
@@ -227,6 +240,15 @@ class InquiryView: Fragment() {
                     )
                     constraint_complete_parent.visibility = VISIBLE
                     constraint_month_spinner.visibility = VISIBLE
+
+//                    if(inquiryVM.getCompleteListSize() == 0){
+//                        constraint_complete_parent.visibility = GONE
+//                        linear_empty_view.visibility = VISIBLE
+//                    }
+//                    else{
+//                        constraint_complete_parent.visibility = VISIBLE
+//                        linear_empty_view.visibility = GONE
+//                    }
                 }
             }
         })
@@ -520,8 +542,16 @@ class InquiryView: Fragment() {
             }
         }
     }
+
     private fun viewSettingForRegisteredList(listSize: Int){
-        //TODO : 작성해야함
+        when(listSize){
+            0 -> {
+                constraint_registered_arrival.visibility = GONE
+            }
+            else -> {
+                constraint_registered_arrival.visibility = VISIBLE
+            }
+        }
     }
 
     //팝업 메뉴에서 '삭제하기'가 선택되었을때 화면 세팅

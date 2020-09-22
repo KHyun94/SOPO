@@ -5,39 +5,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="com.delivery.sopo.R" />
         <variable
-            name="soonInquiryData"
+            name="ongoingInquiryData"
             type="com.delivery.sopo.models.inquiry.InquiryListItem" />
     </data>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cv_parent"
+        android:id="@+id/cv_registered_parent"
         android:layout_width="match_parent"
         android:layout_height="90dp"
         app:cardBackgroundColor="@color/MAIN_WHITE"
         app:cardCornerRadius="15dp"
         app:cardUseCompatPadding="true"
-        app:cardElevation="3dp">
-
+        app:cardElevation="3dp"
+        >
         <LinearLayout
-            android:id="@+id/linear_parent_list_item_soon"
+            android:id="@+id/linear_parent_list_item_register"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
             android:weightSum="1"
             >
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraint_delivery_status"
+                android:id="@+id/constraint_delivery_status_front"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:background="@color/COLOR_MAIN_700"
+                android:background="@color/COLOR_GRAY_400"
                 android:layout_weight="0.2"
-                tools:visibility="visible"
                 >
-
                 <LinearLayout
-                    android:id="@+id/linear_delivery_status_departure"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -47,13 +43,14 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:layout_marginBottom="-10dp"
+                        android:id="@+id/image_delivery_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        app:setImageAsGif="@{R.drawable.start_delivery}" />
+                        tools:background="@drawable/ic_parcel_status_before"
+                        />
                     <TextView
-                        android:id="@+id/tv_delivery_status_departure"
+                        android:id="@+id/tv_delivery_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -61,12 +58,11 @@
                         android:fontFamily="@font/spoqa_han_sans_bold"
                         android:textColor="@color/MAIN_WHITE"
                         android:textSize="10sp"
-                        android:text="배송출발"
-                        />
+                        tools:text="상품인수" />
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraint_delivery_status_delete"
+                android:id="@+id/constraint_delivery_status_front_delete"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.2"
@@ -84,7 +80,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraint_item_part"
+                android:id="@+id/constraint_delivery_status_back"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.8"
@@ -99,26 +95,28 @@
                     android:layout_marginLeft="20dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    >
 
                     <TextView
                         style="@style/H1"
-                        android:id="@+id/tv_parcel_name"
+                        android:id="@+id/tv_registered_parcel_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/spoqa_han_sans_bold"
-                        android:text="@{soonInquiryData.parcel.parcelAlias}"
+                        android:text="@{ongoingInquiryData.parcel.parcelAlias}"
                         android:textColor="@color/COLOR_GRAY_800"
                         android:textSize="12sp"
                         android:letterSpacing="-0.05"
-                        tools:text="갤럭시 버즈 플러스 화이트" />
+                        tools:text="갤럭시 버즈 플러스 화이트"
+                        />
 
                     <TextView
-                        android:id="@+id/tv_parcel_date"
+                        android:id="@+id/tv_registered_parcel_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/spoqa_han_sans_light"
-                        android:text="@{soonInquiryData.parcel.auditDte}"
+                        android:text="@{ongoingInquiryData.parcel.auditDte}"
                         android:textColor="@color/COLOR_GRAY_800"
                         android:textSize="10sp"
                         tools:text="2020/08/31" />
@@ -126,7 +124,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraint_item_part_delete"
+                android:id="@+id/constraint_delivery_status_back_delete"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.8"
@@ -134,6 +132,7 @@
                 >
 
                 <LinearLayout
+                    android:id="@+id/linear_sopo_item_delete"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -143,26 +142,28 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
+                        android:id="@+id/tv_registered_parcel_name_delete"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/spoqa_han_sans_bold"
-                        android:text="@{soonInquiryData.parcel.parcelAlias}"
+                        android:text="@{ongoingInquiryData.parcel.parcelAlias}"
                         android:textColor="@color/COLOR_MAIN_RED_500"
                         android:textSize="12sp"
-                        tools:text="갤럭시 버즈 플러스 화이트" />
+                        tools:text="갤럭시 버즈 플러스 화이트"
+                        />
 
                     <TextView
+                        android:id="@+id/tv_registered_parcel_date_delete"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/spoqa_han_sans_light"
-                        android:text="@{soonInquiryData.parcel.auditDte}"
+                        android:text="@{ongoingInquiryData.parcel.auditDte}"
                         android:textColor="@color/COLOR_MAIN_RED_500"
                         android:textSize="10sp"
-                        tools:text="2020/08/31" />
-
+                        tools:text="2020/08/31"
+                        />
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </layout>
-

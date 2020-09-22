@@ -2,12 +2,12 @@ package com.delivery.sopo.models.inquiry
 
 import com.delivery.sopo.database.dto.TimeCountDTO
 
-class MenuItem(
-    val viewType: MenuType,
+class InquiryMenuItem(
+    val viewType: InquiryMenuType,
     val timeCount: TimeCountDTO? = null,
     val menuTitle: String? = null
 ){
-    enum class MenuType
+    enum class InquiryMenuType
     {
         MainMenu, CompleteHistoryList
     }

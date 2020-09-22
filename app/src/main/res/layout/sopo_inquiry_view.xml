@@ -23,9 +23,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:layout_marginLeft="25dp"
+            android:layout_marginStart="25dp"
             android:fontFamily="@font/spoqa_han_sans_bold"
-            android:text="택배 조회"
+            android:text="@string/INQUIRY_VIEW_MAIN_TITLE"
             android:textColor="@color/COLOR_GRAY_800"
             android:textSize="21sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,9 +37,9 @@
             android:id="@+id/tv_delete_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="25dp"
+            android:layout_marginStart="25dp"
             android:fontFamily="@font/spoqa_han_sans_bold"
-            android:text="삭제할 항목을 선택해주세요."
+            android:text="@string/INQUIRY_VIEW_PLEASE_SELECT_ITEM_TO_DELETE"
             android:textColor="@color/COLOR_GRAY_800"
             android:textSize="17sp"
             app:layout_constraintBottom_toBottomOf="@+id/image_inquiry_popup_menu"
@@ -51,7 +51,7 @@
             android:id="@+id/image_inquiry_popup_menu"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
             android:padding="10dp"
             android:src="@drawable/ic_24_meatball"
             app:layout_constraintBottom_toBottomOf="@+id/tv_title"
@@ -98,7 +98,7 @@
                     android:layout_gravity="center"
                     android:layout_marginRight="15dp"
                     android:background="@drawable/border_all_rounded_light_black"
-                    android:text="배송 중"
+                    android:text="@string/INQUIRY_VIEW_ONGOING_DELIVERY"
                     android:textSize="14sp"
                     tools:textColor="@color/MAIN_WHITE"
                     android:onClick="@{()-> vm.setScreenStatusOngoing()}"
@@ -110,7 +110,7 @@
                     android:layout_height="35dp"
                     android:layout_gravity="center"
                     android:background="@drawable/border_all_rounded_color_gray_400"
-                    android:text="배송 완료"
+                    android:text="@string/INQUIRY_VIEW_COMPLETE_DELIVERY"
                     android:textColor="@color/COLOR_GRAY_400"
                     android:textSize="14sp"
                     android:onClick="@{()-> vm.setScreenStatusComplete()}"
@@ -152,12 +152,12 @@
                     android:id="@+id/tv_is_all_checked"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="5dp"
                     android:layout_gravity="center_vertical"
                     android:fontFamily="@font/spoqa_han_sans_bold"
                     android:letterSpacing="-0.04"
-                    android:text="전체 선택"
+                    android:text="@string/INQUIRY_VIEW_SELECT_ALL"
                     android:textColor="@color/COLOR_GRAY_400"
                     android:textSize="16sp"
                     />
@@ -188,7 +188,7 @@
                 android:layout_marginBottom="15dp"
                 android:fontFamily="@font/spoqa_han_sans_regular"
                 android:letterSpacing="-0.04"
-                android:text="개 선택됨"
+                android:text="@string/INQUIRY_VIEW_COUNT_OF_SELECTED"
                 android:textColor="@color/MAIN_RED"
                 android:textSize="16sp"
                 android:visibility="gone"
@@ -206,7 +206,7 @@
             app:layout_constraintBottom_toTopOf="@+id/nestedScrollView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraint_select"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/tv_spinner_month"
@@ -248,7 +248,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    tools:visibility="invisible"
+                    tools:visibility="gone"
                     >
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -261,9 +261,9 @@
                             android:id="@+id/tv_soon_arrival"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="15dp"
+                            android:layout_marginStart="15dp"
                             android:fontFamily="@font/spoqa_han_sans_regular"
-                            android:text="곧 도착"
+                            android:text="@string/INQUIRY_VIEW_SOON_ARRIVAL"
                             android:textColor="@color/COLOR_GRAY_800"
                             android:textSize="16sp"
                             app:layout_constraintStart_toStartOf="parent"
@@ -312,7 +312,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
                                 android:fontFamily="@font/spoqa_han_sans_regular"
-                                android:text="더보기"
+                                android:text="@string/INQUIRY_VIEW_MORE_VIEW"
                                 android:textColor="@color/COLOR_GRAY_800"
                                 android:textSize="14sp" />
                         </LinearLayout>
@@ -331,9 +331,9 @@
                             android:id="@+id/tv_registered_arrival"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="15dp"
+                            android:layout_marginStart="15dp"
                             android:fontFamily="@font/spoqa_han_sans_regular"
-                            android:text="등록된 택배"
+                            android:text="@string/INQUIRY_VIEW_REGISTERED_PARCEL"
                             android:textColor="@color/COLOR_GRAY_800"
                             android:textSize="16sp"
                             app:layout_constraintStart_toStartOf="parent"
@@ -357,6 +357,7 @@
                     android:id="@+id/constraint_complete_parent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="visible"
                     >
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -370,6 +371,56 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+                <LinearLayout
+                    android:id="@+id/linear_empty_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="100dp"
+                    android:visibility="gone"
+                    >
+
+                    <ImageView
+                        android:id="@+id/image_exclamation_mark"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:src="@drawable/exclamation_mark_icon"
+                        />
+                    <TextView
+                        style="@style/H4"
+                        android:id="@+id/tv_there_is_no_parcel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="22dp"
+                        android:layout_gravity="center_horizontal"
+                        android:text="@string/EMPTY_VIEW_THERE_IS_NO_REGISTERED_PARCEL"
+                        android:textColor="@color/COLOR_GRAY_400"
+                        android:textSize="14sp"
+                        />
+                    <TextView
+                        style="@style/H4"
+                        android:id="@+id/tv_please_register_new_parcel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="@string/EMPTY_VIEW_PLEASE_REGISTER_NEW_PARCEL"
+                        android:textColor="@color/COLOR_GRAY_400"
+                        android:textSize="14sp"
+                        />
+                    <Button
+                        style="@style/H4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginRight="25dp"
+                        android:layout_marginTop="100dp"
+                        android:text="@string/INQUIRY_VIEW_GO_TO_REGISTER"
+                        android:textSize="14sp"
+                        android:textColor="@color/MAIN_WHITE"
+                        android:background="@drawable/border_all_rounded_main_blue"
+                        />
+                </LinearLayout>
             </FrameLayout>
         </androidx.core.widget.NestedScrollView>
 
@@ -406,7 +457,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
                     android:fontFamily="@font/spoqa_han_sans_bold"
                     android:text="@{vm.cntOfSelectedItem + `` ?? ``}"
                     android:textColor="@color/MAIN_WHITE"
@@ -418,7 +469,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/spoqa_han_sans_bold"
-                    android:text="개 삭제하기"
+                    android:text="@string/INQUIRY_VIEW_COUNT_OF_DELETE"
                     android:textColor="@color/MAIN_WHITE"
                     android:layout_gravity="center"
                     android:textSize="16sp" />

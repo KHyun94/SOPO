@@ -3,27 +3,24 @@ package com.delivery.sopo.mapper
 import android.view.Menu
 import androidx.core.view.iterator
 import com.delivery.sopo.database.dto.TimeCountDTO
-import com.delivery.sopo.models.entity.ParcelEntity
-import com.delivery.sopo.models.inquiry.MenuItem
-import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.models.parcel.ParcelId
+import com.delivery.sopo.models.inquiry.InquiryMenuItem
 
 object MenuMapper
 {
-    fun menuToMenuItemList(menu: Menu): List<MenuItem>{
+    fun menuToMenuItemList(menu: Menu): List<InquiryMenuItem>{
 
-        val menuItemList = mutableListOf<MenuItem>()
+        val menuItemList = mutableListOf<InquiryMenuItem>()
         for (menuItem in menu){
-            menuItemList.add(MenuItem(viewType = MenuItem.MenuType.MainMenu,
+            menuItemList.add(InquiryMenuItem(viewType = InquiryMenuItem.InquiryMenuType.MainMenu,
                                       menuTitle = menuItem.title as String))
         }
         return menuItemList
     }
 
-    fun timeCountDtoToMenuItemList(timeCntDtoList: MutableList<TimeCountDTO>): List<MenuItem>{
-        val menuItemList = mutableListOf<MenuItem>()
+    fun timeCountDtoToMenuItemList(timeCntDtoList: MutableList<TimeCountDTO>): List<InquiryMenuItem>{
+        val menuItemList = mutableListOf<InquiryMenuItem>()
         for(timeCnt in timeCntDtoList){
-            menuItemList.add(MenuItem(viewType = MenuItem.MenuType.CompleteHistoryList,
+            menuItemList.add(InquiryMenuItem(viewType = InquiryMenuItem.InquiryMenuType.CompleteHistoryList,
                                       timeCount = timeCnt))
         }
         return menuItemList

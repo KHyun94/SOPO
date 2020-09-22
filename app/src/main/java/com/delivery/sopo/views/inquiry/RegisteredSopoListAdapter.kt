@@ -13,14 +13,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.DeliveryStatus
 import com.delivery.sopo.databinding.InquiryListRegisteredItemBinding
-import com.delivery.sopo.models.inquiry.InquiryListData
+import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import kotlinx.android.synthetic.main.inquiry_list_registered_item.view.*
 
 
 class RegisteredSopoListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, lifecycleOwner: LifecycleOwner,
-                                private var list: MutableList<InquiryListData>) : RecyclerView.Adapter<RegisteredSopoListAdapter.ViewHolder>()
+                                private var list: MutableList<InquiryListItem>) : RecyclerView.Adapter<RegisteredSopoListAdapter.ViewHolder>()
 {
     // 아이템 뷰를 저장하는 뷰홀더 클래스.
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
@@ -36,9 +36,9 @@ class RegisteredSopoListAdapter(private val cntOfSelectedItem: MutableLiveData<I
 
         val registeredBinding = binding
 
-        fun bind(inquiryListData: InquiryListData){
+        fun bind(inquiryListItem: InquiryListItem){
             binding.apply {
-                registeredInquiryData = inquiryListData
+                registeredInquiryData = inquiryListItem
             }
         }
 
@@ -137,7 +137,7 @@ class RegisteredSopoListAdapter(private val cntOfSelectedItem: MutableLiveData<I
         notifyDataSetChanged()
     }
 
-    fun setDataList(parcel: MutableList<InquiryListData>){
+    fun setDataList(parcel: MutableList<InquiryListItem>){
         this.list = parcel
         notifyDataSetChanged()
     }
@@ -170,15 +170,8 @@ class RegisteredSopoListAdapter(private val cntOfSelectedItem: MutableLiveData<I
         }
     }
 
-    fun getList(): MutableList<InquiryListData> {
+    fun getList(): MutableList<InquiryListItem> {
         return list
-    }
-
-    fun deleteSelectedParcel(){
-        list.removeIf {
-            it.isSelected
-        }
-        notifyDataSetChanged()
     }
 
     private fun viewSettingForSelected(binding: InquiryListRegisteredItemBinding){

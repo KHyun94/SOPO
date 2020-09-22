@@ -7,19 +7,19 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.delivery.sopo.R
-import com.delivery.sopo.models.inquiry.MenuItem
+import com.delivery.sopo.models.inquiry.InquiryMenuItem
 
 class InquiryListPopupWindowAdapter(private val ctx: Context,
-                                    private val menuItemList: List<MenuItem>): BaseAdapter()
+                                    private val inquiryMenuItemList: List<InquiryMenuItem>): BaseAdapter()
 {
-    private val itemList = menuItemList
+    private val itemList = inquiryMenuItemList
     private val TAG = this.javaClass.simpleName
 
     override fun getCount(): Int {
         return itemList.size
     }
 
-    override fun getItem(position: Int): MenuItem
+    override fun getItem(position: Int): InquiryMenuItem
     {
         return itemList[position]
     }
@@ -29,7 +29,7 @@ class InquiryListPopupWindowAdapter(private val ctx: Context,
         return position.toLong()
     }
 
-    private fun getViewType(position: Int): MenuItem.MenuType
+    private fun getViewType(position: Int): InquiryMenuItem.InquiryMenuType
     {
         return getItem(position).viewType
     }
@@ -41,12 +41,12 @@ class InquiryListPopupWindowAdapter(private val ctx: Context,
         val menu = view.findViewById<TextView>(R.id.tv_menu_text)
 
         when(getViewType(position)){
-            MenuItem.MenuType.MainMenu -> {
+            InquiryMenuItem.InquiryMenuType.MainMenu -> {
                 getItem(position).menuTitle?.let {title ->
                     menu.text = title
                 }
             }
-            MenuItem.MenuType.CompleteHistoryList -> {
+            InquiryMenuItem.InquiryMenuType.CompleteHistoryList -> {
                 getItem(position).timeCount?.let { timeCnt->
                     menu.text = timeCnt.time.replace("-", "년 ") + "월"
                     if(timeCnt.count > 0){

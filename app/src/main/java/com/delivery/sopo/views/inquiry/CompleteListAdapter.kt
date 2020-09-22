@@ -10,16 +10,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
-import com.delivery.sopo.bindings.CustomEditTextBindingAdapter.TAG
 import com.delivery.sopo.databinding.InquiryListCompleteItemBinding
-import com.delivery.sopo.models.inquiry.InquiryListData
+import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.ParcelId
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import java.util.stream.Stream
 
 
 class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, lifecycleOwner: LifecycleOwner,
-                          private var list: MutableList<InquiryListData>) : RecyclerView.Adapter<CompleteListAdapter.ViewHolder>()
+                          private var list: MutableList<InquiryListItem>) : RecyclerView.Adapter<CompleteListAdapter.ViewHolder>()
 {
     // 아이템 뷰를 저장하는 뷰홀더 클래스.
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
@@ -37,9 +36,9 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
 
         val inquiryBinding = binding
 
-        fun bind(inquiryListData: InquiryListData){
+        fun bind(inquiryListItem: InquiryListItem){
             binding.apply {
-                completeInquiryData = inquiryListData
+                completeInquiryData = inquiryListItem
             }
         }
     }
@@ -122,7 +121,7 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
         }
     }
 
-    fun getList(): MutableList<InquiryListData>
+    fun getList(): MutableList<InquiryListItem>
     {
         return list
     }
@@ -153,7 +152,7 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
         notifyDataSetChanged()
     }
 
-    fun setDataList(parcel: MutableList<InquiryListData>) {
+    fun setDataList(parcel: MutableList<InquiryListItem>) {
         this.list = parcel
         Stream.of(parcel).map {
             it
@@ -163,13 +162,6 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
 
     fun isFullListItem(isFull : Boolean){
         this.isMoreView = isFull
-        notifyDataSetChanged()
-    }
-
-    fun deleteSelectedParcel(){
-        list.removeIf {
-            it.isSelected
-        }
         notifyDataSetChanged()
     }
 
