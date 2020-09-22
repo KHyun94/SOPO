@@ -1,5 +1,6 @@
 package com.delivery.sopo.networks
 
+import com.delivery.sopo.database.dto.TimeCountDTO
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.dto.DeleteParcelsDTO
 import com.delivery.sopo.models.parcel.Parcel
@@ -30,6 +31,9 @@ interface ParcelAPI
         @Query("regDt") regDt: String
     ): Call<APIResult<String?>>
 
+    @GET("api/v1/sopoMainBackEnd/delivery/{email}/months")
+    @Headers("Accept: application/json")
+    suspend fun getMonthList( @Path("email") email: String): APIResult<MutableList<TimeCountDTO>>
 
     // 배송중 & 곧 도착 리스트 가져오는 api
     @GET("api/v1/sopoMainBackEnd/delivery/{email}/parcels/ongoing")

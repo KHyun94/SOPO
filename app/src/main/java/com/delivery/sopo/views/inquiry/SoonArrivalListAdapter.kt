@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
@@ -127,6 +128,7 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
         binding.root.constraint_delivery_status.visibility = View.GONE
         binding.root.constraint_item_part_delete.visibility = View.VISIBLE
         binding.root.constraint_delivery_status_delete.visibility = View.VISIBLE
+        binding.root.linear_parent_list_item_soon.background = ContextCompat.getDrawable(binding.root.context, R.drawable.border_red)
     }
 
     private fun viewInitialize(binding: InquiryListSoonItemBinding){
@@ -134,6 +136,7 @@ class SoonArrivalListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>
         binding.root.constraint_delivery_status.visibility = View.VISIBLE
         binding.root.constraint_item_part_delete.visibility = View.GONE
         binding.root.constraint_delivery_status_delete.visibility = View.GONE
+        binding.root.linear_parent_list_item_soon.background = null
     }
 
     fun setRemovable(flag: Boolean){

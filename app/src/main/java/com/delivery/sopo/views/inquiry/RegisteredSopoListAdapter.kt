@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
@@ -16,7 +17,6 @@ import com.delivery.sopo.models.inquiry.InquiryListData
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import kotlinx.android.synthetic.main.inquiry_list_registered_item.view.*
-import kotlinx.android.synthetic.main.inquiry_list_soon_item.view.*
 
 
 class RegisteredSopoListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, lifecycleOwner: LifecycleOwner,
@@ -74,18 +74,21 @@ class RegisteredSopoListAdapter(private val cntOfSelectedItem: MutableLiveData<I
                 holder.registeredBinding.root.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_registered)
                 holder.registeredBinding.root.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_300)
                 holder.registeredBinding.root.tv_delivery_status.text = "송장등록"
+                holder.registeredBinding.root.tv_delivery_status.setTextColor(ContextCompat.getColor(holder.registeredBinding.root.context, R.color.MAIN_WHITE))
             }
             //상품 인수
             DeliveryStatus.AT_PICKUP -> {
                 holder.registeredBinding.root.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_before)
-                holder.registeredBinding.root.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_GRAY_400)
-                holder.registeredBinding.root.tv_delivery_status.text = "배송 전"
+                holder.registeredBinding.root.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_GRAY_50)
+                holder.registeredBinding.root.tv_delivery_status.text = "배송전"
+                holder.registeredBinding.root.tv_delivery_status.setTextColor(ContextCompat.getColor(holder.registeredBinding.root.context, R.color.COLOR_GRAY_300))
             }
             //상품 이동 중
             DeliveryStatus.IN_TRANSIT -> {
                 holder.registeredBinding.root.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_ing)
                 holder.registeredBinding.root.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_900)
-                holder.registeredBinding.root.tv_delivery_status.text = "배송 중"
+                holder.registeredBinding.root.tv_delivery_status.text = "배송중"
+                holder.registeredBinding.root.tv_delivery_status.setTextColor(ContextCompat.getColor(holder.registeredBinding.root.context, R.color.MAIN_WHITE))
             }
             //배송 출발
             DeliveryStatus.OUT_FOR_DELIVERY -> {
@@ -183,6 +186,7 @@ class RegisteredSopoListAdapter(private val cntOfSelectedItem: MutableLiveData<I
         binding.root.constraint_delivery_status_back.visibility = View.GONE
         binding.root.constraint_delivery_status_front_delete.visibility = View.VISIBLE
         binding.root.constraint_delivery_status_back_delete.visibility = View.VISIBLE
+        binding.root.linear_parent_list_item_register.background = ContextCompat.getDrawable(binding.root.context, R.drawable.border_red)
     }
 
     private fun viewInitialize(binding: InquiryListRegisteredItemBinding){
@@ -190,6 +194,7 @@ class RegisteredSopoListAdapter(private val cntOfSelectedItem: MutableLiveData<I
         binding.root.constraint_delivery_status_back.visibility = View.VISIBLE
         binding.root.constraint_delivery_status_front_delete.visibility = View.GONE
         binding.root.constraint_delivery_status_back_delete.visibility = View.GONE
+        binding.root.linear_parent_list_item_register.background = null
     }
 
     override fun getItemCount(): Int {

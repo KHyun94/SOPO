@@ -1,4 +1,4 @@
-package com.delivery.sopo.models.mapper
+package com.delivery.sopo.mapper
 
 import com.delivery.sopo.models.entity.ParcelEntity
 import com.delivery.sopo.models.parcel.Parcel

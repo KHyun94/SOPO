@@ -1,5 +1,6 @@
 package com.delivery.sopo.repository
 
+import com.delivery.sopo.database.dto.TimeCountDTO
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.entity.ParcelEntity
 import com.delivery.sopo.models.parcel.Parcel
@@ -10,6 +11,7 @@ interface ParcelRepository {
    suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<Parcel>?
    suspend fun getLocalParcelById(regDt: String, parcelUid: String): ParcelEntity?
    suspend fun getLocalOngoingParcels(): MutableList<Parcel>?
+   suspend fun getRemoteMonthList(): MutableList<TimeCountDTO>?
    suspend fun saveLocalOngoingParcels(parcelList: List<Parcel>)
    suspend fun saveLocalOngoingParcel(parcel: ParcelEntity)
    suspend fun updateLocalOngoingParcel(parcel: ParcelEntity)

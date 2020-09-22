@@ -1,11 +1,11 @@
 package com.delivery.sopo.repository
 
+import com.delivery.sopo.database.dto.TimeCountDTO
 import com.delivery.sopo.database.room.AppDatabase
-import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.dto.DeleteParcelsDTO
 import com.delivery.sopo.models.entity.ParcelEntity
-import com.delivery.sopo.models.mapper.ParcelMapper
+import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
@@ -29,6 +29,8 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
     }
 
     override suspend fun getLocalOngoingParcels(): MutableList<Parcel>? = appDatabase.parcelDao().getOngoingData().map(ParcelMapper::entityToObject) as MutableList<Parcel>
+
+    override suspend fun getRemoteMonthList(): MutableList<TimeCountDTO>? = NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd()).getMonthList(email = userRepo.getEmail()).data
 
     override suspend fun saveLocalOngoingParcels(parcelList: List<Parcel>) {
         appDatabase.parcelDao().insert(parcelList.map(ParcelMapper::objectToEntity))

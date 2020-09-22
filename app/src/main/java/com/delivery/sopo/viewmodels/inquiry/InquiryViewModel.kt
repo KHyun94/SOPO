@@ -3,11 +3,12 @@ package com.delivery.sopo.viewmodels.inquiry
 import android.util.Log
 import androidx.lifecycle.*
 import com.delivery.sopo.consts.DeliveryStatus
+import com.delivery.sopo.database.dto.TimeCountDTO
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.enums.ScreenStatus
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.inquiry.InquiryListData
-import com.delivery.sopo.models.mapper.ParcelMapper
+import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
@@ -40,6 +41,11 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
     val completeList: LiveData<MutableList<InquiryListData>>
         get() = _completeList
 
+    // 배송완료 조회 가능한 '년월' 리스트 데이터
+    private val _monthList = MutableLiveData<MutableList<TimeCountDTO>>()
+    val monthList: LiveData<MutableList<TimeCountDTO>>
+        get() = _monthList
+
     // 화면에 전체 아이템의 노출 여부
     private val _isMoreView = MutableLiveData<Boolean>()
     val isMoreView: LiveData<Boolean>
@@ -55,6 +61,7 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
     val isSelectAll: LiveData<Boolean>
         get() = _isSelectAll
 
+    // '배송 중' 또는 '배송완료' 화면 선택의 기준
     private val _screenStatus = MutableLiveData<ScreenStatus>()
     val screenStatus: LiveData<ScreenStatus>
         get() = _screenStatus
@@ -72,6 +79,7 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
 
         _screenStatus.value = ScreenStatus.ONGOING
         getOngoingList()
+        sendRemoveData()
 //        postParcel("타이타우", "kr.lotte", "235255141936")
 //        postParcel("아베다new쿨링두피활력", "kr.lotte", "402280981874")
 //        postParcel("에비앙 330ML", "kr.lotte", "307842100996")
@@ -82,12 +90,26 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
 //        postParcel("손목 받침대", "kr.logen", "97783126932")
     }
 
+    private fun getMonthList(){
+        viewModelScope.launch {
+            withContext(Dispatchers.Default) {
+                val remoteMonthList = parcelRepoImpl.getRemoteMonthList()
+                remoteMonthList?.let { list ->
+                    for(timeCnt in list){
+                        Log.d(TAG, "${timeCnt.time} && ${timeCnt.count}")
+                    }
+                }
+                _monthList.postValue(remoteMonthList)
+            }
+        }
+    }
+
     //일단 Room에 택배 정보가 있는지 확인하고 데이터가 하나도 없다면 remote 서버에 요청해서 저장된 택배 정보를 수신한다.
     private fun getOngoingList()
     {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
-                //로컬db에 데이터를 호출
+                //로컬db에 데이터를 호출sendRemoveData
                 val localParcels = parcelRepoImpl.getLocalOngoingParcels()
 
                 //로컬db에 데이터가 존재하지 않는다면
@@ -101,11 +123,13 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
                             // 데이터를 로컬db에 저장
                             parcelRepoImpl.saveLocalOngoingParcels(parcelData as List<Parcel>)
 
+                            // 저장된 데이터를 리스트에 표출
+                            val localOngoingParcels = parcelRepoImpl.getLocalOngoingParcels()
+
                             //수신된 데이터를 '곧 도착' 및 '등록된 택배' 리스트에 세팅
                             withContext(Main){
-                                setSoonList(parcelData)
-                                setRegisteredList(parcelData)
-                                setCompleteList(parcelData)
+                                setSoonList(localOngoingParcels ?: mutableListOf())
+                                setRegisteredList(localOngoingParcels ?: mutableListOf())
                             }
                         }
                         else{
@@ -113,7 +137,6 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
                             withContext(Main){
                                 setSoonList(mutableListOf())
                                 setRegisteredList(mutableListOf())
-                                setCompleteList(mutableListOf())
                             }
                         }
                     }
@@ -130,18 +153,18 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
                     withContext(Main){
                         setSoonList(localParcels ?: mutableListOf())
                         setRegisteredList(localParcels ?: mutableListOf())
-                        setCompleteList(localParcels ?: mutableListOf())
                     }
                 }
             }
         }
     }
 
-    private fun getCompleteList(){
+    fun getCompleteList(inquiryDate: String){
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
-                val remoteCompleteParcels = parcelRepoImpl.getRemoteCompleteParcels(page = 0, inquiryDate = "202009")
+                val remoteCompleteParcels = parcelRepoImpl.getRemoteCompleteParcels(page = 0, inquiryDate = inquiryDate)
 
+                remoteCompleteParcels?.sortByDescending { it.arrivalDte }
                 withContext(Main){
                     setCompleteList(remoteCompleteParcels ?: mutableListOf())
                 }
@@ -201,6 +224,8 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
         setMoreView(false)
     }
 
+    //TODO : 서버에는 아직 데이터 삭제(status == 0)이 반영 안되어있고 app은 status 3인 경우,
+    //TODO : 서버에서 가져온 데이터가 업데이트 되었을때(inquiry hash에 변화가 생김) 해당 아이템 업데이트 여부 체크
     // 새로고침
     fun refreshOngoing(){
         viewModelScope.launch {
@@ -217,7 +242,7 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
                             parcelRepoImpl.saveLocalOngoingParcel(ParcelMapper.objectToEntity(remote))
                         }
                         else{
-                            if(localParcelById.inqueryHash != remote.inqueryHash){
+                            if(localParcelById.inqueryHash != remote.inqueryHash && localParcelById.status == 1){
                                 parcelRepoImpl.updateLocalOngoingParcel(ParcelMapper.objectToEntity(remote))
                             }
                         }
@@ -232,43 +257,54 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
         }
     }
 
+    // 화면을 배송완료 ==> 배송중으로 전환시킨다.
     fun setScreenStatusOngoing(){
         _screenStatus.value = ScreenStatus.ONGOING
     }
 
+    // TODO : 데이터의 새로고침은 어떻게 시켜줄 것인가?
+    // 화면을 배송중 ==> 배송완료로 전환시킨다.
     fun setScreenStatusComplete(){
         _screenStatus.value = ScreenStatus.COMPLETE
-        getCompleteList()
+
+        if(completeList.value == null || completeList.value?.size == 0){
+            getMonthList()
+//            getCompleteList("202009")
+        }
     }
 
-    // 실질적으로 데이터를 삭제하는 로직
+    // 데이터 삭제 로직 1단계 : Room의 status를 1==>3으로 바꾼다.
     fun removeSelectedData(selectedData: MutableList<ParcelId>) {
         ioScope.launch {
-            try{
-                //TODO : 삭제하기가 실패했을때 로컬에서도 update 3->0으로 업데이트 시키면 안됨.
-                // 로컬에서 먼저 해당 선택된 아이템의 status(PARCEL 테이블의)를 3으로 바꾼다. (3으로 바꾸고 최종적으로 deleteLocalOngoingParcelsStep2에서 0으로 바뀌어야 삭제 처리 완료)
-                parcelRepoImpl.deleteLocalOngoingParcelsStep1(selectedData)
+            parcelRepoImpl.deleteLocalOngoingParcelsStep1(selectedData)
 
+            // '곧 도착' 및 '등록된 택배' 리스트 둘 다 데이터의 변화가 있었음으로 로컬db로부터 데이터를 가져와 화면을 다시 그린다.
+            val localParcels = parcelRepoImpl.getLocalOngoingParcels()
+            withContext(Main){
+                setSoonList(localParcels ?: mutableListOf())
+                setRegisteredList(localParcels ?: mutableListOf())
+            }
+        }
+    }
+
+    // 데어터 삭제 로직 2단계 : Room의 status 3을 가진 택배들을 전부 서버로 보내서 서버 데이터 역시 삭제(1==>0)하고 최종적으로 status를 0으로 바꿔서 삭제 로직을 마무리한다.
+    private fun sendRemoveData(){
+        ioScope.launch {
+            try{
                 // 서버로 데이터를 삭제(상태 업데이트)하라고 요청
                 val deleteRemoteParcels = parcelRepoImpl.deleteRemoteOngoingParcels()
-
-                // 서버에서 요청이 성공했다면
-                if(deleteRemoteParcels.code == ResponseCode.SUCCESS.CODE){
-                    Log.d(TAG, "Server side data delete SUCCESS!!")
-
+                // 위 요청이 성공했다면
+                if(deleteRemoteParcels.code == ResponseCode.SUCCESS.CODE) {
                     // 해당 아이템의 status(PARCEL)를 0으로 업데이트하여 삭제 처리를 마무리
                     parcelRepoImpl.deleteLocalOngoingParcelsStep2()
-
-                    // '곧 도착' 및 '등록된 택배' 리스트 둘 다 데이터의 변화가 있었음으로 로컬db로부터 데이터를 가져와 화면을 다시 그린다.
-                    val localParcels = parcelRepoImpl.getLocalOngoingParcels()
-                    withContext(Main){
-                        setSoonList(localParcels ?: mutableListOf())
-                        setRegisteredList(localParcels ?: mutableListOf())
-                    }
+                    Log.i(TAG, "SUCCESS to send delete data")
                 }
             }
             catch (e: HttpException){
                 //TODO : 삭제하기에서 실패했을때 예외처리.
+                val errorLog = e.response()?.errorBody()?.charStream()
+                val apiResult = Gson().fromJson(errorLog, APIResult::class.java)
+                Log.i(TAG, "Fail to send delete data : ${apiResult.message}") // 실패 로그
             }
         }
     }
