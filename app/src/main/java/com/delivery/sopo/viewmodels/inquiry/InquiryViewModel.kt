@@ -26,17 +26,12 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
-    // '곧 도착' 리스트 데이터
-    private val _soonList = MutableLiveData<MutableList<InquiryListItem>>()
-    val soonList: LiveData<MutableList<InquiryListItem>>
-        get() = _soonList
+    // 진행 중인 리스트 데이터
+    private val _ongoingList = MutableLiveData<MutableList<InquiryListItem>>()
+    val ongoingList: LiveData<MutableList<InquiryListItem>>
+        get() = _ongoingList
 
-    // '등록된 택배' 리스트 데이터
-    private val _registeredList = MutableLiveData<MutableList<InquiryListItem>>()
-    val registerList: LiveData<MutableList<InquiryListItem>>
-        get() = _registeredList
-
-    // '등록된 택배' 리스트 데이터
+    //  배송완료 리스트 데이터
     private val _completeList = MutableLiveData<MutableList<InquiryListItem>>()
     val completeList: LiveData<MutableList<InquiryListItem>>
         get() = _completeList
@@ -61,6 +56,11 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
     val isSelectAll: LiveData<Boolean>
         get() = _isSelectAll
 
+    // '프로그래스 바' 표출 여부
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean>
+        get() = _isLoading
+
     // '배송 중' 또는 '배송완료' 화면 선택의 기준
     private val _screenStatus = MutableLiveData<ScreenStatus>()
     val screenStatus: LiveData<ScreenStatus>
@@ -68,6 +68,11 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
 
     // '삭제하기'에서 선택된 아이템의 개수
     var cntOfSelectedItem = MutableLiveData<Int>()
+
+    private val _cntOfDelete = MutableLiveData<Int>()
+    val cntOfDelete: LiveData<Int>
+        get() = _cntOfDelete
+
 
     private val ioScope = CoroutineScope(Dispatchers.IO)
 
@@ -90,9 +95,29 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
 //        postParcel("손목 받침대", "kr.logen", "97783126932")
     }
 
+    fun setCntOfDelete(value: Int){
+        _cntOfDelete.value = value
+    }
+
+    fun deleteCancel(){
+        viewModelScope.launch(Dispatchers.IO) {
+            val localBeDeleteCanceledParcel = parcelRepoImpl.getLocalBeDeleteCanceledParcel()
+            Log.d(TAG, "삭제 취소할 데이터 : $localBeDeleteCanceledParcel")
+            localBeDeleteCanceledParcel?.let {
+                list ->
+                    list.forEach { it.status = 1 }
+                    parcelRepoImpl.updateLocalOngoingParcels(list)
+            }
+            parcelRepoImpl.getLocalOngoingParcels()?.let {
+                _ongoingList.postValue(ParcelMapper.parcelListToInquiryItemList(it))
+            }
+        }
+    }
+
     private fun getMonthList(){
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
+                _isLoading.postValue(true)
                 val remoteMonthList = parcelRepoImpl.getRemoteMonthList()
                 remoteMonthList?.let { list ->
                     for(timeCnt in list){
@@ -100,6 +125,7 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
                     }
                 }
                 _monthList.postValue(remoteMonthList)
+                _isLoading.postValue(false)
             }
         }
     }
@@ -126,24 +152,19 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
 
                             // 저장된 데이터를 리스트에 표출하기 위하여 Repo로부터 다시 호출
                             val localOngoingParcels = parcelRepoImpl.getLocalOngoingParcels()
-
-                            Log.d(TAG, "!!!!! localOngoingParcels : $localOngoingParcels")
                             // 서버로부터도 받아온 값이 없다면 Empty View를 화면에 노출시킨다.
                             if(localOngoingParcels.isNullOrEmpty()){
-//                                _isOngoingEmptyView.postValue(true)
+                                _ongoingList.postValue(mutableListOf())
                             }
                             // 서버로부터 받아온 값이 있다면(로컬로부터 다시 호출됨)
                             else{
                                 //수신된 데이터를 '곧 도착' 및 '등록된 택배' 리스트에 세팅
-                                withContext(Main){
-                                    setSoonList(localOngoingParcels)
-                                    setRegisteredList(localOngoingParcels)
-                                }
+                                _ongoingList.postValue(ParcelMapper.parcelListToInquiryItemList(localOngoingParcels))
                             }
                         }
                         // 서버로부터 받아온 데이터가 빈 값일 경
                         else{
-//                            _isOngoingEmptyView.postValue(true)
+                            _ongoingList.postValue(mutableListOf())
                         }
                     }
                     catch (e: HttpException){
@@ -156,19 +177,13 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
                 }
                 //로컬 db에 데이터가 존재하는 경우
                 else{
-                    Log.d(TAG, "!!!!! localParcels : $localParcels")
                     // 한번 더 비었는지 체크
                     if(localParcels.isNullOrEmpty()){
-                        Log.d(TAG, "!!!!! localParcels : isNullOrEmpty")
-//                        _isOngoingEmptyView.postValue(true)
+                        _ongoingList.postValue(mutableListOf())
                     }
                     // 로컬db에 데이터가 존재한다면 로컬db의 데이터를 '곧 도착' 및 '등록된 택배' 리스트에 데이터 세팅
-                    else{
-                        Log.d(TAG, "!!!!! localParcels : isNullOrEmpty ELSE")
-                        withContext(Main){
-                            setSoonList(localParcels)
-                            setRegisteredList(localParcels)
-                        }
+                    else {
+                        _ongoingList.postValue(ParcelMapper.parcelListToInquiryItemList(localParcels))
                     }
                 }
             }
@@ -192,7 +207,7 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
     fun isFullySelected(selectedNum: Int): Boolean{
         return when(screenStatus.value ?: ScreenStatus.ONGOING){
             ScreenStatus.ONGOING -> {
-                selectedNum == ((soonList.value?.size ?: 0) + (registerList.value?.size ?: 0))
+                selectedNum == (ongoingList.value?.size ?: 0)
             }
             ScreenStatus.COMPLETE -> {
                 selectedNum ==  (completeList.value?.size ?: 0)
@@ -259,7 +274,7 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
                         )
                         // 서버로부터 받아온 데이터가 검색되지 않았을 경우 => 새로운 데이터라는 의미 => 로컬에 저장한다.
                         if(localParcelById == null){
-                            parcelRepoImpl.saveLocalOngoingParcel(ParcelMapper.objectToEntity(remote))
+                            parcelRepoImpl.saveLocalOngoingParcel(ParcelMapper.parcelToEntity(remote))
                         }
                         /*
                             서버로부터 받앙온 데이터가 검색된 경우
@@ -269,7 +284,7 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
                          */
                         else{
                             if(localParcelById.inqueryHash != remote.inqueryHash && localParcelById.status == 1){
-                                parcelRepoImpl.updateLocalOngoingParcel(ParcelMapper.objectToEntity(remote))
+                                parcelRepoImpl.updateLocalOngoingParcel(ParcelMapper.parcelToEntity(remote))
                             }
                         }
                     }
@@ -282,8 +297,12 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
                     // 로컬db에 데이터가 존재한다면 로컬db의 데이터를 '곧 도착' 및 '등록된 택배' 리스트에 데이터 세팅
                     else{
                         withContext(Main){
-                            setSoonList(localParcels)
-                            setRegisteredList(localParcels)
+//                            setSoonList(localParcels)
+//                            setRegisteredList(localParcels)
+                            _ongoingList.value = localParcels.map {
+                                    parcel ->
+                                InquiryListItem(parcel = parcel)
+                            } as MutableList<InquiryListItem>
                         }
                     }
                 }
@@ -303,7 +322,6 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
 
         if(completeList.value == null || completeList.value?.size == 0){
             getMonthList()
-//            getCompleteList("202009")
         }
     }
 
@@ -315,8 +333,7 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
             // '곧 도착' 및 '등록된 택배' 리스트 둘 다 데이터의 변화가 있었음으로 로컬db로부터 데이터를 가져와 화면을 다시 그린다.
             val localParcels = parcelRepoImpl.getLocalOngoingParcels()
             withContext(Main){
-                setSoonList(localParcels ?: mutableListOf())
-                setRegisteredList(localParcels ?: mutableListOf())
+                _ongoingList.postValue(ParcelMapper.parcelListToInquiryItemList(localParcels ?: mutableListOf()))
             }
         }
     }
@@ -343,28 +360,6 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
         }
     }
 
-    // '곧 도착' 리스트의 데이터를 filter로 걸러 세팅한다.
-    private fun setSoonList(parcelList: MutableList<Parcel>){
-        _soonList.value = parcelList.filter { parcel ->
-            // 리스트 중 오직 '배송출발'일 경우만 해당 adapter로 넘긴다.
-            parcel.deliveryStatus == DeliveryStatus.OUT_FOR_DELIVERY
-        }.map {
-                filteredItem ->
-            InquiryListItem(parcel = filteredItem)
-        } as MutableList<InquiryListItem>
-    }
-
-    // '등록된 택배' 리스트의 데이터를 filter로 걸러 세팅한다.
-    private fun setRegisteredList(parcelList: MutableList<Parcel>){
-        _registeredList.value = parcelList.filter { parcel ->
-            // 리스트 중 오직 '배송출발'일 경우만 해당 adapter로 넘긴다.
-            parcel.deliveryStatus != DeliveryStatus.OUT_FOR_DELIVERY && parcel.deliveryStatus != DeliveryStatus.DELIVERED
-        }.map {
-                filteredItem ->
-            InquiryListItem(parcel = filteredItem)
-        } as MutableList<InquiryListItem>
-    }
-
     // '배송완료' 리스트의 데이터를 filter로 걸러 세팅한다.
     private fun setCompleteList(parcelList: MutableList<Parcel>){
         _completeList.value = parcelList.filter { parcel ->
@@ -375,16 +370,6 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
                 filteredItem ->
             InquiryListItem(parcel = filteredItem)
         } as MutableList<InquiryListItem>
-    }
-
-    fun getOngoingListSize(): Int{
-        val soonListSize = soonList.value?.size ?: 0
-        val registerSize = registerList.value?.size ?: 0
-        return (soonListSize + registerSize)
-    }
-
-    fun getCompleteListSize(): Int{
-        return completeList.value?.size ?: 0
     }
 
     private fun postParcel(parcelAlias: String, trackCompany: String, trackNum: String){
@@ -415,7 +400,6 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
                                     Log.d(TAG,"[postParcel] onResponse : ${response.body()}")
                                 }
                                 400 -> {
-
                                 }
                             }
                         }

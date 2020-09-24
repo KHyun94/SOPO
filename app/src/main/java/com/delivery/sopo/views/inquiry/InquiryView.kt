@@ -7,8 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import android.widget.ListAdapter
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
@@ -20,21 +23,26 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.delivery.sopo.R
 import com.delivery.sopo.database.dto.TimeCountDTO
 import com.delivery.sopo.databinding.SopoInquiryViewBinding
+import com.delivery.sopo.enums.InquiryItemType
 import com.delivery.sopo.enums.ScreenStatus
 import com.delivery.sopo.mapper.MenuMapper
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.fun_util.SizeUtil
+import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.MainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.views.MainViewModelFactory
 import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
 import kotlinx.android.synthetic.main.sopo_inquiry_view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.Stream
 import kotlin.NoSuchElementException
-
 
 /*
     TODO : 로컬에서 Parcel의 status가 3인데 서버는 0인 경우 => 앱에서 지우라고 서버에 요청을해서 서버는 지웠지만 앱은 서버의 성공 요청을 못 받은 경우,
@@ -46,12 +54,13 @@ class InquiryView: Fragment() {
     private val inquiryVM: InquiryViewModel by viewModel()
     private val userRepo: UserRepo by inject()
     private lateinit var binding: SopoInquiryViewBinding
-    private lateinit var soonArrivalListAdapter: SoonArrivalListAdapter
-    private lateinit var registeredSopoListAdapter: RegisteredSopoListAdapter
-    private lateinit var completeListAdapter: CompleteListAdapter
+    private lateinit var soonArrivalListAdapter: InquiryListAdapter
+    private lateinit var registeredSopoListAdapter: InquiryListAdapter
+    private lateinit var completeListAdapter: InquiryListAdapter
     private val mainVm: MainViewModel by lazy {
         ViewModelProvider(requireActivity(), MainViewModelFactory(userRepo)).get(MainViewModel::class.java)
     }
+    private var progressBar : CustomProgressBar? = null
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(
@@ -60,6 +69,7 @@ class InquiryView: Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = SopoInquiryViewBinding.inflate(inflater, container, false)
+        progressBar = CustomProgressBar(requireActivity() as AppCompatActivity)
         viewBinding()
         setObserver()
 
@@ -80,27 +90,33 @@ class InquiryView: Fragment() {
         binding.vm = inquiryVM
         binding.lifecycleOwner = this
 
-        soonArrivalListAdapter = SoonArrivalListAdapter(
-            inquiryVM.cntOfSelectedItem,
-            this,
-            mutableListOf()
+        soonArrivalListAdapter = InquiryListAdapter(
+            cntOfSelectedItem = inquiryVM.cntOfSelectedItem,
+            lifecycleOwner = this,
+            list = mutableListOf(),
+            itemType = InquiryItemType.Soon
         )
+
         binding.recyclerviewSoonArrival.adapter = soonArrivalListAdapter
         binding.recyclerviewSoonArrival.layoutManager = LinearLayoutManager(requireActivity())
 
-        registeredSopoListAdapter = RegisteredSopoListAdapter(
-            inquiryVM.cntOfSelectedItem,
-            this,
-            mutableListOf()
+        registeredSopoListAdapter = InquiryListAdapter(
+            cntOfSelectedItem = inquiryVM.cntOfSelectedItem,
+            lifecycleOwner = this,
+            list = mutableListOf(),
+            itemType = InquiryItemType.Registered
         )
+
         binding.recyclerviewRegisteredParcel.adapter = registeredSopoListAdapter
         binding.recyclerviewRegisteredParcel.layoutManager = LinearLayoutManager(requireActivity())
 
-        completeListAdapter = CompleteListAdapter(
-            inquiryVM.cntOfSelectedItem,
-            this,
-            mutableListOf()
+        completeListAdapter = InquiryListAdapter(
+            cntOfSelectedItem = inquiryVM.cntOfSelectedItem,
+            lifecycleOwner = this,
+            list = mutableListOf(),
+            itemType = InquiryItemType.Complete
         )
+
         binding.recyclerviewCompleteParcel.adapter = completeListAdapter
         binding.recyclerviewCompleteParcel.layoutManager = LinearLayoutManager(requireActivity())
 
@@ -109,16 +125,21 @@ class InquiryView: Fragment() {
 
     private fun setObserver(){
 
-        inquiryVM.soonList.observe(this, Observer {
-            // '곧 도착' 리스트의 아이템의 개수에 따른 화면 세팅
-            viewSettingForSoonArrivalList(it.size)
-            soonArrivalListAdapter.setDataList(it)
+        inquiryVM.isLoading.observe(this, Observer{
+            if(it){
+                progressBar?.onStartDialog()
+            }
+            else{
+                progressBar?.onStop()
+            }
         })
 
-        inquiryVM.registerList.observe(this, Observer {
-            // '등록된 택배' 리스트의 아이템의 개수에 따른 화면 세팅
-            viewSettingForRegisteredList(it.size)
+        inquiryVM.ongoingList.observe(this, Observer {
+            soonArrivalListAdapter.setDataList(it)
             registeredSopoListAdapter.setDataList(it)
+
+            viewSettingForSoonArrivalList(soonArrivalListAdapter.getListSize())
+            viewSettingForRegisteredList(registeredSopoListAdapter.getListSize())
         })
 
         // 배송완료 리스트.
@@ -174,7 +195,6 @@ class InquiryView: Fragment() {
                         requireContext(),
                         R.font.spoqa_han_sans_bold
                     )
-                    linear_ongoing_parent.visibility = VISIBLE
 
                     btn_complete.typeface = ResourcesCompat.getFont(
                         requireContext(),
@@ -190,20 +210,9 @@ class InquiryView: Fragment() {
                         requireContext(),
                         R.drawable.border_all_rounded_color_gray_400
                     )
-                    constraint_complete_parent.visibility = GONE
-                    constraint_month_spinner.visibility = GONE
 
-                    // 만약 배송 중 리스트의 아이템의 개수가 0개라면 Empty View를 보여줘야한다.
-//                    if(inquiryVM.getOngoingListSize() == 0){
-//                        linear_ongoing_parent.visibility = GONE
-//                        constraint_complete_parent.visibility = GONE
-//                        linear_empty_view.visibility = VISIBLE
-//                    }
-//                    else{
-//                        linear_ongoing_parent.visibility = VISIBLE
-//                        constraint_complete_parent.visibility = VISIBLE
-//                        linear_empty_view.visibility = GONE
-//                    }
+//                    linear_ongoing_parent.visibility = VISIBLE
+//                    constraint_complete_parent.visibility = GONE
                 }
                 // '배송 완료' 화면
                 ScreenStatus.COMPLETE ->
@@ -222,8 +231,6 @@ class InquiryView: Fragment() {
                         requireContext(),
                         R.font.spoqa_han_sans_regular
                     )
-                    linear_ongoing_parent.visibility = GONE
-
                     btn_complete.typeface = ResourcesCompat.getFont(
                         requireContext(),
                         R.font.spoqa_han_sans_bold
@@ -238,17 +245,8 @@ class InquiryView: Fragment() {
                         requireContext(),
                         R.drawable.border_all_rounded_light_black
                     )
-                    constraint_complete_parent.visibility = VISIBLE
-                    constraint_month_spinner.visibility = VISIBLE
-
-//                    if(inquiryVM.getCompleteListSize() == 0){
-//                        constraint_complete_parent.visibility = GONE
-//                        linear_empty_view.visibility = VISIBLE
-//                    }
-//                    else{
-//                        constraint_complete_parent.visibility = VISIBLE
-//                        linear_empty_view.visibility = GONE
-//                    }
+//                    linear_ongoing_parent.visibility = GONE
+//                    constraint_complete_parent.visibility = VISIBLE
                 }
             }
         })
@@ -330,7 +328,7 @@ class InquiryView: Fragment() {
                 completeListAdapter.setRemovable(true)
 
                 // 팝업 메뉴에서 '삭제하기'를 선택했을때의 화면 세팅
-                viewSettingforPopupMenuDelete()
+                viewSettingForPopupMenuDelete()
             }
             else {
                 // '삭제하기 취소'일때
@@ -340,7 +338,7 @@ class InquiryView: Fragment() {
                 completeListAdapter.setRemovable(false)
 
                 // 삭제하기가 '취소' 되었을때 화면 세팅
-                viewSettingforPopupMenuDeleteCancel()
+                viewSettingForPopupMenuDeleteCancel()
             }
         })
 
@@ -414,6 +412,7 @@ class InquiryView: Fragment() {
         val listPopupWindowAdapter = InquiryListPopupWindowAdapter(requireActivity(), MenuMapper.timeCountDtoToMenuItemList(timeCntDtoList))
         listPopupWindow.setAdapter(listPopupWindowAdapter)
 
+        // 6개 이상이라면 6개까지만 크기를 늘리고 그 이상의 데이터는 스크롤로 내리도록함
         if(timeCntDtoList.size > 6){
             val measureContentHeight = measureContentHeight(listPopupWindowAdapter)
             Log.d(TAG, "measureContentHeight : $measureContentHeight")
@@ -483,14 +482,17 @@ class InquiryView: Fragment() {
 
                 // 선택된 데이터들을 삭제한다.
                 inquiryVM.removeSelectedData(selectedData)
+                // 삭제할 데이터의 크기를 알려준다.
+                inquiryVM.setCntOfDelete(selectedData.size)
 
                 // TODO: 로딩화면으로 데이터가 삭제되고 화면이 다시 그려지기 전까지의 화면을 대체한다.
-
                 // 삭제하기 화면을 종료한다.
                 inquiryVM.closeRemoveView()
                 dialog.dismiss()
+
+                showDeleteSnackBar()
             }
-                .show(requireActivity().supportFragmentManager, "ConfirmDeleteDialog")
+            .show(requireActivity().supportFragmentManager, "ConfirmDeleteDialog")
         }
     }
 
@@ -506,6 +508,7 @@ class InquiryView: Fragment() {
         image_inquiry_popup_menu_close.visibility = GONE
         constraint_delete_final.visibility = GONE
         tv_delete_title.visibility = GONE
+        constraint_snack_bar.visibility = GONE
     }
 
     /*
@@ -555,7 +558,7 @@ class InquiryView: Fragment() {
     }
 
     //팝업 메뉴에서 '삭제하기'가 선택되었을때 화면 세팅
-    private fun viewSettingforPopupMenuDelete(){
+    private fun viewSettingForPopupMenuDelete(){
         tv_title.visibility = INVISIBLE
         constraint_select.visibility = INVISIBLE
         image_inquiry_popup_menu.visibility = INVISIBLE
@@ -570,7 +573,7 @@ class InquiryView: Fragment() {
     }
 
     // X 버튼으로 '삭제하기 취소'가 되었을때 화면 세팅
-    private fun viewSettingforPopupMenuDeleteCancel(){
+    private fun viewSettingForPopupMenuDeleteCancel(){
         tv_title.visibility = VISIBLE
         constraint_select.visibility = VISIBLE
         image_inquiry_popup_menu.visibility = VISIBLE
@@ -584,5 +587,22 @@ class InquiryView: Fragment() {
         // 삭제하기 취소가 되었을때 화면의 리스트들을 앱이 켜졌을때 처럼 초기화 시켜준다.( '더보기'가 눌렸었는지 아니면 내가 전에 리스트들의 스크롤을 얼마나 내렸는지를 일일이 알고 있기 힘들기 때문에)
         viewSettingForSoonArrivalList(soonArrivalListAdapter.getListSize())
         viewSettingForRegisteredList(registeredSopoListAdapter.getListSize())
+    }
+
+    private fun showDeleteSnackBar(){
+        val slideUp: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up)
+        val slideDown: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down)
+
+        constraint_snack_bar.visibility = VISIBLE
+        constraint_snack_bar.startAnimation(slideUp)
+        //3초후에 실행
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+                CoroutineScope(Dispatchers.Main).launch {
+                    constraint_snack_bar.visibility = GONE
+                    constraint_snack_bar.startAnimation(slideDown)
+                }
+            }
+        }, 2000)
     }
 }

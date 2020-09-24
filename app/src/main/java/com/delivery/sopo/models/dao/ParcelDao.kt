@@ -18,6 +18,9 @@ interface ParcelDao
     @Query("SELECT * FROM PARCEL WHERE STATUS = 3")
     suspend fun getBeDeletedData() : List<ParcelEntity>
 
+    @Query("SELECT * FROM PARCEL WHERE STATUS = 3 AND AUDIT_DTE >= DATETIME('now', 'localtime', '-10.0 seconds')")
+    suspend fun getBeDeleteCanceledData() : List<ParcelEntity>
+
     @Query("SELECT * FROM PARCEL WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
     suspend fun getById(regDt: String, parcelUid: String) : ParcelEntity?
 

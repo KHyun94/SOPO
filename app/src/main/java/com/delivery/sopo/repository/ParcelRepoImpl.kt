@@ -10,6 +10,7 @@ import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.util.fun_util.TimeUtil
 import java.lang.RuntimeException
 import java.util.stream.Collectors
 
@@ -28,12 +29,16 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
         return appDatabase.parcelDao().getById(regDt,parcelUid)
     }
 
-    override suspend fun getLocalOngoingParcels(): MutableList<Parcel>? = appDatabase.parcelDao().getOngoingData().map(ParcelMapper::entityToObject) as MutableList<Parcel>
+    override suspend fun getLocalBeDeleteCanceledParcel(): List<ParcelEntity>? {
+        return appDatabase.parcelDao().getBeDeleteCanceledData()
+    }
+
+    override suspend fun getLocalOngoingParcels(): MutableList<Parcel>? = appDatabase.parcelDao().getOngoingData().map(ParcelMapper::entityToParcel) as MutableList<Parcel>
 
     override suspend fun getRemoteMonthList(): MutableList<TimeCountDTO>? = NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd()).getMonthList(email = userRepo.getEmail()).data
 
     override suspend fun saveLocalOngoingParcels(parcelList: List<Parcel>) {
-        appDatabase.parcelDao().insert(parcelList.map(ParcelMapper::objectToEntity))
+        appDatabase.parcelDao().insert(parcelList.map(ParcelMapper::parcelToEntity))
     }
 
     override suspend fun saveLocalOngoingParcel(parcel: ParcelEntity) {
@@ -42,6 +47,10 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
 
     override suspend fun updateLocalOngoingParcel(parcel: ParcelEntity) {
         appDatabase.parcelDao().update(parcel)
+    }
+
+    override suspend fun updateLocalOngoingParcels(parcelList: List<ParcelEntity>) {
+        appDatabase.parcelDao().update(parcelList)
     }
 
     override suspend fun deleteRemoteOngoingParcels(): APIResult<String?> {
@@ -57,6 +66,7 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
             val parcelEntity = appDatabase.parcelDao().getById(parcelId.regDt, parcelId.parcelUid) ?: throw RuntimeException("deleteLocalOngoingParcelsStep1 process cannot permit null object")
             parcelEntity.apply {
                 this.status = 3
+                this.auditDte = TimeUtil.getDateTime()
             }
             appDatabase.parcelDao().insert(parcelEntity)
         }

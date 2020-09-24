@@ -1,12 +1,13 @@
 package com.delivery.sopo.mapper
 
 import com.delivery.sopo.models.entity.ParcelEntity
+import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 
 object ParcelMapper
 {
-    fun entityToObject(parcelEntity: ParcelEntity): Parcel{
+    fun entityToParcel(parcelEntity: ParcelEntity): Parcel{
         return Parcel(parcelId = ParcelId(regDt = parcelEntity.regDt, parcelUid = parcelEntity.parcelUid),
             userName = parcelEntity.userName,
             trackNum = parcelEntity.trackNum,
@@ -20,7 +21,7 @@ object ParcelMapper
             status = parcelEntity.status)
     }
 
-    fun objectToEntity(parcel: Parcel): ParcelEntity{
+    fun parcelToEntity(parcel: Parcel): ParcelEntity{
         return ParcelEntity(
             regDt = parcel.parcelId.regDt,
             parcelUid = parcel.parcelId.parcelUid,
@@ -39,5 +40,12 @@ object ParcelMapper
 
     fun entityToParcelId(parcelEntity: ParcelEntity): ParcelId{
         return ParcelId(regDt = parcelEntity.regDt, parcelUid = parcelEntity.parcelUid)
+    }
+
+    fun parcelListToInquiryItemList(parcelList: MutableList<Parcel>): MutableList<InquiryListItem>{
+        return parcelList.map {
+            InquiryListItem(parcel = it)
+        } as MutableList<InquiryListItem>
+
     }
 }

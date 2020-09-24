@@ -11,7 +11,7 @@
     </data>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/cv_registered_parent"
+        android:id="@+id/cv_ongoing_parent"
         android:layout_width="match_parent"
         android:layout_height="90dp"
         app:cardBackgroundColor="@color/MAIN_WHITE"

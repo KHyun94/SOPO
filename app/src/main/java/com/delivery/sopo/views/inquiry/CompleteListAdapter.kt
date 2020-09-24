@@ -14,6 +14,7 @@ import com.delivery.sopo.databinding.InquiryListCompleteItemBinding
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.ParcelId
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
+import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
 import java.util.stream.Stream
 
 
@@ -73,7 +74,7 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
             viewInitialize(holder.inquiryBinding)
         }
 
-        holder.inquiryBinding.root.cv_parent.setOnClickListener{
+        holder.inquiryBinding.root.cv_ongoing_parent.setOnClickListener{
 
             Log.d(TAG, "isSelect : ${inquiryListData.isSelected} && isRemovable : $isRemovable")
 

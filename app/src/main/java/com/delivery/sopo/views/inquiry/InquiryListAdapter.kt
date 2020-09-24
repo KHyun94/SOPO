@@ -2,8 +2,10 @@ package com.delivery.sopo.views.inquiry
 
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
@@ -15,31 +17,27 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.DeliveryStatus
 import com.delivery.sopo.databinding.InquiryListCompleteItemBinding
 import com.delivery.sopo.databinding.InquiryListOngoingItemBinding
-import com.delivery.sopo.databinding.InquiryListRegisteredItemBinding
-import com.delivery.sopo.databinding.InquiryListSoonItemBinding
 import com.delivery.sopo.enums.InquiryItemType
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
+import com.delivery.sopo.util.fun_util.SizeUtil
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
-import kotlinx.android.synthetic.main.inquiry_list_registered_item.view.*
-import kotlinx.android.synthetic.main.inquiry_list_soon_item.view.*
-import java.util.stream.Stream
+import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
 
 class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, lifecycleOwner: LifecycleOwner,
                          private var list: MutableList<InquiryListItem>,
                          private val itemType: InquiryItemType) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
-    // 아이템 뷰를 저장하는 뷰홀더 클래스.
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
-    private val limitOfItem = 2
+    // TODO : CONST로 빼던지 BUILD_CONFIG로 빼야함.
+    private val limitOfSoonListSize = 2
 
     private var isMoreView = false
     private var isRemovable = false
 
     init {
-        cntOfSelectedItem.observe(lifecycleOwner, Observer {
-        })
+        cntOfSelectedItem.observe(lifecycleOwner, Observer {})
     }
 
     class OngoingViewHolder(private val binding: InquiryListOngoingItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -62,22 +60,22 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
         }
     }
 
-
     // onCreateViewHolder() - 아이템 뷰를 위한 뷰홀더 객체 생성하여 리턴.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         when(itemType){
             InquiryItemType.Soon ->{
                 return OngoingViewHolder(
-                    DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.inquiry_list_soon_item, parent, false)
+                    DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent, false)
                 )
             }
             InquiryItemType.Registered ->{
                 return OngoingViewHolder(
-                    DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.inquiry_list_registered_item, parent, false)
+                    DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent, false)
                 )
             }
             InquiryItemType.Complete -> {
-                return CompleteListAdapter.ViewHolder(DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.inquiry_list_complete_item, parent, false)
+                return CompleteViewHolder(
+                    DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.inquiry_list_complete_item, parent, false)
                 )
             }
         }
@@ -125,8 +123,19 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
                     //배송 출발
                     DeliveryStatus.OUT_FOR_DELIVERY -> {
                         holder.ongoingBinding.root.apply {
-                            Glide.with(this.context).asGif().load(R.drawable.start_delivery).into(this.image_delivery_status)
-                            this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_900)
+                            Glide.with(this.context).asGif().load(R.drawable.start_delivery2).into(this.image_delivery_status)
+                            val gifMargin = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                            gifMargin.setMargins(0,0,0,-SizeUtil.changeDpToPx(this.context, 5F))
+                            gifMargin.height = SizeUtil.changeDpToPx(this.context, 50F)
+                            gifMargin.width = SizeUtil.changeDpToPx(this.context, 50F)
+
+//                            this.image_delivery_status.layoutParams.height = SizeUtil.changeDpToPx(this.context, 50F)
+//                            this.image_delivery_status.layoutParams.width = SizeUtil.changeDpToPx(this.context, 50F)
+//                            this.image_delivery_status.requestLayout()
+                            this.image_delivery_status.layoutParams = gifMargin
+//                            this.image_delivery_status.requestLayout()
+
+                            this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_500)
                             this.tv_delivery_status.text = "배송출발"
                             this.tv_delivery_status.setTextColor(ContextCompat.getColor(holder.ongoingBinding.root.context, R.color.MAIN_WHITE))
                         }
@@ -144,7 +153,7 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
                     ongoingViewInitialize(holder.ongoingBinding)
                 }
 
-                holder.ongoingBinding.root.cv_registered_parent.setOnClickListener {
+                holder.ongoingBinding.root.cv_ongoing_parent.setOnClickListener {
                     if(isRemovable && !inquiryListData.isSelected){
                         inquiryListData.isSelected = true
                         cntOfSelectedItem.value = (cntOfSelectedItem.value ?: 0) + 1
@@ -169,6 +178,24 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
                 }
                 else{
                     completeViewInitialize(holder.completeBinding)
+                }
+                holder.completeBinding.root.cv_complete_parent.setOnClickListener{
+
+                    Log.d(TAG, "isSelect : ${inquiryListData.isSelected} && isRemovable : $isRemovable")
+
+                    if(isRemovable && !inquiryListData.isSelected){
+                        inquiryListData.isSelected = true
+                        cntOfSelectedItem.value = (cntOfSelectedItem.value ?: 0) + 1
+                        completeViewSelected(holder.completeBinding)
+                    }
+                    else if (isRemovable && inquiryListData.isSelected){
+                        inquiryListData.isSelected = false
+                        cntOfSelectedItem.value = (cntOfSelectedItem.value ?: 0) - 1
+                        completeViewInitialize(holder.completeBinding)
+                    }
+                    else{
+                        Log.d(TAG, "2122")
+                    }
                 }
             }
         }
@@ -202,40 +229,34 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
         }
     }
 
-    fun getList(): MutableList<InquiryListItem> {
-        return list
-    }
-
     private fun ongoingViewSelected(binding: InquiryListOngoingItemBinding){
-        binding.root.constraint_delivery_status_front.visibility = View.GONE
-        binding.root.constraint_delivery_status_back.visibility = View.GONE
-        binding.root.constraint_delivery_status_front_delete.visibility = View.VISIBLE
-        binding.root.constraint_delivery_status_back_delete.visibility = View.VISIBLE
+        binding.root.constraint_delivery_status_front.visibility = GONE
+        binding.root.constraint_delivery_status_back.visibility = GONE
+        binding.root.constraint_delivery_status_front_delete.visibility = VISIBLE
+        binding.root.constraint_delivery_status_back_delete.visibility = VISIBLE
         binding.root.linear_parent_list_item_register.background = ContextCompat.getDrawable(binding.root.context, R.drawable.border_red)
     }
 
     private fun ongoingViewInitialize(binding: InquiryListOngoingItemBinding){
-        binding.root.constraint_delivery_status_front.visibility = View.VISIBLE
-        binding.root.constraint_delivery_status_back.visibility = View.VISIBLE
-        binding.root.constraint_delivery_status_front_delete.visibility = View.GONE
-        binding.root.constraint_delivery_status_back_delete.visibility = View.GONE
+        binding.root.constraint_delivery_status_front.visibility = VISIBLE
+        binding.root.constraint_delivery_status_back.visibility = VISIBLE
+        binding.root.constraint_delivery_status_front_delete.visibility = GONE
+        binding.root.constraint_delivery_status_back_delete.visibility = GONE
         binding.root.linear_parent_list_item_register.background = null
     }
 
     private fun completeViewSelected(binding: InquiryListCompleteItemBinding){
-        Log.d(TAG, "viewSettingForSelected")
-        binding.root.constraint_item_part_complete.visibility = View.GONE
-        binding.root.constraint_date_complete.visibility = View.GONE
-        binding.root.constraint_item_part_delete_complete.visibility = View.VISIBLE
-        binding.root.constraint_delivery_status_front_complete.visibility = View.VISIBLE
+        binding.root.constraint_item_part_complete.visibility = GONE
+        binding.root.constraint_date_complete.visibility = GONE
+        binding.root.constraint_item_part_delete_complete.visibility = VISIBLE
+        binding.root.constraint_delivery_status_front_complete.visibility = VISIBLE
     }
 
     private fun completeViewInitialize(binding: InquiryListCompleteItemBinding){
-        Log.d(TAG, "viewInitialize")
-        binding.root.constraint_item_part_complete.visibility = View.VISIBLE
-        binding.root.constraint_date_complete.visibility = View.VISIBLE
-        binding.root.constraint_item_part_delete_complete.visibility = View.GONE
-        binding.root.constraint_delivery_status_front_complete.visibility = View.GONE
+        binding.root.constraint_item_part_complete.visibility = VISIBLE
+        binding.root.constraint_date_complete.visibility = VISIBLE
+        binding.root.constraint_item_part_delete_complete.visibility = GONE
+        binding.root.constraint_delivery_status_front_complete.visibility = GONE
     }
 
     fun setRemovable(flag: Boolean){
@@ -248,10 +269,24 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
         notifyDataSetChanged()
     }
 
-    fun setDataList(parcel: MutableList<InquiryListItem>) {
-        this.list = parcel
-        Stream.of(parcel).map {
-            it
+    fun setDataList(listItem: MutableList<InquiryListItem>) {
+
+        this.list = when(itemType){
+            InquiryItemType.Soon -> {
+                listItem.filter {
+                    it.parcel.deliveryStatus == DeliveryStatus.OUT_FOR_DELIVERY
+                }.toMutableList()
+            }
+            InquiryItemType.Registered -> {
+                listItem.filter{
+                    it.parcel.deliveryStatus != DeliveryStatus.OUT_FOR_DELIVERY && it.parcel.deliveryStatus != DeliveryStatus.DELIVERED
+                }.toMutableList()
+            }
+            InquiryItemType.Complete -> {
+                listItem.filter {
+                    it.parcel.deliveryStatus == DeliveryStatus.DELIVERED
+                }.toMutableList()
+            }
         }
         notifyDataSetChanged()
     }
@@ -261,13 +296,12 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
         notifyDataSetChanged()
     }
 
-    override fun getItemCount(): Int
-    {
+    override fun getItemCount(): Int {
         return when(itemType){
             InquiryItemType.Soon -> {
                 list.let {
-                    if(it.size > limitOfItem && !isMoreView){
-                        limitOfItem
+                    if(it.size > limitOfSoonListSize && !isMoreView){
+                        limitOfSoonListSize
                     }
                     else {
                         it.size
