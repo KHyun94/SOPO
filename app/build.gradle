@@ -93,6 +93,7 @@ dependencies {
     //Kotlin & Kotlin Support Lib ($kotlin_version = 현재 코틀린 버전) 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation "androidx.work:work-runtime-ktx:$work_version"
 
     // OkHttp3
     implementation 'com.squareup.okhttp3:okhttp:4.2.2'

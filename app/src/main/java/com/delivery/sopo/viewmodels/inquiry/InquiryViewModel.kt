@@ -274,6 +274,7 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
     fun refreshOngoing(){
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
+                Log.d(TAG, "Inquiry Refreshing!!!!!!!!")
                 val remoteParcels = parcelRepoImpl.getRemoteOngoingParcels()
 
                 // 서버로부터 데이터를 받아온 값이 널이 아니라면

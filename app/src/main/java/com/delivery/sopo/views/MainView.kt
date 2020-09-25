@@ -7,34 +7,44 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
-import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.interfaces.BasicView
 import com.delivery.sopo.interfaces.OnMainBackPressListener
+import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.networks.NetworkManager
+import com.delivery.sopo.networks.ParcelAPI
 import com.delivery.sopo.networks.UserAPI
+import com.delivery.sopo.repository.ParcelRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.adapters.ViewPagerAdapter
 import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.viewmodels.MainViewModel
+import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.iid.FirebaseInstanceId
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers.io
 import kotlinx.android.synthetic.main.main_view.*
 import kotlinx.android.synthetic.main.tap_item.view.*
+import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 {
-    var onMainBackPressListener : OnMainBackPressListener? = null
+    private var onMainBackPressListener: OnMainBackPressListener? = null
 
-    fun setOnBackPressListener(listenerMain: OnMainBackPressListener){
+    fun setOnBackPressListener(listenerMain: OnMainBackPressListener)
+    {
         this.onMainBackPressListener = listenerMain
     }
 
     private val mainVm: MainViewModel by viewModel()
+    private val inquiryVm: InquiryViewModel by viewModel()
+
     lateinit var viewPagerAdapter: ViewPagerAdapter
     lateinit var pageChangeListener: ViewPager.OnPageChangeListener
     private val userRepo: UserRepo by inject()
@@ -53,10 +63,9 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        RoomActivate.initCourierDB(this@MainView)
+
         updateFCMToken()
         init()
-
     }
 
     private fun init()
@@ -65,7 +74,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         tabLayoutSetting()
     }
 
-    private fun tabSetting(v : View)
+    private fun tabSetting(v: View)
     {
         // layout을 dynamic 처리해서 넣도록 수정
         (v as TabLayout).getTabAt(0)!!.setCustomView(R.layout.tap_item)
@@ -136,13 +145,18 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
             override fun onPageSelected(p0: Int)
             {
+                // 0923 kh 등록 성공
+                if (p0 == 1 && isRegister)
+                {
+                    onCompleteRegister()
+                    isRegister = false
+                }
             }
         }
 
         vp_main.adapter = viewPagerAdapter
         vp_main.addOnPageChangeListener(pageChangeListener)
     }
-
 
     private fun updateFCMToken()
     {
@@ -171,6 +185,8 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     {
         binding.vm = mainVm
         binding.executePendingBindings()
+
+
     }
 
     override fun setObserver()
@@ -188,7 +204,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             if (it != null && it.isNotEmpty())
             {
                 GeneralDialog(
-                    act = parentActivity,
+                    act = this@MainView,
                     title = "에러",
                     msg = it,
                     detailMsg = null,
@@ -208,5 +224,23 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     {
         onMainBackPressListener!!.onBackPressed()
 //        super.onBackPressed()
+    }
+
+    fun onCompleteRegister()
+    {
+        isRegister = true
+        binding.vpMain.currentItem = 1
+        inquiryVm.refreshOngoing()
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+
+    }
+
+    companion object
+    {
+        var isRegister = false
     }
 }
