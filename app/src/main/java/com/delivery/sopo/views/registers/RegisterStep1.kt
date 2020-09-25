@@ -1,6 +1,7 @@
 package com.delivery.sopo.views.registers
 
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,24 +17,31 @@ import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.interfaces.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.repository.CourierRepolmpl
+import com.delivery.sopo.repository.ParcelRepoImpl
 import com.delivery.sopo.util.fun_util.ClipboardUtil
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.FragmentManager
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
 import com.delivery.sopo.views.MainView
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.main_view.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegisterStep1 : Fragment()
 {
-    private lateinit var parentView : MainView
+    private val TAG = "LOG.SOPO"
+
+    private lateinit var parentView: MainView
 
     private lateinit var binding: RegisterStep1Binding
     private val registerStep1Vm: RegisterStep1ViewModel by viewModel()
     private val courierRepolmpl: CourierRepolmpl by inject()
+    private val parcelRepolmpl: ParcelRepoImpl by inject()
 
     private var waybilNum: String? = null
     private var courier: CourierItem? = null
+    private var returnType: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -41,8 +49,13 @@ class RegisterStep1 : Fragment()
 
         if (arguments != null)
         {
-            waybilNum = arguments!!.getString("waybilNum") ?: ""
-            courier = arguments!!.getSerializable("courier") as CourierItem ?: null
+            Log.d(TAG, "")
+
+            arguments.run {
+                waybilNum = this?.getString("waybilNum") ?: ""
+                courier = this?.getSerializable("courier") as CourierItem?
+                returnType = this?.getInt("returnType") ?: 0
+            }
         }
     }
 
@@ -51,6 +64,8 @@ class RegisterStep1 : Fragment()
         savedInstanceState: Bundle?
     ): View?
     {
+        parentView = activity as MainView
+
         binding = DataBindingUtil.inflate(inflater, R.layout.register_step1, container, false)
         binding.vm = registerStep1Vm
         binding.lifecycleOwner = this
@@ -67,15 +82,23 @@ class RegisterStep1 : Fragment()
             binding.vm!!.courier.value = courier
         }
 
-        parentView = activity as MainView
+        // 0922 kh 등록 완료 시 조회탭으로 이동
+        if (returnType != null && returnType == 1)
+        {
+            val handler = Handler()
+            handler.post {
+                parentView.onCompleteRegister()
+            }
+        }
 
-        parentView.setOnBackPressListener(object : OnMainBackPressListener{
+        parentView.setOnBackPressListener(object : OnMainBackPressListener
+        {
             override fun onBackPressed()
             {
                 Log.d("LOG.SOPO", "OnBackPressed")
 
-                parentView.moveTaskToBack(true);						// 태스크를 백그라운드로 이동
-                parentView.finishAndRemoveTask();						// 액티비티 종료 + 태스크 리스트에서 지우기
+                parentView.moveTaskToBack(true);                        // 태스크를 백그라운드로 이동
+                parentView.finishAndRemoveTask();                        // 액티비티 종료 + 태스크 리스트에서 지우기
                 android.os.Process.killProcess(android.os.Process.myPid());
             }
 
@@ -89,7 +112,7 @@ class RegisterStep1 : Fragment()
     fun setObserve()
     {
         binding.vm?.waybilNum?.observe(this, Observer {
-            if (it.isNotEmpty())
+            if (it != null && it.isNotEmpty())
             {
                 binding.vm?.clipboardStr?.value = ""
 
@@ -105,9 +128,10 @@ class RegisterStep1 : Fragment()
 
                 if (it.length > 8)
                 {
-                    val result = RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, it, 1, courierRepolmpl)
+                    val result =
+                        RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, it, 1, courierRepolmpl)
 
-                    if(result != null && result.size > 0)
+                    if (result != null && result.size > 0)
                     {
                         binding.vm!!.courier.postValue(result[0])
                     }
@@ -174,8 +198,8 @@ class RegisterStep1 : Fragment()
     {
         super.onResume()
 
-        // todo 등록된 택배 운송장 번호와 비교해서 clipboard text와 같거나 운송장 번호 et에 등록 중이면 아래 로직 생략
-        val text = ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE)
+        // 0922 kh 추가사항 - 클립보드에 저장되어있는 운송장 번호가 로컬에 등록된 택배가 있을 때, 안띄어주는 로직 추가
+        val text = ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE, parcelRepolmpl)
 
         val isRegister = binding.vm?.waybilNum?.value.isNullOrEmpty()
 
@@ -187,7 +211,7 @@ class RegisterStep1 : Fragment()
 
     companion object
     {
-        fun newInstance(waybilNum: String?, courier: CourierItem?): RegisterStep1
+        fun newInstance(waybilNum: String?, courier: CourierItem?, returnType: Int?): RegisterStep1
         {
             val registerStep1 = RegisterStep1()
 
@@ -195,6 +219,9 @@ class RegisterStep1 : Fragment()
 
             args.putString("waybilNum", waybilNum)
             args.putSerializable("courier", courier)
+            // 다른 프래그먼트에서 돌아왔을 때 분기 처리
+            // 0: Default 1: Success To Register
+            args.putInt("returnType", returnType ?: 0)
 
             registerStep1.arguments = args
             return registerStep1

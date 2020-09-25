@@ -21,12 +21,12 @@ class RegisterStep1ViewModel : ViewModel()
 
     private val courierList = mutableListOf<CourierItem>()
 
-    var waybilNum = MutableLiveData<String>()
+    var waybilNum = MutableLiveData<String?>()
 
     // 가져온 클립보드 문자열
     var clipboardStr = SingleLiveEvent<String>()
 
-    var courier = MutableLiveData<CourierItem>()
+    var courier = MutableLiveData<CourierItem?>()
 
     var waybilNoStatusType = MutableLiveData<Int>()
     var hideKeyboard = SingleLiveEvent<Boolean>()

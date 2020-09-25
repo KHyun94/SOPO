@@ -13,12 +13,11 @@ class MainViewModel(
 ) : ViewModel()
 {
     val tabLayoutVisibility = MutableLiveData<Int>()
-    val errorMsg = MutableLiveData<String>()
+    val errorMsg = MutableLiveData<String?>()
 
     init
     {
         setPrivateUserAccount()
-        errorMsg.value = ""
     }
 
 
@@ -31,7 +30,7 @@ class MainViewModel(
     // network private api account setting. if it failed, try to logout and finish
     private fun setPrivateUserAccount()
     {
-        if(userRepo.getStatus() != 1)
+        if(userRepo.getStatus() == 1)
             NetworkManager.initPrivateApi(userRepo.getEmail(), userRepo.getApiPwd())
         else
             errorMsg.value = "로그인이 비정상적으로 이루어졌습니다.\n다시 로그인해주시길 바랍니다."

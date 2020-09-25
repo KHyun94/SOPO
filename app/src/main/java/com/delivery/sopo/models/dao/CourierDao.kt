@@ -12,7 +12,7 @@ interface CourierDao
     fun getAll() : List<CourierEntity>
 
     @Query("SELECT COUNT(*) FROM COURIER")
-    fun getAllCnt() : Int
+    suspend fun getAllCnt() : Int
 
     @Query("SELECT * FROM COURIER WHERE courierName = :name")
     fun getWithName(name : String) : List<CourierEntity>
@@ -37,7 +37,7 @@ interface CourierDao
 
 
     @Insert(onConflict = REPLACE)
-    fun insert(courierEntity: CourierEntity)
+    suspend fun insert(courierEntity: CourierEntity)
 
     @Insert(onConflict = REPLACE)
     fun insert(courierList: List<CourierEntity>)

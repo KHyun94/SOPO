@@ -9,11 +9,12 @@
     </data>
 
     <LinearLayout
+        android:id="@+id/layout_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <androidx.viewpager.widget.ViewPager
+        <com.delivery.sopo.util.ui_util.NoneSwipeViewPager
             android:id="@+id/vp_main"
             android:layout_width="match_parent"
             android:layout_height="0sp"

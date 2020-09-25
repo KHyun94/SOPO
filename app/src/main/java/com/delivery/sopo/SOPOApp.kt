@@ -3,6 +3,7 @@ package com.delivery.sopo
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.di.appModule
 import com.delivery.sopo.thirdpartyapi.KakaoSDKAdapter
 import com.delivery.sopo.util.fun_util.OtherUtil
@@ -55,11 +56,12 @@ class SOPOApp : Application() {
             accessToken = Session.getCurrentSession().tokenInfo
         }
 
-
         // FCM TOKEN
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
             Log.d(TAG, "토큰 발행: " + task.result!!.token)
         }
+
+        RoomActivate.initCourierDB(this)
     }
 
     companion object

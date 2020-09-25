@@ -1,6 +1,5 @@
 package com.delivery.sopo.util.fun_util
 
-import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.enums.ResponseCode.*
 
 object CodeUtil
@@ -33,6 +32,8 @@ object CodeUtil
             FAIL_TO_SEARCH_PARCEL.CODE -> FAIL_TO_SEARCH_PARCEL.MSG
             CAN_NOT_FIND_PARCEL.CODE -> CAN_NOT_FIND_PARCEL.MSG
             FAIL_TO_FIND_PARCEL.CODE -> FAIL_TO_FIND_PARCEL.MSG
+            FAIL_TO_DELETE_PARCEL.CODE -> FAIL_TO_DELETE_PARCEL.MSG
+            ALREADY_REGISTERED_PARCEL.CODE -> ALREADY_REGISTERED_PARCEL.MSG
             FAIL_TO_UPDATE_USER_FIREBASE_TOKEN.CODE -> FAIL_TO_UPDATE_USER_FIREBASE_TOKEN.MSG
             UNKNOWN_ERROR.CODE -> UNKNOWN_ERROR.MSG
             UNAUTHORIZED_ACCESS_ERROR.CODE -> UNAUTHORIZED_ACCESS_ERROR.MSG

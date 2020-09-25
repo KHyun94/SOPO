@@ -8,6 +8,8 @@ import com.delivery.sopo.extentions.removeSpace
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.models.entity.CourierEntity
 import com.delivery.sopo.repository.CourierRepolmpl
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -23,9 +25,11 @@ object RoomActivate
     {
         try
         {
-            roomDBHelper = AppDatabase.getInstance(context = context)
+            val scope = CoroutineScope(Dispatchers.Default)
 
-            Thread(Runnable {
+            scope.launch {
+                roomDBHelper = AppDatabase.getInstance(context = context)
+
                 rowCnt = roomDBHelper.courierDao().getAllCnt()
                 Log.d(TAG, "Room All Select row cnt => ${rowCnt}")
 
@@ -319,8 +323,13 @@ object RoomActivate
                         )
                     )
                     roomDBHelper.courierDao().insert(courierList)
+
+                    rowCnt = roomDBHelper.courierDao().getAllCnt()
+                    Log.d(TAG, "insert 확인 => ${rowCnt}")
                 }
-            }).start()
+
+            }
+
         }
         catch (e: Exception)
         {
