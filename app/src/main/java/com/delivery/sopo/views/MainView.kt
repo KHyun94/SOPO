@@ -237,68 +237,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     {
         super.onResume()
 
-        requestRenewal()
     }
-
-    private val parcelRepoImpl: ParcelRepoImpl by inject()
-
-    fun requestRenewal()
-    {
-        val email = userRepo.getEmail()
-
-        var aaa = ""
-
-        runBlocking {
-            CoroutineScope(Dispatchers.Default).launch {
-                withContext(Dispatchers.Default) {
-                    NetworkManager.privateRetro.create(ParcelAPI::class.java)
-                        .requestRenewal(email = email)
-                        .enqueue(object : Callback<APIResult<String?>>
-                        {
-                            override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
-                            {
-                                aaa = t.localizedMessage
-                            }
-
-                            override fun onResponse(
-                                call: Call<APIResult<String?>>,
-                                response: Response<APIResult<String?>>
-                            )
-                            {
-                                aaa = "일단 통신 성공"
-                                val httpStatusCode = response.code()
-
-                                when (httpStatusCode)
-                                {
-                                    200 ->
-                                    {
-                                        // 성공적인 조회
-                                    }
-                                    400 ->
-                                    {
-                                    }
-
-                                    else ->
-                                    {
-                                        // 조회 실패
-
-                                    }
-                                }
-
-                            }
-                        })
-                }
-            }
-        }
-        Log.d(TAG, "aaa ===> $aaa")
-    }
-
-    private suspend fun isEnrolledParcel(): Boolean
-    {
-        val cnt = parcelRepoImpl.getOnGoingDataCnt() ?: 0
-        return cnt < 0
-    }
-
 
     companion object
     {
