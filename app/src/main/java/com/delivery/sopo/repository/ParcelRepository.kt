@@ -16,5 +16,7 @@ interface ParcelRepository {
    suspend fun deleteRemoteOngoingParcels(): APIResult<String?>
    suspend fun deleteLocalOngoingParcelsStep1(parcelIdList: List<ParcelId>)
    suspend fun deleteLocalOngoingParcelsStep2()
-
+   // 0922 kh 추가사항
+   suspend fun getSingleParcelWithWaybilNum(waybilNum:String) : ParcelEntity?
+   suspend fun getOnGoingDataCnt() : Int?
 }

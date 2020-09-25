@@ -3,17 +3,19 @@ package com.delivery.sopo.viewmodels.registesrs
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.CourierItem
+import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.ParcelAPI
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.fun_util.CodeUtil
 import com.delivery.sopo.util.fun_util.SingleLiveEvent
-import kotlinx.coroutines.launch
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,13 +28,13 @@ class RegisterStep3ViewModel(
     var courier = MutableLiveData<CourierItem>()
     var alias = MutableLiveData<String>()
 
-    var errorMsg = SingleLiveEvent<String?>()
+    var validate = SingleLiveEvent<ValidateResult<Any?>>()
 
     val isRevise = SingleLiveEvent<Boolean>()
 
     init
     {
-        errorMsg.value = ""
+        validate.value = ValidateResult(false, "", null, InfoConst.NON_SHOW)
     }
 
     fun onReviseClicked()
@@ -43,69 +45,75 @@ class RegisterStep3ViewModel(
     // '등록하기' Button Click event
     fun onRegisterClicked()
     {
-
-        viewModelScope.launch {
-            NetworkManager.privateRetro
-                .create(ParcelAPI::class.java)
-                .registerParcel(
-                    email = userRepo.getEmail(),
-                    parcelAlias = alias.value?:"Default",
-                    trackCompany = courier.value!!.courierCode ,
-                    trackNum = waybilNum.value!!
-                )
-                .enqueue(object : Callback<APIResult<ParcelId?>>
+        NetworkManager.privateRetro
+            .create(ParcelAPI::class.java)
+            .registerParcel(
+                email = userRepo.getEmail(),
+                parcelAlias = alias.value ?: "Default",
+                trackCompany = courier.value!!.courierCode,
+                trackNum = waybilNum.value!!
+            )
+            .enqueue(object : Callback<APIResult<ParcelId?>>
+            {
+                override fun onFailure(call: Call<APIResult<ParcelId?>>, t: Throwable)
                 {
-                    override fun onFailure(call: Call<APIResult<ParcelId?>>, t: Throwable)
+                    validate.value = ValidateResult(false, t.localizedMessage, t, InfoConst.NON_SHOW)
+                }
+
+                override fun onResponse(
+                    call: Call<APIResult<ParcelId?>>,
+                    response: Response<APIResult<ParcelId?>>
+                )
+                {
+                    val httpStatusCode = response.code()
+
+                    Log.d("LOG.SOPO", "뭐지? $httpStatusCode")
+                    Log.d("LOG.SOPO", "뭐지? ${courier.value}")
+                    Log.d("LOG.SOPO", "뭐지? ${waybilNum.value}")
+
+                    // http status code 200
+                    when (httpStatusCode)
                     {
-                        TODO("Not yet implemented")
-                    }
-
-                    override fun onResponse(
-                        call: Call<APIResult<ParcelId?>>,
-                        response: Response<APIResult<ParcelId?>>
-                    )
-                    {
-                        val httpStatusCode = response.code()
-
-                        val result = response.body()
-
-                        Log.d("LOG.SOPO", "뭐지? $httpStatusCode")
-                        Log.d("LOG.SOPO", "뭐지? $result")
-                        Log.d("LOG.SOPO", "뭐지? ${courier.value}")
-                        Log.d("LOG.SOPO", "뭐지? ${waybilNum.value}")
-
-                        // http status code 200
-                        when (httpStatusCode)
+                        201 ->
                         {
-                            201 ->
-                            {
-                                Log.d("LOG.SOPO", "등록 성공!!!!")
-                            }
-                            else ->
-                            {
-                                val msg = if(result == null)
-                                {
-                                    Log.d("LOG.SOPO", "등록 null")
-                                    "결과 null"
-                                }
-                                else if(result.code == null)
-                                {
-                                    Log.d("LOG.SOPO", "등록 Code null")
-                                    "코드 null"
-                                }
-                                else
-                                {
-                                    Log.d("LOG.SOPO", "등록 Code ${result.code}")
-                                    CodeUtil.returnCodeMsg(result.code)
-                                }
+                            // 0000 =>
+                            // 정상 조회 및 등록 성공
+                            // 이상한 택배도 전부 등록
+                            val result = response.body() as APIResult<ParcelId?>
+                            validate.value = ValidateResult(true, "", null, InfoConst.NON_SHOW)
+                            Log.d("LOG.SOPO", "등록 성공!!!!")
+                        }
+                        400 ->
+                        {
+                            // PC07 =>
+                            // 이미 등록된 택배(서버 DB 상 택배 운송장 번호가 존재하면 나오는 에러 코드;택배사가 달라도 해당 에러코드 나오니 수정바람)
+                            // 택배사만 잘못되도 해당 에러 코드 발생
+                            val errorReader = response.errorBody()!!.charStream()
 
-                                errorMsg.value = msg
+                            val result = Gson().fromJson(errorReader, APIResult::class.java)
+                            Log.e("LOG.SOPO", "[ERROR] getParcels => $result ")
 
+
+                            val msg = if (result == null)
+                            {
+                                Log.d("LOG.SOPO", "등록 null")
+                                "알 수 없는 에러"
                             }
+                            else
+                            {
+                                Log.d("LOG.SOPO", "등록 Code ${result.code}")
+                                CodeUtil.returnCodeMsg(result.code)
+                            }
+
+                            validate.value = ValidateResult(false, msg, null, InfoConst.CUSTOM_DIALOG)
+                        }
+                        else ->
+                        {
+                            validate.value = ValidateResult(false, "알 수 없는 에러", null, InfoConst.CUSTOM_DIALOG)
+                            Log.d("LOG.SOPO", "알 수 없는 에러!!!!")
                         }
                     }
-                })
-        }
-
+                }
+            })
     }
 }

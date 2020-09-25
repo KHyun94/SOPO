@@ -68,4 +68,16 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
         }.collect(Collectors.toList())
         appDatabase.parcelDao().update(beDeletedData)
     }
+
+    // 0922 kh 추가사항
+    override suspend fun getSingleParcelWithWaybilNum(waybilNum : String): ParcelEntity?
+    {
+        return appDatabase.parcelDao().getSingleParcelWithWaybilNum(waybilNum = waybilNum)
+    }
+
+    override suspend fun getOnGoingDataCnt(): Int?
+    {
+        return appDatabase.parcelDao().getOngoingDataCnt()
+    }
+
 }

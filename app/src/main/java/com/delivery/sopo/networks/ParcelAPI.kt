@@ -4,7 +4,6 @@ import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.dto.DeleteParcelsDTO
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
-import kotlinx.coroutines.Deferred
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -13,7 +12,7 @@ interface ParcelAPI
     @FormUrlEncoded
     @POST("api/v1/sopoMainBackEnd/delivery/{email}/parcel")
     @Headers("Accept: application/json")
-    suspend fun registerParcel(
+    fun registerParcel(
         @Path("email") email: String,
         @Field("parcelAlias") parcelAlias: String?,
         @Field("trackCompany") trackCompany: String,
@@ -47,7 +46,11 @@ interface ParcelAPI
         @Query("inquiryDate") inquiryDate: String
     ): APIResult<MutableList<Parcel>?>
 
-    @HTTP(method = "DELETE", path = "api/v1/sopoMainBackEnd/delivery/{email}/parcels", hasBody = true)
+    @HTTP(
+        method = "DELETE",
+        path = "api/v1/sopoMainBackEnd/delivery/{email}/parcels",
+        hasBody = true
+    )
     @Headers("Accept: application/json")
     suspend fun deleteParcels(
         @Path("email") email: String,
@@ -55,9 +58,15 @@ interface ParcelAPI
     ): APIResult<String?>
 
     // 0915 추가 - 택배 상태 업데이트 체크 api
-    @FormUrlEncoded
     @PATCH("/api/v1/sopoMainBackEnd/delivery/{email}/parcels")
     @Headers("Accept: application/json")
-    fun requestRenewal(@Path("email") email: String) : Call<APIResult<String?>>
+    suspend fun requestRenewal(@Path("email") email: String): Call<APIResult<String?>>
 
+    // 0923 추가 - 택배 상태 설정에 따른 해당 상태 택배 전부 불러오기 api
+    @GET("/api/v1/sopoMainBackEnd/delivery/{email}/parcels/{status}")
+    @Headers("Accept: application/json")
+    suspend fun requestRenewal(
+        @Path("email") email: String,
+        @Path("status") status: Int
+    ): Call<APIResult<String?>>
 }

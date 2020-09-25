@@ -6,10 +6,12 @@ import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.CustomToastMsgBinding
+import com.google.android.material.snackbar.Snackbar
 
 object CustomAlertMsg
 {

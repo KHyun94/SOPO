@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.databinding.RegisterStep3Binding
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.interfaces.OnMainBackPressListener
@@ -17,10 +18,12 @@ import com.delivery.sopo.util.ui_util.FragmentManager
 import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep3ViewModel
 import com.delivery.sopo.views.MainView
+import kotlinx.android.synthetic.main.intro_view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegisterStep3 : Fragment()
 {
+    private val TAG = "LOG.SOPO"
     private lateinit var parentView : MainView
 
     private lateinit var binding: RegisterStep3Binding
@@ -81,34 +84,67 @@ class RegisterStep3 : Fragment()
         binding.vm!!.isRevise.observe(this, Observer {
             if (it != null && it)
             {
-                FragmentType.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(waybilNum, courier)
+                FragmentType.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(waybilNum, courier, 0)
 
                 FragmentManager.initFragment(
                     activity = activity!!,
                     viewId = RegisterMainFrame.viewId,
                     currentFragment = this@RegisterStep3,
                     nextFragment = FragmentType.REGISTER_STEP1.FRAGMENT,
-                    nextFragmentTag = FragmentType.REGISTER_STEP3.NAME
+                    nextFragmentTag = FragmentType.REGISTER_STEP1.NAME
                 )
 
                 binding.vm!!.isRevise.call()
             }
         })
 
-        binding.vm!!.errorMsg.observe(this, Observer {
-            if(it != null && it.length > 0)
+        binding.vm!!.validate.observe(this, Observer {
+            if(it != null)
             {
-                GeneralDialog(
-                    act = activity!!,
-                    title = "오류",
-                    msg = it,
-                    detailMsg = null,
-                    rHandler = Pair(
-                        first = "네",
-                        second = { it ->
-                            it.dismiss()
-                        })
-                ).show(activity!!.supportFragmentManager, "tag")
+                if(it.result)
+                {
+                    Log.d(TAG, "등록 성공 $it")
+
+                    FragmentType.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(null, null, 1)
+
+                    FragmentManager.initFragment(
+                        activity = activity!!,
+                        viewId = RegisterMainFrame.viewId,
+                        currentFragment = this@RegisterStep3,
+                        nextFragment = FragmentType.REGISTER_STEP1.FRAGMENT,
+                        nextFragmentTag = FragmentType.REGISTER_STEP1.NAME
+                    )
+                }
+                else
+                {
+                    when(it.showType)
+                    {
+                        InfoConst.NON_SHOW ->
+                        {
+
+                        }
+                        InfoConst.CUSTOM_DIALOG ->
+                        {
+                            GeneralDialog(
+                                act = activity!!,
+                                title = "오류",
+                                msg = it.msg,
+                                detailMsg = null,
+                                rHandler = Pair(
+                                    first = "네",
+                                    second = { it ->
+                                        it.dismiss()
+                                    })
+                            ).show(activity!!.supportFragmentManager, "tag")
+                        }
+                        InfoConst.ERROR_ACTIVITY ->
+                        {
+
+                        }
+                    }
+
+                }
+
             }
 
         })

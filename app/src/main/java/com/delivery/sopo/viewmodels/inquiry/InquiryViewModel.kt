@@ -205,6 +205,7 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
     fun refreshOngoing(){
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
+                Log.d(TAG, "Inquiry Refreshing!!!!!!!!")
                 val remoteParcels = parcelRepoImpl.getRemoteOngoingParcels()
 
                 remoteParcels?.let {
