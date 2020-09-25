@@ -130,7 +130,7 @@ class InquiryView: Fragment() {
                 progressBar?.onStartDialog()
             }
             else{
-                progressBar?.onStop()
+                progressBar?.onCloseDialog()
             }
         })
 

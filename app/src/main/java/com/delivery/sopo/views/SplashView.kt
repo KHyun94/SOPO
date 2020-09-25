@@ -131,7 +131,7 @@ class SplashView : BasicView<SplashViewBinding>(
             {
                 override fun onFailure(call: Call<APIResult<LoginResult?>>, t: Throwable)
                 {
-                    TODO("Not yet implemented")
+//                    TODO("Not yet implemented")
                 }
 
                 override fun onResponse(

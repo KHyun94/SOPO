@@ -81,18 +81,33 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
         _isMoreView.value = false
         _isRemovable.value = false
         _isSelectAll.value = false
-
         _screenStatus.value = ScreenStatus.ONGOING
         getOngoingList()
         sendRemoveData()
-//        postParcel("타이타우", "kr.lotte", "235255141936")
-//        postParcel("아베다new쿨링두피활력", "kr.lotte", "402280981874")
-//        postParcel("에비앙 330ML", "kr.lotte", "307842100996")
-//        postParcel("에비앙 330ML", "kr.lotte", "307842100985")
-//        postParcel("아몬드 초코볼", "kr.cjlogistics", "633027402291")
-//        postParcel("클렌징", "kr.cjlogistics", "381315501434")
-//        postParcel("블루라운지 킥플립", "kr.cjlogistics", "   632601736701")
-//        postParcel("손목 받침대", "kr.logen", "97783126932")
+//        inputTestData()
+    }
+
+    fun inputTestData(){
+        viewModelScope.launch(Dispatchers.IO) {
+            postParcel("타이타우", "kr.lotte", "235255141936")
+            postParcel("아베다new쿨링두피활력", "kr.lotte", "402280981874")
+            postParcel("에비앙 330ML", "kr.lotte", "307842100996")
+            postParcel("에비앙 330ML", "kr.lotte", "307842100985")
+            postParcel("아몬드 초코볼", "kr.cjlogistics", "633027402291")
+            postParcel("클렌징", "kr.cjlogistics", "381315501434")
+            postParcel("블루라운지 킥플립", "kr.cjlogistics", "   632601736701")
+            postParcel("손목 받침대", "kr.logen", "97783126932")
+            postParcel("옷", "kr.cjlogistics", "358087574305")
+            postParcel("테스트1", "kr.epost", "6865422262600")
+            postParcel("테스트2", "kr.epost", "6865422262601")
+            postParcel("테스트3", "kr.epost", "6865422262602")
+            postParcel("테스트4", "kr.epost", "6865422262603")
+            postParcel("테스트5", "kr.epost", "6865422262604")
+            postParcel("테스트6", "kr.epost", "6865422262605")
+            postParcel("테스트7", "kr.epost", "6865422262606")
+            postParcel("테스트8", "kr.epost", "6865422262607")
+            postParcel("테스트9", "kr.epost", "6865422262608")
+        }
     }
 
     fun setCntOfDelete(value: Int){
@@ -115,8 +130,7 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
     }
 
     private fun getMonthList(){
-        viewModelScope.launch {
-            withContext(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.IO) {
                 _isLoading.postValue(true)
                 val remoteMonthList = parcelRepoImpl.getRemoteMonthList()
                 remoteMonthList?.let { list ->
@@ -126,7 +140,6 @@ class InquiryViewModel(private val userRepo: UserRepo, private val parcelRepoImp
                 }
                 _monthList.postValue(remoteMonthList)
                 _isLoading.postValue(false)
-            }
         }
     }
 

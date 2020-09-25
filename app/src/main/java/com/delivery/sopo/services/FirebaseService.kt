@@ -9,70 +9,73 @@ import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.delivery.sopo.R
+import com.delivery.sopo.enums.NotificationEnum
+import com.delivery.sopo.mapper.ParcelMapper
+import com.delivery.sopo.models.dto.FcmPushDTO
+import com.delivery.sopo.notification.NotificationImpl
+import com.delivery.sopo.repository.ParcelRepoImpl
 import com.delivery.sopo.views.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import java.lang.Exception
 
 class FirebaseService: FirebaseMessagingService()
 {
-
+    private val parcelRepo: ParcelRepoImpl by inject()
     var TAG = "LOG.SOPO.FCM"
 
-    override fun onMessageReceived(remoteMessage: RemoteMessage){
-        if (remoteMessage.data.isNotEmpty()){
-
-//            Message m = new Message();
-//
-//            if(remoteMessage.getData().get("m_no") != null)
-//                m.setM_no(Integer.parseInt(remoteMessage.getData().get("m_no")));
-//
-//            m.setM_sender(remoteMessage.getData().get("m_sender"));
-//            m.setM_sender_img(remoteMessage.getData().get("m_sender_img"));
-//            m.setM_card_img(remoteMessage.getData().get("m_card_img"));
-//            m.setM_msg(remoteMessage.getData().get("m_msg"));
-//            m.setM_date(remoteMessage.getData().get("m_date"));
-//            m.setM_is_receive(Boolean.parseBoolean(remoteMessage.getData().get("m_is_receive")));
-//            m.setM_is_delete(Boolean.parseBoolean(remoteMessage.getData().get("m_is_delete")));
-            val intent = Intent("com.example.limky.broadcastreceiver.gogo")
-            // intent.putExtra("isPush", true);
-//            intent.putExtra("msg", m);
-            sendBroadcast(intent)
-            Log.d(TAG, "onMessageReceived: " + remoteMessage.data.toString())
+    private fun alertUpdateParcel(remoteMessage: RemoteMessage, intent: Intent, fcmPushDto: FcmPushDTO){
+        CoroutineScope(Dispatchers.IO).launch {
+            val localOngoingParcels = parcelRepo.getLocalParcelById(fcmPushDto.regDt, fcmPushDto.parcelUid)
+            Log.d(TAG, "CoroutineScope`s parcel list : $localOngoingParcels")
+            // 만약에.. 내부 데이터베이스에 검색된 택배가 없다면.. 알람을 띄우지 않는다.
+            localOngoingParcels?.let {
+                NotificationImpl.alertUpdateParcel(
+                    remoteMessage = remoteMessage,
+                    context = applicationContext,
+                    intent = intent,
+                    parcel = ParcelMapper.entityToParcel(localOngoingParcels)
+                )
+            }
         }
-        remoteMessage.notification?.let{
-            Log.d(TAG, "Notification`s body : " + remoteMessage.notification!!.body)
-            Log.d(TAG, "Notification`s body : " + remoteMessage.notification!!.title)
-        }
-//        sendNotification(remoteMessage);
     }
 
-    private fun sendNotification(remoteMessage: RemoteMessage)
-    {
-        Log.d(TAG, "sendNotification")
-        val intent = Intent(this, SplashView::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val contentIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
-        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val nBuilder = NotificationCompat.Builder(this)
-            .setContentTitle(remoteMessage.data["title"])
-            .setContentText(remoteMessage.data["body"])
-            .setAutoCancel(true)
-            .setSound(defaultSoundUri)
-            .setVibrate(longArrayOf(1000, 1000))
-            .setLights(Color.WHITE, 1500, 1500)
-            .setContentIntent(contentIntent)
-            .setChannelId("notice")
-        val nManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            val channel = NotificationChannel(
-                remoteMessage.data["channel_id"],
-                "channel",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            nManager.createNotificationChannel(channel)
+    override fun onMessageReceived(remoteMessage: RemoteMessage){
+        if (remoteMessage.data.isNotEmpty())
+        {
+            Log.d(TAG, "onMessageReceived: " + remoteMessage.data.toString())
+            Log.d(TAG, "remoteMessage : ${remoteMessage.notification}")
+            val fcmPushDto = Gson().fromJson(remoteMessage.data.toString(), FcmPushDTO::class.java)
+            Log.d(TAG, "fromJson : $fcmPushDto")
+            when (fcmPushDto.notificationId)
+            {
+                // 사용자에게 택배 상태가 업데이트되었다고 알려줌
+                NotificationEnum.PUSH_UPDATE_PARCEL.notificationId ->
+                {
+                    alertUpdateParcel(
+                        remoteMessage,
+                        Intent(this, SplashView::class.java),
+                        fcmPushDto
+                    )
+                }
+                // 친구 추천
+                NotificationEnum.PUSH_FRIEND_RECOMMEND.notificationId ->
+                {
+                    // Nothing to do yet..
+                }
+                // 전체 공지사항
+                NotificationEnum.PUSH_FRIEND_RECOMMEND.notificationId ->
+                {
+                    // Nothing to do yet..
+                }
+            }
         }
-        nManager.notify(0 /* ID of notification */, nBuilder.build())
     }
 
     override fun onDeletedMessages(){
