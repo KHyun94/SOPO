@@ -10,6 +10,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.DeliveryStatus
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.dto.FcmPushDTO
@@ -36,6 +37,14 @@ class FirebaseService: FirebaseMessagingService()
             Log.d(TAG, "CoroutineScope`s parcel list : $localOngoingParcels")
             // 만약에.. 내부 데이터베이스에 검색된 택배가 없다면.. 알람을 띄우지 않는다.
             localOngoingParcels?.let {
+
+                // fcm으로 넘어온 데이터 중 deliveryStatus가 delivered일 경우 => status를 4로 바꾼다.
+                if(fcmPushDto.deliveryStatus == DeliveryStatus.DELIVERED){
+                    parcelRepo.saveLocalOngoingParcel(it.apply {
+                        status = 4
+                    })
+                }
+
                 NotificationImpl.alertUpdateParcel(
                     remoteMessage = remoteMessage,
                     context = applicationContext,

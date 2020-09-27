@@ -107,17 +107,44 @@
                     android:onClick="@{()-> vm.setScreenStatusOngoing()}"
                     />
 
-                <Button
-                    android:id="@+id/btn_complete"
-                    android:layout_width="80dp"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="90dp"
                     android:layout_height="35dp"
-                    android:layout_gravity="center"
-                    android:background="@drawable/border_all_rounded_color_gray_400"
-                    android:text="@string/INQUIRY_VIEW_COMPLETE_DELIVERY"
-                    android:textColor="@color/COLOR_GRAY_400"
-                    android:textSize="14sp"
-                    android:onClick="@{()-> vm.setScreenStatusComplete()}"
-                    />
+                    >
+
+                    <TextView
+                        android:id="@+id/tv_cnt_of_new_delivered"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:background="@drawable/red_circular_view"
+                        android:elevation="10dp"
+                        android:outlineProvider="none"
+                        android:gravity="center"
+                        android:textColor="@color/MAIN_WHITE"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:text="1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:visibility="invisible"
+                        tools:text="1" />
+
+                    <Button
+                        android:id="@+id/btn_complete"
+                        android:layout_width="80dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/border_all_rounded_color_gray_400"
+                        android:onClick="@{()-> vm.setScreenStatusComplete()}"
+                        android:text="@string/INQUIRY_VIEW_COMPLETE_DELIVERY"
+                        android:textColor="@color/COLOR_GRAY_400"
+                        android:textSize="14sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
