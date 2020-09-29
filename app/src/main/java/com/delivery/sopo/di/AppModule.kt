@@ -1,11 +1,11 @@
 package com.delivery.sopo.di
 
-import androidx.appcompat.view.menu.MenuView
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.database.shared.SharedPref
 import com.delivery.sopo.database.shared.SharedPrefHelper
 import com.delivery.sopo.repository.CourierRepolmpl
+import com.delivery.sopo.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.ParcelRepoImpl
 import com.delivery.sopo.viewmodels.*
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
@@ -47,6 +47,10 @@ val appModule = module {
         ParcelRepoImpl(get(), get())
     }
 
+    single {
+        ParcelManagementRepoImpl(get())
+    }
+
     viewModel { SplashViewModel(get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { SignUpViewModel() }
@@ -57,7 +61,7 @@ val appModule = module {
     viewModel { SettingViewModel(get()) }
     viewModel { NoticeViewModel() }
     viewModel { NotDisturbTimeViewModel() }
-    viewModel { InquiryViewModel(get(), get()) }
+    viewModel { InquiryViewModel(get(), get(), get()) }
     viewModel { MenuViewModel(get()) }
 
     viewModel { RegisterStep1ViewModel() }

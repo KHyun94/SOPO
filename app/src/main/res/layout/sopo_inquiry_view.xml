@@ -99,7 +99,7 @@
                     android:layout_width="80dp"
                     android:layout_height="35dp"
                     android:layout_gravity="center"
-                    android:layout_marginRight="15dp"
+                    android:layout_marginEnd="15dp"
                     android:background="@drawable/border_all_rounded_light_black"
                     android:text="@string/INQUIRY_VIEW_ONGOING_DELIVERY"
                     android:textSize="14sp"
@@ -123,11 +123,12 @@
                         android:textColor="@color/MAIN_WHITE"
                         android:textSize="10sp"
                         android:textStyle="bold"
-                        android:text="1"
+                        android:text="@{vm.cntOfBeDelivered+ `` ?? ``}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        android:visibility="invisible"
-                        tools:text="1" />
+                        android:visibility="@{vm.cntOfBeDelivered > 0 ? View.VISIBLE : View.INVISIBLE}"
+                        tools:text="1"
+                        tools:ignore="SmallSp" />
 
                     <Button
                         android:id="@+id/btn_complete"
@@ -461,7 +462,6 @@
                             android:layout_height="match_parent"
                             android:layout_marginLeft="15dp"
                             android:layout_marginRight="15dp"
-
                             tools:itemCount="3"
                             tools:listitem="@layout/inquiry_list_complete_item" />
                     </LinearLayout>
@@ -535,7 +535,7 @@
             android:background="@color/COLOR_MAIN_BLUE_700"
             android:elevation="50dp"
             android:visibility="gone"
-            tools:visibility="visible"
+            tools:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -593,6 +593,73 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_snack_bar_update"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/COLOR_MAIN_BLUE_700"
+            android:elevation="50dp"
+            android:visibility="@{vm.cntOfBeUpdate > 0 &amp;&amp; vm.isForceUpdateFinish == true ? View.VISIBLE : View.GONE}"
+            tools:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            >
+
+            <ImageView
+                android:id="@+id/image_snack_bar_exclamation_mark_update"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="17dp"
+                android:background="@drawable/snack_bar_exclamation_mark"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_count_of_update"
+                style="@style/H4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/COLOR_MAIN_100"
+                android:textSize="14sp"
+                android:text="@{vm.cntOfBeUpdate + `` ?? ``}"
+                app:layout_constraintBottom_toBottomOf="@+id/image_snack_bar_exclamation_mark_update"
+                app:layout_constraintStart_toEndOf="@+id/image_snack_bar_exclamation_mark_update"
+                app:layout_constraintTop_toTopOf="@+id/image_snack_bar_exclamation_mark_update"
+                tools:text="2" />
+
+            <TextView
+                style="@style/H4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="개의 택배에 변동사항이 있습니다."
+                android:textColor="@color/COLOR_MAIN_100"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_count_of_update"
+                app:layout_constraintStart_toEndOf="@+id/tv_count_of_update"
+                app:layout_constraintTop_toTopOf="@+id/tv_count_of_update" />
+
+            <TextView
+                android:id="@+id/tv_update"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="23dp"
+                android:fontFamily="@font/spoqa_han_sans_bold"
+                android:padding="5dp"
+                android:text="새로고침"
+                android:textColor="@color/MAIN_WHITE"
+                android:textSize="12sp"
+                android:onClick="@{() -> vm.refreshOngoing()}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_delete_final"
             android:layout_width="match_parent"

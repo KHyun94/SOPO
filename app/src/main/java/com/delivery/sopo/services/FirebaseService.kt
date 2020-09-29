@@ -1,21 +1,15 @@
 package com.delivery.sopo.services
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Intent
-import android.graphics.Color
-import android.media.RingtoneManager
-import android.os.Build
 import android.util.Log
-import androidx.core.app.NotificationCompat
-import com.delivery.sopo.R
-import com.delivery.sopo.consts.DeliveryStatus
+import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
+import com.delivery.sopo.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.ParcelRepoImpl
+import com.delivery.sopo.util.fun_util.TimeUtil
 import com.delivery.sopo.views.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -29,6 +23,8 @@ import java.lang.Exception
 class FirebaseService: FirebaseMessagingService()
 {
     private val parcelRepo: ParcelRepoImpl by inject()
+    private val parcelManagementRepo: ParcelManagementRepoImpl by inject()
+
     var TAG = "LOG.SOPO.FCM"
 
     private fun alertUpdateParcel(remoteMessage: RemoteMessage, intent: Intent, fcmPushDto: FcmPushDTO){
@@ -38,19 +34,32 @@ class FirebaseService: FirebaseMessagingService()
             // 만약에.. 내부 데이터베이스에 검색된 택배가 없다면.. 알람을 띄우지 않는다.
             localOngoingParcels?.let {
 
-                // fcm으로 넘어온 데이터 중 deliveryStatus가 delivered일 경우 => status를 4로 바꾼다.
-                if(fcmPushDto.deliveryStatus == DeliveryStatus.DELIVERED){
-                    parcelRepo.saveLocalOngoingParcel(it.apply {
-                        status = 4
-                    })
-                }
+                // 현재 해당 택배가 가지고 있는 배송 상태와 fcm으로 넘어온 배송상태가 다른 경우만 노티피케이션을 띄운다!
+                if(it.deliveryStatus != fcmPushDto.deliveryStatus && it.status == 1){
 
-                NotificationImpl.alertUpdateParcel(
-                    remoteMessage = remoteMessage,
-                    context = applicationContext,
-                    intent = intent,
-                    parcel = ParcelMapper.entityToParcel(localOngoingParcels)
-                )
+                    parcelManagementRepo.getEntity(fcmPushDto.regDt, fcmPushDto.parcelUid)?.let {
+                        entity ->
+                            // 기본적으로 fcm으로 데이터가 업데이트 됐다고 수신 받은것이니 isBeUpdate를 1로 save해서 앱에 차후에 업데이트 해야함을 알림.
+                            entity.apply {
+                                isBeUpdate = 1
+                                auditDte = TimeUtil.getDateTime()
+                            }
+
+                            // 배송 중 -> 배송완료가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
+                            if(fcmPushDto.deliveryStatus == DeliveryStatusEnum.delivered.code){
+                                entity.apply { isBeDelivered = 1 }
+                            }
+                            parcelManagementRepo.insertEntity(entity)
+                    }
+
+                    NotificationImpl.alertUpdateParcel(
+                        remoteMessage = remoteMessage,
+                        context = applicationContext,
+                        intent = intent,
+                        parcel = ParcelMapper.parcelEntityToParcel(it),
+                        newDeliveryStatus = fcmPushDto.deliveryStatus
+                    )
+                }
             }
         }
     }

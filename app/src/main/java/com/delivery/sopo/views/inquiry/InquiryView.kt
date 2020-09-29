@@ -9,8 +9,6 @@ import android.view.View.*
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.FrameLayout
-import android.widget.ListAdapter
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.appcompat.widget.PopupMenu
@@ -20,6 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
 import com.delivery.sopo.database.dto.TimeCountDTO
 import com.delivery.sopo.databinding.SopoInquiryViewBinding
@@ -120,6 +119,41 @@ class InquiryView: Fragment() {
         binding.recyclerviewCompleteParcel.adapter = completeListAdapter
         binding.recyclerviewCompleteParcel.layoutManager = LinearLayoutManager(requireActivity())
 
+        binding.recyclerviewCompleteParcel.addOnScrollListener(object: RecyclerView.OnScrollListener(){
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
+            {
+                super.onScrollStateChanged(recyclerView, newState)
+                val canScrollVertically = recyclerView.canScrollVertically(1)
+                Log.d(TAG, "!!!!!!!! canScrollVertically: $canScrollVertically")
+
+                if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    Log.i(TAG, "End of list");
+                }
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0) {
+                    // Scrolling up
+                    Log.d(TAG, "!!!!! Scrolling up")
+                } else {
+                    // Scrolling down
+                    Log.d(TAG, "!!!!! Scrolling down")
+                }
+                    val manager = recyclerView.layoutManager as LinearLayoutManager
+                    val lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition()
+                    val firstVisibleItem = manager.findFirstCompletelyVisibleItemPosition()
+                    val lastItemPosition = recyclerView.adapter?.itemCount
+
+                    Log.d(TAG, "!!!!!!!!! firstVisibleItem: $firstVisibleItem")
+                    Log.d(TAG,"lastItemPosition[$lastItemPosition], lastVisibleItemPosition[$lastVisibleItemPosition]")
+                    if (lastItemPosition == lastVisibleItemPosition) {
+                        Log.d(TAG, "load data")
+                    }
+            }
+        })
+
         binding.executePendingBindings()
     }
 
@@ -175,78 +209,28 @@ class InquiryView: Fragment() {
         /*
          * '배송 중' 또는 '배송 완료' 화면에 따른 화면 세팅
          */
-        inquiryVM.screenStatus.observe(this, Observer {screenStatus ->
-            when (screenStatus)
+        inquiryVM.screenStatus.observe(this, Observer {
+            when (it)
             {
                 // '배송 중' 화면
                 ScreenStatus.ONGOING ->
                 {
-                    btn_ongoing.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.MAIN_WHITE
-                        )
-                    )
-                    btn_ongoing.background = ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.border_all_rounded_light_black
-                    )
-                    btn_ongoing.typeface = ResourcesCompat.getFont(
-                        requireContext(),
-                        R.font.spoqa_han_sans_bold
-                    )
-
-                    btn_complete.typeface = ResourcesCompat.getFont(
-                        requireContext(),
-                        R.font.spoqa_han_sans_regular
-                    )
-                    btn_complete.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.COLOR_GRAY_400
-                        )
-                    )
-                    btn_complete.background = ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.border_all_rounded_color_gray_400
-                    )
-
-//                    linear_ongoing_parent.visibility = VISIBLE
-//                    constraint_complete_parent.visibility = GONE
+                    btn_ongoing.setTextColor(ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE))
+                    btn_ongoing.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_light_black)
+                    btn_ongoing.typeface = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_bold)
+                    btn_complete.typeface = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_regular)
+                    btn_complete.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
+                    btn_complete.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_color_gray_400)
                 }
                 // '배송 완료' 화면
                 ScreenStatus.COMPLETE ->
                 {
-                    btn_ongoing.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.COLOR_GRAY_400
-                        )
-                    )
-                    btn_ongoing.background = ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.border_all_rounded_color_gray_400
-                    )
-                    btn_complete.typeface = ResourcesCompat.getFont(
-                        requireContext(),
-                        R.font.spoqa_han_sans_regular
-                    )
-                    btn_complete.typeface = ResourcesCompat.getFont(
-                        requireContext(),
-                        R.font.spoqa_han_sans_bold
-                    )
-                    btn_complete.setTextColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.MAIN_WHITE
-                        )
-                    )
-                    btn_complete.background = ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.border_all_rounded_light_black
-                    )
-//                    linear_ongoing_parent.visibility = GONE
-//                    constraint_complete_parent.visibility = VISIBLE
+                    btn_ongoing.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
+                    btn_ongoing.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_color_gray_400)
+                    btn_complete.typeface = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_regular)
+                    btn_complete.typeface = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_bold)
+                    btn_complete.setTextColor(ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE))
+                    btn_complete.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_light_black)
                 }
             }
         })
@@ -293,22 +277,12 @@ class InquiryView: Fragment() {
             if (inquiryVM.isFullySelected(it) && it != 0) {
                 //'전채선택'이 됐다면 상단의 '전체선택 뷰'들의 이미지와 택스트를 빨간색으로 세팅한다.
                 image_is_all_checked.setBackgroundResource(R.drawable.ic_checked_red)
-                tv_is_all_checked.setTextColor(
-                    ContextCompat.getColor(
-                        requireActivity(),
-                        R.color.MAIN_RED
-                    )
-                )
+                tv_is_all_checked.setTextColor(ContextCompat.getColor(requireActivity(), R.color.MAIN_RED))
             }
             else {
                 //'전채선택'이 아니라면 상단의 '전체선택 뷰'들의 이미지와 택스트를 회색으로 세팅한다.
                 image_is_all_checked.setBackgroundResource(R.drawable.ic_checked_gray)
-                tv_is_all_checked.setTextColor(
-                    ContextCompat.getColor(
-                        requireActivity(),
-                        R.color.COLOR_GRAY_400
-                    )
-                )
+                tv_is_all_checked.setTextColor(ContextCompat.getColor(requireActivity(), R.color.COLOR_GRAY_400))
             }
         })
 
@@ -414,9 +388,9 @@ class InquiryView: Fragment() {
 
         // 6개 이상이라면 6개까지만 크기를 늘리고 그 이상의 데이터는 스크롤로 내리도록함
         if(timeCntDtoList.size > 6){
-            val measureContentHeight = measureContentHeight(listPopupWindowAdapter)
+            val measureContentHeight = SizeUtil.measureContentHeight(requireContext(), listPopupWindowAdapter)
             Log.d(TAG, "measureContentHeight : $measureContentHeight")
-            listPopupWindow.height = measureContentHeight(listPopupWindowAdapter) * 6
+            listPopupWindow.height = SizeUtil.measureContentHeight(requireContext(), listPopupWindowAdapter) * 6
         }
         else{
             listPopupWindow.height = ListPopupWindow.WRAP_CONTENT
@@ -433,36 +407,6 @@ class InquiryView: Fragment() {
             }
         }
         listPopupWindow.show()
-    }
-
-    private fun measureContentHeight(listAdapter: ListAdapter): Int {
-        var mMeasureParent: ViewGroup? = null
-        var maxHeight = 0
-        var itemView: View? = null
-        var itemType = 0
-        val adapter: ListAdapter = listAdapter
-        val widthMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-        val heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED)
-        val count: Int = adapter.count
-        for (i in 0 until count) {
-            val positionType: Int = adapter.getItemViewType(i)
-            if (positionType != itemType) {
-                itemType = positionType
-                itemView = null
-            }
-            if (mMeasureParent == null) {
-                mMeasureParent = FrameLayout(requireContext())
-            }
-            itemView = adapter.getView(i, itemView, mMeasureParent)
-            itemView.measure(widthMeasureSpec, heightMeasureSpec)
-            val itemWidth = itemView.measuredWidth
-            val itemHeight = itemView.measuredHeight
-
-            if (itemHeight > maxHeight) {
-                maxHeight = itemHeight
-            }
-        }
-        return maxHeight
     }
 
     private fun setListener(){

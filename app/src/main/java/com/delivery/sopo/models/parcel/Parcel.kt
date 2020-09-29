@@ -26,4 +26,20 @@ data class Parcel(
     val auditDte: String,
     @SerializedName("status")
     val status: Int?
-)
+){
+    override fun toString(): String {
+        val stringBuffer: StringBuilder = StringBuilder()
+        stringBuffer.append("[regDt] : ${parcelId.regDt}    ")
+        stringBuffer.append("[parcelUid] : ${parcelId.parcelUid}    ")
+        stringBuffer.append("[userName] : $userName ")
+        stringBuffer.append("[trackNum] : $trackNum ")
+        stringBuffer.append("[carrier] : $carrier   ")
+        stringBuffer.append("[parcelAlias] : $parcelAlias   ")
+        stringBuffer.append("[inqueryResult] : $inqueryResult   ")
+        stringBuffer.append("[inqueryHash] : $inqueryHash   ")
+        stringBuffer.append("[deliveryStatus] : $deliveryStatus ")
+        stringBuffer.append("[arrivalDte] : $arrivalDte ")
+        stringBuffer.append("[status] : $status ")
+        return stringBuffer.toString()
+    }
+}

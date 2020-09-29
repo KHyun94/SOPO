@@ -22,13 +22,13 @@ interface ParcelAPI
 
     @GET("api/v1/sopoMainBackEnd/delivery/{email}/parcel")
     @Headers("Accept: application/json")
-    fun getParcel(
+    suspend fun getParcel(
         @Path("email") email: String,
         // 택배 고유 uid
         @Query("parcelUid") parcelUid: String,
         // 등록일자
         @Query("regDt") regDt: String
-    ): Call<APIResult<String?>>
+    ): APIResult<Parcel?>
 
     @GET("api/v1/sopoMainBackEnd/delivery/{email}/months")
     @Headers("Accept: application/json")
@@ -60,6 +60,10 @@ interface ParcelAPI
         @Path("email") email: String,
         @Body parcelIds: DeleteParcelsDTO
     ): APIResult<String?>
+
+    @PATCH("/api/v1/sopoMainBackEnd/delivery/{email}/parcels")
+    @Headers("Accept: application/json")
+    suspend fun requestRenewal2(@Path("email") email: String): APIResult<String?>
 
     // 0915 추가 - 택배 상태 업데이트 체크 api
     @PATCH("/api/v1/sopoMainBackEnd/delivery/{email}/parcels")

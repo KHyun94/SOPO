@@ -6,5 +6,5 @@ import com.delivery.sopo.models.parcel.Parcel
 import com.google.firebase.messaging.RemoteMessage
 
 interface Notification {
-    fun alertUpdateParcel(remoteMessage: RemoteMessage, context: Context, intent: Intent, parcel: Parcel)
+    fun alertUpdateParcel(remoteMessage: RemoteMessage, context: Context, intent: Intent, parcel: Parcel, newDeliveryStatus: String)
 }

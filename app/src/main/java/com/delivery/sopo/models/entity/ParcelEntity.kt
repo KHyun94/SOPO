@@ -3,10 +3,11 @@ package com.delivery.sopo.models.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.delivery.sopo.models.parcel.Parcel
 
 @Entity(
     tableName = "PARCEL",
-    primaryKeys = arrayOf("REG_DT", "PARCEL_UID")
+    primaryKeys = ["REG_DT", "PARCEL_UID"]
 )
 data class ParcelEntity(
     @ColumnInfo(
@@ -68,4 +69,18 @@ data class ParcelEntity(
         typeAffinity = ColumnInfo.INTEGER
     )
     var status: Int
-)
+){
+    fun update(parcel: Parcel){
+        this.parcelAlias = parcel.parcelAlias
+        this.inqueryResult = parcel.inqueryResult
+        this.inqueryHash = parcel.inqueryHash
+        this.deliveryStatus = parcel.deliveryStatus
+        parcel.arrivalDte?.let {
+            this.arrivalDte = it
+        }
+        this.auditDte = parcel.auditDte
+        parcel.status?.let {
+            this.status = it
+        }
+    }
+}

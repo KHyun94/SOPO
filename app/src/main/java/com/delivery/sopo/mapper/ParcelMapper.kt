@@ -1,13 +1,26 @@
 package com.delivery.sopo.mapper
 
 import com.delivery.sopo.models.entity.ParcelEntity
+import com.delivery.sopo.models.entity.ParcelManagementEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
+import com.delivery.sopo.util.fun_util.TimeUtil
 
 object ParcelMapper
 {
-    fun entityToParcel(parcelEntity: ParcelEntity): Parcel{
+    fun parcelToParcelManagementEntity(parcel: Parcel): ParcelManagementEntity{
+        return ParcelManagementEntity(
+            regDt = parcel.parcelId.regDt,
+            parcelUid = parcel.parcelId.parcelUid,
+            isBeDelete = 0,
+            isBeUpdate = 0,
+            isBeDelivered = 0,
+            auditDte = TimeUtil.getDateTime()
+        )
+    }
+
+    fun parcelEntityToParcel(parcelEntity: ParcelEntity): Parcel{
         return Parcel(parcelId = ParcelId(regDt = parcelEntity.regDt, parcelUid = parcelEntity.parcelUid),
             userName = parcelEntity.userName,
             trackNum = parcelEntity.trackNum,
@@ -21,7 +34,7 @@ object ParcelMapper
             status = parcelEntity.status)
     }
 
-    fun parcelToEntity(parcel: Parcel): ParcelEntity{
+    fun parcelToParcelEntity(parcel: Parcel): ParcelEntity{
         return ParcelEntity(
             regDt = parcel.parcelId.regDt,
             parcelUid = parcel.parcelId.parcelUid,
@@ -38,7 +51,7 @@ object ParcelMapper
         )
     }
 
-    fun entityToParcelId(parcelEntity: ParcelEntity): ParcelId{
+    fun parcelEntityToParcelId(parcelEntity: ParcelEntity): ParcelId{
         return ParcelId(regDt = parcelEntity.regDt, parcelUid = parcelEntity.parcelUid)
     }
 

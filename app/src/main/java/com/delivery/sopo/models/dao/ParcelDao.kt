@@ -1,5 +1,6 @@
 package com.delivery.sopo.models.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import com.delivery.sopo.models.entity.ParcelEntity
@@ -12,19 +13,16 @@ interface ParcelDao
     suspend fun getSingleParcelWithWaybilNum(waybilNum: String): ParcelEntity?
 
     @Query("SELECT * FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS <> 'delivered'")
-    suspend fun getOngoingData(): List<ParcelEntity>
+    fun getOngoingLiveData(): LiveData<List<ParcelEntity>>
+
+    @Query("SELECT * FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS <> 'delivered'")
+    fun getOngoingData(): List<ParcelEntity>?
 
     @Query("SELECT COUNT(*) FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS <> 'delivered'")
     suspend fun getOngoingDataCnt(): Int
 
-    @Query("SELECT * FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS = 'delivered'")
-    suspend fun getCompleteData(): List<ParcelEntity>
-
-    @Query("SELECT * FROM PARCEL WHERE STATUS = 3")
+    @Query("SELECT * FROM PARCEL as p LEFT JOIN PARCEL_MANAGEMENT as pm ON p.REG_DT = pm.REG_DT AND p.PARCEL_UID = pm.PARCEL_UID WHERE p.STATUS = 0 AND pm.isBeDelete = 1")
     suspend fun getBeDeletedData(): List<ParcelEntity>
-
-    @Query("SELECT * FROM PARCEL WHERE STATUS = 3 AND AUDIT_DTE >= DATETIME('now', 'localtime', '-10.0 seconds')")
-    suspend fun getBeDeleteCanceledData() : List<ParcelEntity>
 
     @Query("SELECT * FROM PARCEL WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
     suspend fun getById(regDt: String, parcelUid: String): ParcelEntity?

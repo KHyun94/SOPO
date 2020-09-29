@@ -14,7 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.DeliveryStatus
+import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.databinding.InquiryListCompleteItemBinding
 import com.delivery.sopo.databinding.InquiryListOngoingItemBinding
 import com.delivery.sopo.enums.InquiryItemType
@@ -94,7 +94,7 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
                 val data: Parcel = list[position].parcel
                 when(data.deliveryStatus){
                     //상품 준비중
-                    DeliveryStatus.INFORMATION_RECEIVED -> {
+                    DeliveryStatusEnum.information_received.code -> {
                         holder.ongoingBinding.root.apply {
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_registered)
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_300)
@@ -103,7 +103,7 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
                         }
                     }
                     //상품 인수
-                    DeliveryStatus.AT_PICKUP -> {
+                    DeliveryStatusEnum.at_pickup.code -> {
                         holder.ongoingBinding.root.apply {
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_before)
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_GRAY_50)
@@ -112,7 +112,7 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
                         }
                     }
                     //상품 이동 중
-                    DeliveryStatus.IN_TRANSIT -> {
+                    DeliveryStatusEnum.in_transit.code -> {
                         holder.ongoingBinding.root.apply {
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_ing)
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_900)
@@ -121,7 +121,7 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
                         }
                     }
                     //배송 출발
-                    DeliveryStatus.OUT_FOR_DELIVERY -> {
+                    DeliveryStatusEnum.out_for_delivery.code -> {
                         holder.ongoingBinding.root.apply {
                             Glide.with(this.context).asGif().load(R.drawable.start_delivery2).into(this.image_delivery_status)
                             val gifMargin = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
@@ -141,8 +141,16 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
                         }
                     }
                     //배송 도착
-                    DeliveryStatus.DELIVERED -> {
+                    DeliveryStatusEnum.delivered.code -> {
                         // Nothing to do!!
+                    }
+                    else -> {
+                        holder.ongoingBinding.root.apply {
+                            this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_registered)
+                            this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_300)
+                            this.tv_delivery_status.text = "송장등록"
+                            this.tv_delivery_status.setTextColor(ContextCompat.getColor(this.context, R.color.MAIN_WHITE))
+                        }
                     }
                 }
 
@@ -274,17 +282,17 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
         this.list = when(itemType){
             InquiryItemType.Soon -> {
                 listItem.filter {
-                    it.parcel.deliveryStatus == DeliveryStatus.OUT_FOR_DELIVERY
+                    it.parcel.deliveryStatus == DeliveryStatusEnum.out_for_delivery.code
                 }.toMutableList()
             }
             InquiryItemType.Registered -> {
                 listItem.filter{
-                    it.parcel.deliveryStatus != DeliveryStatus.OUT_FOR_DELIVERY && it.parcel.deliveryStatus != DeliveryStatus.DELIVERED
+                    it.parcel.deliveryStatus != DeliveryStatusEnum.out_for_delivery.code && it.parcel.deliveryStatus != DeliveryStatusEnum.delivered.code
                 }.toMutableList()
             }
             InquiryItemType.Complete -> {
                 listItem.filter {
-                    it.parcel.deliveryStatus == DeliveryStatus.DELIVERED
+                    it.parcel.deliveryStatus == DeliveryStatusEnum.delivered.code
                 }.toMutableList()
             }
         }
