@@ -6,9 +6,11 @@ import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.database.dto.TimeCountDTO
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.enums.ScreenStatus
+import com.delivery.sopo.extentions.MutableLiveDataExtension.plusAssign
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.mapper.ParcelMapper
+import com.delivery.sopo.models.PagingManagement
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
@@ -95,6 +97,7 @@ class InquiryViewModel(private val userRepo: UserRepo,
         get() = _isForceUpdateFinish
 
     private val ioScope = CoroutineScope(Dispatchers.IO)
+    private val pagingManagement = PagingManagement(0, "", true)
 
     init{
         cntOfSelectedItem.value = 0
@@ -184,15 +187,35 @@ class InquiryViewModel(private val userRepo: UserRepo,
     }
 
     fun getCompleteList(inquiryDate: String){
-        viewModelScope.launch {
-            withContext(Dispatchers.Default) {
-                val remoteCompleteParcels = parcelRepoImpl.getRemoteCompleteParcels(page = 0, inquiryDate = inquiryDate)
+        viewModelScope.launch(Dispatchers.IO) {
 
-                remoteCompleteParcels?.sortByDescending { it.arrivalDte }
-                withContext(Main){
-                    setCompleteList(remoteCompleteParcels ?: mutableListOf())
+            _isLoading.postValue(true)
+            if(pagingManagement.InquiryDate != inquiryDate){
+                pagingManagement.pagingNum = 0
+                pagingManagement.InquiryDate = inquiryDate
+                pagingManagement.hasNext = true
+                _completeList.postValue(mutableListOf())
+            }
+            else{
+                pagingManagement.pagingNum += 1
+            }
+
+            // 다음에 조회할 데이터가 있다면
+            if(pagingManagement.hasNext){
+                val remoteCompleteParcels = parcelRepoImpl.getRemoteCompleteParcels(page = pagingManagement.pagingNum, inquiryDate = inquiryDate)
+                // null이거나 0이면 다음 데이터가 없는 것이므로 페이징 숫자를 1빼고 hasNext를 false로 바꾼다.
+                if(remoteCompleteParcels == null || remoteCompleteParcels.size == 0){
+                    pagingManagement.pagingNum -= 1
+                    pagingManagement.hasNext = false
+                }
+                else{
+                    remoteCompleteParcels.sortByDescending { it.arrivalDte } // 도착한 시간을 기준으로 내림차순으로 정렬
+                    withContext(Main){
+                        setCompleteList(remoteCompleteParcels)
+                    }
                 }
             }
+            _isLoading.postValue(false)
         }
     }
 
@@ -342,10 +365,6 @@ class InquiryViewModel(private val userRepo: UserRepo,
         // 전체 isBeDelivered를 0으로 초기화시켜준다.
         viewModelScope.launch(Dispatchers.IO){
             parcelManagementRepoImpl.updateTotalIsBeDeliveredToZero()
-
-            //TODO TEST
-            val requestRenewal2 = NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd()).requestRenewal2(userRepo.getEmail())
-            Log.d(TAG, "requestRenewal2 : $requestRenewal2")
         }
     }
 
@@ -389,14 +408,18 @@ class InquiryViewModel(private val userRepo: UserRepo,
 
     // '배송완료' 리스트의 데이터를 filter로 걸러 세팅한다.
     private fun setCompleteList(parcelList: MutableList<Parcel>){
-        _completeList.value = parcelList.filter { parcel ->
+
+        val newCompleteList = parcelList.filter { parcel ->
             // 리스트 중 오직 '배송출발'일 경우만 해당 adapter로 넘긴다.
             Log.d(TAG, "## ==> ${parcel.deliveryStatus} && ${DeliveryStatusEnum.delivered}")
             parcel.deliveryStatus == DeliveryStatusEnum.delivered.code
-        }.map {
-                filteredItem ->
-                    InquiryListItem(parcel = filteredItem)
+        }.map { filteredItem ->
+            InquiryListItem(parcel = filteredItem)
         } as MutableList<InquiryListItem>
+
+        if(newCompleteList.size > 0 ){
+            _completeList.plusAssign(newCompleteList )
+        }
     }
 
     private fun postParcel(parcelAlias: String, trackCompany: String, trackNum: String){
@@ -431,8 +454,7 @@ class InquiryViewModel(private val userRepo: UserRepo,
                             }
                         }
 
-                        override fun onFailure(call: Call<APIResult<ParcelId?>>, t: Throwable)
-                        {
+                        override fun onFailure(call: Call<APIResult<ParcelId?>>, t: Throwable) {
                             Log.d(TAG,"[postParcel] onFailure, ${t.localizedMessage}")
                         }
                     })

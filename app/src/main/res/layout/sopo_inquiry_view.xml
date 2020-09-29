@@ -234,11 +234,12 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:padding="10dp"
-            app:layout_constraintBottom_toTopOf="@+id/nestedScrollView"
+            android:visibility="@{(vm.completeList.size() > 0 &amp;&amp; vm.screenStatus == ScreenStatus.COMPLETE) ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@+id/frame_layout_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraint_select"
-            android:visibility="@{(vm.completeList.size() > 0 &amp;&amp; vm.screenStatus == ScreenStatus.COMPLETE) ? View.VISIBLE : View.GONE}">
-
+            tools:visibility="gone"
+            >
             <TextView
                 android:id="@+id/tv_spinner_month"
                 android:layout_width="wrap_content"
@@ -260,193 +261,197 @@
                 app:layout_constraintTop_toTopOf="@+id/tv_spinner_month" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/nestedScrollView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraint_month_spinner"
-            app:layout_constraintBottom_toTopOf="@+id/constraint_delete_final"
-            >
-
             <FrameLayout
+                android:id="@+id/frame_layout_content"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/constraint_month_spinner"
+                app:layout_constraintBottom_toTopOf="@+id/constraint_delete_final"
+                >
 
-                <LinearLayout
-                    android:id="@+id/linear_ongoing_parent"
+                <androidx.core.widget.NestedScrollView
+                    android:id="@+id/nestedScrollView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    tools:visibility="gone"
-                    android:visibility="@{vm.screenStatus == ScreenStatus.ONGOING ? View.VISIBLE : View.GONE}"
                     >
+
                     <LinearLayout
-                        android:id="@+id/linear_ongoing_content_view"
+                        android:id="@+id/linear_ongoing_parent"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:visibility="@{(vm.ongoingList.size() > 0 &amp;&amp; vm.screenStatus == ScreenStatus.ONGOING) ? View.VISIBLE : View.GONE}"
-                        tools:visibility="gone"
+                        tools:visibility="visible"
+                        android:visibility="@{vm.screenStatus == ScreenStatus.ONGOING ? View.VISIBLE : View.GONE}"
                         >
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/constraint_soon_arrival"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            tools:visibility="visible">
-
-                            <TextView
-                                android:id="@+id/tv_soon_arrival"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="15dp"
-                                android:fontFamily="@font/spoqa_han_sans_regular"
-                                android:text="@string/INQUIRY_VIEW_SOON_ARRIVAL"
-                                android:textColor="@color/COLOR_GRAY_800"
-                                android:textSize="16sp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/recyclerview_soon_arrival"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="15dp"
-                                android:layout_marginRight="15dp"
-                                android:layout_marginBottom="15dp"
-                                app:layout_constraintTop_toBottomOf="@+id/tv_soon_arrival"
-                                />
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
                         <LinearLayout
-                            android:id="@+id/linear_more_view_parent"
+                            android:id="@+id/linear_ongoing_content_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            tools:visibility="invisible">
-
-                            <LinearLayout
-                                android:id="@+id/linear_more_view"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:onClick="@{()->vm.toggleMoreView()}"
-                                android:orientation="vertical"
-                                android:padding="10dp"
-                                tools:visibility="visible">
-
-                                <ImageView
-                                    android:id="@+id/image_arrow"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
-                                    android:background="@drawable/ic_down_arrow" />
-
-                                <TextView
-                                    android:id="@+id/tv_more_view"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
-                                    android:fontFamily="@font/spoqa_han_sans_regular"
-                                    android:text="@string/INQUIRY_VIEW_MORE_VIEW"
-                                    android:textColor="@color/COLOR_GRAY_800"
-                                    android:textSize="14sp" />
-                            </LinearLayout>
-                        </LinearLayout>
-                        <View
-                            android:id="@+id/v_more_view"
-                            android:layout_width="match_parent"
-                            android:layout_height="20dp"
-                            />
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/constraint_registered_arrival"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                            <TextView
-                                android:id="@+id/tv_registered_arrival"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="15dp"
-                                android:fontFamily="@font/spoqa_han_sans_regular"
-                                android:text="@string/INQUIRY_VIEW_REGISTERED_PARCEL"
-                                android:textColor="@color/COLOR_GRAY_800"
-                                android:textSize="16sp"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/recyclerview_registered_parcel"
+                            android:visibility="@{(vm.ongoingList.size() > 0 &amp;&amp; vm.screenStatus == ScreenStatus.ONGOING) ? View.VISIBLE : View.GONE}"
+                            tools:visibility="gone"
+                            >
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/constraint_soon_arrival"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="15dp"
-                                android:layout_marginRight="15dp"
-                                app:layout_constraintTop_toBottomOf="@+id/tv_registered_arrival"
-                                tools:itemCount="3"
-                                tools:layout_editor_absoluteX="0dp"
-                                tools:listitem="@layout/inquiry_list_ongoing_item"
-                                />
+                                tools:visibility="visible">
 
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:id="@+id/linear_ongoing_empty_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginTop="100dp"
-                        android:visibility="@{(vm.ongoingList.size() == 0 &amp;&amp; vm.screenStatus == ScreenStatus.ONGOING) ? View.VISIBLE : View.GONE}"
-                        >
-                        <ImageView
-                            android:id="@+id/image_exclamation_mark"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:src="@drawable/exclamation_mark_icon"
-                            />
-                        <TextView
-                            style="@style/H4"
-                            android:id="@+id/tv_there_is_no_parcel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="22dp"
-                            android:layout_gravity="center_horizontal"
-                            android:text="@string/EMPTY_VIEW_THERE_IS_NO_REGISTERED_PARCEL"
-                            android:textColor="@color/COLOR_GRAY_400"
-                            android:textSize="14sp"
-                            />
-                        <TextView
-                            style="@style/H4"
-                            android:id="@+id/tv_please_register_new_parcel"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:text="@string/EMPTY_VIEW_PLEASE_REGISTER_NEW_PARCEL"
-                            android:textColor="@color/COLOR_GRAY_400"
-                            android:textSize="14sp"
-                            />
-                        <Button
-                            style="@style/H4"
+                                <TextView
+                                    android:id="@+id/tv_soon_arrival"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="15dp"
+                                    android:fontFamily="@font/spoqa_han_sans_regular"
+                                    android:text="@string/INQUIRY_VIEW_SOON_ARRIVAL"
+                                    android:textColor="@color/COLOR_GRAY_800"
+                                    android:textSize="16sp"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/recyclerview_soon_arrival"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="15dp"
+                                    android:layout_marginRight="15dp"
+                                    android:layout_marginBottom="15dp"
+                                    app:layout_constraintTop_toBottomOf="@+id/tv_soon_arrival"
+                                    />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                            <LinearLayout
+                                android:id="@+id/linear_more_view_parent"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                tools:visibility="invisible">
+
+                                <LinearLayout
+                                    android:id="@+id/linear_more_view"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:onClick="@{()->vm.toggleMoreView()}"
+                                    android:orientation="vertical"
+                                    android:padding="10dp"
+                                    tools:visibility="visible">
+
+                                    <ImageView
+                                        android:id="@+id/image_arrow"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:background="@drawable/ic_down_arrow" />
+
+                                    <TextView
+                                        android:id="@+id/tv_more_view"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:fontFamily="@font/spoqa_han_sans_regular"
+                                        android:text="@string/INQUIRY_VIEW_MORE_VIEW"
+                                        android:textColor="@color/COLOR_GRAY_800"
+                                        android:textSize="14sp" />
+                                </LinearLayout>
+                            </LinearLayout>
+                            <View
+                                android:id="@+id/v_more_view"
+                                android:layout_width="match_parent"
+                                android:layout_height="20dp"
+                                />
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:id="@+id/constraint_registered_arrival"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <TextView
+                                    android:id="@+id/tv_registered_arrival"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="15dp"
+                                    android:fontFamily="@font/spoqa_han_sans_regular"
+                                    android:text="@string/INQUIRY_VIEW_REGISTERED_PARCEL"
+                                    android:textColor="@color/COLOR_GRAY_800"
+                                    android:textSize="16sp"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                                <androidx.recyclerview.widget.RecyclerView
+                                    android:id="@+id/recyclerview_registered_parcel"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginLeft="15dp"
+                                    android:layout_marginRight="15dp"
+                                    app:layout_constraintTop_toBottomOf="@+id/tv_registered_arrival"
+                                    tools:itemCount="3"
+                                    tools:layout_editor_absoluteX="0dp"
+                                    tools:listitem="@layout/inquiry_list_ongoing_item"
+                                    />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+                        </LinearLayout>
+                        <LinearLayout
+                            android:id="@+id/linear_ongoing_empty_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="25dp"
-                            android:layout_marginRight="25dp"
+                            android:orientation="vertical"
                             android:layout_marginTop="100dp"
-                            android:text="@string/INQUIRY_VIEW_GO_TO_REGISTER"
-                            android:textSize="14sp"
-                            android:textColor="@color/MAIN_WHITE"
-                            android:background="@drawable/border_all_rounded_main_blue"
-                            />
+                            android:visibility="@{(vm.ongoingList.size() == 0 &amp;&amp; vm.screenStatus == ScreenStatus.ONGOING) ? View.VISIBLE : View.GONE}"
+                            >
+                            <ImageView
+                                android:id="@+id/image_exclamation_mark"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:src="@drawable/exclamation_mark_icon"
+                                />
+                            <TextView
+                                style="@style/H4"
+                                android:id="@+id/tv_there_is_no_parcel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="22dp"
+                                android:layout_gravity="center_horizontal"
+                                android:text="@string/EMPTY_VIEW_THERE_IS_NO_REGISTERED_PARCEL"
+                                android:textColor="@color/COLOR_GRAY_400"
+                                android:textSize="14sp"
+                                />
+                            <TextView
+                                style="@style/H4"
+                                android:id="@+id/tv_please_register_new_parcel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:text="@string/EMPTY_VIEW_PLEASE_REGISTER_NEW_PARCEL"
+                                android:textColor="@color/COLOR_GRAY_400"
+                                android:textSize="14sp"
+                                />
+                            <Button
+                                style="@style/H4"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="25dp"
+                                android:layout_marginRight="25dp"
+                                android:layout_marginTop="100dp"
+                                android:text="@string/INQUIRY_VIEW_GO_TO_REGISTER"
+                                android:textSize="14sp"
+                                android:textColor="@color/MAIN_WHITE"
+                                android:background="@drawable/border_all_rounded_main_blue"
+                                />
+                        </LinearLayout>
                     </LinearLayout>
-                </LinearLayout>
+                </androidx.core.widget.NestedScrollView>
+
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/constraint_complete_parent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="@{vm.screenStatus == ScreenStatus.COMPLETE ? View.VISIBLE : View.GONE}"
-                    tools:visibility="visible"
+                    tools:visibility="invisible"
                     >
                     <LinearLayout
                         android:id="@+id/linear_complete_content_view"
@@ -527,7 +532,6 @@
                     android:visibility="gone">
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </FrameLayout>
-        </androidx.core.widget.NestedScrollView>
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_snack_bar"
             android:layout_width="match_parent"
@@ -669,7 +673,7 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/nestedScrollView"
+            app:layout_constraintTop_toBottomOf="@+id/frame_layout_content"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:visibility="gone"
             >

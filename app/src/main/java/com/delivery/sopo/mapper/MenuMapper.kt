@@ -33,4 +33,8 @@ object MenuMapper
     fun timeToInquiryDate(time: String): String{
         return time.replace("-","")
     }
+
+    fun titleToInquiryDate(title: String): String{
+        return title.replace("년 ", "").replace("월", "")
+    }
 }

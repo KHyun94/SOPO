@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
@@ -119,52 +120,19 @@ class InquiryView: Fragment() {
         binding.recyclerviewCompleteParcel.adapter = completeListAdapter
         binding.recyclerviewCompleteParcel.layoutManager = LinearLayoutManager(requireActivity())
 
-        binding.recyclerviewCompleteParcel.addOnScrollListener(object: RecyclerView.OnScrollListener(){
-
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
-            {
-                super.onScrollStateChanged(recyclerView, newState)
-                val canScrollVertically = recyclerView.canScrollVertically(1)
-                Log.d(TAG, "!!!!!!!! canScrollVertically: $canScrollVertically")
-
-                if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    Log.i(TAG, "End of list");
-                }
-            }
-
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0) {
-                    // Scrolling up
-                    Log.d(TAG, "!!!!! Scrolling up")
-                } else {
-                    // Scrolling down
-                    Log.d(TAG, "!!!!! Scrolling down")
-                }
-                    val manager = recyclerView.layoutManager as LinearLayoutManager
-                    val lastVisibleItemPosition = manager.findLastCompletelyVisibleItemPosition()
-                    val firstVisibleItem = manager.findFirstCompletelyVisibleItemPosition()
-                    val lastItemPosition = recyclerView.adapter?.itemCount
-
-                    Log.d(TAG, "!!!!!!!!! firstVisibleItem: $firstVisibleItem")
-                    Log.d(TAG,"lastItemPosition[$lastItemPosition], lastVisibleItemPosition[$lastVisibleItemPosition]")
-                    if (lastItemPosition == lastVisibleItemPosition) {
-                        Log.d(TAG, "load data")
-                    }
-            }
-        })
-
         binding.executePendingBindings()
     }
 
     private fun setObserver(){
 
-        inquiryVM.isLoading.observe(this, Observer{
-            if(it){
-                progressBar?.onStartDialog()
-            }
-            else{
-                progressBar?.onCloseDialog()
+        inquiryVM.isLoading.observe(this, Observer{isLoading ->
+            progressBar?.let {
+                if(isLoading && !it.isAdded){
+                    it.onStartDialog()
+                }
+                else{
+                    it.onCloseDialog()
+                }
             }
         })
 
@@ -410,6 +378,20 @@ class InquiryView: Fragment() {
     }
 
     private fun setListener(){
+        binding.recyclerviewCompleteParcel.addOnScrollListener(object: RecyclerView.OnScrollListener(){
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
+            {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    val spinnerMonthTv = tv_spinner_month.text.toString()
+                    Log.d(TAG, "spinnerMonthTv : $spinnerMonthTv")
+                    Log.d(TAG, "MeneMapper : ${MenuMapper.titleToInquiryDate(spinnerMonthTv)}")
+                    inquiryVM.getCompleteList(MenuMapper.titleToInquiryDate(tv_spinner_month.text.toString()))
+                }
+            }
+        })
 
         // '삭제하기' 화면에서 최하단에 '~개 삭제하기' 화면을 눌렀을때 실질적으로 '삭제' 행위를 개시한다.
         constraint_delete_final.setOnClickListener {

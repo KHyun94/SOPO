@@ -44,7 +44,6 @@ class FirebaseService: FirebaseMessagingService()
                                 isBeUpdate = 1
                                 auditDte = TimeUtil.getDateTime()
                             }
-
                             // 배송 중 -> 배송완료가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
                             if(fcmPushDto.deliveryStatus == DeliveryStatusEnum.delivered.code){
                                 entity.apply { isBeDelivered = 1 }

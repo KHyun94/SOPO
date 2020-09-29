@@ -277,6 +277,15 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
         notifyDataSetChanged()
     }
 
+    fun addItems(listItem: MutableList<InquiryListItem>){
+        Log.d(TAG, "!!!!!!!!!! addItems")
+        if(listItem.size > 0){
+            Log.d(TAG, "!!!!!!!!!! listItem > 0")
+            list.addAll(listItem)
+            notifyDataSetChanged()
+        }
+    }
+
     fun setDataList(listItem: MutableList<InquiryListItem>) {
 
         this.list = when(itemType){
