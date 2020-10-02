@@ -40,6 +40,14 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
         appDatabase.parcelManagementDao().insert(parcelManagementEntity)
     }
 
+    override fun insertEntities(parcelManagementEntityList: List<ParcelManagementEntity>){
+        appDatabase.parcelManagementDao().insert(parcelManagementEntityList)
+    }
+
+    override suspend fun updateEntity(parcelManagementEntity: ParcelManagementEntity){
+        appDatabase.parcelManagementDao().update(parcelManagementEntity)
+    }
+
     override suspend fun updateEntities(parcelManagementEntityList: List<ParcelManagementEntity>){
         appDatabase.parcelManagementDao().update(parcelManagementEntityList)
     }
@@ -57,6 +65,29 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
             appDatabase.parcelManagementDao().updateIsBeDeleteToOne(parcelId.regDt, parcelId.parcelUid, TimeUtil.getDateTime())
         }
     }
+
+//    override suspend fun insertRemoteParcelManagementToBeDelete(parcelIdList: List<ParcelId>){
+//        // 만약 서버에서 가져온 데이터가 이미 존재한다면..?
+//        for(parcelId in parcelIdList){
+//            val existParcelMng = appDatabase.parcelManagementDao().getById(parcelUid = parcelId.parcelUid, regDt = parcelId.regDt)
+//            if(existParcelMng != null){
+//                existParcelMng.auditDte = TimeUtil.getDateTime()
+//                existParcelMng.isBeDelete = 1
+//                appDatabase.parcelManagementDao().update(existParcelMng)
+//            }
+//            else{
+//                val remoteParcelMng = ParcelManagementEntity(
+//                    regDt = parcelId.regDt,
+//                    parcelUid = parcelId.parcelUid,
+//                    isBeDelete = 1,
+//                    isBeUpdate = 0,
+//                    isBeDelivered = 0,
+//                    auditDte = TimeUtil.getDateTime()
+//                )
+//                appDatabase.parcelManagementDao().insert(remoteParcelMng)
+//            }
+//        }
+//    }
 
     override suspend fun initializeIsBeUpdate(regDt: String, parcelUid: String){
         getEntity(regDt, parcelUid)?.apply {

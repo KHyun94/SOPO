@@ -12,11 +12,7 @@ object ParcelMapper
     fun parcelToParcelManagementEntity(parcel: Parcel): ParcelManagementEntity{
         return ParcelManagementEntity(
             regDt = parcel.parcelId.regDt,
-            parcelUid = parcel.parcelId.parcelUid,
-            isBeDelete = 0,
-            isBeUpdate = 0,
-            isBeDelivered = 0,
-            auditDte = TimeUtil.getDateTime()
+            parcelUid = parcel.parcelId.parcelUid
         )
     }
 

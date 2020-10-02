@@ -6,7 +6,6 @@ import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.database.dto.TimeCountDTO
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.enums.ScreenStatus
-import com.delivery.sopo.extentions.MutableLiveDataExtension.plusAssign
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.mapper.ParcelMapper
@@ -21,6 +20,7 @@ import com.delivery.sopo.util.fun_util.TimeUtil
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.Main
+import okhttp3.internal.wait
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.HttpException
@@ -41,7 +41,11 @@ class InquiryViewModel(private val userRepo: UserRepo,
         get() = _ongoingList
 
     //  배송완료 리스트 데이터
-    private val _completeList = MutableLiveData<MutableList<InquiryListItem>>()
+    private val _completeList by lazy {
+        Transformations.map(parcelRepoImpl.getLocalCompleteParcelsLiveData()){
+            ParcelMapper.parcelListToInquiryItemList(it as MutableList<Parcel>)
+        }
+    }
     val completeList: LiveData<MutableList<InquiryListItem>>
         get() = _completeList
 
@@ -92,6 +96,10 @@ class InquiryViewModel(private val userRepo: UserRepo,
     val cntOfBeUpdate: LiveData<Int>
         get() = _cntOfBeUpdate
 
+    private val _isShowDeleteSnackBar = MutableLiveData<Boolean>()
+    val isShowDeleteSnackBar: LiveData<Boolean>
+        get() = _isShowDeleteSnackBar
+
     private val _isForceUpdateFinish = MutableLiveData<Boolean>()
     val isForceUpdateFinish: LiveData<Boolean>
         get() = _isForceUpdateFinish
@@ -106,9 +114,129 @@ class InquiryViewModel(private val userRepo: UserRepo,
         _isRemovable.value = false
         _isSelectAll.value = false
         _screenStatus.value = ScreenStatus.ONGOING
-        sendRemoveData()
+        sendRemovedData()
         checkIsRefreshNeed()
 //        inputTestData()
+    }
+
+    fun inputTestData(){
+        viewModelScope.launch(Dispatchers.IO) {
+            postParcel("msi", "kr.epost", "6865421322618")
+            postParcel("asus", "kr.epost", "6865421322619")
+            postParcel("한성컴퓨터", "kr.epost", "6865421322620")
+            postParcel("cooler master", "kr.epost", "6865421322621")
+            postParcel("Galaxy S10", "kr.epost", "6865421322622")
+            postParcel("Iphone 11", "kr.epost", "6865421322623")
+            postParcel("Lg V50", "kr.epost", "6865421322624")
+            postParcel("black berry", "kr.epost", "6865421322625")
+            postParcel("Nike", "kr.epost", "6865421322627")
+        }
+    }
+
+    // 화면을 배송완료 ==> 배송중으로 전환시킨다.
+    fun setScreenStatusOngoing(){
+        _screenStatus.value = ScreenStatus.ONGOING
+    }
+
+    // 화면을 배송중 ==> 배송완료로 전환시킨다.
+    fun setScreenStatusComplete(){
+        _screenStatus.value = ScreenStatus.COMPLETE
+        _isShowDeleteSnackBar.value = false
+        refreshComplete()
+    }
+
+    fun setCntOfDelete(value: Int){
+        _cntOfDelete.value = value
+    }
+
+    private fun setRemovable(flag: Boolean){
+        _isRemovable.value = flag
+    }
+
+    private fun setMoreView(flag: Boolean){
+        _isMoreView.value = flag
+    }
+
+    private fun setSelectAll(flag: Boolean){
+        _isSelectAll.value = flag
+    }
+
+    fun getCurrentScreenStatus(): ScreenStatus? {
+        return screenStatus.value
+    }
+
+    private fun getMonthList(): Job {
+        return viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.postValue(true)
+            val remoteMonthList = parcelRepoImpl.getRemoteMonthList()
+            remoteMonthList?.let { list ->
+                for(timeCnt in list){
+                    Log.d(TAG, "${timeCnt.time} && ${timeCnt.count}")
+                }
+            }
+            _monthList.postValue(remoteMonthList)
+            _isLoading.postValue(false)
+        }
+    }
+
+    fun getCompleteList(inquiryDate: String, refresh: Boolean = false){
+        viewModelScope.launch(Dispatchers.IO) {
+
+            _isLoading.postValue(true)
+            if(pagingManagement.InquiryDate != inquiryDate || refresh){
+                pagingManagement.pagingNum = 0
+                pagingManagement.InquiryDate = inquiryDate
+                pagingManagement.hasNext = true
+                // 전체 리스트(getAll) 중 isNowVisible이 1인 Entity를(filter) 0으로 바꾼 후(forEach) 업데이트(updateEntities)
+                parcelManagementRepoImpl.getAll()?.let {list ->
+                    list.filter { it.isNowVisible == 1 }.forEach { it.isNowVisible = 0 }
+                    parcelManagementRepoImpl.updateEntities(list)
+                }
+            }
+            else{
+                pagingManagement.pagingNum += 1
+            }
+
+            // 다음에 조회할 데이터가 있다면
+            if(pagingManagement.hasNext){
+                val remoteCompleteParcels = parcelRepoImpl.getRemoteCompleteParcels(page = pagingManagement.pagingNum, inquiryDate = inquiryDate)
+
+                // null이거나 0이면 다음 데이터가 없는 것이므로 페이징 숫자를 1빼고 hasNext를 false로 바꾼다.
+                if(remoteCompleteParcels == null || remoteCompleteParcels.size == 0){
+                    pagingManagement.pagingNum -= 1
+                    pagingManagement.hasNext = false
+                }
+                else{
+                    remoteCompleteParcels.sortByDescending { it.arrivalDte } // 도착한 시간을 기준으로 내림차순으로 정렬
+                    //
+                    for(parcel in remoteCompleteParcels){
+                        val localParcelById = parcelRepoImpl.getLocalParcelById(parcel.parcelId.regDt, parcel.parcelId.parcelUid)
+                        if(localParcelById == null){
+                            parcelRepoImpl.saveLocalOngoingParcel(ParcelMapper.parcelToParcelEntity(parcel))
+                            parcelManagementRepoImpl.insertEntity(ParcelMapper.parcelToParcelManagementEntity(parcel).also { it.isNowVisible = 1 })
+                        }
+                        else{
+                            parcelManagementRepoImpl.getEntity(parcel.parcelId.regDt, parcel.parcelId.parcelUid)?.let {entity ->
+                                parcelManagementRepoImpl.updateEntity(entity.also { it.isNowVisible = 1 })
+                            }
+                        }
+                    }
+                }
+            }
+            _isLoading.postValue(false)
+        }
+    }
+
+    fun toggleMoreView(){
+        _isMoreView.value?.let {
+            setMoreView(!it)
+        }
+    }
+
+    fun toggleSelectAll(){
+        _isSelectAll.value?.let {
+            setSelectAll(!it)
+        }
     }
 
     private fun checkIsRefreshNeed(){
@@ -133,26 +261,96 @@ class InquiryViewModel(private val userRepo: UserRepo,
         }
     }
 
-    fun inputTestData(){
+    fun refreshOngoing(){
         viewModelScope.launch(Dispatchers.IO) {
-            postParcel("아령", "kr.epost", "6865422872608")
-            postParcel("화분", "kr.epost", "6865422872609")
-            postParcel("물고기밥", "kr.epost", "6865422872610")
-            postParcel("수조", "kr.epost", "6865422872611")
-            postParcel("장화", "kr.epost", "6865422872612")
-            postParcel("운동화", "kr.epost", "6865422872613")
-            postParcel("정수기", "kr.epost", "6865422872614")
-            postParcel("식탁", "kr.epost", "6865422872615")
-            postParcel("액자", "kr.epost", "6865422872616")
+            _isLoading.postValue(true)
+            Log.d(TAG, "!!!!!!! Inquiry Refreshing!!!!!!!!")
+            val remoteParcels = parcelRepoImpl.getRemoteOngoingParcels()
+
+            // 서버로부터 데이터를 받아온 값이 널이 아니라면
+            remoteParcels?.let {
+
+                // 서버로부터 받아온 데이터(ParcelId로 검색)로 로컬 db에 검색이 되는지 확인한다.
+                for (remote in it){
+                    val localParcelById = parcelRepoImpl.getLocalParcelById(
+                        remote.parcelId.regDt,
+                        remote.parcelId.parcelUid
+                    )
+                    // 서버로부터 받아온 데이터가 검색되지 않았을 경우 => 새로운 데이터라는 의미 => 로컬에 저장한다.
+                    // ParcelEntity를 관리해줄 ParcelManagementEntity도 같은 ParcelId로 저장한다.
+                    if(localParcelById == null){
+                        parcelRepoImpl.saveLocalOngoingParcel(ParcelMapper.parcelToParcelEntity(remote))
+                        parcelManagementRepoImpl.insertEntity(ParcelMapper.parcelToParcelManagementEntity(remote))
+                    }
+                    /*
+                        서버로부터 받아온 데이터가 검색된 경우
+                        => 기존에 있는 데이터라는 의미
+                        => [InqueryHash를 조사해서 변화했는지 체크 및(&&) 택배의 상태가 활성화(STATUS == 1)인지 체크]
+                        => 바뀐게 있다면 서버 데이터를 업데이트한다.
+                     */
+                    else{
+                        // TODO 테스트일떄만 아래 조건문을 사용, 실제로는 위의것만 사용해야함.
+//                            if(localParcelById.inqueryHash != remote.inqueryHash && localParcelById.status == 1){
+                        if(localParcelById.status == 1){
+                            parcelRepoImpl.updateLocalOngoingParcel(ParcelMapper.parcelToParcelEntity(remote))
+                            // 업데이트 성공했으니 isBeUpdate를 0으로 다시 초기화시켜준다.
+                            parcelManagementRepoImpl.initializeIsBeUpdate(remote.parcelId.regDt, remote.parcelId.parcelUid)
+                        }
+                    }
+                }
+            }
+
+            // 로컬에 존재하지만 새로고침하여 서버로부터 받아온 데이터 중에는 없는 데이터
+            // (서버에서는 Delivered , 로컬에서는 out_for_delivery)
+            // => 새로고침을 하여 GET /parcels로 받아온 데이터는 서버의 데이터베이스 기준 onGoing에 해당하는 택배들만 가져옴
+            // => 따라서 로컬에서는 out_for_delivery로 배송 출발 상태(delivered 직전 상태)지만 서버에서는 delivered 상태면 새로고침 대상에서 제외됨.
+            // => 이런 데이터들은 각각 GET /parcel로 요청하여 새로고침한다.
+            parcelRepoImpl.getLocalOngoingParcels()?.let { localList ->
+                remoteParcels?.let { remoteList ->
+                    val filteredLocalList = localList as MutableList
+                    for (remoteParcel in remoteList)
+                    {
+                        filteredLocalList.removeIf {
+                            (it.parcelId.regDt == remoteParcel.parcelId.regDt) && (it.parcelId.parcelUid == remoteParcel.parcelId.parcelUid)
+                        }
+                    }
+
+                    for (parcel in filteredLocalList)
+                    {
+                        val remoteOngoingParcel = parcelRepoImpl.getRemoteOngoingParcel(
+                            regDt = parcel.parcelId.regDt,
+                            parcelUid = parcel.parcelId.parcelUid
+                        )
+                        val localParcelById = parcelRepoImpl.getLocalParcelById(
+                            regDt = parcel.parcelId.regDt,
+                            parcelUid = parcel.parcelId.parcelUid
+                        )
+                        if(remoteOngoingParcel != null && localParcelById != null)
+                        {
+                            if (remoteOngoingParcel.inqueryHash != parcel.inqueryHash)
+                            {
+                                parcelRepoImpl.saveLocalOngoingParcel(localParcelById.apply { this.update(remoteOngoingParcel) })
+                                parcelManagementRepoImpl.initializeIsBeUpdate(localParcelById.regDt, localParcelById.parcelUid)
+                            }
+                        }
+                    }
+                }
+            }
+            _isLoading.postValue(false)
         }
     }
 
-    fun setCntOfDelete(value: Int){
-        _cntOfDelete.value = value
+    fun refreshComplete(){
+        viewModelScope.launch(Dispatchers.IO) {
+            clearIsBeDelivered().join()
+            sendRemovedData().join()
+            getMonthList().join()
+        }
     }
 
     fun deleteCancel(){
         viewModelScope.launch(Dispatchers.IO) {
+            _isShowDeleteSnackBar.postValue(false) // 삭제 스낵바 바로 dismiss
             val cancelDataList = parcelManagementRepoImpl.getCancelIsBeDelete()
             Log.d(TAG, "삭제 취소할 데이터 : $cancelDataList")
 
@@ -172,53 +370,6 @@ class InquiryViewModel(private val userRepo: UserRepo,
         }
     }
 
-    private fun getMonthList(){
-        viewModelScope.launch(Dispatchers.IO) {
-                _isLoading.postValue(true)
-                val remoteMonthList = parcelRepoImpl.getRemoteMonthList()
-                remoteMonthList?.let { list ->
-                    for(timeCnt in list){
-                        Log.d(TAG, "${timeCnt.time} && ${timeCnt.count}")
-                    }
-                }
-                _monthList.postValue(remoteMonthList)
-                _isLoading.postValue(false)
-        }
-    }
-
-    fun getCompleteList(inquiryDate: String){
-        viewModelScope.launch(Dispatchers.IO) {
-
-            _isLoading.postValue(true)
-            if(pagingManagement.InquiryDate != inquiryDate){
-                pagingManagement.pagingNum = 0
-                pagingManagement.InquiryDate = inquiryDate
-                pagingManagement.hasNext = true
-                _completeList.postValue(mutableListOf())
-            }
-            else{
-                pagingManagement.pagingNum += 1
-            }
-
-            // 다음에 조회할 데이터가 있다면
-            if(pagingManagement.hasNext){
-                val remoteCompleteParcels = parcelRepoImpl.getRemoteCompleteParcels(page = pagingManagement.pagingNum, inquiryDate = inquiryDate)
-                // null이거나 0이면 다음 데이터가 없는 것이므로 페이징 숫자를 1빼고 hasNext를 false로 바꾼다.
-                if(remoteCompleteParcels == null || remoteCompleteParcels.size == 0){
-                    pagingManagement.pagingNum -= 1
-                    pagingManagement.hasNext = false
-                }
-                else{
-                    remoteCompleteParcels.sortByDescending { it.arrivalDte } // 도착한 시간을 기준으로 내림차순으로 정렬
-                    withContext(Main){
-                        setCompleteList(remoteCompleteParcels)
-                    }
-                }
-            }
-            _isLoading.postValue(false)
-        }
-    }
-
     // '삭제하기'에서 아이템이 전부 선택되었는지를 반환
     fun isFullySelected(selectedNum: Int): Boolean{
         return when(screenStatus.value ?: ScreenStatus.ONGOING){
@@ -228,30 +379,6 @@ class InquiryViewModel(private val userRepo: UserRepo,
             ScreenStatus.COMPLETE -> {
                 selectedNum ==  (completeList.value?.size ?: 0)
             }
-        }
-    }
-
-    private fun setRemovable(flag: Boolean){
-        _isRemovable.value = flag
-    }
-
-    private fun setMoreView(flag: Boolean){
-        _isMoreView.value = flag
-    }
-
-    private fun setSelectAll(flag: Boolean){
-        _isSelectAll.value = flag
-    }
-
-    fun toggleMoreView(){
-        _isMoreView.value?.let {
-            setMoreView(!it)
-        }
-    }
-
-    fun toggleSelectAll(){
-        _isSelectAll.value?.let {
-            setSelectAll(!it)
         }
     }
 
@@ -268,120 +395,32 @@ class InquiryViewModel(private val userRepo: UserRepo,
         setMoreView(false)
     }
 
-    fun refreshOngoing(){
-        viewModelScope.launch {
-            withContext(Dispatchers.Default) {
-                Log.d(TAG, "!!!!!!! Inquiry Refreshing!!!!!!!!")
-                val remoteParcels = parcelRepoImpl.getRemoteOngoingParcels()
-
-                // 서버로부터 데이터를 받아온 값이 널이 아니라면
-                remoteParcels?.let {
-
-                    // 서버로부터 받아온 데이터(ParcelId로 검색)로 로컬 db에 검색이 되는지 확인한다.
-                    for (remote in it){
-                        val localParcelById = parcelRepoImpl.getLocalParcelById(
-                            remote.parcelId.regDt,
-                            remote.parcelId.parcelUid
-                        )
-                        // 서버로부터 받아온 데이터가 검색되지 않았을 경우 => 새로운 데이터라는 의미 => 로컬에 저장한다.
-                        // ParcelEntity를 관리해줄 ParcelManagementEntity도 같은 ParcelId로 저장한다.
-                        if(localParcelById == null){
-                            parcelRepoImpl.saveLocalOngoingParcel(ParcelMapper.parcelToParcelEntity(remote))
-                            parcelManagementRepoImpl.insertEntity(ParcelMapper.parcelToParcelManagementEntity(remote))
-                        }
-                        /*
-                            서버로부터 받아온 데이터가 검색된 경우
-                            => 기존에 있는 데이터라는 의미
-                            => [InqueryHash를 조사해서 변화했는지 체크 및(&&) 택배의 상태가 활성화(STATUS == 1)인지 체크]
-                            => 바뀐게 있다면 서버 데이터를 업데이트한다.
-                         */
-                        else{
-                            // TODO 테스트일떄만 아래 조건문을 사용, 실제로는 위의것만 사용해야함.
-//                            if(localParcelById.inqueryHash != remote.inqueryHash && localParcelById.status == 1){
-                              if(localParcelById.status == 1){
-                                parcelRepoImpl.updateLocalOngoingParcel(ParcelMapper.parcelToParcelEntity(remote))
-                                // 업데이트 성공했으니 isBeUpdate를 0으로 다시 초기화시켜준다.
-                                parcelManagementRepoImpl.initializeIsBeUpdate(remote.parcelId.regDt, remote.parcelId.parcelUid)
-                            }
-                        }
-                    }
-                }
-
-                // 로컬에 존재하지만 새로고침하여 서버로부터 받아온 데이터 중에는 없는 데이터
-                // (서버에서는 Delivered , 로컬에서는 out_for_delivery)
-                // => 새로고침을 하여 GET /parcels로 받아온 데이터는 서버의 데이터베이스 기준 onGoing에 해당하는 택배들만 가져옴
-                // => 따라서 로컬에서는 out_for_delivery로 배송 출발 상태(delivered 직전 상태)지만 서버에서는 delivered 상태면 새로고침 대상에서 제외됨.
-                // => 이런 데이터들은 각각 GET /parcel로 요청하여 새로고침한다.
-                parcelRepoImpl.getLocalOngoingParcels()?.let { localList ->
-                    remoteParcels?.let { remoteList ->
-
-                        val filteredLocalList = localList as MutableList
-
-                        for (remoteParcel in remoteList)
-                        {
-                            filteredLocalList.removeIf {
-                                (it.parcelId.regDt == remoteParcel.parcelId.regDt) && (it.parcelId.parcelUid == remoteParcel.parcelId.parcelUid)
-                            }
-                        }
-
-                        for (parcel in filteredLocalList)
-                        {
-                            val remoteOngoingParcel = parcelRepoImpl.getRemoteOngoingParcel(
-                                regDt = parcel.parcelId.regDt,
-                                parcelUid = parcel.parcelId.parcelUid
-                            )
-                            val localParcelById = parcelRepoImpl.getLocalParcelById(
-                                regDt = parcel.parcelId.regDt,
-                                parcelUid = parcel.parcelId.parcelUid
-                            )
-                            if(remoteOngoingParcel != null && localParcelById != null)
-                            {
-                                if (remoteOngoingParcel.inqueryHash != parcel.inqueryHash)
-                                {
-                                    parcelRepoImpl.saveLocalOngoingParcel(localParcelById.apply { this.update(remoteOngoingParcel) })
-                                    parcelManagementRepoImpl.initializeIsBeUpdate(localParcelById.regDt, localParcelById.parcelUid)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // 화면을 배송완료 ==> 배송중으로 전환시킨다.
-    fun setScreenStatusOngoing(){
-        _screenStatus.value = ScreenStatus.ONGOING
-    }
-
-    // TODO : 데이터의 새로고침은 어떻게 시켜줄 것인가? , 아래로 당겨서 새로고침...?
-    // 화면을 배송중 ==> 배송완료로 전환시킨다.
-    fun setScreenStatusComplete(){
-        _screenStatus.value = ScreenStatus.COMPLETE
-
-        if(completeList.value == null || completeList.value?.size == 0){
-            getMonthList()
-        }
-        // 전체 isBeDelivered를 0으로 초기화시켜준다.
-        viewModelScope.launch(Dispatchers.IO){
+    // 전체 isBeDelivered를 0으로 초기화시켜준다.
+    private fun clearIsBeDelivered(): Job{
+        return viewModelScope.launch(Dispatchers.IO){
             parcelManagementRepoImpl.updateTotalIsBeDeliveredToZero()
+//            val requestRenewal2 =
+//                NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
+//                    .requestRenewal2(userRepo.getEmail())
         }
     }
 
-    // 데이터 삭제 로직 1단계 : Room의 status를 1==>3으로 바꾼다.
+    // 데이터 삭제 로직 1단계 : Room의 status를 0=>1으로 바꾼다.
     fun removeSelectedData(selectedData: MutableList<ParcelId>) {
-        ioScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d(TAG, "selectedData `s Size : $selectedData")
             parcelRepoImpl.deleteLocalOngoingParcels(selectedData)
             parcelManagementRepoImpl.updateIsBeDeleteToOneByParcelIdList(selectedData)
+//            _isShowDeleteSnackBar.postValue(true) // 삭제 스낵바 표시
         }
     }
 
     // 데어터 삭제 로직 2단계 : Room의 status 3을 가진 택배들을 전부 서버로 보내서 서버 데이터 역시 삭제(1==>0)하고 최종적으로 status를 0으로 바꿔서 삭제 로직을 마무리한다.
-    private fun sendRemoveData(){
-        ioScope.launch {
+    private fun sendRemovedData(): Job{
+        return ioScope.launch {
             try{
                 // 서버로 데이터를 삭제(상태 업데이트)하라고 요청
-                val deleteRemoteParcels = parcelRepoImpl.deleteRemoteOngoingParcels()
+                val deleteRemoteParcels = parcelRepoImpl.deleteRemoteParcels()
                 // 위 요청이 성공했다면 (삭제할 데이터가 없으면 null임)
                 if(deleteRemoteParcels?.code == ResponseCode.SUCCESS.CODE) {
                     // 해당 아이템의 status(PARCEL)를 0으로 업데이트하여 삭제 처리를 마무리
@@ -403,22 +442,6 @@ class InquiryViewModel(private val userRepo: UserRepo,
                 val apiResult = Gson().fromJson(errorLog, APIResult::class.java)
                 Log.i(TAG, "Fail to send delete data : ${apiResult.message}") // 실패 로그
             }
-        }
-    }
-
-    // '배송완료' 리스트의 데이터를 filter로 걸러 세팅한다.
-    private fun setCompleteList(parcelList: MutableList<Parcel>){
-
-        val newCompleteList = parcelList.filter { parcel ->
-            // 리스트 중 오직 '배송출발'일 경우만 해당 adapter로 넘긴다.
-            Log.d(TAG, "## ==> ${parcel.deliveryStatus} && ${DeliveryStatusEnum.delivered}")
-            parcel.deliveryStatus == DeliveryStatusEnum.delivered.code
-        }.map { filteredItem ->
-            InquiryListItem(parcel = filteredItem)
-        } as MutableList<InquiryListItem>
-
-        if(newCompleteList.size > 0 ){
-            _completeList.plusAssign(newCompleteList )
         }
     }
 

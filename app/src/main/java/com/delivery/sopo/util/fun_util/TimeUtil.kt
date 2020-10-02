@@ -20,4 +20,11 @@ object TimeUtil
         val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
         return sdf.format(date)
     }
+
+    @SuppressLint("SimpleDateFormat")
+    fun getYYYYMMDate(): String{
+        val date: Date = Date()
+        val sdf: SimpleDateFormat = SimpleDateFormat("yyyyMM")
+        return sdf.format(date)
+    }
 }

@@ -44,8 +44,14 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
         }
     }
 
-    override suspend fun getLocalOngoingParcels(): List<Parcel>?
-    {
+    fun getLocalCompleteParcelsLiveData(): LiveData<List<Parcel>>{
+            return Transformations.map(appDatabase.parcelDao().getCompleteLiveData()){
+                    entity ->
+                        entity.map(ParcelMapper::parcelEntityToParcel)
+            }
+    }
+
+    override suspend fun getLocalOngoingParcels(): List<Parcel>? {
         return appDatabase.parcelDao().getOngoingData()?.map(ParcelMapper::parcelEntityToParcel)
     }
 
@@ -57,6 +63,11 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
         appDatabase.parcelDao().insert(parcel)
     }
 
+    suspend fun saveLocalCompleteParcels(parcelList: List<Parcel>) {
+        appDatabase.parcelDao().insert(parcelList.map(ParcelMapper::parcelToParcelEntity))
+    }
+
+
     override suspend fun updateLocalOngoingParcel(parcel: ParcelEntity) {
         appDatabase.parcelDao().update(parcel)
     }
@@ -65,7 +76,7 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
         appDatabase.parcelDao().update(parcelList)
     }
 
-    override suspend fun deleteRemoteOngoingParcels(): APIResult<String?>? {
+    override suspend fun deleteRemoteParcels(): APIResult<String?>? {
         val beDeletedData = appDatabase.parcelDao().getBeDeletedData()
         return if(beDeletedData.isNotEmpty()){
             NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd()).deleteParcels(email = userRepo.getEmail(),

@@ -4,12 +4,12 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.appcompat.widget.PopupMenu
@@ -26,11 +26,15 @@ import com.delivery.sopo.databinding.SopoInquiryViewBinding
 import com.delivery.sopo.enums.InquiryItemType
 import com.delivery.sopo.enums.ScreenStatus
 import com.delivery.sopo.mapper.MenuMapper
+import com.delivery.sopo.models.parcel.ParcelId
+import com.delivery.sopo.repository.ParcelManagementRepoImpl
+import com.delivery.sopo.repository.ParcelRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.fun_util.SizeUtil
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.MainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
+import com.delivery.sopo.views.InquiryViewModelFactory
 import com.delivery.sopo.views.MainViewModelFactory
 import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
 import kotlinx.android.synthetic.main.sopo_inquiry_view.*
@@ -38,21 +42,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.lang.IllegalStateException
 import java.util.*
 import java.util.stream.Collectors
 import java.util.stream.Stream
-import kotlin.NoSuchElementException
 
-/*
-    TODO : 로컬에서 Parcel의 status가 3인데 서버는 0인 경우 => 앱에서 지우라고 서버에 요청을해서 서버는 지웠지만 앱은 서버의 성공 요청을 못 받은 경우,
-           로컬에서 다시 한번 삭제요청을 하여 로컬에 데이터가 동기화됐을때 '등록된 택배' TextView가 사라지지 않음(아이템 갯수가 0개인데도 불구하고)
- */
 class InquiryView: Fragment() {
 
     private val TAG = this.javaClass.simpleName
-    private val inquiryVM: InquiryViewModel by viewModel()
     private val userRepo: UserRepo by inject()
+    private val parcelRepoImpl: ParcelRepoImpl by inject()
+    private val parcelManagementRepoImpl: ParcelManagementRepoImpl by inject()
     private lateinit var binding: SopoInquiryViewBinding
     private lateinit var soonArrivalListAdapter: InquiryListAdapter
     private lateinit var registeredSopoListAdapter: InquiryListAdapter
@@ -60,7 +60,11 @@ class InquiryView: Fragment() {
     private val mainVm: MainViewModel by lazy {
         ViewModelProvider(requireActivity(), MainViewModelFactory(userRepo)).get(MainViewModel::class.java)
     }
-    private var progressBar : CustomProgressBar? = null
+    private val inquiryVm: InquiryViewModel by lazy {
+        ViewModelProvider(requireActivity(), InquiryViewModelFactory(userRepo, parcelRepoImpl, parcelManagementRepoImpl)).get(InquiryViewModel::class.java)
+    }
+    private var progressBar: CustomProgressBar? = null
+    private var refreshDelay: Boolean = false
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(
@@ -87,11 +91,11 @@ class InquiryView: Fragment() {
     }
 
     private fun viewBinding() {
-        binding.vm = inquiryVM
+        binding.vm = inquiryVm
         binding.lifecycleOwner = this
 
         soonArrivalListAdapter = InquiryListAdapter(
-            cntOfSelectedItem = inquiryVM.cntOfSelectedItem,
+            cntOfSelectedItem = inquiryVm.cntOfSelectedItem,
             lifecycleOwner = this,
             list = mutableListOf(),
             itemType = InquiryItemType.Soon
@@ -101,7 +105,7 @@ class InquiryView: Fragment() {
         binding.recyclerviewSoonArrival.layoutManager = LinearLayoutManager(requireActivity())
 
         registeredSopoListAdapter = InquiryListAdapter(
-            cntOfSelectedItem = inquiryVM.cntOfSelectedItem,
+            cntOfSelectedItem = inquiryVm.cntOfSelectedItem,
             lifecycleOwner = this,
             list = mutableListOf(),
             itemType = InquiryItemType.Registered
@@ -111,7 +115,7 @@ class InquiryView: Fragment() {
         binding.recyclerviewRegisteredParcel.layoutManager = LinearLayoutManager(requireActivity())
 
         completeListAdapter = InquiryListAdapter(
-            cntOfSelectedItem = inquiryVM.cntOfSelectedItem,
+            cntOfSelectedItem = inquiryVm.cntOfSelectedItem,
             lifecycleOwner = this,
             list = mutableListOf(),
             itemType = InquiryItemType.Complete
@@ -120,23 +124,60 @@ class InquiryView: Fragment() {
         binding.recyclerviewCompleteParcel.adapter = completeListAdapter
         binding.recyclerviewCompleteParcel.layoutManager = LinearLayoutManager(requireActivity())
 
+        // 당겨서 새로고침 !
+        binding.swipeRefresh.setOnRefreshListener {
+            if(!refreshDelay){
+                refreshDelay = true
+
+                when(inquiryVm.getCurrentScreenStatus()){
+                    ScreenStatus.COMPLETE -> {
+                        inquiryVm.refreshComplete()
+                    }
+                    ScreenStatus.ONGOING -> {
+                        inquiryVm.refreshOngoing()
+                    }
+                }
+
+                //5초후에 실행
+                Timer().schedule(object : TimerTask()
+                {
+                    override fun run()
+                    {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            refreshDelay = false
+                        }
+                    }
+                }, 5000)
+            }
+            else{
+                Toast.makeText(requireContext(), "5초 후에 다시 새로고침을 시도해주세요.", Toast.LENGTH_LONG).show()
+            }
+            binding.swipeRefresh.isRefreshing = false
+        }
         binding.executePendingBindings()
     }
 
     private fun setObserver(){
 
-        inquiryVM.isLoading.observe(this, Observer{isLoading ->
+        inquiryVm.isLoading.observe(this, Observer { isLoading ->
             progressBar?.let {
-                if(isLoading && !it.isAdded){
+                if (isLoading && !it.isAdded)
+                {
                     it.onStartDialog()
                 }
-                else{
-                    it.onCloseDialog()
+                else
+                {
+                    try {
+                        it.onCloseDialog()
+                    }
+                    catch (e: IllegalStateException){
+                        Log.e(TAG, "IllegalStateException !!!!!!! ${e.localizedMessage}")
+                    }
                 }
             }
         })
 
-        inquiryVM.ongoingList.observe(this, Observer {
+        inquiryVm.ongoingList.observe(this, Observer {
             soonArrivalListAdapter.setDataList(it)
             registeredSopoListAdapter.setDataList(it)
 
@@ -145,22 +186,27 @@ class InquiryView: Fragment() {
         })
 
         // 배송완료 리스트.
-        inquiryVM.completeList.observe(this, Observer {
-            completeListAdapter.setDataList(it)
+        inquiryVm.completeList.observe(this, Observer {list ->
+            Log.d(TAG, "!!!!!!!!!!!!!!!!!!!!!!!! list`size : ${list.size}")
+
+            list.sortByDescending { it.parcel.arrivalDte }
+            completeListAdapter.setDataList(list)
         })
 
         // 배송완료 화면에서 표출 가능한 년월 리스트
-        inquiryVM.monthList.observe(this, Observer {
-            monthList ->
+        inquiryVm.monthList.observe(this, Observer { monthList ->
 
-            if(monthList.size > 0){
+            if (monthList.size > 0)
+            {
                 //만약 아래의 first객체가 it.count > 0인 객체가 맞다면... 만약 it.count가 전부 0인 경우는..? ==> NoSuchElementException 발생..
-                try{
+                try
+                {
                     val first = monthList.first { it.count > 0 }
                     tv_spinner_month.text = MenuMapper.timeToListTitle(first.time)
-                    inquiryVM.getCompleteList(MenuMapper.timeToInquiryDate(first.time))
+                    inquiryVm.getCompleteList(MenuMapper.timeToInquiryDate(first.time))
                 }
-                catch (e: NoSuchElementException){
+                catch (e: NoSuchElementException)
+                {
                     /*
                      * 분명 monthList에는 값(2020-10, 1 -> 2020년 10월에 1개의 데이터가 있음을 뜻함)이 존재하는데 해당 년월에 데이터가 0개인 경우..
                      * 데이터가 하나도 존재하지 않는 경우로 간주해야함.
@@ -169,7 +215,7 @@ class InquiryView: Fragment() {
                 }
             }
 
-            constraint_month_spinner.setOnClickListener{ v ->
+            constraint_month_spinner.setOnClickListener { v ->
                 openPopUpMonthlyUsageHistory(v, monthList)
             }
         })
@@ -177,28 +223,72 @@ class InquiryView: Fragment() {
         /*
          * '배송 중' 또는 '배송 완료' 화면에 따른 화면 세팅
          */
-        inquiryVM.screenStatus.observe(this, Observer {
+        inquiryVm.screenStatus.observe(this, Observer {
             when (it)
             {
                 // '배송 중' 화면
                 ScreenStatus.ONGOING ->
                 {
-                    btn_ongoing.setTextColor(ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE))
-                    btn_ongoing.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_light_black)
-                    btn_ongoing.typeface = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_bold)
-                    btn_complete.typeface = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_regular)
-                    btn_complete.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
-                    btn_complete.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_color_gray_400)
+                    btn_ongoing.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.MAIN_WHITE
+                        )
+                    )
+                    btn_ongoing.background = ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.border_all_rounded_light_black
+                    )
+                    btn_ongoing.typeface = ResourcesCompat.getFont(
+                        requireContext(),
+                        R.font.spoqa_han_sans_bold
+                    )
+                    btn_complete.typeface = ResourcesCompat.getFont(
+                        requireContext(),
+                        R.font.spoqa_han_sans_regular
+                    )
+                    btn_complete.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.COLOR_GRAY_400
+                        )
+                    )
+                    btn_complete.background = ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.border_all_rounded_color_gray_400
+                    )
                 }
                 // '배송 완료' 화면
                 ScreenStatus.COMPLETE ->
                 {
-                    btn_ongoing.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
-                    btn_ongoing.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_color_gray_400)
-                    btn_complete.typeface = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_regular)
-                    btn_complete.typeface = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_bold)
-                    btn_complete.setTextColor(ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE))
-                    btn_complete.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_light_black)
+                    btn_ongoing.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.COLOR_GRAY_400
+                        )
+                    )
+                    btn_ongoing.background = ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.border_all_rounded_color_gray_400
+                    )
+                    btn_complete.typeface = ResourcesCompat.getFont(
+                        requireContext(),
+                        R.font.spoqa_han_sans_regular
+                    )
+                    btn_complete.typeface = ResourcesCompat.getFont(
+                        requireContext(),
+                        R.font.spoqa_han_sans_bold
+                    )
+                    btn_complete.setTextColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.MAIN_WHITE
+                        )
+                    )
+                    btn_complete.background = ContextCompat.getDrawable(
+                        requireContext(),
+                        R.drawable.border_all_rounded_light_black
+                    )
                 }
             }
         })
@@ -206,8 +296,9 @@ class InquiryView: Fragment() {
         /*
          *  '더 보기'로 아이템들을 숨기는 것을 해제하여 모든 아이템들을 화면에 노출시킨다.
          */
-        inquiryVM.isMoreView.observe(this, Observer {
-            if (it) {
+        inquiryVm.isMoreView.observe(this, Observer {
+            if (it)
+            {
                 // '곧 도착' 리스트뷰는 2개 이상의 데이터는 '더 보기'로 숨겨져 있기 때문에 어덥터에 모든 데이터를 표출하라고 지시한다.
                 soonArrivalListAdapter.isFullListItem(true)
 
@@ -216,7 +307,8 @@ class InquiryView: Fragment() {
                 tv_more_view.text = ""
                 image_arrow.setBackgroundResource(R.drawable.ic_up_arrow)
             }
-            else {
+            else
+            {
                 // '곧 도착' 리스트뷰의 2개 이상의 데이터가 존재할떄 '더 보기'로 숨기라고 지시한다.
                 soonArrivalListAdapter.isFullListItem(false)
 
@@ -230,27 +322,41 @@ class InquiryView: Fragment() {
         /*
          *  '삭제하기'에서 선택된 아이템의 개수
          */
-        inquiryVM.cntOfSelectedItem.observe(this, Observer {
+        inquiryVm.cntOfSelectedItem.observe(this, Observer {
 
             // 선택된 아이템이 1개 이상이라면 '~개 삭제 하기' 뷰가 나와야한다.
-            if (it > 0) {
+            if (it > 0)
+            {
                 constraint_delete_final.visibility = VISIBLE
             }
             // X 버튼을 눌러 삭제하기가 취소됐을때 '~개 삭제 하기' 뷰가 사라져야한다.
-            else if (it == 0) {
+            else if (it == 0)
+            {
                 constraint_delete_final.visibility = GONE
             }
 
             // 아이템이 전부 선택되었는지를 확인(아이템이 존재하지 않을때 역시 '전체선택'으로 판단될 수 있으므로 선택된 아이템의 개수가 0 이상이어야한다.)
-            if (inquiryVM.isFullySelected(it) && it != 0) {
+            if (inquiryVm.isFullySelected(it) && it != 0)
+            {
                 //'전채선택'이 됐다면 상단의 '전체선택 뷰'들의 이미지와 택스트를 빨간색으로 세팅한다.
                 image_is_all_checked.setBackgroundResource(R.drawable.ic_checked_red)
-                tv_is_all_checked.setTextColor(ContextCompat.getColor(requireActivity(), R.color.MAIN_RED))
+                tv_is_all_checked.setTextColor(
+                    ContextCompat.getColor(
+                        requireActivity(),
+                        R.color.MAIN_RED
+                    )
+                )
             }
-            else {
+            else
+            {
                 //'전채선택'이 아니라면 상단의 '전체선택 뷰'들의 이미지와 택스트를 회색으로 세팅한다.
                 image_is_all_checked.setBackgroundResource(R.drawable.ic_checked_gray)
-                tv_is_all_checked.setTextColor(ContextCompat.getColor(requireActivity(), R.color.COLOR_GRAY_400))
+                tv_is_all_checked.setTextColor(
+                    ContextCompat.getColor(
+                        requireActivity(),
+                        R.color.COLOR_GRAY_400
+                    )
+                )
             }
         })
 
@@ -261,8 +367,9 @@ class InquiryView: Fragment() {
          *      2. 아이템들의 '상세 내역' 화면으로 '이동' 되어야한다.
          *   이 경우 viewModel의 liveData를 이용하여 아이템들을 '삭제'할 수 있는 상태라고 뷰들에게 알려준다.
          */
-        inquiryVM.isRemovable.observe(this, Observer {
-            if (it) {
+        inquiryVm.isRemovable.observe(this, Observer {
+            if (it)
+            {
                 //'삭제하기'일때
                 // 리스트들에게 앞으로의 아이템들의 '클릭' 또는 '터치' 행위는 삭제하기 위한 '선택'됨을 뜻한다고 알려준다.
                 soonArrivalListAdapter.setRemovable(true)
@@ -272,7 +379,8 @@ class InquiryView: Fragment() {
                 // 팝업 메뉴에서 '삭제하기'를 선택했을때의 화면 세팅
                 viewSettingForPopupMenuDelete()
             }
-            else {
+            else
+            {
                 // '삭제하기 취소'일때
                 // 선택되었지만 '취소'되어 '선택된 상태'를 다시 '미선택 상태'로 초기화한다.
                 soonArrivalListAdapter.setRemovable(false)
@@ -287,13 +395,16 @@ class InquiryView: Fragment() {
         /*
          * 뷰모델에서 데이터 바인딩으로 '전체선택'하기를 이용자가 선택했을때
          */
-        inquiryVM.isSelectAll.observe(this, Observer {
-            when (inquiryVM.screenStatus.value) {
-                ScreenStatus.ONGOING -> {
+        inquiryVm.isSelectAll.observe(this, Observer {
+            when (inquiryVm.screenStatus.value)
+            {
+                ScreenStatus.ONGOING ->
+                {
                     soonArrivalListAdapter.setSelectAll(it)
                     registeredSopoListAdapter.setSelectAll(it)
                 }
-                ScreenStatus.COMPLETE -> {
+                ScreenStatus.COMPLETE ->
+                {
                     completeListAdapter.setSelectAll(it)
                 }
             }
@@ -315,20 +426,27 @@ class InquiryView: Fragment() {
         requireActivity().menuInflater.inflate(R.menu.inquiry_popup_menu, menu)
 
         // 팝업 메뉴 세팅
-        val listPopupWindowAdapter = InquiryListPopupWindowAdapter(requireActivity(), MenuMapper.menuToMenuItemList(menu))
+        val listPopupWindowAdapter = InquiryListPopupWindowAdapter(
+            requireActivity(), MenuMapper.menuToMenuItemList(
+                menu
+            )
+        )
         listPopupWindow.setAdapter(listPopupWindowAdapter)
         listPopupWindow.setOnItemClickListener{ parent, view, position, id ->
             when(position){
                 //삭제하기
-                0 -> {
-                    inquiryVM.openRemoveView()
+                0 ->
+                {
+                    inquiryVm.openRemoveView()
                 }
                 // 새로고침
-                1 -> {
-                    inquiryVM.refreshOngoing()
+                1 ->
+                {
+                    inquiryVm.refreshOngoing()
                 }
                 // 도움말
-                2 -> {
+                2 ->
+                {
                 }
             }
             listPopupWindow.dismiss()
@@ -338,7 +456,10 @@ class InquiryView: Fragment() {
 
     // 배송완료 화면에서 년/월을 눌렀을 시 팝업 메뉴가 나온다.
     @SuppressLint("UseCompatLoadingForDrawables")
-    private fun openPopUpMonthlyUsageHistory(anchorView: View, timeCntDtoList: MutableList<TimeCountDTO>){
+    private fun openPopUpMonthlyUsageHistory(
+        anchorView: View,
+        timeCntDtoList: MutableList<TimeCountDTO>
+    ){
 
         val listPopupWindow = ListPopupWindow(requireActivity()).apply {
             this.width = SizeUtil.changeDpToPx(binding.root.context, 120F)
@@ -351,14 +472,24 @@ class InquiryView: Fragment() {
         requireActivity().menuInflater.inflate(R.menu.basic_menu, menu)
 
         // 팝업 메뉴 세팅
-        val listPopupWindowAdapter = InquiryListPopupWindowAdapter(requireActivity(), MenuMapper.timeCountDtoToMenuItemList(timeCntDtoList))
+        val listPopupWindowAdapter = InquiryListPopupWindowAdapter(
+            requireActivity(), MenuMapper.timeCountDtoToMenuItemList(
+                timeCntDtoList
+            )
+        )
         listPopupWindow.setAdapter(listPopupWindowAdapter)
 
         // 6개 이상이라면 6개까지만 크기를 늘리고 그 이상의 데이터는 스크롤로 내리도록함
         if(timeCntDtoList.size > 6){
-            val measureContentHeight = SizeUtil.measureContentHeight(requireContext(), listPopupWindowAdapter)
+            val measureContentHeight = SizeUtil.measureContentHeight(
+                requireContext(),
+                listPopupWindowAdapter
+            )
             Log.d(TAG, "measureContentHeight : $measureContentHeight")
-            listPopupWindow.height = SizeUtil.measureContentHeight(requireContext(), listPopupWindowAdapter) * 6
+            listPopupWindow.height = SizeUtil.measureContentHeight(
+                requireContext(),
+                listPopupWindowAdapter
+            ) * 6
         }
         else{
             listPopupWindow.height = ListPopupWindow.WRAP_CONTENT
@@ -368,7 +499,7 @@ class InquiryView: Fragment() {
         listPopupWindow.setOnItemClickListener{ parent, view, position, id ->
             listPopupWindowAdapter.getItem(position).timeCount?.let {
                 if(it.count > 0){
-                    inquiryVM.getCompleteList(MenuMapper.timeToInquiryDate(it.time))
+                    inquiryVm.getCompleteList(MenuMapper.timeToInquiryDate(it.time))
                     tv_spinner_month.text = MenuMapper.timeToListTitle(it.time)
                     listPopupWindow.dismiss()
                 }
@@ -378,17 +509,20 @@ class InquiryView: Fragment() {
     }
 
     private fun setListener(){
-        binding.recyclerviewCompleteParcel.addOnScrollListener(object: RecyclerView.OnScrollListener(){
+        binding.recyclerviewCompleteParcel.addOnScrollListener(object :
+            RecyclerView.OnScrollListener()
+        {
 
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
             {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE)
+                {
                     val spinnerMonthTv = tv_spinner_month.text.toString()
                     Log.d(TAG, "spinnerMonthTv : $spinnerMonthTv")
                     Log.d(TAG, "MeneMapper : ${MenuMapper.titleToInquiryDate(spinnerMonthTv)}")
-                    inquiryVM.getCompleteList(MenuMapper.titleToInquiryDate(tv_spinner_month.text.toString()))
+                    inquiryVm.getCompleteList(MenuMapper.titleToInquiryDate(tv_spinner_month.text.toString()))
                 }
             }
         })
@@ -397,23 +531,26 @@ class InquiryView: Fragment() {
         constraint_delete_final.setOnClickListener {
             ConfirmDeleteDialog(requireActivity()){ dialog ->
 
-                // '곧 도착'에서 선택된 아이템들 리스트
-                val selectedDataSoon = soonArrivalListAdapter.getSelectedListData()
-                // '등록된 택배'에서 선택된 아이템들 리스트
-                val selectedDataRegister = registeredSopoListAdapter.getSelectedListData()
-                // '곧 도착' 리스트와 '등록뙨 택배' 리스트에서 선택된 아이템들을 '하나'의 리스트로 합쳐 뷰모델로 보내 삭제 처리를 한다.
-                val selectedData = Stream.of(selectedDataSoon, selectedDataRegister).flatMap { it.stream()}.collect(
-                    Collectors.toList()
-                )
+                val selectedData
+                        = when(inquiryVm.getCurrentScreenStatus()){
+                                ScreenStatus.ONGOING -> {
+                                    val selectedDataSoon = soonArrivalListAdapter.getSelectedListData() // '곧 도착'에서 선택된 아이템들 리스트
+                                    val selectedDataRegister = registeredSopoListAdapter.getSelectedListData() // '등록된 택배'에서 선택된 아이템들 리스트
+                                    Stream.of(selectedDataSoon, selectedDataRegister).flatMap { it.stream()}.collect(Collectors.toList()) // '곧 도착' 리스트와 '등록뙨 택배' 리스트에서 선택된 아이템들을 '하나'의 리스트로 합쳐 뷰모델로 보내 삭제 처리를 한다.
+                                }
+                                ScreenStatus.COMPLETE -> {
+                                    completeListAdapter.getSelectedListData()
+                                }
+                                else -> mutableListOf()
+                            }
 
                 // 선택된 데이터들을 삭제한다.
-                inquiryVM.removeSelectedData(selectedData)
+                inquiryVm.removeSelectedData(selectedData as MutableList<ParcelId>)
                 // 삭제할 데이터의 크기를 알려준다.
-                inquiryVM.setCntOfDelete(selectedData.size)
+                inquiryVm.setCntOfDelete(selectedData.size)
 
-                // TODO: 로딩화면으로 데이터가 삭제되고 화면이 다시 그려지기 전까지의 화면을 대체한다.
                 // 삭제하기 화면을 종료한다.
-                inquiryVM.closeRemoveView()
+                inquiryVm.closeRemoveView()
                 dialog.dismiss()
 
                 showDeleteSnackBar()
@@ -474,7 +611,8 @@ class InquiryView: Fragment() {
 
     private fun viewSettingForRegisteredList(listSize: Int){
         when(listSize){
-            0 -> {
+            0 ->
+            {
                 constraint_registered_arrival.visibility = GONE
             }
             else -> {
@@ -521,12 +659,17 @@ class InquiryView: Fragment() {
 
         constraint_snack_bar.visibility = VISIBLE
         constraint_snack_bar.startAnimation(slideUp)
-        //3초후에 실행
-        Timer().schedule(object : TimerTask() {
-            override fun run() {
+        //2초후에 실행
+        Timer().schedule(object : TimerTask()
+        {
+            override fun run()
+            {
                 CoroutineScope(Dispatchers.Main).launch {
-                    constraint_snack_bar.visibility = GONE
-                    constraint_snack_bar.startAnimation(slideDown)
+                    // 만약 '삭제취소'를 눌러서 삭제가 취소 되었을 경우, 이미 GONE이 된 상태이므로 애니메이션 효과를 줄 필요가 없다.
+                    if(constraint_snack_bar.visibility != GONE){
+                        constraint_snack_bar.visibility = GONE
+                        constraint_snack_bar.startAnimation(slideDown)
+                    }
                 }
             }
         }, 2000)

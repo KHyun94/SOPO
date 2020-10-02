@@ -45,6 +45,9 @@ interface ParcelManagementDao
     @Insert(onConflict = REPLACE)
     fun insert(parcelManagementEntity: ParcelManagementEntity)
 
+    @Insert(onConflict = REPLACE)
+    fun insert(parcelManagementEntityList: List<ParcelManagementEntity>)
+
     @Delete
     fun delete(parcelManagementEntity: ParcelManagementEntity)
 

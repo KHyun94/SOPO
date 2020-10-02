@@ -261,6 +261,16 @@
                 app:layout_constraintTop_toTopOf="@+id/tv_spinner_month" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraint_month_spinner"
+            app:layout_constraintBottom_toTopOf="@+id/constraint_delete_final"
+            >
+
             <FrameLayout
                 android:id="@+id/frame_layout_content"
                 android:layout_width="match_parent"
@@ -532,13 +542,17 @@
                     android:visibility="gone">
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </FrameLayout>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_snack_bar"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@color/COLOR_MAIN_BLUE_700"
             android:elevation="50dp"
-            android:visibility="gone"
+            android:visibility="@{vm.isShowDeleteSnackBar ? View.GONE : View.GONE}"
             tools:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -673,7 +687,6 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/frame_layout_content"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:visibility="gone"
             >

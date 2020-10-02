@@ -3,6 +3,7 @@ package com.delivery.sopo.models.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.delivery.sopo.util.fun_util.TimeUtil
 
 @Entity(
     tableName = "PARCEL_MANAGEMENT",
@@ -35,8 +36,13 @@ data class ParcelManagementEntity(
     )
     var isBeDelivered: Int = 0,
     @ColumnInfo(
+        name = "isNowVisible",
+        typeAffinity = ColumnInfo.INTEGER
+    )
+    var isNowVisible: Int = 0,
+    @ColumnInfo(
         name = "AUDIT_DTE",
         typeAffinity = ColumnInfo.TEXT
     )
-    var auditDte: String
+    var auditDte: String = TimeUtil.getDateTime()
 )
