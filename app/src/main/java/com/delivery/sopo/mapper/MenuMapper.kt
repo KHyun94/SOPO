@@ -3,6 +3,7 @@ package com.delivery.sopo.mapper
 import android.view.Menu
 import androidx.core.view.iterator
 import com.delivery.sopo.database.dto.TimeCountDTO
+import com.delivery.sopo.models.entity.TimeCountEntity
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 
 object MenuMapper
@@ -17,11 +18,11 @@ object MenuMapper
         return menuItemList
     }
 
-    fun timeCountDtoToMenuItemList(timeCntDtoList: MutableList<TimeCountDTO>): List<InquiryMenuItem>{
+    fun timeCountDtoToMenuItemList(timeCntDtoList: MutableList<TimeCountEntity>): List<InquiryMenuItem>{
         val menuItemList = mutableListOf<InquiryMenuItem>()
         for(timeCnt in timeCntDtoList){
             menuItemList.add(InquiryMenuItem(viewType = InquiryMenuItem.InquiryMenuType.CompleteHistoryList,
-                                      timeCount = timeCnt))
+                                             timeCount = timeCnt))
         }
         return menuItemList
     }

@@ -69,6 +69,7 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
 
 
     override suspend fun updateLocalOngoingParcel(parcel: ParcelEntity) {
+        parcel.auditDte = TimeUtil.getDateTime()
         appDatabase.parcelDao().update(parcel)
     }
 

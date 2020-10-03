@@ -2,25 +2,26 @@ package com.delivery.sopo.viewmodels.inquiry
 
 import android.util.Log
 import androidx.lifecycle.*
-import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.database.dto.TimeCountDTO
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.enums.ScreenStatus
+import com.delivery.sopo.mapper.MenuMapper
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.mapper.ParcelMapper
+import com.delivery.sopo.mapper.TimeCountMapper
 import com.delivery.sopo.models.PagingManagement
+import com.delivery.sopo.models.entity.TimeCountEntity
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.repository.ParcelRepoImpl
+import com.delivery.sopo.repository.TimeCountRepoImpl
 import com.delivery.sopo.util.fun_util.TimeUtil
 import com.google.gson.Gson
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Dispatchers.Main
-import okhttp3.internal.wait
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.HttpException
@@ -28,7 +29,8 @@ import retrofit2.Response
 
 class InquiryViewModel(private val userRepo: UserRepo,
                        private val parcelRepoImpl: ParcelRepoImpl,
-                       private val parcelManagementRepoImpl: ParcelManagementRepoImpl) : ViewModel()
+                       private val parcelManagementRepoImpl: ParcelManagementRepoImpl,
+                       private val timeCountRepoImpl: TimeCountRepoImpl) : ViewModel()
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     // 진행 중인 리스트 데이터
@@ -49,12 +51,7 @@ class InquiryViewModel(private val userRepo: UserRepo,
     val completeList: LiveData<MutableList<InquiryListItem>>
         get() = _completeList
 
-    // 배송완료 조회 가능한 '년월' 리스트 데이터
-    private val _monthList = MutableLiveData<MutableList<TimeCountDTO>>()
-    val monthList: LiveData<MutableList<TimeCountDTO>>
-        get() = _monthList
-
-    // 화면에 전체 아이템의 노출 여부
+       // 화면에 전체 아이템의 노출 여부
     private val _isMoreView = MutableLiveData<Boolean>()
     val isMoreView: LiveData<Boolean>
         get() = _isMoreView
@@ -104,6 +101,19 @@ class InquiryViewModel(private val userRepo: UserRepo,
     val isForceUpdateFinish: LiveData<Boolean>
         get() = _isForceUpdateFinish
 
+    private val _currentTimeCount = timeCountRepoImpl.getCurrentTimeCountLiveData()
+    val currentTimeCount: LiveData<TimeCountEntity?>
+        get() = _currentTimeCount
+
+    // 배송완료 조회 가능한 '년월' 리스트 데이터
+    private val _monthList = timeCountRepoImpl.getAllLiveData()
+    val monthList: LiveData<MutableList<TimeCountEntity>>
+        get() = _monthList
+
+    private val _refreshCompleteListByOnlyLocalData = timeCountRepoImpl.getRefreshCriteriaLiveData()
+    val refreshCompleteListByOnlyLocalData: LiveData<Int>
+        get() = _refreshCompleteListByOnlyLocalData
+
     private val ioScope = CoroutineScope(Dispatchers.IO)
     private val pagingManagement = PagingManagement(0, "", true)
 
@@ -115,10 +125,12 @@ class InquiryViewModel(private val userRepo: UserRepo,
         _isSelectAll.value = false
         _screenStatus.value = ScreenStatus.ONGOING
         sendRemovedData()
-        checkIsRefreshNeed()
+        checkIsNeedForceUpdate()
 //        inputTestData()
     }
 
+    // TODO 테스트 함수.. 운영에서는 삭제해야함.
+    // 테스트 데이터 삽입
     fun inputTestData(){
         viewModelScope.launch(Dispatchers.IO) {
             postParcel("msi", "kr.epost", "6865421322618")
@@ -165,25 +177,84 @@ class InquiryViewModel(private val userRepo: UserRepo,
         return screenStatus.value
     }
 
-    private fun getMonthList(): Job {
-        return viewModelScope.launch(Dispatchers.IO) {
-            _isLoading.postValue(true)
-            val remoteMonthList = parcelRepoImpl.getRemoteMonthList()
-            remoteMonthList?.let { list ->
-                for(timeCnt in list){
-                    Log.d(TAG, "${timeCnt.time} && ${timeCnt.count}")
+    fun refreshCompleteListByOnlyLocalData(){
+        viewModelScope.launch(Dispatchers.IO) {
+            //  monthList가 1개 있었을 경우 => 2개 있었을 경우 =>
+            timeCountRepoImpl.getCurrentTimeCount()?.let {
+                it.visibility = 0
+                timeCountRepoImpl.updateEntity(it)
+            }
+            timeCountRepoImpl.getAll()?.let { list ->
+                if(list.filter { it.count > 0 }.isNotEmpty()){
+                    val nextVisibleEntity = list.first { it.count > 0 }
+                    nextVisibleEntity.visibility = 1
+                    timeCountRepoImpl.updateEntity(nextVisibleEntity)
+
+                    getCompleteListWithPaging(nextVisibleEntity.time.replace("-", ""))
+                }
+                // 전부 다 존재하긴 하지만 count가 0개일때는 TimeCount 자체가 쓸모가 없는 상태로 visibility를 -1로 세팅하여
+                // monthList(LiveData)에서 제외 (deleteAll로 삭제하면 '삭제취소'로 복구를 할 수가 없기 때문에 visibility를 -1로 세팅한다.
+                // ( status를 0으로 수정하면 UI에서 접부 삭제했을때 monthList가 남아있어서 EmptyView가 올라오지 않는다.)
+                else{
+                    list.forEach { it.visibility = -1 }
+                    timeCountRepoImpl.updateEntities(list)
                 }
             }
-            _monthList.postValue(remoteMonthList)
-            _isLoading.postValue(false)
         }
     }
 
-    fun getCompleteList(inquiryDate: String, refresh: Boolean = false){
+    // 배송완료 리스트의 년월 리스트를 가져온다.
+    private suspend fun getTimeCountList(): MutableList<TimeCountDTO>? {
+        // 기존 TimeCount를 deleteAll하고 새로운 TimeCount를 insert 해도 되지만 , 이렇게하면 화면 UI가 CompleteList가 먼저 보이고 년월 리스트가 그 후에 보이게 되므로
+        // status를 이용해서 0으로 먼저 바꾸고(비활성화) insert를 한 후 status가 0인 데이터를 전부 지운다. (화면의 부자연스러움이 사라짐)
+        timeCountRepoImpl.getAll()?.let { list ->
+            list.forEach { it.status = 0}
+            timeCountRepoImpl.updateEntities(list)
+        }
+
+        return parcelRepoImpl.getRemoteMonthList()?.let { list ->
+            val entityList = list.map(TimeCountMapper::timeCountDtoToTimeCountEntity)
+            if(entityList.isNotEmpty()){
+                entityList.first { it.count > 0 }.visibility = 1 // visibility를 1로 세팅함으로써 화면에 노출
+                timeCountRepoImpl.insertEntities(entityList)
+                timeCountRepoImpl.getAll()?.let{ all ->
+                    all.filter { it.status == 0 }.also {
+                        timeCountRepoImpl.deleteEntities(it)
+                    }
+                }
+            }
+            list
+        }
+    }
+
+    // UI를 통해 사용자가 배송완료에서 조회하고 싶은 년월을 바꾼다.
+    fun changeTimeCount(time: String){
+        viewModelScope.launch(Dispatchers.IO){
+            updateCurrentTimeCount(time) // TimeCount의 visibility를 수정한다.
+            timeCountRepoImpl.getCurrentTimeCount()?.let {
+                getCompleteListWithPaging(TimeCountMapper.timeCountToInquiryDate(time)) // 수정된 Visibility에 해당하는 년월을 서버로 요청해서 받아온다.
+            }
+        }
+    }
+
+    // TimeCount의 visibility를 수정한다.
+    private fun updateCurrentTimeCount(time: String){
+        timeCountRepoImpl.getCurrentTimeCount()?.let {
+            it.visibility = 0
+            timeCountRepoImpl.updateEntity(it)
+        }
+        timeCountRepoImpl.getById(time)?.let {
+            it.visibility = 1
+            timeCountRepoImpl.updateEntity(it)
+        }
+    }
+
+    // 배송완료 리스트를 가져온다.(페이징 포함)
+    fun getCompleteListWithPaging(inquiryDate: String){
         viewModelScope.launch(Dispatchers.IO) {
 
-            _isLoading.postValue(true)
-            if(pagingManagement.InquiryDate != inquiryDate || refresh){
+            _isLoading.postValue(true) // 로딩 프로그래스바 표출
+            if(pagingManagement.InquiryDate != inquiryDate){ //pagingManagement에 저장된 inquiryDate랑 새로 조회하려는 데이터가 다르면 페이징 데이터 초기화 후 새로운 데이터로 조회
                 pagingManagement.pagingNum = 0
                 pagingManagement.InquiryDate = inquiryDate
                 pagingManagement.hasNext = true
@@ -208,7 +279,6 @@ class InquiryViewModel(private val userRepo: UserRepo,
                 }
                 else{
                     remoteCompleteParcels.sortByDescending { it.arrivalDte } // 도착한 시간을 기준으로 내림차순으로 정렬
-                    //
                     for(parcel in remoteCompleteParcels){
                         val localParcelById = parcelRepoImpl.getLocalParcelById(parcel.parcelId.regDt, parcel.parcelId.parcelUid)
                         if(localParcelById == null){
@@ -216,6 +286,7 @@ class InquiryViewModel(private val userRepo: UserRepo,
                             parcelManagementRepoImpl.insertEntity(ParcelMapper.parcelToParcelManagementEntity(parcel).also { it.isNowVisible = 1 })
                         }
                         else{
+                            parcelRepoImpl.saveLocalOngoingParcel(ParcelMapper.parcelToParcelEntity(parcel))
                             parcelManagementRepoImpl.getEntity(parcel.parcelId.regDt, parcel.parcelId.parcelUid)?.let {entity ->
                                 parcelManagementRepoImpl.updateEntity(entity.also { it.isNowVisible = 1 })
                             }
@@ -227,19 +298,22 @@ class InquiryViewModel(private val userRepo: UserRepo,
         }
     }
 
+    //'더보기'를 눌렀다가 땠을때
     fun toggleMoreView(){
         _isMoreView.value?.let {
             setMoreView(!it)
         }
     }
 
+    // 택배 삭제할때 전체선택 여부
     fun toggleSelectAll(){
         _isSelectAll.value?.let {
             setSelectAll(!it)
         }
     }
 
-    private fun checkIsRefreshNeed(){
+    // 앱이 켜졌을 때 택배의 변동사항이 있어 사용자에게 업데이트된 내용을 보여줘야할 때 강제 업데이트를 한다.
+    private fun checkIsNeedForceUpdate(){
         viewModelScope.launch(Dispatchers.Default){
 
             // 현재 가지고 있는 아이템의 수가 0개라면 새로고침 한다.
@@ -261,10 +335,10 @@ class InquiryViewModel(private val userRepo: UserRepo,
         }
     }
 
+    // 배송 중, 등록된 택배의 전체 새로고침
     fun refreshOngoing(){
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.postValue(true)
-            Log.d(TAG, "!!!!!!! Inquiry Refreshing!!!!!!!!")
             val remoteParcels = parcelRepoImpl.getRemoteOngoingParcels()
 
             // 서버로부터 데이터를 받아온 값이 널이 아니라면
@@ -289,9 +363,8 @@ class InquiryViewModel(private val userRepo: UserRepo,
                         => 바뀐게 있다면 서버 데이터를 업데이트한다.
                      */
                     else{
-                        // TODO 테스트일떄만 아래 조건문을 사용, 실제로는 위의것만 사용해야함.
-//                            if(localParcelById.inqueryHash != remote.inqueryHash && localParcelById.status == 1){
-                        if(localParcelById.status == 1){
+                            if(localParcelById.inqueryHash != remote.inqueryHash && localParcelById.status == 1){
+//                        if(localParcelById.status == 1){
                             parcelRepoImpl.updateLocalOngoingParcel(ParcelMapper.parcelToParcelEntity(remote))
                             // 업데이트 성공했으니 isBeUpdate를 0으로 다시 초기화시켜준다.
                             parcelManagementRepoImpl.initializeIsBeUpdate(remote.parcelId.regDt, remote.parcelId.parcelUid)
@@ -340,30 +413,106 @@ class InquiryViewModel(private val userRepo: UserRepo,
         }
     }
 
+    // 배송완료 리스트의 전체 새로고침
     fun refreshComplete(){
         viewModelScope.launch(Dispatchers.IO) {
-            clearIsBeDelivered().join()
+            clearIsBeDelivered().join() //
             sendRemovedData().join()
-            getMonthList().join()
+            initCompleteList().join()
         }
     }
 
+    // 전체 isBeDelivered를 0으로 초기화시켜준다.
+    private fun clearIsBeDelivered(): Job{
+        return viewModelScope.launch(Dispatchers.IO){
+            parcelManagementRepoImpl.updateTotalIsBeDeliveredToZero()
+//            val requestRenewal2 =
+//                NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
+//                    .requestRenewal2(userRepo.getEmail())
+        }
+    }
+
+    // 배송완료 리스트를 가져오기전 초기화 작업
+    private fun initCompleteList(): Job{
+        return viewModelScope.launch(Dispatchers.IO) {
+
+            getTimeCountList() // 년월 리스트를 가져온다.
+            timeCountRepoImpl.getCurrentTimeCount()?.let{
+                getCompleteListWithPaging(MenuMapper.timeToInquiryDate(it.time))
+            }
+        }
+    }
+
+    // 데이터 삭제 로직 1단계 : Room의 status를 0=>1으로 바꾼다.
+    fun removeSelectedData(selectedData: MutableList<ParcelId>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.d(TAG, "selectedData `s Size : $selectedData")
+            parcelRepoImpl.deleteLocalOngoingParcels(selectedData)
+            parcelManagementRepoImpl.updateIsBeDeleteToOneByParcelIdList(selectedData)
+            timeCountRepoImpl.getCurrentTimeCount()?.let {
+                it.count = it.count - selectedData.size
+                timeCountRepoImpl.updateEntity(it)
+            }
+        }
+    }
+
+    // 데어터 삭제 로직 2단계 : Room의 status 3을 가진 택배들을 전부 서버로 보내서 서버 데이터 역시 삭제(1==>0)하고 최종적으로 status를 0으로 바꿔서 삭제 로직을 마무리한다.
+    private fun sendRemovedData(): Job{
+        return ioScope.launch {
+            try{
+                // 서버로 데이터를 삭제(상태 업데이트)하라고 요청
+                val deleteRemoteParcels = parcelRepoImpl.deleteRemoteParcels()
+                // 위 요청이 성공했다면 (삭제할 데이터가 없으면 null임)
+                if(deleteRemoteParcels?.code == ResponseCode.SUCCESS.CODE) {
+                    // 해당 아이템의 status(PARCEL)를 0으로 업데이트하여 삭제 처리를 마무리
+                    val isBeDeleteList = parcelManagementRepoImpl.getAll()?.let { parcelMng ->
+                        parcelMng.filter { it.isBeDelete == 1 }
+                    }
+                    isBeDeleteList?.let { list ->
+                        list.forEach { it.isBeDelete = 0
+                            it.auditDte =TimeUtil.getDateTime()}
+                        parcelManagementRepoImpl.updateEntities(list)
+                    }
+
+                    Log.i(TAG, "SUCCESS to send delete data")
+                }
+            }
+            catch (e: HttpException){
+                //TODO : 삭제하기에서 실패했을때 예외처리.
+                val errorLog = e.response()?.errorBody()?.charStream()
+                val apiResult = Gson().fromJson(errorLog, APIResult::class.java)
+                Log.i(TAG, "Fail to send delete data : ${apiResult.message}") // 실패 로그
+            }
+        }
+    }
+
+    // 삭제취소를 눌렀을 때
     fun deleteCancel(){
         viewModelScope.launch(Dispatchers.IO) {
             _isShowDeleteSnackBar.postValue(false) // 삭제 스낵바 바로 dismiss
             val cancelDataList = parcelManagementRepoImpl.getCancelIsBeDelete()
             Log.d(TAG, "삭제 취소할 데이터 : $cancelDataList")
 
-            cancelDataList?.let { parcelMnglist ->
-                parcelMnglist.forEach { it.isBeDelete = 0
-                               it.auditDte = TimeUtil.getDateTime()}
-                parcelManagementRepoImpl.updateEntities(parcelMnglist)
+            cancelDataList?.let { parcelMngList ->
+                // PARCEL_MANAGEMENT의 isBeDelete를 0으로 다시 초기화
+                parcelMngList.forEach { it.isBeDelete = 0 }
+                parcelManagementRepoImpl.updateEntities(parcelMngList)
 
-                for(parcelMng in parcelMnglist){
+                for(parcelMng in parcelMngList){
                     parcelRepoImpl.getLocalParcelById(parcelMng.regDt, parcelMng.parcelUid)?.let {
                         it.status = 1
-                        it.auditDte = TimeUtil.getDateTime()
                         parcelRepoImpl.updateLocalOngoingParcel(it)
+                    }
+                }
+                // 복구해야할 리스트 중 아이템 하나의 도착일자 (2020-09-19 ~~)에서 TIME_COUNT의 primaryKey를 추출해서 복구해야할 TIME_COUNT를 구한다.
+                parcelRepoImpl.getLocalParcelById(cancelDataList.first().regDt, cancelDataList.first().parcelUid)?.let {
+                    val timeCountPrimaryKey = TimeCountMapper.arrivalDateToTime(it.arrivalDte)
+                    timeCountRepoImpl.getLatestUpdatedEntity(timeCountPrimaryKey)?.let { entity ->
+                        entity.count += cancelDataList.size
+                        entity.visibility = 0 // 모든 아이템(monthList)가 삭제되었을때 삭제취소를 하려면 visibility를 0으로 수정해줘야한다.
+
+                        Log.d(TAG, "복구해야할 TIME_COUNT => time : ${entity.time} , count : ${entity.count}, status : ${entity.status} , auditDate : ${entity.auditDte}")
+                        timeCountRepoImpl.updateEntity(entity)
                     }
                 }
             }
@@ -395,56 +544,7 @@ class InquiryViewModel(private val userRepo: UserRepo,
         setMoreView(false)
     }
 
-    // 전체 isBeDelivered를 0으로 초기화시켜준다.
-    private fun clearIsBeDelivered(): Job{
-        return viewModelScope.launch(Dispatchers.IO){
-            parcelManagementRepoImpl.updateTotalIsBeDeliveredToZero()
-//            val requestRenewal2 =
-//                NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
-//                    .requestRenewal2(userRepo.getEmail())
-        }
-    }
-
-    // 데이터 삭제 로직 1단계 : Room의 status를 0=>1으로 바꾼다.
-    fun removeSelectedData(selectedData: MutableList<ParcelId>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            Log.d(TAG, "selectedData `s Size : $selectedData")
-            parcelRepoImpl.deleteLocalOngoingParcels(selectedData)
-            parcelManagementRepoImpl.updateIsBeDeleteToOneByParcelIdList(selectedData)
-//            _isShowDeleteSnackBar.postValue(true) // 삭제 스낵바 표시
-        }
-    }
-
-    // 데어터 삭제 로직 2단계 : Room의 status 3을 가진 택배들을 전부 서버로 보내서 서버 데이터 역시 삭제(1==>0)하고 최종적으로 status를 0으로 바꿔서 삭제 로직을 마무리한다.
-    private fun sendRemovedData(): Job{
-        return ioScope.launch {
-            try{
-                // 서버로 데이터를 삭제(상태 업데이트)하라고 요청
-                val deleteRemoteParcels = parcelRepoImpl.deleteRemoteParcels()
-                // 위 요청이 성공했다면 (삭제할 데이터가 없으면 null임)
-                if(deleteRemoteParcels?.code == ResponseCode.SUCCESS.CODE) {
-                    // 해당 아이템의 status(PARCEL)를 0으로 업데이트하여 삭제 처리를 마무리
-                    val isBeDeleteList = parcelManagementRepoImpl.getAll()?.let { parcelMng ->
-                        parcelMng.filter { it.isBeDelete == 1 }
-                    }
-                    isBeDeleteList?.let { list ->
-                        list.forEach { it.isBeDelete = 0
-                                       it.auditDte =TimeUtil.getDateTime()}
-                        parcelManagementRepoImpl.updateEntities(list)
-                    }
-
-                    Log.i(TAG, "SUCCESS to send delete data")
-                }
-            }
-            catch (e: HttpException){
-                //TODO : 삭제하기에서 실패했을때 예외처리.
-                val errorLog = e.response()?.errorBody()?.charStream()
-                val apiResult = Gson().fromJson(errorLog, APIResult::class.java)
-                Log.i(TAG, "Fail to send delete data : ${apiResult.message}") // 실패 로그
-            }
-        }
-    }
-
+    // TODO : 테스트하기 위해서 만든 함수, 운영에서는 삭제해야함.
     private fun postParcel(parcelAlias: String, trackCompany: String, trackNum: String){
 
         val ioScope = CoroutineScope(Dispatchers.IO)
@@ -476,7 +576,6 @@ class InquiryViewModel(private val userRepo: UserRepo,
                                 }
                             }
                         }
-
                         override fun onFailure(call: Call<APIResult<ParcelId?>>, t: Throwable) {
                             Log.d(TAG,"[postParcel] onFailure, ${t.localizedMessage}")
                         }

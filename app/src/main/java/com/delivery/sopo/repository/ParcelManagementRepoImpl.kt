@@ -41,14 +41,17 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
     }
 
     override fun insertEntities(parcelManagementEntityList: List<ParcelManagementEntity>){
+        parcelManagementEntityList.forEach { it.auditDte = TimeUtil.getDateTime() }
         appDatabase.parcelManagementDao().insert(parcelManagementEntityList)
     }
 
     override suspend fun updateEntity(parcelManagementEntity: ParcelManagementEntity){
+        parcelManagementEntity.auditDte = TimeUtil.getDateTime()
         appDatabase.parcelManagementDao().update(parcelManagementEntity)
     }
 
     override suspend fun updateEntities(parcelManagementEntityList: List<ParcelManagementEntity>){
+        parcelManagementEntityList.forEach { it.auditDte = TimeUtil.getDateTime() }
         appDatabase.parcelManagementDao().update(parcelManagementEntityList)
     }
 

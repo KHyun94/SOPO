@@ -7,6 +7,7 @@ import com.delivery.sopo.database.shared.SharedPrefHelper
 import com.delivery.sopo.repository.CourierRepolmpl
 import com.delivery.sopo.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.ParcelRepoImpl
+import com.delivery.sopo.repository.TimeCountRepoImpl
 import com.delivery.sopo.viewmodels.*
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.menus.*
@@ -51,6 +52,10 @@ val appModule = module {
         ParcelManagementRepoImpl(get())
     }
 
+    single {
+        TimeCountRepoImpl(get(), get())
+    }
+
     viewModel { SplashViewModel(get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { SignUpViewModel() }
@@ -59,9 +64,9 @@ val appModule = module {
     viewModel { MainViewModel(get()) }
     viewModel { LockScreenViewModel() }
     viewModel { SettingViewModel(get()) }
-    viewModel { NoticeViewModel() }
+    viewModel { NoticeViewModel()}
     viewModel { NotDisturbTimeViewModel() }
-    viewModel { InquiryViewModel(get(), get(), get()) }
+    viewModel { InquiryViewModel(get(), get(), get(), get()) }
     viewModel { MenuViewModel(get()) }
 
     viewModel { RegisterStep1ViewModel() }

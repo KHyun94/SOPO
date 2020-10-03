@@ -16,10 +16,14 @@ class ExampleUnitTest {
     fun addition_isCorrect() {
         val calendar = Calendar.getInstance()
         val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
-        calendar.time = simpleDateFormat.parse("2020-09-10")
+        calendar.time = simpleDateFormat.parse("2020-01")
 
         println("calendar : $calendar")
-        println("calendar day of week : ${calendar.get(Calendar.DAY_OF_WEEK)}")
-        println("calendar : ${calendar.get(Calendar.DATE)}")
+        println("YEAR : ${calendar.get(Calendar.YEAR)}")
+        println("MONTH : ${calendar.get(Calendar.MONTH)}")
+
+        println("DATE : ${calendar.get(Calendar.DATE)}")
+
+
     }
 }
