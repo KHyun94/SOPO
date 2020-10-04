@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <variable
+            name="item"
+            type="String" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_date_yymmdd"
+            style="@style/H5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:text="20/07/02"
+            android:textColor="@color/COLOR_GRAY_400"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_date_hhmmss"
+            style="@style/H5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:text="19:40:10"
+            android:textColor="@color/COLOR_GRAY_400"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_date_yymmdd" />
+
+        <!-- 상태에 따라 이미지 변경 해줘야함 현재 이미지 미제작으로 인하여 임시  -->
+        <LinearLayout
+            android:id="@+id/layout_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:layout_constraintLeft_toRightOf="@+id/tv_date_yymmdd"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_time_line_oval"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:background="@drawable/ic_time_line_tmp_oval" />
+
+            <View
+                android:id="@+id/v_time_line_bar"
+                android:layout_width="2dp"
+                android:layout_height="75dp"
+                android:background="@color/COLOR_GRAY_100" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_delivery_status"
+            style="@style/H5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:includeFontPadding="false"
+            android:text="간선상차"
+            android:textColor="@color/COLOR_MAIN_BLUE_700"
+            app:layout_constraintLeft_toRightOf="@+id/layout_status"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_delivery_location"
+            style="@style/H5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:includeFontPadding="false"
+            android:text="곤지암Hub"
+            android:textColor="@color/COLOR_GRAY_800"
+            app:layout_constraintLeft_toRightOf="@+id/layout_status"
+            app:layout_constraintTop_toBottomOf="@+id/tv_delivery_status" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
