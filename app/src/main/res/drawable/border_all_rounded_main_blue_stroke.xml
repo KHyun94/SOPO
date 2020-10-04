@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 상세 조회 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <solid
+        android:color="@android:color/transparent"/>
+
+    <stroke
+        android:width="2sp"
+        android:color="@color/COLOR_MAIN_BLUE_700" />
+
+    <corners
+        android:topLeftRadius="19sp"
+        android:topRightRadius="19sp"
+        android:bottomRightRadius="19sp"
+        android:bottomLeftRadius="19sp"/>
+</shape>

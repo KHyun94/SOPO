@@ -60,6 +60,8 @@
     <color name="FAQ_EMAIL_LAYOUT">#F0F2F7</color>
     <color name="SOPO_INQUERY_SELECTED">#424242</color>
     <color name="COLOR_MAIN_BLUE_50">#EFF2F9</color>
+    <color name="SAMPLE_BLACK">#080808</color>
+    <color name="TMP_BLACK">#1D1D1D</color>
 
 
 </resources>

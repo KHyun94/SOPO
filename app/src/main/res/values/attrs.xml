@@ -9,4 +9,5 @@
         <attr name="nonFocusColor" format="color"/>
         <attr name="focusColor" format="color"/>
     </declare-styleable>
+
 </resources>
