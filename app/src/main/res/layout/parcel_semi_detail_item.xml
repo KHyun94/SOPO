@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/layout_add_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_upper_arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_upper_arrow" />
+
+            <TextView
+                android:id="@+id/tv_add"
+                style="@style/H4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="더보기"
+                android:textColor="@color/SAMPLE_BLACK" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_detail_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="horizontal"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layout_add_view" />
+
+        <TextView
+            android:id="@+id/tv_status"
+            style="@style/H4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="49dp"
+            android:background="@drawable/border_all_rounded_main_blue_stroke"
+            android:paddingHorizontal="7dp"
+            android:text="상품인수"
+            android:textColor="@color/COLOR_MAIN_BLUE_700"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layout_detail_content" />
+
+        <TextView
+            android:id="@+id/tv_alias"
+            style="@style/H3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="6dp"
+            android:text="갤럭시 버즈 플러스 _ 화이트"
+            android:textColor="@color/TMP_BLACK"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_status" />
+
+        <TextView
+            android:id="@+id/tv_courier"
+            style="@style/H5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginBottom="31dp"
+            android:text="한진택배"
+            android:textColor="@color/COLOR_GRAY_800"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_alias" />
+
+        <TextView
+            android:id="@+id/tv_waybil_num"
+            style="@style/H4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginBottom="31dp"
+            android:text="4320938802"
+            android:textColor="@color/COLOR_GRAY_800"
+            app:layout_constraintBaseline_toBaselineOf="@+id/tv_courier"
+            app:layout_constraintLeft_toRightOf="@+id/tv_courier"
+            app:layout_constraintTop_toBottomOf="@id/tv_alias" />
+
+        <ImageView
+            android:id="@+id/iv_paste"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginBottom="31dp"
+            android:background="@drawable/ic_paste"
+            app:layout_constraintLeft_toRightOf="@id/tv_waybil_num"
+            app:layout_constraintTop_toBottomOf="@id/tv_alias" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="31dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_waybil_num"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

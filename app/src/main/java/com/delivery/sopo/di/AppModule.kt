@@ -69,6 +69,9 @@ val appModule = module {
     viewModel { InquiryViewModel(get(), get(), get(), get()) }
     viewModel { MenuViewModel(get()) }
 
+
+    viewModel { ParcelDetailViewModel(get(), get()) }
+
     viewModel { RegisterStep1ViewModel() }
     viewModel { RegisterStep2ViewModel(get()) }
     viewModel { RegisterStep3ViewModel(get()) }

@@ -5,6 +5,7 @@ import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.dto.DeleteParcelsDTO
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
+import com.kakao.usermgmt.StringSet.email
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -77,4 +78,14 @@ interface ParcelAPI
         @Path("email") email: String,
         @Path("status") status: Int
     ): Call<APIResult<String?>>
+
+    // 1002 단일 택배 업데이트 및 가져오기
+    @PATCH("/api/v1/sopoMainBackEnd/delivery/{email}/parcel")
+    @Headers("Accept: application/json")
+    suspend fun requestRenewalOneParcel(
+        @Path("email") email: String,
+        @Query("parcelUid") parcelUid : String,
+        @Query("regDt") regDt : String
+    ) : Call<APIResult<Parcel?>>
+
 }

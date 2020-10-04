@@ -19,37 +19,37 @@
 
   <style name="H1">
     <item name="android:fontFamily">@font/spoqa_han_sans_bold</item>
-    <item name="android:textSize">35sp</item>
+    <item name="android:textSize">35dp</item>
     <item name="android:letterSpacing">-0.02</item>
   </style>
 
   <style name="H2">
     <item name="android:fontFamily">@font/spoqa_han_sans_bold</item>
-    <item name="android:textSize">21sp</item>
+    <item name="android:textSize">21dp</item>
     <item name="android:letterSpacing">-0.02</item>
   </style>
 
   <style name="H3">
     <item name="android:fontFamily">@font/spoqa_han_sans_bold</item>
-    <item name="android:textSize">16sp</item>
+    <item name="android:textSize">16dp</item>
     <item name="android:letterSpacing">-0.04</item>
   </style>
 
   <style name="H4">
     <item name="android:fontFamily">@font/spoqa_han_sans_regular</item>
-    <item name="android:textSize">14sp</item>
+    <item name="android:textSize">14dp</item>
     <item name="android:letterSpacing">-0.04</item>
   </style>
 
   <style name="H5">
     <item name="android:fontFamily">@font/spoqa_han_sans_regular</item>
-    <item name="android:textSize">12sp</item>
+    <item name="android:textSize">12dp</item>
     <item name="android:letterSpacing">-0.04</item>
   </style>
 
   <style name="H6">
     <item name="android:fontFamily">@font/spoqa_han_sans_regular</item>
-    <item name="android:textSize">10sp</item>
+    <item name="android:textSize">10dp</item>
     <item name="android:letterSpacing">-0.04</item>
   </style>
 </resources>
