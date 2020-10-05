@@ -16,7 +16,7 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintlayout_setting"
+        android:id="@+id/constraint_setting"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white">
@@ -566,7 +566,7 @@
                 style="@style/H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/INQUIRY_VIEW_SNACK_BAR_COMMENT"
+                android:text="@string/INQUIRY_VIEW_DELETE_SNACK_BAR_COMMENT"
                 android:textColor="@color/COLOR_MAIN_100"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_count_of_deleted"
@@ -632,7 +632,7 @@
                 style="@style/H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="개의 택배에 변동사항이 있습니다."
+                android:text="@string/INQUIRY_VIEW_UPDATE_SNACK_BAR_COMMENT"
                 android:textColor="@color/COLOR_MAIN_100"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_count_of_update"
@@ -646,7 +646,7 @@
                 android:layout_marginEnd="23dp"
                 android:fontFamily="@font/spoqa_han_sans_bold"
                 android:padding="5dp"
-                android:text="새로고침"
+                android:text="@string/INQUIRY_VIEW_UPDATE_SNACK_BAR_UPDATE_BTN"
                 android:textColor="@color/MAIN_WHITE"
                 android:textSize="12sp"
                 android:onClick="@{() -> vm.refreshOngoing()}"

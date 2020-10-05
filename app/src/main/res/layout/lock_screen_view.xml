@@ -9,11 +9,10 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintlayout_setting"
+        android:id="@+id/constraint_setting"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@android:color/white">
-
 
         <TextView
             android:id="@+id/textView2"
@@ -21,9 +20,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:fontFamily="@font/spoqa_han_sans_bold"
-            android:text="잠금 비밀번호 설정"
+            android:text="@string/LOCK_SCREEN_VIEW_PASSWORD_TITLE"
             android:textColor="@color/COLOR_GRAY_800"
-            android:textSize="25dp"
+            android:textSize="25sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -34,9 +33,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/spoqa_han_sans_bold"
-            android:text="비밀번호가 일치하지 않습니다."
+            android:text="@string/LOCK_SCREEN_VIEW_INVALID_PASSWORD"
             android:textColor="@color/MAIN_RED"
-            android:textSize="12dp"
+            android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/tv_guideComment"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -48,9 +47,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="70dp"
             android:fontFamily="@font/spoqa_han_sans_bold"
-            android:text="어플 실행 비밀번호를 입력해 주세요."
+            android:text="@string/LOCK_SCREEN_VIEW_PLEASE_INPUT_PASSWORD"
             android:textColor="@color/COLOR_GRAY_600"
-            android:textSize="12dp"
+            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView2" />
@@ -82,7 +81,7 @@
                 android:id="@+id/et_firstPassword"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginRight="15dp"
+                android:layout_marginEnd="15dp"
                 android:layout_weight="1"
                 android:layout_gravity="center"
                 android:gravity="center"
@@ -94,7 +93,7 @@
                 android:id="@+id/et_secondPassword"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginRight="15dp"
+                android:layout_marginEnd="15dp"
                 android:layout_weight="1"
                 android:background="@drawable/ic_lock_edittext_off"
                 android:enabled="false"
@@ -104,7 +103,7 @@
                 android:id="@+id/et_thirdPassword"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:layout_marginRight="15dp"
+                android:layout_marginEnd="15dp"
                 android:layout_weight="1"
                 android:background="@drawable/ic_lock_edittext_off"
                 android:enabled="false"
@@ -142,7 +141,7 @@
                     android:gravity="center"
                     android:text="1"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
                     android:onClick="@{() -> vm.setlockPassword(1)}"
                     />
@@ -157,7 +156,7 @@
                     android:gravity="center"
                     android:text="2"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
                     android:onClick="@{() -> vm.setlockPassword(2)}"
                     />
@@ -172,7 +171,7 @@
                     android:gravity="center"
                     android:text="3"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
                     android:onClick="@{() -> vm.setlockPassword(3)}"
                     />
@@ -193,7 +192,7 @@
                     android:gravity="center"
                     android:text="4"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
                     android:onClick="@{() -> vm.setlockPassword(4)}"
                     />
@@ -208,7 +207,7 @@
                     android:gravity="center"
                     android:text="5"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
                     android:onClick="@{() -> vm.setlockPassword(5)}"
                     />
@@ -223,7 +222,7 @@
                     android:gravity="center"
                     android:text="6"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
                     android:onClick="@{() -> vm.setlockPassword(6)}"
                     />
@@ -244,7 +243,7 @@
                     android:gravity="center"
                     android:text="7"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
                     android:onClick="@{() -> vm.setlockPassword(7)}"
                     />
@@ -259,7 +258,7 @@
                     android:gravity="center"
                     android:text="8"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
                     android:onClick="@{() -> vm.setlockPassword(8)}"
                     />
@@ -274,7 +273,7 @@
                     android:gravity="center"
                     android:text="9"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
                     android:onClick="@{() -> vm.setlockPassword(9)}"
                     />
@@ -294,7 +293,7 @@
                     android:gravity="center"
                     android:text="1"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:visibility="invisible" />
 
 
@@ -307,7 +306,7 @@
                     android:gravity="center"
                     android:text="0"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20dp"
+                    android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
                     android:onClick="@{() -> vm.setlockPassword(0)}"
                     />
@@ -325,12 +324,11 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_row="0"
                         android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
                         android:background="@drawable/ic_erase_btn"
                         android:fontFamily="@font/spoqa_han_sans_bold"
-                        android:textSize="20dp"
+                        android:textSize="20sp"
                         />
                 </RelativeLayout>
             </LinearLayout>

@@ -7,7 +7,7 @@
             type="com.delivery.sopo.viewmodels.menus.NoticeViewModel" />
     </data>
 <LinearLayout
-    android:id="@+id/constraintlayout_setting"
+    android:id="@+id/constraint_setting"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
