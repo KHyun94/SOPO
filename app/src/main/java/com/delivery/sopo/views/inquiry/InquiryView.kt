@@ -349,6 +349,8 @@ class InquiryView: Fragment() {
                 }
                 // 도움말
                 2 -> {
+                    //TODO 삭제해야함
+                    inquiryVm.testFunReNewALL()
                 }
             }
             listPopupWindow.dismiss()

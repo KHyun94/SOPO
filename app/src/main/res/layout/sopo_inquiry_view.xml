@@ -506,31 +506,10 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="22dp"
-                            android:text="@string/EMPTY_VIEW_THERE_IS_NO_REGISTERED_PARCEL"
+                            android:text="@string/EMPTY_VIEW_THERE_IS_NO_DELIVERED_PARCEL"
                             android:textColor="@color/COLOR_GRAY_400"
                             android:textSize="14sp" />
 
-                        <TextView
-                            android:id="@+id/tv_complete_please_register_new_parcel"
-                            style="@style/H4"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:text="@string/EMPTY_VIEW_PLEASE_REGISTER_NEW_PARCEL"
-                            android:textColor="@color/COLOR_GRAY_400"
-                            android:textSize="14sp" />
-
-                        <Button
-                            style="@style/H4"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="25dp"
-                            android:layout_marginTop="100dp"
-                            android:layout_marginRight="25dp"
-                            android:background="@drawable/border_all_rounded_main_blue"
-                            android:text="@string/INQUIRY_VIEW_GO_TO_REGISTER"
-                            android:textColor="@color/MAIN_WHITE"
-                            android:textSize="14sp" />
                     </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

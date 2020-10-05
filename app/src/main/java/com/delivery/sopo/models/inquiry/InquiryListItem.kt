@@ -10,25 +10,42 @@ class InquiryListItem(
     var isSelected: Boolean = false,
     val viewType: InquiryItemType? = null
 ){
-    val calendar: Calendar by lazy {
+    val completeTimeDate: Calendar by lazy {
         val cal = Calendar.getInstance()
-        cal.time = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA).parse(getParseString())
+        parcel.arrivalDte?.let {
+            cal.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(parcel.arrivalDte.replace("T", " "))
+        }
+        cal
+    }
+    val ongoingTimeDate: Calendar by lazy {
+        val cal = Calendar.getInstance()
+        parcel.auditDte.let {
+            cal.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(parcel.auditDte.replace("T", " "))
+        }
         cal
     }
 
     private fun getParseString(): String{
         return parcel.arrivalDte?.let {
             it.substring(0, it.indexOf("T"))
-        } ?: ""
+        } ?: " "
+    }
+
+    fun getCompleteDateTime(): String{
+        return "${completeTimeDate.get(Calendar.YEAR)}/${completeTimeDate.get(Calendar.MONTH)+1}/${completeTimeDate.get(Calendar.DATE)} ${String.format("%02d", completeTimeDate.get(Calendar.HOUR_OF_DAY))}:${String.format("%02d", completeTimeDate.get(Calendar.MINUTE))}"
+    }
+
+    fun getOngoingDateTime(): String{
+        return "${ongoingTimeDate.get(Calendar.YEAR)}/${ongoingTimeDate.get(Calendar.MONTH)+1}/${ongoingTimeDate.get(Calendar.DATE)} ${String.format("%02d", ongoingTimeDate.get(Calendar.HOUR_OF_DAY))}:${String.format("%02d", ongoingTimeDate.get(Calendar.MINUTE))}"
     }
 
     fun getDateOfMonth(): String{
-        return "${calendar.get(Calendar.DATE)}"
+        return "${completeTimeDate.get(Calendar.DATE)}"
     }
 
     fun getDayOfWeek(): String{
 
-        return when(calendar.get(Calendar.DAY_OF_WEEK))
+        return when(completeTimeDate.get(Calendar.DAY_OF_WEEK))
         {
             1-> {
                  "일"
