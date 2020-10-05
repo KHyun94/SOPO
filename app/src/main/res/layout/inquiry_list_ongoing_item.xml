@@ -32,6 +32,7 @@
                 android:layout_height="match_parent"
                 android:background="@color/COLOR_GRAY_400"
                 android:layout_weight="0.2"
+                tools:visibility="gone"
                 >
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -47,7 +48,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        tools:background="@drawable/ic_parcel_status_before"
+                        tools:src="@drawable/ic_parcel_status_ing"
                         />
                     <TextView
                         android:id="@+id/tv_delivery_status"
@@ -66,7 +67,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.2"
-                tools:visibility="gone"
+                tools:visibility="visible"
                 >
 
                 <ImageView
@@ -84,7 +85,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.8"
-                tools:visibility="visible"
+                tools:visibility="gone"
                 >
 
                 <LinearLayout
@@ -116,7 +117,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/spoqa_han_sans_light"
-                        android:text="@{ongoingInquiryData.parcel.auditDte}"
+                        android:text="@{ongoingInquiryData.ongoingDateTime}"
                         android:textColor="@color/COLOR_GRAY_800"
                         android:textSize="10sp"
                         tools:text="2020/08/31" />
@@ -128,7 +129,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.8"
-                tools:visibility="gone"
+                tools:visibility="visible"
                 >
 
                 <LinearLayout
@@ -157,7 +158,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/spoqa_han_sans_light"
-                        android:text="@{ongoingInquiryData.parcel.auditDte}"
+                        android:text="@{ongoingInquiryData.ongoingDateTime}"
                         android:textColor="@color/COLOR_MAIN_RED_500"
                         android:textSize="10sp"
                         tools:text="2020/08/31"

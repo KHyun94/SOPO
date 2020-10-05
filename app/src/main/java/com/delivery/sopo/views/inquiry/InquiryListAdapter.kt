@@ -123,10 +123,10 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
                     //배송 출발
                     DeliveryStatusEnum.out_for_delivery.code -> {
                         holder.ongoingBinding.root.apply {
-                            Glide.with(this.context).asGif().load(R.drawable.start_delivery2).into(this.image_delivery_status)
+                            Glide.with(this.context).asGif().load(R.drawable.start_delivery).into(this.image_delivery_status)
                             val gifMargin = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-                            gifMargin.setMargins(0,0,0,-SizeUtil.changeDpToPx(this.context, 5F))
-                            gifMargin.height = SizeUtil.changeDpToPx(this.context, 50F)
+//                            gifMargin.setMargins(0,0,0,-SizeUtil.changeDpToPx(this.context, 8F))
+                            gifMargin.height = SizeUtil.changeDpToPx(this.context, 38F)
                             gifMargin.width = SizeUtil.changeDpToPx(this.context, 50F)
 
 //                            this.image_delivery_status.layoutParams.height = SizeUtil.changeDpToPx(this.context, 50F)
@@ -135,7 +135,7 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
                             this.image_delivery_status.layoutParams = gifMargin
 //                            this.image_delivery_status.requestLayout()
 
-                            this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_500)
+                            this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_700)
                             this.tv_delivery_status.text = "배송출발"
                             this.tv_delivery_status.setTextColor(ContextCompat.getColor(holder.ongoingBinding.root.context, R.color.MAIN_WHITE))
                         }
@@ -254,17 +254,21 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
     }
 
     private fun completeViewSelected(binding: InquiryListCompleteItemBinding){
-        binding.root.constraint_item_part_complete.visibility = GONE
         binding.root.constraint_date_complete.visibility = GONE
-        binding.root.constraint_item_part_delete_complete.visibility = VISIBLE
+        binding.root.constraint_item_part_complete.visibility = GONE
+        binding.root.v_dividerLine.visibility = GONE
         binding.root.constraint_delivery_status_front_complete.visibility = VISIBLE
+        binding.root.constraint_item_part_delete_complete.visibility = VISIBLE
+        binding.root.linear_item_complete.background = ContextCompat.getDrawable(binding.root.context, R.drawable.border_red)
     }
 
     private fun completeViewInitialize(binding: InquiryListCompleteItemBinding){
         binding.root.constraint_item_part_complete.visibility = VISIBLE
         binding.root.constraint_date_complete.visibility = VISIBLE
+        binding.root.v_dividerLine.visibility = VISIBLE
         binding.root.constraint_item_part_delete_complete.visibility = GONE
         binding.root.constraint_delivery_status_front_complete.visibility = GONE
+        binding.root.linear_item_complete.background = null
     }
 
     fun setRemovable(flag: Boolean){
@@ -278,9 +282,7 @@ class InquiryListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, li
     }
 
     fun addItems(listItem: MutableList<InquiryListItem>){
-        Log.d(TAG, "!!!!!!!!!! addItems")
         if(listItem.size > 0){
-            Log.d(TAG, "!!!!!!!!!! listItem > 0")
             list.addAll(listItem)
             notifyDataSetChanged()
         }

@@ -133,15 +133,15 @@ class InquiryViewModel(private val userRepo: UserRepo,
     // 테스트 데이터 삽입
     fun inputTestData(){
         viewModelScope.launch(Dispatchers.IO) {
-            postParcel("msi", "kr.epost", "6865421322618")
-            postParcel("asus", "kr.epost", "6865421322619")
-            postParcel("한성컴퓨터", "kr.epost", "6865421322620")
-            postParcel("cooler master", "kr.epost", "6865421322621")
-            postParcel("Galaxy S10", "kr.epost", "6865421322622")
-            postParcel("Iphone 11", "kr.epost", "6865421322623")
-            postParcel("Lg V50", "kr.epost", "6865421322624")
-            postParcel("black berry", "kr.epost", "6865421322625")
-            postParcel("Nike", "kr.epost", "6865421322627")
+            postParcel("LG전자 WING 5G", "kr.epost", "6865423455650")
+            postParcel("솔로스토브 캠프파이어", "kr.epost", "6865423455656")
+            postParcel("아웃셋 로즈우드 오버사이즈드 그릴 브러쉬", "kr.epost", "6865423455659")
+            postParcel("코글란 에그 홀더", "kr.epost", "6865423609628")
+            postParcel("써니라이프 배터리 일렉트릭 에어펌프", "kr.epost", "6865423609629")
+            postParcel("스탠스포츠 508 포터플 필로우", "kr.epost", "6865423609630")
+            postParcel("트와인 씨사이드 피크닉 블랭킷 세트", "kr.epost", "6865423609894")
+            postParcel("로지텍 G613 LIGHT SPEED 무선 기계식 케이밍 키보드", "kr.epost", "6865423611999")
+            postParcel("COX CK87", "kr.epost", "6865423611599")
         }
     }
 
@@ -416,7 +416,7 @@ class InquiryViewModel(private val userRepo: UserRepo,
     // 배송완료 리스트의 전체 새로고침
     fun refreshComplete(){
         viewModelScope.launch(Dispatchers.IO) {
-            clearIsBeDelivered().join() //
+            clearIsBeDelivered().join()
             sendRemovedData().join()
             initCompleteList().join()
         }
@@ -426,9 +426,15 @@ class InquiryViewModel(private val userRepo: UserRepo,
     private fun clearIsBeDelivered(): Job{
         return viewModelScope.launch(Dispatchers.IO){
             parcelManagementRepoImpl.updateTotalIsBeDeliveredToZero()
-//            val requestRenewal2 =
-//                NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
-//                    .requestRenewal2(userRepo.getEmail())
+        }
+    }
+
+    //TODO 삭제해야함
+    fun testFunReNewALL(){
+        viewModelScope.launch(Dispatchers.IO){
+            val requestRenewal2 =
+                NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
+                    .requestRenewal2(userRepo.getEmail())
         }
     }
 
@@ -504,15 +510,17 @@ class InquiryViewModel(private val userRepo: UserRepo,
                         parcelRepoImpl.updateLocalOngoingParcel(it)
                     }
                 }
-                // 복구해야할 리스트 중 아이템 하나의 도착일자 (2020-09-19 ~~)에서 TIME_COUNT의 primaryKey를 추출해서 복구해야할 TIME_COUNT를 구한다.
-                parcelRepoImpl.getLocalParcelById(cancelDataList.first().regDt, cancelDataList.first().parcelUid)?.let {
-                    val timeCountPrimaryKey = TimeCountMapper.arrivalDateToTime(it.arrivalDte)
-                    timeCountRepoImpl.getLatestUpdatedEntity(timeCountPrimaryKey)?.let { entity ->
-                        entity.count += cancelDataList.size
-                        entity.visibility = 0 // 모든 아이템(monthList)가 삭제되었을때 삭제취소를 하려면 visibility를 0으로 수정해줘야한다.
+                if(getCurrentScreenStatus() == ScreenStatus.COMPLETE){
+                    // 복구해야할 리스트 중 아이템 하나의 도착일자 (2020-09-19 ~~)에서 TIME_COUNT의 primaryKey를 추출해서 복구해야할 TIME_COUNT를 구한다.
+                    parcelRepoImpl.getLocalParcelById(cancelDataList.first().regDt, cancelDataList.first().parcelUid)?.let {
+                        val timeCountPrimaryKey = TimeCountMapper.arrivalDateToTime(it.arrivalDte)
+                        timeCountRepoImpl.getLatestUpdatedEntity(timeCountPrimaryKey)?.let { entity ->
+                            entity.count += cancelDataList.size
+                            entity.visibility = 0 // 모든 아이템(monthList)가 삭제되었을때 삭제취소를 하려면 visibility를 0으로 수정해줘야한다.
 
-                        Log.d(TAG, "복구해야할 TIME_COUNT => time : ${entity.time} , count : ${entity.count}, status : ${entity.status} , auditDate : ${entity.auditDte}")
-                        timeCountRepoImpl.updateEntity(entity)
+                            Log.d(TAG, "복구해야할 TIME_COUNT => time : ${entity.time} , count : ${entity.count}, status : ${entity.status} , auditDate : ${entity.auditDte}")
+                            timeCountRepoImpl.updateEntity(entity)
+                        }
                     }
                 }
             }
