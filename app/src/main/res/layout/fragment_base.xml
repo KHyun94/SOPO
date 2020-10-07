@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tool="http://schemas.android.com/tools"
-    android:id="@+id/linearLayout2"
+    android:id="@+id/constraint_fragment_base"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
@@ -22,7 +22,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:layout_marginLeft="17dp"
             android:layout_marginStart="18dp"
             android:layout_marginTop="15dp"
             android:layout_centerVertical="true"
@@ -62,7 +61,7 @@
         />
 
     <FrameLayout
-        android:id="@+id/framelayout_menu"
+        android:id="@+id/frame_menu"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@android:color/white"

@@ -27,16 +27,17 @@ import com.delivery.sopo.enums.ScreenStatus
 import com.delivery.sopo.mapper.MenuMapper
 import com.delivery.sopo.models.entity.TimeCountEntity
 import com.delivery.sopo.models.parcel.ParcelId
-import com.delivery.sopo.repository.ParcelManagementRepoImpl
-import com.delivery.sopo.repository.ParcelRepoImpl
-import com.delivery.sopo.repository.TimeCountRepoImpl
+import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
+import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
+import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.fun_util.SizeUtil
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.MainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
-import com.delivery.sopo.views.InquiryViewModelFactory
-import com.delivery.sopo.views.MainViewModelFactory
+import com.delivery.sopo.viewmodels.factory.InquiryViewModelFactory
+import com.delivery.sopo.viewmodels.factory.MainViewModelFactory
 import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
 import kotlinx.android.synthetic.main.sopo_inquiry_view.*
 import kotlinx.coroutines.CoroutineScope
@@ -55,12 +56,13 @@ class InquiryView: Fragment() {
     private val parcelRepoImpl: ParcelRepoImpl by inject()
     private val parcelManagementRepoImpl: ParcelManagementRepoImpl by inject()
     private val timeCountRepoImpl: TimeCountRepoImpl by inject()
+    private val appPasswordRepoImpl: AppPasswordRepoImpl by inject()
     private lateinit var binding: SopoInquiryViewBinding
     private lateinit var soonArrivalListAdapter: InquiryListAdapter
     private lateinit var registeredSopoListAdapter: InquiryListAdapter
     private lateinit var completeListAdapter: InquiryListAdapter
     private val mainVm: MainViewModel by lazy {
-        ViewModelProvider(requireActivity(), MainViewModelFactory(userRepo)).get(MainViewModel::class.java)
+        ViewModelProvider(requireActivity(), MainViewModelFactory(userRepo, appPasswordRepoImpl)).get(MainViewModel::class.java)
     }
     private val inquiryVm: InquiryViewModel by lazy {
         ViewModelProvider(requireActivity(), InquiryViewModelFactory(userRepo, parcelRepoImpl, parcelManagementRepoImpl, timeCountRepoImpl)).get(InquiryViewModel::class.java)

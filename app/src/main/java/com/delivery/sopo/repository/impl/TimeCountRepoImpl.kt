@@ -1,8 +1,9 @@
-package com.delivery.sopo.repository
+package com.delivery.sopo.repository.impl
 
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.models.entity.TimeCountEntity
+import com.delivery.sopo.repository.TimeCountRepository
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.fun_util.TimeUtil
 
@@ -37,6 +38,11 @@ class TimeCountRepoImpl(private val userRepo: UserRepo,
     override fun getLatestUpdatedEntity(time: String): TimeCountEntity?
     {
         return appDatabase.timeCountDao().getLatestUpdatedEntity(time)
+    }
+
+    override fun getSumOfCountLiveData(): LiveData<Int>
+    {
+        return appDatabase.timeCountDao().getSumOfCountLiveData()
     }
 
     override fun getCurrentTimeCountLiveData(): LiveData<TimeCountEntity?>

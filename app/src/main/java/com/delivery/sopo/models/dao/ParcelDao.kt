@@ -24,6 +24,12 @@ interface ParcelDao
     @Query("SELECT COUNT(*) FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS <> 'delivered'")
     suspend fun getOngoingDataCnt(): Int
 
+    @Query("SELECT COUNT(*) FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS = 'out_for_delivery'")
+    fun getSoonDataCntLiveData(): LiveData<Int>
+
+    @Query("SELECT COUNT(*) FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS <> 'delivered'")
+    fun getOngoingDataCntLiveData(): LiveData<Int>
+
     @Query("SELECT * FROM PARCEL as p LEFT JOIN PARCEL_MANAGEMENT as pm ON p.REG_DT = pm.REG_DT AND p.PARCEL_UID = pm.PARCEL_UID WHERE p.STATUS = 0 AND pm.isBeDelete = 1")
     suspend fun getBeDeletedData(): List<ParcelEntity>
 

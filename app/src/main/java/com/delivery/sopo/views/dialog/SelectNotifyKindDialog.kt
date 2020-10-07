@@ -10,15 +10,12 @@ import com.delivery.sopo.R
 import kotlinx.android.synthetic.main.select_notify_kind_dialog.view.*
 
 
-class SelectNotifyKindDialog : DialogFragment {
+class SelectNotifyKindDialog(act: Activity) : DialogFragment()
+{
 
-    private var parentActivity: Activity
+    private var parentActivity: Activity = act
     private lateinit var layoutView: View
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
-
-    constructor(act: Activity) : super() {
-        this.parentActivity = act
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,

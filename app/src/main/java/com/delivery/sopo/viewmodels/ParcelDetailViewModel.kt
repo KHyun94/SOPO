@@ -7,7 +7,7 @@ import com.delivery.sopo.models.StatusItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.ParcelAPI
-import com.delivery.sopo.repository.ParcelRepoImpl
+import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

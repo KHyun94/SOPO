@@ -18,6 +18,9 @@ interface ParcelRepository {
    fun getLocalOngoingParcelsLiveData(): LiveData<List<Parcel>>
    suspend fun getLocalOngoingParcels(): List<Parcel>?
 
+   fun getSoonDataCntLiveData(): LiveData<Int>
+   fun getOngoingDataCntLiveData(): LiveData<Int>
+
    suspend fun saveLocalOngoingParcels(parcelList: List<Parcel>)
    suspend fun saveLocalOngoingParcel(parcel: ParcelEntity)
    suspend fun updateLocalOngoingParcel(parcel: ParcelEntity)

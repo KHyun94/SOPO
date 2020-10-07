@@ -2,20 +2,30 @@ package com.delivery.sopo.views.menus
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import com.delivery.sopo.R
+import androidx.lifecycle.ViewModelProvider
+import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.databinding.FragmentSettingBinding
+import com.delivery.sopo.enums.LockScreenStatus
+import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.extentions.launchActivitiy
-import com.delivery.sopo.views.dialog.OtherFaqDialog
+import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
+import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.repository.impl.TimeCountRepoImpl
+import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.viewmodels.factory.InquiryViewModelFactory
+import com.delivery.sopo.viewmodels.factory.MenuViewModelFactory
+import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
+import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import com.delivery.sopo.viewmodels.menus.SettingViewModel
-import kotlinx.android.synthetic.main.fragment_setting.*
+import com.delivery.sopo.views.dialog.SelectNotifyKindDialog
+import kotlinx.android.synthetic.main.fragment_setting.view.*
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -24,6 +34,12 @@ class SettingFragment : Fragment(){
     private val settingVM: SettingViewModel by viewModel()
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     private lateinit var binding: FragmentSettingBinding
+    private val userRepo: UserRepo by inject()
+    private val parcelRepoImpl: ParcelRepoImpl by inject()
+    private val timeCountRepoImpl: TimeCountRepoImpl by inject()
+    private val menuVm: MenuViewModel by lazy {
+        ViewModelProvider(requireActivity(), MenuViewModelFactory(userRepo, parcelRepoImpl, timeCountRepoImpl)).get(MenuViewModel::class.java)
+    }
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(
@@ -34,6 +50,7 @@ class SettingFragment : Fragment(){
         binding = FragmentSettingBinding.inflate(inflater, container, false)
         viewBinding()
         setObserver()
+        setListener()
 
         lifecycle.addObserver(settingVM)
 
@@ -46,44 +63,33 @@ class SettingFragment : Fragment(){
         binding.executePendingBindings() // 즉 바인딩
     }
 
-    fun setObserver(){
-        binding.vm!!.isSecuritySetting.observe(this, Observer {
-            if (it)
-            {
-                toggleBtn.background = ContextCompat.getDrawable(
-                    requireContext(),
-                    R.drawable.ic_toggle_on
-                )
-                tv_lockStatus.text = "설정하기"
-                linear_guideWord.visibility = VISIBLE
-                tv_changePassword.visibility = VISIBLE
-
-                activity?.launchActivitiy<LockScreenView>()
+    private fun setListener(){
+        binding.root.constraint_how_to_set_notify.setOnClickListener{
+            SelectNotifyKindDialog(this.requireActivity()).show(requireActivity().supportFragmentManager, "SelectNotifyKindDialog")
+        }
+        binding.root.linear_set_no_disturbance_time.setOnClickListener {
+            gotoSetOfNotDisturbTimeView()
+        }
+        binding.root.tv_change_password.setOnClickListener {
+            activity?.launchActivitiy<LockScreenView>{
+                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatus.SET)
             }
-            else
-            {
-                toggleBtn.background = ContextCompat.getDrawable(
-                    requireContext(),
-                    R.drawable.ic_toggle_off
-                )
-                tv_lockStatus.text = "설정 안 함"
-                linear_guideWord.visibility = GONE
-                tv_changePassword.visibility = GONE
-            }
-        })
-
-        binding.vm!!.testval.observe(this, Observer {
-            if (it > 0){
-                showtestDialog()
-            }
-        })
+        }
     }
 
-    private fun showtestDialog(){
+    private fun gotoSetOfNotDisturbTimeView(){
+        menuVm.pushView(MenuEnum.NOT_DISTURB)
+    }
 
-//        NotDisturbTimeDialog(act = requireActivity()).show(requireActivity().supportFragmentManager, "NotDisturbTimeDialog")
-//        SelectNotifyKindDialog(act = requireActivity()).show(requireActivity().supportFragmentManager, "SelectNotifyKindDialog")
-        OtherFaqDialog(act = requireActivity()).show(requireActivity().supportFragmentManager, "OtherFaqDialog")
-
+    fun setObserver(){
+        settingVM.showSetPassword.observe(this, Observer {
+            if (it) {
+                activity?.launchActivitiy<LockScreenView>{
+                    putExtra(IntentConst.LOCK_SCREEN, LockScreenStatus.SET)
+                }
+            }
+            else {
+            }
+        })
     }
 }

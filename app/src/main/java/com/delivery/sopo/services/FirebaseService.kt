@@ -7,8 +7,8 @@ import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
-import com.delivery.sopo.repository.ParcelManagementRepoImpl
-import com.delivery.sopo.repository.ParcelRepoImpl
+import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
+import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.util.fun_util.TimeUtil
 import com.delivery.sopo.views.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -36,7 +36,6 @@ class FirebaseService: FirebaseMessagingService()
 
                 // 현재 해당 택배가 가지고 있는 배송 상태와 fcm으로 넘어온 배송상태가 다른 경우만 노티피케이션을 띄운다!
                 if(it.deliveryStatus != fcmPushDto.deliveryStatus && it.status == 1){
-
                     parcelManagementRepo.getEntity(fcmPushDto.regDt, fcmPushDto.parcelUid)?.let {
                         entity ->
                             // 기본적으로 fcm으로 데이터가 업데이트 됐다고 수신 받은것이니 isBeUpdate를 1로 save해서 앱에 차후에 업데이트 해야함을 알림.

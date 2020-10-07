@@ -1,35 +1,46 @@
 package com.delivery.sopo.views.menus
 
+import android.os.Bundle
 import android.view.View.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.databinding.LockScreenViewBinding
-import com.delivery.sopo.interfaces.BasicView
+import com.delivery.sopo.enums.LockScreenStatus
 import com.delivery.sopo.viewmodels.menus.LockScreenViewModel
 import kotlinx.android.synthetic.main.lock_screen_view.*
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class LockScreenView : BasicView<LockScreenViewBinding>(R.layout.lock_screen_view)
+class LockScreenView : AppCompatActivity()
 {
 
     private val lockScreenVM: LockScreenViewModel by viewModel()
-
+    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
+    private lateinit var binding: LockScreenViewBinding
     private var firstCheck = false
     private var firstPassword = ""
 
-    init {
-        TAG += this.javaClass.simpleName
-        parentActivity = this@LockScreenView
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        binding = DataBindingUtil.setContentView(this, R.layout.lock_screen_view)
+        bindView()
+        loadData()
+        setObserver()
     }
 
-    override fun bindView() {
+    private fun bindView() {
         binding.vm = lockScreenVM
+        binding.lifecycleOwner = this
+        binding.executePendingBindings() // 즉 바인딩
     }
 
-    override fun setObserver() {
-        binding.vm!!.lockPassword.observe(this@LockScreenView, Observer {
+    fun setObserver() {
+        lockScreenVM.lockPassword.observe(this@LockScreenView, Observer {
             val scope = CoroutineScope(Dispatchers.Main)
             when (it.length)
             {
@@ -74,7 +85,17 @@ class LockScreenView : BasicView<LockScreenViewBinding>(R.layout.lock_screen_vie
                 }
             }
         })
-        binding.vm!!.verifyCnt.observe(this@LockScreenView, Observer {
+        lockScreenVM.verifyResult.observe(this, Observer{
+            if(it){
+                finish()
+            }
+            else{
+                tv_errorComment.visibility = VISIBLE
+                tv_guideComment.text = "다시 입력해 주세요."
+            }
+        })
+
+        lockScreenVM.verifyCnt.observe(this@LockScreenView, Observer {
 
             when(it){
                 1 ->{
@@ -94,38 +115,42 @@ class LockScreenView : BasicView<LockScreenViewBinding>(R.layout.lock_screen_vie
         })
     }
 
+    private fun loadData() {
+        lockScreenVM.setLockScreenStatus(intent.getSerializableExtra(IntentConst.LOCK_SCREEN) as LockScreenStatus)
+    }
+
     private fun noneOfNumberPadIsPressed(){
-        et_firstPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_off)
-        et_secondPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_off)
-        et_thirdPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_off)
-        et_fourthPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_off)
+        et_firstPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+        et_secondPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+        et_thirdPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+        et_fourthPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
     }
 
     private fun firstPasswordIsPressed(){
-        et_firstPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_on)
-        et_secondPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_off)
-        et_thirdPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_off)
-        et_fourthPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_off)
+        et_firstPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_secondPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+        et_thirdPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+        et_fourthPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
     }
 
     private fun secondPasswordIsPressed(){
-        et_firstPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_on)
-        et_secondPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_on)
-        et_thirdPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_off)
-        et_fourthPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_off)
+        et_firstPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_secondPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_thirdPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+        et_fourthPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
     }
 
     private fun thirdPasswordIsPressed(){
-        et_firstPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_on)
-        et_secondPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_on)
-        et_thirdPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_on)
-        et_fourthPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_off)
+        et_firstPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_secondPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_thirdPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_fourthPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
     }
     private fun fourthPasswordIsPressed(){
-        et_firstPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_on)
-        et_secondPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_on)
-        et_thirdPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_on)
-        et_fourthPassword.background = ContextCompat.getDrawable(parentActivity, R.drawable.ic_lock_edittext_on)
+        et_firstPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_secondPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_thirdPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_fourthPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
     }
 
 

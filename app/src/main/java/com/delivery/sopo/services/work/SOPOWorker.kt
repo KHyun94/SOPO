@@ -7,7 +7,7 @@ import androidx.work.WorkerParameters
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.ParcelAPI
-import com.delivery.sopo.repository.ParcelRepoImpl
+import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
 import org.koin.core.KoinComponent
 import org.koin.core.inject

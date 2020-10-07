@@ -1,6 +1,8 @@
 package com.delivery.sopo.extentions
 
 import androidx.lifecycle.MutableLiveData
+import java.util.*
+import kotlin.collections.ArrayList
 
 object MutableLiveDataExtension
 {
@@ -23,6 +25,18 @@ object MutableLiveDataExtension
     fun <T> MutableLiveData<List<T>>.add(item: T) {
         val updatedItems = this.value as ArrayList
         updatedItems.add(item)
+        this.value = updatedItems
+    }
+
+    fun <T> MutableLiveData<Stack<T>>.pushItem(item: T) {
+        val updatedItems = this.value as Stack
+        updatedItems.push(item)
+        this.value = updatedItems
+    }
+
+    fun <T> MutableLiveData<Stack<T>>.popItem() {
+        val updatedItems = this.value as Stack
+        updatedItems.pop()
         this.value = updatedItems
     }
 

@@ -7,31 +7,28 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.databinding.MainViewBinding
+import com.delivery.sopo.enums.LockScreenStatus
+import com.delivery.sopo.extentions.launchActivitiy
 import com.delivery.sopo.interfaces.BasicView
 import com.delivery.sopo.interfaces.OnMainBackPressListener
-import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.ParcelAPI
 import com.delivery.sopo.networks.UserAPI
-import com.delivery.sopo.repository.ParcelRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.adapters.ViewPagerAdapter
 import com.delivery.sopo.util.ui_util.GeneralDialog
 import com.delivery.sopo.viewmodels.MainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
+import com.delivery.sopo.views.menus.LockScreenView
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.iid.FirebaseInstanceId
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers.io
 import kotlinx.android.synthetic.main.main_view.*
 import kotlinx.android.synthetic.main.tap_item.view.*
-import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 {
@@ -48,6 +45,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     lateinit var viewPagerAdapter: ViewPagerAdapter
     lateinit var pageChangeListener: ViewPager.OnPageChangeListener
     private val userRepo: UserRepo by inject()
+    private var checkAppPasswordIsPassed: Boolean  = false
 
     private var transaction: FragmentTransaction? = null
 
@@ -185,12 +183,19 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     {
         binding.vm = mainVm
         binding.executePendingBindings()
-
-
     }
 
     override fun setObserver()
     {
+        binding.vm!!.isSetOfSecurity.observe(this, Observer {
+            if(it>0 && !checkAppPasswordIsPassed){
+                checkAppPasswordIsPassed = true
+                this.launchActivitiy<LockScreenView>{
+                    putExtra(IntentConst.LOCK_SCREEN, LockScreenStatus.VERIFY)
+                }
+            }
+        })
+
         binding.vm!!.tabLayoutVisibility.observe(this, Observer {
             when (it)
             {

@@ -2,9 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
+        <import type="android.view.View" />
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.menus.SettingViewModel" />
+        <variable
+            name="activity"
+            type="com.delivery.sopo.views.menus.SettingFragment" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/constraint_setting"
@@ -13,7 +17,7 @@
     android:background="@android:color/white">
 
     <LinearLayout
-        android:id="@+id/linear_setNotification"
+        android:id="@+id/linear_set_notification"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="horizontal"
@@ -23,11 +27,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="35dp"
+            android:layout_marginStart="35dp"
             android:fontFamily="@font/spoqa_han_sans_bold"
-            android:text="알림 설정"
+            android:text="@string/SETTING_VIEW_SETTING_OF_NOTIFY"
             android:textColor="@color/MAIN_BLACK"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
     </LinearLayout>
 
     <View
@@ -35,27 +39,26 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="@color/COLOR_GRAY_200"
-        app:layout_constraintTop_toBottomOf="@+id/linear_setNotification"
+        app:layout_constraintTop_toBottomOf="@+id/linear_set_notification"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint_howToSetNoti"
+        android:id="@+id/constraint_how_to_set_notify"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="horizontal"
-        android:onClick="@{()->vm.showTestDialog()}"
         app:layout_constraintTop_toBottomOf="@+id/v_dividerLine1"
         >
         <TextView
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="35dp"
+            android:layout_marginStart="35dp"
             android:layout_gravity="center_vertical"
             android:fontFamily="@font/spoqa_han_sans_regular"
-            android:text="알림 방법"
+            android:text="@string/SETTING_VIEW_KIND_OF_NOTIFY"
             android:textColor="@color/MAIN_BLACK"
-            android:textSize="15dp"
+            android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -63,7 +66,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="15dp"
+            android:layout_marginEnd="15dp"
             android:background="@drawable/ic_black_arrow_right"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -75,11 +78,11 @@
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="@color/COLOR_GRAY_200"
-        app:layout_constraintTop_toBottomOf="@+id/constraint_howToSetNoti"
+        app:layout_constraintTop_toBottomOf="@+id/constraint_how_to_set_notify"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linear_setNoDisturbanceTime"
+        android:id="@+id/linear_set_no_disturbance_time"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="horizontal"
@@ -90,11 +93,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="35dp"
+            android:layout_marginStart="35dp"
             android:fontFamily="@font/spoqa_han_sans_regular"
-            android:text="빙해금지 시간대 설정"
+            android:text="@string/SETTING_VIEW_SETTING_OF_NO_DISTURB"
             android:textColor="@color/MAIN_BLACK"
-            android:textSize="15dp"
+            android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -103,7 +106,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="15dp"
+            android:layout_marginEnd="15dp"
             android:background="@drawable/ic_black_arrow_right"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -115,7 +118,7 @@
         android:layout_width="match_parent"
         android:layout_height="5dp"
         android:background="@color/COLOR_GRAY_200"
-        app:layout_constraintTop_toBottomOf="@+id/linear_setNoDisturbanceTime"
+        app:layout_constraintTop_toBottomOf="@+id/linear_set_no_disturbance_time"
         />
 
     <LinearLayout
@@ -130,11 +133,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="35dp"
+            android:layout_marginStart="35dp"
             android:fontFamily="@font/spoqa_han_sans_bold"
-            android:text="잠금 설정"
+            android:text="@string/SETTING_VIEW_SETTING_OF_SECURITY"
             android:textColor="@color/MAIN_BLACK"
-            android:textSize="20dp" />
+            android:textSize="20sp" />
     </LinearLayout>
 
     <View
@@ -152,7 +155,7 @@
         android:layout_gravity="center_vertical"
         android:layout_marginTop="25dp"
         android:fontFamily="@font/spoqa_han_sans_regular"
-        android:text="어플 실행 시, 항상 보안확인(비밀번호)을 하시겠습니까?"
+        android:text="@string/SETTING_VIEW_ALWAYS_CHECK_YOUR_SECURITY"
         android:textColor="@color/COLOR_GRAY_600"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -163,9 +166,10 @@
         android:layout_width="55dp"
         android:layout_height="30dp"
         android:layout_marginTop="15dp"
+        android:background="@{vm.isSetOfSecurity > 0 ? @drawable/ic_toggle_on:@drawable/ic_toggle_off}"
         android:textOn=""
         android:textOff=""
-        android:onClick="@{()->vm.toggleSecuritySetting()}"
+        android:onClick="@{()->vm.setAppPassword()}"
         app:layout_constraintStart_toStartOf="@+id/tv_securityComment"
         app:layout_constraintTop_toBottomOf="@+id/tv_securityComment" />
 
@@ -173,26 +177,27 @@
         android:id="@+id/tv_lockStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
         android:layout_gravity="center_vertical"
         android:fontFamily="@font/spoqa_han_sans_regular"
-        android:text="설정 안함"
+        android:text="@{vm.isSetOfSecurity > 0 ? @string/SETTING_VIEW_SET_THE_SECURITY : @string/SETTING_VIEW_NOT_SET_THE_SECURITY}"
         android:textColor="@color/MAIN_BLACK"
-        android:textSize="15dp"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="@+id/toggleBtn"
         app:layout_constraintStart_toEndOf="@+id/toggleBtn"
         app:layout_constraintTop_toTopOf="@+id/toggleBtn" />
 
     <TextView
-        android:id="@+id/tv_changePassword"
+        android:id="@+id/tv_change_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginRight="30dp"
+        android:layout_marginEnd="30dp"
         android:fontFamily="@font/spoqa_han_sans_regular"
-        android:text="비밀번호 변경"
+        android:text="@string/SETTING_VIEW_CHANGE_OF_PASSWORD"
         android:textColor="@color/COLOR_MAIN_BLUE_700"
-        android:textSize="15dp"
+        android:textSize="15sp"
+        android:visibility="@{vm.isSetOfSecurity > 0 ? View.VISIBLE : View.GONE}"
         app:layout_constraintBottom_toBottomOf="@+id/toggleBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/toggleBtn"
@@ -206,23 +211,24 @@
         android:layout_marginRight="35dp"
         android:layout_marginTop="25dp"
         android:orientation="horizontal"
+        android:visibility="@{vm.isSetOfSecurity > 0 ? View.VISIBLE : View.GONE}"
         app:layout_constraintTop_toBottomOf="@+id/tv_lockStatus">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:background="@drawable/ic_16_exclamation_mark" />
+            android:background="@drawable/ic_16_exclamation_mark"/>
 
         <TextView
             android:id="@+id/tv_settingPasswordExtraInfoComment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:fontFamily="@font/spoqa_han_sans_regular"
-            android:text="비밀번호를 잊어버린 경우 앱을 삭제하고 재설치 해야 하며, 재설치 시 기존 내용은 삭제됩니다."
+            android:text="@string/SETTING_VIEW_PASSWORD_COMMENT"
             android:textColor="@color/MAIN_NAVY"
-            android:textSize="13dp"
+            android:textSize="13sp"
             />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

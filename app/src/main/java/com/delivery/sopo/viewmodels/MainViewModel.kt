@@ -1,19 +1,26 @@
 package com.delivery.sopo.viewmodels
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.networks.NetworkManager
+import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
 
 
 class MainViewModel(
-    private val userRepo: UserRepo
+    private val userRepo: UserRepo,
+    private val appPasswordRepo: AppPasswordRepoImpl
 ) : ViewModel()
 {
     val tabLayoutVisibility = MutableLiveData<Int>()
     val errorMsg = MutableLiveData<String?>()
+
+    private val _isSetOfSecurity = appPasswordRepo.getCntOfAppPasswordLiveData()
+    val isSetOfSecurity: LiveData<Int>
+        get() = _isSetOfSecurity
 
     init
     {

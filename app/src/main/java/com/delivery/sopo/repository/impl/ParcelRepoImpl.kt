@@ -1,4 +1,4 @@
-package com.delivery.sopo.repository
+package com.delivery.sopo.repository.impl
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
@@ -11,13 +11,13 @@ import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
+import com.delivery.sopo.repository.ParcelRepository
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.fun_util.TimeUtil
-import java.lang.RuntimeException
-import java.util.stream.Collectors
 
 class ParcelRepoImpl(private val userRepo: UserRepo,
-                     private val appDatabase: AppDatabase): ParcelRepository {
+                     private val appDatabase: AppDatabase): ParcelRepository
+{
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
     override suspend fun getRemoteOngoingParcels(): MutableList<Parcel>? = NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd()).getParcelsOngoing(email = userRepo.getEmail()).data
@@ -53,6 +53,16 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
 
     override suspend fun getLocalOngoingParcels(): List<Parcel>? {
         return appDatabase.parcelDao().getOngoingData()?.map(ParcelMapper::parcelEntityToParcel)
+    }
+
+    override fun getSoonDataCntLiveData(): LiveData<Int>
+    {
+        return appDatabase.parcelDao().getSoonDataCntLiveData()
+    }
+
+    override fun getOngoingDataCntLiveData(): LiveData<Int>
+    {
+        return  appDatabase.parcelDao().getOngoingDataCntLiveData()
     }
 
     override suspend fun saveLocalOngoingParcels(parcelList: List<Parcel>) {

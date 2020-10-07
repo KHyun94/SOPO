@@ -13,9 +13,10 @@
         android:background="@android:color/white">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_not_disturb_time_board"
             android:layout_width="match_parent"
             android:layout_height="80dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="15dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -46,7 +47,7 @@
                     android:layout_gravity="center_vertical"
                     android:fontFamily="@font/spoqa_han_sans_regular"
                     android:letterSpacing="-0.04"
-                    android:text="시작 시간"
+                    android:text="@string/NOT_DISTURB_TIME_START_TIME"
                     android:textColor="@color/NOT_DISTURB_TIME_TEXT"
                     android:textSize="14sp" />
 
@@ -79,7 +80,7 @@
                     android:layout_gravity="center_vertical"
                     android:fontFamily="@font/spoqa_han_sans_regular"
                     android:letterSpacing="-0.04"
-                    android:text="종료 시간"
+                    android:text="@string/NOT_DISTURB_TIME_END_TIME"
                     android:textColor="@color/NOT_DISTURB_TIME_TEXT"
                     android:textSize="14sp" />
 
@@ -94,8 +95,47 @@
                     android:textColor="@color/COLOR_MAIN_BLUE_700"
                     android:textSize="21sp" />
             </LinearLayout>
-
-
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <view
+            class="com.delivery.sopo.views.menus.clockpieview.ClockPieView"
+            android:id="@+id/pie_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="25dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/constraint_not_disturb_time_board" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="30dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/pie_view">
+
+            <ImageView
+                android:id="@+id/image_circle"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/profile_circular_view" />
+
+            <TextView
+                style="@style/H6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_gravity="center_vertical"
+                android:text="@string/NOT_DISTURB_COMMENT_MSG"
+                android:textSize="13sp"
+                android:textColor="@color/COLOR_GRAY_500" />
+
+        </LinearLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

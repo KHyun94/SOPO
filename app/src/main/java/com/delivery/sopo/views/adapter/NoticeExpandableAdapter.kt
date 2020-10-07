@@ -12,8 +12,8 @@ import java.lang.NullPointerException
 
 class NoticeExpandableAdapter(private val context: Context, private val groupData: MutableList<NoticeData>): BaseExpandableListAdapter()
 {
-    private val groupLay: Int = R.layout.notice_item_group
-    private val childLay: Int = R.layout.notice_item_child
+    private val groupLay: Int = R.layout.expandable_notice_item_group
+    private val childLay: Int = R.layout.expandable_notice_item_child
     val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
 

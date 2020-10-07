@@ -38,7 +38,7 @@ class MenuView : AppCompatActivity()
 
     private fun move(activity: AppCompatActivity, fragment: Fragment, animation: Int) {
         val transaction = activity.supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.framelayout_menu, fragment).commitAllowingStateLoss()
+        transaction.replace(R.id.frame_menu, fragment).commitAllowingStateLoss()
     }
 
 }

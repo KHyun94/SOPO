@@ -7,7 +7,7 @@ import com.delivery.sopo.R.drawable.*
 import com.delivery.sopo.extentions.removeSpace
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.models.entity.CourierEntity
-import com.delivery.sopo.repository.CourierRepolmpl
+import com.delivery.sopo.repository.impl.CourierRepolmpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

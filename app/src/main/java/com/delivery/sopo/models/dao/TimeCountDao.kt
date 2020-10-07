@@ -31,6 +31,9 @@ interface TimeCountDao
     @Query("SELECT * FROM TIME_COUNT WHERE TIME = :time AND AUDIT_DTE >= DATETIME('now', 'localtime', '-3.0 seconds')")
     fun getLatestUpdatedEntity(time: String) : TimeCountEntity?
 
+    @Query("SELECT SUM(COUNT) FROM TIME_COUNT WHERE VISIBILITY >= 0")
+    fun getSumOfCountLiveData(): LiveData<Int>
+
     @Insert(onConflict = REPLACE)
     fun insert(timeCountEntity: TimeCountEntity)
 

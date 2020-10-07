@@ -143,7 +143,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.setlockPassword(1)}"
+                    android:onClick="@{() -> vm.lockPasswordAction(1)}"
                     />
 
 
@@ -158,7 +158,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.setlockPassword(2)}"
+                    android:onClick="@{() -> vm.lockPasswordAction(2)}"
                     />
 
                 <Button
@@ -173,7 +173,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.setlockPassword(3)}"
+                    android:onClick="@{() -> vm.lockPasswordAction(3)}"
                     />
             </LinearLayout>
 
@@ -194,7 +194,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.setlockPassword(4)}"
+                    android:onClick="@{() -> vm.lockPasswordAction(4)}"
                     />
 
 
@@ -209,7 +209,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.setlockPassword(5)}"
+                    android:onClick="@{() -> vm.lockPasswordAction(5)}"
                     />
 
                 <Button
@@ -224,7 +224,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.setlockPassword(6)}"
+                    android:onClick="@{() -> vm.lockPasswordAction(6)}"
                     />
 
             </LinearLayout>
@@ -245,7 +245,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.setlockPassword(7)}"
+                    android:onClick="@{() -> vm.lockPasswordAction(7)}"
                     />
 
 
@@ -260,7 +260,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.setlockPassword(8)}"
+                    android:onClick="@{() -> vm.lockPasswordAction(8)}"
                     />
 
                 <Button
@@ -275,7 +275,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.setlockPassword(9)}"
+                    android:onClick="@{() -> vm.lockPasswordAction(9)}"
                     />
 
             </LinearLayout>
@@ -308,7 +308,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.setlockPassword(0)}"
+                    android:onClick="@{() -> vm.lockPasswordAction(0)}"
                     />
 
                 <RelativeLayout
@@ -318,7 +318,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{()->vm.eraselockPassword()}"
+                    android:onClick="@{()->vm.eraseLockPassword()}"
                     >
 
                     <ImageView

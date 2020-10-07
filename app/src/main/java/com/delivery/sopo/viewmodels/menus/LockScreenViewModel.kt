@@ -1,11 +1,21 @@
 package com.delivery.sopo.viewmodels.menus
 
 import android.util.Log
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import java.lang.Exception
+import androidx.lifecycle.viewModelScope
+import com.delivery.sopo.enums.LockScreenStatus
+import com.delivery.sopo.extentions.asSHA256
+import com.delivery.sopo.models.entity.AppPasswordEntity
+import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
+import com.delivery.sopo.repository.shared.UserRepo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-class LockScreenViewModel : ViewModel()
+class LockScreenViewModel(
+    private val userRepo: UserRepo,
+    private val appPasswordRepo: AppPasswordRepoImpl) : ViewModel()
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
@@ -16,6 +26,13 @@ class LockScreenViewModel : ViewModel()
     var isFinish = MutableLiveData<Boolean>()
     var verifyCnt = MutableLiveData<Int>()
 
+    private val _lockScreenStatus = MutableLiveData<LockScreenStatus>()
+    val lockScreenStatus: LiveData<LockScreenStatus>
+        get() = _lockScreenStatus
+
+    private val _verifyResult = MutableLiveData<Boolean>()
+    val verifyResult: LiveData<Boolean>
+        get() = _verifyResult
 
     private var firstCheckPassword = ""
 
@@ -28,14 +45,51 @@ class LockScreenViewModel : ViewModel()
         verifyCnt.value = 0
     }
 
-    fun setlockPassword(num: Int){
+    fun setLockScreenStatus(status: LockScreenStatus){
+        _lockScreenStatus.value = status
+    }
 
-        lockPassword.value?.let {
+    private fun verifyPassword(inputPassword: String): Boolean{
+        return appPasswordRepo.getAppPassword()?.let{
+            it.appPassword == inputPassword.asSHA256
+        } ?: false
+    }
+
+    fun lockPasswordAction(num: Int){
+        when(_lockScreenStatus.value){
+            LockScreenStatus.SET -> {
+                setLockPassword(num)
+            }
+            LockScreenStatus.VERIFY -> {
+                verifyLockPassword(num)
+            }
+        }
+    }
+
+    private fun verifyLockPassword(num: Int){
+        lockPassword.value?.also {
             if (it.length < 4){
                 lockPassword.value = "${it}$num"
             }
         }
-        lockPassword.value?.let {
+        lockPassword.value?.also {
+            if(it.length == 4){
+                lockPassword.value = ""
+                viewModelScope.launch(Dispatchers.IO) {
+                    _verifyResult.postValue(verifyPassword(it))
+                }
+            }
+        }
+    }
+
+    private fun setLockPassword(num: Int){
+
+        lockPassword.value?.also {
+            if (it.length < 4){
+                lockPassword.value = "${it}$num"
+            }
+        }
+        lockPassword.value?.also {
             if (it.length == 4 && firstCheckPassword == ""){
                 firstCheckPassword = it
                 lockPassword.value = ""
@@ -50,15 +104,20 @@ class LockScreenViewModel : ViewModel()
                     verifyCnt.value = 2
                 }
                 //[다시 한번 입력해주세요.]에서 일치한 경우, 저장 후 종료.
-                //todo: 해당 비밀번호를 저장해야함.
                 else{
-                    verifyCnt.value = 3
+                   verifyCnt.value = 3
+                   viewModelScope.launch(Dispatchers.IO){
+                       appPasswordRepo.insertEntity(AppPasswordEntity(
+                           userName = userRepo.getEmail(),
+                           appPassword = lockPassword.value.toString().asSHA256
+                       ))
+                   }
                 }
             }
         }
     }
 
-    fun eraselockPassword(){
+    fun eraseLockPassword(){
         val currentPassword = lockPassword.value
 
         currentPassword?.let {

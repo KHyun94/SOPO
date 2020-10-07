@@ -16,7 +16,7 @@
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:tabIndicatorColor="@color/COLOR_GRAY_800"
+        app:tabIndicatorColor="@color/COLOR_MAIN_500"
         android:background="@color/MAIN_WHITE">
 
     </com.google.android.material.tabs.TabLayout>

@@ -10,6 +10,7 @@ interface TimeCountRepository {
    fun getRefreshCriteriaLiveData(): LiveData<Int>
    fun getCurrentTimeCount(): TimeCountEntity?
    fun getLatestUpdatedEntity(time: String): TimeCountEntity?
+   fun getSumOfCountLiveData(): LiveData<Int>
    fun insertEntity(entity: TimeCountEntity)
    fun insertEntities(entities: List<TimeCountEntity>)
    fun updateEntity(entity: TimeCountEntity)

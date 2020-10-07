@@ -4,10 +4,7 @@ import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.database.shared.SharedPref
 import com.delivery.sopo.database.shared.SharedPrefHelper
-import com.delivery.sopo.repository.CourierRepolmpl
-import com.delivery.sopo.repository.ParcelManagementRepoImpl
-import com.delivery.sopo.repository.ParcelRepoImpl
-import com.delivery.sopo.repository.TimeCountRepoImpl
+import com.delivery.sopo.repository.impl.*
 import com.delivery.sopo.viewmodels.*
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.menus.*
@@ -56,18 +53,24 @@ val appModule = module {
         TimeCountRepoImpl(get(), get())
     }
 
+    single {
+        AppPasswordRepoImpl(get())
+    }
+
     viewModel { SplashViewModel(get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { SignUpViewModel() }
     viewModel { LoginSelectViewModel() }
     viewModel { MyMenuViewModel(get()) }
-    viewModel { MainViewModel(get()) }
-    viewModel { LockScreenViewModel() }
-    viewModel { SettingViewModel(get()) }
+    viewModel { MainViewModel(get(),get()) }
+    viewModel { LockScreenViewModel(get(),get()) }
+    viewModel { SettingViewModel(get(),get()) }
     viewModel { NoticeViewModel()}
+    viewModel { FaqViewModel()}
+    viewModel { AppInfoViewModel()}
     viewModel { NotDisturbTimeViewModel() }
     viewModel { InquiryViewModel(get(), get(), get(), get()) }
-    viewModel { MenuViewModel(get()) }
+    viewModel { MenuViewModel(get(), get(), get()) }
 
 
     viewModel { ParcelDetailViewModel(get(), get()) }

@@ -8,9 +8,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.views.inquiry.InquiryView
-import com.delivery.sopo.views.lookups.LookupMainFragment
 import com.delivery.sopo.views.menus.MenuFragment
-import com.delivery.sopo.views.menus.MyMenuView
 import com.delivery.sopo.views.registers.RegisterMainFrame
 
 class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :

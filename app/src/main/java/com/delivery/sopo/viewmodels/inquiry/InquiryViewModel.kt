@@ -15,10 +15,10 @@ import com.delivery.sopo.models.entity.TimeCountEntity
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.repository.ParcelManagementRepoImpl
+import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
-import com.delivery.sopo.repository.ParcelRepoImpl
-import com.delivery.sopo.repository.TimeCountRepoImpl
+import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.util.fun_util.TimeUtil
 import com.google.gson.Gson
 import kotlinx.coroutines.*
@@ -30,7 +30,8 @@ import retrofit2.Response
 class InquiryViewModel(private val userRepo: UserRepo,
                        private val parcelRepoImpl: ParcelRepoImpl,
                        private val parcelManagementRepoImpl: ParcelManagementRepoImpl,
-                       private val timeCountRepoImpl: TimeCountRepoImpl) : ViewModel()
+                       private val timeCountRepoImpl: TimeCountRepoImpl
+) : ViewModel()
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     // 진행 중인 리스트 데이터
@@ -455,9 +456,12 @@ class InquiryViewModel(private val userRepo: UserRepo,
             Log.d(TAG, "selectedData `s Size : $selectedData")
             parcelRepoImpl.deleteLocalOngoingParcels(selectedData)
             parcelManagementRepoImpl.updateIsBeDeleteToOneByParcelIdList(selectedData)
-            timeCountRepoImpl.getCurrentTimeCount()?.let {
-                it.count = it.count - selectedData.size
-                timeCountRepoImpl.updateEntity(it)
+            // 배송완료일때 아이템이 하나도 없을 경우 전체 새로고침을 해야해서 삭제할때 -1을 해줘야함.
+            if(getCurrentScreenStatus() == ScreenStatus.COMPLETE){
+                timeCountRepoImpl.getCurrentTimeCount()?.let {
+                    it.count = it.count - selectedData.size
+                    timeCountRepoImpl.updateEntity(it)
+                }
             }
         }
     }

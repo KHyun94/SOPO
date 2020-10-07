@@ -23,7 +23,6 @@
         <activity
             android:name=".views.TestActivity"
             android:windowSoftInputMode="adjustResize">
-
         </activity>
         <activity
             android:name=".views.MainView"
