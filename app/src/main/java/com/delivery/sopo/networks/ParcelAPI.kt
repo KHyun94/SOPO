@@ -82,7 +82,7 @@ interface ParcelAPI
     // 1002 단일 택배 업데이트 및 가져오기
     @PATCH("/api/v1/sopoMainBackEnd/delivery/{email}/parcel")
     @Headers("Accept: application/json")
-    suspend fun requestRenewalOneParcel(
+    fun requestRenewalOneParcel(
         @Path("email") email: String,
         @Query("parcelUid") parcelUid : String,
         @Query("regDt") regDt : String

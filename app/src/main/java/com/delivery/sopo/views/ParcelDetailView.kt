@@ -3,55 +3,55 @@ package com.delivery.sopo.views
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
 import com.delivery.sopo.models.StatusItem
+import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
+import com.delivery.sopo.repository.ParcelRepoImpl
+import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.fun_util.SizeUtil
 import com.delivery.sopo.viewmodels.ParcelDetailViewModel
-import com.delivery.sopo.views.adapter.TimeLineRvAdapter
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
+import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class ParcelDetailView : Fragment()
 {
     val TAG = "LOG.SOPO"
 
+    private val userRepo: UserRepo by inject()
+    private val parcelRepoImpl: ParcelRepoImpl by inject()
+
     lateinit var binding: ParcelDetailViewBinding
     private val vm: ParcelDetailViewModel by viewModel()
 
-
-
-    private var parcelUId : String? = null
-    private var regDt : String? = null
-
-    var statusList = mutableListOf<StatusItem>(
-        StatusItem("상품인수", false),
-        StatusItem("배송중", true),
-        StatusItem("동네도착", false),
-        StatusItem("배송완료", false)
-    )
+    private var parcelUId: String? = null
+    private var regDt: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
 
-        if(arguments != null)
+        NetworkManager.initPrivateApi(userRepo.getEmail(), userRepo.getApiPwd())
+
+        if (arguments != null)
         {
             parcelUId = arguments?.getString(PARCEL_UID)
             regDt = arguments?.getString(REQ_DT)
         }
 
-        NetworkManager.initPrivateApi("gnltlgnlrl94@naver.com", "A9E5E837F775F17A6C3B16F810FD74EFA6CFF5064D95977497E5091DC177BDC2")
     }
 
     override fun onCreateView(
@@ -60,16 +60,14 @@ class ParcelDetailView : Fragment()
         savedInstanceState: Bundle?
     ): View?
     {
-        bindView(inflater = inflater, container = container)
-        parcelUId = "54f61e1a-0439-41bf-b07d-cf51835c0dc3"
-        regDt = "2020-09-19"
-        if(parcelUId != null && regDt != null)
-        {
-            Log.d(TAG, "실행 전")
-            binding.vm!!.requestFetchParcel(parcelUId = parcelUId!!, regDt = regDt!!)
+        bindViewSetting(inflater = inflater, container = container)
+        setObserve()
 
+        parcelUId = "7dbaed4a-9231-4cb4-ad77-ce5c68069a79"
+        regDt = "2020-10-04"
 
-        }
+        // 택배 info LiveData 데이터 입력
+        binding.vm!!.parcelId.value = ParcelId(regDt!!, parcelUId!!)
 
         return binding.root
     }
@@ -77,76 +75,142 @@ class ParcelDetailView : Fragment()
     override fun onActivityCreated(savedInstanceState: Bundle?)
     {
         super.onActivityCreated(savedInstanceState)
+//        Log.d(TAG, "Rv 호출 전")
+//
+//        binding.includeFull.rvTimeLine.run {
+//            layoutManager = LinearLayoutManager(activity)
+//            adapter = TimeLineRvAdapter()
+//        }
 
-        setIndicatorView(
-            binding.includeSemi.layoutAddView,
-            null,
-            binding.includeSemi.layoutDetailContent,
-            statusList
-        )
-        setIndicatorView(
-            binding.includeFull.tvTitle,
-            binding.includeFull.vEmpty,
-            binding.includeFull.layoutDetailContent,
-            statusList
-        )
+//        binding.includeFull.layoutHedaer.setOnTouchListener(object : View.OnTouchListener
+//        {
+//            override fun onTouch(v: View?, event: MotionEvent): Boolean
+//            {
+//                val action = event.action
+//                val curX = event.x
+//                val curY = event.y
+//                if (action == MotionEvent.ACTION_DOWN)
+//                {
+////                    println("손가락 눌렸음 : $curX,$curY")
+//                }
+//                else if (action == MotionEvent.ACTION_MOVE)
+//                {
+////                    println("손가락 움직임 : $curX,$curY")
+//                }
+//                else if (action == MotionEvent.ACTION_UP)
+//                {
+////                    println("손가락 떼졌음 : $curX,$curY")
+//                }
+//                return true
+//            }
+//        })
+//
+//        binding.includeFull.layoutBody.setOnTouchListener(object : View.OnTouchListener
+//        {
+//            override fun onTouch(v: View?, event: MotionEvent): Boolean
+//            {
+//                val action = event.action
+//                val curX = event.x
+//                val curY = event.y
+//                if (action == MotionEvent.ACTION_DOWN)
+//                {
+//                    binding.layoutDrawer.isEnabled = false
+////                    println("손가락 눌렸음 : $curX,$curY")
+//                }
+//                else if (action == MotionEvent.ACTION_MOVE)
+//                {
+//
+//                    binding.layoutDrawer.isEnabled = false
+////                    println("손가락 움직임 : $curX,$curY")
+//                }
+//                else if (action == MotionEvent.ACTION_UP)
+//                {
+//
+//                    binding.layoutDrawer.isEnabled = true
+////                    println("손가락 떼졌음 : $curX,$curY")
+//                }
+//                return true
+//            }
+//        })
 
-        updateDrawerLayoutSize(binding.includeSemi.root)
-
-        Log.d(TAG, "Rv 호출 전")
-
-        binding.includeFull.rvTimeLine.run {
-            layoutManager = LinearLayoutManager(activity)
-            adapter = TimeLineRvAdapter()
-        }
-
-
-        var location: IntArray = IntArray(2)
-        binding.layoutDrawer.setOnTouchListener { view: View, event: MotionEvent ->
-            when (event.action)
+        binding.layoutMain.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener
+        {
+            override fun onPanelSlide(panel: View?, slideOffset: Float)
             {
-                MotionEvent.ACTION_MOVE ->
+                Log.i(TAG, "onPanelSlide, offset $slideOffset")
+
+                if (slideOffset > 0.9f)
                 {
-                    view.getLocationOnScreen(location)
-
-                    if (location[1] > 72)
-                    {
-                        activity!!.runOnUiThread {
-//                            layout_drawer.setBackgroundResource(R.color.MAIN_WHITE)
-                            binding.includeSemi.root.visibility = View.GONE
-                            binding.includeFull.root.visibility = View.VISIBLE
-                            binding.layoutMain.isEnabled = true
-
-                        }
+                    activity!!.runOnUiThread {
+                        binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
+                        binding.includeSemi.root.visibility = View.GONE
+                        binding.includeFull.root.visibility = View.VISIBLE
                     }
-                    else
-                    {
-                        activity!!.runOnUiThread {
-//                            layout_drawer.setBackgroundResource(R.drawable.border_drawer)
+                }
+                else
+                {
+                    activity!!.runOnUiThread {
+                        binding.layoutDrawer.setBackgroundResource(R.drawable.border_drawer)
 
-                            binding.includeSemi.root.visibility = View.VISIBLE
-                            binding.includeFull.root.visibility = View.GONE
-                            binding.layoutMain.isEnabled = false
-                        }
+                        binding.includeSemi.root.visibility = View.VISIBLE
+                        binding.includeFull.root.visibility = View.GONE
                     }
-
-                    Log.d("LOG.SOPO", "Event X => ${event.x}")
-                    Log.d("LOG.SOPO", "Event Y => ${event.y}")
                 }
 
             }
-            //리턴값은 return 없이 아래와 같이
-            true // or false
-        }
+
+            override fun onPanelStateChanged(
+                panel: View?,
+                previousState: PanelState?,
+                newState: PanelState
+            )
+            {
+                Log.i(TAG, "onPanelStateChanged $newState")
+
+
+            }
+        })
 
     }
 
     // binding setting
-    private fun bindView(inflater: LayoutInflater, container: ViewGroup?)
+    private fun bindViewSetting(inflater: LayoutInflater, container: ViewGroup?)
     {
         binding = ParcelDetailViewBinding.inflate(inflater, container, false)
         binding.vm = vm
         binding.lifecycleOwner = this
+    }
+
+    private fun setObserve()
+    {
+        binding.vm!!.parcelId.observe(this, Observer {
+            if (it != null)
+            {
+                binding.vm!!.requestLocalParcel(it)
+            }
+        })
+
+        binding.vm!!.statusList.observe(this, Observer {
+            if (it != null)
+            {
+                setIndicatorView(
+                    topView = binding.includeSemi.layoutAddView,
+                    bottomView = null,
+                    baseLayout = binding.includeSemi.layoutDetailContent,
+                    list = it
+                )
+
+                updateDrawerLayoutSize(binding.includeSemi.root)
+
+                setIndicatorView(
+                    topView = binding.includeFull.tvTitle,
+                    bottomView = binding.includeFull.vEmpty,
+                    baseLayout = binding.includeFull.layoutDetailContent,
+                    list = it
+                )
+            }
+        })
+
     }
 
     // 동적으로 indicator view 생성
@@ -251,13 +315,14 @@ class ParcelDetailView : Fragment()
 
     }
 
-    companion object{
+    companion object
+    {
 
         private val PARCEL_UID = "PARCEL_UID"
         private val REQ_DT = "REQ_DT"
 
         // 해당 프래그먼트를 인스턴스화 할 때 무조건 newInstance로 호출해야한다.
-        fun newInstance(parcelUId:String, regDt:String):ParcelDetailView
+        fun newInstance(parcelUId: String, regDt: String): ParcelDetailView
         {
             val fragment = ParcelDetailView()
 

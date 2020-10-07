@@ -73,7 +73,7 @@ val appModule = module {
     viewModel { MenuViewModel(get(), get(), get()) }
 
 
-    viewModel { ParcelDetailViewModel(get(), get()) }
+    viewModel { ParcelDetailViewModel(get(), get(), get()) }
 
     viewModel { RegisterStep1ViewModel() }
     viewModel { RegisterStep2ViewModel(get()) }

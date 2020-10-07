@@ -2,166 +2,223 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <data>
+        <import type="androidx.lifecycle.MutableLiveData"/>
+        <variable
+            name="adapter"
+            type="com.delivery.sopo.views.adapter.TimeLineRvAdapter" />
+
+        <variable
+            name="item"
+            type="com.delivery.sopo.models.parcel.ParcelDetailItem" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tv_title"
-            style="@style/H2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="11dp"
-            android:includeFontPadding="false"
-            android:text="택배조회"
-            android:textColor="@color/COLOR_GRAY_800"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="14dp"
-            android:background="@drawable/ic_clear_btn"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <LinearLayout
-            android:id="@+id/layout_detail_content"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:orientation="horizontal"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_title" />
-
-        <View
-            android:id="@+id/v_empty"
             android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:layout_marginTop="40dp"
-            android:background="@color/COLOR_GRAY_100"
-            app:layout_constraintBottom_toTopOf="@id/layout_detail_content" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_alias"
-            style="@style/H3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="40dp"
-            android:includeFontPadding="false"
-            android:text="갤럭시 버즈 플러스 _ 화이트"
-            android:textColor="@color/COLOR_GRAY_800"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/v_empty" />
-
-        <TextView
-            android:id="@+id/tv_register_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="24dp"
-            android:fontFamily="@font/spoqa_han_sans_light"
-            android:includeFontPadding="false"
-            android:text="최초등록일 2020/08/30"
-            android:textColor="@color/COLOR_GRAY_800"
-            android:textSize="10dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_alias" />
-
-        <LinearLayout
-            android:id="@+id/layout_parcel_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_register_date">
-
-            <ImageView
-                android:layout_width="41dp"
-                android:layout_height="41dp"
-                android:layout_marginEnd="16dp"
-                android:background="@drawable/ic_color_hanjin"
-                android:src="@drawable/border_round_2sp" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:id="@+id/layout_hedaer"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginBottom="24dp">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/tv_title"
+                    style="@style/H2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center">
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="11dp"
+                    android:includeFontPadding="false"
+                    android:text="택배조회"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    android:layout_centerVertical="true"/>
 
-                    <TextView
-                        style="@style/H5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:includeFontPadding="false"
-                        android:lineHeight="17.76px"
 
-                        android:text="한진택배"
-                        android:textColor="@color/COLOR_MAIN_900" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ic_relative_courier" />
-
-                </LinearLayout>
-
-                <LinearLayout
+                <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center">
+                    android:layout_margin="14dp"
+                    android:background="@drawable/ic_clear_btn"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
 
-                    <TextView
-                        style="@style/H3"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_body"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/layout_detail_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintLeft_toRightOf="parent"
+                    app:layout_constraintRight_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/v_empty"
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="40dp"
+                    android:background="@color/COLOR_GRAY_100"
+                    app:layout_constraintBottom_toTopOf="@id/layout_detail_content" />
+
+                <TextView
+                    android:id="@+id/tv_alias"
+                    style="@style/H3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="40dp"
+                    android:includeFontPadding="false"
+                    android:text="@{item.alias}"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/v_empty" />
+
+                <TextView
+                    android:id="@+id/tv_base_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="24dp"
+                    android:fontFamily="@font/spoqa_han_sans_light"
+                    android:includeFontPadding="false"
+                    android:text="최초등록일 "
+                    android:textColor="@color/COLOR_GRAY_800"
+                    android:textSize="10dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_alias" />
+
+                <TextView
+                    android:id="@+id/tv_registered_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:fontFamily="@font/spoqa_han_sans_light"
+                    android:includeFontPadding="false"
+                    android:text="@{item.regDt}"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    android:textSize="10dp"
+                    app:layout_constraintLeft_toRightOf="@id/tv_base_date"
+                    app:layout_constraintTop_toBottomOf="@id/tv_alias" />
+
+                <LinearLayout
+                    android:id="@+id/layout_parcel_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="24dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_base_date">
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:includeFontPadding="false"
-                        android:text="123456789"
-                        android:textColor="@color/COLOR_GRAY_800" />
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/border_round_2sp">
 
-                    <ImageView
-                        android:id="@+id/iv_paste"
+                        <ImageView
+                            android:layout_width="41dp"
+                            android:layout_height="41dp"
+                            app:setImage="@{item.courier.iconRes}"
+                            android:padding="10sp"/>
+                    </LinearLayout>
+
+
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/ic_paste"
-                        app:layout_constraintLeft_toRightOf="@id/tv_waybil_num"
-                        app:layout_constraintTop_toBottomOf="@id/tv_alias" />
+                        android:orientation="vertical">
 
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center">
+
+                            <TextView
+                                style="@style/H5"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:includeFontPadding="false"
+                                android:lineHeight="17.76px"
+                                android:text="@{item.courier.courierName}"
+                                android:textColor="@color/COLOR_MAIN_900" />
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/ic_relative_courier" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center">
+
+                            <TextView
+                                style="@style/H3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:includeFontPadding="false"
+                                android:text="@{item.waybilNym}"
+                                android:textColor="@color/COLOR_GRAY_800" />
+
+                            <ImageView
+                                android:id="@+id/iv_paste"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/ic_paste"
+                                app:layout_constraintLeft_toRightOf="@id/tv_waybil_num"
+                                app:layout_constraintTop_toBottomOf="@id/tv_alias" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
                 </LinearLayout>
 
-            </LinearLayout>
+                <View
+                    android:id="@+id/v_empty2"
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:layout_marginTop="40dp"
+                    android:background="@color/COLOR_GRAY_100"
+                    app:layout_constraintTop_toBottomOf="@id/layout_parcel_info" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_time_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="24dp"
+                    android:layout_marginTop="37dp"
+                    android:nestedScrollingEnabled="false"
+                    android:overScrollMode="never"
+                    app:layout_constraintLeft_toRightOf="parent"
+                    app:layout_constraintRight_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/v_empty2"
+                    app:linearRvAdapter="@{adapter}" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
         </LinearLayout>
 
-        <View
-            android:id="@+id/v_empty2"
-            android:layout_width="match_parent"
-            android:layout_height="8dp"
-            android:layout_marginTop="40dp"
-            android:background="@color/COLOR_GRAY_100"
-            app:layout_constraintTop_toBottomOf="@id/layout_parcel_info" />
+    </androidx.core.widget.NestedScrollView>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_time_line"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="37dp"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/v_empty2" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
