@@ -6,7 +6,7 @@
 
         <variable
             name="item"
-            type="String" />
+            type="com.delivery.sopo.models.parcel.Progress" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -65,7 +65,7 @@
             style="@style/H5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="11dp"
             android:includeFontPadding="false"
             android:text="간선상차"
             android:textColor="@color/COLOR_MAIN_BLUE_700"
@@ -77,7 +77,7 @@
             style="@style/H5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="11dp"
             android:includeFontPadding="false"
             android:text="곤지암Hub"
             android:textColor="@color/COLOR_GRAY_800"

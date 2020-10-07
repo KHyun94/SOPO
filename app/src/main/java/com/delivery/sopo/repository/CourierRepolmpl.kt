@@ -16,6 +16,11 @@ class CourierRepolmpl(
             ) as MutableList<CourierItem?>
     }
 
+    override suspend fun getWithCode(code: String): CourierItem?
+    {
+        return appDB.courierDao().getWithCode(code = code)
+    }
+
     override suspend fun getWithoutLen(len: Int, cnt: Int): MutableList<CourierItem?>?
     {
         return appDB.courierDao()

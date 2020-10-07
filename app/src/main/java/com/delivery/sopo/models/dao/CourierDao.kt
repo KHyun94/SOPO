@@ -17,6 +17,9 @@ interface CourierDao
     @Query("SELECT * FROM COURIER WHERE courierName = :name")
     fun getWithName(name : String) : List<CourierEntity>
 
+    @Query("SELECT courierName, courierCode, clickRes, nonClickRes, iconRes FROM COURIER WHERE courierCode = :code")
+    suspend fun getWithCode(code : String) : CourierItem
+
     @Query("SELECT courierName, courierCode, clickRes, nonClickRes, iconRes FROM COURIER WHERE minLen <= :len AND maxLen >= :len ORDER BY priority DESC LIMIT :cnt")
     suspend fun getWithLen(len:Int, cnt : Int) : List<CourierItem?>
 
