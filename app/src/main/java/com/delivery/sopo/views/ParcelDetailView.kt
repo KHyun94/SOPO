@@ -17,7 +17,7 @@ import com.delivery.sopo.databinding.StatusDisplayBinding
 import com.delivery.sopo.models.StatusItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.repository.ParcelRepoImpl
+import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.util.fun_util.SizeUtil
 import com.delivery.sopo.viewmodels.ParcelDetailViewModel
