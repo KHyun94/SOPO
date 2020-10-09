@@ -45,7 +45,6 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     lateinit var viewPagerAdapter: ViewPagerAdapter
     lateinit var pageChangeListener: ViewPager.OnPageChangeListener
     private val userRepo: UserRepo by inject()
-    private var checkAppPasswordIsPassed: Boolean  = false
 
     private var transaction: FragmentTransaction? = null
 
@@ -187,16 +186,15 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     override fun setObserver()
     {
-        binding.vm!!.isSetOfSecurity.observe(this, Observer {
-            if(it>0 && !checkAppPasswordIsPassed){
-                checkAppPasswordIsPassed = true
+        mainVm.isSetOfSecurity.observe(this, Observer {
+            it?.also {
                 this.launchActivitiy<LockScreenView>{
                     putExtra(IntentConst.LOCK_SCREEN, LockScreenStatus.VERIFY)
                 }
             }
         })
 
-        binding.vm!!.tabLayoutVisibility.observe(this, Observer {
+        mainVm.tabLayoutVisibility.observe(this, Observer {
             when (it)
             {
                 View.VISIBLE -> tablayout_bottom_tab.visibility = View.VISIBLE
@@ -205,7 +203,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             }
         })
 
-        binding.vm!!.errorMsg.observe(this, Observer {
+        mainVm.errorMsg.observe(this, Observer {
             if (it != null && it.isNotEmpty())
             {
                 GeneralDialog(

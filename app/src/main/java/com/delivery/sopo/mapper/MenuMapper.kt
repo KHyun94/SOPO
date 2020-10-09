@@ -2,7 +2,6 @@ package com.delivery.sopo.mapper
 
 import android.view.Menu
 import androidx.core.view.iterator
-import com.delivery.sopo.database.dto.TimeCountDTO
 import com.delivery.sopo.models.entity.TimeCountEntity
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 

@@ -54,19 +54,19 @@ class MenuViewModel(private val userRepo: UserRepo,
         _menu.value = menu
     }
 
-    fun popView(){
-        try {
+    fun popView(): Boolean{
+        return try {
             _viewStack.popItem()
             _viewStack.value?.also {
                 if(!it.empty()){
                     _menu.value = it.peek()
                 }
             }
+            true
         }
         catch (e: EmptyStackException){
             Log.e(TAG, "STACK IS ALREADY EMPTY!!, you try to pop item even if stack is already empty!!")
+            false
         }
     }
-
-
 }

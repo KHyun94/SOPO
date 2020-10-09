@@ -3,11 +3,15 @@ package com.delivery.sopo.viewmodels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.AppDatabase
+import com.delivery.sopo.models.entity.AppPasswordEntity
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class MainViewModel(
@@ -18,18 +22,23 @@ class MainViewModel(
     val tabLayoutVisibility = MutableLiveData<Int>()
     val errorMsg = MutableLiveData<String?>()
 
-    private val _isSetOfSecurity = appPasswordRepo.getCntOfAppPasswordLiveData()
-    val isSetOfSecurity: LiveData<Int>
+    private val _isSetOfSecurity = MutableLiveData<AppPasswordEntity?>()
+    val isSetOfSecurity: LiveData<AppPasswordEntity?>
         get() = _isSetOfSecurity
 
     init
     {
         setPrivateUserAccount()
+        initIsSetOfSecurity()
     }
 
+    private fun initIsSetOfSecurity(){
+         viewModelScope.launch(Dispatchers.IO){
+             _isSetOfSecurity.postValue(appPasswordRepo.getAppPassword())
+         }
+    }
 
-
-    fun setTabLayoutVisiblity(visibility: Int)
+    fun setTabLayoutVisibility(visibility: Int)
     {
         tabLayoutVisibility.value = visibility
     }

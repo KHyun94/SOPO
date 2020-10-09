@@ -3,21 +3,20 @@ package com.delivery.sopo.views.inquiry
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
+import android.view.*
 import android.view.View.*
-import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.ListPopupWindow
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
@@ -26,6 +25,7 @@ import com.delivery.sopo.enums.InquiryItemType
 import com.delivery.sopo.enums.ScreenStatus
 import com.delivery.sopo.mapper.MenuMapper
 import com.delivery.sopo.models.entity.TimeCountEntity
+import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
@@ -39,6 +39,7 @@ import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.factory.InquiryViewModelFactory
 import com.delivery.sopo.viewmodels.factory.MainViewModelFactory
 import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
+import kotlinx.android.synthetic.main.popup_menu_view.view.*
 import kotlinx.android.synthetic.main.sopo_inquiry_view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +62,9 @@ class InquiryView: Fragment() {
     private lateinit var soonArrivalListAdapter: InquiryListAdapter
     private lateinit var registeredSopoListAdapter: InquiryListAdapter
     private lateinit var completeListAdapter: InquiryListAdapter
+    private var menuPopUpWindow: PopupWindow? = null
+    private var historyPopUpWindow: PopupWindow? = null
+
     private val mainVm: MainViewModel by lazy {
         ViewModelProvider(requireActivity(), MainViewModelFactory(userRepo, appPasswordRepoImpl)).get(MainViewModel::class.java)
     }
@@ -71,11 +75,7 @@ class InquiryView: Fragment() {
     private var refreshDelay: Boolean = false
 
     @SuppressLint("SourceLockedOrientationActivity")
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = SopoInquiryViewBinding.inflate(inflater, container, false)
         progressBar = CustomProgressBar(requireActivity() as AppCompatActivity)
         viewBinding()
@@ -84,13 +84,14 @@ class InquiryView: Fragment() {
         return binding.root
     }
 
+    @SuppressLint("ClickableViewAccessibility", "RestrictedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         initViewSetting()
         setListener()
         image_inquiry_popup_menu.setOnClickListener {
-            openPopUpMenu(it)
+            openInquiryMenu(it)
         }
     }
 
@@ -100,15 +101,12 @@ class InquiryView: Fragment() {
 
         soonArrivalListAdapter = InquiryListAdapter(inquiryVm.cntOfSelectedItem, this, mutableListOf(), InquiryItemType.Soon)
         binding.recyclerviewSoonArrival.adapter = soonArrivalListAdapter
-        binding.recyclerviewSoonArrival.layoutManager = LinearLayoutManager(requireActivity())
 
         registeredSopoListAdapter = InquiryListAdapter(inquiryVm.cntOfSelectedItem, this, mutableListOf(), InquiryItemType.Registered)
         binding.recyclerviewRegisteredParcel.adapter = registeredSopoListAdapter
-        binding.recyclerviewRegisteredParcel.layoutManager = LinearLayoutManager(requireActivity())
 
         completeListAdapter = InquiryListAdapter(inquiryVm.cntOfSelectedItem, this, mutableListOf(), InquiryItemType.Complete)
         binding.recyclerviewCompleteParcel.adapter = completeListAdapter
-        binding.recyclerviewCompleteParcel.layoutManager = LinearLayoutManager(requireActivity())
 
         // 당겨서 새로고침 !
         binding.swipeRefresh.setOnRefreshListener {
@@ -318,46 +316,49 @@ class InquiryView: Fragment() {
         })
     }
 
-    // 메뉴를 눌렀을때 팝업 메뉴를 띄운다.
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private fun openPopUpMenu(anchorView: View){
+    private fun openInquiryMenu(anchorView: View){
+        if(menuPopUpWindow == null){
+            val menu = PopupMenu(requireActivity(), anchorView).menu
+            requireActivity().menuInflater.inflate(R.menu.inquiry_popup_menu, menu)
 
-        val listPopupWindow = ListPopupWindow(requireActivity()).apply {
-            this.width = SizeUtil.changeDpToPx(binding.root.context, 150F)
-            this.setBackgroundDrawable(requireActivity().getDrawable(R.drawable.border_all_rounded_no_storke))
-        }
+            val popUpView: View = LayoutInflater.from(requireContext()).inflate(R.layout.popup_menu_view,null).also {v ->
+                val popupMenuListAdapter = PopupMenuListAdapter(MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
+                v.recyclerview_inquiry_popup_menu.also {
+                    it.adapter = popupMenuListAdapter
+                    val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                    dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
+                    it.addItemDecoration(dividerItemDecoration)
 
-        listPopupWindow.anchorView = anchorView
-        val menu = PopupMenu(requireActivity(), anchorView).menu
-        // 화면 inflate
-        requireActivity().menuInflater.inflate(R.menu.inquiry_popup_menu, menu)
-
-        // 팝업 메뉴 세팅
-        val listPopupWindowAdapter = InquiryListPopupWindowAdapter(
-            requireActivity(), MenuMapper.menuToMenuItemList(
-                menu
-            )
-        )
-        listPopupWindow.setAdapter(listPopupWindowAdapter)
-        listPopupWindow.setOnItemClickListener{ parent, view, position, id ->
-            when(position){
-                //삭제하기
-                0 -> {
-                    inquiryVm.openRemoveView()
-                }
-                // 새로고침
-                1 -> {
-                    inquiryVm.refreshOngoing()
-                }
-                // 도움말
-                2 -> {
-                    //TODO 삭제해야함
-                    inquiryVm.testFunReNewALL()
+                    popupMenuListAdapter.setPopUpMenuOnclick(object: PopupMenuListAdapter.InquiryPopUpMenuItemOnclick{
+                        override fun removeItem(v: View)
+                        {
+                            //삭제하기
+                            inquiryVm.openRemoveView()
+                            menuPopUpWindow?.dismiss()
+                        }
+                        override fun refreshItems(v: View)
+                        {
+                            // 새로고침
+                            inquiryVm.refreshOngoing()
+                            menuPopUpWindow?.dismiss()
+                        }
+                        override fun help(v: View)
+                        {
+                            // 도움말
+                            inquiryVm.testFunReNewALL()
+                            menuPopUpWindow?.dismiss()
+                        }
+                    })
                 }
             }
-            listPopupWindow.dismiss()
+
+            menuPopUpWindow = PopupWindow(popUpView, SizeUtil.changeDpToPx(binding.root.context, 150F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
+                showAsDropDown(anchorView)
+            }
         }
-        listPopupWindow.show()
+        else{
+            menuPopUpWindow?.showAsDropDown(anchorView)
+        }
     }
 
     // 배송완료 화면에서 년/월을 눌렀을 시 팝업 메뉴가 나온다.
@@ -367,48 +368,28 @@ class InquiryView: Fragment() {
         timeCntDtoList: MutableList<TimeCountEntity>
     ){
 
-        val listPopupWindow = ListPopupWindow(requireActivity()).apply {
-            this.width = SizeUtil.changeDpToPx(binding.root.context, 120F)
-            this.setBackgroundDrawable(requireActivity().getDrawable(R.drawable.border_all_rounded_no_storke))
-        }
+        val historyPopUpView: View = LayoutInflater.from(requireContext()).inflate(R.layout.popup_menu_view,null).also {v ->
+            val popupMenuListAdapter = PopupMenuListAdapter(MenuMapper.timeCountDtoToMenuItemList(timeCntDtoList) as MutableList<InquiryMenuItem>)
+            v.recyclerview_inquiry_popup_menu.also {
+                it.adapter = popupMenuListAdapter
+                val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
+                it.addItemDecoration(dividerItemDecoration)
 
-        listPopupWindow.anchorView = anchorView
-        val menu = PopupMenu(requireActivity(), anchorView).menu
-        // 화면 inflate
-        requireActivity().menuInflater.inflate(R.menu.basic_menu, menu)
-
-        // 팝업 메뉴 세팅
-        val listPopupWindowAdapter = InquiryListPopupWindowAdapter(
-            requireActivity(), MenuMapper.timeCountDtoToMenuItemList(timeCntDtoList)
-        )
-        listPopupWindow.setAdapter(listPopupWindowAdapter)
-
-        // 6개 이상이라면 6개까지만 크기를 늘리고 그 이상의 데이터는 스크롤로 내리도록함
-        if(timeCntDtoList.size > 6){
-            val measureContentHeight = SizeUtil.measureContentHeight(
-                requireContext(),
-                listPopupWindowAdapter
-            )
-            Log.d(TAG, "measureContentHeight : $measureContentHeight")
-            listPopupWindow.height = SizeUtil.measureContentHeight(
-                requireContext(),
-                listPopupWindowAdapter
-            ) * 6
-        }
-        else{
-            listPopupWindow.height = ListPopupWindow.WRAP_CONTENT
-        }
-
-        // 해당 년월을 눌렀을때 페이징해서 서버에서 데이터를 가져오고 텍스트뷰를 선택한 년월로 세팅한다.
-        listPopupWindow.setOnItemClickListener{ parent, view, position, id ->
-            listPopupWindowAdapter.getItem(position).timeCount?.let {
-                if(it.count > 0){
-                    inquiryVm.changeTimeCount(it.time)
-                    listPopupWindow.dismiss()
-                }
+                popupMenuListAdapter.setHistoryPopUpItemOnclick(object: PopupMenuListAdapter.HistoryPopUpItemOnclick{
+                    override fun changeTimeCount(v: View, time: String) {
+                        inquiryVm.changeTimeCount(time)
+                        historyPopUpWindow?.dismiss()
+                    }
+                })
             }
         }
-        listPopupWindow.show()
+        historyPopUpWindow = if(timeCntDtoList.size > 6){
+            PopupWindow(historyPopUpView, SizeUtil.changeDpToPx(binding.root.context, 120F), SizeUtil.changeDpToPx(binding.root.context, 35*6F), true).apply { showAsDropDown(anchorView) }
+        }
+        else {
+            PopupWindow(historyPopUpView, SizeUtil.changeDpToPx(binding.root.context, 120F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply { showAsDropDown(anchorView) }
+        }
     }
 
     private fun setListener(){
@@ -537,7 +518,7 @@ class InquiryView: Fragment() {
         tv_delete_title.visibility = VISIBLE
 
         // '하단 탭'이 사라져야한다.
-        mainVm.setTabLayoutVisiblity(GONE)
+        mainVm.setTabLayoutVisibility(GONE)
     }
 
     // X 버튼으로 '삭제하기 취소'가 되었을때 화면 세팅
@@ -551,7 +532,7 @@ class InquiryView: Fragment() {
         constraint_delete_select.visibility = GONE
 
         // '하단 탭'이 노출되어야한다.
-        mainVm.setTabLayoutVisiblity(VISIBLE)
+        mainVm.setTabLayoutVisibility(VISIBLE)
 
         // 삭제하기 취소가 되었을때 화면의 리스트들을 앱이 켜졌을때 처럼 초기화 시켜준다.( '더보기'가 눌렸었는지 아니면 내가 전에 리스트들의 스크롤을 얼마나 내렸는지를 일일이 알고 있기 힘들기 때문에)
         viewSettingForSoonArrivalList(soonArrivalListAdapter.getListSize())

@@ -9,6 +9,7 @@ import com.delivery.sopo.util.fun_util.TimeUtil
 class AppPasswordRepoImpl(private val appDatabase: AppDatabase): AppPasswordRepository
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
+
     override fun getAppPassword(): AppPasswordEntity?
     {
         return appDatabase.securityDao().getAppPassword()
