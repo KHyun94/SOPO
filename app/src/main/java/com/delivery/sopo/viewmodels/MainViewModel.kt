@@ -7,14 +7,18 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
+import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
 
 
 class MainViewModel(
     private val userRepo: UserRepo,
+    private val parcelRepoImpl: ParcelRepoImpl,
     private val appPasswordRepo: AppPasswordRepoImpl
 ) : ViewModel()
 {
+
+    lateinit var registeredParcelCnt : LiveData<Int>
     val tabLayoutVisibility = MutableLiveData<Int>()
     val errorMsg = MutableLiveData<String?>()
 
@@ -25,8 +29,12 @@ class MainViewModel(
     init
     {
         setPrivateUserAccount()
+        setRegisteredParcelCnt()
     }
 
+    fun setRegisteredParcelCnt(){
+        registeredParcelCnt = parcelRepoImpl.getOngoingDataCntLiveData()
+    }
 
 
     fun setTabLayoutVisiblity(visibility: Int)

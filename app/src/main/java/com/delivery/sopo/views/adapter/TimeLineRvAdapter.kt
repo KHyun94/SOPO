@@ -15,7 +15,7 @@ class TimeLineRvAdapter : RecyclerView.Adapter<TimeLineViewHolder>()
 {
     val TAG = "LOG.SOPO"
 
-    var list: MutableList<Progress?> = mutableListOf()
+    var list: List<Progress?> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeLineViewHolder
     {
@@ -60,7 +60,7 @@ class TimeLineRvAdapter : RecyclerView.Adapter<TimeLineViewHolder>()
 
     fun setItemList(_list: MutableList<Progress?>)
     {
-        list = _list.reversed() as MutableList<Progress?>
+        list = _list.reversed()
     }
 
     inner class TimeLineViewHolder(binding: TimeLineItemBinding) :
@@ -71,7 +71,7 @@ class TimeLineRvAdapter : RecyclerView.Adapter<TimeLineViewHolder>()
         fun onBind(item: Progress)
         {
             itemBindingUtil.tvDateHhmmss.text = item.date!!.HHmmss
-            itemBindingUtil.tvDateYymmdd.text = item.date!!.yyMMdd
+            itemBindingUtil.tvDateYymmdd.text = item.date.yyMMdd
             itemBindingUtil.tvDeliveryLocation.text = item.location
             itemBindingUtil.tvDeliveryStatus.text = item.status!!.text
         }

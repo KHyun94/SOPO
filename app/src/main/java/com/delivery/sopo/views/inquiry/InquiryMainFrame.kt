@@ -17,19 +17,11 @@ class InquiryMainFrame : Fragment()
     lateinit var binding : InquiryMainFrameBinding
     val vm : InquiryMainViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View?
     {
-
         binding = InquiryMainFrameBinding.inflate(inflater, container, false)
         binding.vm = vm
         binding.lifecycleOwner = this

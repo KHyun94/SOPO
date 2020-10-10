@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="54sp"
+    android:layout_height="54dp"
     android:background="@color/COLOR_MAIN_BLUE_700">
 
     <ImageView
@@ -9,7 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginStart="17sp"
+        android:layout_marginStart="17dp"
         android:background="@drawable/ic_blue_marker" />
 
     <TextView
@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginStart="8sp"
+        android:layout_marginStart="8dp"
         android:layout_toEndOf="@+id/iv_marker"
         android:text="2개의 항목이 삭제되었습니다."
         android:textColor="@color/COLOR_MAIN_BLUE_100" />
@@ -29,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="23sp"
+        android:layout_marginEnd="23dp"
         android:layout_alignParentEnd="true"
         android:text="실행 취소"
         android:textStyle="bold"

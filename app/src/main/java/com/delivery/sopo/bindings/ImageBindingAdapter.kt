@@ -1,5 +1,6 @@
 package com.delivery.sopo.bindings
 
+import android.util.Log
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
@@ -31,6 +32,7 @@ object ImageBindingAdapter
     @BindingAdapter("setImageAsGif")
     fun bindSetterGif(view: ImageView, res: Int)
     {
+        Log.d("LOG.SOPO", "왓 $res")
         Glide.with(view.context)
             .asGif()
             .load(res)

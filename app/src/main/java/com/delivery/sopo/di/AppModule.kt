@@ -63,7 +63,7 @@ val appModule = module {
     viewModel { SignUpViewModel() }
     viewModel { LoginSelectViewModel() }
     viewModel { MyMenuViewModel(get()) }
-    viewModel { MainViewModel(get(),get()) }
+    viewModel { MainViewModel(get(),get(), get()) }
     viewModel { LockScreenViewModel(get(),get()) }
     viewModel { SettingViewModel(get(),get()) }
     viewModel { NoticeViewModel()}

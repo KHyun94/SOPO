@@ -4,6 +4,11 @@
 
     <data>
         <import type="androidx.lifecycle.MutableLiveData"/>
+
+        <variable
+            name="OnDownClicked"
+            type="android.view.View.OnClickListener" />
+
         <variable
             name="adapter"
             type="com.delivery.sopo.views.adapter.TimeLineRvAdapter" />
@@ -49,7 +54,8 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"/>
+                    android:layout_centerVertical="true"
+                    android:onClick="@{OnDownClicked}"/>
             </RelativeLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
