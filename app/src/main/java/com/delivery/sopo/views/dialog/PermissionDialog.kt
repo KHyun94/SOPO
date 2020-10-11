@@ -12,7 +12,7 @@ import android.view.Window
 import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
-import com.delivery.sopo.util.fun_util.SizeUtil
+import com.delivery.sopo.util.SizeUtil
 import kotlinx.android.synthetic.main.permission_dialog.view.*
 
 //typealias OnClickListener = (agree: PermissionDialog) -> Unit

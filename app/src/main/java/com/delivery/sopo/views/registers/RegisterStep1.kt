@@ -14,15 +14,15 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.databinding.RegisterStep1Binding
 import com.delivery.sopo.enums.FragmentType
-import com.delivery.sopo.interfaces.OnMainBackPressListener
+import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.repository.impl.CourierRepolmpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.util.fun_util.ClipboardUtil
+import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
-import com.delivery.sopo.util.ui_util.FragmentManager
+import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
-import com.delivery.sopo.views.MainView
+import com.delivery.sopo.views.main.MainView
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

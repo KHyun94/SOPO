@@ -10,8 +10,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentNotDisturbTimeBinding
 import com.delivery.sopo.viewmodels.menus.NotDisturbTimeViewModel
 import com.delivery.sopo.views.dialog.NotDisturbTimeDialog
-import com.delivery.sopo.views.dialog.SelectNotifyKindDialog
-import com.delivery.sopo.views.menus.clockpieview.ClockPieHelper
+import com.delivery.sopo.views.widget.clockpieview.ClockPieHelper
 import kotlinx.android.synthetic.main.fragment_not_disturb_time.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
@@ -40,7 +39,14 @@ class NotDisturbTimeFragment : Fragment()
 
         // TODO 테스트
         val clockPieHelperArrayList: ArrayList<ClockPieHelper> = ArrayList<ClockPieHelper>()
-        clockPieHelperArrayList.add(ClockPieHelper(22, 0, 6, 0))
+        clockPieHelperArrayList.add(
+            ClockPieHelper(
+                22,
+                0,
+                6,
+                0
+            )
+        )
         binding.root.pie_view.setDate(clockPieHelperArrayList)
 
         setObserver()

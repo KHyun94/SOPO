@@ -1,15 +1,14 @@
 package com.delivery.sopo.mapper
 
-import androidx.core.view.iterator
-import com.delivery.sopo.database.dto.TimeCountDTO
-import com.delivery.sopo.models.entity.TimeCountEntity
+import com.delivery.sopo.networks.dto.TimeCountDTO
+import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.parcel.Parcel
 
 object TimeCountMapper
 {
-    fun timeCountDtoToTimeCountEntity(timeCountDTO: TimeCountDTO): TimeCountEntity{
+    fun timeCountDtoToTimeCountEntity(timeCountDTO: TimeCountDTO): TimeCountEntity
+    {
         return TimeCountEntity(
             timeCountDTO.time,
             timeCountDTO.count

@@ -1,15 +1,15 @@
 package com.delivery.sopo.mapper
 
-import com.delivery.sopo.models.entity.ParcelEntity
-import com.delivery.sopo.models.entity.ParcelManagementEntity
+import com.delivery.sopo.database.room.entity.ParcelEntity
+import com.delivery.sopo.database.room.entity.ParcelManagementEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
-import com.delivery.sopo.util.fun_util.TimeUtil
 
 object ParcelMapper
 {
-    fun parcelToParcelManagementEntity(parcel: Parcel): ParcelManagementEntity{
+    fun parcelToParcelManagementEntity(parcel: Parcel): ParcelManagementEntity
+    {
         return ParcelManagementEntity(
             regDt = parcel.parcelId.regDt,
             parcelUid = parcel.parcelId.parcelUid
@@ -30,7 +30,8 @@ object ParcelMapper
             status = parcelEntity.status)
     }
 
-    fun parcelToParcelEntity(parcel: Parcel): ParcelEntity{
+    fun parcelToParcelEntity(parcel: Parcel): ParcelEntity
+    {
         return ParcelEntity(
             regDt = parcel.parcelId.regDt,
             parcelUid = parcel.parcelId.parcelUid,

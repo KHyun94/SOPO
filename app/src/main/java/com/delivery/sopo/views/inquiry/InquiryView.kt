@@ -24,10 +24,10 @@ import com.delivery.sopo.databinding.SopoInquiryViewBinding
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.enums.InquiryItemType
 import com.delivery.sopo.enums.ScreenStatus
-import com.delivery.sopo.interfaces.OnMainBackPressListener
-import com.delivery.sopo.interfaces.OnParcelClickListener
+import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
+import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.mapper.MenuMapper
-import com.delivery.sopo.models.entity.TimeCountEntity
+import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
@@ -35,14 +35,16 @@ import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
-import com.delivery.sopo.util.fun_util.SizeUtil
+import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.MainViewModel
 import com.delivery.sopo.viewmodels.factory.InquiryViewModelFactory
 import com.delivery.sopo.viewmodels.factory.MainViewModelFactory
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
-import com.delivery.sopo.views.MainView
-import com.delivery.sopo.views.ParcelDetailView
+import com.delivery.sopo.views.main.MainView
+import com.delivery.sopo.views.adapter.InquiryListAdapter
+import com.delivery.sopo.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
 import kotlinx.android.synthetic.main.popup_menu_view.view.*
 import kotlinx.android.synthetic.main.sopo_inquiry_view.*
@@ -474,11 +476,12 @@ class InquiryView : Fragment()
 
     private fun getParcelClicked() : OnParcelClickListener
     {
-        return object : OnParcelClickListener{
+        return object : OnParcelClickListener
+        {
             override fun onItemClicked(view: View, parcelId: ParcelId)
             {
                 FragmentType.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelUId = parcelId.parcelUid, regDt = parcelId.regDt)
-                com.delivery.sopo.util.ui_util.FragmentManager.move(activity!!, FragmentType.INQUIRY_DETAIL, InquiryMainFrame.viewId)
+                FragmentManager.move(activity!!, FragmentType.INQUIRY_DETAIL, InquiryMainFrame.viewId)
             }
 
         }

@@ -1,17 +1,10 @@
 package com.delivery.sopo.viewmodels.registesrs
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.delivery.sopo.R
-import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.models.CourierItem
-import com.delivery.sopo.util.adapters.GridRvAdapter
-import com.delivery.sopo.util.fun_util.SingleLiveEvent
-import com.delivery.sopo.util.ui_util.FragmentManager
-import com.delivery.sopo.util.ui_util.GridSpacingItemDecoration
+import com.delivery.sopo.util.SingleLiveEvent
 import com.delivery.sopo.viewmodels.FocusChangeCallback
 
 

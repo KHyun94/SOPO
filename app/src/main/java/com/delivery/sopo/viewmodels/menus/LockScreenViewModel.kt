@@ -1,13 +1,12 @@
 package com.delivery.sopo.viewmodels.menus
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.enums.LockScreenStatus
 import com.delivery.sopo.extentions.asSHA256
-import com.delivery.sopo.models.entity.AppPasswordEntity
+import com.delivery.sopo.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
 import kotlinx.coroutines.Dispatchers
@@ -107,10 +106,12 @@ class LockScreenViewModel(
                 else{
                    verifyCnt.value = 3
                    viewModelScope.launch(Dispatchers.IO){
-                       appPasswordRepo.insertEntity(AppPasswordEntity(
+                       appPasswordRepo.insertEntity(
+                           AppPasswordEntity(
                            userName = userRepo.getEmail(),
                            appPassword = lockPassword.value.toString().asSHA256
-                       ))
+                       )
+                       )
                    }
                 }
             }

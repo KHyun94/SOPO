@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.delivery.sopo.databinding.FragmentNoticeBinding
-import com.delivery.sopo.models.NoticeData
+import com.delivery.sopo.models.menu.NoticeData
 import com.delivery.sopo.viewmodels.menus.NoticeViewModel
 import com.delivery.sopo.views.adapter.NoticeExpandableAdapter
 import kotlinx.android.synthetic.main.fragment_notice.*

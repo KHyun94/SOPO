@@ -3,6 +3,7 @@ package com.delivery.sopo.views
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.delivery.sopo.R
+import com.delivery.sopo.views.inquiry.ParcelDetailView
 
 class TestActivity : AppCompatActivity()
 {

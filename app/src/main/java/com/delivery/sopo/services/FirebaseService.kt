@@ -5,12 +5,12 @@ import android.util.Log
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.mapper.ParcelMapper
-import com.delivery.sopo.models.dto.FcmPushDTO
+import com.delivery.sopo.networks.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.util.fun_util.TimeUtil
-import com.delivery.sopo.views.SplashView
+import com.delivery.sopo.util.TimeUtil
+import com.delivery.sopo.views.splash.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson

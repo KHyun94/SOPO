@@ -1,7 +1,6 @@
 package com.delivery.sopo.models.inquiry
 
-import com.delivery.sopo.database.dto.TimeCountDTO
-import com.delivery.sopo.models.entity.TimeCountEntity
+import com.delivery.sopo.database.room.entity.TimeCountEntity
 
 class InquiryMenuItem(
     val viewType: InquiryMenuType,

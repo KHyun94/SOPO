@@ -4,9 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.database.room.AppDatabase
-import com.delivery.sopo.models.entity.AppPasswordEntity
+import com.delivery.sopo.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl

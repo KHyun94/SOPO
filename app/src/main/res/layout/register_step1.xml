@@ -33,7 +33,7 @@
             app:layout_constraintTop_toBottomOf="parent"
             app:layout_constraintVertical_bias="0.9" />
 
-        <com.delivery.sopo.util.ui_util.CustomEditText
+        <com.delivery.sopo.views.widget.CustomEditText
             android:id="@+id/custom_et_track_num"
             content="@={vm.waybilNum}"
             android:layout_width="match_parent"

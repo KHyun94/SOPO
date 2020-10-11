@@ -329,9 +329,9 @@
             <View
                 android:id="@+id/v_dividerLine1"
                 android:layout_width="match_parent"
-                android:layout_height="10dp"
+                android:layout_height="8dp"
                 android:layout_marginTop="20dp"
-                android:background="@color/COLOR_GRAY_200"
+                android:background="@color/COLOR_GRAY_100"
                 app:layout_constraintTop_toBottomOf="@+id/linear_deliveryStatus"
                 />
 
@@ -383,8 +383,8 @@
             <View
                 android:id="@+id/v_dividerLine2"
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/COLOR_GRAY_200"
+                android:layout_height="1dp"
+                android:background="@color/COLOR_GRAY_100"
                 app:layout_constraintTop_toBottomOf="@+id/constraint_notice" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -436,8 +436,8 @@
             <View
                 android:id="@+id/v_dividerLine3"
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/COLOR_GRAY_200"
+                android:layout_height="1dp"
+                android:background="@color/COLOR_GRAY_100"
                 app:layout_constraintTop_toBottomOf="@+id/constraint_setting" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -489,8 +489,8 @@
             <View
                 android:id="@+id/v_dividerLine4"
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/COLOR_GRAY_200"
+                android:layout_height="1dp"
+                android:background="@color/COLOR_GRAY_100"
                 app:layout_constraintTop_toBottomOf="@+id/constraint_faq" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -540,8 +540,8 @@
             <View
                 android:id="@+id/v_dividerLine5"
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/COLOR_GRAY_200"
+                android:layout_height="1dp"
+                android:background="@color/COLOR_GRAY_100"
                 app:layout_constraintTop_toBottomOf="@+id/constraint_termOfUse" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -591,8 +591,8 @@
             <View
                 android:id="@+id/v_dividerLine6"
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:background="@color/COLOR_GRAY_200"
+                android:layout_height="1dp"
+                android:background="@color/COLOR_GRAY_100"
                 app:layout_constraintTop_toBottomOf="@+id/constraint_appInfo" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

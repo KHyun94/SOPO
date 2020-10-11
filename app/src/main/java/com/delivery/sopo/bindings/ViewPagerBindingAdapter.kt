@@ -1,12 +1,10 @@
 package com.delivery.sopo.bindings
 
 import android.util.Log
-import android.widget.LinearLayout
 import androidx.databinding.BindingAdapter
 import androidx.viewpager.widget.ViewPager
-import com.bumptech.glide.Glide
 import com.delivery.sopo.R
-import com.delivery.sopo.util.adapters.ViewPagerAdapter
+import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.google.android.material.tabs.TabLayout
 
 object ViewPagerBindingAdapter

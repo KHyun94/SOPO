@@ -7,10 +7,10 @@ import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.repository.impl.CourierRepolmpl
-import com.delivery.sopo.util.adapters.GridRvAdapter
-import com.delivery.sopo.util.fun_util.SingleLiveEvent
-import com.delivery.sopo.util.ui_util.FragmentManager
-import com.delivery.sopo.util.ui_util.GridSpacingItemDecoration
+import com.delivery.sopo.views.adapter.GridRvAdapter
+import com.delivery.sopo.util.SingleLiveEvent
+import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.GridSpacingItemDecoration
 
 class RegisterStep2ViewModel(private val courierRepolmpl: CourierRepolmpl) : ViewModel()
 {
@@ -26,7 +26,8 @@ class RegisterStep2ViewModel(private val courierRepolmpl: CourierRepolmpl) : Vie
     val errorMsg = MutableLiveData<String>()
 
     var adapter =  MutableLiveData<GridRvAdapter>()
-    val decoration = GridSpacingItemDecoration(3, 48, true)
+    val decoration =
+        GridSpacingItemDecoration(3, 48, true)
     val rowCnt = 3
 
     init

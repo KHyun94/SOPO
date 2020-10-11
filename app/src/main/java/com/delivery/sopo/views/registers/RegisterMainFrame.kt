@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterMainFrameBinding
 import com.delivery.sopo.enums.FragmentType
-import com.delivery.sopo.util.ui_util.FragmentManager
+import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 

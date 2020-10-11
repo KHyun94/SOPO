@@ -45,7 +45,7 @@
             app:layout_constraintTop_toBottomOf="@id/tv_title"
             app:layout_constraintVertical_bias="0.6">
 
-            <com.delivery.sopo.util.ui_util.CustomEditText
+            <com.delivery.sopo.views.widget.CustomEditText
                 android:id="@+id/text_test"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
                 app:title="@string/EMAIL"
                 app:type="@{InfoConst.EMAIL}" />
 
-            <com.delivery.sopo.util.ui_util.CustomEditText
+            <com.delivery.sopo.views.widget.CustomEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24sp"
@@ -76,7 +76,7 @@
                 app:title="@string/PASSWORD"
                 app:type="@{InfoConst.PASSWORD}" />
 
-            <com.delivery.sopo.util.ui_util.CustomEditText
+            <com.delivery.sopo.views.widget.CustomEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="40sp"

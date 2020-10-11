@@ -5,8 +5,8 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.delivery.sopo.models.dao.*
-import com.delivery.sopo.models.entity.*
+import com.delivery.sopo.database.room.dao.*
+import com.delivery.sopo.database.room.entity.*
 
 @Database(entities = [CourierEntity::class, ParcelEntity::class, ParcelManagementEntity::class, TimeCountEntity::class, AppPasswordEntity::class], version = 1)
 abstract class AppDatabase : RoomDatabase()

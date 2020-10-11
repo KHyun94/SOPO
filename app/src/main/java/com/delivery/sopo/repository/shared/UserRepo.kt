@@ -2,6 +2,7 @@ package com.delivery.sopo.repository.shared
 
 import com.delivery.sopo.database.shared.SharedPrefHelper
 
+//todo kh impl로 수정할
 class UserRepo(private val shared: SharedPrefHelper)
 {
     fun getEmail(): String

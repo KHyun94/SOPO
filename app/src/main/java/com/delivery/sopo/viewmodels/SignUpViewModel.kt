@@ -14,7 +14,7 @@ import com.delivery.sopo.extentions.commonMessageResId
 import com.delivery.sopo.firebase.FirebaseUserManagement
 import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.util.fun_util.ValidateUtil
+import com.delivery.sopo.util.ValidateUtil
 import com.google.firebase.analytics.FirebaseAnalytics
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers.io

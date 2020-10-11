@@ -12,11 +12,13 @@ import androidx.core.app.NotificationCompat
 import com.delivery.sopo.R
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
+import com.delivery.sopo.interfaces.notification.Notification
 import com.delivery.sopo.models.parcel.Parcel
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
-object NotificationImpl: Notification{
+object NotificationImpl: Notification
+{
 
     override fun alertUpdateParcel(remoteMessage: RemoteMessage, context: Context, intent: Intent, parcel: Parcel, newDeliveryStatus: String) {
         val channelId = "${context.packageName}SOPO"

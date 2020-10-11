@@ -1,11 +1,10 @@
 package com.delivery.sopo.bindings
 
-import android.widget.LinearLayout
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.delivery.sopo.util.ui_util.GridSpacingItemDecoration
+import com.delivery.sopo.util.GridSpacingItemDecoration
 
 object RecyclerViewBindingAdapter
 {

@@ -2,18 +2,18 @@ package com.delivery.sopo.repository.impl
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import com.delivery.sopo.database.dto.TimeCountDTO
+import com.delivery.sopo.networks.dto.TimeCountDTO
 import com.delivery.sopo.database.room.AppDatabase
-import com.delivery.sopo.models.APIResult
-import com.delivery.sopo.models.dto.DeleteParcelsDTO
-import com.delivery.sopo.models.entity.ParcelEntity
+import com.delivery.sopo.models.api.APIResult
+import com.delivery.sopo.database.room.dto.DeleteParcelsDTO
+import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.ParcelRepository
 import com.delivery.sopo.repository.shared.UserRepo
-import com.delivery.sopo.util.fun_util.TimeUtil
+import com.delivery.sopo.util.TimeUtil
 
 class ParcelRepoImpl(private val userRepo: UserRepo,
                      private val appDatabase: AppDatabase): ParcelRepository
@@ -92,7 +92,8 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
         val beDeletedData = appDatabase.parcelDao().getBeDeletedData()
         return if(beDeletedData.isNotEmpty()){
             NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd()).deleteParcels(email = userRepo.getEmail(),
-                parcelIds = DeleteParcelsDTO(beDeletedData.map(ParcelMapper::parcelEntityToParcelId) as MutableList<ParcelId>))
+                parcelIds = DeleteParcelsDTO(beDeletedData.map(ParcelMapper::parcelEntityToParcelId) as MutableList<ParcelId>)
+            )
         }
         else{
             null

@@ -163,6 +163,7 @@
                         android:text="@{completeInquiryData.parcel.parcelAlias}"
                         android:textColor="@color/COLOR_MAIN_RED_500"
                         android:textSize="12sp"
+                        android:letterSpacing="-0.05"
                         tools:text="갤럭시 버즈 플러스 화이트"
                         />
 

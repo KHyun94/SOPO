@@ -1,7 +1,7 @@
 package com.delivery.sopo.enums
 
 import androidx.fragment.app.Fragment
-import com.delivery.sopo.views.ParcelDetailView
+import com.delivery.sopo.views.inquiry.ParcelDetailView
 import com.delivery.sopo.views.inquiry.InquiryMainFrame
 import com.delivery.sopo.views.inquiry.InquiryView
 import com.delivery.sopo.views.menus.MenuFragment

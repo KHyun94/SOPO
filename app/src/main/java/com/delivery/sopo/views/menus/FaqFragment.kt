@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.delivery.sopo.databinding.FragmentFaqBinding
-import com.delivery.sopo.models.FaqData
+import com.delivery.sopo.models.menu.FaqData
 import com.delivery.sopo.viewmodels.menus.FaqViewModel
 import com.delivery.sopo.views.adapter.FaqExpandableAdapter
 import com.delivery.sopo.views.dialog.OtherFaqDialog

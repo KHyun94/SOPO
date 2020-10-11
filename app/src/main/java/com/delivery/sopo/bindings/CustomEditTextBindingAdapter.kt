@@ -2,11 +2,10 @@ package com.delivery.sopo.bindings
 
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.databinding.BindingAdapter
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
-import com.delivery.sopo.util.ui_util.CustomEditText
+import com.delivery.sopo.views.widget.CustomEditText
 import kotlinx.android.synthetic.main.custom_edit_text.view.*
 
 object CustomEditTextBindingAdapter

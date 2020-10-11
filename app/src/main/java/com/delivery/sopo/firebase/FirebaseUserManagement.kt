@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseUser
 typealias FirebaseAuthCallback = (Task<AuthResult>?) -> Unit
 typealias SendEmailCallback = (Task<Void>?) -> Unit
 
+//todo kh firebase repository로 수정 예
 object FirebaseUserManagement {
 
     @Throws(FirebaseException::class)

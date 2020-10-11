@@ -1,7 +1,7 @@
 package com.delivery.sopo.repository
 
 import androidx.lifecycle.LiveData
-import com.delivery.sopo.models.entity.TimeCountEntity
+import com.delivery.sopo.database.room.entity.TimeCountEntity
 
 interface TimeCountRepository {
    fun getById(time: String): TimeCountEntity?

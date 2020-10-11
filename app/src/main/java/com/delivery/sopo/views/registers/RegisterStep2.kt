@@ -12,13 +12,13 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterStep2Binding
 import com.delivery.sopo.enums.FragmentType
-import com.delivery.sopo.interfaces.OnMainBackPressListener
+import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.models.SelectItem
-import com.delivery.sopo.util.adapters.GridRvAdapter
-import com.delivery.sopo.util.ui_util.FragmentManager
+import com.delivery.sopo.views.adapter.GridRvAdapter
+import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep2ViewModel
-import com.delivery.sopo.views.MainView
+import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegisterStep2 : Fragment()

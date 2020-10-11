@@ -12,13 +12,12 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.databinding.RegisterStep3Binding
 import com.delivery.sopo.enums.FragmentType
-import com.delivery.sopo.interfaces.OnMainBackPressListener
+import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
-import com.delivery.sopo.util.ui_util.FragmentManager
-import com.delivery.sopo.util.ui_util.GeneralDialog
+import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep3ViewModel
-import com.delivery.sopo.views.MainView
-import kotlinx.android.synthetic.main.intro_view.*
+import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegisterStep3 : Fragment()

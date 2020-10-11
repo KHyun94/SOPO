@@ -2,16 +2,16 @@ package com.delivery.sopo.viewmodels.inquiry
 
 import android.util.Log
 import androidx.lifecycle.*
-import com.delivery.sopo.database.dto.TimeCountDTO
+import com.delivery.sopo.networks.dto.TimeCountDTO
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.enums.ScreenStatus
 import com.delivery.sopo.mapper.MenuMapper
-import com.delivery.sopo.models.APIResult
+import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.mapper.TimeCountMapper
-import com.delivery.sopo.models.PagingManagement
-import com.delivery.sopo.models.entity.TimeCountEntity
+import com.delivery.sopo.models.inquiry.PagingManagement
+import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
@@ -19,7 +19,7 @@ import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
-import com.delivery.sopo.util.fun_util.TimeUtil
+import com.delivery.sopo.util.TimeUtil
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import retrofit2.Call
@@ -480,7 +480,7 @@ class InquiryViewModel(private val userRepo: UserRepo,
                     }
                     isBeDeleteList?.let { list ->
                         list.forEach { it.isBeDelete = 0
-                            it.auditDte =TimeUtil.getDateTime()}
+                            it.auditDte = TimeUtil.getDateTime()}
                         parcelManagementRepoImpl.updateEntities(list)
                     }
 

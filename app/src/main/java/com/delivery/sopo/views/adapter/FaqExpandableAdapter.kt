@@ -7,8 +7,7 @@ import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.TextView
 import com.delivery.sopo.R
-import com.delivery.sopo.models.FaqData
-import com.delivery.sopo.models.NoticeData
+import com.delivery.sopo.models.menu.FaqData
 import java.lang.NullPointerException
 
 class FaqExpandableAdapter(private val context: Context, private val groupData: MutableList<FaqData>): BaseExpandableListAdapter()

@@ -9,9 +9,9 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.di.appModule
-import com.delivery.sopo.services.work.SOPOWorker
-import com.delivery.sopo.thirdpartyapi.KakaoSDKAdapter
-import com.delivery.sopo.util.fun_util.OtherUtil
+import com.delivery.sopo.services.SOPOWorker
+import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
+import com.delivery.sopo.util.OtherUtil
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.iid.FirebaseInstanceId

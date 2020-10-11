@@ -12,13 +12,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.MenuViewBinding
 import com.delivery.sopo.enums.MenuEnum
-import com.delivery.sopo.interfaces.OnMainBackPressListener
+import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.viewmodels.factory.MenuViewModelFactory
 import com.delivery.sopo.viewmodels.menus.MenuViewModel
-import com.delivery.sopo.views.MainView
+import com.delivery.sopo.views.main.MainView
 import kotlinx.android.synthetic.main.menu_view.view.*
 import org.koin.android.ext.android.inject
 

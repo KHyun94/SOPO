@@ -1,11 +1,7 @@
 package com.delivery.sopo.repository
 
 import androidx.lifecycle.LiveData
-import com.delivery.sopo.database.dto.TimeCountDTO
-import com.delivery.sopo.models.APIResult
-import com.delivery.sopo.models.entity.ParcelEntity
-import com.delivery.sopo.models.entity.ParcelManagementEntity
-import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.database.room.entity.ParcelManagementEntity
 import com.delivery.sopo.models.parcel.ParcelId
 
 interface ParcelManagementRepository {

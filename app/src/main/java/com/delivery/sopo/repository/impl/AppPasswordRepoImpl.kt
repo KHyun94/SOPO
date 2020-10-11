@@ -2,9 +2,9 @@ package com.delivery.sopo.repository.impl
 
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.database.room.AppDatabase
-import com.delivery.sopo.models.entity.AppPasswordEntity
+import com.delivery.sopo.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.repository.AppPasswordRepository
-import com.delivery.sopo.util.fun_util.TimeUtil
+import com.delivery.sopo.util.TimeUtil
 
 class AppPasswordRepoImpl(private val appDatabase: AppDatabase): AppPasswordRepository
 {

@@ -1,7 +1,7 @@
 package com.delivery.sopo.repository
 
 import androidx.lifecycle.LiveData
-import com.delivery.sopo.models.entity.AppPasswordEntity
+import com.delivery.sopo.database.room.entity.AppPasswordEntity
 
 interface AppPasswordRepository {
    fun getAppPassword(): AppPasswordEntity?

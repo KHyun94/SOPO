@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/MAIN_WHITE"
     android:orientation="vertical"
-    tools:context=".views.IntroView">
+    tools:context=".views.intro.IntroView">
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/viewPager"
@@ -31,7 +31,7 @@
             android:text="@string/INTRO_SKIP"
             android:textColor="@color/COLOR_MAIN_BLUE_700" />
 
-        <com.delivery.sopo.util.ui_util.IntroIndicator
+        <com.delivery.sopo.views.widget.IntroIndicator
             android:id="@+id/indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

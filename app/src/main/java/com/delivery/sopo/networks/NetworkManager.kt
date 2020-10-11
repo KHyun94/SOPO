@@ -1,6 +1,8 @@
 package com.delivery.sopo.networks
 
 import com.delivery.sopo.consts.NetworkConst
+import com.delivery.sopo.networks.api.ParcelAPI
+import com.delivery.sopo.networks.api.UserAPI
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
