@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -21,6 +22,7 @@ import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.util.fun_util.ClipboardUtil
 import com.delivery.sopo.util.fun_util.SizeUtil
 import com.delivery.sopo.util.ui_util.FragmentManager
 import com.delivery.sopo.viewmodels.ParcelDetailViewModel
@@ -86,69 +88,29 @@ class ParcelDetailView : Fragment()
 
         })
 
+        binding.includeSemi.ivCopy.setOnClickListener {
+            val copyText = binding.includeSemi.tvWaybilNum.text.toString()
+            ClipboardUtil.copyTextToClipboard(activity!!, copyText)
+
+            Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.includeFull.ivCopy.setOnClickListener {
+            val copyText = binding.includeFull.tvWaybilNum.text.toString()
+            ClipboardUtil.copyTextToClipboard(activity!!, copyText)
+
+            Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
+        }
+
+
+
+
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?)
     {
         super.onActivityCreated(savedInstanceState)
-//        Log.d(TAG, "Rv 호출 전")
-//
-//        binding.includeFull.rvTimeLine.run {
-//            layoutManager = LinearLayoutManager(activity)
-//            adapter = TimeLineRvAdapter()
-//        }
-
-//        binding.includeFull.layoutHedaer.setOnTouchListener(object : View.OnTouchListener
-//        {
-//            override fun onTouch(v: View?, event: MotionEvent): Boolean
-//            {
-//                val action = event.action
-//                val curX = event.x
-//                val curY = event.y
-//                if (action == MotionEvent.ACTION_DOWN)
-//                {
-////                    println("손가락 눌렸음 : $curX,$curY")
-//                }
-//                else if (action == MotionEvent.ACTION_MOVE)
-//                {
-////                    println("손가락 움직임 : $curX,$curY")
-//                }
-//                else if (action == MotionEvent.ACTION_UP)
-//                {
-////                    println("손가락 떼졌음 : $curX,$curY")
-//                }
-//                return true
-//            }
-//        })
-//
-//        binding.includeFull.layoutBody.setOnTouchListener(object : View.OnTouchListener
-//        {
-//            override fun onTouch(v: View?, event: MotionEvent): Boolean
-//            {
-//                val action = event.action
-//                val curX = event.x
-//                val curY = event.y
-//                if (action == MotionEvent.ACTION_DOWN)
-//                {
-//                    binding.layoutDrawer.isEnabled = false
-////                    println("손가락 눌렸음 : $curX,$curY")
-//                }
-//                else if (action == MotionEvent.ACTION_MOVE)
-//                {
-//
-//                    binding.layoutDrawer.isEnabled = false
-////                    println("손가락 움직임 : $curX,$curY")
-//                }
-//                else if (action == MotionEvent.ACTION_UP)
-//                {
-//
-//                    binding.layoutDrawer.isEnabled = true
-////                    println("손가락 떼졌음 : $curX,$curY")
-//                }
-//                return true
-//            }
-//        })
 
         binding.layoutMain.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener
         {
@@ -198,12 +160,6 @@ class ParcelDetailView : Fragment()
         binding.lifecycleOwner = this
 
         binding.ivStatus.bringToFront()
-
-        Glide.with(binding.ivStatus.context)
-            .asGif()
-            .load(R.drawable.ic_parcel_in_transit)
-            .into(binding.ivStatus)
-
     }
 
     private fun setObserve()

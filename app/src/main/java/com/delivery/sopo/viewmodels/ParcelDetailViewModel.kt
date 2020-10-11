@@ -55,6 +55,7 @@ class ParcelDetailViewModel(
     // 상세 화면에서 사용할 데이터 객체
     var item = MutableLiveData<ParcelDetailItem?>()
 
+    var subTitle = MutableLiveData<String>()
     var statusBg = MutableLiveData<Int?>()
 
     // 상세 화면 종료
@@ -65,9 +66,10 @@ class ParcelDetailViewModel(
 
     init
     {
+        subTitle.value = ""
     }
 
-    // java.lang.ClassCastException: com.google.gson.internal.LinkedTreeMap cannot be cast to 해당 에러 발생해서 사용 불가
+    // todo java.lang.ClassCastException: com.google.gson.internal.LinkedTreeMap cannot be cast to 해당 에러 발생해서 사용 불가
     fun <T> changeJsonToObject(json: String): T
     {
         val gson = Gson()
@@ -120,43 +122,54 @@ class ParcelDetailViewModel(
 
                 val deliveryStatus = when (parcelEntity!!.deliveryStatus)
                 {
+
+                    DeliveryStatusConst.NOT_REGISTER ->
+                    {
+                        subTitle.postValue("상품이 아직 등록되지 않았습니다.")
+                        statusBg.postValue(0)
+                        "미등록"
+                    }
+
                     DeliveryStatusConst.INFORMATION_RECEIVED ->
                     {
-                        "미등록"
+                        subTitle.postValue("상품의 수송 정보를 접수하였습니다.")
+                        statusBg.postValue(0)
+                        "정보수송"
                     }
                     DeliveryStatusConst.AT_PICKUP ->
                     {
+                        subTitle.postValue("상품이 집화처리 되었습니다.")
+                        statusBg.postValue(0)
                         "상품픽업"
                     }
                     DeliveryStatusConst.IN_TRANSIT ->
                     {
+                        subTitle.postValue("상품이 출발했습니다.")
+                        statusBg.postValue(R.drawable.ic_parcel_in_transit)
                         "배송중"
                     }
                     DeliveryStatusConst.OUT_FOR_DELIVERRY ->
                     {
+                        subTitle.postValue("집배원이 배달을 시작했습니다.")
+                        statusBg.postValue(0)
                         "동네도착"
                     }
                     DeliveryStatusConst.DELIVERED ->
                     {
+                        subTitle.postValue("상품이 도착했습니다.")
+                        statusBg.postValue(0)
                         "배송완료"
                     }
                     else ->
                     {
+                        subTitle.postValue("상품을 조회할 수 없습니다.")
+                        statusBg.postValue(0)
+                        Log.d(TAG, parcelEntity!!.deliveryStatus)
                         "에러상태"
                     }
                 }
 
-                statusBg.postValue(
-                    when (parcelEntity!!.deliveryStatus)
-                    {
-                        DeliveryStatusConst.INFORMATION_RECEIVED -> R.drawable.ic_parcel_in_transit
-                        DeliveryStatusConst.AT_PICKUP -> R.drawable.ic_parcel_in_transit
-                        DeliveryStatusConst.IN_TRANSIT -> R.drawable.ic_parcel_in_transit
-                        DeliveryStatusConst.OUT_FOR_DELIVERRY -> R.drawable.ic_parcel_in_transit
-                        DeliveryStatusConst.DELIVERED -> R.drawable.ic_parcel_in_transit
-                        else -> R.drawable.ic_parcel_in_transit
-                    }
-                )
+//
                 // 배경 및 배송 상태 표시용
                 statusList.postValue(getDeliveryStatusIndicator(deliveryStatus = parcelEntity!!.deliveryStatus))
 
@@ -229,6 +242,10 @@ class ParcelDetailViewModel(
 
         when (deliveryStatus)
         {
+            DeliveryStatusConst.NOT_REGISTER ->
+            {
+
+            }
             DeliveryStatusConst.INFORMATION_RECEIVED ->
             {
                 _statusList[0].isCurrent = true

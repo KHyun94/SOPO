@@ -19,6 +19,7 @@
     </data>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/sv_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -178,6 +179,7 @@
 
                             <TextView
                                 style="@style/H3"
+                                android:id="@+id/tv_waybil_num"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
@@ -186,7 +188,7 @@
                                 android:textColor="@color/COLOR_GRAY_800" />
 
                             <ImageView
-                                android:id="@+id/iv_paste"
+                                android:id="@+id/iv_copy"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/ic_paste"

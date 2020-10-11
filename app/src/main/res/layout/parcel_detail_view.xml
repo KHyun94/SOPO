@@ -66,7 +66,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="42dp"
                     android:fontFamily="@font/spoqa_han_sans_regular"
-                    android:text="집배원이 배달을 시작했습니다."
+                    android:text="@{vm.subTitle}"
                     android:textColor="@color/COLOR_GRAY_800"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
@@ -77,6 +77,7 @@
                     android:layout_width="360dp"
                     android:layout_height="305dp"
                     android:layout_marginTop="60dp"
+                    setImageAsGif="@{vm.statusBg}"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

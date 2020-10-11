@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.models.entity.ParcelEntity
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import kotlinx.coroutines.CoroutineScope
@@ -13,6 +14,14 @@ import kotlinx.coroutines.withContext
 
 object ClipboardUtil
 {
+    fun copyTextToClipboard(con:Context, text : String)
+    {
+        val clipboard = con.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipData = ClipData.newPlainText("waybilNum", text)
+        clipboard.setPrimaryClip(clipData)
+    }
+
+
     // 20200829 최근 복사한 클립보드 내용 가져오기
     fun pasteClipboardText(con: Context, parcelImpl : ParcelRepoImpl): String
     {

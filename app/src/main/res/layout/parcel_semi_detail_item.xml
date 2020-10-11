@@ -95,14 +95,16 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="25dp"
             android:layout_marginBottom="31dp"
-            android:text="@{item.waybilNym}"
+            android:text="123456789123"
             android:textColor="@color/COLOR_GRAY_800"
             app:layout_constraintBaseline_toBaselineOf="@+id/tv_courier"
             app:layout_constraintLeft_toRightOf="@+id/tv_courier"
-            app:layout_constraintTop_toBottomOf="@id/tv_alias" />
+            app:layout_constraintTop_toBottomOf="@id/tv_alias"
+            app:layout_constraintRight_toLeftOf="@id/iv_copy"
+            />
 
         <ImageView
-            android:id="@+id/iv_paste"
+            android:id="@+id/iv_copy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="12dp"
@@ -110,7 +112,7 @@
             android:layout_marginBottom="31dp"
             android:background="@drawable/ic_paste"
             app:layout_constraintLeft_toRightOf="@id/tv_waybil_num"
-            app:layout_constraintTop_toBottomOf="@id/tv_alias" />
+            app:layout_constraintTop_toBottomOf="@id/tv_alias"/>
 
         <LinearLayout
             android:layout_width="match_parent"
