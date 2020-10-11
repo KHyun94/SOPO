@@ -12,14 +12,15 @@ import androidx.lifecycle.ViewModelProvider
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.MenuViewBinding
 import com.delivery.sopo.enums.MenuEnum
+import com.delivery.sopo.interfaces.OnMainBackPressListener
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.viewmodels.factory.MenuViewModelFactory
 import com.delivery.sopo.viewmodels.menus.MenuViewModel
+import com.delivery.sopo.views.MainView
 import kotlinx.android.synthetic.main.menu_view.view.*
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class MenuFragment : Fragment(){
@@ -33,6 +34,7 @@ class MenuFragment : Fragment(){
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     private lateinit var menuView: FragmentActivity
     private lateinit var binding: MenuViewBinding
+    private lateinit var parentView: MainView
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(
@@ -46,11 +48,25 @@ class MenuFragment : Fragment(){
         setListener()
 
         menuView = this.requireActivity()
+        parentView = activity as MainView
+        parentView.setOnBackPressListener(object : OnMainBackPressListener
+        {
+            override fun onBackPressed()
+            {
+                if(!menuVm.popView()){
+                    parentView.moveTaskToBack(true);                        // 태스크를 백그라운드로 이동
+                    parentView.finishAndRemoveTask();                        // 액티비티 종료 + 태스크 리스트에서 지우기
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                }
+            }
+        })
 
         lifecycle.addObserver(menuVm)
 
         return binding.root
     }
+
+
 
     private fun viewBinding() {
         binding.vm = menuVm

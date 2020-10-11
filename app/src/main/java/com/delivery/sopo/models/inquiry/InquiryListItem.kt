@@ -31,6 +31,10 @@ class InquiryListItem(
         } ?: " "
     }
 
+    fun getCompleteYearMonth(): String{
+        return "${completeTimeDate.get(Calendar.YEAR)}/${completeTimeDate.get(Calendar.MONTH)+1}"
+    }
+
     fun getCompleteDateTime(): String{
         return "${completeTimeDate.get(Calendar.YEAR)}/${completeTimeDate.get(Calendar.MONTH)+1}/${completeTimeDate.get(Calendar.DATE)} ${String.format("%02d", completeTimeDate.get(Calendar.HOUR_OF_DAY))}:${String.format("%02d", completeTimeDate.get(Calendar.MINUTE))}"
     }

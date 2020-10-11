@@ -221,7 +221,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:text="@{vm.cntOfCompleteListItem + ``}"
+                        android:text="@{vm.cntOfCompleteListItem == null ? `0` : vm.cntOfCompleteListItem+``}"
                         android:textColor="@color/MAIN_BLACK"
                         android:textSize="35sp"
                         android:letterSpacing="-0.02"

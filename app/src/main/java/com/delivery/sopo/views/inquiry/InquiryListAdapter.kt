@@ -183,22 +183,11 @@ class InquiryListAdapter(
                     DeliveryStatusEnum.out_for_delivery.code ->
                     {
                         holder.ongoingBinding.root.apply {
-                            Glide.with(this.context).asGif().load(R.drawable.start_delivery)
-                                .into(this.image_delivery_status)
-                            val gifMargin = LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                            )
-//                            gifMargin.setMargins(0,0,0,-SizeUtil.changeDpToPx(this.context, 8F))
+                            Glide.with(this.context).asGif().load(R.drawable.start_delivery).into(this.image_delivery_status)
+                            val gifMargin = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                             gifMargin.height = SizeUtil.changeDpToPx(this.context, 38F)
                             gifMargin.width = SizeUtil.changeDpToPx(this.context, 50F)
-
-//                            this.image_delivery_status.layoutParams.height = SizeUtil.changeDpToPx(this.context, 50F)
-//                            this.image_delivery_status.layoutParams.width = SizeUtil.changeDpToPx(this.context, 50F)
-//                            this.image_delivery_status.requestLayout()
                             this.image_delivery_status.layoutParams = gifMargin
-//                            this.image_delivery_status.requestLayout()
-
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_700)
                             this.tv_delivery_status.text = "배송출발"
                             this.tv_delivery_status.setTextColor(
@@ -342,8 +331,7 @@ class InquiryListAdapter(
         }
     }
 
-    fun getSelectedListData(): List<ParcelId>
-    {
+    fun getSelectedListData(): List<ParcelId> {
         return list.filter {
             it.isSelected
         }.map {
@@ -404,11 +392,18 @@ class InquiryListAdapter(
         notifyDataSetChanged()
     }
 
-    fun addItems(listItem: MutableList<InquiryListItem>)
-    {
-        if (listItem.size > 0)
-        {
+    fun addItems(listItem: MutableList<InquiryListItem>){
+
+        val oldListSize = list.size
+        if(listItem.size > 0){
             list.addAll(listItem)
+            list.sortByDescending { it.parcel.arrivalDte}
+
+//            for(newItem in listItem){
+//                val indexOfNewItem = list.indexOf(newItem)
+//                notifyItemChanged(indexOfNewItem)
+//            }
+//            notifyItemRangeChanged(oldListSize-1, listItem.size)
             notifyDataSetChanged()
         }
     }
@@ -446,12 +441,9 @@ class InquiryListAdapter(
         notifyDataSetChanged()
     }
 
-    override fun getItemCount(): Int
-    {
-        return when (itemType)
-        {
-            InquiryItemType.Soon ->
-            {
+    override fun getItemCount(): Int{
+        return when(itemType){
+            InquiryItemType.Soon -> {
                 list.let {
                     if (it.size > limitOfSoonListSize && !isMoreView)
                     {
@@ -473,5 +465,9 @@ class InquiryListAdapter(
     fun getListSize(): Int
     {
         return list.size
+    }
+
+    fun getList(): MutableList<InquiryListItem>{
+        return list
     }
 }
