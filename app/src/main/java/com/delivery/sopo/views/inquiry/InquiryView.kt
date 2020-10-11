@@ -178,8 +178,34 @@ class InquiryView: Fragment() {
         // 배송완료 리스트.
         inquiryVm.completeList.observe(this, Observer {list ->
 
-            list.sortByDescending { it.parcel.arrivalDte }
-            completeListAdapter.setDataList(list)
+            list.sortByDescending { it.parcel.arrivalDte}
+
+            val existingList = completeListAdapter.getList()
+
+            if(existingList.isNotEmpty() && list.isNotEmpty()){
+                Log.d(TAG, "!!!! completeListAdapter.getList().isNotEmpty() !!!!")
+                Log.d(TAG, "!!!! completeList`s regDt : ${existingList.first().getCompleteYearMonth()}")
+                Log.d(TAG, "!!!! list`s regDt : ${list.first().getCompleteYearMonth()}")
+
+                if(list.first().getCompleteYearMonth() != existingList.first().getCompleteYearMonth() || list.size < existingList.size){
+                    Log.d(TAG, "!!!! 완료일자가 다릅니다. !!!!")
+                    completeListAdapter.setDataList(list)
+                    Log.d(TAG, "!!!! After setDataList !!!!")
+                }
+            }
+
+            // 새로고침을 통해서 얻게된 새로운 데이터들을 업데이트해준다.
+            Log.d(TAG, "!!!! 기존 리스트 크기 : ${existingList.size} // 새로 받아온 리스트의 크기 : ${list.size}")
+            if(list.size > existingList.size){
+                // 기존의 데이터들을 제거해줘서 새로 업데이트해야할 아이템들만 남겨놓는다.
+                for (listItem in existingList){
+                    list.removeIf { it.parcel.parcelId.regDt == listItem.parcel.parcelId.regDt &&
+                                    it.parcel.parcelId.parcelUid == listItem.parcel.parcelId.parcelUid  }
+                }
+                Log.d(TAG, "!!!! 기존 데이터들을 모두 제거하고 난 이후의 업데이트 리스트 크기 : ${list.size}")
+                completeListAdapter.addItems(list)
+                Log.d(TAG, "!!!! 업데이트 데이터들을 어뎁터에 넣고 난 이후의 completeList의 크기 : ${completeListAdapter.getListSize()}")
+            }
         })
 
         // 현재 배송완료의 년월 데이터를 tv_spinner_month에 text 적용

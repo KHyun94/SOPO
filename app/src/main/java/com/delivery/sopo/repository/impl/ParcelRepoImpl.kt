@@ -73,6 +73,7 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
         appDatabase.parcelDao().insert(parcel)
     }
 
+
     suspend fun saveLocalCompleteParcels(parcelList: List<Parcel>) {
         appDatabase.parcelDao().insert(parcelList.map(ParcelMapper::parcelToParcelEntity))
     }

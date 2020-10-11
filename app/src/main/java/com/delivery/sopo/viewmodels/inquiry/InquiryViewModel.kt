@@ -30,8 +30,7 @@ import retrofit2.Response
 class InquiryViewModel(private val userRepo: UserRepo,
                        private val parcelRepoImpl: ParcelRepoImpl,
                        private val parcelManagementRepoImpl: ParcelManagementRepoImpl,
-                       private val timeCountRepoImpl: TimeCountRepoImpl
-) : ViewModel()
+                       private val timeCountRepoImpl: TimeCountRepoImpl) : ViewModel()
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     // 진행 중인 리스트 데이터
@@ -280,19 +279,20 @@ class InquiryViewModel(private val userRepo: UserRepo,
                 }
                 else{
                     remoteCompleteParcels.sortByDescending { it.arrivalDte } // 도착한 시간을 기준으로 내림차순으로 정렬
+                    val updateParcelList = mutableListOf<Parcel>() // list에 모았다가 한번에 업데이트
                     for(parcel in remoteCompleteParcels){
                         val localParcelById = parcelRepoImpl.getLocalParcelById(parcel.parcelId.regDt, parcel.parcelId.parcelUid)
+                        updateParcelList.add(parcel)
                         if(localParcelById == null){
-                            parcelRepoImpl.saveLocalOngoingParcel(ParcelMapper.parcelToParcelEntity(parcel))
                             parcelManagementRepoImpl.insertEntity(ParcelMapper.parcelToParcelManagementEntity(parcel).also { it.isNowVisible = 1 })
                         }
                         else{
-                            parcelRepoImpl.saveLocalOngoingParcel(ParcelMapper.parcelToParcelEntity(parcel))
                             parcelManagementRepoImpl.getEntity(parcel.parcelId.regDt, parcel.parcelId.parcelUid)?.let {entity ->
                                 parcelManagementRepoImpl.updateEntity(entity.also { it.isNowVisible = 1 })
                             }
                         }
                     }
+                    parcelRepoImpl.saveLocalOngoingParcels(updateParcelList)
                 }
             }
             _isLoading.postValue(false)
