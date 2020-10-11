@@ -22,7 +22,6 @@ class SOPOWorker(context: Context, private val params: WorkerParameters) :
     private val TAG = "LOG.SOPO"
 
     private val userRepo: UserRepo by inject()
-
     private val parcelRepoImpl: ParcelRepoImpl by inject()
 
     suspend fun requestRenewal()
@@ -40,6 +39,7 @@ class SOPOWorker(context: Context, private val params: WorkerParameters) :
                 {
                     override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
                     {
+                        Log.d("LOG.SOPO", "Fail!!!!!! BACK END!!!!!!!!!!!!!!!Service")
                     }
 
                     override fun onResponse(
@@ -47,24 +47,25 @@ class SOPOWorker(context: Context, private val params: WorkerParameters) :
                         response: Response<APIResult<String?>>
                     )
                     {
-                        val httpStatusCode = response.code()
-
-                        when (httpStatusCode)
-                        {
-                            200 ->
-                            {
-                                // 성공적인 조회
-                            }
-                            400 ->
-                            {
-
-                            }
-                            else ->
-                            {
-                                // 조회 실패
-
-                            }
-                        }
+                        Log.d("LOG.SOPO", "BACK END!!!!!!!!!!!!!!!Service")
+//                        val httpStatusCode = response.code()
+//
+//                        when (httpStatusCode)
+//                        {
+//                            200 ->
+//                            {
+//                                // 성공적인 조회
+//                            }
+//                            400 ->
+//                            {
+//
+//                            }
+//                            else ->
+//                            {
+//                                // 조회 실패
+//
+//                            }
+//                        }
 
                     }
                 })
@@ -80,14 +81,14 @@ class SOPOWorker(context: Context, private val params: WorkerParameters) :
     private suspend fun isEnrolledParcel(): Boolean
     {
         val cnt = parcelRepoImpl.getOnGoingDataCnt() ?: 0
-        return cnt < 0
+        Log.d(TAG, "등록된 소포의 갯수 => $cnt")
+        return cnt > 0
     }
 
 
     override suspend fun doWork(): Result
     {
-
-
+        requestRenewal()
         return Result.success()
     }
 

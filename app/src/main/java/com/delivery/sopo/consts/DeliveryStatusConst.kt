@@ -2,7 +2,7 @@ package com.delivery.sopo.consts
 
 object DeliveryStatusConst
 {
-
+    const val NOT_REGISTER = "NOT_REGISTER"
     const val INFORMATION_RECEIVED = "information_received" // 0.5. 전산상 등록 상태
     const val AT_PICKUP = "at_pickup" // 1. 상품 인수
     const val IN_TRANSIT = "in_transit" // 2. 배송 중

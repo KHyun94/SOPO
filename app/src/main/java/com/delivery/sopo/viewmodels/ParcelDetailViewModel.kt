@@ -1,8 +1,10 @@
 package com.delivery.sopo.viewmodels
 
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.delivery.sopo.R
 import com.delivery.sopo.consts.DeliveryStatusConst
 import com.delivery.sopo.models.APIResult
 import com.delivery.sopo.models.StatusItem
@@ -14,6 +16,7 @@ import com.delivery.sopo.networks.ParcelAPI
 import com.delivery.sopo.repository.impl.CourierRepolmpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.util.fun_util.SingleLiveEvent
 import com.delivery.sopo.views.adapter.TimeLineRvAdapter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -41,14 +44,50 @@ class ParcelDetailViewModel(
 
     // delivery status 리스트
     val statusList = MutableLiveData<MutableList<StatusItem>?>()
-    var parcelEntity: ParcelEntity? = null
-
     var adapter = MutableLiveData<TimeLineRvAdapter?>()
+
+    // Local or Remote Parcel Data를 저장하는 객체
+    var parcelEntity: ParcelEntity? = null
 
     // parcelEntity 중 inqueryResult를 객체화시키는 용도
     var parcelItem: ParcelItem? = null
 
+    // 상세 화면에서 사용할 데이터 객체
     var item = MutableLiveData<ParcelDetailItem?>()
+
+    var subTitle = MutableLiveData<String>()
+    var statusBg = MutableLiveData<Int?>()
+
+    // 상세 화면 종료
+    var isBack = SingleLiveEvent<Boolean>()
+
+    // 상세 화면 Full Down
+    var isDown = SingleLiveEvent<Boolean>()
+
+    init
+    {
+        subTitle.value = ""
+    }
+
+    // todo java.lang.ClassCastException: com.google.gson.internal.LinkedTreeMap cannot be cast to 해당 에러 발생해서 사용 불가
+    fun <T> changeJsonToObject(json: String): T
+    {
+        val gson = Gson()
+
+        val type = object : TypeToken<T>()
+        {}.type
+
+        val reader = gson.toJson(json)
+        val replaceStr = reader.replace("\\", "")
+        val subStr = replaceStr.substring(1, replaceStr.length - 1)
+
+        return gson.fromJson<T>(subStr, type)
+    }
+
+    fun initDetailItem()
+    {
+
+    }
 
     // 로컬에 저장된 택배 인포를 로드
     fun requestLocalParcel(parcelId: ParcelId)
@@ -56,23 +95,16 @@ class ParcelDetailViewModel(
         // 로컬 호출 동시에 서버에 택배 상태 업데이트 상태 체크
         requestRemoteParcel(parcelId = parcelId)
 
-        val _statusList = mutableListOf<StatusItem>(
-            StatusItem("상품픽업", false),
-            StatusItem("배송중", false),
-            StatusItem("동네도착", false),
-            StatusItem("배송완료", false)
-        )
-
-        var deliveryStatus = ""
-
         CoroutineScope(Dispatchers.Default).launch {
             withContext(Dispatchers.IO) {
 
+                // 로컬에 등록된 택배 정보를 불러온다.
                 parcelEntity = parcelRepoImpl.getLocalParcelById(
                     parcelUid = parcelId.parcelUid,
                     regDt = parcelId.regDt
                 )
 
+                // ParcelEntity 중 inqueryResult(json의 String화)를 ParcelItem으로 객체화
                 val gson = Gson()
 
                 val type = object : TypeToken<ParcelItem?>()
@@ -83,69 +115,102 @@ class ParcelDetailViewModel(
                 val subStr = replaceStr.substring(1, replaceStr.length - 1)
 
                 parcelItem = gson.fromJson<ParcelItem?>(subStr, type)
+                //----------------------------------------------------------------------------------
 
                 Log.d(TAG, "==>> ${parcelEntity!!.toString()}")
                 Log.d(TAG, "==>> ${parcelItem.toString()}")
 
-
-                Log.d(TAG, "Origin Time ${parcelItem!!.from!!.time!!}")
-                Log.d(TAG, "Revise Time ${changeDateFormat(parcelItem!!.from!!.time!!)}")
-
-
-                // delivery status view value setting
-                when (parcelEntity!!.deliveryStatus)
+                val deliveryStatus = when (parcelEntity!!.deliveryStatus)
                 {
+
+                    DeliveryStatusConst.NOT_REGISTER ->
+                    {
+                        subTitle.postValue("상품이 아직 등록되지 않았습니다.")
+                        statusBg.postValue(0)
+                        "미등록"
+                    }
+
                     DeliveryStatusConst.INFORMATION_RECEIVED ->
                     {
-                        _statusList[0].isCurrent = true
-                        deliveryStatus = _statusList[0].name
+                        subTitle.postValue("상품의 수송 정보를 접수하였습니다.")
+                        statusBg.postValue(0)
+                        "정보수송"
                     }
                     DeliveryStatusConst.AT_PICKUP ->
                     {
-                        _statusList[0].isCurrent = true
-                        deliveryStatus = _statusList[0].name
+                        subTitle.postValue("상품이 집화처리 되었습니다.")
+                        statusBg.postValue(0)
+                        "상품픽업"
                     }
                     DeliveryStatusConst.IN_TRANSIT ->
                     {
-                        _statusList[1].isCurrent = true
-                        deliveryStatus = _statusList[1].name
+                        subTitle.postValue("상품이 출발했습니다.")
+                        statusBg.postValue(R.drawable.ic_parcel_in_transit)
+                        "배송중"
                     }
                     DeliveryStatusConst.OUT_FOR_DELIVERRY ->
                     {
-                        _statusList[2].isCurrent = true
-                        deliveryStatus = _statusList[2].name
+                        subTitle.postValue("집배원이 배달을 시작했습니다.")
+                        statusBg.postValue(0)
+                        "동네도착"
                     }
                     DeliveryStatusConst.DELIVERED ->
                     {
-                        _statusList[3].isCurrent = true
-                        deliveryStatus = _statusList[3].name
+                        subTitle.postValue("상품이 도착했습니다.")
+                        statusBg.postValue(0)
+                        "배송완료"
                     }
                     else ->
                     {
-                        // 못가져오거나 미등록 상태
+                        subTitle.postValue("상품을 조회할 수 없습니다.")
+                        statusBg.postValue(0)
+                        Log.d(TAG, parcelEntity!!.deliveryStatus)
+                        "에러상태"
                     }
                 }
 
-                statusList.postValue(_statusList)
+//
+                // 배경 및 배송 상태 표시용
+                statusList.postValue(getDeliveryStatusIndicator(deliveryStatus = parcelEntity!!.deliveryStatus))
 
+                // 택배 정보의 별칭
                 val alias =
-                    if (parcelEntity!!.parcelAlias == "default") "${parcelItem!!.from!!.name}이 보낸 택배" else parcelEntity!!.parcelAlias
+                    if (parcelEntity!!.parcelAlias != "default")
+                    {
+                        parcelEntity!!.parcelAlias
+                    }
+                    else
+                    {
+                        if (parcelItem != null)
+                            "${parcelItem!!.from!!.name}이 보낸 택배"
+                        else
+                            "택배의 별칭을 등록해주세요."
+                    }
+
+                // 택배사 코드를 ROOM에서 택배명으로 검색
                 val courier = courierRepolmpl.getWithCode(parcelEntity!!.carrier)
-                val progressList = mutableListOf<Progress?>()
 
-                for (item in parcelItem!!.progresses)
+                var progressList: MutableList<Progress?> = mutableListOf()
+
+                // 프로그레스(택배의 경로 내용이 있을 때
+                if (parcelItem != null)
                 {
-                    val date = changeDateFormat(item!!.time!!)
-                    val spliteDate = date!!.split(" ")
-                    val dateObj = Date(spliteDate[0], spliteDate[1])
-                    val progress = Progress(
-                        date = dateObj,
-                        location = item.location!!.name,
-                        description = item.description,
-                        status = item.status
-                    )
+                    progressList = mutableListOf<Progress?>()
 
-                    progressList.add(progress)
+                    for (item in parcelItem!!.progresses)
+                    {
+                        val date = changeDateFormat(item!!.time!!)
+                        val spliteDate = date!!.split(" ")
+                        val dateObj = Date(spliteDate[0], spliteDate[1])
+                        val progress = Progress(
+                            date = dateObj,
+                            location = item.location!!.name,
+                            description = item.description,
+                            status = item.status
+                        )
+
+                        progressList.add(progress)
+                    }
                 }
 
                 item.postValue(
@@ -165,6 +230,50 @@ class ParcelDetailViewModel(
 
     }
 
+    // 택배의 이동 상태(indicator)의 값을 리스트 형식으로 반환
+    fun getDeliveryStatusIndicator(deliveryStatus: String): MutableList<StatusItem>
+    {
+        val _statusList = mutableListOf<StatusItem>(
+            StatusItem("상품픽업", false),
+            StatusItem("배송중", false),
+            StatusItem("동네도착", false),
+            StatusItem("배송완료", false)
+        )
+
+        when (deliveryStatus)
+        {
+            DeliveryStatusConst.NOT_REGISTER ->
+            {
+
+            }
+            DeliveryStatusConst.INFORMATION_RECEIVED ->
+            {
+                _statusList[0].isCurrent = true
+            }
+            DeliveryStatusConst.AT_PICKUP ->
+            {
+                _statusList[0].isCurrent = true
+            }
+            DeliveryStatusConst.IN_TRANSIT ->
+            {
+                _statusList[1].isCurrent = true
+            }
+            DeliveryStatusConst.OUT_FOR_DELIVERRY ->
+            {
+                _statusList[2].isCurrent = true
+            }
+            DeliveryStatusConst.DELIVERED ->
+            {
+                _statusList[3].isCurrent = true
+            }
+            else ->
+            {
+                // 못가져오거나 미등록 상태
+            }
+        }
+
+        return _statusList
+    }
 
     // dateTime => yyyy-MM-dd'T'HH"mm:ss.SSS'Z -> yyyy-MM-dd HHmm
     fun changeDateFormat(dateTime: String): String?
@@ -190,7 +299,7 @@ class ParcelDetailViewModel(
     {
         NetworkManager.privateRetro.create(ParcelAPI::class.java)
             .requestRenewalOneParcel(
-                email = "gnltlgnlrl94@naver.com",
+                email = userRepo.getEmail(),
                 parcelUid = parcelId.parcelUid,
                 regDt = parcelId.regDt
             ).enqueue(object : Callback<APIResult<Parcel?>>
@@ -215,7 +324,6 @@ class ParcelDetailViewModel(
 
             })
 
-//            .requestRenewalOneParcel(email = userRepo.getEmail(), parcelUid = parcelUId, regDt = regDt)
     }
 
     private fun setAdapter(list: List<Progress?>)
@@ -223,5 +331,18 @@ class ParcelDetailViewModel(
         val timeLineRvAdapter = TimeLineRvAdapter()
         timeLineRvAdapter.setItemList(list as MutableList<Progress?>)
         adapter.postValue(timeLineRvAdapter)
+    }
+
+    fun onBackClicked()
+    {
+        isBack.value = true
+    }
+
+    fun onDownClicked(): View.OnClickListener
+    {
+        return View.OnClickListener()
+        {
+            isDown.value = true
+        }
     }
 }

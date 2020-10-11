@@ -6,6 +6,7 @@ import com.delivery.sopo.database.shared.SharedPref
 import com.delivery.sopo.database.shared.SharedPrefHelper
 import com.delivery.sopo.repository.impl.*
 import com.delivery.sopo.viewmodels.*
+import com.delivery.sopo.viewmodels.inquiry.InquiryMainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.menus.*
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
@@ -62,7 +63,7 @@ val appModule = module {
     viewModel { SignUpViewModel() }
     viewModel { LoginSelectViewModel() }
     viewModel { MyMenuViewModel(get()) }
-    viewModel { MainViewModel(get(),get()) }
+    viewModel { MainViewModel(get(),get(), get()) }
     viewModel { LockScreenViewModel(get(),get()) }
     viewModel { SettingViewModel(get(),get()) }
     viewModel { NoticeViewModel()}
@@ -72,7 +73,7 @@ val appModule = module {
     viewModel { InquiryViewModel(get(), get(), get(), get()) }
     viewModel { MenuViewModel(get(), get(), get()) }
 
-
+    viewModel { InquiryMainViewModel() }
     viewModel { ParcelDetailViewModel(get(), get(), get()) }
 
     viewModel { RegisterStep1ViewModel() }

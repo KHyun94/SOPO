@@ -3,8 +3,13 @@ package com.delivery.sopo
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.di.appModule
+import com.delivery.sopo.services.work.SOPOWorker
 import com.delivery.sopo.thirdpartyapi.KakaoSDKAdapter
 import com.delivery.sopo.util.fun_util.OtherUtil
 import com.google.firebase.FirebaseApp
@@ -15,8 +20,10 @@ import com.kakao.auth.Session
 import com.kakao.auth.authorization.accesstoken.AccessToken
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import java.util.concurrent.TimeUnit
 
-class SOPOApp : Application() {
+class SOPOApp : Application()
+{
 
     val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
@@ -24,7 +31,8 @@ class SOPOApp : Application() {
     var accessToken: AccessToken? = null
 
 
-    override fun onCreate() {
+    override fun onCreate()
+    {
         super.onCreate()
 
         INSTANCE = this@SOPOApp
@@ -34,7 +42,7 @@ class SOPOApp : Application() {
             modules(appModule)
         }
 
-        Log.d(TAG, "${ OtherUtil.getDeviceID(SOPOApp.INSTANCE)}")
+        Log.d(TAG, "${OtherUtil.getDeviceID(SOPOApp.INSTANCE)}")
 
 
         //Firebase Init
@@ -50,9 +58,12 @@ class SOPOApp : Application() {
         KakaoSDK.init(kakaoSDKAdapter)
 
         /** 카카오 토큰 만료시 갱신을 시켜준다**/
-        if (Session.getCurrentSession().isOpenable()) {
+        if (Session.getCurrentSession().isOpenable())
+        {
             Session.getCurrentSession().checkAndImplicitOpen()
-        } else {
+        }
+        else
+        {
             accessToken = Session.getCurrentSession().tokenInfo
         }
 
@@ -62,11 +73,31 @@ class SOPOApp : Application() {
         }
 
         RoomActivate.initCourierDB(this)
+
+       checkWorkManager()
+    }
+
+    private fun checkWorkManager()
+    {
+        val workConstraint = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED).build()
+
+        val workRequest = PeriodicWorkRequestBuilder<SOPOWorker>(15, TimeUnit.MINUTES)
+            .setConstraints(workConstraint).build()
+
+
+        val workerManager = WorkManager.getInstance(this)
+
+        val workerState = workerManager.getWorkInfoByIdLiveData(workRequest.id)
+
+        workerManager.enqueue(workRequest)
+
+//        val statusLiveData = workerManager
     }
 
     companion object
     {
-        lateinit var INSTANCE : Context
-        lateinit var auth : FirebaseAuth
+        lateinit var INSTANCE: Context
+        lateinit var auth: FirebaseAuth
     }
 }

@@ -8,18 +8,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
+import com.delivery.sopo.interfaces.OnMainBackPressListener
 import com.delivery.sopo.models.StatusItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.util.fun_util.ClipboardUtil
 import com.delivery.sopo.util.fun_util.SizeUtil
+import com.delivery.sopo.util.ui_util.FragmentManager
 import com.delivery.sopo.viewmodels.ParcelDetailViewModel
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
@@ -30,6 +35,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class ParcelDetailView : Fragment()
 {
     val TAG = "LOG.SOPO"
+
+    private lateinit var parentView: MainView
 
     private val userRepo: UserRepo by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
@@ -63,11 +70,40 @@ class ParcelDetailView : Fragment()
         bindViewSetting(inflater = inflater, container = container)
         setObserve()
 
-        parcelUId = "7dbaed4a-9231-4cb4-ad77-ce5c68069a79"
-        regDt = "2020-10-04"
+//        binding.includeConfirmMsg.bringToFront()
 
         // 택배 info LiveData 데이터 입력
         binding.vm!!.parcelId.value = ParcelId(regDt!!, parcelUId!!)
+
+        parentView = activity as MainView
+
+        parentView.setOnBackPressListener(object : OnMainBackPressListener
+        {
+            override fun onBackPressed()
+            {
+                Log.d("LOG.SOPO", "OnBackPressed")
+
+                FragmentManager.remove(activity!!)
+            }
+
+        })
+
+        binding.includeSemi.ivCopy.setOnClickListener {
+            val copyText = binding.includeSemi.tvWaybilNum.text.toString()
+            ClipboardUtil.copyTextToClipboard(activity!!, copyText)
+
+            Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
+        }
+
+        binding.includeFull.ivCopy.setOnClickListener {
+            val copyText = binding.includeFull.tvWaybilNum.text.toString()
+            ClipboardUtil.copyTextToClipboard(activity!!, copyText)
+
+            Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
+        }
+
+
+
 
         return binding.root
     }
@@ -75,63 +111,6 @@ class ParcelDetailView : Fragment()
     override fun onActivityCreated(savedInstanceState: Bundle?)
     {
         super.onActivityCreated(savedInstanceState)
-//        Log.d(TAG, "Rv 호출 전")
-//
-//        binding.includeFull.rvTimeLine.run {
-//            layoutManager = LinearLayoutManager(activity)
-//            adapter = TimeLineRvAdapter()
-//        }
-
-//        binding.includeFull.layoutHedaer.setOnTouchListener(object : View.OnTouchListener
-//        {
-//            override fun onTouch(v: View?, event: MotionEvent): Boolean
-//            {
-//                val action = event.action
-//                val curX = event.x
-//                val curY = event.y
-//                if (action == MotionEvent.ACTION_DOWN)
-//                {
-////                    println("손가락 눌렸음 : $curX,$curY")
-//                }
-//                else if (action == MotionEvent.ACTION_MOVE)
-//                {
-////                    println("손가락 움직임 : $curX,$curY")
-//                }
-//                else if (action == MotionEvent.ACTION_UP)
-//                {
-////                    println("손가락 떼졌음 : $curX,$curY")
-//                }
-//                return true
-//            }
-//        })
-//
-//        binding.includeFull.layoutBody.setOnTouchListener(object : View.OnTouchListener
-//        {
-//            override fun onTouch(v: View?, event: MotionEvent): Boolean
-//            {
-//                val action = event.action
-//                val curX = event.x
-//                val curY = event.y
-//                if (action == MotionEvent.ACTION_DOWN)
-//                {
-//                    binding.layoutDrawer.isEnabled = false
-////                    println("손가락 눌렸음 : $curX,$curY")
-//                }
-//                else if (action == MotionEvent.ACTION_MOVE)
-//                {
-//
-//                    binding.layoutDrawer.isEnabled = false
-////                    println("손가락 움직임 : $curX,$curY")
-//                }
-//                else if (action == MotionEvent.ACTION_UP)
-//                {
-//
-//                    binding.layoutDrawer.isEnabled = true
-////                    println("손가락 떼졌음 : $curX,$curY")
-//                }
-//                return true
-//            }
-//        })
 
         binding.layoutMain.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener
         {
@@ -179,6 +158,8 @@ class ParcelDetailView : Fragment()
         binding = ParcelDetailViewBinding.inflate(inflater, container, false)
         binding.vm = vm
         binding.lifecycleOwner = this
+
+        binding.ivStatus.bringToFront()
     }
 
     private fun setObserve()
@@ -211,6 +192,29 @@ class ParcelDetailView : Fragment()
             }
         })
 
+        binding.vm!!.isBack.observe(this, Observer {
+
+            if (it != null)
+            {
+                if (it)
+                {
+                    FragmentManager.remove(activity!!)
+                    binding.vm!!.isBack.call()
+                }
+            }
+
+        })
+
+        binding.vm!!.isDown.observe(this, Observer {
+            if (it != null)
+            {
+                if (it)
+                {
+                    binding.layoutMain.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+                    binding.vm!!.isDown.call()
+                }
+            }
+        })
     }
 
     // 동적으로 indicator view 생성

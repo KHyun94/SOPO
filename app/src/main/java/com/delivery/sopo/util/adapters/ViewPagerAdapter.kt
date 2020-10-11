@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.views.inquiry.InquiryMainFrame
 import com.delivery.sopo.views.inquiry.InquiryView
 import com.delivery.sopo.views.menus.MenuFragment
 import com.delivery.sopo.views.registers.RegisterMainFrame
@@ -26,7 +27,7 @@ class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
     init
     {
         tab1stFragment = RegisterMainFrame()
-        tab2ndFragment = InquiryView()
+        tab2ndFragment = InquiryMainFrame()
         tab3rdFragment = MenuFragment()
 
         currentFragment = tab1stFragment

@@ -72,6 +72,10 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         tabLayoutSetting()
     }
 
+    private fun setCurrentTab(){
+
+    }
+
     private fun tabSetting(v: View)
     {
         // layout을 dynamic 처리해서 넣도록 수정
@@ -223,12 +227,22 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                 ).show(supportFragmentManager, "tag")
             }
         })
+
+        binding.vm!!.registeredParcelCnt.observe(this, Observer {
+            if(it > 0)
+            {
+                binding.vpMain.setCurrentItem(1, false)
+            }
+            else
+            {
+                binding.vpMain.setCurrentItem(0, false)
+            }
+        })
     }
 
     override fun onBackPressed()
     {
         onMainBackPressListener!!.onBackPressed()
-//        super.onBackPressed()
     }
 
     fun onCompleteRegister()
