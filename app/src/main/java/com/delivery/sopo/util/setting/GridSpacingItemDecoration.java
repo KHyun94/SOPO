@@ -1,4 +1,4 @@
-package com.delivery.sopo.util;
+package com.delivery.sopo.util.setting;
 
 import android.graphics.Rect;
 import android.view.View;

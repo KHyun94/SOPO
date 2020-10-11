@@ -2,6 +2,7 @@ package com.delivery.sopo.util;
 
 import android.content.Context;
 
+// todo gy SizeUtil과 중복되는 기능을 가지고 있으니 수정 후 삭제 바람
 public class MyUtils {
 
     public static int dip2px(Context context, float dipValue){

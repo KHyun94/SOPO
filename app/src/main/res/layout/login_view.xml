@@ -10,7 +10,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.LoginViewModel" />
+            type="com.delivery.sopo.viewmodels.login.LoginViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

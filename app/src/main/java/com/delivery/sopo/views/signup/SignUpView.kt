@@ -9,7 +9,7 @@ import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.databinding.SignUpViewBinding
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
-import com.delivery.sopo.viewmodels.SignUpViewModel
+import com.delivery.sopo.viewmodels.signup.SignUpViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SignUpView : BasicView<SignUpViewBinding>(R.layout.sign_up_view)

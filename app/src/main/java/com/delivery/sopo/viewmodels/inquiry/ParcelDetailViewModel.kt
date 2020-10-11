@@ -1,4 +1,4 @@
-package com.delivery.sopo.viewmodels
+package com.delivery.sopo.viewmodels.inquiry
 
 import android.util.Log
 import android.view.View
@@ -7,16 +7,16 @@ import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.DeliveryStatusConst
 import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.models.StatusItem
 import com.delivery.sopo.database.room.entity.ParcelEntity
+import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.parcel.*
 import com.delivery.sopo.models.parcel.Date
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.repository.impl.CourierRepolmpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.repository.shared.UserRepo
-import com.delivery.sopo.util.SingleLiveEvent
+import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.views.adapter.TimeLineRvAdapter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -32,7 +32,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class ParcelDetailViewModel(
-    private val userRepo: UserRepo,
+    private val userRepoImpl: UserRepoImpl,
     private val courierRepolmpl: CourierRepolmpl,
     private val parcelRepoImpl: ParcelRepoImpl
 ) : ViewModel()
@@ -43,7 +43,7 @@ class ParcelDetailViewModel(
     val parcelId = MutableLiveData<ParcelId?>()
 
     // delivery status 리스트
-    val statusList = MutableLiveData<MutableList<StatusItem>?>()
+    val statusList = MutableLiveData<MutableList<SelectItem<String>>?>()
     var adapter = MutableLiveData<TimeLineRvAdapter?>()
 
     // Local or Remote Parcel Data를 저장하는 객체
@@ -231,13 +231,13 @@ class ParcelDetailViewModel(
     }
 
     // 택배의 이동 상태(indicator)의 값을 리스트 형식으로 반환
-    fun getDeliveryStatusIndicator(deliveryStatus: String): MutableList<StatusItem>
+    fun getDeliveryStatusIndicator(deliveryStatus: String): MutableList<SelectItem<String>>
     {
-        val _statusList = mutableListOf<StatusItem>(
-            StatusItem("상품픽업", false),
-            StatusItem("배송중", false),
-            StatusItem("동네도착", false),
-            StatusItem("배송완료", false)
+        val _statusList = mutableListOf<SelectItem<String>>(
+            SelectItem("상품픽업", false),
+            SelectItem("배송중", false),
+            SelectItem("동네도착", false),
+            SelectItem("배송완료", false)
         )
 
         when (deliveryStatus)
@@ -248,23 +248,23 @@ class ParcelDetailViewModel(
             }
             DeliveryStatusConst.INFORMATION_RECEIVED ->
             {
-                _statusList[0].isCurrent = true
+                _statusList[0].isSelect = true
             }
             DeliveryStatusConst.AT_PICKUP ->
             {
-                _statusList[0].isCurrent = true
+                _statusList[0].isSelect = true
             }
             DeliveryStatusConst.IN_TRANSIT ->
             {
-                _statusList[1].isCurrent = true
+                _statusList[1].isSelect = true
             }
             DeliveryStatusConst.OUT_FOR_DELIVERRY ->
             {
-                _statusList[2].isCurrent = true
+                _statusList[2].isSelect = true
             }
             DeliveryStatusConst.DELIVERED ->
             {
-                _statusList[3].isCurrent = true
+                _statusList[3].isSelect = true
             }
             else ->
             {
@@ -299,7 +299,7 @@ class ParcelDetailViewModel(
     {
         NetworkManager.privateRetro.create(ParcelAPI::class.java)
             .requestRenewalOneParcel(
-                email = userRepo.getEmail(),
+                email = userRepoImpl.getEmail(),
                 parcelUid = parcelId.parcelUid,
                 regDt = parcelId.regDt
             ).enqueue(object : Callback<APIResult<Parcel?>>

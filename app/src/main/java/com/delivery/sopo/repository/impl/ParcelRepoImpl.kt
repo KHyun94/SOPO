@@ -11,27 +11,27 @@ import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.repository.ParcelRepository
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.interfaces.ParcelRepository
 import com.delivery.sopo.util.TimeUtil
 
-class ParcelRepoImpl(private val userRepo: UserRepo,
-                     private val appDatabase: AppDatabase): ParcelRepository
+class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
+                     private val appDatabase: AppDatabase):
+    ParcelRepository
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
-    override suspend fun getRemoteOngoingParcels(): MutableList<Parcel>? = NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd()).getParcelsOngoing(email = userRepo.getEmail()).data
+    override suspend fun getRemoteOngoingParcels(): MutableList<Parcel>? = NetworkManager.getPrivateParcelAPI(userRepoImpl.getEmail(), userRepoImpl.getApiPwd()).getParcelsOngoing(email = userRepoImpl.getEmail()).data
     override suspend fun getRemoteOngoingParcel(regDt: String, parcelUid: String): Parcel? = NetworkManager
-                                                            .getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
-                                                            .getParcel( email = userRepo.getEmail(),
+                                                            .getPrivateParcelAPI(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
+                                                            .getParcel( email = userRepoImpl.getEmail(),
                                                                         regDt = regDt,
                                                                         parcelUid = parcelUid).data
 
-    override suspend fun getRemoteMonthList(): MutableList<TimeCountDTO>? = NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd()).getMonthList(email = userRepo.getEmail()).data
+    override suspend fun getRemoteMonthList(): MutableList<TimeCountDTO>? = NetworkManager.getPrivateParcelAPI(userRepoImpl.getEmail(), userRepoImpl.getApiPwd()).getMonthList(email = userRepoImpl.getEmail()).data
 
     override suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<Parcel>? = NetworkManager
-                                                                                                        .getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
-                                                                                                        .getParcelsComplete(email = userRepo.getEmail(), page = page, inquiryDate = inquiryDate).data
+                                                                                                        .getPrivateParcelAPI(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
+                                                                                                        .getParcelsComplete(email = userRepoImpl.getEmail(), page = page, inquiryDate = inquiryDate).data
 
     override suspend fun getLocalParcelById(regDt: String, parcelUid: String): ParcelEntity? {
         return appDatabase.parcelDao().getById(regDt,parcelUid)
@@ -91,7 +91,7 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
     override suspend fun deleteRemoteParcels(): APIResult<String?>? {
         val beDeletedData = appDatabase.parcelDao().getBeDeletedData()
         return if(beDeletedData.isNotEmpty()){
-            NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd()).deleteParcels(email = userRepo.getEmail(),
+            NetworkManager.getPrivateParcelAPI(userRepoImpl.getEmail(), userRepoImpl.getApiPwd()).deleteParcels(email = userRepoImpl.getEmail(),
                 parcelIds = DeleteParcelsDTO(beDeletedData.map(ParcelMapper::parcelEntityToParcelId) as MutableList<ParcelId>)
             )
         }

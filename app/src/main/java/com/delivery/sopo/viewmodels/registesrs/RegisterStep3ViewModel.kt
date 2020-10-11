@@ -10,23 +10,24 @@ import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.CodeUtil
-import com.delivery.sopo.util.SingleLiveEvent
+import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class RegisterStep3ViewModel(
-    private val userRepo: UserRepo
+    private val userRepoImpl: UserRepoImpl
 ) : ViewModel()
 {
     var waybilNum = MutableLiveData<String>()
     var courier = MutableLiveData<CourierItem>()
     var alias = MutableLiveData<String>()
 
-    var validate = SingleLiveEvent<ValidateResult<Any?>>()
+    var validate =
+        SingleLiveEvent<ValidateResult<Any?>>()
 
     val isRevise = SingleLiveEvent<Boolean>()
 
@@ -46,7 +47,7 @@ class RegisterStep3ViewModel(
         NetworkManager.privateRetro
             .create(ParcelAPI::class.java)
             .registerParcel(
-                email = userRepo.getEmail(),
+                email = userRepoImpl.getEmail(),
                 parcelAlias = alias.value ?: "Default",
                 trackCompany = courier.value!!.courierCode,
                 trackNum = waybilNum.value!!

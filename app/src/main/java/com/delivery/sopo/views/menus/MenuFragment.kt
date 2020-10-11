@@ -15,7 +15,7 @@ import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.viewmodels.factory.MenuViewModelFactory
 import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import com.delivery.sopo.views.main.MainView
@@ -25,11 +25,11 @@ import org.koin.android.ext.android.inject
 
 class MenuFragment : Fragment(){
 
-    private val userRepo: UserRepo by inject()
+    private val userRepoImpl: UserRepoImpl by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
     private val timeCountRepoImpl: TimeCountRepoImpl by inject()
     private val menuVm: MenuViewModel by lazy {
-        ViewModelProvider(requireActivity(), MenuViewModelFactory(userRepo, parcelRepoImpl, timeCountRepoImpl)).get(MenuViewModel::class.java)
+        ViewModelProvider(requireActivity(), MenuViewModelFactory(userRepoImpl, parcelRepoImpl, timeCountRepoImpl)).get(MenuViewModel::class.java)
     }
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     private lateinit var menuView: FragmentActivity

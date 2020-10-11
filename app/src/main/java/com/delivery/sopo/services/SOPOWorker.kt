@@ -8,7 +8,7 @@ import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import retrofit2.Call
@@ -21,12 +21,12 @@ class SOPOWorker(context: Context, private val params: WorkerParameters) :
 {
     private val TAG = "LOG.SOPO"
 
-    private val userRepo: UserRepo by inject()
+    private val userRepoImpl : UserRepoImpl by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
 
     suspend fun requestRenewal()
     {
-        val email = userRepo.getEmail()
+        val email = userRepoImpl.getEmail()
 
         if (isEnrolledParcel())
         {

@@ -16,15 +16,15 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
-import com.delivery.sopo.models.StatusItem
+import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.viewmodels.ParcelDetailViewModel
+import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.views.main.MainView
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
@@ -38,7 +38,7 @@ class ParcelDetailView : Fragment()
 
     private lateinit var parentView: MainView
 
-    private val userRepo: UserRepo by inject()
+    private val userRepoImpl : UserRepoImpl by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
 
     lateinit var binding: ParcelDetailViewBinding
@@ -51,7 +51,7 @@ class ParcelDetailView : Fragment()
     {
         super.onCreate(savedInstanceState)
 
-        NetworkManager.initPrivateApi(userRepo.getEmail(), userRepo.getApiPwd())
+        NetworkManager.initPrivateApi(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
 
         if (arguments != null)
         {
@@ -222,7 +222,7 @@ class ParcelDetailView : Fragment()
         topView: View?,
         bottomView: View?,
         baseLayout: LinearLayout,
-        list: List<StatusItem>
+        list: List<SelectItem<String>>
     )
     {
         val inflater =
@@ -248,7 +248,7 @@ class ParcelDetailView : Fragment()
             itemBinding.layoutMain.layoutParams = linearParams
 
             // 배송 상태 현재 step의 image view의 세팅을 변경
-            if (item.isCurrent)
+            if (item.isSelect)
             {
                 val ivParam = LinearLayout.LayoutParams(
                     SizeUtil.changeDpToPx(activity!!, 30.0f),

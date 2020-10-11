@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.SplashViewModel" />
+            type="com.delivery.sopo.viewmodels.splash.SplashViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

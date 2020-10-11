@@ -4,10 +4,11 @@ import androidx.lifecycle.LiveData
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.entity.ParcelManagementEntity
 import com.delivery.sopo.models.parcel.ParcelId
-import com.delivery.sopo.repository.ParcelManagementRepository
+import com.delivery.sopo.repository.interfaces.ParcelManagementRepository
 import com.delivery.sopo.util.TimeUtil
 
-class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelManagementRepository
+class ParcelManagementRepoImpl(private val appDatabase: AppDatabase):
+    ParcelManagementRepository
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     override fun getIsDeleteCntLiveData(): LiveData<Int> {

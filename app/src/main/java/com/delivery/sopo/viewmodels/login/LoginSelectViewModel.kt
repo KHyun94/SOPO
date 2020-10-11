@@ -1,4 +1,4 @@
-package com.delivery.sopo.viewmodels
+package com.delivery.sopo.viewmodels.login
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData

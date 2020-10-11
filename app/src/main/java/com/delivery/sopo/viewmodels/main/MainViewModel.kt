@@ -1,4 +1,4 @@
-package com.delivery.sopo.viewmodels
+package com.delivery.sopo.viewmodels.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,13 +8,13 @@ import com.delivery.sopo.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
 class MainViewModel(
-    private val userRepo: UserRepo,
+    private val userRepoImpl: UserRepoImpl,
     private val parcelRepoImpl: ParcelRepoImpl,
     private val appPasswordRepo: AppPasswordRepoImpl
 ) : ViewModel()
@@ -53,8 +53,8 @@ class MainViewModel(
     // network private api account setting. if it failed, try to logout and finish
     private fun setPrivateUserAccount()
     {
-        if(userRepo.getStatus() == 1)
-            NetworkManager.initPrivateApi(userRepo.getEmail(), userRepo.getApiPwd())
+        if(userRepoImpl.getStatus() == 1)
+            NetworkManager.initPrivateApi(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
         else
             errorMsg.value = "로그인이 비정상적으로 이루어졌습니다.\n다시 로그인해주시길 바랍니다."
     }

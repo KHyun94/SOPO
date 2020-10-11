@@ -18,11 +18,11 @@ import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.LoginResult
 import com.delivery.sopo.networks.api.LoginAPI
 import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.views.dialog.PermissionDialog
-import com.delivery.sopo.viewmodels.SplashViewModel
+import com.delivery.sopo.viewmodels.splash.SplashViewModel
 import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.intro.IntroView
 import com.tbruyelle.rxpermissions2.RxPermissions
@@ -36,7 +36,7 @@ class SplashView : BasicView<SplashViewBinding>(
     layoutRes = R.layout.splash_view
 )
 {
-    private val userRepo: UserRepo by inject()
+    private val userRepoImpl: UserRepoImpl by inject()
 
     private val splashVM: SplashViewModel by viewModel()
     lateinit var rxPermission: RxPermissions
@@ -119,16 +119,16 @@ class SplashView : BasicView<SplashViewBinding>(
 
     fun requestAutoLogin()
     {
-        NetworkManager.initPrivateApi(userRepo.getEmail(), userRepo.getApiPwd())
+        NetworkManager.initPrivateApi(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
 
         val firebaseUser = SOPOApp.auth.currentUser
 
         NetworkManager.privateRetro.create(LoginAPI::class.java)
             .requestAutoLogin(
                 OtherUtil.getDeviceID(SOPOApp.INSTANCE),
-                userRepo.getJoinType(),
+                userRepoImpl.getJoinType(),
                 firebaseUser?.uid!!,
-                userRepo.getSNSUId()
+                userRepoImpl.getSNSUId()
             ).enqueue(object : Callback<APIResult<LoginResult?>>
             {
                 override fun onFailure(call: Call<APIResult<LoginResult?>>, t: Throwable)

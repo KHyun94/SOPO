@@ -17,7 +17,7 @@ import com.delivery.sopo.extentions.launchActivitiy
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.viewmodels.factory.InquiryViewModelFactory
 import com.delivery.sopo.viewmodels.factory.MenuViewModelFactory
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
@@ -34,11 +34,11 @@ class SettingFragment : Fragment(){
     private val settingVM: SettingViewModel by viewModel()
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     private lateinit var binding: FragmentSettingBinding
-    private val userRepo: UserRepo by inject()
+    private val userRepoImpl: UserRepoImpl by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
     private val timeCountRepoImpl: TimeCountRepoImpl by inject()
     private val menuVm: MenuViewModel by lazy {
-        ViewModelProvider(requireActivity(), MenuViewModelFactory(userRepo, parcelRepoImpl, timeCountRepoImpl)).get(MenuViewModel::class.java)
+        ViewModelProvider(requireActivity(), MenuViewModelFactory(userRepoImpl, parcelRepoImpl, timeCountRepoImpl)).get(MenuViewModel::class.java)
     }
 
     @SuppressLint("SourceLockedOrientationActivity")

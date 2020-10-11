@@ -1,4 +1,4 @@
-package com.delivery.sopo.viewmodels
+package com.delivery.sopo.viewmodels.signup
 
 import android.os.Bundle
 import android.text.TextUtils

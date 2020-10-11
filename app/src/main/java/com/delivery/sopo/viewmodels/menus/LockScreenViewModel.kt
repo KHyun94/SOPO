@@ -8,12 +8,12 @@ import com.delivery.sopo.enums.LockScreenStatus
 import com.delivery.sopo.extentions.asSHA256
 import com.delivery.sopo.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LockScreenViewModel(
-    private val userRepo: UserRepo,
+    private val userRepoImpl: UserRepoImpl,
     private val appPasswordRepo: AppPasswordRepoImpl) : ViewModel()
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
@@ -108,7 +108,7 @@ class LockScreenViewModel(
                    viewModelScope.launch(Dispatchers.IO){
                        appPasswordRepo.insertEntity(
                            AppPasswordEntity(
-                           userName = userRepo.getEmail(),
+                           userName = userRepoImpl.getEmail(),
                            appPassword = lockPassword.value.toString().asSHA256
                        )
                        )

@@ -1,90 +1,93 @@
-package com.delivery.sopo.repository.shared
+package com.delivery.sopo.repository.impl
 
 import com.delivery.sopo.database.shared.SharedPrefHelper
+import com.delivery.sopo.repository.interfaces.UserRepository
 
 //todo kh impl로 수정할
-class UserRepo(private val shared: SharedPrefHelper)
+class UserRepoImpl(private val shared: SharedPrefHelper) : UserRepository
 {
-    fun getEmail(): String
+    override fun getEmail(): String
     {
         return shared.getUserEmail() ?: ""
     }
 
-    fun setEmail(email: String)
+    override fun setEmail(email: String)
     {
         shared.setUserEmail(email = email)
     }
 
-    fun getApiPwd(): String
+    override fun getApiPwd(): String
     {
         return shared.getPrivateApiPwd() ?: ""
     }
 
-    fun setApiPwd(pwd: String)
+    override fun setApiPwd(pwd: String)
     {
         return shared.setPrivateApiPwd(pwd)
     }
 
-    fun getDeviceInfo(): String
+    override fun getDeviceInfo(): String
     {
         return shared.getDeviceInfo() ?: ""
     }
 
-    fun setDeviceInfo(info: String)
+    override fun setDeviceInfo(info: String)
     {
         return shared.setDeviceInfo(info)
     }
 
-    fun getRegisterDate(): String
+    override fun getRegisterDate(): String
     {
         return shared.getRegisterDate() ?: ""
     }
 
-    fun setRegisterDate(regDt: String)
+    override fun setRegisterDate(regDt: String)
     {
         shared.setRegisterDate(regDt)
     }
 
-    fun getStatus(): Int
+    override fun getStatus(): Int
     {
         return shared.getStatus() ?: 0
     }
 
-    fun setStatus(status: Int)
+    override fun setStatus(status: Int)
     {
         shared.setStatus(status)
     }
 
-    fun getJoinType(): String
+    override fun getJoinType(): String
     {
         return shared.getJoinType() ?: ""
     }
 
-    fun setJoinType(joinType: String)
+    override fun setJoinType(joinType: String)
     {
         shared.setJoinType(joinType)
     }
 
-    fun getSNSUId(): String?
+    override fun getSNSUId(): String?
     {
         return shared.getSNSUId()
     }
 
-    fun setSNSUId(uid: String)
+    override fun setSNSUId(uid: String)
     {
         shared.setSNSUId(uid)
     }
 
-    fun getAppPassword(): String{
+    override fun getAppPassword(): String
+    {
         return shared.getAppPassword() ?: ""
     }
 
-    fun setAppPassword(password: String){
+    override fun setAppPassword(password: String)
+    {
         shared.setAppPassword(password)
     }
 
 
-    fun removeUserRepo()
+    override fun removeUserRepo()
     {
         setEmail("")
         setApiPwd("")

@@ -1,4 +1,4 @@
-package com.delivery.sopo.repository
+package com.delivery.sopo.repository.interfaces
 
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.models.CourierItem

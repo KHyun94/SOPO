@@ -2,12 +2,12 @@ package com.delivery.sopo.viewmodels.menus
 
 import androidx.lifecycle.*
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SettingViewModel(
-    private val userRepo: UserRepo,
+    private val userRepoImpl: UserRepoImpl,
     private val appPasswordRepo: AppPasswordRepoImpl) : ViewModel() , LifecycleObserver
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"

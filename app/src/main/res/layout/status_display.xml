@@ -17,7 +17,7 @@
 
         <variable
             name="item"
-            type="com.delivery.sopo.models.StatusItem" />
+            type="com.delivery.sopo.models.SelectItem&lt;String>" />
     </data>
 
     <LinearLayout
@@ -35,7 +35,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="13dp"
             android:background="@drawable/ic_status_oval"
-            app:isSelect="@{item.current}"
+            app:isSelect="@{item.select}"
             app:selectRes="@{selectRes}"
             app:unselectRes="@{unselectRes}" />
 
@@ -45,8 +45,8 @@
             style="@style/H5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{item.name}"
-            android:textColor="@{item.current ? @color/COLOR_MAIN_BLUE_700:@color/COLOR_GRAY_300}" />
+            android:text="@{item.item}"
+            android:textColor="@{item.select ? @color/COLOR_MAIN_BLUE_700:@color/COLOR_GRAY_300}" />
 
     </LinearLayout>
 </layout>

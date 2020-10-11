@@ -16,9 +16,9 @@ import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
-import com.delivery.sopo.repository.shared.UserRepo
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.TimeUtil
 import com.google.gson.Gson
 import kotlinx.coroutines.*
@@ -27,7 +27,7 @@ import retrofit2.Callback
 import retrofit2.HttpException
 import retrofit2.Response
 
-class InquiryViewModel(private val userRepo: UserRepo,
+class InquiryViewModel(private val userRepoImpl: UserRepoImpl,
                        private val parcelRepoImpl: ParcelRepoImpl,
                        private val parcelManagementRepoImpl: ParcelManagementRepoImpl,
                        private val timeCountRepoImpl: TimeCountRepoImpl) : ViewModel()
@@ -434,8 +434,8 @@ class InquiryViewModel(private val userRepo: UserRepo,
     fun testFunReNewALL(){
         viewModelScope.launch(Dispatchers.IO){
             val requestRenewal2 =
-                NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
-                    .requestRenewal2(userRepo.getEmail())
+                NetworkManager.getPrivateParcelAPI(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
+                    .requestRenewal2(userRepoImpl.getEmail())
         }
     }
 
@@ -562,11 +562,11 @@ class InquiryViewModel(private val userRepo: UserRepo,
         val ioScope = CoroutineScope(Dispatchers.IO)
         ioScope.launch {
             withContext(Dispatchers.IO){
-                Log.d(TAG, "email : ${userRepo.getEmail()}")
-                Log.d(TAG, "password : ${userRepo.getApiPwd()}")
+                Log.d(TAG, "email : ${userRepoImpl.getEmail()}")
+                Log.d(TAG, "password : ${userRepoImpl.getApiPwd()}")
 
-                NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
-                    .registerParcel(email = userRepo.getEmail(),
+                NetworkManager.getPrivateParcelAPI(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
+                    .registerParcel(email = userRepoImpl.getEmail(),
                         parcelAlias = parcelAlias,
                         trackCompany = trackCompany,
                         trackNum = trackNum)

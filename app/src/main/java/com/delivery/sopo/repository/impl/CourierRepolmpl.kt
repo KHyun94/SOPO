@@ -2,7 +2,7 @@ package com.delivery.sopo.repository.impl
 
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.models.CourierItem
-import com.delivery.sopo.repository.CourierRepository
+import com.delivery.sopo.repository.interfaces.CourierRepository
 
 class CourierRepolmpl(
     private val appDB: AppDatabase

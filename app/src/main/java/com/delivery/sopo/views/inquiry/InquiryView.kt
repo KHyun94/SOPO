@@ -30,15 +30,11 @@ import com.delivery.sopo.mapper.MenuMapper
 import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.parcel.ParcelId
-import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
-import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.repository.impl.TimeCountRepoImpl
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.*
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.ui_util.CustomProgressBar
-import com.delivery.sopo.viewmodels.MainViewModel
+import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.viewmodels.factory.InquiryViewModelFactory
 import com.delivery.sopo.viewmodels.factory.MainViewModelFactory
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
@@ -62,7 +58,7 @@ class InquiryView : Fragment()
     private lateinit var parentView: MainView
 
     private val TAG = this.javaClass.simpleName
-    private val userRepo: UserRepo by inject()
+    private val userRepoImpl : UserRepoImpl by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
     private val parcelManagementRepoImpl: ParcelManagementRepoImpl by inject()
     private val timeCountRepoImpl: TimeCountRepoImpl by inject()
@@ -77,14 +73,14 @@ class InquiryView : Fragment()
     private val mainVm: MainViewModel by lazy {
         ViewModelProvider(
             requireActivity(),
-            MainViewModelFactory(userRepo, parcelRepoImpl, appPasswordRepoImpl)
+            MainViewModelFactory(userRepoImpl, parcelRepoImpl, appPasswordRepoImpl)
         ).get(MainViewModel::class.java)
     }
     private val inquiryVm: InquiryViewModel by lazy {
         ViewModelProvider(
             requireActivity(),
             InquiryViewModelFactory(
-                userRepo,
+                userRepoImpl,
                 parcelRepoImpl,
                 parcelManagementRepoImpl,
                 timeCountRepoImpl

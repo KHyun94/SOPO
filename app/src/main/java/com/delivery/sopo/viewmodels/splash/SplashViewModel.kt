@@ -1,12 +1,12 @@
-package com.delivery.sopo.viewmodels
+package com.delivery.sopo.viewmodels.splash
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.UserRepoImpl
 
 class SplashViewModel(
-    private val userRepo: UserRepo
+    private val userRepoImpl: UserRepoImpl
 ) : ViewModel()
 {
     var navigator = MutableLiveData<String>()
@@ -18,7 +18,7 @@ class SplashViewModel(
 
     fun requestAfterActivity()
     {
-        if (userRepo.getStatus() == 1)
+        if (userRepoImpl.getStatus() == 1)
         {
             navigator.value = NavigatorConst.TO_MAIN
         }

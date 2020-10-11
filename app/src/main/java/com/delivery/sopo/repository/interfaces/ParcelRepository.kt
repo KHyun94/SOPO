@@ -1,4 +1,4 @@
-package com.delivery.sopo.repository
+package com.delivery.sopo.repository.interfaces
 
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.networks.dto.TimeCountDTO

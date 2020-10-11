@@ -8,9 +8,9 @@ import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.repository.impl.CourierRepolmpl
 import com.delivery.sopo.views.adapter.GridRvAdapter
-import com.delivery.sopo.util.SingleLiveEvent
+import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.util.GridSpacingItemDecoration
+import com.delivery.sopo.util.setting.GridSpacingItemDecoration
 
 class RegisterStep2ViewModel(private val courierRepolmpl: CourierRepolmpl) : ViewModel()
 {
@@ -21,7 +21,8 @@ class RegisterStep2ViewModel(private val courierRepolmpl: CourierRepolmpl) : Vie
     var selectedItem = MutableLiveData<SelectItem<CourierItem>?>()
     var waybilNum = MutableLiveData<String>()
     var moveFragment = MutableLiveData<String>()
-    var hideKeyboard = SingleLiveEvent<Boolean>()
+    var hideKeyboard =
+        SingleLiveEvent<Boolean>()
 
     val errorMsg = MutableLiveData<String>()
 

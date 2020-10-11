@@ -10,10 +10,10 @@ import com.delivery.sopo.extentions.MutableLiveDataExtension.popItem
 import com.delivery.sopo.extentions.MutableLiveDataExtension.pushItem
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import java.util.*
 
-class MenuViewModel(private val userRepo: UserRepo,
+class MenuViewModel(private val userRepoImpl: UserRepoImpl,
                     private val parcelRepoImpl: ParcelRepoImpl,
                     private val timeCountRepoImpl: TimeCountRepoImpl
 ) : ViewModel(), LifecycleObserver
@@ -45,7 +45,7 @@ class MenuViewModel(private val userRepo: UserRepo,
         get() = _viewStack
 
     init {
-        _userEmail.value = userRepo.getEmail()
+        _userEmail.value = userRepoImpl.getEmail()
         _viewStack.value = Stack()
     }
 

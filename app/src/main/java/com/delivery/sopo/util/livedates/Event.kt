@@ -1,4 +1,4 @@
-package com.delivery.sopo.util
+package com.delivery.sopo.util.livedates
 
 open class Event<out T>(private val content: T)
 {

@@ -3,10 +3,11 @@ package com.delivery.sopo.repository.impl
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.entity.AppPasswordEntity
-import com.delivery.sopo.repository.AppPasswordRepository
+import com.delivery.sopo.repository.interfaces.AppPasswordRepository
 import com.delivery.sopo.util.TimeUtil
 
-class AppPasswordRepoImpl(private val appDatabase: AppDatabase): AppPasswordRepository
+class AppPasswordRepoImpl(private val appDatabase: AppDatabase):
+    AppPasswordRepository
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 

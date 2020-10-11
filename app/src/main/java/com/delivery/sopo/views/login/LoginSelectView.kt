@@ -18,11 +18,11 @@ import com.delivery.sopo.networks.api.LoginAPI
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.NetworkManager.publicRetro
 import com.delivery.sopo.networks.api.UserAPI
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.ui_util.CustomProgressBar
-import com.delivery.sopo.viewmodels.LoginSelectViewModel
+import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
 import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.signup.SignUpView
 import com.google.gson.Gson
@@ -40,7 +40,7 @@ import retrofit2.Response
 
 class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_view)
 {
-    private val userRepo: UserRepo by inject()
+    private val userRepoImpl : UserRepoImpl by inject()
 
     private val loginSelectVM: LoginSelectViewModel by viewModel()
     private var sessionCallback: ISessionCallback? = null
@@ -291,13 +291,13 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
                                     val user = gson.fromJson<LoginResult>(reader, type)
 
-                                    userRepo.setEmail(email = user.userName)
-                                    userRepo.setApiPwd(pwd = user.password)
-                                    userRepo.setDeviceInfo(info = deviceInfo)
-                                    userRepo.setJoinType(joinType = JoinTypeConst.KAKAO)
-                                    userRepo.setRegisterDate(user.regDt)
-                                    userRepo.setStatus(user.status)
-                                    userRepo.setSNSUId(kakaoUserId)
+                                    userRepoImpl.setEmail(email = user.userName)
+                                    userRepoImpl.setApiPwd(pwd = user.password)
+                                    userRepoImpl.setDeviceInfo(info = deviceInfo)
+                                    userRepoImpl.setJoinType(joinType = JoinTypeConst.KAKAO)
+                                    userRepoImpl.setRegisterDate(user.regDt)
+                                    userRepoImpl.setStatus(user.status)
+                                    userRepoImpl.setSNSUId(kakaoUserId)
 
                                     startActivity(Intent(parentActivity, MainView::class.java))
                                     finish()

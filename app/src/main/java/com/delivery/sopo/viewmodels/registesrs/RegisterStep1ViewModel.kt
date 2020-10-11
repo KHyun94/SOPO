@@ -4,8 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.models.CourierItem
-import com.delivery.sopo.util.SingleLiveEvent
-import com.delivery.sopo.viewmodels.FocusChangeCallback
+import com.delivery.sopo.util.livedates.SingleLiveEvent
+import com.delivery.sopo.viewmodels.signup.FocusChangeCallback
 
 
 class RegisterStep1ViewModel : ViewModel()
@@ -22,7 +22,8 @@ class RegisterStep1ViewModel : ViewModel()
     var courier = MutableLiveData<CourierItem?>()
 
     var waybilNoStatusType = MutableLiveData<Int>()
-    var hideKeyboard = SingleLiveEvent<Boolean>()
+    var hideKeyboard =
+        SingleLiveEvent<Boolean>()
 
     var moveFragment = MutableLiveData<String>()
 

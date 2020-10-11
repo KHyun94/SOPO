@@ -3,12 +3,12 @@ package com.delivery.sopo.repository.impl
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.entity.TimeCountEntity
-import com.delivery.sopo.repository.TimeCountRepository
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.interfaces.TimeCountRepository
 import com.delivery.sopo.util.TimeUtil
 
-class TimeCountRepoImpl(private val userRepo: UserRepo,
-                        private val appDatabase: AppDatabase): TimeCountRepository
+class TimeCountRepoImpl(private val userRepoImpl : UserRepoImpl,
+                        private val appDatabase: AppDatabase):
+    TimeCountRepository
 {
     override fun getById(time: String): TimeCountEntity?
     {

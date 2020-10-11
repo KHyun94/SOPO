@@ -28,11 +28,8 @@ class CustomProgressBar(private val act: AppCompatActivity) : DialogFragment()
     {
         val view = inflater.inflate(R.layout.loading, container, false)
         setSetting()
-        setGiFImage(view)
         return view
     }
-
-
 
     fun onStartDialog()
     {
@@ -50,19 +47,5 @@ class CustomProgressBar(private val act: AppCompatActivity) : DialogFragment()
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             requestFeature(Window.FEATURE_NO_TITLE)
         }
-    }
-
-    private fun setGiFImage(v:View){
-//        Glide
-//            .with(v.iv_loading.context)
-//            .asGif()
-//            .load(R.drawable.ic_loading)
-//            .into(v.iv_loading)
-
-    }
-
-    override fun onCancel(dialog: DialogInterface)
-    {
-        super.onCancel(dialog)
     }
 }

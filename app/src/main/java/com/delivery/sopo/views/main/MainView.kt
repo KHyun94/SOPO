@@ -15,10 +15,10 @@ import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.UserAPI
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.dialog.GeneralDialog
-import com.delivery.sopo.viewmodels.MainViewModel
+import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.views.menus.LockScreenView
 import com.google.android.material.tabs.TabLayout
@@ -44,7 +44,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     lateinit var viewPagerAdapter: ViewPagerAdapter
     lateinit var pageChangeListener: ViewPager.OnPageChangeListener
-    private val userRepo: UserRepo by inject()
+    private val userRepoImpl: UserRepoImpl by inject()
 
     private var transaction: FragmentTransaction? = null
 
@@ -52,9 +52,9 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     {
         TAG += "MainView"
         transaction = supportFragmentManager.beginTransaction()
-        NetworkManager.initPrivateApi(id = userRepo.getEmail(), pwd = userRepo.getApiPwd())
-        Log.d(TAG, "ID = ${userRepo.getEmail()}")
-        Log.d(TAG, "ID = ${userRepo.getApiPwd()}")
+        NetworkManager.initPrivateApi(id = userRepoImpl.getEmail(), pwd = userRepoImpl.getApiPwd())
+        Log.d(TAG, "ID = ${userRepoImpl.getEmail()}")
+        Log.d(TAG, "ID = ${userRepoImpl.getApiPwd()}")
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -168,7 +168,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             Log.d(TAG, "FCM - $token")
 
             NetworkManager.privateRetro.create(UserAPI::class.java)
-                .updateFCMToken(userRepo.getEmail(), token)
+                .updateFCMToken(userRepoImpl.getEmail(), token)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(io())
                 .subscribe(
@@ -218,7 +218,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                     rHandler = Pair(
                         first = "네",
                         second = { it ->
-                            userRepo.removeUserRepo()
+                            userRepoImpl.removeUserRepo()
                             it.dismiss()
                             finish()
                         })

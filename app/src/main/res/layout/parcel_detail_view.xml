@@ -6,7 +6,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.ParcelDetailViewModel" />
+            type="com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel" />
     </data>
 
     <RelativeLayout

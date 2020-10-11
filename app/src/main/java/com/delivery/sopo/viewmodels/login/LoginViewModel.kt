@@ -1,4 +1,4 @@
-package com.delivery.sopo.viewmodels
+package com.delivery.sopo.viewmodels.login
 
 import android.text.TextUtils
 import android.util.Log
@@ -17,10 +17,11 @@ import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.networks.api.LoginAPI
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.UserAPI
-import com.delivery.sopo.repository.shared.UserRepo
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.ValidateUtil
+import com.delivery.sopo.viewmodels.signup.FocusChangeCallback
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import retrofit2.Call
@@ -28,7 +29,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class LoginViewModel(val userRepo: UserRepo) : ViewModel()
+class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
 {
 
     val TAG = "LOG.SOPO.LoginVM"
@@ -380,12 +381,12 @@ class LoginViewModel(val userRepo: UserRepo) : ViewModel()
 
                                     val user = gson.fromJson<LoginResult>(reader, type)
 
-                                    userRepo.setEmail(email = user.userName)
-                                    userRepo.setApiPwd(pwd = user.password)
-                                    userRepo.setDeviceInfo(info = deviceInfo)
-                                    userRepo.setJoinType(joinType = joinType)
-                                    userRepo.setRegisterDate(user.regDt)
-                                    userRepo.setStatus(user.status)
+                                    userRepoImpl.setEmail(email = user.userName)
+                                    userRepoImpl.setApiPwd(pwd = user.password)
+                                    userRepoImpl.setDeviceInfo(info = deviceInfo)
+                                    userRepoImpl.setJoinType(joinType = joinType)
+                                    userRepoImpl.setRegisterDate(user.regDt)
+                                    userRepoImpl.setStatus(user.status)
 
                                     validateResult.value =
                                         ValidateResult(

@@ -9,7 +9,7 @@ import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.databinding.LoginViewBinding
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
-import com.delivery.sopo.viewmodels.LoginViewModel
+import com.delivery.sopo.viewmodels.login.LoginViewModel
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
