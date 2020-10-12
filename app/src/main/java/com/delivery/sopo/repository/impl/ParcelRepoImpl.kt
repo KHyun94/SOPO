@@ -44,11 +44,16 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
         }
     }
 
-    fun getLocalCompleteParcelsLiveData(): LiveData<List<Parcel>>{
+    override fun getLocalCompleteParcelsLiveData(): LiveData<List<Parcel>>{
             return Transformations.map(appDatabase.parcelDao().getCompleteLiveData()){
                     entity ->
                         entity.map(ParcelMapper::parcelEntityToParcel)
             }
+    }
+
+    override fun getLocalCompleteParcels(): List<Parcel>
+    {
+        return appDatabase.parcelDao().getComplete().map(ParcelMapper::parcelEntityToParcel)
     }
 
     override suspend fun getLocalOngoingParcels(): List<Parcel>? {
@@ -65,11 +70,11 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
         return  appDatabase.parcelDao().getOngoingDataCntLiveData()
     }
 
-    override suspend fun saveLocalOngoingParcels(parcelList: List<Parcel>) {
+    override suspend fun insertEntities(parcelList: List<Parcel>) {
         appDatabase.parcelDao().insert(parcelList.map(ParcelMapper::parcelToParcelEntity))
     }
 
-    override suspend fun saveLocalOngoingParcel(parcel: ParcelEntity) {
+    override suspend fun insetEntity(parcel: ParcelEntity) {
         appDatabase.parcelDao().insert(parcel)
     }
 
@@ -79,12 +84,12 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
     }
 
 
-    override suspend fun updateLocalOngoingParcel(parcel: ParcelEntity) {
+    override suspend fun updateEntity(parcel: ParcelEntity) {
         parcel.auditDte = TimeUtil.getDateTime()
         appDatabase.parcelDao().update(parcel)
     }
 
-    override suspend fun updateLocalOngoingParcels(parcelList: List<ParcelEntity>) {
+    override suspend fun updateEntities(parcelList: List<ParcelEntity>) {
         appDatabase.parcelDao().update(parcelList)
     }
 
@@ -100,7 +105,7 @@ class ParcelRepoImpl(private val userRepo: UserRepo,
         }
     }
 
-    override suspend fun deleteLocalOngoingParcels(parcelIdList: List<ParcelId>){
+    override suspend fun deleteLocalParcels(parcelIdList: List<ParcelId>){
         for(parcelId in parcelIdList){
             appDatabase.parcelDao().getById(parcelId.regDt, parcelId.parcelUid)?.let {
                 it.status = 0

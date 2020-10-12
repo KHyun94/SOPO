@@ -22,10 +22,7 @@ import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.util.TimeUtil
 import com.google.gson.Gson
 import kotlinx.coroutines.*
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.HttpException
-import retrofit2.Response
 
 class InquiryViewModel(private val userRepo: UserRepo,
                        private val parcelRepoImpl: ParcelRepoImpl,
@@ -51,7 +48,7 @@ class InquiryViewModel(private val userRepo: UserRepo,
     val completeList: LiveData<MutableList<InquiryListItem>>
         get() = _completeList
 
-       // 화면에 전체 아이템의 노출 여부
+    // 화면에 전체 아이템의 노출 여부
     private val _isMoreView = MutableLiveData<Boolean>()
     val isMoreView: LiveData<Boolean>
         get() = _isMoreView
@@ -126,23 +123,6 @@ class InquiryViewModel(private val userRepo: UserRepo,
         _screenStatus.value = ScreenStatus.ONGOING
         sendRemovedData()
         checkIsNeedForceUpdate()
-//        inputTestData()
-    }
-
-    // TODO 테스트 함수.. 운영에서는 삭제해야함.
-    // 테스트 데이터 삽입
-    fun inputTestData(){
-        viewModelScope.launch(Dispatchers.IO) {
-            postParcel("LG전자 WING 5G", "kr.epost", "6865423455650")
-            postParcel("솔로스토브 캠프파이어", "kr.epost", "6865423455656")
-            postParcel("아웃셋 로즈우드 오버사이즈드 그릴 브러쉬", "kr.epost", "6865423455659")
-            postParcel("코글란 에그 홀더", "kr.epost", "6865423609628")
-            postParcel("써니라이프 배터리 일렉트릭 에어펌프", "kr.epost", "6865423609629")
-            postParcel("스탠스포츠 508 포터플 필로우", "kr.epost", "6865423609630")
-            postParcel("트와인 씨사이드 피크닉 블랭킷 세트", "kr.epost", "6865423609894")
-            postParcel("로지텍 G613 LIGHT SPEED 무선 기계식 케이밍 키보드", "kr.epost", "6865423611999")
-            postParcel("COX CK87", "kr.epost", "6865423611599")
-        }
     }
 
     // 화면을 배송완료 ==> 배송중으로 전환시킨다.
@@ -292,7 +272,7 @@ class InquiryViewModel(private val userRepo: UserRepo,
                             }
                         }
                     }
-                    parcelRepoImpl.saveLocalOngoingParcels(updateParcelList)
+                    parcelRepoImpl.insertEntities(updateParcelList)
                 }
             }
             _isLoading.postValue(false)
@@ -354,7 +334,7 @@ class InquiryViewModel(private val userRepo: UserRepo,
                     // 서버로부터 받아온 데이터가 검색되지 않았을 경우 => 새로운 데이터라는 의미 => 로컬에 저장한다.
                     // ParcelEntity를 관리해줄 ParcelManagementEntity도 같은 ParcelId로 저장한다.
                     if(localParcelById == null){
-                        parcelRepoImpl.saveLocalOngoingParcel(ParcelMapper.parcelToParcelEntity(remote))
+                        parcelRepoImpl.insetEntity(ParcelMapper.parcelToParcelEntity(remote))
                         parcelManagementRepoImpl.insertEntity(ParcelMapper.parcelToParcelManagementEntity(remote))
                     }
                     /*
@@ -366,7 +346,7 @@ class InquiryViewModel(private val userRepo: UserRepo,
                     else{
                             if(localParcelById.inqueryHash != remote.inqueryHash && localParcelById.status == 1){
 //                        if(localParcelById.status == 1){
-                            parcelRepoImpl.updateLocalOngoingParcel(ParcelMapper.parcelToParcelEntity(remote))
+                            parcelRepoImpl.updateEntity(ParcelMapper.parcelToParcelEntity(remote))
                             // 업데이트 성공했으니 isBeUpdate를 0으로 다시 초기화시켜준다.
                             parcelManagementRepoImpl.initializeIsBeUpdate(remote.parcelId.regDt, remote.parcelId.parcelUid)
                         }
@@ -403,7 +383,7 @@ class InquiryViewModel(private val userRepo: UserRepo,
                         {
                             if (remoteOngoingParcel.inqueryHash != parcel.inqueryHash)
                             {
-                                parcelRepoImpl.saveLocalOngoingParcel(localParcelById.apply { this.update(remoteOngoingParcel) })
+                                parcelRepoImpl.insetEntity(localParcelById.apply { this.update(remoteOngoingParcel) })
                                 parcelManagementRepoImpl.initializeIsBeUpdate(localParcelById.regDt, localParcelById.parcelUid)
                             }
                         }
@@ -453,8 +433,7 @@ class InquiryViewModel(private val userRepo: UserRepo,
     // 데이터 삭제 로직 1단계 : Room의 status를 0=>1으로 바꾼다.
     fun removeSelectedData(selectedData: MutableList<ParcelId>) {
         viewModelScope.launch(Dispatchers.IO) {
-            Log.d(TAG, "selectedData `s Size : $selectedData")
-            parcelRepoImpl.deleteLocalOngoingParcels(selectedData)
+            parcelRepoImpl.deleteLocalParcels(selectedData)
             parcelManagementRepoImpl.updateIsBeDeleteToOneByParcelIdList(selectedData)
             // 배송완료일때 아이템이 하나도 없을 경우 전체 새로고침을 해야해서 삭제할때 -1을 해줘야함.
             if(getCurrentScreenStatus() == ScreenStatus.COMPLETE){
@@ -483,7 +462,6 @@ class InquiryViewModel(private val userRepo: UserRepo,
                             it.auditDte = TimeUtil.getDateTime()}
                         parcelManagementRepoImpl.updateEntities(list)
                     }
-
                     Log.i(TAG, "SUCCESS to send delete data")
                 }
             }
@@ -511,7 +489,7 @@ class InquiryViewModel(private val userRepo: UserRepo,
                 for(parcelMng in parcelMngList){
                     parcelRepoImpl.getLocalParcelById(parcelMng.regDt, parcelMng.parcelUid)?.let {
                         it.status = 1
-                        parcelRepoImpl.updateLocalOngoingParcel(it)
+                        parcelRepoImpl.updateEntity(it)
                     }
                 }
                 if(getCurrentScreenStatus() == ScreenStatus.COMPLETE){
@@ -554,45 +532,5 @@ class InquiryViewModel(private val userRepo: UserRepo,
         cntOfSelectedItem.value = 0
         setRemovable(false)
         setMoreView(false)
-    }
-
-    // TODO : 테스트하기 위해서 만든 함수, 운영에서는 삭제해야함.
-    private fun postParcel(parcelAlias: String, trackCompany: String, trackNum: String){
-
-        val ioScope = CoroutineScope(Dispatchers.IO)
-        ioScope.launch {
-            withContext(Dispatchers.IO){
-                Log.d(TAG, "email : ${userRepo.getEmail()}")
-                Log.d(TAG, "password : ${userRepo.getApiPwd()}")
-
-                NetworkManager.getPrivateParcelAPI(userRepo.getEmail(), userRepo.getApiPwd())
-                    .registerParcel(email = userRepo.getEmail(),
-                        parcelAlias = parcelAlias,
-                        trackCompany = trackCompany,
-                        trackNum = trackNum)
-                    .enqueue(object : Callback<APIResult<ParcelId?>>
-                    {
-                        override fun onResponse(
-                            call: Call<APIResult<ParcelId?>>,
-                            response: Response<APIResult<ParcelId?>>
-                        )
-                        {
-                            val code = response.code()
-                            Log.d(TAG, "상태 코드 : $code")
-
-                            when(code){
-                                201 -> {
-                                    Log.d(TAG,"[postParcel] onResponse : ${response.body()}")
-                                }
-                                400 -> {
-                                }
-                            }
-                        }
-                        override fun onFailure(call: Call<APIResult<ParcelId?>>, t: Throwable) {
-                            Log.d(TAG,"[postParcel] onFailure, ${t.localizedMessage}")
-                        }
-                    })
-            }
-        }
     }
 }

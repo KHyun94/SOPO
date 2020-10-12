@@ -183,8 +183,12 @@ class InquiryListAdapter(
                     DeliveryStatusEnum.out_for_delivery.code ->
                     {
                         holder.ongoingBinding.root.apply {
-                            Glide.with(this.context).asGif().load(R.drawable.start_delivery).into(this.image_delivery_status)
-                            val gifMargin = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                            Glide.with(this.context).asGif().load(R.drawable.start_delivery)
+                                .into(this.image_delivery_status)
+                            val gifMargin = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
                             gifMargin.height = SizeUtil.changeDpToPx(this.context, 38F)
                             gifMargin.width = SizeUtil.changeDpToPx(this.context, 50F)
                             this.image_delivery_status.layoutParams = gifMargin
@@ -331,7 +335,8 @@ class InquiryListAdapter(
         }
     }
 
-    fun getSelectedListData(): List<ParcelId> {
+    fun getSelectedListData(): List<ParcelId>
+    {
         return list.filter {
             it.isSelected
         }.map {
@@ -392,19 +397,43 @@ class InquiryListAdapter(
         notifyDataSetChanged()
     }
 
-    fun addItems(listItem: MutableList<InquiryListItem>){
+    //현재는 '배송완료'에만 적용되어있음. 데이터를 무조건 notifyDataSetChanged()로 데이터를 리프레쉬하지 않고 진짜 변경된 데이터만 변경할 수 있도록함.
+    fun notifyChanged(updatedList: MutableList<InquiryListItem>)
+    {
+        updatedList.sortByDescending { it.parcel.arrivalDte }
 
-        val oldListSize = list.size
-        if(listItem.size > 0){
-            list.addAll(listItem)
-            list.sortByDescending { it.parcel.arrivalDte}
-
-//            for(newItem in listItem){
-//                val indexOfNewItem = list.indexOf(newItem)
-//                notifyItemChanged(indexOfNewItem)
-//            }
-//            notifyItemRangeChanged(oldListSize-1, listItem.size)
+        if (list.size > updatedList.size)
+        {
+            list.removeIf { list.indexOf(it) > updatedList.lastIndex }
             notifyDataSetChanged()
+        }
+
+        val notifyIndexList = mutableListOf<Int>()
+        for (index in 0..updatedList.lastIndex)
+        {
+            if (list.getOrNull(index) == null)
+            {
+                Log.d(
+                    TAG,
+                    "기존 리스트에 해당 index[$index]가 존재하지 않아 list[$index]에 ${updatedList[index].parcel.parcelAlias} 아이템을 추가합니다."
+                )
+                list.add(updatedList[index])
+                notifyIndexList.add(index)
+            }
+            else if (!((updatedList[index].parcel.parcelId.regDt == list[index].parcel.parcelId.regDt) && (updatedList[index].parcel.parcelId.parcelUid == list[index].parcel.parcelId.parcelUid)))
+            {
+                Log.d(
+                    TAG,
+                    "index[$index]에 해당하는 ${list[index].parcel.parcelAlias}와 업데이트될 아이템(${updatedList[index].parcel.parcelAlias}) 일치하지 않아 기존 아이템에 업데이트될 아이템을 덮어씁니다."
+                )
+                list[index] = updatedList[index]
+                notifyIndexList.add(index)
+            }
+        }
+
+        for (index in 0..notifyIndexList.lastIndex)
+        {
+            notifyItemChanged(notifyIndexList[index])
         }
     }
 
@@ -441,9 +470,12 @@ class InquiryListAdapter(
         notifyDataSetChanged()
     }
 
-    override fun getItemCount(): Int{
-        return when(itemType){
-            InquiryItemType.Soon -> {
+    override fun getItemCount(): Int
+    {
+        return when (itemType)
+        {
+            InquiryItemType.Soon ->
+            {
                 list.let {
                     if (it.size > limitOfSoonListSize && !isMoreView)
                     {
@@ -467,7 +499,8 @@ class InquiryListAdapter(
         return list.size
     }
 
-    fun getList(): MutableList<InquiryListItem>{
+    fun getList(): MutableList<InquiryListItem>
+    {
         return list
     }
 }

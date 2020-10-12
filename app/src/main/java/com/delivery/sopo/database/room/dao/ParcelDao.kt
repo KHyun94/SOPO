@@ -15,6 +15,9 @@ interface ParcelDao
     @Query("SELECT * FROM PARCEL as p LEFT JOIN PARCEL_MANAGEMENT as pm ON p.REG_DT = pm.REG_DT AND p.PARCEL_UID = pm.PARCEL_UID WHERE p.STATUS = 1 AND p.DELIVERY_STATUS = 'delivered' AND pm.isNowVisible = 1")
     fun getCompleteLiveData(): LiveData<List<ParcelEntity>>
 
+    @Query("SELECT * FROM PARCEL as p LEFT JOIN PARCEL_MANAGEMENT as pm ON p.REG_DT = pm.REG_DT AND p.PARCEL_UID = pm.PARCEL_UID WHERE p.STATUS = 1 AND p.DELIVERY_STATUS = 'delivered' AND pm.isNowVisible = 1")
+    fun getComplete(): List<ParcelEntity>
+
     @Query("SELECT * FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS <> 'delivered'")
     fun getOngoingLiveData(): LiveData<List<ParcelEntity>>
 
