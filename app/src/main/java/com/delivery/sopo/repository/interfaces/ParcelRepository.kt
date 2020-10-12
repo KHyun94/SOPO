@@ -16,16 +16,20 @@ interface ParcelRepository {
 
    suspend fun getLocalParcelById(regDt: String, parcelUid: String): ParcelEntity?
    fun getLocalOngoingParcelsLiveData(): LiveData<List<Parcel>>
+   fun getLocalCompleteParcelsLiveData(): LiveData<List<Parcel>>
+   fun getLocalCompleteParcels(): List<Parcel>
    suspend fun getLocalOngoingParcels(): List<Parcel>?
 
    fun getSoonDataCntLiveData(): LiveData<Int>
    fun getOngoingDataCntLiveData(): LiveData<Int>
 
-   suspend fun saveLocalOngoingParcels(parcelList: List<Parcel>)
-   suspend fun saveLocalOngoingParcel(parcel: ParcelEntity)
-   suspend fun updateLocalOngoingParcel(parcel: ParcelEntity)
-   suspend fun updateLocalOngoingParcels(parcelList: List<ParcelEntity>)
-   suspend fun deleteLocalOngoingParcels(parcelIdList: List<ParcelId>)
+   suspend fun insetEntity(parcel: ParcelEntity)
+   suspend fun insertEntities(parcelList: List<Parcel>)
+
+   suspend fun updateEntity(parcel: ParcelEntity)
+   suspend fun updateEntities(parcelList: List<ParcelEntity>)
+
+   suspend fun deleteLocalParcels(parcelIdList: List<ParcelId>)
    suspend fun deleteRemoteParcels(): APIResult<String?>?
 
    // 0922 kh 추가사항

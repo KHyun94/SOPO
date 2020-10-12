@@ -54,9 +54,7 @@ import java.util.stream.Stream
 
 class InquiryView : Fragment()
 {
-
     private lateinit var parentView: MainView
-
     private val TAG = this.javaClass.simpleName
     private val userRepoImpl : UserRepoImpl by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
@@ -91,13 +89,18 @@ class InquiryView : Fragment()
     private var refreshDelay: Boolean = false
 
     @SuppressLint("SourceLockedOrientationActivity")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View
+    {
         binding = SopoInquiryViewBinding.inflate(inflater, container, false)
         progressBar = CustomProgressBar(requireActivity() as AppCompatActivity)
         viewBinding()
         setObserver()
 
-        parentView =  activity as MainView
+        parentView = activity as MainView
 
         parentView.setOnBackPressListener(object : OnMainBackPressListener
         {
@@ -112,12 +115,12 @@ class InquiryView : Fragment()
 
         })
 
-
         return binding.root
     }
 
     @SuppressLint("ClickableViewAccessibility", "RestrictedApi")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
         super.onViewCreated(view, savedInstanceState)
 
         initViewSetting()
@@ -248,34 +251,8 @@ class InquiryView : Fragment()
         // 배송완료 리스트.
         inquiryVm.completeList.observe(this, Observer { list ->
 
-            list.sortByDescending { it.parcel.arrivalDte}
-
-            val existingList = completeListAdapter.getList()
-
-            if(existingList.isNotEmpty() && list.isNotEmpty()){
-                Log.d(TAG, "!!!! completeListAdapter.getList().isNotEmpty() !!!!")
-                Log.d(TAG, "!!!! completeList`s regDt : ${existingList.first().getCompleteYearMonth()}")
-                Log.d(TAG, "!!!! list`s regDt : ${list.first().getCompleteYearMonth()}")
-
-                if(list.first().getCompleteYearMonth() != existingList.first().getCompleteYearMonth() || list.size < existingList.size){
-                    Log.d(TAG, "!!!! 완료일자가 다릅니다. !!!!")
-                    completeListAdapter.setDataList(list)
-                    Log.d(TAG, "!!!! After setDataList !!!!")
-                }
-            }
-
-            // 새로고침을 통해서 얻게된 새로운 데이터들을 업데이트해준다.
-            Log.d(TAG, "!!!! 기존 리스트 크기 : ${existingList.size} // 새로 받아온 리스트의 크기 : ${list.size}")
-            if(list.size > existingList.size){
-                // 기존의 데이터들을 제거해줘서 새로 업데이트해야할 아이템들만 남겨놓는다.
-                for (listItem in existingList){
-                    list.removeIf { it.parcel.parcelId.regDt == listItem.parcel.parcelId.regDt &&
-                                    it.parcel.parcelId.parcelUid == listItem.parcel.parcelId.parcelUid  }
-                }
-                Log.d(TAG, "!!!! 기존 데이터들을 모두 제거하고 난 이후의 업데이트 리스트 크기 : ${list.size}")
-                completeListAdapter.addItems(list)
-                Log.d(TAG, "!!!! 업데이트 데이터들을 어뎁터에 넣고 난 이후의 completeList의 크기 : ${completeListAdapter.getListSize()}")
-            }
+            list.sortByDescending { it.parcel.arrivalDte }
+            completeListAdapter.notifyChanged(list)
         })
 
         // 현재 배송완료의 년월 데이터를 tv_spinner_month에 text 적용
@@ -470,60 +447,90 @@ class InquiryView : Fragment()
         })
     }
 
-    private fun getParcelClicked() : OnParcelClickListener
+    private fun getParcelClicked(): OnParcelClickListener
     {
         return object : OnParcelClickListener
         {
             override fun onItemClicked(view: View, parcelId: ParcelId)
             {
-                FragmentType.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelUId = parcelId.parcelUid, regDt = parcelId.regDt)
-                FragmentManager.move(activity!!, FragmentType.INQUIRY_DETAIL, InquiryMainFrame.viewId)
+                FragmentType.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(
+                    parcelUId = parcelId.parcelUid,
+                    regDt = parcelId.regDt
+                )
+                FragmentManager.move(
+                    activity!!,
+                    FragmentType.INQUIRY_DETAIL,
+                    InquiryMainFrame.viewId
+                )
             }
 
         }
     }
 
-    private fun openInquiryMenu(anchorView: View){
-        if(menuPopUpWindow == null){
+    private fun openInquiryMenu(anchorView: View)
+    {
+        if (menuPopUpWindow == null)
+        {
             val menu = PopupMenu(requireActivity(), anchorView).menu
             requireActivity().menuInflater.inflate(R.menu.inquiry_popup_menu, menu)
 
-            val popUpView: View = LayoutInflater.from(requireContext()).inflate(R.layout.popup_menu_view,null).also {v ->
-                val popupMenuListAdapter = PopupMenuListAdapter(MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
-                v.recyclerview_inquiry_popup_menu.also {
-                    it.adapter = popupMenuListAdapter
-                    val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                    dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
-                    it.addItemDecoration(dividerItemDecoration)
+            val popUpView: View =
+                LayoutInflater.from(requireContext()).inflate(R.layout.popup_menu_view, null)
+                    .also { v ->
+                        val popupMenuListAdapter =
+                            PopupMenuListAdapter(MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
+                        v.recyclerview_inquiry_popup_menu.also {
+                            it.adapter = popupMenuListAdapter
+                            val dividerItemDecoration = DividerItemDecoration(
+                                requireContext(),
+                                LinearLayoutManager.VERTICAL
+                            )
+                            dividerItemDecoration.setDrawable(
+                                ContextCompat.getDrawable(
+                                    requireContext(),
+                                    R.drawable.line_divider
+                                )!!
+                            )
+                            it.addItemDecoration(dividerItemDecoration)
 
-                    popupMenuListAdapter.setPopUpMenuOnclick(object: PopupMenuListAdapter.InquiryPopUpMenuItemOnclick{
-                        override fun removeItem(v: View)
-                        {
-                            //삭제하기
-                            inquiryVm.openRemoveView()
-                            menuPopUpWindow?.dismiss()
-                        }
-                        override fun refreshItems(v: View)
-                        {
-                            // 새로고침
-                            inquiryVm.refreshOngoing()
-                            menuPopUpWindow?.dismiss()
-                        }
-                        override fun help(v: View)
-                        {
-                            // 도움말
-                            inquiryVm.testFunReNewALL()
-                            menuPopUpWindow?.dismiss()
-                        }
-                    })
-                }
-            }
+                            popupMenuListAdapter.setPopUpMenuOnclick(object :
+                                PopupMenuListAdapter.InquiryPopUpMenuItemOnclick
+                            {
+                                override fun removeItem(v: View)
+                                {
+                                    //삭제하기
+                                    inquiryVm.openRemoveView()
+                                    menuPopUpWindow?.dismiss()
+                                }
 
-            menuPopUpWindow = PopupWindow(popUpView, SizeUtil.changeDpToPx(binding.root.context, 150F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
+                                override fun refreshItems(v: View)
+                                {
+                                    // 새로고침
+                                    inquiryVm.refreshOngoing()
+                                    menuPopUpWindow?.dismiss()
+                                }
+
+                                override fun help(v: View)
+                                {
+                                    // 도움말
+                                    inquiryVm.testFunReNewALL()
+                                    menuPopUpWindow?.dismiss()
+                                }
+                            })
+                        }
+                    }
+
+            menuPopUpWindow = PopupWindow(
+                popUpView,
+                SizeUtil.changeDpToPx(binding.root.context, 150F),
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
+            ).apply {
                 showAsDropDown(anchorView)
             }
         }
-        else{
+        else
+        {
             menuPopUpWindow?.showAsDropDown(anchorView)
         }
     }
@@ -535,27 +542,51 @@ class InquiryView : Fragment()
         timeCntDtoList: MutableList<TimeCountEntity>
     )
     {
-        val historyPopUpView: View = LayoutInflater.from(requireContext()).inflate(R.layout.popup_menu_view,null).also {v ->
-            val popupMenuListAdapter = PopupMenuListAdapter(MenuMapper.timeCountDtoToMenuItemList(timeCntDtoList) as MutableList<InquiryMenuItem>)
-            v.recyclerview_inquiry_popup_menu.also {
-                it.adapter = popupMenuListAdapter
-                val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
-                it.addItemDecoration(dividerItemDecoration)
+        val historyPopUpView: View =
+            LayoutInflater.from(requireContext()).inflate(R.layout.popup_menu_view, null)
+                .also { v ->
+                    val popupMenuListAdapter =
+                        PopupMenuListAdapter(MenuMapper.timeCountDtoToMenuItemList(timeCntDtoList) as MutableList<InquiryMenuItem>)
+                    v.recyclerview_inquiry_popup_menu.also {
+                        it.adapter = popupMenuListAdapter
+                        val dividerItemDecoration =
+                            DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                        dividerItemDecoration.setDrawable(
+                            ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.line_divider
+                            )!!
+                        )
+                        it.addItemDecoration(dividerItemDecoration)
 
-                popupMenuListAdapter.setHistoryPopUpItemOnclick(object: PopupMenuListAdapter.HistoryPopUpItemOnclick{
-                    override fun changeTimeCount(v: View, time: String) {
-                        inquiryVm.changeTimeCount(time)
-                        historyPopUpWindow?.dismiss()
+                        popupMenuListAdapter.setHistoryPopUpItemOnclick(object :
+                            PopupMenuListAdapter.HistoryPopUpItemOnclick
+                        {
+                            override fun changeTimeCount(v: View, time: String)
+                            {
+                                inquiryVm.changeTimeCount(time)
+                                historyPopUpWindow?.dismiss()
+                            }
+                        })
                     }
-                })
-            }
+                }
+        historyPopUpWindow = if (timeCntDtoList.size > 6)
+        {
+            PopupWindow(
+                historyPopUpView,
+                SizeUtil.changeDpToPx(binding.root.context, 120F),
+                SizeUtil.changeDpToPx(binding.root.context, 35 * 6F),
+                true
+            ).apply { showAsDropDown(anchorView) }
         }
-        historyPopUpWindow = if(timeCntDtoList.size > 6){
-            PopupWindow(historyPopUpView, SizeUtil.changeDpToPx(binding.root.context, 120F), SizeUtil.changeDpToPx(binding.root.context, 35*6F), true).apply { showAsDropDown(anchorView) }
-        }
-        else {
-            PopupWindow(historyPopUpView, SizeUtil.changeDpToPx(binding.root.context, 120F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply { showAsDropDown(anchorView) }
+        else
+        {
+            PopupWindow(
+                historyPopUpView,
+                SizeUtil.changeDpToPx(binding.root.context, 120F),
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
+            ).apply { showAsDropDown(anchorView) }
         }
     }
 
