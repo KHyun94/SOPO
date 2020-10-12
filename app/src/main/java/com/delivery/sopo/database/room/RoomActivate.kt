@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.delivery.sopo.R
 import com.delivery.sopo.R.drawable.*
-import com.delivery.sopo.extentions.removeSpace
+import com.delivery.sopo.extensions.removeSpace
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.database.room.entity.CourierEntity
 import com.delivery.sopo.repository.impl.CourierRepolmpl

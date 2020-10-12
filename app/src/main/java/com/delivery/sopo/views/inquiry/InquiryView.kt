@@ -3,8 +3,10 @@ package com.delivery.sopo.views.inquiry
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
 import android.view.View.*
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.PopupWindow
@@ -20,6 +22,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
+import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.databinding.SopoInquiryViewBinding
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.enums.InquiryItemType
@@ -27,21 +31,20 @@ import com.delivery.sopo.enums.ScreenStatus
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.mapper.MenuMapper
-import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.repository.impl.*
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.ui_util.CustomProgressBar
-import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.viewmodels.factory.InquiryViewModelFactory
 import com.delivery.sopo.viewmodels.factory.MainViewModelFactory
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
-import com.delivery.sopo.views.main.MainView
+import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
+import com.delivery.sopo.views.main.MainView
 import kotlinx.android.synthetic.main.popup_menu_view.view.*
 import kotlinx.android.synthetic.main.sopo_inquiry_view.*
 import kotlinx.coroutines.CoroutineScope
@@ -58,7 +61,7 @@ class InquiryView : Fragment()
     private lateinit var parentView: MainView
 
     private val TAG = this.javaClass.simpleName
-    private val userRepoImpl : UserRepoImpl by inject()
+    private val userRepoImpl: UserRepoImpl by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
     private val parcelManagementRepoImpl: ParcelManagementRepoImpl by inject()
     private val timeCountRepoImpl: TimeCountRepoImpl by inject()
@@ -91,13 +94,18 @@ class InquiryView : Fragment()
     private var refreshDelay: Boolean = false
 
     @SuppressLint("SourceLockedOrientationActivity")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View
+    {
         binding = SopoInquiryViewBinding.inflate(inflater, container, false)
-        progressBar = CustomProgressBar(requireActivity() as AppCompatActivity)
+        progressBar = CustomProgressBar(activity!!)
         viewBinding()
         setObserver()
 
-        parentView =  activity as MainView
+        parentView = activity as MainView
 
         parentView.setOnBackPressListener(object : OnMainBackPressListener
         {
@@ -117,7 +125,8 @@ class InquiryView : Fragment()
     }
 
     @SuppressLint("ClickableViewAccessibility", "RestrictedApi")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
         super.onViewCreated(view, savedInstanceState)
 
         initViewSetting()
@@ -216,26 +225,57 @@ class InquiryView : Fragment()
             }
         })
 
-        inquiryVm.isLoading.observe(this, Observer { isLoading ->
-            progressBar?.let {
-                if (isLoading && !it.isAdded)
+        binding.vm!!.isLoading.observe(this, Observer {
+
+            if (it != null)
+            {
+                Log.d(TAG, "")
+
+                Log.d(TAG, "1. isLoading")
+                if (it)
                 {
-                    it.onStartDialog()
+                    Log.d(TAG, "2. isLoading true")
+                    progressBar!!.onStartDialog()
                 }
                 else
                 {
-                    try
-                    {
-                        it.onCloseDialog()
-                    }
-                    catch (e: IllegalStateException)
-                    {
-                        Log.e(TAG, "IllegalStateException !!!!!!! ${e.localizedMessage}")
-                    }
+                    Log.d(TAG, "3. isLoading false")
+                    progressBar!!.onCloseDialog()
                 }
+            } else {
+                Log.d(TAG, "4. isLoading null")
             }
         })
+        /*
+        inquiryVm.isLoading.observe(this, Observer { isLoading ->
 
+            try
+            {
+                if (isLoading)
+                {
+                    if (!progressBar?.isAdded!!)
+                    {
+                        progressBar?.onStartDialog()
+                    }
+                    else
+                    {
+                        progressBar?.onCloseDialog()
+                    }
+                }
+                else
+                {
+                    progressBar?.onCloseDialog()
+                }
+
+            }
+            catch (e: Exception)
+            {
+                progressBar?.onCloseDialog()
+                Log.d(TAG, "Progress error $e")
+            }
+
+        })
+*/
         // 배송중 , 등록된 택배 리스트
         inquiryVm.ongoingList.observe(this, Observer {
             soonArrivalListAdapter.setDataList(it)
@@ -248,16 +288,23 @@ class InquiryView : Fragment()
         // 배송완료 리스트.
         inquiryVm.completeList.observe(this, Observer { list ->
 
-            list.sortByDescending { it.parcel.arrivalDte}
+            list.sortByDescending { it.parcel.arrivalDte }
 
             val existingList = completeListAdapter.getList()
 
-            if(existingList.isNotEmpty() && list.isNotEmpty()){
+            if (existingList.isNotEmpty() && list.isNotEmpty())
+            {
                 Log.d(TAG, "!!!! completeListAdapter.getList().isNotEmpty() !!!!")
-                Log.d(TAG, "!!!! completeList`s regDt : ${existingList.first().getCompleteYearMonth()}")
+                Log.d(
+                    TAG,
+                    "!!!! completeList`s regDt : ${existingList.first().getCompleteYearMonth()}"
+                )
                 Log.d(TAG, "!!!! list`s regDt : ${list.first().getCompleteYearMonth()}")
 
-                if(list.first().getCompleteYearMonth() != existingList.first().getCompleteYearMonth() || list.size < existingList.size){
+                if (list.first().getCompleteYearMonth() != existingList.first()
+                        .getCompleteYearMonth() || list.size < existingList.size
+                )
+                {
                     Log.d(TAG, "!!!! 완료일자가 다릅니다. !!!!")
                     completeListAdapter.setDataList(list)
                     Log.d(TAG, "!!!! After setDataList !!!!")
@@ -266,15 +313,22 @@ class InquiryView : Fragment()
 
             // 새로고침을 통해서 얻게된 새로운 데이터들을 업데이트해준다.
             Log.d(TAG, "!!!! 기존 리스트 크기 : ${existingList.size} // 새로 받아온 리스트의 크기 : ${list.size}")
-            if(list.size > existingList.size){
+            if (list.size > existingList.size)
+            {
                 // 기존의 데이터들을 제거해줘서 새로 업데이트해야할 아이템들만 남겨놓는다.
-                for (listItem in existingList){
-                    list.removeIf { it.parcel.parcelId.regDt == listItem.parcel.parcelId.regDt &&
-                                    it.parcel.parcelId.parcelUid == listItem.parcel.parcelId.parcelUid  }
+                for (listItem in existingList)
+                {
+                    list.removeIf {
+                        it.parcel.parcelId.regDt == listItem.parcel.parcelId.regDt &&
+                                it.parcel.parcelId.parcelUid == listItem.parcel.parcelId.parcelUid
+                    }
                 }
                 Log.d(TAG, "!!!! 기존 데이터들을 모두 제거하고 난 이후의 업데이트 리스트 크기 : ${list.size}")
                 completeListAdapter.addItems(list)
-                Log.d(TAG, "!!!! 업데이트 데이터들을 어뎁터에 넣고 난 이후의 completeList의 크기 : ${completeListAdapter.getListSize()}")
+                Log.d(
+                    TAG,
+                    "!!!! 업데이트 데이터들을 어뎁터에 넣고 난 이후의 completeList의 크기 : ${completeListAdapter.getListSize()}"
+                )
             }
         })
 
@@ -470,60 +524,90 @@ class InquiryView : Fragment()
         })
     }
 
-    private fun getParcelClicked() : OnParcelClickListener
+    private fun getParcelClicked(): OnParcelClickListener
     {
         return object : OnParcelClickListener
         {
             override fun onItemClicked(view: View, parcelId: ParcelId)
             {
-                FragmentType.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelUId = parcelId.parcelUid, regDt = parcelId.regDt)
-                FragmentManager.move(activity!!, FragmentType.INQUIRY_DETAIL, InquiryMainFrame.viewId)
+                FragmentType.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(
+                    parcelUId = parcelId.parcelUid,
+                    regDt = parcelId.regDt
+                )
+                FragmentManager.move(
+                    activity!!,
+                    FragmentType.INQUIRY_DETAIL,
+                    InquiryMainFrame.viewId
+                )
             }
 
         }
     }
 
-    private fun openInquiryMenu(anchorView: View){
-        if(menuPopUpWindow == null){
+    private fun openInquiryMenu(anchorView: View)
+    {
+        if (menuPopUpWindow == null)
+        {
             val menu = PopupMenu(requireActivity(), anchorView).menu
             requireActivity().menuInflater.inflate(R.menu.inquiry_popup_menu, menu)
 
-            val popUpView: View = LayoutInflater.from(requireContext()).inflate(R.layout.popup_menu_view,null).also {v ->
-                val popupMenuListAdapter = PopupMenuListAdapter(MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
-                v.recyclerview_inquiry_popup_menu.also {
-                    it.adapter = popupMenuListAdapter
-                    val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                    dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
-                    it.addItemDecoration(dividerItemDecoration)
+            val popUpView: View =
+                LayoutInflater.from(requireContext()).inflate(R.layout.popup_menu_view, null)
+                    .also { v ->
+                        val popupMenuListAdapter =
+                            PopupMenuListAdapter(MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
+                        v.recyclerview_inquiry_popup_menu.also {
+                            it.adapter = popupMenuListAdapter
+                            val dividerItemDecoration = DividerItemDecoration(
+                                requireContext(),
+                                LinearLayoutManager.VERTICAL
+                            )
+                            dividerItemDecoration.setDrawable(
+                                ContextCompat.getDrawable(
+                                    requireContext(),
+                                    R.drawable.line_divider
+                                )!!
+                            )
+                            it.addItemDecoration(dividerItemDecoration)
 
-                    popupMenuListAdapter.setPopUpMenuOnclick(object: PopupMenuListAdapter.InquiryPopUpMenuItemOnclick{
-                        override fun removeItem(v: View)
-                        {
-                            //삭제하기
-                            inquiryVm.openRemoveView()
-                            menuPopUpWindow?.dismiss()
-                        }
-                        override fun refreshItems(v: View)
-                        {
-                            // 새로고침
-                            inquiryVm.refreshOngoing()
-                            menuPopUpWindow?.dismiss()
-                        }
-                        override fun help(v: View)
-                        {
-                            // 도움말
-                            inquiryVm.testFunReNewALL()
-                            menuPopUpWindow?.dismiss()
-                        }
-                    })
-                }
-            }
+                            popupMenuListAdapter.setPopUpMenuOnclick(object :
+                                PopupMenuListAdapter.InquiryPopUpMenuItemOnclick
+                            {
+                                override fun removeItem(v: View)
+                                {
+                                    //삭제하기
+                                    inquiryVm.openRemoveView()
+                                    menuPopUpWindow?.dismiss()
+                                }
 
-            menuPopUpWindow = PopupWindow(popUpView, SizeUtil.changeDpToPx(binding.root.context, 150F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
+                                override fun refreshItems(v: View)
+                                {
+                                    // 새로고침
+                                    inquiryVm.refreshOngoing()
+                                    menuPopUpWindow?.dismiss()
+                                }
+
+                                override fun help(v: View)
+                                {
+                                    // 도움말
+                                    inquiryVm.testFunReNewALL()
+                                    menuPopUpWindow?.dismiss()
+                                }
+                            })
+                        }
+                    }
+
+            menuPopUpWindow = PopupWindow(
+                popUpView,
+                SizeUtil.changeDpToPx(binding.root.context, 150F),
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
+            ).apply {
                 showAsDropDown(anchorView)
             }
         }
-        else{
+        else
+        {
             menuPopUpWindow?.showAsDropDown(anchorView)
         }
     }
@@ -535,27 +619,51 @@ class InquiryView : Fragment()
         timeCntDtoList: MutableList<TimeCountEntity>
     )
     {
-        val historyPopUpView: View = LayoutInflater.from(requireContext()).inflate(R.layout.popup_menu_view,null).also {v ->
-            val popupMenuListAdapter = PopupMenuListAdapter(MenuMapper.timeCountDtoToMenuItemList(timeCntDtoList) as MutableList<InquiryMenuItem>)
-            v.recyclerview_inquiry_popup_menu.also {
-                it.adapter = popupMenuListAdapter
-                val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
-                it.addItemDecoration(dividerItemDecoration)
+        val historyPopUpView: View =
+            LayoutInflater.from(requireContext()).inflate(R.layout.popup_menu_view, null)
+                .also { v ->
+                    val popupMenuListAdapter =
+                        PopupMenuListAdapter(MenuMapper.timeCountDtoToMenuItemList(timeCntDtoList) as MutableList<InquiryMenuItem>)
+                    v.recyclerview_inquiry_popup_menu.also {
+                        it.adapter = popupMenuListAdapter
+                        val dividerItemDecoration =
+                            DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                        dividerItemDecoration.setDrawable(
+                            ContextCompat.getDrawable(
+                                requireContext(),
+                                R.drawable.line_divider
+                            )!!
+                        )
+                        it.addItemDecoration(dividerItemDecoration)
 
-                popupMenuListAdapter.setHistoryPopUpItemOnclick(object: PopupMenuListAdapter.HistoryPopUpItemOnclick{
-                    override fun changeTimeCount(v: View, time: String) {
-                        inquiryVm.changeTimeCount(time)
-                        historyPopUpWindow?.dismiss()
+                        popupMenuListAdapter.setHistoryPopUpItemOnclick(object :
+                            PopupMenuListAdapter.HistoryPopUpItemOnclick
+                        {
+                            override fun changeTimeCount(v: View, time: String)
+                            {
+                                inquiryVm.changeTimeCount(time)
+                                historyPopUpWindow?.dismiss()
+                            }
+                        })
                     }
-                })
-            }
+                }
+        historyPopUpWindow = if (timeCntDtoList.size > 6)
+        {
+            PopupWindow(
+                historyPopUpView,
+                SizeUtil.changeDpToPx(binding.root.context, 120F),
+                SizeUtil.changeDpToPx(binding.root.context, 35 * 6F),
+                true
+            ).apply { showAsDropDown(anchorView) }
         }
-        historyPopUpWindow = if(timeCntDtoList.size > 6){
-            PopupWindow(historyPopUpView, SizeUtil.changeDpToPx(binding.root.context, 120F), SizeUtil.changeDpToPx(binding.root.context, 35*6F), true).apply { showAsDropDown(anchorView) }
-        }
-        else {
-            PopupWindow(historyPopUpView, SizeUtil.changeDpToPx(binding.root.context, 120F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply { showAsDropDown(anchorView) }
+        else
+        {
+            PopupWindow(
+                historyPopUpView,
+                SizeUtil.changeDpToPx(binding.root.context, 120F),
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true
+            ).apply { showAsDropDown(anchorView) }
         }
     }
 

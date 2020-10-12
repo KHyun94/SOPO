@@ -13,12 +13,13 @@ import android.view.ViewGroup
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
 import com.delivery.sopo.R
 import kotlinx.android.synthetic.main.loading.*
 import kotlinx.android.synthetic.main.loading.view.*
 
-class CustomProgressBar(private val act: AppCompatActivity) : DialogFragment()
+class CustomProgressBar(private val act: FragmentActivity) : DialogFragment()
 {
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,12 +34,14 @@ class CustomProgressBar(private val act: AppCompatActivity) : DialogFragment()
 
     fun onStartDialog()
     {
-        show(act.supportFragmentManager, null)
+        if(!isAdded)
+            show(act.supportFragmentManager, null)
     }
 
     fun onCloseDialog()
     {
-        dismiss()
+        if(isAdded)
+            dismiss()
     }
 
     private fun setSetting() {

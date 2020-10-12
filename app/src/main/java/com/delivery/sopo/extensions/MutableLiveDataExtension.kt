@@ -1,4 +1,4 @@
-package com.delivery.sopo.extentions
+package com.delivery.sopo.extensions
 
 import androidx.lifecycle.MutableLiveData
 import java.util.*

@@ -10,7 +10,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatus
-import com.delivery.sopo.extentions.launchActivitiy
+import com.delivery.sopo.extensions.launchActivitiy
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.networks.NetworkManager
