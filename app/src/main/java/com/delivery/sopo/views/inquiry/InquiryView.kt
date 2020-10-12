@@ -241,9 +241,11 @@ class InquiryView : Fragment()
                 {
                     Log.d(TAG, "3. isLoading false")
                     progressBar!!.onCloseDialog()
+                    binding.vm!!.isLoading.call()
                 }
             } else {
                 Log.d(TAG, "4. isLoading null")
+                progressBar!!.onCloseDialog()
             }
         })
         /*

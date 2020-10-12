@@ -229,11 +229,11 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         binding.vm!!.registeredParcelCnt.observe(this, Observer {
             if(it > 0)
             {
-                binding.vpMain.setCurrentItem(1, false)
+                binding.vpMain.setCurrentItem(1, true)
             }
             else
             {
-                binding.vpMain.setCurrentItem(0, false)
+                binding.vpMain.setCurrentItem(0, true)
             }
         })
     }

@@ -1,23 +1,16 @@
 package com.delivery.sopo.util.ui_util
 
-import android.app.Activity
-import android.app.Dialog
-import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
-import com.bumptech.glide.Glide
 import com.delivery.sopo.R
-import kotlinx.android.synthetic.main.loading.*
-import kotlinx.android.synthetic.main.loading.view.*
 
 class CustomProgressBar(private val act: FragmentActivity) : DialogFragment()
 {
@@ -34,17 +27,33 @@ class CustomProgressBar(private val act: FragmentActivity) : DialogFragment()
 
     fun onStartDialog()
     {
-        if(!isAdded)
+        if (!isAdded)
+        {
             show(act.supportFragmentManager, null)
+            Log.d("!!!!!!!", "프로그레스 정상 등록")
+        }
+        else
+        {
+            Log.d("!!!!!!!", "프로그레스 정상 등록 실패")
+        }
     }
 
     fun onCloseDialog()
     {
-        if(isAdded)
+        if (!isAdded)
+        {
+            Log.d("!!!!!!!", "프로그레스 정상 취소 실패")
+
+        }
+        else
+        {
+            Log.d("!!!!!!!", "프로그레스 정상 취소")
             dismiss()
+        }
     }
 
-    private fun setSetting() {
+    private fun setSetting()
+    {
         isCancelable = false
         dialog?.window?.run {
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
