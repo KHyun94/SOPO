@@ -12,7 +12,7 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.PermissionConst
 import com.delivery.sopo.databinding.SplashViewBinding
-import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.enums.ResponseCodeEnum
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.LoginResult
@@ -147,12 +147,12 @@ class SplashView : BasicView<SplashViewBinding>(
 
                     when (httpStatusCode)
                     {
-                        ResponseCode.SUCCESS.HTTP_STATUS ->
+                        ResponseCodeEnum.SUCCESS.HTTP_STATUS ->
                         {
                             startActivity(Intent(parentActivity, MainView::class.java))
                             finish()
                         }
-                        ResponseCode.INVALID_USER.HTTP_STATUS ->
+                        ResponseCodeEnum.INVALID_USER.HTTP_STATUS ->
                         {
                             GeneralDialog(
                                 act = parentActivity,

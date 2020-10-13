@@ -1,8 +1,7 @@
 package com.delivery.sopo.networks
 
+import com.delivery.sopo.BuildConfig
 import com.delivery.sopo.consts.NetworkConst
-import com.delivery.sopo.networks.api.ParcelAPI
-import com.delivery.sopo.networks.api.UserAPI
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -48,7 +47,7 @@ object NetworkManager
             gson.setLenient()
 
             return Retrofit.Builder()
-                .baseUrl(NetworkConst.API_URL)
+                .baseUrl(BuildConfig.API_URL)
                 .client(mOKHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson.create()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -60,7 +59,11 @@ object NetworkManager
         {
             // 공용 API 계정
             val basicAuthInterceptor =
-                BasicAuthInterceptor(NetworkConst.REAL_API_ID, NetworkConst.REAL_API_PWD)
+                BasicAuthInterceptor(
+                    BuildConfig.PUBLIC_API_ACCOUNT_ID,
+                    BuildConfig.PUBLIC_API_ACCOUNT_PASSWORD
+                )
+//                BasicAuthInterceptor(NetworkConst.REAL_API_ID, NetworkConst.REAL_API_PWD)
             val httpLoggingInterceptor = HttpLoggingInterceptor()
             httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -76,94 +79,10 @@ object NetworkManager
             gson.setLenient()
 
             return Retrofit.Builder()
-                .baseUrl(NetworkConst.API_URL)
+                .baseUrl(BuildConfig.API_URL)
                 .client(mOKHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson.create()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
         }
-
-    fun getPrivateUserAPI(id: String, pwd: String): UserAPI
-    {
-        val basicAuthInterceptor = BasicAuthInterceptor(id, pwd)
-        val httpLoggingInterceptor = HttpLoggingInterceptor()
-        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-
-        mOKHttpClient = OkHttpClient().newBuilder().apply {
-            addInterceptor(httpLoggingInterceptor)
-            addInterceptor(basicAuthInterceptor)
-            connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
-            writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
-            readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-        }.build()
-
-        val gson = GsonBuilder()
-        gson.setLenient()
-
-        mRetrofit = Retrofit.Builder()
-            .baseUrl(NetworkConst.API_URL)
-            .client(mOKHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(gson.create()))
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-
-        return mRetrofit.create(UserAPI::class.java)
-    }
-
-    fun getPrivateParcelAPI(id: String, pwd: String): ParcelAPI
-    {
-        val basicAuthInterceptor = BasicAuthInterceptor(id, pwd)
-        val httpLoggingInterceptor = HttpLoggingInterceptor()
-        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-
-        mOKHttpClient = OkHttpClient().newBuilder().apply {
-            addInterceptor(httpLoggingInterceptor)
-            addInterceptor(basicAuthInterceptor)
-            connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
-            writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
-            readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-        }.build()
-
-        val gson = GsonBuilder()
-        gson.setLenient()
-
-        mRetrofit = Retrofit.Builder()
-            .baseUrl(NetworkConst.API_URL)
-            .client(mOKHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(gson.create()))
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-
-        return mRetrofit.create(ParcelAPI::class.java)
-    }
-
-
-    fun getUserAPI(): UserAPI
-    {
-        // 공용 API 계정
-        val basicAuthInterceptor =
-            BasicAuthInterceptor(NetworkConst.REAL_API_ID, NetworkConst.REAL_API_PWD)
-        val httpLoggingInterceptor = HttpLoggingInterceptor()
-        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-
-        mOKHttpClient = OkHttpClient().newBuilder().apply {
-            addInterceptor(httpLoggingInterceptor)
-            addInterceptor(basicAuthInterceptor)
-            connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
-            writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
-            readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-        }.build()
-
-        val gson = GsonBuilder()
-        gson.setLenient()
-
-        mRetrofit = Retrofit.Builder()
-            .baseUrl(NetworkConst.API_URL)
-            .client(mOKHttpClient)
-            .addConverterFactory(GsonConverterFactory.create(gson.create()))
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
-
-        return mRetrofit.create(UserAPI::class.java)
-    }
 }

@@ -11,7 +11,6 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.PopupWindow
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -22,12 +21,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.databinding.SopoInquiryViewBinding
-import com.delivery.sopo.enums.FragmentType
-import com.delivery.sopo.enums.InquiryItemType
-import com.delivery.sopo.enums.ScreenStatus
+import com.delivery.sopo.enums.FragmentTypeEnum
+import com.delivery.sopo.enums.InquiryItemTypeEnum
+import com.delivery.sopo.enums.ScreenStatusEnum
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.mapper.MenuMapper
@@ -142,7 +140,7 @@ class InquiryView : Fragment()
             inquiryVm.cntOfSelectedItem,
             this,
             mutableListOf(),
-            InquiryItemType.Soon
+            InquiryItemTypeEnum.Soon
         )
 
         soonArrivalListAdapter.setOnParcelClickListener(_mClickListener = getParcelClicked())
@@ -153,7 +151,7 @@ class InquiryView : Fragment()
             inquiryVm.cntOfSelectedItem,
             this,
             mutableListOf(),
-            InquiryItemType.Registered
+            InquiryItemTypeEnum.Registered
         )
 
         registeredSopoListAdapter.setOnParcelClickListener(_mClickListener = getParcelClicked())
@@ -164,7 +162,7 @@ class InquiryView : Fragment()
             inquiryVm.cntOfSelectedItem,
             this,
             mutableListOf(),
-            InquiryItemType.Complete
+            InquiryItemTypeEnum.Complete
         )
 
         completeListAdapter.setOnParcelClickListener(_mClickListener = getParcelClicked())
@@ -179,11 +177,11 @@ class InquiryView : Fragment()
 
                 when (inquiryVm.getCurrentScreenStatus())
                 {
-                    ScreenStatus.COMPLETE ->
+                    ScreenStatusEnum.COMPLETE ->
                     {
                         inquiryVm.refreshComplete()
                     }
-                    ScreenStatus.ONGOING ->
+                    ScreenStatusEnum.ONGOING ->
                     {
                         inquiryVm.refreshOngoing()
                     }
@@ -307,10 +305,10 @@ class InquiryView : Fragment()
 
         // '배송 중' 또는 '배송 완료' 화면에 따른 화면 세팅
         // TODO 데이터 바인딩으로 처리할 수 있으면 처리하도록 수정해야함.
-        inquiryVm.screenStatus.observe(this, Observer {
+        inquiryVm.screenStatusEnum.observe(this, Observer {
             when (it)
             {
-                ScreenStatus.ONGOING ->
+                ScreenStatusEnum.ONGOING ->
                 { // '배송 중' 화면
                     btn_ongoing.setTextColor(
                         ContextCompat.getColor(
@@ -338,7 +336,7 @@ class InquiryView : Fragment()
                     )
                 }
 
-                ScreenStatus.COMPLETE ->
+                ScreenStatusEnum.COMPLETE ->
                 { // '배송 완료' 화면
                     btn_ongoing.setTextColor(
                         ContextCompat.getColor(
@@ -468,14 +466,14 @@ class InquiryView : Fragment()
          * 뷰모델에서 데이터 바인딩으로 '전체선택'하기를 이용자가 선택했을때
          */
         inquiryVm.isSelectAll.observe(this, Observer {
-            when (inquiryVm.screenStatus.value)
+            when (inquiryVm.screenStatusEnum.value)
             {
-                ScreenStatus.ONGOING ->
+                ScreenStatusEnum.ONGOING ->
                 {
                     soonArrivalListAdapter.setSelectAll(it)
                     registeredSopoListAdapter.setSelectAll(it)
                 }
-                ScreenStatus.COMPLETE ->
+                ScreenStatusEnum.COMPLETE ->
                 {
                     completeListAdapter.setSelectAll(it)
                 }
@@ -489,13 +487,13 @@ class InquiryView : Fragment()
         {
             override fun onItemClicked(view: View, parcelId: ParcelId)
             {
-                FragmentType.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(
+                FragmentTypeEnum.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(
                     parcelUId = parcelId.parcelUid,
                     regDt = parcelId.regDt
                 )
                 FragmentManager.move(
                     activity!!,
-                    FragmentType.INQUIRY_DETAIL,
+                    FragmentTypeEnum.INQUIRY_DETAIL,
                     InquiryMainFrame.viewId
                 )
             }
@@ -656,7 +654,7 @@ class InquiryView : Fragment()
 
                 val selectedData = when (inquiryVm.getCurrentScreenStatus())
                 {
-                    ScreenStatus.ONGOING ->
+                    ScreenStatusEnum.ONGOING ->
                     {
                         val selectedDataSoon =
                             soonArrivalListAdapter.getSelectedListData() // '곧 도착'에서 선택된 아이템들 리스트
@@ -665,7 +663,7 @@ class InquiryView : Fragment()
                         Stream.of(selectedDataSoon, selectedDataRegister).flatMap { it.stream() }
                             .collect(Collectors.toList()) // '곧 도착' 리스트와 '등록뙨 택배' 리스트에서 선택된 아이템들을 '하나'의 리스트로 합쳐 뷰모델로 보내 삭제 처리를 한다.
                     }
-                    ScreenStatus.COMPLETE ->
+                    ScreenStatusEnum.COMPLETE ->
                     {
                         completeListAdapter.getSelectedListData()
                     }

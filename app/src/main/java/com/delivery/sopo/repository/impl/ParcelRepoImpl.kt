@@ -11,6 +11,7 @@ import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
+import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.repository.interfaces.ParcelRepository
 import com.delivery.sopo.util.TimeUtil
 
@@ -20,17 +21,18 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
-    override suspend fun getRemoteOngoingParcels(): MutableList<Parcel>? = NetworkManager.getPrivateParcelAPI(userRepoImpl.getEmail(), userRepoImpl.getApiPwd()).getParcelsOngoing(email = userRepoImpl.getEmail()).data
+    override suspend fun getRemoteOngoingParcels(): MutableList<Parcel>? = NetworkManager.privateRetro.create(
+        ParcelAPI::class.java).getParcelsOngoing(email = userRepoImpl.getEmail()).data
     override suspend fun getRemoteOngoingParcel(regDt: String, parcelUid: String): Parcel? = NetworkManager
-                                                            .getPrivateParcelAPI(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
+                                                            .privateRetro.create(ParcelAPI::class.java)
                                                             .getParcel( email = userRepoImpl.getEmail(),
                                                                         regDt = regDt,
                                                                         parcelUid = parcelUid).data
 
-    override suspend fun getRemoteMonthList(): MutableList<TimeCountDTO>? = NetworkManager.getPrivateParcelAPI(userRepoImpl.getEmail(), userRepoImpl.getApiPwd()).getMonthList(email = userRepoImpl.getEmail()).data
+    override suspend fun getRemoteMonthList(): MutableList<TimeCountDTO>? = NetworkManager.privateRetro.create(ParcelAPI::class.java).getMonthList(email = userRepoImpl.getEmail()).data
 
     override suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<Parcel>? = NetworkManager
-                                                                                                        .getPrivateParcelAPI(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
+                                                                                                        .privateRetro.create(ParcelAPI::class.java)
                                                                                                         .getParcelsComplete(email = userRepoImpl.getEmail(), page = page, inquiryDate = inquiryDate).data
 
     override suspend fun getLocalParcelById(regDt: String, parcelUid: String): ParcelEntity? {
@@ -96,7 +98,7 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
     override suspend fun deleteRemoteParcels(): APIResult<String?>? {
         val beDeletedData = appDatabase.parcelDao().getBeDeletedData()
         return if(beDeletedData.isNotEmpty()){
-            NetworkManager.getPrivateParcelAPI(userRepoImpl.getEmail(), userRepoImpl.getApiPwd()).deleteParcels(email = userRepoImpl.getEmail(),
+            NetworkManager.privateRetro.create(ParcelAPI::class.java).deleteParcels(email = userRepoImpl.getEmail(),
                 parcelIds = DeleteParcelsDTO(beDeletedData.map(ParcelMapper::parcelEntityToParcelId) as MutableList<ParcelId>)
             )
         }

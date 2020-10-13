@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.consts.JoinTypeConst
-import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.enums.ResponseCodeEnum
 import com.delivery.sopo.extensions.commonMessageResId
 import com.delivery.sopo.firebase.FirebaseUserManagement
 import com.delivery.sopo.models.api.APIResult
@@ -293,7 +293,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
                     {
                         200 ->
                         {
-                            if (result?.code == ResponseCode.SUCCESS.CODE)
+                            if (result?.code == ResponseCodeEnum.SUCCESS.CODE)
                             {
                                 requestLogin(
                                     email = email.value.toString(),
@@ -369,7 +369,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
                         {
                             when (result?.code)
                             {
-                                ResponseCode.SUCCESS.CODE ->
+                                ResponseCodeEnum.SUCCESS.CODE ->
                                 {
                                     Log.d(TAG, "What the fuck ${result.data.toString()}")
                                     val gson = Gson()
@@ -396,7 +396,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
                                             InfoConst.NON_SHOW
                                         )
                                 }
-                                ResponseCode.ALREADY_LOGGED_IN.CODE ->
+                                ResponseCodeEnum.ALREADY_LOGGED_IN.CODE ->
                                 {
                                     val jwtToken = result.data as String
 

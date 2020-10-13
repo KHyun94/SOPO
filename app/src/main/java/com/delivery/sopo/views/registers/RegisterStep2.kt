@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterStep2Binding
-import com.delivery.sopo.enums.FragmentType
+import com.delivery.sopo.enums.FragmentTypeEnum
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.models.SelectItem
@@ -76,17 +76,17 @@ class RegisterStep2 : Fragment()
 
             when (it)
             {
-                FragmentType.REGISTER_STEP3.NAME ->
+                FragmentTypeEnum.REGISTER_STEP3.NAME ->
                 {
                     val mHandler = Handler()
                     mHandler.postDelayed(Runnable {
 
-                        FragmentType.REGISTER_STEP3.FRAGMENT =
+                        FragmentTypeEnum.REGISTER_STEP3.FRAGMENT =
                             RegisterStep3.newInstance(waybilNum, binding.vm!!.selectedItem.value!!.item)
 
                         FragmentManager.move(
                             activity!!,
-                            FragmentType.REGISTER_STEP3,
+                            FragmentTypeEnum.REGISTER_STEP3,
                             RegisterMainFrame.viewId
                         )
                         binding.vm?.moveFragment?.value = ""
@@ -94,7 +94,7 @@ class RegisterStep2 : Fragment()
                     }, 300) // 0.5초후
                 }
 
-                FragmentType.REGISTER_STEP2.NAME ->
+                FragmentTypeEnum.REGISTER_STEP2.NAME ->
                 {
                     FragmentManager.remove(activity = activity!!)
                     binding.vm?.moveFragment?.value = ""
@@ -113,7 +113,7 @@ class RegisterStep2 : Fragment()
                     if(item.isSelect)
                     {
                         binding.vm!!.selectedItem.value = item
-                        binding.vm!!.moveFragment.value = FragmentType.REGISTER_STEP3.NAME
+                        binding.vm!!.moveFragment.value = FragmentTypeEnum.REGISTER_STEP3.NAME
                     }
                 }
 

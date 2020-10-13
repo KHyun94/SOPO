@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.TextView
 import com.delivery.sopo.R
-import com.delivery.sopo.models.menu.NoticeData
+import com.delivery.sopo.models.menu.NoticeItem
 import java.lang.NullPointerException
 
-class NoticeExpandableAdapter(private val context: Context, private val groupData: MutableList<NoticeData>): BaseExpandableListAdapter()
+class NoticeExpandableAdapter(private val context: Context, private val groupData: MutableList<NoticeItem>): BaseExpandableListAdapter()
 {
     private val groupLay: Int = R.layout.expandable_notice_item_group
     private val childLay: Int = R.layout.expandable_notice_item_child
@@ -60,7 +60,7 @@ class NoticeExpandableAdapter(private val context: Context, private val groupDat
         return groupData[groupPosition].content.size
     }
 
-    override fun getGroup(groupPosition: Int): NoticeData
+    override fun getGroup(groupPosition: Int): NoticeItem
     {
         return groupData[groupPosition]
     }

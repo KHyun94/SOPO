@@ -1,6 +1,6 @@
 package com.delivery.sopo.util
 
-import com.delivery.sopo.enums.ResponseCode.*
+import com.delivery.sopo.enums.ResponseCodeEnum.*
 
 object CodeUtil
 {

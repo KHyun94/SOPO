@@ -17,7 +17,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.InquiryListCompleteItemBinding
 import com.delivery.sopo.databinding.InquiryListOngoingItemBinding
 import com.delivery.sopo.enums.DeliveryStatusEnum
-import com.delivery.sopo.enums.InquiryItemType
+import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
@@ -29,7 +29,7 @@ import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
 class InquiryListAdapter(
     private val cntOfSelectedItem: MutableLiveData<Int>, lifecycleOwner: LifecycleOwner,
     private var list: MutableList<InquiryListItem>,
-    private val itemType: InquiryItemType
+    private val itemTypeEnum: InquiryItemTypeEnum
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
     private var mClickListener: OnParcelClickListener? = null
@@ -81,9 +81,9 @@ class InquiryListAdapter(
     // onCreateViewHolder() - 아이템 뷰를 위한 뷰홀더 객체 생성하여 리턴.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
     {
-        when (itemType)
+        when (itemTypeEnum)
         {
-            InquiryItemType.Soon ->
+            InquiryItemTypeEnum.Soon ->
             {
                 return OngoingViewHolder(
                     DataBindingUtil.inflate(
@@ -94,7 +94,7 @@ class InquiryListAdapter(
                     )
                 )
             }
-            InquiryItemType.Registered ->
+            InquiryItemTypeEnum.Registered ->
             {
                 return OngoingViewHolder(
                     DataBindingUtil.inflate(
@@ -105,7 +105,7 @@ class InquiryListAdapter(
                     )
                 )
             }
-            InquiryItemType.Complete ->
+            InquiryItemTypeEnum.Complete ->
             {
                 return CompleteViewHolder(
                     DataBindingUtil.inflate(
@@ -440,21 +440,21 @@ class InquiryListAdapter(
     fun setDataList(listItem: MutableList<InquiryListItem>)
     {
 
-        this.list = when (itemType)
+        this.list = when (itemTypeEnum)
         {
-            InquiryItemType.Soon ->
+            InquiryItemTypeEnum.Soon ->
             {
                 listItem.filter {
                     it.parcel.deliveryStatus == DeliveryStatusEnum.out_for_delivery.code
                 }.toMutableList()
             }
-            InquiryItemType.Registered ->
+            InquiryItemTypeEnum.Registered ->
             {
                 listItem.filter {
                     it.parcel.deliveryStatus != DeliveryStatusEnum.out_for_delivery.code && it.parcel.deliveryStatus != DeliveryStatusEnum.delivered.code
                 }.toMutableList()
             }
-            InquiryItemType.Complete ->
+            InquiryItemTypeEnum.Complete ->
             {
                 listItem.filter {
                     it.parcel.deliveryStatus == DeliveryStatusEnum.delivered.code
@@ -472,9 +472,9 @@ class InquiryListAdapter(
 
     override fun getItemCount(): Int
     {
-        return when (itemType)
+        return when (itemTypeEnum)
         {
-            InquiryItemType.Soon ->
+            InquiryItemTypeEnum.Soon ->
             {
                 list.let {
                     if (it.size > limitOfSoonListSize && !isMoreView)

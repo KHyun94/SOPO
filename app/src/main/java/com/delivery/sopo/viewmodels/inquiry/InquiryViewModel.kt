@@ -3,8 +3,8 @@ package com.delivery.sopo.viewmodels.inquiry
 import android.util.Log
 import androidx.lifecycle.*
 import com.delivery.sopo.database.room.entity.TimeCountEntity
-import com.delivery.sopo.enums.ResponseCode
-import com.delivery.sopo.enums.ScreenStatus
+import com.delivery.sopo.enums.ResponseCodeEnum
+import com.delivery.sopo.enums.ScreenStatusEnum
 import com.delivery.sopo.mapper.MenuMapper
 import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.mapper.TimeCountMapper
@@ -14,6 +14,7 @@ import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
+import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.networks.dto.TimeCountDTO
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
@@ -76,8 +77,8 @@ class InquiryViewModel(
 
 
     // '배송 중' 또는 '배송완료' 화면 선택의 기준
-    private val _screenStatus = MutableLiveData<ScreenStatus>()
-    val screenStatus: LiveData<ScreenStatus>
+    private val _screenStatus = MutableLiveData<ScreenStatusEnum>()
+    val screenStatusEnum: LiveData<ScreenStatusEnum>
         get() = _screenStatus
 
     // '삭제하기'에서 선택된 아이템의 개수
@@ -128,7 +129,7 @@ class InquiryViewModel(
         _isMoreView.value = false
         _isRemovable.value = false
         _isSelectAll.value = false
-        _screenStatus.value = ScreenStatus.ONGOING
+        _screenStatus.value = ScreenStatusEnum.ONGOING
         sendRemovedData()
         checkIsNeedForceUpdate()
     }
@@ -136,13 +137,13 @@ class InquiryViewModel(
     // 화면을 배송완료 ==> 배송중으로 전환시킨다.
     fun setScreenStatusOngoing()
     {
-        _screenStatus.value = ScreenStatus.ONGOING
+        _screenStatus.value = ScreenStatusEnum.ONGOING
     }
 
     // 화면을 배송중 ==> 배송완료로 전환시킨다.
     fun setScreenStatusComplete()
     {
-        _screenStatus.value = ScreenStatus.COMPLETE
+        _screenStatus.value = ScreenStatusEnum.COMPLETE
         _isShowDeleteSnackBar.value = false
         refreshComplete()
     }
@@ -167,9 +168,9 @@ class InquiryViewModel(
         _isSelectAll.value = flag
     }
 
-    fun getCurrentScreenStatus(): ScreenStatus?
+    fun getCurrentScreenStatus(): ScreenStatusEnum?
     {
-        return screenStatus.value
+        return screenStatusEnum.value
     }
 
     fun refreshCompleteListByOnlyLocalData()
@@ -484,11 +485,7 @@ class InquiryViewModel(
     {
         viewModelScope.launch(Dispatchers.IO) {
             val requestRenewal2 =
-                NetworkManager.getPrivateParcelAPI(
-                    userRepoImpl.getEmail(),
-                    userRepoImpl.getApiPwd()
-                )
-                    .requestRenewal2(userRepoImpl.getEmail())
+                NetworkManager.privateRetro.create(ParcelAPI::class.java).requestRenewal2(userRepoImpl.getEmail())
         }
     }
 
@@ -511,7 +508,7 @@ class InquiryViewModel(
             parcelRepoImpl.deleteLocalParcels(selectedData)
             parcelManagementRepoImpl.updateIsBeDeleteToOneByParcelIdList(selectedData)
             // 배송완료일때 아이템이 하나도 없을 경우 전체 새로고침을 해야해서 삭제할때 -1을 해줘야함.
-            if (getCurrentScreenStatus() == ScreenStatus.COMPLETE)
+            if (getCurrentScreenStatus() == ScreenStatusEnum.COMPLETE)
             {
                 timeCountRepoImpl.getCurrentTimeCount()?.let {
                     it.count = it.count - selectedData.size
@@ -530,7 +527,7 @@ class InquiryViewModel(
                 // 서버로 데이터를 삭제(상태 업데이트)하라고 요청
                 val deleteRemoteParcels = parcelRepoImpl.deleteRemoteParcels()
                 // 위 요청이 성공했다면 (삭제할 데이터가 없으면 null임)
-                if (deleteRemoteParcels?.code == ResponseCode.SUCCESS.CODE)
+                if (deleteRemoteParcels?.code == ResponseCodeEnum.SUCCESS.CODE)
                 {
                     // 해당 아이템의 status(PARCEL)를 0으로 업데이트하여 삭제 처리를 마무리
                     val isBeDeleteList = parcelManagementRepoImpl.getAll()?.let { parcelMng ->
@@ -576,7 +573,7 @@ class InquiryViewModel(
                         parcelRepoImpl.updateEntity(it)
                     }
                 }
-                if (getCurrentScreenStatus() == ScreenStatus.COMPLETE)
+                if (getCurrentScreenStatus() == ScreenStatusEnum.COMPLETE)
                 {
                     // 복구해야할 리스트 중 아이템 하나의 도착일자 (2020-09-19 ~~)에서 TIME_COUNT의 primaryKey를 추출해서 복구해야할 TIME_COUNT를 구한다.
                     parcelRepoImpl.getLocalParcelById(
@@ -605,13 +602,13 @@ class InquiryViewModel(
     // '삭제하기'에서 아이템이 전부 선택되었는지를 반환
     fun isFullySelected(selectedNum: Int): Boolean
     {
-        return when (screenStatus.value ?: ScreenStatus.ONGOING)
+        return when (screenStatusEnum.value ?: ScreenStatusEnum.ONGOING)
         {
-            ScreenStatus.ONGOING ->
+            ScreenStatusEnum.ONGOING ->
             {
                 selectedNum == (ongoingList.value?.size ?: 0)
             }
-            ScreenStatus.COMPLETE ->
+            ScreenStatusEnum.COMPLETE ->
             {
                 selectedNum == (completeList.value?.size ?: 0)
             }

@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.delivery.sopo.enums.LockScreenStatus
+import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.asSHA256
 import com.delivery.sopo.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
@@ -25,8 +25,8 @@ class LockScreenViewModel(
     var isFinish = MutableLiveData<Boolean>()
     var verifyCnt = MutableLiveData<Int>()
 
-    private val _lockScreenStatus = MutableLiveData<LockScreenStatus>()
-    val lockScreenStatus: LiveData<LockScreenStatus>
+    private val _lockScreenStatus = MutableLiveData<LockScreenStatusEnum>()
+    val lockScreenStatusEnum: LiveData<LockScreenStatusEnum>
         get() = _lockScreenStatus
 
     private val _verifyResult = MutableLiveData<Boolean>()
@@ -44,8 +44,8 @@ class LockScreenViewModel(
         verifyCnt.value = 0
     }
 
-    fun setLockScreenStatus(status: LockScreenStatus){
-        _lockScreenStatus.value = status
+    fun setLockScreenStatus(statusEnum: LockScreenStatusEnum){
+        _lockScreenStatus.value = statusEnum
     }
 
     private fun verifyPassword(inputPassword: String): Boolean{
@@ -56,10 +56,10 @@ class LockScreenViewModel(
 
     fun lockPasswordAction(num: Int){
         when(_lockScreenStatus.value){
-            LockScreenStatus.SET -> {
+            LockScreenStatusEnum.SET -> {
                 setLockPassword(num)
             }
-            LockScreenStatus.VERIFY -> {
+            LockScreenStatusEnum.VERIFY -> {
                 verifyLockPassword(num)
             }
         }

@@ -11,7 +11,7 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.databinding.RegisterStep3Binding
-import com.delivery.sopo.enums.FragmentType
+import com.delivery.sopo.enums.FragmentTypeEnum
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.util.FragmentManager
@@ -83,14 +83,14 @@ class RegisterStep3 : Fragment()
         binding.vm!!.isRevise.observe(this, Observer {
             if (it != null && it)
             {
-                FragmentType.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(waybilNum, courier, 0)
+                FragmentTypeEnum.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(waybilNum, courier, 0)
 
                 FragmentManager.initFragment(
                     activity = activity!!,
                     viewId = RegisterMainFrame.viewId,
                     currentFragment = this@RegisterStep3,
-                    nextFragment = FragmentType.REGISTER_STEP1.FRAGMENT,
-                    nextFragmentTag = FragmentType.REGISTER_STEP1.NAME
+                    nextFragment = FragmentTypeEnum.REGISTER_STEP1.FRAGMENT,
+                    nextFragmentTag = FragmentTypeEnum.REGISTER_STEP1.NAME
                 )
 
                 binding.vm!!.isRevise.call()
@@ -104,14 +104,14 @@ class RegisterStep3 : Fragment()
                 {
                     Log.d(TAG, "등록 성공 $it")
 
-                    FragmentType.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(null, null, 1)
+                    FragmentTypeEnum.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(null, null, 1)
 
                     FragmentManager.initFragment(
                         activity = activity!!,
                         viewId = RegisterMainFrame.viewId,
                         currentFragment = this@RegisterStep3,
-                        nextFragment = FragmentType.REGISTER_STEP1.FRAGMENT,
-                        nextFragmentTag = FragmentType.REGISTER_STEP1.NAME
+                        nextFragment = FragmentTypeEnum.REGISTER_STEP1.FRAGMENT,
+                        nextFragmentTag = FragmentTypeEnum.REGISTER_STEP1.NAME
                     )
                 }
                 else

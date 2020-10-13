@@ -14,8 +14,10 @@ import com.delivery.sopo.extensions.commonMessageResId
 import com.delivery.sopo.firebase.FirebaseUserManagement
 import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.networks.NetworkManager
+import com.delivery.sopo.networks.api.UserAPI
 import com.delivery.sopo.util.ValidateUtil
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.kakao.usermgmt.api.UserApi
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers.io
 
@@ -180,7 +182,7 @@ class SignUpViewModel : ViewModel()
                         if (isDuplicate)
                         {
                             Log.d(TAG, "Duplicate Check Start!!!")
-                            onCheckDuplicateEmail(email = email.value!!)
+                            onCheckDuplicatedEmail(email = email.value!!)
 
                             return@FocusChangeCallback
                         }
@@ -395,10 +397,10 @@ class SignUpViewModel : ViewModel()
         return ValidateResult(result = true, msg = "", data = null, showType = InfoConst.NON_SHOW)
     }
 
-    private fun onCheckDuplicateEmail(email: String)
+    private fun onCheckDuplicatedEmail(email: String)
     {
         NetworkManager.run {
-            getUserAPI().requestDuplicateEmail(email)
+            publicRetro.create(UserAPI::class.java).requestDuplicateEmail(email)
                 .subscribeOn(io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

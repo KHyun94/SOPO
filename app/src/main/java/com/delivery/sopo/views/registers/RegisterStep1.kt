@@ -13,7 +13,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.databinding.RegisterStep1Binding
-import com.delivery.sopo.enums.FragmentType
+import com.delivery.sopo.enums.FragmentTypeEnum
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.repository.impl.CourierRepolmpl
@@ -154,9 +154,9 @@ class RegisterStep1 : Fragment()
         binding.vm?.moveFragment?.observe(this, Observer {
             when (it)
             {
-                FragmentType.REGISTER_STEP2.NAME ->
+                FragmentTypeEnum.REGISTER_STEP2.NAME ->
                 {
-                    FragmentType.REGISTER_STEP2.FRAGMENT =
+                    FragmentTypeEnum.REGISTER_STEP2.FRAGMENT =
                         RegisterStep2.newInstance(
                             binding.vm!!.waybilNum.value,
                             binding.vm!!.courier.value
@@ -164,14 +164,14 @@ class RegisterStep1 : Fragment()
 
                     FragmentManager.move(
                         activity!!,
-                        FragmentType.REGISTER_STEP2,
+                        FragmentTypeEnum.REGISTER_STEP2,
                         RegisterMainFrame.viewId
                     )
                     binding.vm?.moveFragment?.value = ""
                 }
-                FragmentType.REGISTER_STEP3.NAME ->
+                FragmentTypeEnum.REGISTER_STEP3.NAME ->
                 {
-                    FragmentType.REGISTER_STEP3.FRAGMENT =
+                    FragmentTypeEnum.REGISTER_STEP3.FRAGMENT =
                         RegisterStep3.newInstance(
                             binding.vm!!.waybilNum.value,
                             binding.vm!!.courier.value
@@ -179,7 +179,7 @@ class RegisterStep1 : Fragment()
 
                     FragmentManager.move(
                         activity!!,
-                        FragmentType.REGISTER_STEP3,
+                        FragmentTypeEnum.REGISTER_STEP3,
                         RegisterMainFrame.viewId
                     )
                     binding.vm?.moveFragment?.value = ""

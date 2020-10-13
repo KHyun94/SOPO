@@ -4,14 +4,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <import type="android.view.View" />
-        <import type="com.delivery.sopo.enums.ScreenStatus" />
+        <import type="com.delivery.sopo.enums.ScreenStatusEnum" />
 
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.inquiry.InquiryViewModel" />
         <variable
             name="screenStatus"
-            type="com.delivery.sopo.enums.ScreenStatus" />
+            type="com.delivery.sopo.enums.ScreenStatusEnum" />
     </data>
 
 
@@ -236,7 +236,7 @@
             android:layout_marginStart="16dp"
             android:paddingRight="10dp"
             android:paddingLeft="10dp"
-            android:visibility="@{(vm.monthList.size() > 0 &amp;&amp; vm.screenStatus == ScreenStatus.COMPLETE) ? View.VISIBLE : View.GONE}"
+            android:visibility="@{(vm.monthList.size() > 0 &amp;&amp; vm.screenStatusEnum == ScreenStatusEnum.COMPLETE) ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraint_select"
             tools:visibility="visible"
@@ -295,14 +295,14 @@
                         android:layout_height="match_parent"
                         android:orientation="vertical"
                         tools:visibility="gone"
-                        android:visibility="@{vm.screenStatus == ScreenStatus.ONGOING ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{vm.screenStatusEnum == ScreenStatusEnum.ONGOING ? View.VISIBLE : View.GONE}"
                         >
                         <LinearLayout
                             android:id="@+id/linear_ongoing_content_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:visibility="@{(vm.ongoingList.size() > 0 &amp;&amp; vm.screenStatus == ScreenStatus.ONGOING) ? View.VISIBLE : View.GONE}"
+                            android:visibility="@{(vm.ongoingList.size() > 0 &amp;&amp; vm.screenStatusEnum == ScreenStatusEnum.ONGOING) ? View.VISIBLE : View.GONE}"
                             tools:visibility="visible"
                             >
                             <androidx.constraintlayout.widget.ConstraintLayout
@@ -413,7 +413,7 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             android:layout_marginTop="100dp"
-                            android:visibility="@{(vm.ongoingList.size() == 0 &amp;&amp; vm.screenStatus == ScreenStatus.ONGOING) ? View.VISIBLE : View.GONE}"
+                            android:visibility="@{(vm.ongoingList.size() == 0 &amp;&amp; vm.screenStatusEnum == ScreenStatusEnum.ONGOING) ? View.VISIBLE : View.GONE}"
                             >
                             <ImageView
                                 android:id="@+id/image_exclamation_mark"
@@ -464,7 +464,7 @@
                     android:id="@+id/constraint_complete_parent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="@{vm.screenStatus == ScreenStatus.COMPLETE ? View.VISIBLE : View.GONE}"
+                    android:visibility="@{vm.screenStatusEnum == ScreenStatusEnum.COMPLETE ? View.VISIBLE : View.GONE}"
                     tools:visibility="gone"
                     >
                     <LinearLayout
@@ -472,7 +472,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:visibility="@{(vm.completeList.size() > 0 &amp;&amp; vm.screenStatus == ScreenStatus.COMPLETE) ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{(vm.completeList.size() > 0 &amp;&amp; vm.screenStatusEnum == ScreenStatusEnum.COMPLETE) ? View.VISIBLE : View.GONE}"
                         tools:visibility="visible"
                         >
                         <androidx.recyclerview.widget.RecyclerView
@@ -492,7 +492,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="100dp"
                         android:orientation="vertical"
-                        android:visibility="@{(vm.monthList.size() == 0 &amp;&amp; vm.screenStatus == ScreenStatus.COMPLETE) ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{(vm.monthList.size() == 0 &amp;&amp; vm.screenStatusEnum == ScreenStatusEnum.COMPLETE) ? View.VISIBLE : View.GONE}"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"

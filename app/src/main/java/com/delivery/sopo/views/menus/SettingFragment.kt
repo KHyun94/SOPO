@@ -10,7 +10,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.databinding.FragmentSettingBinding
-import com.delivery.sopo.enums.LockScreenStatus
+import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.extensions.launchActivitiy
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
@@ -68,7 +68,7 @@ class SettingFragment : Fragment(){
         }
         binding.root.tv_change_password.setOnClickListener {
             activity?.launchActivitiy<LockScreenView>{
-                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatus.SET)
+                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET)
             }
         }
     }
@@ -81,7 +81,7 @@ class SettingFragment : Fragment(){
         settingVM.showSetPassword.observe(this, Observer {
             if (it) {
                 activity?.launchActivitiy<LockScreenView>{
-                    putExtra(IntentConst.LOCK_SCREEN, LockScreenStatus.SET)
+                    putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET)
                 }
             }
             else {

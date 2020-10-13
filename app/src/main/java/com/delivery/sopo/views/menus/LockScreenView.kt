@@ -9,7 +9,7 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.databinding.LockScreenViewBinding
-import com.delivery.sopo.enums.LockScreenStatus
+import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.viewmodels.menus.LockScreenViewModel
 import kotlinx.android.synthetic.main.lock_screen_view.*
 import kotlinx.coroutines.*
@@ -116,7 +116,7 @@ class LockScreenView : AppCompatActivity()
     }
 
     private fun loadData() {
-        lockScreenVM.setLockScreenStatus(intent.getSerializableExtra(IntentConst.LOCK_SCREEN) as LockScreenStatus)
+        lockScreenVM.setLockScreenStatus(intent.getSerializableExtra(IntentConst.LOCK_SCREEN) as LockScreenStatusEnum)
     }
 
     private fun noneOfNumberPadIsPressed(){

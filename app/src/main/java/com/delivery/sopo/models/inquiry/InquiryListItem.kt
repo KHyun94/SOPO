@@ -1,6 +1,6 @@
 package com.delivery.sopo.models.inquiry
 
-import com.delivery.sopo.enums.InquiryItemType
+import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.models.parcel.Parcel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -8,7 +8,7 @@ import java.util.*
 class InquiryListItem(
     val parcel: Parcel,
     var isSelected: Boolean = false,
-    val viewType: InquiryItemType? = null
+    val viewTypeEnum: InquiryItemTypeEnum? = null
 ){
     val completeTimeDate: Calendar by lazy {
         val cal = Calendar.getInstance()

@@ -1,25 +1,25 @@
 package com.delivery.sopo.exceptions
 
-import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.enums.ResponseCodeEnum
 import java.lang.RuntimeException
 
 class APIException : RuntimeException
 {
-    val responseEnum: ResponseCode
+    val responseEnumEnum: ResponseCodeEnum
     val httpStatus: Int
     override val message: String
 
-    constructor(responseCode: ResponseCode)
+    constructor(responseCodeEnum: ResponseCodeEnum)
     {
-        this.responseEnum = responseCode
-        this.message = responseCode.MSG
-        this.httpStatus = responseCode.HTTP_STATUS
+        this.responseEnumEnum = responseCodeEnum
+        this.message = responseCodeEnum.MSG
+        this.httpStatus = responseCodeEnum.HTTP_STATUS
     }
 
-    constructor(responseCode: ResponseCode, extraMessage: String)
+    constructor(responseCodeEnum: ResponseCodeEnum, extraMessage: String)
     {
-        this.responseEnum = responseCode
-        this.message = responseCode.MSG + " : " + extraMessage
-        this.httpStatus = responseCode.HTTP_STATUS
+        this.responseEnumEnum = responseCodeEnum
+        this.message = responseCodeEnum.MSG + " : " + extraMessage
+        this.httpStatus = responseCodeEnum.HTTP_STATUS
     }
 }

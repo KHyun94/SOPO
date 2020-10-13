@@ -9,7 +9,7 @@ import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.databinding.MainViewBinding
-import com.delivery.sopo.enums.LockScreenStatus
+import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.launchActivitiy
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
@@ -193,7 +193,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         mainVm.isSetOfSecurity.observe(this, Observer {
             it?.also {
                 this.launchActivitiy<LockScreenView>{
-                    putExtra(IntentConst.LOCK_SCREEN, LockScreenStatus.VERIFY)
+                    putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
                 }
             }
         })

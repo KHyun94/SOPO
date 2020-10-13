@@ -2,7 +2,7 @@ package com.delivery.sopo.viewmodels.registesrs
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.delivery.sopo.enums.FragmentType
+import com.delivery.sopo.enums.FragmentTypeEnum
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.viewmodels.signup.FocusChangeCallback
@@ -53,7 +53,7 @@ class RegisterStep1ViewModel : ViewModel()
         if (waybilNum.value!!.length > 8)
         {
             if (courier.value == null || courier.value!!.courierName.isEmpty())
-                moveFragment.value = FragmentType.REGISTER_STEP2.NAME
+                moveFragment.value = FragmentTypeEnum.REGISTER_STEP2.NAME
         }
         else
         {
@@ -63,7 +63,7 @@ class RegisterStep1ViewModel : ViewModel()
 
     fun onMoveStep3Clicked()
     {
-        moveFragment.value = FragmentType.REGISTER_STEP3.NAME
+        moveFragment.value = FragmentTypeEnum.REGISTER_STEP3.NAME
     }
 
     fun onReselectClicked()
@@ -71,7 +71,7 @@ class RegisterStep1ViewModel : ViewModel()
         if (waybilNum.value!!.length > 8)
         {
             if (courier.value != null && !courier.value!!.courierName.isEmpty())
-                moveFragment.value = FragmentType.REGISTER_STEP2.NAME
+                moveFragment.value = FragmentTypeEnum.REGISTER_STEP2.NAME
         }
         else
         {

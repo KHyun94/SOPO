@@ -7,10 +7,10 @@ import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.TextView
 import com.delivery.sopo.R
-import com.delivery.sopo.models.menu.FaqData
+import com.delivery.sopo.models.menu.FaqItem
 import java.lang.NullPointerException
 
-class FaqExpandableAdapter(private val context: Context, private val groupData: MutableList<FaqData>): BaseExpandableListAdapter()
+class FaqExpandableAdapter(private val context: Context, private val groupData: MutableList<FaqItem>): BaseExpandableListAdapter()
 {
     private val groupLay: Int = R.layout.expandable_faq_item_group
     private val childLay: Int = R.layout.expandable_faq_item_child
@@ -57,7 +57,7 @@ class FaqExpandableAdapter(private val context: Context, private val groupData: 
         return groupData[groupPosition].content.size
     }
 
-    override fun getGroup(groupPosition: Int): FaqData
+    override fun getGroup(groupPosition: Int): FaqItem
     {
         return groupData[groupPosition]
     }

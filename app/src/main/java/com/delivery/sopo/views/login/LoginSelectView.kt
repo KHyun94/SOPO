@@ -9,7 +9,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.JoinTypeConst
 import com.delivery.sopo.databinding.LoginSelectViewBinding
-import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.enums.ResponseCodeEnum
 import com.delivery.sopo.firebase.FirebaseUserManagement
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.models.api.APIResult
@@ -177,7 +177,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                     {
                         200 ->
                         {
-                            if (result?.code == ResponseCode.SUCCESS.CODE)
+                            if (result?.code == ResponseCodeEnum.SUCCESS.CODE)
                             {
                                 val customToken = result.data as String
 
@@ -277,11 +277,11 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                     when (httpStatusCode)
                     {
 
-                        ResponseCode.SUCCESS.HTTP_STATUS ->
+                        ResponseCodeEnum.SUCCESS.HTTP_STATUS ->
                         {
                             when (result?.code)
                             {
-                                ResponseCode.SUCCESS.CODE ->
+                                ResponseCodeEnum.SUCCESS.CODE ->
                                 {
                                     val gson = Gson()
 
@@ -302,14 +302,14 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                                     startActivity(Intent(parentActivity, MainView::class.java))
                                     finish()
                                 }
-                                ResponseCode.ALREADY_LOGGED_IN.CODE ->
+                                ResponseCodeEnum.ALREADY_LOGGED_IN.CODE ->
                                 {
                                     val jwtToken = result.data as String
 
                                     GeneralDialog(
                                         act = parentActivity,
                                         title = "알림",
-                                        msg = ResponseCode.ALREADY_LOGGED_IN.MSG,
+                                        msg = ResponseCodeEnum.ALREADY_LOGGED_IN.MSG,
                                         detailMsg = null,
                                         rHandler = Pair(
                                             first = "네",
