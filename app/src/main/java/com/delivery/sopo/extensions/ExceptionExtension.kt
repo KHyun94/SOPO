@@ -1,4 +1,4 @@
-package com.delivery.sopo.extentions
+package com.delivery.sopo.extensions
 
 import android.content.Context
 import com.delivery.sopo.R

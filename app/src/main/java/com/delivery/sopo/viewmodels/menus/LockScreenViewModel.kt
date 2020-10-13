@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.enums.LockScreenStatus
-import com.delivery.sopo.extentions.asSHA256
+import com.delivery.sopo.extensions.asSHA256
 import com.delivery.sopo.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl

@@ -1,4 +1,4 @@
-package com.delivery.sopo.extentions
+package com.delivery.sopo.extensions
 
 val ByteArray.asHex get() = byteToHexString(this)
 val String.hexAsByteArray get() = hexStringToByteArray(this)

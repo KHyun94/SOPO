@@ -95,7 +95,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="25dp"
             android:layout_marginBottom="31dp"
-            android:text="123456789123"
+            android:text="@{item.waybilNym}"
             android:textColor="@color/COLOR_GRAY_800"
             app:layout_constraintBaseline_toBaselineOf="@+id/tv_courier"
             app:layout_constraintLeft_toRightOf="@+id/tv_courier"

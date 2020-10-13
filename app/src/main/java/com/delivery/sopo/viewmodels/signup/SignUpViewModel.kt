@@ -10,7 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst
-import com.delivery.sopo.extentions.commonMessageResId
+import com.delivery.sopo.extensions.commonMessageResId
 import com.delivery.sopo.firebase.FirebaseUserManagement
 import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.networks.NetworkManager

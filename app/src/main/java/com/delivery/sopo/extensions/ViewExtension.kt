@@ -1,9 +1,8 @@
-package com.delivery.sopo.extentions
+package com.delivery.sopo.extensions
 
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import android.widget.LinearLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 
 internal fun View?.findSuitableParent(): ViewGroup? {

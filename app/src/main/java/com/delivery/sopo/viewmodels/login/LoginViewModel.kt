@@ -9,7 +9,7 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.consts.JoinTypeConst
 import com.delivery.sopo.enums.ResponseCode
-import com.delivery.sopo.extentions.commonMessageResId
+import com.delivery.sopo.extensions.commonMessageResId
 import com.delivery.sopo.firebase.FirebaseUserManagement
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.LoginResult

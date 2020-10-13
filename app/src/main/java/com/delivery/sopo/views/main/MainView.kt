@@ -10,7 +10,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatus
-import com.delivery.sopo.extentions.launchActivitiy
+import com.delivery.sopo.extensions.launchActivitiy
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.networks.NetworkManager
@@ -229,11 +229,11 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         binding.vm!!.registeredParcelCnt.observe(this, Observer {
             if(it > 0)
             {
-                binding.vpMain.setCurrentItem(1, false)
+                binding.vpMain.setCurrentItem(1, true)
             }
             else
             {
-                binding.vpMain.setCurrentItem(0, false)
+                binding.vpMain.setCurrentItem(0, true)
             }
         })
     }

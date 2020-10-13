@@ -6,8 +6,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.enums.MenuEnum
-import com.delivery.sopo.extentions.MutableLiveDataExtension.popItem
-import com.delivery.sopo.extentions.MutableLiveDataExtension.pushItem
+import com.delivery.sopo.extensions.MutableLiveDataExtension.popItem
+import com.delivery.sopo.extensions.MutableLiveDataExtension.pushItem
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl

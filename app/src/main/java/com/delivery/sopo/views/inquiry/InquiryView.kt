@@ -3,8 +3,10 @@ package com.delivery.sopo.views.inquiry
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
 import android.view.View.*
+import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.PopupWindow
@@ -20,6 +22,8 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
+import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.databinding.SopoInquiryViewBinding
 import com.delivery.sopo.enums.FragmentType
 import com.delivery.sopo.enums.InquiryItemType
@@ -27,21 +31,20 @@ import com.delivery.sopo.enums.ScreenStatus
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.mapper.MenuMapper
-import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.repository.impl.*
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.ui_util.CustomProgressBar
-import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.viewmodels.factory.InquiryViewModelFactory
 import com.delivery.sopo.viewmodels.factory.MainViewModelFactory
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
-import com.delivery.sopo.views.main.MainView
+import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
+import com.delivery.sopo.views.main.MainView
 import kotlinx.android.synthetic.main.popup_menu_view.view.*
 import kotlinx.android.synthetic.main.sopo_inquiry_view.*
 import kotlinx.coroutines.CoroutineScope
@@ -56,7 +59,7 @@ class InquiryView : Fragment()
 {
     private lateinit var parentView: MainView
     private val TAG = this.javaClass.simpleName
-    private val userRepoImpl : UserRepoImpl by inject()
+    private val userRepoImpl: UserRepoImpl by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
     private val parcelManagementRepoImpl: ParcelManagementRepoImpl by inject()
     private val timeCountRepoImpl: TimeCountRepoImpl by inject()
@@ -96,7 +99,7 @@ class InquiryView : Fragment()
     ): View
     {
         binding = SopoInquiryViewBinding.inflate(inflater, container, false)
-        progressBar = CustomProgressBar(requireActivity() as AppCompatActivity)
+        progressBar = CustomProgressBar(activity!!)
         viewBinding()
         setObserver()
 
@@ -219,26 +222,59 @@ class InquiryView : Fragment()
             }
         })
 
-        inquiryVm.isLoading.observe(this, Observer { isLoading ->
-            progressBar?.let {
-                if (isLoading && !it.isAdded)
+        binding.vm!!.isLoading.observe(this, Observer {
+
+            if (it != null)
+            {
+                Log.d(TAG, "")
+
+                Log.d(TAG, "1. isLoading")
+                if (it)
                 {
-                    it.onStartDialog()
+                    Log.d(TAG, "2. isLoading true")
+                    progressBar!!.onStartDialog()
                 }
                 else
                 {
-                    try
-                    {
-                        it.onCloseDialog()
-                    }
-                    catch (e: IllegalStateException)
-                    {
-                        Log.e(TAG, "IllegalStateException !!!!!!! ${e.localizedMessage}")
-                    }
+                    Log.d(TAG, "3. isLoading false")
+                    progressBar!!.onCloseDialog()
+                    binding.vm!!.isLoading.call()
                 }
+            } else {
+                Log.d(TAG, "4. isLoading null")
+                progressBar!!.onCloseDialog()
             }
         })
+        /*
+        inquiryVm.isLoading.observe(this, Observer { isLoading ->
 
+            try
+            {
+                if (isLoading)
+                {
+                    if (!progressBar?.isAdded!!)
+                    {
+                        progressBar?.onStartDialog()
+                    }
+                    else
+                    {
+                        progressBar?.onCloseDialog()
+                    }
+                }
+                else
+                {
+                    progressBar?.onCloseDialog()
+                }
+
+            }
+            catch (e: Exception)
+            {
+                progressBar?.onCloseDialog()
+                Log.d(TAG, "Progress error $e")
+            }
+
+        })
+*/
         // 배송중 , 등록된 택배 리스트
         inquiryVm.ongoingList.observe(this, Observer {
             soonArrivalListAdapter.setDataList(it)

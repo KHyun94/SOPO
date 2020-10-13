@@ -2,7 +2,6 @@ package com.delivery.sopo.views.menus
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,14 +12,11 @@ import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.databinding.FragmentSettingBinding
 import com.delivery.sopo.enums.LockScreenStatus
 import com.delivery.sopo.enums.MenuEnum
-import com.delivery.sopo.extentions.launchActivitiy
-import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
+import com.delivery.sopo.extensions.launchActivitiy
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
-import com.delivery.sopo.viewmodels.factory.InquiryViewModelFactory
 import com.delivery.sopo.viewmodels.factory.MenuViewModelFactory
-import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import com.delivery.sopo.viewmodels.menus.SettingViewModel
 import com.delivery.sopo.views.dialog.SelectNotifyKindDialog
