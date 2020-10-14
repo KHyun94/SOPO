@@ -12,7 +12,11 @@
 NetworkConst.kt
 strings.xml
 google-services.json
+
+# keystore
 keystore.properties
+/keystore.properties
+./keystore.properties
 
 # Generated files
 bin/
