@@ -68,7 +68,7 @@ interface ParcelAPI
     // 0915 추가 - 택배 상태 업데이트 체크 api
     @PATCH("/api/v1/sopoMainBackEnd/delivery/{email}/parcels")
     @Headers("Accept: application/json")
-    suspend fun requestRenewal(@Path("email") email: String): Call<APIResult<String?>>
+    suspend fun requestRenewal(@Path("email") email: String): APIResult<String?>?
 
     // 0923 추가 - 택배 상태 설정에 따른 해당 상태 택배 전부 불러오기 api
     @GET("/api/v1/sopoMainBackEnd/delivery/{email}/parcels/{status}")

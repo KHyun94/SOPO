@@ -8,7 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.delivery.sopo.database.room.dao.*
 import com.delivery.sopo.database.room.entity.*
 
-@Database(entities = [CourierEntity::class, ParcelEntity::class, ParcelManagementEntity::class, TimeCountEntity::class, AppPasswordEntity::class], version = 1)
+@Database(entities = [CourierEntity::class, ParcelEntity::class, ParcelManagementEntity::class, TimeCountEntity::class, AppPasswordEntity::class, WorkEntity::class], version = 1)
 abstract class AppDatabase : RoomDatabase()
 {
     abstract fun courierDao(): CourierDao
@@ -16,6 +16,7 @@ abstract class AppDatabase : RoomDatabase()
     abstract fun parcelManagementDao(): ParcelManagementDao
     abstract fun timeCountDao(): TimeCountDao
     abstract fun securityDao(): AppPasswordDao
+    abstract fun workDao(): WorkDao
 
     companion object
     {

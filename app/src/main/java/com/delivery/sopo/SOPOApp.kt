@@ -7,8 +7,11 @@ import androidx.work.Constraints
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.RoomActivate
+import com.delivery.sopo.database.room.entity.WorkEntity
 import com.delivery.sopo.di.appModule
+import com.delivery.sopo.services.SOPOWorkeManager
 import com.delivery.sopo.services.SOPOWorker
 import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
 import com.delivery.sopo.util.OtherUtil
@@ -18,12 +21,19 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.kakao.auth.KakaoSDK
 import com.kakao.auth.Session
 import com.kakao.auth.authorization.accesstoken.AccessToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class SOPOApp : Application()
 {
+    val appDatabase: AppDatabase by inject()
 
     val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
@@ -74,26 +84,9 @@ class SOPOApp : Application()
 
         RoomActivate.initCourierDB(this)
 
-       checkWorkManager()
     }
 
-    private fun checkWorkManager()
-    {
-        val workConstraint = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED).build()
 
-        val workRequest = PeriodicWorkRequestBuilder<SOPOWorker>(15, TimeUnit.MINUTES)
-            .setConstraints(workConstraint).build()
-
-
-        val workerManager = WorkManager.getInstance(this)
-
-        val workerState = workerManager.getWorkInfoByIdLiveData(workRequest.id)
-
-        workerManager.enqueue(workRequest)
-
-//        val statusLiveData = workerManager
-    }
 
     companion object
     {
