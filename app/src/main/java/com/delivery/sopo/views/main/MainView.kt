@@ -69,12 +69,6 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
         updateFCMToken()
         init()
-
-        SOPOWorkeManager.updateWorkManager(
-            lifecycleOwner = this,
-            context = this,
-            appDatabase = appDatabase
-        )
     }
 
     private fun init()

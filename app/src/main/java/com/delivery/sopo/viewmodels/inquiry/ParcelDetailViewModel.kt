@@ -139,7 +139,7 @@ class ParcelDetailViewModel(
                     DeliveryStatusConst.AT_PICKUP ->
                     {
                         subTitle.postValue("상품이 집화처리 되었습니다.")
-                        statusBg.postValue(0)
+                        statusBg.postValue(R.drawable.ic_parcel_at_pickup)
                         "상품픽업"
                     }
                     DeliveryStatusConst.IN_TRANSIT ->

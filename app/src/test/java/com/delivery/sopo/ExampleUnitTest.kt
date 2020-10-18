@@ -1,8 +1,9 @@
 package com.delivery.sopo
 
+import com.delivery.sopo.database.room.AppDatabase
+import com.delivery.sopo.services.SOPOWorkeManager
 import org.junit.Test
-
-import org.junit.Assert.*
+import org.koin.java.KoinJavaComponent.inject
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -12,6 +13,17 @@ import java.util.*
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
+
+//    val appDB : AppDatabase = AppDatabase.getInstance(context = javaClass)
+
+    @Test
+    @Throws(Exception::class)
+    fun testWithWorkManager()
+    {
+        val appDatabase = AppDatabase.getInstance(SOPOApp.INSTANCE)
+        SOPOWorkeManager.updateWorkManager(SOPOApp.INSTANCE, appDatabase)
+    }
+
     @Test
     fun addition_isCorrect() {
         val calendar = Calendar.getInstance()

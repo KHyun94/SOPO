@@ -2,13 +2,13 @@ package com.delivery.sopo.services
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.work.*
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.AppDatabase
+import com.delivery.sopo.database.room.entity.LogEntity
 import com.delivery.sopo.database.room.entity.WorkEntity
+import com.delivery.sopo.services.worker.OneTimeWorker
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,36 +16,40 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 import java.util.concurrent.TimeUnit
+import com.delivery.sopo.services.worker.SOPOWorker
+
 
 object SOPOWorkeManager
 {
     val TAG = "LOG.SOPO"
 
+    // '배송 중' 또는 '배송완료' 화면 선택의 기준
+    private var _workInfo = MutableLiveData<WorkInfo?>()
+    val workInfo: LiveData<WorkInfo?>
+        get() = _workInfo
+
+
     private fun getWorkConstraint(): Constraints =
         Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
 
-    private inline fun <reified T : ListenableWorker> getWorkRequest(
-        intervalMin: Long,
-        contrains: Constraints
-    ): PeriodicWorkRequest =
-        PeriodicWorkRequestBuilder<T>(intervalMin, TimeUnit.MINUTES).setConstraints(contrains)
-            .build()
+    private inline fun <reified T : ListenableWorker> getWorkRequest(intervalMin: Long, contrains: Constraints): PeriodicWorkRequest = PeriodicWorkRequestBuilder<T>(intervalMin, TimeUnit.MINUTES).setConstraints(contrains).build()
 
-    fun updateWorkManager(lifecycleOwner: LifecycleOwner?,context: Context, appDatabase: AppDatabase)
+    fun updateWorkManager(context: Context, appDatabase: AppDatabase)
     {
         val workManager = WorkManager.getInstance(context)
 
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScope(Dispatchers.Main).launch {
+
             withContext(Dispatchers.Default) {
 
                 val works = appDatabase.workDao().getAll()
 
                 var workUUID: UUID? = null
-                var workInfo: LiveData<WorkInfo>? = null
                 var workRequest: PeriodicWorkRequest? = null
 
                 if (works == null || works.isEmpty())
                 {
+                    Log.d(TAG, "워크매니저 새로 등록")
                     // work 인스턴스화
                     workRequest = getWorkRequest<SOPOWorker>(15, getWorkConstraint())
 
@@ -64,37 +68,15 @@ object SOPOWorkeManager
                         )
 
                     // 워크 상태 조회
-                    workInfo = workManager.getWorkInfoByIdLiveData(workUUID)
+                    _workInfo = workManager.getWorkInfoByIdLiveData(workUUID) as MutableLiveData<WorkInfo?>
                 }
                 else
                 {
                     val workEntity = works[works.size - 1]
-                    workInfo = workManager.getWorkInfoByIdLiveData(UUID.fromString(workEntity.workUUID))
+                    Log.d(TAG, "워크매니저 이미 등록 ===> $workEntity")
+                    _workInfo = workManager.getWorkInfoByIdLiveData(UUID.fromString(workEntity.workUUID)) as MutableLiveData<WorkInfo?>
                 }
 
-
-//                if(lifecycleOwner != null)
-//                {
-//                    workInfo.observe(lifecycleOwner, androidx.lifecycle.Observer{workInfo ->
-//                        Toast.makeText(context, "WorkManager State =>\n${workInfo.state}", Toast.LENGTH_LONG).show()
-//                        when(workInfo.state)
-//                        {
-//                            WorkInfo.State.SUCCEEDED ->
-//                            {
-//
-//                            }
-//                            WorkInfo.State.RUNNING ->
-//                            {
-//
-//                            }
-//                            else ->
-//                            {
-//
-//                            }
-//                        }
-//
-//                    })
-//                }
             }
         }
 
@@ -105,4 +87,16 @@ object SOPOWorkeManager
         val workManager = WorkManager.getInstance(context)
         workManager.cancelAllWork()
     }
+
+    fun requestOneTimeWorker(context : Context)
+    {
+        val workManager = WorkManager.getInstance(context)
+        val workRequest = PeriodicWorkRequestBuilder<OneTimeWorker>(15, TimeUnit.MINUTES).build()
+
+        Log.d(TAG, "Period Service Manager GO!!")
+
+        workManager.enqueue(workRequest)
+    }
+
+
 }

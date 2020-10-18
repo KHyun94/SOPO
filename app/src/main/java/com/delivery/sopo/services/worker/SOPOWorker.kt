@@ -1,15 +1,17 @@
-package com.delivery.sopo.services
+package com.delivery.sopo.services.worker
 
 import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.delivery.sopo.database.room.AppDatabase
+import com.delivery.sopo.database.room.entity.LogEntity
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
@@ -17,7 +19,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 
-class SOPOWorker(context: Context, private val params: WorkerParameters) :
+class SOPOWorker(val context: Context, private val params: WorkerParameters) :
     CoroutineWorker(context, params), KoinComponent
 {
     val appDatabase: AppDatabase by inject()
@@ -55,7 +57,6 @@ class SOPOWorker(context: Context, private val params: WorkerParameters) :
         return cnt > 0
     }
 
-
     override suspend fun doWork(): Result = coroutineScope {
         withContext(Dispatchers.Default) {
 
@@ -63,7 +64,8 @@ class SOPOWorker(context: Context, private val params: WorkerParameters) :
 
             if (cnt == null || cnt == 0)
             {
-                Result.failure()
+                Result.success()
+//                Result.failure()
             }
             else
             {
@@ -75,15 +77,53 @@ class SOPOWorker(context: Context, private val params: WorkerParameters) :
 
                     if (result.code == "0000")
                     {
+                        Log.d(TAG, "Success to build Worker  $result")
+
+                        appDatabase.logDao()
+                            .insert(
+                                LogEntity(
+                                    no = 0,
+                                    msg = "Success to PATCH work manager",
+                                    uuid = "1",
+                                    regDt = TimeUtil.getDateTime()
+                                )
+                            )
+
                         Result.success()
                     }
                     else
+                    {
+                        appDatabase.logDao()
+                            .insert(
+                                LogEntity(
+                                    no = 0,
+                                    msg = "Failure to PATCH work manager",
+                                    uuid = "1",
+                                    regDt = TimeUtil.getDateTime()
+                                )
+                            )
+
+
+                        Log.d(TAG, "Fail to build Worker  $result")
                         Result.failure()
+                    }
                 }
                 else
                 {
+                    appDatabase.logDao()
+                        .insert(
+                            LogEntity(
+                                no = 0,
+                                msg = "Connect Fail to PATCH work manager",
+                                uuid = "1",
+                                regDt = TimeUtil.getDateTime()
+                            )
+                        )
+
+
                     Log.i(TAG, "Work Service Fail")
-                    Result.failure()
+
+                    Result.success()
                 }
             }
 

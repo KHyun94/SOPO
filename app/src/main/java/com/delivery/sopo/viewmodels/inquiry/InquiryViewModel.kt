@@ -20,6 +20,7 @@ import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.services.SOPOWorkeManager
 import com.delivery.sopo.util.TimeUtil
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.google.gson.Gson

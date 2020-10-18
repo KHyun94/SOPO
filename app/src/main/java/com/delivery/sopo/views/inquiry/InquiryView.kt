@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
+import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.databinding.SopoInquiryViewBinding
 import com.delivery.sopo.enums.FragmentTypeEnum
@@ -32,6 +33,7 @@ import com.delivery.sopo.mapper.MenuMapper
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.repository.impl.*
+import com.delivery.sopo.services.SOPOWorkeManager
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.ui_util.CustomProgressBar
@@ -68,6 +70,8 @@ class InquiryView : Fragment()
     private lateinit var completeListAdapter: InquiryListAdapter
     private var menuPopUpWindow: PopupWindow? = null
     private var historyPopUpWindow: PopupWindow? = null
+
+    private val appDatabase : AppDatabase by inject()
 
     private val mainVm: MainViewModel by lazy {
         ViewModelProvider(
@@ -237,6 +241,12 @@ class InquiryView : Fragment()
                     Log.d(TAG, "3. isLoading false")
                     progressBar!!.onCloseDialog()
                     binding.vm!!.isLoading.call()
+
+
+                    SOPOWorkeManager.updateWorkManager(
+                        context = context!!,
+                        appDatabase = appDatabase
+                    )
                 }
             } else {
                 Log.d(TAG, "4. isLoading null")
