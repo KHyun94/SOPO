@@ -47,8 +47,6 @@ class RegisterStep1 : Fragment()
 
         if (arguments != null)
         {
-            Log.d(TAG, "")
-
             arguments.run {
                 waybilNum = this?.getString("waybilNum") ?: ""
                 courier = this?.getSerializable("courier") as CourierItem?
@@ -93,16 +91,13 @@ class RegisterStep1 : Fragment()
         {
             override fun onBackPressed()
             {
-                Log.d("LOG.SOPO", "OnBackPressed")
+                Log.d(TAG, "OnBackPressed RegisterStep1")
 
                 parentView.moveTaskToBack(true);                        // 태스크를 백그라운드로 이동
                 parentView.finishAndRemoveTask();                        // 액티비티 종료 + 태스크 리스트에서 지우기
                 android.os.Process.killProcess(android.os.Process.myPid());
             }
-
         })
-
-
 
         return binding.root
     }

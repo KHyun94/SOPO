@@ -17,7 +17,6 @@ import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.UserAPI
 import com.delivery.sopo.repository.impl.UserRepoImpl
-import com.delivery.sopo.services.SOPOWorkeManager
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.viewmodels.main.MainViewModel
@@ -238,7 +237,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             binding.vm!!.registeredParcelCnt.observe(this, Observer {
                 if(it > 0)
                 {
-                    binding.vpMain.setCurrentItem(1, true)
+//                    binding.vpMain.setCurrentItem(3, true)
                     isInit = false
                     Log.d(TAG, "진행 중인 택배가 있음")
                 }
@@ -259,7 +258,6 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     fun onCompleteRegister()
     {
-
         isRegister = true
         binding.vpMain.currentItem = 1
         inquiryVm.refreshOngoing()

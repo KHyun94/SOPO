@@ -73,7 +73,7 @@ class RegisterStep3 : Fragment()
         {
             override fun onBackPressed()
             {
-                Log.d("LOG.SOPO", "OnBackPressed task 2")
+                Log.d(TAG, "OnBackPressed RegisterStep3")
                 FragmentManager.remove(activity!!)
             }
 

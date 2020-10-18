@@ -102,23 +102,10 @@ class InquiryView : Fragment()
     {
         binding = SopoInquiryViewBinding.inflate(inflater, container, false)
         progressBar = CustomProgressBar(activity!!)
+        parentView = activity as MainView
         viewBinding()
         setObserver()
 
-        parentView = activity as MainView
-
-        parentView.setOnBackPressListener(object : OnMainBackPressListener
-        {
-            override fun onBackPressed()
-            {
-                Log.d("LOG.SOPO", "OnBackPressed")
-
-                parentView.moveTaskToBack(true);                        // 태스크를 백그라운드로 이동
-                parentView.finishAndRemoveTask();                        // 액티비티 종료 + 태스크 리스트에서 지우기
-                android.os.Process.killProcess(android.os.Process.myPid());
-            }
-
-        })
 
         return binding.root
     }

@@ -81,11 +81,10 @@ class ParcelDetailView : Fragment()
         {
             override fun onBackPressed()
             {
-                Log.d("LOG.SOPO", "OnBackPressed")
+                Log.d(TAG, "OnBackPressed ParcelDetailView")
 
                 FragmentManager.remove(activity!!)
             }
-
         })
 
         binding.includeSemi.ivCopy.setOnClickListener {
@@ -102,10 +101,16 @@ class ParcelDetailView : Fragment()
             Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
         }
 
-
-
-
         return binding.root
+    }
+
+    override fun onDestroyView()
+    {
+        super.onDestroyView()
+        binding.root.parent?.also {
+            Log.d("!!!!!!", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ParcelDetailView DELETE")
+            (it as ViewGroup).removeView(binding.root)
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?)

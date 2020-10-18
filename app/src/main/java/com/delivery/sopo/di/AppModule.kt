@@ -83,6 +83,7 @@ val appModule = module {
     viewModel { MenuViewModel(get(), get(), get()) }
 
     viewModel { InquiryMainViewModel() }
+    viewModel { MenuMainViewModel() }
     viewModel {
         ParcelDetailViewModel(
             get(),

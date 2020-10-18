@@ -2,6 +2,7 @@ package com.delivery.sopo.views.menus
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,25 +44,12 @@ class MenuFragment : Fragment(){
         savedInstanceState: Bundle?
     ): View {
         binding = MenuViewBinding.inflate(inflater, container, false)
+        menuView = this.requireActivity()
+        parentView = activity as MainView
+
         viewBinding()
         setObserver()
         setListener()
-
-        menuView = this.requireActivity()
-        parentView = activity as MainView
-        parentView.setOnBackPressListener(object : OnMainBackPressListener
-        {
-            override fun onBackPressed()
-            {
-                if(!menuVm.popView()){
-                    parentView.moveTaskToBack(true);                        // 태스크를 백그라운드로 이동
-                    parentView.finishAndRemoveTask();                        // 액티비티 종료 + 태스크 리스트에서 지우기
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                }
-            }
-        })
-
-        lifecycle.addObserver(menuVm)
 
         return binding.root
     }
@@ -110,5 +98,23 @@ class MenuFragment : Fragment(){
         binding.root.relative_profile.setOnClickListener {
 
         }
+    }
+
+
+    override fun onResume()
+    {
+        super.onResume()
+        Log.d(TAG, "Menu onResume() !!!!!!!!!!!!!!")
+        parentView.setOnBackPressListener(object : OnMainBackPressListener
+        {
+            override fun onBackPressed()
+            {
+                if(!menuVm.popView()){
+                    parentView.moveTaskToBack(true);                // 태스크를 백그라운드로 이동
+                    parentView.finishAndRemoveTask();                        // 액티비티 종료 + 태스크 리스트에서 지우기
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                }
+            }
+        })
     }
 }

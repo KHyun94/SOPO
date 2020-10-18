@@ -10,6 +10,7 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.views.inquiry.InquiryMainFrame
 import com.delivery.sopo.views.inquiry.InquiryView
 import com.delivery.sopo.views.menus.MenuFragment
+import com.delivery.sopo.views.menus.MenuMainFrame
 import com.delivery.sopo.views.registers.RegisterMainFrame
 
 class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
@@ -32,6 +33,7 @@ class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
 
         currentFragment = tab1stFragment
     }
+
 
 
     override fun getPageTitle(position: Int): CharSequence?
