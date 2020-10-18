@@ -406,7 +406,7 @@ class InquiryViewModel(
                      */
                     else
                     {
-                        if (localParcelById.inqueryHash != remote.inqueryHash && localParcelById.status == 1)
+                        if (localParcelById.status == 1)
                         {
 
                             parcelRepoImpl.updateEntity(ParcelMapper.parcelToParcelEntity(remote))

@@ -15,41 +15,38 @@
         android:background="@android:color/white">
 
         <TextView
+            style="@style/H2"
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
-            android:fontFamily="@font/spoqa_han_sans_bold"
+            android:layout_marginTop="13dp"
             android:text="@string/LOCK_SCREEN_VIEW_PASSWORD_TITLE"
             android:textColor="@color/COLOR_GRAY_800"
-            android:textSize="25sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            style="@style/H5"
             android:id="@+id/tv_errorComment"
             android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/spoqa_han_sans_bold"
             android:text="@string/LOCK_SCREEN_VIEW_INVALID_PASSWORD"
             android:textColor="@color/MAIN_RED"
-            android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@+id/tv_guideComment"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             />
 
         <TextView
+            style="@style/H5"
             android:id="@+id/tv_guideComment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
-            android:fontFamily="@font/spoqa_han_sans_bold"
+            android:layout_marginTop="113dp"
             android:text="@string/LOCK_SCREEN_VIEW_PLEASE_INPUT_PASSWORD"
             android:textColor="@color/COLOR_GRAY_600"
-            android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView2" />
@@ -71,7 +68,7 @@
             android:id="@+id/linearLayout3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="28dp"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

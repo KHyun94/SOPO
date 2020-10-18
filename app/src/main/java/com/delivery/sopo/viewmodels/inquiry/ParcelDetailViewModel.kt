@@ -151,13 +151,13 @@ class ParcelDetailViewModel(
                     DeliveryStatusConst.OUT_FOR_DELIVERRY ->
                     {
                         subTitle.postValue("집배원이 배달을 시작했습니다.")
-                        statusBg.postValue(0)
+                        statusBg.postValue(R.drawable.ic_parcel_out_of_delivery_dismiss)
                         "동네도착"
                     }
                     DeliveryStatusConst.DELIVERED ->
                     {
                         subTitle.postValue("상품이 도착했습니다.")
-                        statusBg.postValue(0)
+                        statusBg.postValue(R.drawable.ic_splash_icon)
                         "배송완료"
                     }
                     else ->

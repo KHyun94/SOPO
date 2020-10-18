@@ -6,37 +6,56 @@
     android:layout_height="match_parent"
     tools:context=".views.signup.SignUpClear">
 
-    <TextView
-        android:id="@+id/textView"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="환영합니다.\n회원가입이 완료되었습니다."
-        android:textSize="25sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.2"
-        app:layout_constraintVertical_bias="0.2"/>
+        android:orientation="vertical"
 
-    <Button
-        android:id="@+id/btn_move_login"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintVertical_bias="0.7"
-        android:text="로그인하고 시작하기"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="@color/MAIN_WHITE"
-        android:paddingVertical="10sp"
-        android:paddingHorizontal="80sp"
-        android:background="@drawable/border_round_white_btn"
-        android:backgroundTint="@color/COLOR_MAIN_BLUE_700"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="125dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_join_complete" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_marginTop="50dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="환영합니다.!"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="회원가입이 완료되었습니다."
+            android:textSize="16sp" />
+
+
+
+        <Button
+            android:id="@+id/btn_move_login"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="100dp"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/border_round_white_btn"
+            android:backgroundTint="@color/COLOR_MAIN_BLUE_700"
+            android:paddingHorizontal="80sp"
+            android:paddingVertical="10sp"
+            android:text="로그인하고 시작하기"
+            android:textColor="@color/MAIN_WHITE"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

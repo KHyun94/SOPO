@@ -34,7 +34,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".views.signup.SignUpClear"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".views.login.LoginSelectView"
             android:windowSoftInputMode="adjustResize" />
