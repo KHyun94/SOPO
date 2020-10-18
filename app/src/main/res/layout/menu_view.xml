@@ -38,7 +38,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="10dp"
-                    android:layout_marginStart="18dp"
+                    android:layout_marginStart="28dp"
                     android:layout_marginTop="15dp"
                     android:layout_centerVertical="true"
                     android:background="@android:color/transparent"
@@ -50,16 +50,13 @@
                     />
 
                 <TextView
+                    style="@style/H2"
                     android:id="@+id/title_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:background="@android:color/white"
-                    android:fontFamily="@font/spoqa_han_sans_bold"
-                    android:textColor="@android:color/black"
-                    android:letterSpacing="0.05"
-                    android:lineSpacingExtra="11sp"
-                    android:textSize="16sp"
+                    android:textColor="@color/COLOR_GRAY_800"
                     android:text="@{vm.menu.title ?? ``}"
                     app:layout_constraintBottom_toBottomOf="@+id/btn_back"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -100,7 +97,7 @@
                 android:id="@+id/relative_profile"
                 android:layout_width="57dp"
                 android:layout_height="57dp"
-                android:layout_marginStart="35dp"
+                android:layout_marginStart="42dp"
                 android:layout_margin="35dp"
                 android:layout_marginHorizontal="35dp"
                 android:background="@drawable/profile_circular_view"
@@ -150,8 +147,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/MENU_VIEW_PLEASE_SET_NICK_NAME"
                     android:textColor="@color/COLOR_GRAY_400"
-                    android:letterSpacing="-0.04"
-                    android:textSize="12sp"
                     />
 
                 <TextView
@@ -159,9 +154,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{vm.userEmail}"
-                    android:letterSpacing="-0.04"
                     android:textColor="@color/MAIN_BLACK"
-                    android:textSize="12sp"
                     tools:text="win1692@naver.com"
                     />
 
@@ -188,21 +181,17 @@
                     android:id="@+id/tv_settingPassword"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/spoqa_han_sans_regular"
+                    android:layout_marginStart="4dp"
                     android:text="@string/MENU_VIEW_PASSWORD"
                     android:textColor="@color/MAIN_BLACK"
-                    android:textSize="12sp"
-                    android:letterSpacing="-0.04"
                     />
             </LinearLayout>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/linear_deliveryStatus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
+                android:layout_marginTop="42dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -210,26 +199,29 @@
 
                 <LinearLayout
                     android:id="@+id/linear_deliveryStatus_complete"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="67dp"
                     android:orientation="vertical"
-                    android:layout_weight="1"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/linear_deliveryStatus_ing"
                     >
 
                     <TextView
-                        style="@style/H1"
+                        android:textSize="35sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="-0.06"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:text="@{vm.cntOfCompleteListItem == null ? `0` : vm.cntOfCompleteListItem+``}"
                         android:textColor="@color/MAIN_BLACK"
-                        android:textSize="35sp"
-                        android:letterSpacing="-0.02"
                         tools:text="12"
                         />
                     <View
-                        android:layout_width="match_parent"
-                        android:layout_height="3dp"
+                        android:layout_width="45dp"
+                        android:layout_height="2dp"
                         android:background="@color/COLOR_MAIN_BLUE_700"
                         android:layout_gravity="center_horizontal"
                         />
@@ -244,35 +236,33 @@
 
                 </LinearLayout>
 
-                <View
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="5dp"
-                    />
 
                 <LinearLayout
                     android:id="@+id/linear_deliveryStatus_ing"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_weight="1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     >
 
                     <TextView
-                        style="@style/H1"
+                        android:textSize="35sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="-0.06"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{vm.cntOfOngoingListItem + ``}"
                         android:textColor="@color/MAIN_BLACK"
-                        android:textSize="35sp"
                         android:layout_gravity="center_horizontal"
-                        android:letterSpacing="-0.02"
                         tools:text="6"
                         />
 
                     <View
-                        android:layout_width="match_parent"
-                        android:layout_height="3dp"
+                        android:layout_width="45dp"
+                        android:layout_height="2dp"
                         android:background="@color/COLOR_MAIN_BLUE_700"
                         android:layout_gravity="center_horizontal"
                         />
@@ -287,32 +277,33 @@
 
                 </LinearLayout>
 
-                <View
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="5dp"
-                    />
+
                 <LinearLayout
                     android:id="@+id/linear_deliveryStatus_soon"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_weight="1"
+                    android:layout_marginStart="67dp"
+                    app:layout_constraintStart_toEndOf="@+id/linear_deliveryStatus_ing"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     >
+
                     <TextView
-                        style="@style/H1"
+                        android:textSize="35sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="-0.06"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
                         android:text="@{vm.cntOfSoonListItem + ``}"
                         android:textColor="@color/MAIN_BLACK"
-                        android:textSize="35sp"
-                        android:layout_gravity="center_horizontal"
-                        tools:text="4"
-                        />
+                        tools:text="4" />
                     <View
-                        android:layout_width="match_parent"
-                        android:layout_height="3dp"
+                        android:layout_width="45dp"
+                        android:layout_height="2dp"
                         android:background="@color/COLOR_MAIN_BLUE_700"
+                        android:layout_gravity="center_horizontal"
                         />
                     <TextView
                         style="@style/H5"
@@ -324,7 +315,7 @@
                         />
 
                 </LinearLayout>
-            </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
                 android:id="@+id/v_dividerLine1"
@@ -338,13 +329,13 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_notice"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="71dp"
                 app:layout_constraintTop_toBottomOf="@+id/v_dividerLine1">
 
                 <LinearLayout
                     android:id="@+id/linear_notice"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="71dp"
                     android:orientation="horizontal"
                     android:onClick="@{()-> vm.pushView(MenuEnum.NOTICE)}"
                     app:layout_constraintStart_toStartOf="parent"
@@ -352,9 +343,9 @@
                     app:layout_constraintBottom_toBottomOf="parent">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="35dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="42dp"
                         android:layout_gravity="center_vertical"
                         android:background="@drawable/ic_24_notice"
                         />
@@ -362,10 +353,9 @@
                         style="@style/H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="9dp"
                         android:layout_gravity="center_vertical"
                         android:text="@string/MENU_VIEW_NOTICE"
-                        android:textSize="16sp"
                         android:textColor="@color/COLOR_GRAY_800"
                         />
                 </LinearLayout>
@@ -373,7 +363,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="22dp"
+                    android:layout_marginEnd="26dp"
                     android:src="@drawable/ic_black_arrow_right"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -390,13 +380,13 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_setting"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="71dp"
                 app:layout_constraintTop_toBottomOf="@+id/v_dividerLine2">
 
                 <LinearLayout
                     android:id="@+id/linear_setting"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="71dp"
                     android:orientation="horizontal"
                     android:onClick="@{()-> vm.pushView(MenuEnum.SETTING)}"
                     app:layout_constraintStart_toStartOf="parent"
@@ -404,9 +394,9 @@
                     app:layout_constraintBottom_toBottomOf="parent">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="35dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="42dp"
                         android:layout_gravity="center_vertical"
                         android:background="@drawable/ic_24_setting"
                         />
@@ -414,10 +404,9 @@
                         style="@style/H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="9dp"
                         android:layout_gravity="center_vertical"
                         android:text="@string/MENU_VIEW_SETTING"
-                        android:textSize="16sp"
                         android:textColor="@color/COLOR_GRAY_800"
                         />
                 </LinearLayout>
@@ -425,7 +414,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="22dp"
+                    android:layout_marginEnd="26dp"
                     android:src="@drawable/ic_black_arrow_right"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -443,13 +432,13 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_faq"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="71dp"
                 app:layout_constraintTop_toBottomOf="@+id/v_dividerLine3">
 
                 <LinearLayout
                     android:id="@+id/linear_faq"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="71dp"
                     android:orientation="horizontal"
                     android:onClick="@{()-> vm.pushView(MenuEnum.FAQ)}"
                     app:layout_constraintStart_toStartOf="parent"
@@ -457,9 +446,9 @@
                     app:layout_constraintBottom_toBottomOf="parent">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="35dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="42dp"
                         android:layout_gravity="center_vertical"
                         android:background="@drawable/ic_24_faq"
                         />
@@ -467,10 +456,9 @@
                         style="@style/H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="9dp"
                         android:layout_gravity="center_vertical"
                         android:text="@string/MENU_VIEW_FAQ"
-                        android:textSize="16sp"
                         android:textColor="@color/COLOR_GRAY_800"
                         />
                 </LinearLayout>
@@ -478,7 +466,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="22dp"
+                    android:layout_marginEnd="26dp"
                     android:src="@drawable/ic_black_arrow_right"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -496,13 +484,13 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_termOfUse"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="71dp"
                 app:layout_constraintTop_toBottomOf="@+id/v_dividerLine4">
 
                 <LinearLayout
                     android:id="@+id/linear_termOfUse"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="71dp"
                     android:orientation="horizontal"
                     android:onClick="@{()-> vm.pushView(MenuEnum.USE_TERMS)}"
                     app:layout_constraintStart_toStartOf="parent"
@@ -510,26 +498,25 @@
                     app:layout_constraintBottom_toBottomOf="parent">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginStart="35dp"
+                        android:layout_marginStart="42dp"
                         android:background="@drawable/ic_24_terms" />
                     <TextView
                         style="@style/H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="9dp"
                         android:layout_gravity="center_vertical"
                         android:text="@string/MENU_VIEW_TERMS"
-                        android:textSize="16sp"
                         android:textColor="@color/COLOR_GRAY_800"
                         />
                 </LinearLayout>
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="22dp"
+                    android:layout_marginEnd="26dp"
                     android:src="@drawable/ic_black_arrow_right"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -547,12 +534,12 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_appInfo"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="71dp"
                 app:layout_constraintTop_toBottomOf="@+id/v_dividerLine5">
                 <LinearLayout
                     android:id="@+id/linear_appInfo"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="71dp"
                     android:orientation="horizontal"
                     android:onClick="@{()-> vm.pushView(MenuEnum.APP_INFO)}"
                     app:layout_constraintStart_toStartOf="parent"
@@ -560,9 +547,9 @@
                     app:layout_constraintBottom_toBottomOf="parent">
 
                     <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="35dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="42dp"
                         android:layout_gravity="center_vertical"
                         android:background="@drawable/ic_24_info"
                         />
@@ -570,10 +557,9 @@
                         style="@style/H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
+                        android:layout_marginStart="9dp"
                         android:layout_gravity="center_vertical"
                         android:text="@string/MENU_VIEW_APP_INFO"
-                        android:textSize="16sp"
                         android:textColor="@color/COLOR_GRAY_800"
                         />
                 </LinearLayout>
@@ -581,7 +567,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="22dp"
+                    android:layout_marginEnd="26dp"
                     android:src="@drawable/ic_black_arrow_right"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

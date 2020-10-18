@@ -27,8 +27,9 @@
                 android:id="@+id/textView3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="36dp"
+                android:layout_marginStart="41dp"
                 android:layout_marginBottom="44dp"
+                android:letterSpacing="-0.05"
                 android:fontFamily="@font/spoqa_han_sans_light"
                 android:text="@string/LOGIN_SELECT_MAIN_COMMENT"
                 android:textColor="@color/PRIMARY_700"
@@ -41,7 +42,7 @@
             <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="116dp"
-                android:layout_height="84sp"
+                android:layout_height="84dp"
                 android:layout_marginEnd="23dp"
                 android:layout_marginBottom="30dp"
                 android:background="@drawable/ic_triple_sopo"
@@ -72,11 +73,11 @@
             <RelativeLayout
                 android:id="@+id/relative_email_login"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="52dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginStart="35dp"
-                android:layout_marginEnd="35dp"
-                android:background="@drawable/border_15dp_rounder"
+                android:layout_marginStart="41dp"
+                android:layout_marginEnd="41dp"
+                android:background="@drawable/border_14dp_rounder"
                 android:clickable="true"
                 android:onClick="@{()->vm.onGoLoginClicked()}">
 
@@ -108,11 +109,11 @@
             <RelativeLayout
                 android:id="@+id/layout_kakao_login"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="52dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginStart="35dp"
-                android:layout_marginEnd="35dp"
-                android:background="@drawable/border_15dp_rounder"
+                android:layout_marginStart="41dp"
+                android:layout_marginEnd="41dp"
+                android:background="@drawable/border_14dp_rounder"
                 android:clickable="true"
                 android:onClick="@{()->vm.onKakaoLoginClicked()}">
 
@@ -159,8 +160,8 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1sp"
-                    android:layout_marginStart="35dp"
-                    android:layout_marginEnd="35dp"
+                    android:layout_marginStart="41dp"
+                    android:layout_marginEnd="41dp"
                     android:layout_centerInParent="true"
                     android:background="@color/COLOR_GRAY_200" />
 
@@ -180,10 +181,10 @@
                 style="@style/H4"
                 android:id="@+id/btn_sign_up"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginStart="35dp"
-                android:layout_marginEnd="35dp"
-                android:background="@drawable/border_15dp_rounder"
+                android:layout_height="52dp"
+                android:layout_marginStart="41dp"
+                android:layout_marginEnd="41dp"
+                android:background="@drawable/border_14dp_rounder"
                 android:backgroundTint="@color/PRIMARY_700"
                 android:onClick="@{()->vm.onGoSignUpClicked()}"
                 android:text="@string/LOGIN_SELECT_JOIN_COMMENT"
