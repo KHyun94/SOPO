@@ -45,7 +45,7 @@ object RoomActivate
                             priority = 0.98,
                             clickRes = ic_color_korean,
                             nonClickRes = ic_gray_korean,
-                            iconRes = ic_color_korean
+                            iconRes = ic_logo_korean
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -56,7 +56,7 @@ object RoomActivate
                             priority = 1.0,
                             clickRes = ic_color_daehan,
                             nonClickRes = ic_gray_daehan,
-                            iconRes = ic_color_daehan
+                            iconRes = ic_logo_daehan
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -67,7 +67,7 @@ object RoomActivate
                             priority = 0.97,
                             clickRes = ic_color_logen,
                             nonClickRes = ic_gray_logen,
-                            iconRes = ic_color_logen
+                            iconRes = ic_logo_logen
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -78,7 +78,7 @@ object RoomActivate
                             priority = 0.96,
                             clickRes = ic_color_hanjin,
                             nonClickRes = ic_gray_hanjin,
-                            iconRes = ic_color_hanjin
+                            iconRes = ic_logo_hanjin
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -89,7 +89,7 @@ object RoomActivate
                             priority = 0.91,
                             clickRes = ic_color_dhl,
                             nonClickRes = ic_gray_dhl,
-                            iconRes = ic_color_dhl
+                            iconRes = ic_logo_dhl
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -100,7 +100,7 @@ object RoomActivate
                             priority = 0.88,
                             clickRes = ic_color_chunil,
                             nonClickRes = ic_gray_chunil,
-                            iconRes = ic_color_chunil
+                            iconRes = ic_logo_chunil
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -111,7 +111,7 @@ object RoomActivate
                             priority = 0.95,
                             clickRes = ic_color_daeshin,
                             nonClickRes = ic_gray_daeshin,
-                            iconRes = ic_color_daeshin
+                            iconRes = ic_logo_daeshin
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -122,7 +122,7 @@ object RoomActivate
                             priority = 0.92,
                             clickRes = ic_color_daeshin,
                             nonClickRes = ic_gray_daeshin,
-                            iconRes = ic_color_daeshin
+                            iconRes = ic_logo_daeshin
                         ),
 //                        CourierEntity(0, "한의사랑택배", 13, 13, 1.0, ic_color_ha, ic_gray_dhl, ic_color_dhl),
                         CourierEntity(
@@ -134,7 +134,7 @@ object RoomActivate
                             priority = 0.89,
                             clickRes = ic_color_habdong,
                             nonClickRes = ic_gray_habdong,
-                            iconRes = ic_color_habdong
+                            iconRes = ic_logo_habdong
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -145,7 +145,7 @@ object RoomActivate
                             priority = 0.86,
                             clickRes = ic_color_ilyang,
                             nonClickRes = ic_gray_ilyang,
-                            iconRes = ic_color_ilyang
+                            iconRes = ic_logo_ilyang
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -154,9 +154,9 @@ object RoomActivate
                             minLen = 9,
                             maxLen = 16,
                             priority = 0.93,
-                            clickRes = ic_color_gyungdong,
-                            nonClickRes = ic_gray_gyungdong,
-                            iconRes = ic_color_gyungdong
+                            clickRes = ic_color_kyungdong,
+                            nonClickRes = ic_gray_kyungdong,
+                            iconRes = ic_logo_kyungdong
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -167,7 +167,7 @@ object RoomActivate
                             priority = 0.5,
                             clickRes = ic_color_gunyoung,
                             nonClickRes = ic_gray_gunyoung,
-                            iconRes = ic_color_gunyoung
+                            iconRes = ic_logo_gunyoung
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -177,7 +177,7 @@ object RoomActivate
                             priority = 0.99,
                             clickRes = ic_color_lotte,
                             nonClickRes = ic_gray_lotte,
-                            iconRes = ic_color_lotte
+                            iconRes = ic_logo_lotte
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -187,7 +187,7 @@ object RoomActivate
                             priority = 0.94,
                             clickRes = ic_color_ems,
                             nonClickRes = ic_gray_ems,
-                            iconRes = ic_color_ems
+                            iconRes = ic_logo_ems
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -197,7 +197,7 @@ object RoomActivate
                             priority = 0.5,
                             clickRes = ic_color_tnt,
                             nonClickRes = ic_gray_tnt,
-                            iconRes = ic_color_tnt
+                            iconRes = ic_logo_tnt
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -207,7 +207,7 @@ object RoomActivate
                             priority = 0.5,
                             clickRes = ic_color_fedex,
                             nonClickRes = ic_gray_fedex,
-                            iconRes = ic_color_fedex
+                            iconRes = ic_logo_fedex
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -217,7 +217,7 @@ object RoomActivate
                             priority = 0.5,
                             clickRes = ic_color_usps,
                             nonClickRes = ic_gray_usps,
-                            iconRes = ic_color_usps
+                            iconRes = ic_logo_usps
                         ),
 
                         //미확정
@@ -229,7 +229,7 @@ object RoomActivate
                             priority = 0.0,
                             clickRes = ic_color_sagawa,
                             nonClickRes = ic_gray_sagawa,
-                            iconRes = ic_color_sagawa
+                            iconRes = ic_logo_sagawa
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -239,7 +239,7 @@ object RoomActivate
                             priority = 0.0,
                             clickRes = ic_color_yamato,
                             nonClickRes = ic_gray_yamato,
-                            iconRes = ic_color_yamato
+                            iconRes = ic_logo_yamato
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -249,7 +249,7 @@ object RoomActivate
                             priority = 0.0,
                             clickRes = ic_color_japan,
                             nonClickRes = ic_gray_japan,
-                            iconRes = ic_color_japan
+                            iconRes = ic_logo_japan
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -259,7 +259,7 @@ object RoomActivate
                             priority = 0.90,
                             clickRes = ic_color_gs,
                             nonClickRes = ic_gray_gs,
-                            iconRes = ic_color_gs
+                            iconRes = ic_logo_gs
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -269,7 +269,7 @@ object RoomActivate
                             priority = 0.0,
                             clickRes = ic_color_cway,
                             nonClickRes = ic_gray_cway,
-                            iconRes = ic_color_cway
+                            iconRes = ic_logo_cway
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -279,7 +279,7 @@ object RoomActivate
                             priority = 0.85,
                             clickRes = ic_color_homepick,
                             nonClickRes = ic_gray_homepick,
-                            iconRes = ic_color_homepick
+                            iconRes = ic_logo_homepick
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -289,7 +289,7 @@ object RoomActivate
                             priority = 0.0,
                             clickRes = ic_color_hanseohonam,
                             nonClickRes = ic_gray_hanseohonam,
-                            iconRes = ic_color_hanseohonam
+                            iconRes = ic_logo_hanseohonam
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -299,7 +299,7 @@ object RoomActivate
                             priority = 0.87,
                             clickRes = ic_color_slx,
                             nonClickRes = ic_gray_slx,
-                            iconRes = ic_color_slx
+                            iconRes = ic_logo_slx
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -309,7 +309,7 @@ object RoomActivate
                             priority = 0.0,
                             clickRes = ic_color_sungone,
                             nonClickRes = ic_gray_sungone,
-                            iconRes = ic_color_sungone
+                            iconRes = ic_logo_sungone
                         ),
                         CourierEntity(
                             courierNo = 0,
@@ -319,7 +319,7 @@ object RoomActivate
                             priority = 0.0,
                             clickRes = ic_color_ups,
                             nonClickRes = ic_gray_ups,
-                            iconRes = ic_color_ups
+                            iconRes = ic_logo_ups
                         )
                     )
                     roomDBHelper.courierDao().insert(courierList)
@@ -438,9 +438,9 @@ object RoomActivate
                                 returnList!!.add(
                                     CourierItem(
                                         courierName = "경동택배", courierCode = "",
-                                        clickRes = R.drawable.ic_color_gyungdong,
-                                        nonClickRes = R.drawable.ic_gray_gyungdong,
-                                        iconRes = R.drawable.ic_color_gyungdong
+                                        clickRes = R.drawable.ic_color_kyungdong,
+                                        nonClickRes = R.drawable.ic_gray_kyungdong,
+                                        iconRes = R.drawable.ic_color_kyungdong
                                     )
                                 )
                             }
