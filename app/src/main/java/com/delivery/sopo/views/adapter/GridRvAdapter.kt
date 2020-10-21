@@ -146,6 +146,8 @@ class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
                         Log.d(TAG, "item ===> $item")
                     }
                 }
+
+                notifyDataSetChanged()
             }
         }
 

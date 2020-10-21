@@ -6,14 +6,19 @@ import android.util.Log
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.di.appModule
+import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
+import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.OtherUtil
+import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.iid.FirebaseInstanceId
 import com.kakao.auth.KakaoSDK
 import com.kakao.auth.Session
 import com.kakao.auth.authorization.accesstoken.AccessToken
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -21,6 +26,7 @@ import org.koin.core.context.startKoin
 class SOPOApp : Application()
 {
     val appDatabase: AppDatabase by inject()
+    val parcelRepoImpl: ParcelRepoImpl by inject()
 
     val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
@@ -71,13 +77,39 @@ class SOPOApp : Application()
 
         RoomActivate.initCourierDB(this)
 
+        GlobalScope.launch {
+            currentPage.postValue(getInitViewPagerNumber())
+        }
     }
 
+    suspend fun getInitViewPagerNumber(): Int
+    {
+        val text = ClipboardUtil.pasteClipboardText(con = this, parcelImpl = parcelRepoImpl)
 
+        return if (text.isNotEmpty())
+        {
+            0
+        }
+        else
+        {
+            val cnt = parcelRepoImpl.getOnGoingDataCnt()
+
+            if (cnt == 0)
+            {
+                0
+            }
+            else
+            {
+                1
+            }
+        }
+    }
 
     companion object
     {
         lateinit var INSTANCE: Context
         lateinit var auth: FirebaseAuth
+
+        var currentPage = SingleLiveEvent<Int?>()
     }
 }

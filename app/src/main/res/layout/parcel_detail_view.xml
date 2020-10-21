@@ -36,24 +36,30 @@
                 android:layout_height="match_parent"
                 android:background="@color/MAIN_WHITE">
 
+                <!--      기존 left:31에 -> 31 * 1.1762 = 36.4622 올림 37dp      -->
+                <!--      기존 top:18에 -> 18 * 1.1762 = 21.1716 내림 21dp      -->
                 <ImageView
                     android:id="@+id/btn_previous"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginStart="37dp"
+                    android:layout_marginTop="18dp"
                     android:background="@drawable/ic_left_arrow"
+                    android:onClick="@{()->vm.onBackClicked()}"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:onClick="@{()->vm.onBackClicked()}"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
+
+                <!--        기존 top:11 -> 11 * 1.1762 = 12.9382 올림 13dp      -->
+                <!--        기존 bottom:10 -> 10 * 1.1762 = 11.762 올림 12dp       -->
                 <TextView
                     android:id="@+id/tv_title"
                     style="@style/H2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="7dp"
-                    android:text="상세조회"
+                    android:layout_marginTop="11dp"
+                    android:includeFontPadding="false"
+                    android:text="상세 조회"
                     android:textColor="@color/COLOR_GRAY_800"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
@@ -64,8 +70,9 @@
                     style="@style/H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="42dp"
+                    android:layout_marginTop="39dp"
                     android:fontFamily="@font/spoqa_han_sans_regular"
+                    android:includeFontPadding="false"
                     android:text="@{vm.subTitle}"
                     android:textColor="@color/COLOR_GRAY_800"
                     app:layout_constraintLeft_toRightOf="parent"
@@ -74,13 +81,13 @@
 
                 <ImageView
                     android:id="@+id/iv_status"
-                    android:layout_width="360dp"
-                    android:layout_height="305dp"
-                    android:layout_marginTop="60dp"
                     setImageAsGif="@{vm.statusBg}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="46dp"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@+id/tv_subtext" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -105,9 +112,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
+                    app:OnDownClicked="@{vm.onDownClicked()}"
                     app:adapter="@{vm.adapter}"
-                    app:item="@{vm.item}"
-                    app:OnDownClicked ="@{vm.onDownClicked()}"/>
+                    app:item="@{vm.item}" />
 
             </LinearLayout>
 

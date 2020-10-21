@@ -134,7 +134,7 @@ class ParcelDetailViewModel(
                     {
                         subTitle.postValue("상품의 수송 정보를 접수하였습니다.")
                         statusBg.postValue(0)
-                        "정보수송"
+                        "배송정보 접수"
                     }
                     DeliveryStatusConst.AT_PICKUP ->
                     {
@@ -223,6 +223,10 @@ class ParcelDetailViewModel(
                         progress = progressList
                     )
                 )
+
+                Thread.sleep(2000)
+
+                Log.d(TAG, "Detail Item => ${item.value}")
 
                 setAdapter(progressList)
             }

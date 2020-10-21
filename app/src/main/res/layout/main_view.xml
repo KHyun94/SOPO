@@ -25,7 +25,7 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tablayout_bottom_tab"
             android:layout_width="match_parent"
-            android:layout_height="60sp"
+            android:layout_height="wrap_content"
             android:background="@drawable/border_top_colored_gray"
             app:tabIndicatorColor="@android:color/transparent" />
 

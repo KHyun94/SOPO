@@ -6,10 +6,7 @@ import android.content.Context
 import android.util.Log
 import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 object ClipboardUtil
 {
@@ -75,16 +72,22 @@ object ClipboardUtil
         var parcel : ParcelEntity? = null
 
         CoroutineScope(Dispatchers.Default).launch {
-            withContext(Dispatchers.Default) {
+            withContext(Dispatchers.Default){
                 parcel = parcelImpl.getSingleParcelWithWaybilNum(waybilNum = waybilNum)
+                Log.d("LOG.SOPO", "등록된 택배 Check $parcel")
             }
+
         }
+
+        Thread.sleep(500)
 
         if(parcel != null)
         {
+            Log.d("LOG.SOPO", "등록된 택배가 있기에, 클립보드 안띄움")
             waybilNum = ""
             return waybilNum
         }
+
 
         return waybilNum
     }

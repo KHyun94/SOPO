@@ -7,20 +7,21 @@ import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
+import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.IntentConst
+import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.launchActivitiy
-import com.delivery.sopo.abstracts.BasicView
-import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.UserAPI
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
+import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.dialog.GeneralDialog
-import com.delivery.sopo.viewmodels.main.MainViewModel
-import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.views.menus.LockScreenView
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.iid.FirebaseInstanceId
@@ -33,7 +34,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 {
-    val appDatabase : AppDatabase by inject()
+    val appDatabase: AppDatabase by inject()
 
     private var onMainBackPressListener: OnMainBackPressListener? = null
 
@@ -76,21 +77,51 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         tabLayoutSetting()
     }
 
-    private fun setCurrentTab(){
+    private fun setCurrentTab()
+    {
+        SOPOApp.currentPage.observe(this, Observer {
+            if (it != null)
+            {
+                when (it)
+                {
+                    0 -> binding.vpMain.setCurrentItem(0, true)
+                    1 -> binding.vpMain.setCurrentItem(1, true)
+                    else -> binding.vpMain.setCurrentItem(0, true)
+                }
 
+            }
+        })
     }
 
-    private fun tabSetting(v: View)
+    private fun tabSetting(v: TabLayout)
     {
         // layout을 dynamic 처리해서 넣도록 수정
-        (v as TabLayout).getTabAt(0)!!.setCustomView(R.layout.tap_item)
-        v.getTabAt(0)!!.customView!!.iv_tab.setBackgroundResource(R.drawable.ic_clicked_tap_register)
+        v.getTabAt(0)!!.run {
+            setCustomView(R.layout.tap_item)
+            customView!!.run {
+                iv_tab.setBackgroundResource(R.drawable.ic_activate_register)
+                tv_tab_name.setText("등록")
+                tv_tab_name.setTextColor(resources.getColor(R.color.COLOR_MAIN_BLUE_700))
+            }
+        }
 
-        v.getTabAt(1)!!.setCustomView(R.layout.tap_item)
-        v.getTabAt(1)!!.customView!!.iv_tab.setBackgroundResource(R.drawable.ic_non_clicked_tap_lookup)
+        v.getTabAt(1)!!.run {
+            setCustomView(R.layout.tap_item)
+            customView!!.run {
+                iv_tab.setBackgroundResource(R.drawable.ic_inactivate_inquiry)
+                tv_tab_name.setText("조회")
+                tv_tab_name.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
+            }
+        }
 
-        v.getTabAt(2)!!.setCustomView(R.layout.tap_item)
-        v.getTabAt(2)!!.customView!!.iv_tab.setBackgroundResource(R.drawable.ic_non_clicked_tap_my)
+        v.getTabAt(2)!!.run {
+            setCustomView(R.layout.tap_item)
+            customView!!.run {
+                iv_tab.setBackgroundResource(R.drawable.ic_inactivate_menu)
+                tv_tab_name.setText("메뉴")
+                tv_tab_name.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
+            }
+        }
     }
 
     private fun tabLayoutSetting()
@@ -106,26 +137,28 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                 {
                     val res = when (tab!!.position)
                     {
-                        0 -> R.drawable.ic_clicked_tap_register
-                        1 -> R.drawable.ic_clicked_tap_lookup
-                        2 -> R.drawable.ic_clicked_tap_my
-                        else -> R.drawable.ic_clicked_tap_register
+                        0 -> R.drawable.ic_activate_register
+                        1 -> R.drawable.ic_activate_inquiry
+                        2 -> R.drawable.ic_activate_menu
+                        else -> 0
                     }
 
                     tab.customView!!.iv_tab.setBackgroundResource(res)
+                    tab.customView!!.tv_tab_name.setTextColor(resources.getColor(R.color.COLOR_MAIN_BLUE_700))
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab?)
                 {
                     val res = when (tab!!.position)
                     {
-                        0 -> R.drawable.ic_non_clicked_tap_register
-                        1 -> R.drawable.ic_non_clicked_tap_lookup
-                        2 -> R.drawable.ic_non_clicked_tap_my
-                        else -> R.drawable.ic_non_clicked_tap_register
+                        0 -> R.drawable.ic_inactivate_register
+                        1 -> R.drawable.ic_inactivate_inquiry
+                        2 -> R.drawable.ic_inactivate_menu
+                        else -> 0
                     }
 
                     tab.customView!!.iv_tab.setBackgroundResource(res)
+                    tab.customView!!.tv_tab_name.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
                 }
 
                 override fun onTabReselected(tab: TabLayout.Tab?)
@@ -163,6 +196,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
         vp_main.adapter = viewPagerAdapter
         vp_main.addOnPageChangeListener(pageChangeListener)
+        setCurrentTab()
     }
 
     private fun updateFCMToken()
@@ -198,7 +232,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     {
         mainVm.isSetOfSecurity.observe(this, Observer {
             it?.also {
-                this.launchActivitiy<LockScreenView>{
+                this.launchActivitiy<LockScreenView> {
                     putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
                 }
             }
@@ -232,10 +266,10 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             }
         })
 
-        if(isInit)
+        if (isInit)
         {
             binding.vm!!.registeredParcelCnt.observe(this, Observer {
-                if(it > 0)
+                if (it > 0)
                 {
 //                    binding.vpMain.setCurrentItem(3, true)
                     isInit = false

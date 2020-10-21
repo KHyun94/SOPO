@@ -8,12 +8,12 @@
         android:color="@android:color/transparent"/>
 
     <stroke
-        android:width="2sp"
+        android:width="1.5dp"
         android:color="@color/COLOR_MAIN_BLUE_700" />
 
     <corners
-        android:topLeftRadius="19sp"
-        android:topRightRadius="19sp"
-        android:bottomRightRadius="19sp"
-        android:bottomLeftRadius="19sp"/>
+        android:topLeftRadius="19dp"
+        android:topRightRadius="19dp"
+        android:bottomRightRadius="19dp"
+        android:bottomLeftRadius="19dp"/>
 </shape>

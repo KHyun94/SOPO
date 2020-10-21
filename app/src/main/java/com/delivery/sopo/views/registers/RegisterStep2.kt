@@ -15,9 +15,9 @@ import com.delivery.sopo.enums.FragmentTypeEnum
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.models.SelectItem
-import com.delivery.sopo.views.adapter.GridRvAdapter
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep2ViewModel
+import com.delivery.sopo.views.adapter.GridRvAdapter
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -25,7 +25,7 @@ class RegisterStep2 : Fragment()
 {
     val TAG = "LOG.SOPO"
 
-    private lateinit var parentView : MainView
+    private lateinit var parentView: MainView
 
     private lateinit var binding: RegisterStep2Binding
     private val registerStep2Vm: RegisterStep2ViewModel by viewModel()
@@ -82,7 +82,10 @@ class RegisterStep2 : Fragment()
                     mHandler.postDelayed(Runnable {
 
                         FragmentTypeEnum.REGISTER_STEP3.FRAGMENT =
-                            RegisterStep3.newInstance(waybilNum, binding.vm!!.selectedItem.value!!.item)
+                            RegisterStep3.newInstance(
+                                waybilNum,
+                                binding.vm!!.selectedItem.value!!.item
+                            )
 
                         FragmentManager.move(
                             activity!!,
@@ -103,14 +106,13 @@ class RegisterStep2 : Fragment()
         })
 
         binding.vm!!.adapter.observe(this, Observer {
-            it?.setOnItemClickListener(object :
-                GridRvAdapter.OnItemClickListener<List<SelectItem<CourierItem>>>
+            it?.setOnItemClickListener(object : GridRvAdapter.OnItemClickListener<List<SelectItem<CourierItem>>>
             {
                 override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<CourierItem>>)
                 {
                     val item = items[pos]
 
-                    if(item.isSelect)
+                    if (item.isSelect)
                     {
                         binding.vm!!.selectedItem.value = item
                         binding.vm!!.moveFragment.value = FragmentTypeEnum.REGISTER_STEP3.NAME

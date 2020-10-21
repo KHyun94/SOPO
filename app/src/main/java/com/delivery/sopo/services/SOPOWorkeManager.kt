@@ -40,7 +40,7 @@ object SOPOWorkeManager
 
         CoroutineScope(Dispatchers.Main).launch {
 
-            withContext(Dispatchers.Default) {
+            withContext(Dispatchers.IO) {
 
                 val works = appDatabase.workDao().getAll()
 
