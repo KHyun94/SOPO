@@ -3,6 +3,7 @@ package com.delivery.sopo.views.main
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
@@ -10,6 +11,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.IntentConst
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
@@ -23,6 +25,7 @@ import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.menus.LockScreenView
+import com.delivery.sopo.views.widget.AlertMessageBar
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.iid.FirebaseInstanceId
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -54,6 +57,8 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     private var isInit = true
 
+    lateinit var alertMsgBar : AlertMessageBar
+
     init
     {
         TAG += "MainView"
@@ -66,9 +71,11 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-
+        alertMsgBar = alert_message_bar
         updateFCMToken()
         init()
+
+
     }
 
     private fun init()
@@ -84,8 +91,8 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             {
                 when (it)
                 {
-                    0 -> binding.vpMain.setCurrentItem(0, true)
-                    1 -> binding.vpMain.setCurrentItem(1, true)
+                    NavigatorConst.REGISTER_TAB -> binding.vpMain.setCurrentItem(NavigatorConst.REGISTER_TAB, true)
+                    NavigatorConst.INQUIRY_TAB -> binding.vpMain.setCurrentItem(NavigatorConst.INQUIRY_TAB, true)
                     else -> binding.vpMain.setCurrentItem(0, true)
                 }
 
@@ -96,7 +103,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     private fun tabSetting(v: TabLayout)
     {
         // layout을 dynamic 처리해서 넣도록 수정
-        v.getTabAt(0)!!.run {
+        v.getTabAt(NavigatorConst.REGISTER_TAB)!!.run {
             setCustomView(R.layout.tap_item)
             customView!!.run {
                 iv_tab.setBackgroundResource(R.drawable.ic_activate_register)
@@ -105,7 +112,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             }
         }
 
-        v.getTabAt(1)!!.run {
+        v.getTabAt(NavigatorConst.INQUIRY_TAB)!!.run {
             setCustomView(R.layout.tap_item)
             customView!!.run {
                 iv_tab.setBackgroundResource(R.drawable.ic_inactivate_inquiry)
@@ -114,7 +121,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             }
         }
 
-        v.getTabAt(2)!!.run {
+        v.getTabAt(NavigatorConst.MY_MENU_TAB)!!.run {
             setCustomView(R.layout.tap_item)
             customView!!.run {
                 iv_tab.setBackgroundResource(R.drawable.ic_inactivate_menu)
@@ -137,10 +144,10 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                 {
                     val res = when (tab!!.position)
                     {
-                        0 -> R.drawable.ic_activate_register
-                        1 -> R.drawable.ic_activate_inquiry
-                        2 -> R.drawable.ic_activate_menu
-                        else -> 0
+                        NavigatorConst.REGISTER_TAB -> R.drawable.ic_activate_register
+                        NavigatorConst.INQUIRY_TAB -> R.drawable.ic_activate_inquiry
+                        NavigatorConst.MY_MENU_TAB -> R.drawable.ic_activate_menu
+                        else -> NavigatorConst.REGISTER_TAB
                     }
 
                     tab.customView!!.iv_tab.setBackgroundResource(res)
@@ -151,10 +158,10 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                 {
                     val res = when (tab!!.position)
                     {
-                        0 -> R.drawable.ic_inactivate_register
-                        1 -> R.drawable.ic_inactivate_inquiry
-                        2 -> R.drawable.ic_inactivate_menu
-                        else -> 0
+                        NavigatorConst.REGISTER_TAB -> R.drawable.ic_inactivate_register
+                        NavigatorConst.INQUIRY_TAB -> R.drawable.ic_inactivate_inquiry
+                        NavigatorConst.MY_MENU_TAB -> R.drawable.ic_inactivate_menu
+                        else -> NavigatorConst.REGISTER_TAB
                     }
 
                     tab.customView!!.iv_tab.setBackgroundResource(res)
@@ -295,12 +302,6 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         isRegister = true
         binding.vpMain.currentItem = 1
         inquiryVm.refreshOngoing()
-    }
-
-    override fun onResume()
-    {
-        super.onResume()
-
     }
 
     companion object

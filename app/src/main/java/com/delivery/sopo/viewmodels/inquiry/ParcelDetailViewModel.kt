@@ -6,9 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.DeliveryStatusConst
-import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.SelectItem
+import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.*
 import com.delivery.sopo.models.parcel.Date
 import com.delivery.sopo.networks.NetworkManager
@@ -47,6 +47,7 @@ class ParcelDetailViewModel(
     var adapter = MutableLiveData<TimeLineRvAdapter?>()
 
     // Local or Remote Parcel Data를 저장하는 객체
+//    var parcelEntity: ParcelEntity? = null
     var parcelEntity: ParcelEntity? = null
 
     // parcelEntity 중 inqueryResult를 객체화시키는 용도
@@ -63,6 +64,8 @@ class ParcelDetailViewModel(
 
     // 상세 화면 Full Down
     var isDown = SingleLiveEvent<Boolean>()
+
+    var isUpdate = MutableLiveData<Boolean?>()
 
     init
     {
@@ -84,25 +87,15 @@ class ParcelDetailViewModel(
         return gson.fromJson<T>(subStr, type)
     }
 
-    fun initDetailItem()
+    fun updateParcelItem(parcelEntity: ParcelEntity)
     {
+        var progressList: MutableList<Progress?> = mutableListOf()
+        var deliveryStatus = ""
 
-    }
+        CoroutineScope(Dispatchers.Main).launch {
 
-    // 로컬에 저장된 택배 인포를 로드
-    fun requestLocalParcel(parcelId: ParcelId)
-    {
-        // 로컬 호출 동시에 서버에 택배 상태 업데이트 상태 체크
-        requestRemoteParcel(parcelId = parcelId)
-
-        CoroutineScope(Dispatchers.Default).launch {
-            withContext(Dispatchers.IO) {
-
+            withContext(Dispatchers.Default) {
                 // 로컬에 등록된 택배 정보를 불러온다.
-                parcelEntity = parcelRepoImpl.getLocalParcelById(
-                    parcelUid = parcelId.parcelUid,
-                    regDt = parcelId.regDt
-                )
 
                 // ParcelEntity 중 inqueryResult(json의 String화)를 ParcelItem으로 객체화
                 val gson = Gson()
@@ -115,25 +108,28 @@ class ParcelDetailViewModel(
                 val subStr = replaceStr.substring(1, replaceStr.length - 1)
 
                 parcelItem = gson.fromJson<ParcelItem?>(subStr, type)
-                //----------------------------------------------------------------------------------
 
                 Log.d(TAG, "==>> ${parcelEntity!!.toString()}")
                 Log.d(TAG, "==>> ${parcelItem.toString()}")
+                //----------------------------------------------------------------------------------
+            }
 
-                val deliveryStatus = when (parcelEntity!!.deliveryStatus)
+            withContext(Dispatchers.IO) {
+                // Delivery Status
+                deliveryStatus = when (parcelEntity!!.deliveryStatus)
                 {
 
                     DeliveryStatusConst.NOT_REGISTER ->
                     {
-                        subTitle.postValue("상품이 아직 등록되지 않았습니다.")
-                        statusBg.postValue(0)
+                        subTitle.postValue("아직 배송상품 정보가 없습니다.")
+                        statusBg.postValue(R.drawable.ic_parcel_not_register)
                         "미등록"
                     }
 
                     DeliveryStatusConst.INFORMATION_RECEIVED ->
                     {
-                        subTitle.postValue("상품의 수송 정보를 접수하였습니다.")
-                        statusBg.postValue(0)
+                        subTitle.postValue("아직 배송상품 정보가 없습니다.")
+                        statusBg.postValue(R.drawable.ic_parcel_not_register)
                         "배송정보 접수"
                     }
                     DeliveryStatusConst.AT_PICKUP ->
@@ -157,7 +153,7 @@ class ParcelDetailViewModel(
                     DeliveryStatusConst.DELIVERED ->
                     {
                         subTitle.postValue("상품이 도착했습니다.")
-                        statusBg.postValue(R.drawable.ic_splash_icon)
+                        statusBg.postValue(R.drawable.ic_parcel_delivered)
                         "배송완료"
                     }
                     else ->
@@ -169,28 +165,32 @@ class ParcelDetailViewModel(
                     }
                 }
 
-//
+
                 // 배경 및 배송 상태 표시용
                 statusList.postValue(getDeliveryStatusIndicator(deliveryStatus = parcelEntity!!.deliveryStatus))
+                //--------------------------------------------------------------------------------------------
+            }
 
-                // 택배 정보의 별칭
-                val alias =
-                    if (parcelEntity!!.parcelAlias != "default")
-                    {
-                        parcelEntity!!.parcelAlias
-                    }
+            // 택배 정보의 별칭
+            val alias =
+                if (parcelEntity!!.parcelAlias != "default")
+                {
+                    parcelEntity!!.parcelAlias
+                }
+                else
+                {
+                    if (parcelItem != null)
+                        "${parcelItem!!.from!!.name}이 보낸 택배"
                     else
-                    {
-                        if (parcelItem != null)
-                            "${parcelItem!!.from!!.name}이 보낸 택배"
-                        else
-                            "택배의 별칭을 등록해주세요."
-                    }
+                        "택배의 별칭을 등록해주세요."
+                }
 
+            withContext(Dispatchers.IO)
+            {
                 // 택배사 코드를 ROOM에서 택배명으로 검색
                 val courier = courierRepolmpl.getWithCode(parcelEntity!!.carrier)
 
-                var progressList: MutableList<Progress?> = mutableListOf()
+
 
                 // 프로그레스(택배의 경로 내용이 있을 때
                 if (parcelItem != null)
@@ -223,15 +223,30 @@ class ParcelDetailViewModel(
                         progress = progressList
                     )
                 )
-
-                Thread.sleep(2000)
-
-                Log.d(TAG, "Detail Item => ${item.value}")
-
-                setAdapter(progressList)
             }
-        }
 
+            Log.d(TAG, "Detail Item => ${item.value}")
+
+            setAdapter(progressList)
+        }
+    }
+
+    // 로컬에 저장된 택배 인포를 로드
+    fun requestLocalParcel(parcelId: ParcelId)
+    {
+        // 로컬 호출 동시에 서버에 택배 상태 업데이트 상태 체크
+        requestRemoteParcel(parcelId = parcelId)
+
+        CoroutineScope(Dispatchers.Main).launch{
+            withContext(Dispatchers.Default){
+                parcelEntity = parcelRepoImpl.getLocalParcelById(
+                    parcelUid = parcelId.parcelUid,
+                    regDt = parcelId.regDt
+                )
+            }
+
+            updateParcelItem(parcelEntity!!)
+        }
     }
 
     // 택배의 이동 상태(indicator)의 값을 리스트 형식으로 반환
@@ -320,7 +335,13 @@ class ParcelDetailViewModel(
                 {
                     when (response.code())
                     {
-                        200 -> Log.d(TAG, "정상 ${response.body()}")
+                        200 ->
+                        {
+                            val parcel = response.body()!!.data ?: return
+                            Log.d(TAG, "정상 $parcel")
+                            parcelEntity!!.update(parcel = parcel)
+                            isUpdate.postValue(true)
+                        }
                         400 -> Log.d(TAG, "정상 ${response.errorBody()}")
                         else -> Log.d(TAG, "에러러러")
                     }

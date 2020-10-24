@@ -13,14 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/include_confirm_msg"
-            layout="@layout/custom_confirm_msg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:visibility="gone" />
-
         <com.sothree.slidinguppanel.SlidingUpPanelLayout
             android:id="@+id/layout_main"
             android:layout_width="match_parent"
@@ -81,8 +73,8 @@
 
                 <ImageView
                     android:id="@+id/iv_status"
-                    setImageAsGif="@{vm.statusBg}"
-                    android:layout_width="match_parent"
+                    app:setImage="@{vm.statusBg}"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="46dp"
                     app:layout_constraintLeft_toRightOf="parent"

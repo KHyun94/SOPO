@@ -22,12 +22,16 @@ import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.ClipboardUtil
-import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.views.main.MainView
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
+import kotlinx.android.synthetic.main.main_view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -38,7 +42,7 @@ class ParcelDetailView : Fragment()
 
     private lateinit var parentView: MainView
 
-    private val userRepoImpl : UserRepoImpl by inject()
+    private val userRepoImpl: UserRepoImpl by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
 
     lateinit var binding: ParcelDetailViewBinding
@@ -58,7 +62,6 @@ class ParcelDetailView : Fragment()
             parcelUId = arguments?.getString(PARCEL_UID)
             regDt = arguments?.getString(REQ_DT)
         }
-
     }
 
     override fun onCreateView(
@@ -69,8 +72,6 @@ class ParcelDetailView : Fragment()
     {
         bindViewSetting(inflater = inflater, container = container)
         setObserve()
-
-//        binding.includeConfirmMsg.bringToFront()
 
         // 택배 info LiveData 데이터 입력
         binding.vm!!.parcelId.value = ParcelId(regDt!!, parcelUId!!)
@@ -101,6 +102,12 @@ class ParcelDetailView : Fragment()
             Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
         }
 
+        parentView.alert_message_bar.setOnCancelClicked("업데이트", R.color.MAIN_WHITE, View.OnClickListener {
+
+            binding.vm!!.updateParcelItem(binding.vm!!.parcelEntity!!)
+
+            parentView.alertMsgBar.onDismiss()
+        })
         return binding.root
     }
 
@@ -123,23 +130,24 @@ class ParcelDetailView : Fragment()
             {
                 Log.i(TAG, "onPanelSlide, offset $slideOffset")
 
-                if (slideOffset > 0.9f)
-                {
-                    activity!!.runOnUiThread {
+                CoroutineScope(Dispatchers.Main).launch {
+
+                    if (slideOffset > 0.9f)
+                    {
                         binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
                         binding.includeSemi.root.visibility = View.GONE
                         binding.includeFull.root.visibility = View.VISIBLE
                     }
-                }
-                else
-                {
-                    activity!!.runOnUiThread {
+                    else
+                    {
                         binding.layoutDrawer.setBackgroundResource(R.drawable.border_drawer)
 
                         binding.includeSemi.root.visibility = View.VISIBLE
                         binding.includeFull.root.visibility = View.GONE
                     }
+
                 }
+
 
             }
 
@@ -194,6 +202,13 @@ class ParcelDetailView : Fragment()
                     baseLayout = binding.includeFull.layoutDetailContent,
                     list = it
                 )
+            }
+        })
+
+        binding.vm!!.isUpdate.observe(this, Observer {
+            if(it != null && it == true)
+            {
+                parentView.alertMsgBar.onStart(null)
             }
         })
 

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <declare-styleable name="BasicAttrs">
+
+    </declare-styleable>
+
     <declare-styleable name="CustomEditText">
         <attr name="text" format="string"/>
         <attr name="title" format="string"/>
@@ -10,4 +14,12 @@
         <attr name="focusColor" format="color"/>
     </declare-styleable>
 
+    <declare-styleable name="AlertMessageBar" >
+        <attr name="msgtext" format="string"/>
+        <attr name="buttonText" format="string"/>
+        <attr name="markImage" format="reference|integer"/>
+        <attr name="customBgColor" format="reference|integer"/>
+        <attr name="textColor" format="reference|integer"/>
+        <attr name="buttonTextColor" format="reference|integer"/>
+    </declare-styleable>
 </resources>

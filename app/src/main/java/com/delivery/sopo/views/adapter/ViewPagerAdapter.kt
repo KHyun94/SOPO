@@ -50,7 +50,7 @@ class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
             {
                 tab1stFragment
             }
-            NavigatorConst.LOOKUP_TAB ->
+            NavigatorConst.INQUIRY_TAB ->
             {
                 tab2ndFragment
             }

@@ -3,6 +3,7 @@ package com.delivery.sopo
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.di.appModule
@@ -82,13 +83,13 @@ class SOPOApp : Application()
         }
     }
 
-    suspend fun getInitViewPagerNumber(): Int
+    private suspend fun getInitViewPagerNumber(): Int
     {
         val text = ClipboardUtil.pasteClipboardText(con = this, parcelImpl = parcelRepoImpl)
 
         return if (text.isNotEmpty())
         {
-            0
+            NavigatorConst.REGISTER_TAB
         }
         else
         {
@@ -96,11 +97,11 @@ class SOPOApp : Application()
 
             if (cnt == 0)
             {
-                0
+                NavigatorConst.REGISTER_TAB
             }
             else
             {
-                1
+                NavigatorConst.INQUIRY_TAB
             }
         }
     }

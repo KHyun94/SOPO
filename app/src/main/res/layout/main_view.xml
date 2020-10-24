@@ -8,7 +8,7 @@
             type="com.delivery.sopo.viewmodels.main.MainViewModel" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,17 +18,34 @@
             android:id="@+id/vp_main"
             android:layout_width="match_parent"
             android:layout_height="0sp"
-            android:layout_weight="1"
+            app:layout_constrainedHeight="true"
             android:background="@color/MAIN_WHITE"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/tablayout_bottom_tab"
             />
+
+        <com.delivery.sopo.views.widget.AlertMessageBar
+            android:id="@+id/alert_message_bar"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/tablayout_bottom_tab"
+            app:markImage="@drawable/ic_blue_marker"
+            app:msgtext="테스트"/>
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tablayout_bottom_tab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/border_top_colored_gray"
-            app:tabIndicatorColor="@android:color/transparent" />
+            app:tabIndicatorColor="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"/>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

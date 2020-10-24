@@ -2,10 +2,9 @@ package com.delivery.sopo.bindings
 
 import android.util.Log
 import android.widget.ImageView
-import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
-import com.delivery.sopo.generated.callback.OnClickListener
+import com.delivery.sopo.util.OtherUtil
 
 object ImageBindingAdapter
 {
@@ -13,9 +12,36 @@ object ImageBindingAdapter
     @BindingAdapter("setImage")
     fun bindSetterImage(view: ImageView, res: Int)
     {
-        Glide.with(view.context)
-            .load(res)
-            .into(view)
+
+        try
+        {
+            val mimeTypedValue = OtherUtil.getResourceExtension(res)
+
+            when (mimeTypedValue)
+            {
+                "gif" ->
+                {
+                    Glide.with(view.context)
+                        .asGif()
+                        .load(res)
+                        .into(view)
+                }
+                else ->
+                {
+                    Glide.with(view.context)
+                        .load(res)
+                        .into(view)
+                }
+            }
+        }
+        catch (e: Exception)
+        {
+            Glide.with(view.context)
+                .load(res)
+                .into(view)
+        }
+
+
     }
 
     @JvmStatic
