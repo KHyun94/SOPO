@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -20,7 +21,6 @@
             android:gravity="bottom"
             app:umanoDragView="@+id/layout_drawer"
             app:umanoOverlay="true"
-            app:umanoPanelHeight="304dp"
             app:umanoShadowHeight="0dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -69,17 +69,37 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+                    app:layout_constraintTop_toBottomOf="@+id/tv_title"
+                    tools:text="아아아아아앙아" />
 
-                <ImageView
-                    android:id="@+id/iv_status"
-                    app:setImage="@{vm.statusBg}"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/layout_body"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="46dp"
+                    android:gravity="center"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_subtext" />
+                    app:layout_constraintTop_toBottomOf="@+id/tv_subtext"
+                    app:layout_constraintBottom_toTopOf="@+id/layout_tail">
+
+                    <ImageView
+                        android:id="@+id/iv_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        app:setImage="@{vm.statusBg}" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_tail"
+                    android:layout_width="match_parent"
+                    android:layout_height="304dp"
+                    app:layout_constraintTop_toBottomOf="@+id/layout_body"
+                    app:layout_constraintLeft_toRightOf="parent"
+                    app:layout_constraintRight_toLeftOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:orientation="vertical"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

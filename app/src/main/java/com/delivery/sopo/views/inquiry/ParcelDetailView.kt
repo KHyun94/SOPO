@@ -2,6 +2,7 @@ package com.delivery.sopo.views.inquiry
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
@@ -106,7 +108,7 @@ class ParcelDetailView : Fragment()
 
             binding.vm!!.updateParcelItem(binding.vm!!.parcelEntity!!)
 
-            parentView.alertMsgBar.onDismiss()
+            parentView.alert_message_bar.onDismiss()
         })
         return binding.root
     }
@@ -208,7 +210,7 @@ class ParcelDetailView : Fragment()
         binding.vm!!.isUpdate.observe(this, Observer {
             if(it != null && it == true)
             {
-                parentView.alertMsgBar.onStart(null)
+                parentView.alert_message_bar.onStart(null)
             }
         })
 
@@ -325,16 +327,27 @@ class ParcelDetailView : Fragment()
         }
     }
 
+//    var bar = updateDrawerLayoutSize(layout)
+
     // 하단 드로우 레이아웃 사이즈 변경
     private fun updateDrawerLayoutSize(view: View)
     {
         val globalListener = ViewTreeObserver.OnGlobalLayoutListener {
             val height = view.height
             binding.layoutMain.panelHeight = height
+//            binding.layoutTail.layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, height)
+
+//            Log.d(TAG, "바텀 리니어 높이 => ${binding.layoutTail.height}")
+//            Log.d(TAG, "드로어 높이 => ${binding.layoutMain.panelHeight}")
         }
 
         view.viewTreeObserver.run {
             addOnGlobalLayoutListener(globalListener)
+
+            Handler().postDelayed(Runnable {
+                removeOnGlobalLayoutListener(globalListener)
+            }, 1000)
+
         }
 
     }

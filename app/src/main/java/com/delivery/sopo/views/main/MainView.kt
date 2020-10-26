@@ -57,8 +57,6 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     private var isInit = true
 
-    lateinit var alertMsgBar : AlertMessageBar
-
     init
     {
         TAG += "MainView"
@@ -71,7 +69,6 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        alertMsgBar = alert_message_bar
         updateFCMToken()
         init()
 
