@@ -213,7 +213,7 @@ class InquiryViewModel(
             timeCountRepoImpl.updateEntities(list)
         }
 
-        return parcelRepoImpl.getRemoteMonthList()?.let { list ->
+        return parcelRepoImpl.getRemoteMonths()?.let { list ->
             val entityList = list.map(TimeCountMapper::timeCountDtoToTimeCountEntity)
             if (entityList.isNotEmpty())
             {
@@ -485,8 +485,8 @@ class InquiryViewModel(
     fun testFunReNewALL()
     {
         viewModelScope.launch(Dispatchers.IO) {
-            val requestRenewal2 =
-                NetworkManager.privateRetro.create(ParcelAPI::class.java).requestRenewal2(userRepoImpl.getEmail())
+            val parcelsRefreshing =
+                NetworkManager.privateRetro.create(ParcelAPI::class.java).parcelsRefreshing(userRepoImpl.getEmail())
         }
     }
 

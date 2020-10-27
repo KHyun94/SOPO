@@ -39,7 +39,7 @@ class SOPOWorker(val context: Context, private val params: WorkerParameters) :
             Log.d(TAG, "is Enrolled Parcel => YES")
 
             return NetworkManager.privateRetro.create(ParcelAPI::class.java)
-                .requestRenewal(email = email)
+                .parcelsRefreshing(email = email)
         }
         else
         {

@@ -29,7 +29,7 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
                                                                         regDt = regDt,
                                                                         parcelUid = parcelUid).data
 
-    override suspend fun getRemoteMonthList(): MutableList<TimeCountDTO>? = NetworkManager.privateRetro.create(ParcelAPI::class.java).getMonthList(email = userRepoImpl.getEmail()).data
+    override suspend fun getRemoteMonths(): MutableList<TimeCountDTO>? = NetworkManager.privateRetro.create(ParcelAPI::class.java).getMonths(email = userRepoImpl.getEmail()).data
 
     override suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<Parcel>? = NetworkManager
                                                                                                         .privateRetro.create(ParcelAPI::class.java)

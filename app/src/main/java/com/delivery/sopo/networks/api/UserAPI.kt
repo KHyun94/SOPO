@@ -9,7 +9,7 @@ import retrofit2.http.*
 interface UserAPI
 {
     // 카카오 로그인 시 Firebase 토큰으로 변경하는 Api ------------------------------------------------
-    @GET("api/v1/sopoMainBackEnd/user/{email}/firebase/auth-token")
+    @GET("api/v1/sopo-api/user/{email}/firebase/auth-token")
     @Headers("Accept: application/json")
     fun requestCustomToken(
         // 이메일
@@ -23,21 +23,21 @@ interface UserAPI
     ): Call<APIResult<String?>>
 
     @FormUrlEncoded
-    @PATCH("api/v1/sopoMainBackEnd/user/{email}/deviceInfo")
+    @PATCH("api/v1/sopo-api/user/{email}/deviceInfo")
     @Headers("Accept: application/json")
     fun requestUpdateDeviceInfo(
         @Path("email") email: String,
         @Field("jwtToken") jwtToken: String
     ): Call<APIResult<String?>>
 
-    @GET("api/v1/sopoMainBackEnd/validation/email/exist/{EMAIL}")
+    @GET("api/v1/sopo-api/validation/email/exist/{EMAIL}")
     @Headers("Accept: application/json")
     fun requestDuplicateEmail(
         @Path("EMAIL") email: String
     ): Observable<APIResult<Boolean>>
 
     @FormUrlEncoded
-    @PATCH("/api/v1/sopoMainBackEnd/user/{email}/firebase/fcm-token")
+    @PATCH("/api/v1/sopo-api/user/{email}/firebase/fcm-token")
     @Headers("Accept: application/json")
     fun updateFCMToken(
         @Path("email") email : String,

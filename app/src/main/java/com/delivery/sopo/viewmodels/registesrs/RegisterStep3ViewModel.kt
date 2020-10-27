@@ -46,7 +46,7 @@ class RegisterStep3ViewModel(
     {
         NetworkManager.privateRetro
             .create(ParcelAPI::class.java)
-            .registerParcel(
+            .postParcel(
                 email = userRepoImpl.getEmail(),
                 parcelAlias = alias.value ?: "Default",
                 trackCompany = courier.value!!.courierCode,

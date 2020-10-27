@@ -10,7 +10,7 @@ import com.delivery.sopo.models.parcel.ParcelId
 interface ParcelRepository {
    suspend fun getRemoteOngoingParcels(): MutableList<Parcel>?
    suspend fun getRemoteOngoingParcel(regDt: String, parcelUid: String): Parcel?
-   suspend fun getRemoteMonthList(): MutableList<TimeCountDTO>?
+   suspend fun getRemoteMonths(): MutableList<TimeCountDTO>?
 
    suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<Parcel>?
 

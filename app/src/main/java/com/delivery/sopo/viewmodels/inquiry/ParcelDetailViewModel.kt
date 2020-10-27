@@ -317,7 +317,7 @@ class ParcelDetailViewModel(
     private fun requestRemoteParcel(parcelId: ParcelId)
     {
         NetworkManager.privateRetro.create(ParcelAPI::class.java)
-            .requestRenewalOneParcel(
+            .parcelRefreshing(
                 email = userRepoImpl.getEmail(),
                 parcelUid = parcelId.parcelUid,
                 regDt = parcelId.regDt
