@@ -9,7 +9,7 @@ interface LoginAPI
 {
     // 카카오 간편 로그인
     @FormUrlEncoded
-    @POST("api/v1/sopoMainBackEnd/login/kakao")
+    @POST("api/v1/sopo-api/login/kakao")
     @Headers("Accept: application/json")
     fun requestKakaoLogin(
         // 이메일
@@ -24,7 +24,7 @@ interface LoginAPI
 
     // 자체 로그인 API
     @FormUrlEncoded
-    @POST("api/v1/sopoMainBackEnd/login/sopo")
+    @POST("api/v1/sopo-api/login/sopo")
     @Headers("Accept: application/json")
     fun requestSelfLogin(
         // 유저 이메일
@@ -42,7 +42,7 @@ interface LoginAPI
 
     // 자동 로그인 API
     @FormUrlEncoded
-    @POST("api/v1/sopoMainBackEnd/login/auto")
+    @POST("api/v1/sopo-api/login/auto")
     @Headers("Accept: application/json")
     fun requestAutoLogin(
         @Field("deviceInfo") deviceInfo: String,

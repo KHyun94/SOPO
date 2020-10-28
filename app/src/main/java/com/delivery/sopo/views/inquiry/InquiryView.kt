@@ -1,6 +1,7 @@
 package com.delivery.sopo.views.inquiry
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,7 +12,9 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.PopupWindow
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
@@ -33,7 +36,7 @@ import com.delivery.sopo.mapper.MenuMapper
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.repository.impl.*
-import com.delivery.sopo.services.SOPOWorkeManager
+import com.delivery.sopo.services.workmanager.SOPOWorkeManager
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.ui_util.CustomProgressBar
@@ -106,6 +109,16 @@ class InquiryView : Fragment()
         viewBinding()
         setObserver()
 
+//        parentView.setOnBackPressListener(object : OnMainBackPressListener
+//        {
+//            override fun onBackPressed()
+//            {
+//                parentView.moveTaskToBack(true);                        // 태스크를 백그라운드로 이동
+//                parentView.finishAndRemoveTask();                        // 액티비티 종료 + 태스크 리스트에서 지우기
+//                android.os.Process.killProcess(android.os.Process.myPid());
+//            }
+//
+//        })
 
         return binding.root
     }
@@ -121,6 +134,32 @@ class InquiryView : Fragment()
             openInquiryMenu(it)
         }
     }
+
+    var callback : OnBackPressedCallback? = null
+
+    override fun onAttach(context: Context)
+    {
+        super.onAttach(context)
+
+        callback = object : OnBackPressedCallback(true){
+            override fun handleOnBackPressed()
+            {
+                ActivityCompat.finishAffinity(activity!!)
+                System.exit(0)
+            }
+
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+    }
+
+    override fun onDetach()
+    {
+        super.onDetach()
+
+        callback!!.remove()
+    }
+
 
     private fun viewBinding()
     {
@@ -200,6 +239,22 @@ class InquiryView : Fragment()
 
     private fun setObserver()
     {
+        parentView.currentPage.observe(this, Observer {
+            if(it != null && it == 1)
+            {
+                callback = object : OnBackPressedCallback(true){
+                    override fun handleOnBackPressed()
+                    {
+                        Log.d(TAG, "InquiryView:: BackPressListener")
+                        ActivityCompat.finishAffinity(activity!!)
+                        System.exit(0)
+                    }
+
+                }
+
+                requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+            }
+        })
 
         // 배송완료 리스트에서 해당 년월에 속해있는 택배들을 전부 삭제했을 때는 서버로 통신해서 새로고침하면 안돼고 무조건 로컬에 있는 데이터로 새로고침 해야한다.
         // (서버로 통신해서 새로고침하면 서버에 있는 데이터(우선순위가 높음)로 덮어써버리기 때문에 '삭제취소'를 통해 복구를 못함..)

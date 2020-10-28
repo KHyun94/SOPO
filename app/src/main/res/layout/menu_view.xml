@@ -2,9 +2,13 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <import type="android.view.View" />
+
         <import type="com.delivery.sopo.enums.MenuEnum" />
+
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.menus.MenuViewModel" />
@@ -20,9 +24,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/white"
-            android:visibility="@{vm.viewStack.size > 0 ? View.VISIBLE : View.INVISIBLE}"
-            tools:visibility="gone"
-            >
+            android:visibility="@{vm.viewStack.size > 0 ? View.VISIBLE : View.GONE}"
+            tools:visibility="gone">
 
             <RelativeLayout
                 android:id="@+id/topMenuBar"
@@ -37,43 +40,40 @@
                     android:id="@+id/btn_back"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="10dp"
+                    android:layout_centerVertical="true"
                     android:layout_marginStart="28dp"
                     android:layout_marginTop="15dp"
-                    android:layout_centerVertical="true"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/ic_btn_back_b"
                     android:onClick="@{()->vm.popView()}"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_btn_back_b"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_btn_back_b"
-                    />
+                    app:srcCompat="@drawable/ic_btn_back_b" />
 
                 <TextView
-                    style="@style/H2"
                     android:id="@+id/title_tv"
+                    style="@style/H2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:background="@android:color/white"
-                    android:textColor="@color/COLOR_GRAY_800"
                     android:text="@{vm.menu.title ?? ``}"
+                    android:textColor="@color/COLOR_GRAY_800"
                     app:layout_constraintBottom_toBottomOf="@+id/btn_back"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/btn_back"
-                    tools:text="TITLE"
-                    />
+                    tools:text="TITLE" />
             </RelativeLayout>
 
             <View
                 android:id="@+id/view_divisionLine"
-                android:visibility="invisible"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="#40000000"
-                app:layout_constraintTop_toBottomOf="@+id/topMenuBar"
-                />
+                android:visibility="invisible"
+                app:layout_constraintTop_toBottomOf="@+id/topMenuBar" />
 
             <FrameLayout
                 android:id="@+id/frame_menu"
@@ -87,46 +87,44 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_body"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="@{vm.viewStack.size == 0 ? View.VISIBLE : View.INVISIBLE}"
-            tools:visibility="visible"
-            >
+            tools:visibility="visible">
 
             <RelativeLayout
                 android:id="@+id/relative_profile"
                 android:layout_width="57dp"
                 android:layout_height="57dp"
-                android:layout_marginStart="42dp"
                 android:layout_margin="35dp"
                 android:layout_marginHorizontal="35dp"
+                android:layout_marginStart="42dp"
                 android:background="@drawable/profile_circular_view"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    style="@style/H2"
                     android:id="@+id/tv_circularProfile"
+                    style="@style/H2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:letterSpacing="-0.02"
                     android:text="@{vm.viewStack.size + ``}"
                     android:textColor="@color/MAIN_WHITE"
                     android:textSize="21sp"
-                    android:letterSpacing="-0.02"
                     android:visibility="gone"
-                    tools:visibility="gone"
-                    />
+                    tools:visibility="gone" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_edit"
-                    android:visibility="visible"
-                    android:gravity="center"
                     android:layout_centerInParent="true"
-                    />
+                    android:gravity="center"
+                    android:src="@drawable/ic_edit"
+                    android:visibility="visible" />
             </RelativeLayout>
 
 
@@ -141,13 +139,12 @@
                 app:layout_constraintTop_toTopOf="@+id/relative_profile">
 
                 <TextView
-                    style="@style/H5"
                     android:id="@+id/tv_userName"
+                    style="@style/H5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/MENU_VIEW_PLEASE_SET_NICK_NAME"
-                    android:textColor="@color/COLOR_GRAY_400"
-                    />
+                    android:textColor="@color/COLOR_GRAY_400" />
 
                 <TextView
                     style="@style/H5"
@@ -155,8 +152,7 @@
                     android:layout_height="wrap_content"
                     android:text="@{vm.userEmail}"
                     android:textColor="@color/MAIN_BLACK"
-                    tools:text="win1692@naver.com"
-                    />
+                    tools:text="win1692@naver.com" />
 
             </LinearLayout>
 
@@ -167,9 +163,8 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:orientation="horizontal"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                >
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -177,14 +172,13 @@
                     android:background="@drawable/ic_24_lock" />
 
                 <TextView
-                    style="@style/H5"
                     android:id="@+id/tv_settingPassword"
+                    style="@style/H5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="@string/MENU_VIEW_PASSWORD"
-                    android:textColor="@color/MAIN_BLACK"
-                    />
+                    android:textColor="@color/MAIN_BLACK" />
             </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -203,36 +197,34 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="67dp"
                     android:orientation="vertical"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/linear_deliveryStatus_ing"
-                    >
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        android:textSize="35sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="-0.06"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
+                        android:letterSpacing="-0.06"
                         android:text="@{vm.cntOfCompleteListItem == null ? `0` : vm.cntOfCompleteListItem+``}"
                         android:textColor="@color/MAIN_BLACK"
-                        tools:text="12"
-                        />
+                        android:textSize="35sp"
+                        android:textStyle="bold"
+                        tools:text="12" />
+
                     <View
                         android:layout_width="45dp"
                         android:layout_height="2dp"
-                        android:background="@color/COLOR_MAIN_BLUE_700"
                         android:layout_gravity="center_horizontal"
-                        />
+                        android:background="@color/COLOR_MAIN_BLUE_700" />
+
                     <TextView
                         style="@style/H5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:text="@string/MENU_VIEW_DELIVERY_STATUS_COMPLETE"
-                        android:textColor="@color/COLOR_MAIN_BLUE_700"
-                        />
+                        android:textColor="@color/COLOR_MAIN_BLUE_700" />
 
                 </LinearLayout>
 
@@ -242,38 +234,35 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    >
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        android:textSize="35sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="-0.06"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:letterSpacing="-0.06"
                         android:text="@{vm.cntOfOngoingListItem + ``}"
                         android:textColor="@color/MAIN_BLACK"
-                        android:layout_gravity="center_horizontal"
-                        tools:text="6"
-                        />
+                        android:textSize="35sp"
+                        android:textStyle="bold"
+                        tools:text="6" />
 
                     <View
                         android:layout_width="45dp"
                         android:layout_height="2dp"
-                        android:background="@color/COLOR_MAIN_BLUE_700"
                         android:layout_gravity="center_horizontal"
-                        />
+                        android:background="@color/COLOR_MAIN_BLUE_700" />
+
                     <TextView
                         style="@style/H5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:text="@string/MENU_VIEW_DELIVERY_STATUS_ONGOING"
-                        android:textColor="@color/COLOR_MAIN_BLUE_700"
-                        />
+                        android:textColor="@color/COLOR_MAIN_BLUE_700" />
 
                 </LinearLayout>
 
@@ -282,37 +271,36 @@
                     android:id="@+id/linear_deliveryStatus_soon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:layout_marginStart="67dp"
-                    app:layout_constraintStart_toEndOf="@+id/linear_deliveryStatus_ing"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    >
+                    app:layout_constraintStart_toEndOf="@+id/linear_deliveryStatus_ing"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
-                        android:textSize="35sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="-0.06"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
+                        android:letterSpacing="-0.06"
                         android:text="@{vm.cntOfSoonListItem + ``}"
                         android:textColor="@color/MAIN_BLACK"
+                        android:textSize="35sp"
+                        android:textStyle="bold"
                         tools:text="4" />
+
                     <View
                         android:layout_width="45dp"
                         android:layout_height="2dp"
-                        android:background="@color/COLOR_MAIN_BLUE_700"
                         android:layout_gravity="center_horizontal"
-                        />
+                        android:background="@color/COLOR_MAIN_BLUE_700" />
+
                     <TextView
                         style="@style/H5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:text="@string/MENU_VIEW_DELIVERY_STATUS_SOON"
-                        android:textColor="@color/COLOR_MAIN_BLUE_700"
-                        />
+                        android:textColor="@color/COLOR_MAIN_BLUE_700" />
 
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -323,8 +311,7 @@
                 android:layout_height="8dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/COLOR_GRAY_100"
-                app:layout_constraintTop_toBottomOf="@+id/linear_deliveryStatus"
-                />
+                app:layout_constraintTop_toBottomOf="@+id/linear_deliveryStatus" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_notice"
@@ -336,28 +323,27 @@
                     android:id="@+id/linear_notice"
                     android:layout_width="match_parent"
                     android:layout_height="71dp"
-                    android:orientation="horizontal"
                     android:onClick="@{()-> vm.pushView(MenuEnum.NOTICE)}"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="28dp"
                         android:layout_height="28dp"
-                        android:layout_marginStart="42dp"
                         android:layout_gravity="center_vertical"
-                        android:background="@drawable/ic_24_notice"
-                        />
+                        android:layout_marginStart="42dp"
+                        android:background="@drawable/ic_24_notice" />
+
                     <TextView
                         style="@style/H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="9dp"
                         android:layout_gravity="center_vertical"
+                        android:layout_marginStart="9dp"
                         android:text="@string/MENU_VIEW_NOTICE"
-                        android:textColor="@color/COLOR_GRAY_800"
-                        />
+                        android:textColor="@color/COLOR_GRAY_800" />
                 </LinearLayout>
 
                 <ImageView
@@ -387,28 +373,27 @@
                     android:id="@+id/linear_setting"
                     android:layout_width="match_parent"
                     android:layout_height="71dp"
-                    android:orientation="horizontal"
                     android:onClick="@{()-> vm.pushView(MenuEnum.SETTING)}"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="28dp"
                         android:layout_height="28dp"
-                        android:layout_marginStart="42dp"
                         android:layout_gravity="center_vertical"
-                        android:background="@drawable/ic_24_setting"
-                        />
+                        android:layout_marginStart="42dp"
+                        android:background="@drawable/ic_24_setting" />
+
                     <TextView
                         style="@style/H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="9dp"
                         android:layout_gravity="center_vertical"
+                        android:layout_marginStart="9dp"
                         android:text="@string/MENU_VIEW_SETTING"
-                        android:textColor="@color/COLOR_GRAY_800"
-                        />
+                        android:textColor="@color/COLOR_GRAY_800" />
                 </LinearLayout>
 
                 <ImageView
@@ -439,28 +424,27 @@
                     android:id="@+id/linear_faq"
                     android:layout_width="match_parent"
                     android:layout_height="71dp"
-                    android:orientation="horizontal"
                     android:onClick="@{()-> vm.pushView(MenuEnum.FAQ)}"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="28dp"
                         android:layout_height="28dp"
-                        android:layout_marginStart="42dp"
                         android:layout_gravity="center_vertical"
-                        android:background="@drawable/ic_24_faq"
-                        />
+                        android:layout_marginStart="42dp"
+                        android:background="@drawable/ic_24_faq" />
+
                     <TextView
                         style="@style/H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="9dp"
                         android:layout_gravity="center_vertical"
+                        android:layout_marginStart="9dp"
                         android:text="@string/MENU_VIEW_FAQ"
-                        android:textColor="@color/COLOR_GRAY_800"
-                        />
+                        android:textColor="@color/COLOR_GRAY_800" />
                 </LinearLayout>
 
                 <ImageView
@@ -491,11 +475,11 @@
                     android:id="@+id/linear_termOfUse"
                     android:layout_width="match_parent"
                     android:layout_height="71dp"
-                    android:orientation="horizontal"
                     android:onClick="@{()-> vm.pushView(MenuEnum.USE_TERMS)}"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="28dp"
@@ -503,16 +487,17 @@
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="42dp"
                         android:background="@drawable/ic_24_terms" />
+
                     <TextView
                         style="@style/H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="9dp"
                         android:layout_gravity="center_vertical"
+                        android:layout_marginStart="9dp"
                         android:text="@string/MENU_VIEW_TERMS"
-                        android:textColor="@color/COLOR_GRAY_800"
-                        />
+                        android:textColor="@color/COLOR_GRAY_800" />
                 </LinearLayout>
+
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -536,32 +521,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="71dp"
                 app:layout_constraintTop_toBottomOf="@+id/v_dividerLine5">
+
                 <LinearLayout
                     android:id="@+id/linear_appInfo"
                     android:layout_width="match_parent"
                     android:layout_height="71dp"
-                    android:orientation="horizontal"
                     android:onClick="@{()-> vm.pushView(MenuEnum.APP_INFO)}"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
                         android:layout_width="28dp"
                         android:layout_height="28dp"
-                        android:layout_marginStart="42dp"
                         android:layout_gravity="center_vertical"
-                        android:background="@drawable/ic_24_info"
-                        />
+                        android:layout_marginStart="42dp"
+                        android:background="@drawable/ic_24_info" />
+
                     <TextView
                         style="@style/H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="9dp"
                         android:layout_gravity="center_vertical"
+                        android:layout_marginStart="9dp"
                         android:text="@string/MENU_VIEW_APP_INFO"
-                        android:textColor="@color/COLOR_GRAY_800"
-                        />
+                        android:textColor="@color/COLOR_GRAY_800" />
                 </LinearLayout>
 
                 <ImageView

@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
@@ -57,6 +58,8 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     private var isInit = true
 
+    var currentPage = MutableLiveData<Int?>()
+    
     init
     {
         TAG += "MainView"
@@ -139,6 +142,8 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             {
                 override fun onTabSelected(tab: TabLayout.Tab?)
                 {
+                    currentPage.postValue(tab!!.position)
+
                     val res = when (tab!!.position)
                     {
                         NavigatorConst.REGISTER_TAB -> R.drawable.ic_activate_register
@@ -289,10 +294,10 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         }
     }
 
-    override fun onBackPressed()
-    {
-        onMainBackPressListener!!.onBackPressed()
-    }
+//    override fun onBackPressed()
+//    {
+////        onMainBackPressListener!!.onBackPressed()
+//    }
 
     fun onCompleteRegister()
     {

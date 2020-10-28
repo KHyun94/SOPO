@@ -10,7 +10,9 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -72,6 +74,8 @@ class ParcelDetailView : Fragment()
         savedInstanceState: Bundle?
     ): View?
     {
+        parentView = activity as MainView
+
         bindViewSetting(inflater = inflater, container = container)
         setObserve()
 
@@ -79,16 +83,6 @@ class ParcelDetailView : Fragment()
         binding.vm!!.parcelId.value = ParcelId(regDt!!, parcelUId!!)
 
         parentView = activity as MainView
-
-        parentView.setOnBackPressListener(object : OnMainBackPressListener
-        {
-            override fun onBackPressed()
-            {
-                Log.d(TAG, "OnBackPressed ParcelDetailView")
-
-                FragmentManager.remove(activity!!)
-            }
-        })
 
         binding.includeSemi.ivCopy.setOnClickListener {
             val copyText = binding.includeSemi.tvWaybilNum.text.toString()
@@ -134,7 +128,7 @@ class ParcelDetailView : Fragment()
 
                 CoroutineScope(Dispatchers.Main).launch {
 
-                    if (slideOffset > 0.9f)
+                    if (slideOffset > 0.1f)
                     {
                         binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
                         binding.includeSemi.root.visibility = View.GONE
@@ -179,6 +173,22 @@ class ParcelDetailView : Fragment()
 
     private fun setObserve()
     {
+        parentView.currentPage.observe(this, Observer {
+            if(it != null && it == 1)
+            {
+                callback = object : OnBackPressedCallback(true){
+                    override fun handleOnBackPressed()
+                    {
+                        Log.d(TAG, "ParcelDetailView:: BackPressListener")
+                        requireActivity().supportFragmentManager.popBackStack()
+                    }
+
+                }
+
+                requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+            }
+        })
+
         binding.vm!!.parcelId.observe(this, Observer {
             if (it != null)
             {
@@ -220,7 +230,7 @@ class ParcelDetailView : Fragment()
             {
                 if (it)
                 {
-                    FragmentManager.remove(activity!!)
+                    FragmentManager.remove(activity!!, this@ParcelDetailView)
                     binding.vm!!.isBack.call()
                 }
             }
@@ -350,6 +360,31 @@ class ParcelDetailView : Fragment()
 
         }
 
+    }
+
+    var callback : OnBackPressedCallback? = null
+
+    override fun onAttach(context: Context)
+    {
+        super.onAttach(context)
+
+        callback = object : OnBackPressedCallback(true){
+            override fun handleOnBackPressed()
+            {
+                if(binding.layoutMain.isOverlayed)
+                Log.d(TAG, "ParcelDetailView::2 BackPressListener")
+                requireActivity().supportFragmentManager.popBackStack()
+            }
+
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+    }
+
+    override fun onDetach()
+    {
+        super.onDetach()
+        callback!!.remove()
     }
 
     companion object

@@ -1,4 +1,4 @@
-package com.delivery.sopo.services.worker
+package com.delivery.sopo.services.workmanager
 
 import android.content.Context
 import android.util.Log

@@ -1,11 +1,14 @@
 package com.delivery.sopo.views.registers
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -87,23 +90,54 @@ class RegisterStep1 : Fragment()
             }
         }
 
-        parentView.setOnBackPressListener(object : OnMainBackPressListener
-        {
-            override fun onBackPressed()
-            {
-                Log.d(TAG, "OnBackPressed RegisterStep1")
-
-                parentView.moveTaskToBack(true);                        // 태스크를 백그라운드로 이동
-                parentView.finishAndRemoveTask();                        // 액티비티 종료 + 태스크 리스트에서 지우기
-                android.os.Process.killProcess(android.os.Process.myPid());
-            }
-        })
-
         return binding.root
+    }
+
+    var callback : OnBackPressedCallback? = null
+
+    override fun onAttach(context: Context)
+    {
+        super.onAttach(context)
+
+        callback = object : OnBackPressedCallback(true){
+            override fun handleOnBackPressed()
+            {
+                Log.d(TAG, "Register Step::1 BackPressListener")
+                ActivityCompat.finishAffinity(activity!!)
+                System.exit(0)
+                }
+
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+    }
+
+    override fun onDetach()
+    {
+        super.onDetach()
+
+        callback!!.remove()
     }
 
     fun setObserve()
     {
+        parentView.currentPage.observe(this, Observer {
+            if(it != null && it == 0)
+            {
+                callback = object : OnBackPressedCallback(true){
+                    override fun handleOnBackPressed()
+                    {
+                        Log.d(TAG, "Register Step::1 BackPressListener")
+                        ActivityCompat.finishAffinity(activity!!)
+                        System.exit(0)
+                    }
+
+                }
+
+                requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+            }
+        })
+
         binding.vm?.waybilNum?.observe(this, Observer {
             if (it != null && it.isNotEmpty())
             {
@@ -190,6 +224,8 @@ class RegisterStep1 : Fragment()
     override fun onResume()
     {
         super.onResume()
+
+        Log.d(TAG, "OnResume")
 
         // 0922 kh 추가사항 - 클립보드에 저장되어있는 운송장 번호가 로컬에 등록된 택배가 있을 때, 안띄어주는 로직 추가
         val text = ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE, parcelRepolmpl)

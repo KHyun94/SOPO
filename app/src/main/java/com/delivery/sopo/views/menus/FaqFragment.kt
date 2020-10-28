@@ -1,17 +1,25 @@
 package com.delivery.sopo.views.menus
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.delivery.sopo.databinding.FragmentFaqBinding
+import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.menu.FaqItem
+import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.viewmodels.menus.FaqViewModel
 import com.delivery.sopo.views.adapter.FaqExpandableAdapter
 import com.delivery.sopo.views.dialog.OtherFaqDialog
+import com.delivery.sopo.views.main.MainView
 import kotlinx.android.synthetic.main.fragment_faq.view.*
+import kotlinx.android.synthetic.main.menu_view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FaqFragment: Fragment(){
@@ -19,9 +27,13 @@ class FaqFragment: Fragment(){
     private val faqVM: FaqViewModel by viewModel()
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     private lateinit var binding:FragmentFaqBinding
+    private lateinit var parentView: MainView
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+
+        parentView = activity as MainView
+
         binding = FragmentFaqBinding.inflate(inflater, container, false)
         viewBinding()
         setObserver()
@@ -37,6 +49,7 @@ class FaqFragment: Fragment(){
     }
 
     fun setObserver(){
+
     }
 
     private fun setListener(){
@@ -64,4 +77,5 @@ class FaqFragment: Fragment(){
         val faqExpandableAdapter = FaqExpandableAdapter(requireContext() , data)
         binding.root.expand_faq.setAdapter(faqExpandableAdapter)
     }
+
 }

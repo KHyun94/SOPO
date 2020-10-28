@@ -1,10 +1,13 @@
 package com.delivery.sopo.views.registers
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -15,7 +18,7 @@ import com.delivery.sopo.databinding.RegisterStep3Binding
 import com.delivery.sopo.enums.FragmentTypeEnum
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
-import com.delivery.sopo.services.SOPOWorkeManager
+import com.delivery.sopo.services.workmanager.SOPOWorkeManager
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep3ViewModel
@@ -69,21 +72,27 @@ class RegisterStep3 : Fragment()
 
         setObserve()
 
-        parentView.setOnBackPressListener(object : OnMainBackPressListener
-        {
-            override fun onBackPressed()
-            {
-                Log.d(TAG, "OnBackPressed RegisterStep3")
-                FragmentManager.remove(activity!!)
-            }
-
-        })
-
         return binding.root
     }
 
     private fun setObserve()
     {
+        parentView.currentPage.observe(this, Observer {
+            if(it != null && it == 0)
+            {
+                callback = object : OnBackPressedCallback(true){
+                    override fun handleOnBackPressed()
+                    {
+                        Log.d(TAG, "Register Step::3 BackPressListener")
+                        requireActivity().supportFragmentManager.popBackStack()
+                    }
+
+                }
+
+                requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+            }
+        })
+
         binding.vm!!.isRevise.observe(this, Observer {
             if (it != null && it)
             {
@@ -154,7 +163,29 @@ class RegisterStep3 : Fragment()
 
         })
     }
+    var callback : OnBackPressedCallback? = null
 
+    override fun onAttach(context: Context)
+    {
+        super.onAttach(context)
+
+        callback = object : OnBackPressedCallback(true){
+            override fun handleOnBackPressed()
+            {
+                Log.d(TAG, "Register Step::3 BackPressListener")
+                requireActivity().supportFragmentManager.popBackStack()
+            }
+
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+    }
+
+    override fun onDetach()
+    {
+        super.onDetach()
+        callback!!.remove()
+    }
     companion object
     {
         fun newInstance(waybilNum: String?, courier: CourierItem?): RegisterStep3
