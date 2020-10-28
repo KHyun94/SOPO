@@ -1,9 +1,8 @@
 package com.delivery.sopo
 
 import com.delivery.sopo.database.room.AppDatabase
-import com.delivery.sopo.services.SOPOWorkeManager
+import com.delivery.sopo.services.workmanager.SOPOWorkeManager
 import org.junit.Test
-import org.koin.java.KoinJavaComponent.inject
 import java.text.SimpleDateFormat
 import java.util.*
 

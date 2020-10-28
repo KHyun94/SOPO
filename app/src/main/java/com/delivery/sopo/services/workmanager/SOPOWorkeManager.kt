@@ -1,4 +1,4 @@
-package com.delivery.sopo.services
+package com.delivery.sopo.services.workmanager
 
 import android.content.Context
 import android.util.Log
@@ -6,9 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.work.*
 import com.delivery.sopo.database.room.AppDatabase
-import com.delivery.sopo.database.room.entity.LogEntity
 import com.delivery.sopo.database.room.entity.WorkEntity
-import com.delivery.sopo.services.worker.OneTimeWorker
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +14,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 import java.util.concurrent.TimeUnit
-import com.delivery.sopo.services.worker.SOPOWorker
 
 
 object SOPOWorkeManager
@@ -51,7 +48,11 @@ object SOPOWorkeManager
                 {
                     Log.d(TAG, "워크매니저 새로 등록")
                     // work 인스턴스화
-                    workRequest = getWorkRequest<SOPOWorker>(15, getWorkConstraint())
+                    workRequest =
+                        getWorkRequest<SOPOWorker>(
+                            15,
+                            getWorkConstraint()
+                        )
 
                     // work UUID
                     workUUID = workRequest.id

@@ -1,11 +1,14 @@
 package com.delivery.sopo.views.registers
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -57,21 +60,28 @@ class RegisterStep2 : Fragment()
 
         parentView = activity as MainView
 
-        parentView.setOnBackPressListener(object : OnMainBackPressListener
-        {
-            override fun onBackPressed()
-            {
-                Log.d(TAG, "OnBackPressed task 2")
-                FragmentManager.remove(activity!!)
-            }
-        })
-
         return binding.root
     }
 
     //(activity as RegisterMainFrame).childFragmentManager
     fun setObserve()
     {
+        parentView.currentPage.observe(this, Observer {
+            if(it != null && it == 0)
+            {
+                callback = object : OnBackPressedCallback(true){
+                    override fun handleOnBackPressed()
+                    {
+                        Log.d(TAG, "Register Step::2 BackPressListener")
+                        requireActivity().supportFragmentManager.popBackStack()
+                    }
+
+                }
+
+                requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+            }
+        })
+
         binding.vm?.moveFragment?.observe(this, Observer {
 
             when (it)
@@ -99,7 +109,7 @@ class RegisterStep2 : Fragment()
 
                 FragmentTypeEnum.REGISTER_STEP2.NAME ->
                 {
-                    FragmentManager.remove(activity = activity!!)
+                    FragmentManager.remove(activity = activity!!, fragment = this@RegisterStep2)
                     binding.vm?.moveFragment?.value = ""
                 }
             }
@@ -139,4 +149,27 @@ class RegisterStep2 : Fragment()
         }
     }
 
+    var callback : OnBackPressedCallback? = null
+
+    override fun onAttach(context: Context)
+    {
+        super.onAttach(context)
+
+        callback = object : OnBackPressedCallback(true){
+            override fun handleOnBackPressed()
+            {
+                Log.d(TAG, "Register Step::2 BackPressListener")
+                requireActivity().supportFragmentManager.popBackStack()
+            }
+
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+    }
+
+    override fun onDetach()
+    {
+        super.onDetach()
+        callback!!.remove()
+    }
 }

@@ -428,10 +428,10 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-    override fun onBackPressed()
-    {
-        super.onBackPressed()
-    }
+//    override fun onBackPressed()
+//    {
+//        super.onBackPressed()
+//    }
 
 
     override fun onDestroy()

@@ -20,6 +20,7 @@ import com.delivery.sopo.models.LoginResult
 import com.delivery.sopo.networks.api.LoginAPI
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.services.PowerManager
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.views.dialog.PermissionDialog
@@ -55,9 +56,8 @@ class SplashView : BasicView<SplashViewBinding>(
         super.onCreate(savedInstanceState)
 
         rxPermission = RxPermissions.getInstance(applicationContext)
-//
-//        val intent = Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS)
-//        startActivity(intent)
+
+//        PowerManager.checkWhiteList(SOPOApp.INSTANCE)
     }
 
     override fun bindView()

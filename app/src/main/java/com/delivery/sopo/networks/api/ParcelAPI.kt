@@ -61,6 +61,30 @@ interface ParcelAPI
         @Body parcelIds: DeleteParcelsDTO
     ): APIResult<String?>
 
+//<<<<<<< HEAD
+
+//=======
+//    @PATCH("/api/v1/sopo-api/delivery/{email}/parcels")
+//    @Headers("Accept: application/json")
+//    suspend fun requestRenewal2(@Path("email") email: String): APIResult<String?>
+//
+//    // 0915 추가 - 택배 상태 업데이트 체크 api
+//    @PATCH("/api/v1/sopo-api/delivery/{email}/parcels")
+//    @Headers("Accept: application/json")
+//    suspend fun requestRenewal(@Path("email") email: String): APIResult<String?>?
+//
+//    // 0923 추가 - 택배 상태 설정에 따른 해당 상태 택배 전부 불러오기 api
+//    @GET("/api/v1/sopo-api/delivery/{email}/parcels/{status}")
+//    @Headers("Accept: application/json")
+//    suspend fun requestRenewal(
+//        @Path("email") email: String,
+//        @Path("status") status: Int
+//    ): Call<APIResult<String?>>
+//
+//    // 1002 단일 택배 업데이트 및 가져오기
+//    @PATCH("/api/v1/sopo-api/delivery/{email}/parcel")
+//>>>>>>> feature-revise
+
     // 0915 추가 - 택배 상태 업데이트 체크 api
     @POST("/api/v1/sopo-api/delivery/{email}/parcels/refreshing")
     @Headers("Accept: application/json")

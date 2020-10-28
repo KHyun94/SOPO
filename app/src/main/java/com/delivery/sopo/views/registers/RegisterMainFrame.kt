@@ -20,7 +20,6 @@ class RegisterMainFrame : Fragment()
 {
     private lateinit var binding: RegisterMainFrameBinding
     private val registerStep1Vm: RegisterStep1ViewModel by viewModel()
-    private lateinit var parentView: MainView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,7 +32,6 @@ class RegisterMainFrame : Fragment()
 
         viewId = binding.frameRegister.id
 
-        parentView = activity as MainView
         FragmentManager.move(this.requireActivity(),FragmentTypeEnum.REGISTER_STEP1, viewId)
 
         return binding.root
