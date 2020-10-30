@@ -12,14 +12,11 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
-import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
@@ -28,6 +25,7 @@ import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.views.main.MainView
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
@@ -98,12 +96,15 @@ class ParcelDetailView : Fragment()
             Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
         }
 
-        parentView.alert_message_bar.setOnCancelClicked("업데이트", R.color.MAIN_WHITE, View.OnClickListener {
+        parentView.alert_message_bar.setOnCancelClicked(
+            "업데이트",
+            R.color.MAIN_WHITE,
+            View.OnClickListener {
 
-            binding.vm!!.updateParcelItem(binding.vm!!.parcelEntity!!)
+                binding.vm!!.updateParcelItem(binding.vm!!.parcelEntity!!)
 
-            parentView.alert_message_bar.onDismiss()
-        })
+                parentView.alert_message_bar.onDismiss()
+            })
         return binding.root
     }
 
@@ -120,30 +121,32 @@ class ParcelDetailView : Fragment()
     {
         super.onActivityCreated(savedInstanceState)
 
+        var slideoffsetC: Float = 0.0f
+
         binding.layoutMain.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener
         {
             override fun onPanelSlide(panel: View?, slideOffset: Float)
             {
-                Log.i(TAG, "onPanelSlide, offset $slideOffset")
-
+//                Log.i(TAG, "onPanelSlide, offset $slideOffset")
+                slideoffsetC = slideOffset
                 CoroutineScope(Dispatchers.Main).launch {
-
-                    if (slideOffset > 0.1f)
+                    if (slideoffsetC < 0.1)
                     {
-                        binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
-                        binding.includeSemi.root.visibility = View.GONE
-                        binding.includeFull.root.visibility = View.VISIBLE
-                    }
-                    else
-                    {
+                        // 테두리
                         binding.layoutDrawer.setBackgroundResource(R.drawable.border_drawer)
 
                         binding.includeSemi.root.visibility = View.VISIBLE
                         binding.includeFull.root.visibility = View.GONE
                     }
+                    else
+                    {
+                        // 테두리
+                        binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
 
+                        binding.includeSemi.root.visibility = View.GONE
+                        binding.includeFull.root.visibility = View.VISIBLE
+                    }
                 }
-
 
             }
 
@@ -153,8 +156,18 @@ class ParcelDetailView : Fragment()
                 newState: PanelState
             )
             {
-                Log.i(TAG, "onPanelStateChanged $newState")
-
+                CoroutineScope(Dispatchers.Main).launch {
+                    if (slideoffsetC < 0.1 && previousState == SlidingUpPanelLayout.PanelState.DRAGGING)
+                    {
+                        SopoLog.d("닫힘 -> pre {$previousState } cur {$newState }", null)
+                        binding.layoutMain.panelState = PanelState.COLLAPSED
+                    }
+                    else if (slideoffsetC == 1.0f && previousState == PanelState.DRAGGING)
+                    {
+                        SopoLog.d("열림 -> pre {$previousState } cur {$newState }", null)
+                        binding.layoutMain.panelState = PanelState.EXPANDED
+                    }
+                }
 
             }
         })
@@ -174,9 +187,10 @@ class ParcelDetailView : Fragment()
     private fun setObserve()
     {
         parentView.currentPage.observe(this, Observer {
-            if(it != null && it == 1)
+            if (it != null && it == 1)
             {
-                callback = object : OnBackPressedCallback(true){
+                callback = object : OnBackPressedCallback(true)
+                {
                     override fun handleOnBackPressed()
                     {
                         Log.d(TAG, "ParcelDetailView:: BackPressListener")
@@ -218,7 +232,7 @@ class ParcelDetailView : Fragment()
         })
 
         binding.vm!!.isUpdate.observe(this, Observer {
-            if(it != null && it == true)
+            if (it != null && it == true)
             {
                 parentView.alert_message_bar.onStart(null)
             }
@@ -362,17 +376,18 @@ class ParcelDetailView : Fragment()
 
     }
 
-    var callback : OnBackPressedCallback? = null
+    var callback: OnBackPressedCallback? = null
 
     override fun onAttach(context: Context)
     {
         super.onAttach(context)
 
-        callback = object : OnBackPressedCallback(true){
+        callback = object : OnBackPressedCallback(true)
+        {
             override fun handleOnBackPressed()
             {
-                if(binding.layoutMain.isOverlayed)
-                Log.d(TAG, "ParcelDetailView::2 BackPressListener")
+                if (binding.layoutMain.isOverlayed)
+                    Log.d(TAG, "ParcelDetailView::2 BackPressListener")
                 requireActivity().supportFragmentManager.popBackStack()
             }
 

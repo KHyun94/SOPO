@@ -38,7 +38,7 @@ val appModule = module {
         UserRepoImpl(get())
     }
 
-    single{
+    single {
         AppDatabase.getInstance(get())
     }
 
@@ -66,18 +66,12 @@ val appModule = module {
     viewModel { LoginViewModel(get()) }
     viewModel { SignUpViewModel() }
     viewModel { LoginSelectViewModel() }
-    viewModel {
-        MainViewModel(
-            get(),
-            get(),
-            get()
-        )
-    }
-    viewModel { LockScreenViewModel(get(),get()) }
-    viewModel { SettingViewModel(get(),get()) }
-    viewModel { NoticeViewModel()}
-    viewModel { FaqViewModel()}
-    viewModel { AppInfoViewModel()}
+    viewModel { MainViewModel(get(), get(), get(), get()) }
+    viewModel { LockScreenViewModel(get(), get()) }
+    viewModel { SettingViewModel(get(), get()) }
+    viewModel { NoticeViewModel() }
+    viewModel { FaqViewModel() }
+    viewModel { AppInfoViewModel() }
     viewModel { NotDisturbTimeViewModel() }
     viewModel { InquiryViewModel(get(), get(), get(), get()) }
     viewModel { MenuViewModel(get(), get(), get()) }

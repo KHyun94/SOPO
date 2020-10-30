@@ -17,15 +17,16 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.databinding.RegisterStep1Binding
 import com.delivery.sopo.enums.FragmentTypeEnum
-import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.repository.impl.CourierRepolmpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.util.ClipboardUtil
-import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
 import com.delivery.sopo.views.main.MainView
+import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -93,19 +94,37 @@ class RegisterStep1 : Fragment()
         return binding.root
     }
 
-    var callback : OnBackPressedCallback? = null
+    var callback: OnBackPressedCallback? = null
 
     override fun onAttach(context: Context)
     {
         super.onAttach(context)
 
-        callback = object : OnBackPressedCallback(true){
+        var pressedTime: Long = 0
+
+        callback = object : OnBackPressedCallback(true)
+        {
             override fun handleOnBackPressed()
             {
-                Log.d(TAG, "Register Step::1 BackPressListener")
-                ActivityCompat.finishAffinity(activity!!)
-                System.exit(0)
+                if (System.currentTimeMillis() - pressedTime > 2000)
+                {
+                    pressedTime = System.currentTimeMillis()
+                    val snackbar = Snackbar.make(
+                        parentView.binding.layoutMain,
+                        "한번 더 누르시면 앱이 종료됩니다.",
+                        2000
+                    )
+                    snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
+
+                    SopoLog.d("Register Step::1 BackPressListener = 종료를 위해 한번 더 클릭", null)
                 }
+                else
+                {
+                    SopoLog.d("Register Step::1 BackPressListener = 종료", null)
+                    ActivityCompat.finishAffinity(activity!!)
+                    System.exit(0)
+                }
+            }
 
         }
 
@@ -121,15 +140,34 @@ class RegisterStep1 : Fragment()
 
     fun setObserve()
     {
+        var pressedTime: Long = 0
+
         parentView.currentPage.observe(this, Observer {
-            if(it != null && it == 0)
+            if (it != null && it == 0)
             {
-                callback = object : OnBackPressedCallback(true){
+                callback = object : OnBackPressedCallback(true)
+                {
                     override fun handleOnBackPressed()
                     {
-                        Log.d(TAG, "Register Step::1 BackPressListener")
-                        ActivityCompat.finishAffinity(activity!!)
-                        System.exit(0)
+                        if (System.currentTimeMillis() - pressedTime > 2000)
+                        {
+                            pressedTime = System.currentTimeMillis()
+                            val snackbar = Snackbar.make(
+                                parentView.binding.layoutMain,
+                                "한번 더 누르시면 앱이 종료됩니다.",
+                                2000
+                            )
+                            snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
+
+                            SopoLog.d("Register Step::1 BackPressListener = 종료를 위해 한번 더 클릭", null)
+                        }
+                        else
+                        {
+                            SopoLog.d("Register Step::1 BackPressListener = 종료", null)
+                            ActivityCompat.finishAffinity(activity!!)
+                            System.exit(0)
+                        }
+
                     }
 
                 }

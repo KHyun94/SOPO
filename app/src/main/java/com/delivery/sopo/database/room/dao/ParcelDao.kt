@@ -52,7 +52,7 @@ interface ParcelDao
     fun delete(listParcelEntity: List<ParcelEntity>)
 
     @Update
-    fun update(parcelEntity: ParcelEntity)
+    fun update(parcelEntity: ParcelEntity) : Int
 
     @Update
     fun update(listParcelEntity: List<ParcelEntity>)

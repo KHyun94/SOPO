@@ -2,6 +2,7 @@ package com.delivery.sopo.viewmodels.inquiry
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.enums.ResponseCodeEnum
 import com.delivery.sopo.enums.ScreenStatusEnum
@@ -20,11 +21,18 @@ import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.util.CodeUtil
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import kotlinx.coroutines.*
+import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.HttpException
+import retrofit2.Response
 
 class InquiryViewModel(
     private val userRepoImpl: UserRepoImpl,
@@ -394,9 +402,14 @@ class InquiryViewModel(
                     )
                     // 서버로부터 받아온 데이터가 검색되지 않았을 경우 => 새로운 데이터라는 의미 => 로컬에 저장한다.
                     // ParcelEntity를 관리해줄 ParcelManagementEntity도 같은 ParcelId로 저장한다.
-                    if(localParcelById == null){
+                    if (localParcelById == null)
+                    {
                         parcelRepoImpl.insetEntity(ParcelMapper.parcelToParcelEntity(remote))
-                        parcelManagementRepoImpl.insertEntity(ParcelMapper.parcelToParcelManagementEntity(remote))
+                        parcelManagementRepoImpl.insertEntity(
+                            ParcelMapper.parcelToParcelManagementEntity(
+                                remote
+                            )
+                        )
                     }
                     /*
                         서버로부터 받아온 데이터가 검색된 경우
@@ -450,8 +463,15 @@ class InquiryViewModel(
                         {
                             if (remoteOngoingParcel.inqueryHash != parcel.inqueryHash)
                             {
-                                parcelRepoImpl.insetEntity(localParcelById.apply { this.update(remoteOngoingParcel) })
-                                parcelManagementRepoImpl.initializeIsBeUpdate(localParcelById.regDt, localParcelById.parcelUid)
+                                parcelRepoImpl.insetEntity(localParcelById.apply {
+                                    this.update(
+                                        remoteOngoingParcel
+                                    )
+                                })
+                                parcelManagementRepoImpl.initializeIsBeUpdate(
+                                    localParcelById.regDt,
+                                    localParcelById.parcelUid
+                                )
                             }
                         }
                     }
@@ -485,7 +505,8 @@ class InquiryViewModel(
     {
         viewModelScope.launch(Dispatchers.IO) {
             val parcelsRefreshing =
-                NetworkManager.privateRetro.create(ParcelAPI::class.java).parcelsRefreshing(userRepoImpl.getEmail())
+                NetworkManager.privateRetro.create(ParcelAPI::class.java)
+                    .parcelsRefreshing(userRepoImpl.getEmail())
         }
     }
 
@@ -629,6 +650,91 @@ class InquiryViewModel(
         setRemovable(false)
         setMoreView(false)
     }
+
+    fun patchParcelAlias(parcelId: ParcelId, patchAlias: String)
+    {
+        // Json Patch를 위한 Body
+        val jsonArray = JsonArray()
+        val jsonObject = JsonObject()
+
+        jsonObject.run {
+            addProperty("op", "replace")    // 사용할 method
+            addProperty("path", "/parcelAlias") // 변경 target path
+            addProperty("value", patchAlias)    // 변경 value
+        }
+
+        jsonArray.add(jsonObject)
+
+        SopoLog.d("Parcel Alias 변경 JsonArray ===> ${jsonArray}", null)
+
+
+        NetworkManager.privateRetro.create(ParcelAPI::class.java)
+            .patchParcel(
+                email = userRepoImpl.getEmail(),
+                parcelUid = parcelId.parcelUid,
+                regDt = parcelId.regDt,
+                jsonPATCH = jsonArray
+            ).enqueue(object : Callback<APIResult<ParcelEntity?>>
+            {
+                override fun onFailure(call: Call<APIResult<ParcelEntity?>>, t: Throwable)
+                {
+                    TODO("Not yet implemented")
+                }
+
+                override fun onResponse(
+                    call: Call<APIResult<ParcelEntity?>>,
+                    response: Response<APIResult<ParcelEntity?>>
+                )
+                {
+                    val httpStatusCode = response.code()
+
+                    SopoLog.d("Alias 변경 HttpCode => $httpStatusCode", null)
+
+                    // http status code 200
+                    when (httpStatusCode)
+                    {
+                        200 ->
+                        {
+                            // 0000 =>
+                            val result = response.body() as APIResult<ParcelEntity?>
+
+                            CoroutineScope(Dispatchers.Main).launch {
+                                withContext(Dispatchers.Default) {
+                                    val a = parcelRepoImpl.updateEntity(result.data!!)
+                                    SopoLog.d("업데이트 완료 + $a", null)
+                                }
+                            }
+                        }
+                        400 ->
+                        {
+                            // ERROR
+                            val errorReader = response.errorBody()!!.charStream()
+
+                            val result = Gson().fromJson(errorReader, APIResult::class.java)
+                            Log.e("LOG.SOPO", "[ERROR] getParcels => $result ")
+
+
+                            val msg = if (result == null)
+                            {
+                                SopoLog.e("등록 null", null, null)
+                                "알 수 없는 에러"
+                            }
+                            else
+                            {
+                                Log.d("LOG.SOPO", "등록 Code ${result.code}")
+                                CodeUtil.returnCodeMsg(result.code)
+                            }
+
+                        }
+                        else ->
+                        {
+                            Log.d("LOG.SOPO", "알 수 없는 에러!!!!")
+                        }
+                    }
+                }
+            })
+    }
+
 
     override fun onCleared()
     {

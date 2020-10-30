@@ -39,6 +39,7 @@ import com.delivery.sopo.repository.impl.*
 import com.delivery.sopo.services.workmanager.SOPOWorkeManager
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.factory.InquiryViewModelFactory
 import com.delivery.sopo.viewmodels.factory.MainViewModelFactory
@@ -48,6 +49,7 @@ import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
 import com.delivery.sopo.views.main.MainView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.popup_menu_view.view.*
 import kotlinx.android.synthetic.main.sopo_inquiry_view.*
 import kotlinx.coroutines.CoroutineScope
@@ -79,7 +81,7 @@ class InquiryView : Fragment()
     private val mainVm: MainViewModel by lazy {
         ViewModelProvider(
             requireActivity(),
-            MainViewModelFactory(userRepoImpl, parcelRepoImpl, appPasswordRepoImpl)
+            MainViewModelFactory(userRepoImpl, parcelRepoImpl, parcelManagementRepoImpl, appPasswordRepoImpl)
         ).get(MainViewModel::class.java)
     }
     private val inquiryVm: InquiryViewModel by lazy {
@@ -109,17 +111,6 @@ class InquiryView : Fragment()
         viewBinding()
         setObserver()
 
-//        parentView.setOnBackPressListener(object : OnMainBackPressListener
-//        {
-//            override fun onBackPressed()
-//            {
-//                parentView.moveTaskToBack(true);                        // 태스크를 백그라운드로 이동
-//                parentView.finishAndRemoveTask();                        // 액티비티 종료 + 태스크 리스트에서 지우기
-//                android.os.Process.killProcess(android.os.Process.myPid());
-//            }
-//
-//        })
-
         return binding.root
     }
 
@@ -141,11 +132,29 @@ class InquiryView : Fragment()
     {
         super.onAttach(context)
 
+        var pressedTime : Long = 0
+
         callback = object : OnBackPressedCallback(true){
             override fun handleOnBackPressed()
             {
-                ActivityCompat.finishAffinity(activity!!)
-                System.exit(0)
+                if (System.currentTimeMillis() - pressedTime > 2000)
+                {
+                    pressedTime = System.currentTimeMillis()
+                    val snackbar = Snackbar.make(
+                        parentView.binding.layoutMain,
+                        "한번 더 누르시면 앱이 종료됩니다.",
+                        2000
+                    )
+                    snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
+
+                    SopoLog.d("InquiryView::1 BackPressListener = 종료를 위해 한번 더 클릭", null)
+                }
+                else
+                {
+                    SopoLog.d("InquiryView::1 BackPressListener = 종료", null)
+                    ActivityCompat.finishAffinity(activity!!)
+                    System.exit(0)
+                }
             }
 
         }
@@ -239,15 +248,32 @@ class InquiryView : Fragment()
 
     private fun setObserver()
     {
+        var pressedTime : Long = 0
+
         parentView.currentPage.observe(this, Observer {
             if(it != null && it == 1)
             {
                 callback = object : OnBackPressedCallback(true){
                     override fun handleOnBackPressed()
                     {
-                        Log.d(TAG, "InquiryView:: BackPressListener")
-                        ActivityCompat.finishAffinity(activity!!)
-                        System.exit(0)
+                        if (System.currentTimeMillis() - pressedTime > 2000)
+                        {
+                            pressedTime = System.currentTimeMillis()
+                            val snackbar = Snackbar.make(
+                                parentView.binding.layoutMain,
+                                "한번 더 누르시면 앱이 종료됩니다.",
+                                2000
+                            )
+                            snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
+
+                            SopoLog.d("InquiryView::1 BackPressListener = 종료를 위해 한번 더 클릭", null)
+                        }
+                        else
+                        {
+                            SopoLog.d("InquiryView::1 BackPressListener = 종료", null)
+                            ActivityCompat.finishAffinity(activity!!)
+                            System.exit(0)
+                        }
                     }
 
                 }
@@ -548,6 +574,11 @@ class InquiryView : Fragment()
                     FragmentTypeEnum.INQUIRY_DETAIL,
                     InquiryMainFrame.viewId
                 )
+            }
+
+            override fun onItemLongClicked(view: View, parcelId: ParcelId)
+            {
+                binding.vm!!.patchParcelAlias(parcelId, "Test")
             }
 
         }

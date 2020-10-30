@@ -86,9 +86,9 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
     }
 
 
-    override suspend fun updateEntity(parcel: ParcelEntity) {
+    override suspend fun updateEntity(parcel: ParcelEntity) : Int {
         parcel.auditDte = TimeUtil.getDateTime()
-        appDatabase.parcelDao().update(parcel)
+        return appDatabase.parcelDao().update(parcel)
     }
 
     override suspend fun updateEntities(parcelList: List<ParcelEntity>) {

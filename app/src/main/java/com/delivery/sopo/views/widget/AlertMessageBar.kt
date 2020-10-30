@@ -26,10 +26,10 @@ class AlertMessageBar : RelativeLayout
 
     private var contentStr: String? = null
     private var buttonStr: String? = null
-    private var markImg: Int = 0
-    private var bgColor: Int = 0
-    private var contentTextColor: Int = 0
-    private var buttonTextColor: Int = 0
+    private var markImg: Int = R.drawable.ic_blue_marker
+    private var bgColor: Int = R.color.COLOR_MAIN_BLUE_700
+    private var contentTextColor: Int = R.color.MAIN_WHITE
+    private var buttonTextColor: Int = R.color.MAIN_WHITE
 
     constructor(context: Context?) : super(context)
     {
@@ -66,22 +66,40 @@ class AlertMessageBar : RelativeLayout
 
             contentStr = typedArray?.getString(R.styleable.AlertMessageBar_msgtext) ?: "메시지"
             buttonStr = typedArray?.getString(R.styleable.AlertMessageBar_buttonText) ?: "버튼"
-            markImg = typedArray?.getResourceId(R.styleable.AlertMessageBar_markImage, R.drawable.ic_blue_marker)?:R.drawable.ic_blue_marker
-            bgColor = typedArray?.getResourceId(R.styleable.AlertMessageBar_customBgColor, R.color.COLOR_MAIN_BLUE_700)?:R.color.COLOR_MAIN_BLUE_700
-            contentTextColor = typedArray?.getResourceId(R.styleable.AlertMessageBar_textColor,  R.color.MAIN_WHITE)?:R.color.MAIN_WHITE
-            buttonTextColor = typedArray?.getResourceId(R.styleable.AlertMessageBar_buttonTextColor, R.color.MAIN_WHITE)?:R.color.MAIN_WHITE
+            markImg = typedArray?.getResourceId(
+                R.styleable.AlertMessageBar_markImage,
+                R.drawable.ic_blue_marker
+            ) ?: R.drawable.ic_blue_marker
+            bgColor = typedArray?.getResourceId(
+                R.styleable.AlertMessageBar_customBgColor,
+                R.color.COLOR_MAIN_BLUE_700
+            ) ?: R.color.COLOR_MAIN_BLUE_700
+            contentTextColor =
+                typedArray?.getResourceId(R.styleable.AlertMessageBar_textColor, R.color.MAIN_WHITE)
+                    ?: R.color.MAIN_WHITE
+            buttonTextColor = typedArray?.getResourceId(
+                R.styleable.AlertMessageBar_buttonTextColor,
+                R.color.MAIN_WHITE
+            ) ?: R.color.MAIN_WHITE
 
             layoutMain.visibility = View.GONE
 
             CoroutineScope(Dispatchers.Main).launch {
                 layoutMain.setBackgroundResource(bgColor)
-                tvContent.text = contentStr
-                tvButton.text = buttonStr
+                tvContent.run {
+                    text = contentStr
+                    setTextColor(resources.getColor(contentTextColor))
+                }
+
+                tvButton.run {
+                    text = buttonStr
+                    setTextColor(resources.getColor(buttonTextColor))
+                }
 
                 Glide.with(ivMarker.context).load(markImg).into(ivMarker)
 
-                tvContent.setTextColor(contentTextColor)
-                tvButton.setTextColor(buttonTextColor)
+                tvContent.setTextColor(resources.getColor(contentTextColor))
+                tvButton.setTextColor(resources.getColor(buttonTextColor))
             }
 
         }
@@ -125,7 +143,7 @@ class AlertMessageBar : RelativeLayout
 
     fun setTextColor(colorHex: Int)
     {
-        tvContent.setTextColor(colorHex)
+        tvContent.setTextColor(resources.getColor(colorHex))
     }
 
     fun setBackgroundRes(resid: Int)
@@ -144,15 +162,17 @@ class AlertMessageBar : RelativeLayout
         }
     }
 
-    fun onStart(timer : Long?){
+    fun onStart(timer: Long?)
+    {
         layoutMain.visibility = View.VISIBLE
 
         Handler().postDelayed(Runnable {
             layoutMain.visibility = View.GONE
-        }, timer?:5000)
+        }, timer ?: 5000)
     }
 
-    fun onDismiss(){
+    fun onDismiss()
+    {
         layoutMain.visibility = View.GONE
     }
 }

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
+import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import kotlinx.coroutines.Dispatchers
@@ -16,6 +17,7 @@ import kotlinx.coroutines.launch
 class MainViewModel(
     private val userRepoImpl: UserRepoImpl,
     private val parcelRepoImpl: ParcelRepoImpl,
+    private val parcelManagementRepoImpl: ParcelManagementRepoImpl,
     private val appPasswordRepo: AppPasswordRepoImpl
 ) : ViewModel()
 {
@@ -27,6 +29,11 @@ class MainViewModel(
     private val _isSetOfSecurity = MutableLiveData<AppPasswordEntity?>()
     val isSetOfSecurity: LiveData<AppPasswordEntity?>
         get() = _isSetOfSecurity
+
+    // 업데이트 여부
+    private val _cntOfBeUpdate = parcelManagementRepoImpl.getIsUpdateCntLiveData()
+    val cntOfBeUpdate: LiveData<Int>
+        get() = _cntOfBeUpdate
 
     init
     {

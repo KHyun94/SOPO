@@ -3,8 +3,10 @@ package com.delivery.sopo.networks.api
 import com.delivery.sopo.networks.dto.TimeCountDTO
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.database.room.dto.DeleteParcelsDTO
+import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
+import com.google.gson.JsonArray
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -99,4 +101,13 @@ interface ParcelAPI
         @Path("parcelUid") parcelUid : String
     ) : Call<APIResult<Parcel?>>
 
+    // alias 변경
+    @PATCH("api/v1/sopo-api/delivery/{email}/parcel/{regDt}/{parcelUid}")
+    @Headers("Content-Type: application/json-patch+json")
+    fun patchParcel(
+        @Path("email") email : String,
+        @Path("regDt") regDt : String,
+        @Path("parcelUid") parcelUid : String,
+        @Body jsonPATCH: JsonArray
+    ): Call<APIResult<ParcelEntity?>>
 }

@@ -1,7 +1,6 @@
 package com.delivery.sopo.views.menus
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,9 +18,11 @@ import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.factory.MenuViewModelFactory
 import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import com.delivery.sopo.views.main.MainView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.menu_view.view.*
 import org.koin.android.ext.android.inject
 
@@ -73,6 +74,8 @@ class MenuFragment : Fragment()
 
     fun setObserver()
     {
+        var pressedTime: Long = 0
+
         parentView.currentPage.observe(this, Observer {
             if (it != null && it == 2)
             {
@@ -84,12 +87,29 @@ class MenuFragment : Fragment()
 
                         isMainMenu = binding.constraintFragmentBase.visibility == View.GONE
 
-                        if(isMainMenu)
+                        if (isMainMenu)
                         {
-                            Log.d(TAG, "Main MenuFragment:: BackPressListener")
+                            if (System.currentTimeMillis() - pressedTime > 2000)
+                            {
+                                pressedTime = System.currentTimeMillis()
+                                val snackbar = Snackbar.make(
+                                    parentView.binding.layoutMain,
+                                    "한번 더 누르시면 앱이 종료됩니다.",
+                                    2000
+                                )
+                                snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
 
-                            ActivityCompat.finishAffinity(activity!!)
-                            System.exit(0)
+                                SopoLog.d(
+                                    "MenuFragment::1 BackPressListener = 종료를 위해 한번 더 클릭",
+                                    null
+                                )
+                            }
+                            else
+                            {
+                                SopoLog.d("MenuFragment::1 BackPressListener = 종료", null)
+                                ActivityCompat.finishAffinity(activity!!)
+                                System.exit(0)
+                            }
                         }
                         else
                         {
@@ -156,29 +176,6 @@ class MenuFragment : Fragment()
 
     var callback: OnBackPressedCallback? = null
 
-    override fun onAttach(context: Context)
-    {
-        super.onAttach(context)
-
-        callback = object : OnBackPressedCallback(true)
-        {
-            override fun handleOnBackPressed()
-            {
-                if(isMainMenu)
-                {
-                    ActivityCompat.finishAffinity(activity!!)
-                    System.exit(0)
-                }
-                else
-                {
-                    binding.vm!!.popView()
-                }
-            }
-
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
-    }
 
     override fun onDetach()
     {

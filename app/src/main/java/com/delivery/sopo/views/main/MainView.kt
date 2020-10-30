@@ -3,7 +3,6 @@ package com.delivery.sopo.views.main
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -21,12 +20,12 @@ import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.UserAPI
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.menus.LockScreenView
-import com.delivery.sopo.views.widget.AlertMessageBar
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.iid.FirebaseInstanceId
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -59,7 +58,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     private var isInit = true
 
     var currentPage = MutableLiveData<Int?>()
-    
+
     init
     {
         TAG += "MainView"
@@ -91,8 +90,14 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             {
                 when (it)
                 {
-                    NavigatorConst.REGISTER_TAB -> binding.vpMain.setCurrentItem(NavigatorConst.REGISTER_TAB, true)
-                    NavigatorConst.INQUIRY_TAB -> binding.vpMain.setCurrentItem(NavigatorConst.INQUIRY_TAB, true)
+                    NavigatorConst.REGISTER_TAB -> binding.vpMain.setCurrentItem(
+                        NavigatorConst.REGISTER_TAB,
+                        true
+                    )
+                    NavigatorConst.INQUIRY_TAB -> binding.vpMain.setCurrentItem(
+                        NavigatorConst.INQUIRY_TAB,
+                        true
+                    )
                     else -> binding.vpMain.setCurrentItem(0, true)
                 }
 
@@ -239,6 +244,46 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     override fun setObserver()
     {
+
+        binding.vm!!.cntOfBeUpdate.observe(this, Observer {
+
+            SopoLog.d("업데이트 가능 여부 택배 갯수: $it", null)
+
+            if (it > 0)
+            {
+                binding.alertMessageBar.run {
+                    setText("${it}개 아이템의 배송 상태가 업데이트되었습니다.")
+                    setTextColor(R.color.MAIN_WHITE)
+                    setOnCancelClicked("업데이트", R.color.MAIN_WHITE, View.OnClickListener {
+                        when (currentPage.value)
+                        {
+                            NavigatorConst.REGISTER_TAB ->
+                            {
+                                binding.vpMain.currentItem = 1
+                                inquiryVm.refreshOngoing()
+                            }
+                            NavigatorConst.INQUIRY_TAB ->
+                            {
+                                inquiryVm.refreshOngoing()
+                            }
+                            NavigatorConst.MY_MENU_TAB ->
+                            {
+                                binding.vpMain.currentItem = 1
+                                inquiryVm.refreshOngoing()
+                            }
+                        }
+
+                        this.onDismiss()
+                    })
+                    onStart(10000)
+                }
+            }
+            else
+            {
+
+            }
+        })
+
         mainVm.isSetOfSecurity.observe(this, Observer {
             it?.also {
                 this.launchActivitiy<LockScreenView> {

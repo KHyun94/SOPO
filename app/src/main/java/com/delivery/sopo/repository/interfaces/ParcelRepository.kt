@@ -26,8 +26,8 @@ interface ParcelRepository {
    suspend fun insetEntity(parcel: ParcelEntity)
    suspend fun insertEntities(parcelList: List<Parcel>)
 
-   suspend fun updateEntity(parcel: ParcelEntity)
-   suspend fun updateEntities(parcelList: List<ParcelEntity>)
+   suspend fun updateEntity(parcel: ParcelEntity): Int
+    suspend fun updateEntities(parcelList: List<ParcelEntity>)
 
    suspend fun deleteLocalParcels(parcelIdList: List<ParcelId>)
    suspend fun deleteRemoteParcels(): APIResult<String?>?

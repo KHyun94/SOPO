@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/H4"
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="닉네임을 입력해주세yo."
+        android:layout_marginStart="19dp"
+        android:layout_marginTop="24dp"/>
+
+<!--    <LinearLayout-->
+<!--        android:id="@+id/layout "-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/tv_title"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        android:layout_marginHorizontal="19dp"-->
+<!--        android:orientation="vertical">-->
+
+<!--        <EditText-->
+<!--            style="@style/H3"-->
+<!--            android:id="@+id/et_input_text"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:includeFontPadding="false"-->
+<!--            android:background="@android:color/transparent"-->
+<!--            android:layout_marginBottom="3dp"/>-->
+<!--        -->
+<!--        <View-->
+<!--            android:id="@+id/v_focus_status"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="2dp"-->
+<!--            android:background="@color/COLOR_GRAY_200"/>-->
+
+<!--    </LinearLayout>-->
+
+<!--    <TextView-->
+<!--        style="@style/H4"-->
+<!--        android:id="@+id/tv_cancel_btn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:layout_constraintBottom_toBottomOf="@+id/"-->
+</androidx.constraintlayout.widget.ConstraintLayout>

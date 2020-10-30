@@ -262,6 +262,17 @@ class InquiryListAdapter(
                         }
                     }
                 }
+
+                holder.itemView.cv_ongoing_parent.setOnLongClickListener {
+                    if(mClickListener != null)
+                    {
+                        mClickListener!!.onItemLongClicked(
+                            view = it,
+                            parcelId = inquiryListData.parcel.parcelId
+                        )
+                    }
+                    return@setOnLongClickListener true
+                }
             }
             is CompleteViewHolder ->
             {
@@ -305,6 +316,17 @@ class InquiryListAdapter(
                             )
                         }
                     }
+                }
+
+                holder.itemView.cv_complete_parent.setOnLongClickListener {
+                    if(mClickListener != null)
+                    {
+                        mClickListener!!.onItemLongClicked(
+                            view = it,
+                            parcelId = inquiryListData.parcel.parcelId
+                        )
+                    }
+                    return@setOnLongClickListener true
                 }
             }
         }

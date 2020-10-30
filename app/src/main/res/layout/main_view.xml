@@ -17,7 +17,7 @@
         <com.delivery.sopo.views.widget.NoneSwipeViewPager
             android:id="@+id/vp_main"
             android:layout_width="match_parent"
-            android:layout_height="0sp"
+            android:layout_height="wrap_content"
             app:layout_constrainedHeight="true"
             android:background="@color/MAIN_WHITE"
             app:layout_constraintLeft_toRightOf="parent"

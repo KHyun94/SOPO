@@ -110,8 +110,7 @@
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="90dp"
-                    android:layout_height="35dp"
-                    >
+                    android:layout_height="35dp">
 
                     <TextView
                         android:id="@+id/tv_cnt_of_new_delivered"
@@ -596,71 +595,71 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_snack_bar_update"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/COLOR_MAIN_BLUE_700"
-            android:elevation="50dp"
-            android:visibility="@{vm.cntOfBeUpdate > 0 &amp;&amp; vm.isForceUpdateFinish == true ? View.VISIBLE : View.GONE}"
-            tools:visibility="gone"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            >
+<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--            android:id="@+id/constraint_snack_bar_update"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:background="@color/COLOR_MAIN_BLUE_700"-->
+<!--            android:elevation="50dp"-->
+<!--            android:visibility="@{vm.cntOfBeUpdate > 0 &amp;&amp; vm.isForceUpdateFinish == true ? View.VISIBLE : View.GONE}"-->
+<!--            tools:visibility="gone"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            >-->
 
-            <ImageView
-                android:id="@+id/image_snack_bar_exclamation_mark_update"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginStart="17dp"
-                android:background="@drawable/snack_bar_exclamation_mark"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+<!--            <ImageView-->
+<!--                android:id="@+id/image_snack_bar_exclamation_mark_update"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_gravity="center"-->
+<!--                android:layout_marginStart="17dp"-->
+<!--                android:background="@drawable/snack_bar_exclamation_mark"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
 
-            <TextView
-                android:id="@+id/tv_count_of_update"
-                style="@style/H4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:textColor="@color/COLOR_MAIN_100"
-                android:textSize="14sp"
-                android:text="@{vm.cntOfBeUpdate + `` ?? ``}"
-                app:layout_constraintBottom_toBottomOf="@+id/image_snack_bar_exclamation_mark_update"
-                app:layout_constraintStart_toEndOf="@+id/image_snack_bar_exclamation_mark_update"
-                app:layout_constraintTop_toTopOf="@+id/image_snack_bar_exclamation_mark_update"
-                tools:text="2" />
+<!--            <TextView-->
+<!--                android:id="@+id/tv_count_of_update"-->
+<!--                style="@style/H4"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="8dp"-->
+<!--                android:textColor="@color/COLOR_MAIN_100"-->
+<!--                android:textSize="14sp"-->
+<!--                android:text="@{vm.cntOfBeUpdate + `` ?? ``}"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/image_snack_bar_exclamation_mark_update"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/image_snack_bar_exclamation_mark_update"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/image_snack_bar_exclamation_mark_update"-->
+<!--                tools:text="2" />-->
 
-            <TextView
-                style="@style/H4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/INQUIRY_VIEW_UPDATE_SNACK_BAR_COMMENT"
-                android:textColor="@color/COLOR_MAIN_100"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_count_of_update"
-                app:layout_constraintStart_toEndOf="@+id/tv_count_of_update"
-                app:layout_constraintTop_toTopOf="@+id/tv_count_of_update" />
+<!--            <TextView-->
+<!--                style="@style/H4"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:text="@string/INQUIRY_VIEW_UPDATE_SNACK_BAR_COMMENT"-->
+<!--                android:textColor="@color/COLOR_MAIN_100"-->
+<!--                android:textSize="14sp"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/tv_count_of_update"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/tv_count_of_update"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/tv_count_of_update" />-->
 
-            <TextView
-                android:id="@+id/tv_update"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="23dp"
-                android:fontFamily="@font/spoqa_han_sans_bold"
-                android:padding="5dp"
-                android:text="@string/INQUIRY_VIEW_UPDATE_SNACK_BAR_UPDATE_BTN"
-                android:textColor="@color/MAIN_WHITE"
-                android:textSize="12sp"
-                android:onClick="@{() -> vm.refreshOngoing()}"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+<!--            <TextView-->
+<!--                android:id="@+id/tv_update"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginEnd="23dp"-->
+<!--                android:fontFamily="@font/spoqa_han_sans_bold"-->
+<!--                android:padding="5dp"-->
+<!--                android:text="@string/INQUIRY_VIEW_UPDATE_SNACK_BAR_UPDATE_BTN"-->
+<!--                android:textColor="@color/MAIN_WHITE"-->
+<!--                android:textSize="12sp"-->
+<!--                android:onClick="@{() -> vm.refreshOngoing()}"-->
+<!--                app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_delete_final"
