@@ -1,33 +1,50 @@
 package com.delivery.sopo.models.parcel
 
+import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.google.gson.annotations.SerializedName
-import java.time.LocalDateTime
 
 data class Parcel(
     @SerializedName("parcelId")
-    val parcelId: ParcelId,
+    var parcelId: ParcelId,
     @SerializedName("userName")
-    val userName: String,
+    var userName: String,
     @SerializedName("trackNum")
-    val trackNum: String,
+    var trackNum: String,
     @SerializedName("carrier")
-    val carrier: String,
+    var carrier: String,
     @SerializedName("parcelAlias")
-    val parcelAlias: String,
+    var parcelAlias: String,
     @SerializedName("inqueryResult")
-    val inqueryResult: String,
+    var inqueryResult: String,
     @SerializedName("inqueryHash")
-    val inqueryHash: String,
+    var inqueryHash: String,
     @SerializedName("deliveryStatus")
-    val deliveryStatus: String,
+    var deliveryStatus: String,
     @SerializedName("arrivalDte")
-    val arrivalDte: String?,
+    var arrivalDte: String?,
     @SerializedName("auditDte")
-    val auditDte: String,
+    var auditDte: String,
     @SerializedName("status")
-    val status: Int?
-){
-    override fun toString(): String {
+    var status: Int?
+)
+{
+    fun update(parcelEntity: ParcelEntity)
+    {
+        this.parcelId = ParcelId(parcelEntity.parcelUid, parcelEntity.regDt)
+        this.userName = parcelEntity.userName
+        this.trackNum = parcelEntity.trackNum
+        this.auditDte = parcelEntity.auditDte
+        this.arrivalDte = parcelEntity.arrivalDte
+        this.carrier = parcelEntity.carrier
+        this.deliveryStatus = parcelEntity.deliveryStatus
+        this.parcelAlias = parcelEntity.parcelAlias
+        this.inqueryHash = parcelEntity.inqueryHash
+        this.inqueryResult = parcelEntity.inqueryResult
+        this.status = parcelEntity.status
+    }
+
+    override fun toString(): String
+    {
         val stringBuffer: StringBuilder = StringBuilder()
         stringBuffer.append("[regDt] : ${parcelId.regDt}    ")
         stringBuffer.append("[parcelUid] : ${parcelId.parcelUid}    ")

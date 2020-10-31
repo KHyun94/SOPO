@@ -16,7 +16,7 @@ object SopoLog
     {
         Log.i(tag?: "$TAG.i", str)
     }
-    fun d(str : String, tag : String?)
+    fun d(str : String, tag : String? = null)
     {
         Log.d(tag?: "$TAG.d", str)
     }

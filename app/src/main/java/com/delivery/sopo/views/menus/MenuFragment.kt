@@ -180,7 +180,6 @@ class MenuFragment : Fragment()
     override fun onDetach()
     {
         super.onDetach()
-
-        callback!!.remove()
+        if(callback != null) callback!!.remove()
     }
 }

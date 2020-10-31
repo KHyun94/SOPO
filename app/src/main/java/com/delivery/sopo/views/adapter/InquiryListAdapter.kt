@@ -27,7 +27,8 @@ import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
 
 class InquiryListAdapter(
-    private val cntOfSelectedItem: MutableLiveData<Int>, lifecycleOwner: LifecycleOwner,
+    private val cntOfSelectedItem: MutableLiveData<Int>,
+    lifecycleOwner: LifecycleOwner,
     private var list: MutableList<InquiryListItem>,
     private val itemTypeEnum: InquiryItemTypeEnum
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
@@ -257,6 +258,7 @@ class InquiryListAdapter(
                         {
                             mClickListener!!.onItemClicked(
                                 view = it,
+                                type = 0,
                                 parcelId = inquiryListData.parcel.parcelId
                             )
                         }
@@ -264,10 +266,11 @@ class InquiryListAdapter(
                 }
 
                 holder.itemView.cv_ongoing_parent.setOnLongClickListener {
-                    if(mClickListener != null)
+                    if (mClickListener != null)
                     {
                         mClickListener!!.onItemLongClicked(
                             view = it,
+                            type = 0,
                             parcelId = inquiryListData.parcel.parcelId
                         )
                     }
@@ -312,6 +315,7 @@ class InquiryListAdapter(
                         {
                             mClickListener!!.onItemClicked(
                                 view = it,
+                                type = 1,
                                 parcelId = inquiryListData.parcel.parcelId
                             )
                         }
@@ -319,10 +323,11 @@ class InquiryListAdapter(
                 }
 
                 holder.itemView.cv_complete_parent.setOnLongClickListener {
-                    if(mClickListener != null)
+                    if (mClickListener != null)
                     {
                         mClickListener!!.onItemLongClicked(
                             view = it,
+                            type = 1,
                             parcelId = inquiryListData.parcel.parcelId
                         )
                     }

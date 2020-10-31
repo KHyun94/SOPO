@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -30,13 +31,13 @@ import com.delivery.sopo.databinding.SopoInquiryViewBinding
 import com.delivery.sopo.enums.FragmentTypeEnum
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.enums.ScreenStatusEnum
-import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.mapper.MenuMapper
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.repository.impl.*
 import com.delivery.sopo.services.workmanager.SOPOWorkeManager
+import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
@@ -57,6 +58,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import java.util.*
+import java.util.function.Function
 import java.util.stream.Collectors
 import java.util.stream.Stream
 
@@ -76,12 +78,17 @@ class InquiryView : Fragment()
     private var menuPopUpWindow: PopupWindow? = null
     private var historyPopUpWindow: PopupWindow? = null
 
-    private val appDatabase : AppDatabase by inject()
+    private val appDatabase: AppDatabase by inject()
 
     private val mainVm: MainViewModel by lazy {
         ViewModelProvider(
             requireActivity(),
-            MainViewModelFactory(userRepoImpl, parcelRepoImpl, parcelManagementRepoImpl, appPasswordRepoImpl)
+            MainViewModelFactory(
+                userRepoImpl,
+                parcelRepoImpl,
+                parcelManagementRepoImpl,
+                appPasswordRepoImpl
+            )
         ).get(MainViewModel::class.java)
     }
     private val inquiryVm: InquiryViewModel by lazy {
@@ -126,15 +133,16 @@ class InquiryView : Fragment()
         }
     }
 
-    var callback : OnBackPressedCallback? = null
+    var callback: OnBackPressedCallback? = null
 
     override fun onAttach(context: Context)
     {
         super.onAttach(context)
 
-        var pressedTime : Long = 0
+        var pressedTime: Long = 0
 
-        callback = object : OnBackPressedCallback(true){
+        callback = object : OnBackPressedCallback(true)
+        {
             override fun handleOnBackPressed()
             {
                 if (System.currentTimeMillis() - pressedTime > 2000)
@@ -248,12 +256,13 @@ class InquiryView : Fragment()
 
     private fun setObserver()
     {
-        var pressedTime : Long = 0
+        var pressedTime: Long = 0
 
         parentView.currentPage.observe(this, Observer {
-            if(it != null && it == 1)
+            if (it != null && it == 1)
             {
-                callback = object : OnBackPressedCallback(true){
+                callback = object : OnBackPressedCallback(true)
+                {
                     override fun handleOnBackPressed()
                     {
                         if (System.currentTimeMillis() - pressedTime > 2000)
@@ -316,7 +325,9 @@ class InquiryView : Fragment()
                         appDatabase = appDatabase
                     )
                 }
-            } else {
+            }
+            else
+            {
                 Log.d(TAG, "4. isLoading null")
                 progressBar!!.onCloseDialog()
             }
@@ -563,7 +574,7 @@ class InquiryView : Fragment()
     {
         return object : OnParcelClickListener
         {
-            override fun onItemClicked(view: View, parcelId: ParcelId)
+            override fun onItemClicked(view: View, type:Int, parcelId: ParcelId)
             {
                 FragmentTypeEnum.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(
                     parcelUId = parcelId.parcelUid,
@@ -576,9 +587,33 @@ class InquiryView : Fragment()
                 )
             }
 
-            override fun onItemLongClicked(view: View, parcelId: ParcelId)
+            override fun onItemLongClicked(view: View, type:Int, parcelId: ParcelId)
             {
-                binding.vm!!.patchParcelAlias(parcelId, "Test")
+                var edit = MutableLiveData<String>()
+
+                AlertUtil.updateValueDialog(
+                    context!!,
+                    Pair("확인", View.OnClickListener {
+                        edit.observe(this@InquiryView, Observer {
+                            SopoLog.d("입력 값 = > $it")
+                            binding.vm!!.patchParcelAlias(parcelId, it)
+                            AlertUtil.onDismiss()
+
+                            if(type == 0)
+                            {
+                                binding.vm!!.refreshOngoing()
+                            }
+                            else
+                            {
+                                binding.vm!!.refreshComplete()
+                            }
+                        })
+                    }),
+                    Pair("취소", null),
+                    Function {
+                        edit.value = it
+                    })
+
             }
 
         }

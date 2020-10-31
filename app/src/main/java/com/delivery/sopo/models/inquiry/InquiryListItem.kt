@@ -13,7 +13,7 @@ class InquiryListItem(
     val completeTimeDate: Calendar by lazy {
         val cal = Calendar.getInstance()
         parcel.arrivalDte?.let {
-            cal.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(parcel.arrivalDte.replace("T", " "))
+            cal.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(parcel!!.arrivalDte!!.replace("T", " "))
         }
         cal
     }
