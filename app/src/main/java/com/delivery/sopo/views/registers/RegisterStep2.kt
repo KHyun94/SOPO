@@ -56,9 +56,10 @@ class RegisterStep2 : Fragment()
 
         binding.vm!!.initAdapter(_waybilNum = waybilNum ?: "")
 
+        parentView = activity as MainView
+
         setObserve()
 
-        parentView = activity as MainView
 
         return binding.root
     }

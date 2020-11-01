@@ -11,6 +11,7 @@ import com.delivery.sopo.extensions.MutableLiveDataExtension.pushItem
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.util.SopoLog
 import java.util.*
 
 class MenuViewModel(private val userRepoImpl: UserRepoImpl,
@@ -44,9 +45,12 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
     val viewStack: LiveData<Stack<MenuEnum>>
         get() = _viewStack
 
+    val isUpdate = MutableLiveData<Boolean>()
+
     init {
         _userEmail.value = userRepoImpl.getEmail()
         _viewStack.value = Stack()
+        isUpdate.value = false
     }
 
     fun pushView(menu: MenuEnum){
@@ -68,5 +72,11 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
             Log.e(TAG, "STACK IS ALREADY EMPTY!!, you try to pop item even if stack is already empty!!")
             false
         }
+    }
+
+    fun onUpdateClicked()
+    {
+        SopoLog.d("닉네임 변경 클릭")
+        isUpdate.value = true
     }
 }

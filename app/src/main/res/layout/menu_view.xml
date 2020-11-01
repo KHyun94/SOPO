@@ -144,7 +144,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/MENU_VIEW_PLEASE_SET_NICK_NAME"
-                    android:textColor="@color/COLOR_GRAY_400" />
+                    android:textColor="@color/COLOR_GRAY_400"
+                    android:onClick="@{()->vm.onUpdateClicked()}"/>
 
                 <TextView
                     style="@style/H5"

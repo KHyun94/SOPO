@@ -2,6 +2,7 @@ package com.delivery.sopo.views.adapter
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
@@ -140,6 +141,7 @@ class InquiryListAdapter(
                     {
                         holder.ongoingBinding.root.apply {
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_registered)
+                            this.iv_red_dot.visibility = if(inquiryListData.isUpdated) View.GONE else View.VISIBLE
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_300)
                             this.tv_delivery_status.text = "송장등록"
                             this.tv_delivery_status.setTextColor(
@@ -155,6 +157,7 @@ class InquiryListAdapter(
                     {
                         holder.ongoingBinding.root.apply {
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_before)
+                            this.iv_red_dot.visibility = if(inquiryListData.isUpdated) View.GONE else View.VISIBLE
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_GRAY_50)
                             this.tv_delivery_status.text = "배송전"
                             this.tv_delivery_status.setTextColor(
@@ -170,6 +173,7 @@ class InquiryListAdapter(
                     {
                         holder.ongoingBinding.root.apply {
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_ing)
+                            this.iv_red_dot.visibility = if(inquiryListData.isUpdated) View.GONE else View.VISIBLE
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_900)
                             this.tv_delivery_status.text = "배송중"
                             this.tv_delivery_status.setTextColor(
@@ -193,6 +197,7 @@ class InquiryListAdapter(
                             gifMargin.height = SizeUtil.changeDpToPx(this.context, 38F)
                             gifMargin.width = SizeUtil.changeDpToPx(this.context, 50F)
                             this.image_delivery_status.layoutParams = gifMargin
+                            this.iv_red_dot.visibility = if(inquiryListData.isUpdated) View.GONE else View.VISIBLE
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_700)
                             this.tv_delivery_status.text = "배송출발"
                             this.tv_delivery_status.setTextColor(
@@ -212,6 +217,7 @@ class InquiryListAdapter(
                     {
                         holder.ongoingBinding.root.apply {
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_registered)
+                            this.iv_red_dot.visibility = if(inquiryListData.isUpdated) View.GONE else View.VISIBLE
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_300)
                             this.tv_delivery_status.text = "송장등록"
                             this.tv_delivery_status.setTextColor(
@@ -466,24 +472,26 @@ class InquiryListAdapter(
 
     fun setDataList(listItem: MutableList<InquiryListItem>)
     {
-
         this.list = when (itemTypeEnum)
         {
             InquiryItemTypeEnum.Soon ->
             {
                 listItem.filter {
+                    it.isUpdated = false
                     it.parcel.deliveryStatus == DeliveryStatusEnum.out_for_delivery.code
                 }.toMutableList()
             }
             InquiryItemTypeEnum.Registered ->
             {
                 listItem.filter {
+                    it.isUpdated = false
                     it.parcel.deliveryStatus != DeliveryStatusEnum.out_for_delivery.code && it.parcel.deliveryStatus != DeliveryStatusEnum.delivered.code
                 }.toMutableList()
             }
             InquiryItemTypeEnum.Complete ->
             {
                 listItem.filter {
+                    it.isUpdated = true
                     it.parcel.deliveryStatus == DeliveryStatusEnum.delivered.code
                 }.toMutableList()
             }

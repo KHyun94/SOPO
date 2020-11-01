@@ -80,17 +80,6 @@ class InquiryView : Fragment()
 
     private val appDatabase: AppDatabase by inject()
 
-    private val mainVm: MainViewModel by lazy {
-        ViewModelProvider(
-            requireActivity(),
-            MainViewModelFactory(
-                userRepoImpl,
-                parcelRepoImpl,
-                parcelManagementRepoImpl,
-                appPasswordRepoImpl
-            )
-        ).get(MainViewModel::class.java)
-    }
     private val inquiryVm: InquiryViewModel by lazy {
         ViewModelProvider(
             requireActivity(),
@@ -164,7 +153,6 @@ class InquiryView : Fragment()
                     System.exit(0)
                 }
             }
-
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
@@ -589,10 +577,11 @@ class InquiryView : Fragment()
 
             override fun onItemLongClicked(view: View, type:Int, parcelId: ParcelId)
             {
-                var edit = MutableLiveData<String>()
+                val edit = MutableLiveData<String>()
 
                 AlertUtil.updateValueDialog(
                     context!!,
+                    "택배의 별칭을 입력해주세요.",
                     Pair("확인", View.OnClickListener {
                         edit.observe(this@InquiryView, Observer {
                             SopoLog.d("입력 값 = > $it")
@@ -887,7 +876,8 @@ class InquiryView : Fragment()
         tv_delete_title.visibility = VISIBLE
 
         // '하단 탭'이 사라져야한다.
-        mainVm.setTabLayoutVisibility(GONE)
+        parentView.binding.vm!!.setTabLayoutVisibility(GONE)
+//        mainVm.setTabLayoutVisibility(GONE)
     }
 
     // X 버튼으로 '삭제하기 취소'가 되었을때 화면 세팅
@@ -902,7 +892,7 @@ class InquiryView : Fragment()
         constraint_delete_select.visibility = GONE
 
         // '하단 탭'이 노출되어야한다.
-        mainVm.setTabLayoutVisibility(VISIBLE)
+        parentView.binding.vm!!.setTabLayoutVisibility(VISIBLE)
 
         // 삭제하기 취소가 되었을때 화면의 리스트들을 앱이 켜졌을때 처럼 초기화 시켜준다.( '더보기'가 눌렸었는지 아니면 내가 전에 리스트들의 스크롤을 얼마나 내렸는지를 일일이 알고 있기 힘들기 때문에)
         viewSettingForSoonArrivalList(soonArrivalListAdapter.getListSize())

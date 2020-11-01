@@ -8,6 +8,7 @@ import java.util.*
 class InquiryListItem(
     val parcel: Parcel,
     var isSelected: Boolean = false,
+    var isUpdated : Boolean = false,
     val viewTypeEnum: InquiryItemTypeEnum? = null
 ){
     val completeTimeDate: Calendar by lazy {

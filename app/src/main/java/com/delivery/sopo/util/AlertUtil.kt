@@ -25,6 +25,7 @@ object AlertUtil
 
     fun updateValueDialog(
         context: Context,
+        title : String,
         okListener: OnTextClickListener?,
         cancelListener: OnTextClickListener?,
         callback : Function<String, Unit>
@@ -36,9 +37,9 @@ object AlertUtil
         val layoutMain: ConstraintLayout = constraintLayout.findViewById(R.id.layout_main)
         val etInputText: EditText = constraintLayout.findViewById(R.id.et_input_text)
         val vFocusStatus: View = constraintLayout.findViewById(R.id.v_focus_status)
+        val tvTitle : TextView = constraintLayout.findViewById(R.id.tv_title)
         val tvCancelBtn: TextView = constraintLayout.findViewById(R.id.tv_cancel_btn)
         val tvOkBtn: TextView = constraintLayout.findViewById(R.id.tv_ok_btn)
-
 
         alert = AlertDialog.Builder(context)
             .setView(constraintLayout)
@@ -52,6 +53,8 @@ object AlertUtil
         }
 
         CoroutineScope(Dispatchers.Main).launch {
+
+            tvTitle.text = title
 
             tvOkBtn.text = okListener?.first ?: "확인"
             if (okListener?.first != null) tvOkBtn.setOnClickListener(okListener.second)

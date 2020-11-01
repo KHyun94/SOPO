@@ -10,6 +10,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.delivery.sopo.R
@@ -18,6 +19,7 @@ import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.factory.MenuViewModelFactory
 import com.delivery.sopo.viewmodels.menus.MenuViewModel
@@ -25,6 +27,7 @@ import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.menu_view.view.*
 import org.koin.android.ext.android.inject
+import java.util.function.Function
 
 
 class MenuFragment : Fragment()
@@ -158,6 +161,30 @@ class MenuFragment : Fragment()
                 }
             }
         })
+
+        // todo nickname 업데이트 api 줘...
+        binding.vm!!.isUpdate.observe(this, Observer {
+            if (it)
+            {
+                val edit = MutableLiveData<String>()
+
+                AlertUtil.updateValueDialog(
+                    context!!,
+                    "사용하실 닉네임을 입력해주세요.",
+                    Pair("확인", View.OnClickListener {
+                        edit.observe(this@MenuFragment, Observer {
+                            SopoLog.d("입력 값 = > $it")
+                            AlertUtil.onDismiss()
+                        })
+                    }),
+                    Pair("취소", null),
+                    Function {
+                        edit.value = it
+                    })
+
+                binding.vm!!.isUpdate.value = false
+            }
+        })
     }
 
     private fun move(activity: FragmentActivity, fragment: Fragment, animation: Int)
@@ -180,6 +207,6 @@ class MenuFragment : Fragment()
     override fun onDetach()
     {
         super.onDetach()
-        if(callback != null) callback!!.remove()
+        if (callback != null) callback!!.remove()
     }
 }
