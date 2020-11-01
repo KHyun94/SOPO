@@ -1,6 +1,8 @@
 package com.delivery.sopo.networks.api
 
 import com.delivery.sopo.models.api.APIResult
+import com.delivery.sopo.networks.dto.JsonPatchDto
+import com.google.gson.JsonArray
 import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.Call
@@ -9,7 +11,7 @@ import retrofit2.http.*
 interface UserAPI
 {
     // 카카오 로그인 시 Firebase 토큰으로 변경하는 Api ------------------------------------------------
-    @GET("api/v1/sopo-api/user/{email}/firebase/auth-token")
+    @GET("api/v1/sopo-api/user-management/{email}/user/firebase/auth-token")
     @Headers("Accept: application/json")
     fun requestCustomToken(
         // 이메일
@@ -22,25 +24,17 @@ interface UserAPI
         @Query("userId") userId: String
     ): Call<APIResult<String?>>
 
-    @FormUrlEncoded
-    @PATCH("api/v1/sopo-api/user/{email}/deviceInfo")
-    @Headers("Accept: application/json")
-    fun requestUpdateDeviceInfo(
-        @Path("email") email: String,
-        @Field("jwtToken") jwtToken: String
-    ): Call<APIResult<String?>>
-
     @GET("api/v1/sopo-api/validation/email/exist/{EMAIL}")
     @Headers("Accept: application/json")
     fun requestDuplicateEmail(
         @Path("EMAIL") email: String
     ): Observable<APIResult<Boolean>>
 
-    @FormUrlEncoded
-    @PATCH("/api/v1/sopo-api/user/{email}/firebase/fcm-token")
-    @Headers("Accept: application/json")
-    fun updateFCMToken(
+    @PATCH("/api/v1/sopo-api/user-management/{email}/user")
+    fun patchUser(
+        @Header("Content-Type") contentType: String = "application/json",
+        @Header("jwt") jwt: String?,
         @Path("email") email : String,
-        @Field("fcmToken") fcmToken: String
-    ): Single<String>
+        @Body jsonPatch: JsonPatchDto
+    ): Call<APIResult<String?>>
 }

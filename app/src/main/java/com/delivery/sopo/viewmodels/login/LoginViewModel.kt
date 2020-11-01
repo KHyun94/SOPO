@@ -13,10 +13,12 @@ import com.delivery.sopo.extensions.commonMessageResId
 import com.delivery.sopo.firebase.FirebaseUserManagement
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.LoginResult
+import com.delivery.sopo.models.SopoJsonPatch
 import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.networks.api.LoginAPI
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.UserAPI
+import com.delivery.sopo.networks.dto.JsonPatchDto
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.OtherUtil
@@ -269,10 +271,14 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
 
     fun authJwtToken(jwtToken: String)
     {
+        val jsonPatchList = mutableListOf<SopoJsonPatch>()
+        jsonPatchList.add(SopoJsonPatch("replace", "/deviceInfo", OtherUtil.getDeviceID(SOPOApp.INSTANCE)))
+
         NetworkManager.publicRetro.create(UserAPI::class.java)
-            .requestUpdateDeviceInfo(
+            .patchUser(
                 email = email.value.toString(),
-                jwtToken = jwtToken
+                jwt = jwtToken,
+                jsonPatch = JsonPatchDto(jsonPatchList)
             ).enqueue(object : Callback<APIResult<String?>>
             {
                 override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)

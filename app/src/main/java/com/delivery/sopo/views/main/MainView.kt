@@ -17,8 +17,11 @@ import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.launchActivitiy
 import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
+import com.delivery.sopo.models.SopoJsonPatch
+import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.UserAPI
+import com.delivery.sopo.networks.dto.JsonPatchDto
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
@@ -28,12 +31,13 @@ import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.menus.LockScreenView
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.iid.FirebaseInstanceId
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers.io
 import kotlinx.android.synthetic.main.main_view.*
 import kotlinx.android.synthetic.main.tap_item.view.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 {
@@ -215,24 +219,34 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     private fun updateFCMToken()
     {
+
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
 
             val token = task.result!!.token
 
             Log.d(TAG, "FCM - $token")
+            val jsonPatchList = mutableListOf<SopoJsonPatch>()
+            jsonPatchList.add(SopoJsonPatch("replace", "/fcmToken", token))
 
             NetworkManager.privateRetro.create(UserAPI::class.java)
-                .updateFCMToken(userRepoImpl.getEmail(), token)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(io())
-                .subscribe(
+                .patchUser(
+                    email = userRepoImpl.getEmail(),
+                    jwt = token,
+                    jsonPatch = JsonPatchDto(jsonPatchList)
+                ).enqueue(object : Callback<APIResult<String?>>{
+                    override fun onResponse(
+                        call: Call<APIResult<String?>>,
+                        response: Response<APIResult<String?>>
+                    )
                     {
-                        Log.d(TAG, it)
-                    },
-                    {
-                        Log.d(TAG, it.message)
+                        Log.d(TAG, response.message())
                     }
-                )
+
+                    override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
+                    {
+                        Log.e(TAG, t.localizedMessage)
+                    }
+                })
         }
     }
 

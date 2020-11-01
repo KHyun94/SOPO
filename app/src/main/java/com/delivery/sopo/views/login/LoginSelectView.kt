@@ -14,10 +14,12 @@ import com.delivery.sopo.firebase.FirebaseUserManagement
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.LoginResult
+import com.delivery.sopo.models.SopoJsonPatch
 import com.delivery.sopo.networks.api.LoginAPI
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.NetworkManager.publicRetro
 import com.delivery.sopo.networks.api.UserAPI
+import com.delivery.sopo.networks.dto.JsonPatchDto
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.OtherUtil
@@ -359,10 +361,14 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
     fun updateDeviceInfo(email: String, jwtToken: String)
     {
+        val jsonPatchList = mutableListOf<SopoJsonPatch>()
+        jsonPatchList.add(SopoJsonPatch("replace", "/deviceInfo", OtherUtil.getDeviceID(SOPOApp.INSTANCE)))
+
         publicRetro.create(UserAPI::class.java)
-            .requestUpdateDeviceInfo(
+            .patchUser(
                 email = email,
-                jwtToken = jwtToken
+                jwt = jwtToken,
+                jsonPatch = JsonPatchDto(jsonPatchList)
             ).enqueue(object : Callback<APIResult<String?>>
             {
                 override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
