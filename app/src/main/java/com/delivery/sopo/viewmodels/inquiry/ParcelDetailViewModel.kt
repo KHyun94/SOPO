@@ -337,10 +337,19 @@ class ParcelDetailViewModel(
                                 // 업데이트 변경 가능
                                 parcelEntity!!.update(parcel = parcel)
 
-                                if(!isDirectUpdate) isBeUpdated.postValue(true)
-                                else updateIsBeUpdated(parcelId.regDt, parcelId.parcelUid)
+                                CoroutineScope(Dispatchers.Default).launch {
 
-                                updateIsBeUpdated(parcelId.regDt, parcelId.parcelUid)
+
+                                    if(!isDirectUpdate)
+                                        isBeUpdated.postValue(true)
+                                    else
+                                    {
+                                        parcelRepoImpl.updateEntity(parcelEntity!!)
+                                        updateIsBeUpdated(parcelId.regDt, parcelId.parcelUid)
+                                    }
+                                }
+
+
                             }
                             else
                             {
@@ -372,11 +381,9 @@ class ParcelDetailViewModel(
         adapter.postValue(timeLineRvAdapter)
     }
 
-    fun updateIsBeUpdated(regDt: String, parcelUid: String)
+    suspend fun updateIsBeUpdated(regDt: String, parcelUid: String)
     {
-        CoroutineScope(Dispatchers.Default).launch {
             parcelManagementRepoImpl.updateIsBeUpdate(regDt, parcelUid)
-        }
     }
 
     fun getUpdateValue(cb : (Boolean?) -> Unit){

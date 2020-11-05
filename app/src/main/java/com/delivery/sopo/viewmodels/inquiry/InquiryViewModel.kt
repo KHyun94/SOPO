@@ -668,7 +668,6 @@ class InquiryViewModel(
 
         SopoLog.d("Parcel Alias 변경 JsonArray ===> ${jsonArray}", null)
 
-
         NetworkManager.privateRetro.create(ParcelAPI::class.java)
             .patchParcel(
                 email = userRepoImpl.getEmail(),
