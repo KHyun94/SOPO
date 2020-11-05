@@ -18,6 +18,8 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.kakao.auth.KakaoSDK
 import com.kakao.auth.Session
 import com.kakao.auth.authorization.accesstoken.AccessToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -78,32 +80,34 @@ class SOPOApp : Application()
 
         RoomActivate.initCourierDB(this)
 
-        GlobalScope.launch {
-            currentPage.postValue(getInitViewPagerNumber())
+        getInitViewPagerNumber(){
+            currentPage.postValue(it)
         }
     }
 
-    private suspend fun getInitViewPagerNumber(): Int
+    private fun getInitViewPagerNumber(cb : ((Int) -> Unit))
     {
-        val text = ClipboardUtil.pasteClipboardText(con = this, parcelImpl = parcelRepoImpl)
+       ClipboardUtil.pasteClipboardText(con = this, parcelImpl = parcelRepoImpl){
+            if (it.isNotEmpty())
+           {
+               cb.invoke(NavigatorConst.REGISTER_TAB)
+           }
+           else
+           {
+               CoroutineScope(Dispatchers.Default).launch {
+                   val cnt = parcelRepoImpl.getOnGoingDataCnt()
 
-        return if (text.isNotEmpty())
-        {
-            NavigatorConst.REGISTER_TAB
-        }
-        else
-        {
-            val cnt = parcelRepoImpl.getOnGoingDataCnt()
-
-            if (cnt == 0)
-            {
-                NavigatorConst.REGISTER_TAB
-            }
-            else
-            {
-                NavigatorConst.INQUIRY_TAB
-            }
-        }
+                   if (cnt == 0)
+                   {
+                       cb.invoke(NavigatorConst.REGISTER_TAB)
+                   }
+                   else
+                   {
+                       cb.invoke(NavigatorConst.INQUIRY_TAB)
+                   }
+               }
+           }
+       }
     }
 
     companion object

@@ -1,14 +1,22 @@
 package com.delivery.sopo.models.inquiry
 
+import android.provider.Settings
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.*
+import org.koin.java.KoinJavaComponent.inject
 import java.text.SimpleDateFormat
 import java.util.*
 
 class InquiryListItem(
     val parcel: Parcel,
     var isSelected: Boolean = false,
-    var isUpdated : Boolean = false,
+    var isBeUpdated : Boolean = true,
     val viewTypeEnum: InquiryItemTypeEnum? = null
 ){
     val completeTimeDate: Calendar by lazy {
@@ -78,4 +86,24 @@ class InquiryListItem(
             }
         }
     }
+
+    fun setUpdateValue(parcelRepoImpl: ParcelRepoImpl, cb : (Boolean?) -> Unit){
+
+        CoroutineScope(Dispatchers.Main).launch {
+            var update : LiveData<Int?>? = null
+            withContext(Dispatchers.Default){
+               update = parcelRepoImpl.isBeingUpdateParcel(parcel.parcelId.regDt, parcel.parcelId.parcelUid)
+            }
+
+            update?.observeForever{
+                SopoLog.d("[${parcel.parcelAlias}] => $it")
+
+                isBeUpdated = it != null && it  == 1
+
+                cb.invoke(isBeUpdated)
+            }
+        }
+    }
+
+
 }

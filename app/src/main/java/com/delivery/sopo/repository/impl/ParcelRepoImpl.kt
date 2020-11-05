@@ -72,6 +72,8 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
         return  appDatabase.parcelDao().getOngoingDataCntLiveData()
     }
 
+    override suspend fun isBeingUpdateParcel(regDt: String, parcelUid: String): LiveData<Int?> = appDatabase.parcelDao().isBeingUpdateParcel(regDt, parcelUid)
+
     override suspend fun insertEntities(parcelList: List<Parcel>) {
         appDatabase.parcelDao().insert(parcelList.map(ParcelMapper::parcelToParcelEntity))
     }
@@ -126,5 +128,4 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
     override suspend fun getOnGoingDataCnt(): Int {
         return appDatabase.parcelDao().getOngoingDataCnt()
     }
-
 }

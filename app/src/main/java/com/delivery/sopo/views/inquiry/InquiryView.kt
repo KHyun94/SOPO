@@ -57,6 +57,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import java.util.function.Function
 import java.util.stream.Collectors
@@ -80,17 +81,19 @@ class InquiryView : Fragment()
 
     private val appDatabase: AppDatabase by inject()
 
-    private val inquiryVm: InquiryViewModel by lazy {
-        ViewModelProvider(
-            requireActivity(),
-            InquiryViewModelFactory(
-                userRepoImpl,
-                parcelRepoImpl,
-                parcelManagementRepoImpl,
-                timeCountRepoImpl
-            )
-        ).get(InquiryViewModel::class.java)
-    }
+    // todo viewModelFactory를 koin으로 변경
+    private val inquiryVm : InquiryViewModel by viewModel()
+//    private val inquiryVm: InquiryViewModel by lazy {
+//        ViewModelProvider(
+//            requireActivity(),
+//            InquiryViewModelFactory(
+//                userRepoImpl,
+//                parcelRepoImpl,
+//                parcelManagementRepoImpl,
+//                timeCountRepoImpl
+//            )
+//        ).get(InquiryViewModel::class.java)
+//    }
     private var progressBar: CustomProgressBar? = null
     private var refreshDelay: Boolean = false
 
@@ -172,8 +175,9 @@ class InquiryView : Fragment()
         binding.lifecycleOwner = this
 
         soonArrivalListAdapter = InquiryListAdapter(
-            inquiryVm.cntOfSelectedItem,
+            parcelRepoImpl,
             this,
+            inquiryVm.cntOfSelectedItem,
             mutableListOf(),
             InquiryItemTypeEnum.Soon
         )
@@ -183,8 +187,9 @@ class InquiryView : Fragment()
         binding.recyclerviewSoonArrival.adapter = soonArrivalListAdapter
 
         registeredSopoListAdapter = InquiryListAdapter(
-            inquiryVm.cntOfSelectedItem,
+            parcelRepoImpl,
             this,
+            inquiryVm.cntOfSelectedItem,
             mutableListOf(),
             InquiryItemTypeEnum.Registered
         )
@@ -194,8 +199,9 @@ class InquiryView : Fragment()
         binding.recyclerviewRegisteredParcel.adapter = registeredSopoListAdapter
 
         completeListAdapter = InquiryListAdapter(
-            inquiryVm.cntOfSelectedItem,
+            parcelRepoImpl,
             this,
+            inquiryVm.cntOfSelectedItem,
             mutableListOf(),
             InquiryItemTypeEnum.Complete
         )
@@ -320,36 +326,7 @@ class InquiryView : Fragment()
                 progressBar!!.onCloseDialog()
             }
         })
-        /*
-        inquiryVm.isLoading.observe(this, Observer { isLoading ->
 
-            try
-            {
-                if (isLoading)
-                {
-                    if (!progressBar?.isAdded!!)
-                    {
-                        progressBar?.onStartDialog()
-                    }
-                    else
-                    {
-                        progressBar?.onCloseDialog()
-                    }
-                }
-                else
-                {
-                    progressBar?.onCloseDialog()
-                }
-
-            }
-            catch (e: Exception)
-            {
-                progressBar?.onCloseDialog()
-                Log.d(TAG, "Progress error $e")
-            }
-
-        })
-*/
         // 배송중 , 등록된 택배 리스트
         inquiryVm.ongoingList.observe(this, Observer {
             soonArrivalListAdapter.setDataList(it)

@@ -77,8 +77,6 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         super.onCreate(savedInstanceState)
         updateFCMToken()
         init()
-
-
     }
 
     private fun init()
@@ -219,7 +217,6 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     private fun updateFCMToken()
     {
-
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
 
             val token = task.result!!.token
@@ -258,7 +255,6 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     override fun setObserver()
     {
-
         binding.vm!!.cntOfBeUpdate.observe(this, Observer {
 
             SopoLog.d("업데이트 가능 여부 택배 갯수: $it", null)
@@ -266,7 +262,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             if (it > 0)
             {
                 binding.alertMessageBar.run {
-                    setText("${it}개 아이템의 배송 상태가 업데이트되었습니다.")
+                    setText("${it}개의 새로운 배송정보가 있어요.")
                     setTextColor(R.color.MAIN_WHITE)
                     setOnCancelClicked("업데이트", R.color.MAIN_WHITE, View.OnClickListener {
                         when (currentPage.value)
@@ -289,7 +285,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
                         this.onDismiss()
                     })
-                    onStart(10000)
+                    onStart(null)
                 }
             }
             else

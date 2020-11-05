@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="android.view.View"/>
         <variable
             name="ongoingInquiryData"
             type="com.delivery.sopo.models.inquiry.InquiryListItem" />
@@ -94,7 +94,8 @@
                     android:src="@drawable/oval_red_dot"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_margin="10dp" />
+                    android:layout_margin="10dp"
+                    android:visibility="gone"/>
 
                 <LinearLayout
                     android:id="@+id/linear_sopo_item"

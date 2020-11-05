@@ -35,12 +35,11 @@ interface ParcelManagementDao
     @Query("SELECT * FROM PARCEL_MANAGEMENT WHERE isBeDelete = 1 AND AUDIT_DTE >= DATETIME('now', 'localtime', '-10.0 seconds')")
     suspend fun getCancelIsBeDelete() : List<ParcelManagementEntity>?
 
-//    @Query("SELECT * FROM PARCEL_MANAGEMENT as pm" +
-//            "INNER JOIN PARCEL as p ON pm.regDt = p.regDt AND pm.parcelUid = p.parcelUid" +
-//            "WHERE ")
-
     @Query("UPDATE PARCEL_MANAGEMENT SET isBeDelivered = 0")
     fun updateTotalIsBeDeliveredToZero()
+
+    @Query("UPDATE PARCEL_MANAGEMENT SET isBeUpdate = 0 WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
+    fun updateIsBeUpdateToZero(regDt: String, parcelUid: String)
 
     @Query("UPDATE PARCEL_MANAGEMENT SET isBeDelete = 1 , AUDIT_DTE = :auditDte WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
     fun updateIsBeDeleteToOne(regDt: String, parcelUid: String, auditDte: String)

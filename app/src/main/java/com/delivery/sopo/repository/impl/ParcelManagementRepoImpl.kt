@@ -58,6 +58,8 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase):
         appDatabase.parcelManagementDao().update(parcelManagementEntityList)
     }
 
+    override suspend fun updateIsBeUpdate(regDt: String, parcelUid: String) = appDatabase.parcelManagementDao().updateIsBeUpdateToZero(regDt, parcelUid)
+
     override fun getEntity(regDt: String, parcelUid: String): ParcelManagementEntity? {
         return appDatabase.parcelManagementDao().getById(regDt, parcelUid)
     }

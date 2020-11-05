@@ -421,6 +421,7 @@ class InquiryViewModel(
                     {
                         if (localParcelById.status == 1)
                         {
+                            SopoLog.d("InquiryVm => Parcel_Management의 'isBeUpdate'를 1 -> 0으로 초기화 작업")
 
                             parcelRepoImpl.updateEntity(ParcelMapper.parcelToParcelEntity(remote))
 

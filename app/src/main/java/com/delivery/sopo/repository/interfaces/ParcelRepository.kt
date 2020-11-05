@@ -35,4 +35,6 @@ interface ParcelRepository {
    // 0922 kh 추가사항
    suspend fun getSingleParcelWithWaybilNum(waybilNum:String) : ParcelEntity?
    suspend fun getOnGoingDataCnt() : Int?
+
+   suspend fun isBeingUpdateParcel(regDt: String, parcelUid: String): LiveData<Int?>
 }

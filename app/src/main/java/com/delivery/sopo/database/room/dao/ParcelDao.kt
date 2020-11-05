@@ -39,6 +39,9 @@ interface ParcelDao
     @Query("SELECT * FROM PARCEL WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
     suspend fun getById(regDt: String, parcelUid: String): ParcelEntity?
 
+    @Query("SELECT pm.isBeUpdate FROM PARCEL as p INNER JOIN PARCEL_MANAGEMENT as pm where p.REG_DT = pm.REG_DT AND p.PARCEL_UID = pm.PARCEL_UID AND p.REG_DT = :regDt AND p.PARCEL_UID = :parcelUid AND p.DELIVERY_STATUS != 'delivered'")
+    fun isBeingUpdateParcel(regDt: String, parcelUid: String): LiveData<Int?>
+
     @Insert(onConflict = REPLACE)
     fun insert(parcelEntity: ParcelEntity)
 
@@ -52,7 +55,7 @@ interface ParcelDao
     fun delete(listParcelEntity: List<ParcelEntity>)
 
     @Update
-    fun update(parcelEntity: ParcelEntity) : Int
+    fun update(parcelEntity: ParcelEntity): Int
 
     @Update
     fun update(listParcelEntity: List<ParcelEntity>)

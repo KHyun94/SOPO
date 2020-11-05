@@ -10,10 +10,12 @@ import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.InquiryListCompleteItemBinding
 import com.delivery.sopo.databinding.InquiryListOngoingItemBinding
@@ -23,13 +25,22 @@ import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
+import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.util.SizeUtil
+import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
+import org.koin.java.KoinJavaComponent.inject
 
 class InquiryListAdapter(
+    private val parcelRepoImpl: ParcelRepoImpl,
+    private val lifecycleOwner: LifecycleOwner,
     private val cntOfSelectedItem: MutableLiveData<Int>,
-    lifecycleOwner: LifecycleOwner,
     private var list: MutableList<InquiryListItem>,
     private val itemTypeEnum: InquiryItemTypeEnum
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
@@ -49,11 +60,6 @@ class InquiryListAdapter(
     private var isMoreView = false
     private var isRemovable = false
 
-    init
-    {
-        cntOfSelectedItem.observe(lifecycleOwner, Observer {})
-    }
-
     class OngoingViewHolder(private val binding: InquiryListOngoingItemBinding) :
         RecyclerView.ViewHolder(binding.root)
     {
@@ -62,7 +68,7 @@ class InquiryListAdapter(
         fun bind(inquiryListItem: InquiryListItem)
         {
             binding.apply {
-                ongoingInquiryData = inquiryListItem
+                setVariable(BR.ongoingInquiryData,  inquiryListItem)
             }
         }
     }
@@ -133,15 +139,22 @@ class InquiryListAdapter(
                 holder.bind(inquiryListData)
                 holder.itemView.tag = inquiryListData
 
-                val data: Parcel = list[position].parcel
+                inquiryListData.setUpdateValue(parcelRepoImpl){
+                    if(it != null && it == true)
+                        holder.itemView.iv_red_dot.visibility = View.VISIBLE
+                    else
+                        holder.itemView.iv_red_dot.visibility = View.GONE
+                }
+
+                val data: Parcel = inquiryListData.parcel
                 when (data.deliveryStatus)
                 {
                     //상품 준비중
                     DeliveryStatusEnum.information_received.code ->
                     {
                         holder.ongoingBinding.root.apply {
+                            this.iv_red_dot.visibility = View.VISIBLE
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_registered)
-                            this.iv_red_dot.visibility = if(inquiryListData.isUpdated) View.GONE else View.VISIBLE
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_300)
                             this.tv_delivery_status.text = "송장등록"
                             this.tv_delivery_status.setTextColor(
@@ -157,7 +170,6 @@ class InquiryListAdapter(
                     {
                         holder.ongoingBinding.root.apply {
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_before)
-                            this.iv_red_dot.visibility = if(inquiryListData.isUpdated) View.GONE else View.VISIBLE
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_GRAY_50)
                             this.tv_delivery_status.text = "배송전"
                             this.tv_delivery_status.setTextColor(
@@ -173,7 +185,6 @@ class InquiryListAdapter(
                     {
                         holder.ongoingBinding.root.apply {
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_ing)
-                            this.iv_red_dot.visibility = if(inquiryListData.isUpdated) View.GONE else View.VISIBLE
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_900)
                             this.tv_delivery_status.text = "배송중"
                             this.tv_delivery_status.setTextColor(
@@ -197,7 +208,6 @@ class InquiryListAdapter(
                             gifMargin.height = SizeUtil.changeDpToPx(this.context, 38F)
                             gifMargin.width = SizeUtil.changeDpToPx(this.context, 50F)
                             this.image_delivery_status.layoutParams = gifMargin
-                            this.iv_red_dot.visibility = if(inquiryListData.isUpdated) View.GONE else View.VISIBLE
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_700)
                             this.tv_delivery_status.text = "배송출발"
                             this.tv_delivery_status.setTextColor(
@@ -217,7 +227,6 @@ class InquiryListAdapter(
                     {
                         holder.ongoingBinding.root.apply {
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_registered)
-                            this.iv_red_dot.visibility = if(inquiryListData.isUpdated) View.GONE else View.VISIBLE
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_300)
                             this.tv_delivery_status.text = "송장등록"
                             this.tv_delivery_status.setTextColor(
@@ -340,6 +349,7 @@ class InquiryListAdapter(
                     return@setOnLongClickListener true
                 }
             }
+
         }
     }
 
@@ -477,25 +487,23 @@ class InquiryListAdapter(
             InquiryItemTypeEnum.Soon ->
             {
                 listItem.filter {
-                    it.isUpdated = false
                     it.parcel.deliveryStatus == DeliveryStatusEnum.out_for_delivery.code
                 }.toMutableList()
             }
             InquiryItemTypeEnum.Registered ->
             {
                 listItem.filter {
-                    it.isUpdated = false
                     it.parcel.deliveryStatus != DeliveryStatusEnum.out_for_delivery.code && it.parcel.deliveryStatus != DeliveryStatusEnum.delivered.code
                 }.toMutableList()
             }
             InquiryItemTypeEnum.Complete ->
             {
                 listItem.filter {
-                    it.isUpdated = true
                     it.parcel.deliveryStatus == DeliveryStatusEnum.delivered.code
                 }.toMutableList()
             }
         }
+
         notifyDataSetChanged()
     }
 

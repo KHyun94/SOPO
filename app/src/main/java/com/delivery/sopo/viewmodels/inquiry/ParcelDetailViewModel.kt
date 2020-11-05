@@ -2,6 +2,7 @@ package com.delivery.sopo.viewmodels.inquiry
 
 import android.util.Log
 import android.view.View
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
@@ -10,12 +11,14 @@ import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.*
-import com.delivery.sopo.models.parcel.Date
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.repository.impl.CourierRepolmpl
+import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.util.DateUtil
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.views.adapter.TimeLineRvAdapter
 import com.google.gson.Gson
@@ -27,14 +30,12 @@ import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.*
 
 class ParcelDetailViewModel(
     private val userRepoImpl: UserRepoImpl,
     private val courierRepolmpl: CourierRepolmpl,
-    private val parcelRepoImpl: ParcelRepoImpl
+    private val parcelRepoImpl: ParcelRepoImpl,
+    private val parcelManagementRepoImpl: ParcelManagementRepoImpl
 ) : ViewModel()
 {
     val TAG = "LOG.SOPO"
@@ -65,7 +66,8 @@ class ParcelDetailViewModel(
     // 상세 화면 Full Down
     var isDown = SingleLiveEvent<Boolean>()
 
-    var isUpdate = MutableLiveData<Boolean?>()
+    var isBeUpdated = MutableLiveData<Boolean?>()
+    var isDirectUpdate = false
 
     init
     {
@@ -103,22 +105,21 @@ class ParcelDetailViewModel(
                 val type = object : TypeToken<ParcelItem?>()
                 {}.type
 
-                val reader = gson.toJson(parcelEntity!!.inqueryResult)
+                val reader = gson.toJson(parcelEntity.inqueryResult)
                 val replaceStr = reader.replace("\\", "")
                 val subStr = replaceStr.substring(1, replaceStr.length - 1)
 
                 parcelItem = gson.fromJson<ParcelItem?>(subStr, type)
 
-                Log.d(TAG, "==>> ${parcelEntity!!.toString()}")
+                Log.d(TAG, "==>> ${parcelEntity.toString()}")
                 Log.d(TAG, "==>> ${parcelItem.toString()}")
                 //----------------------------------------------------------------------------------
             }
 
             withContext(Dispatchers.IO) {
                 // Delivery Status
-                deliveryStatus = when (parcelEntity!!.deliveryStatus)
+                deliveryStatus = when (parcelEntity.deliveryStatus)
                 {
-
                     DeliveryStatusConst.NOT_REGISTER ->
                     {
                         subTitle.postValue("아직 배송상품 정보가 없습니다.")
@@ -160,22 +161,21 @@ class ParcelDetailViewModel(
                     {
                         subTitle.postValue("상품을 조회할 수 없습니다.")
                         statusBg.postValue(0)
-                        Log.d(TAG, parcelEntity!!.deliveryStatus)
+                        Log.d(TAG, parcelEntity.deliveryStatus)
                         "에러상태"
                     }
                 }
 
-
                 // 배경 및 배송 상태 표시용
-                statusList.postValue(getDeliveryStatusIndicator(deliveryStatus = parcelEntity!!.deliveryStatus))
+                statusList.postValue(getDeliveryStatusIndicator(deliveryStatus = parcelEntity.deliveryStatus))
                 //--------------------------------------------------------------------------------------------
             }
 
             // 택배 정보의 별칭
             val alias =
-                if (parcelEntity!!.parcelAlias != "default")
+                if (parcelEntity.parcelAlias != "default")
                 {
-                    parcelEntity!!.parcelAlias
+                    parcelEntity.parcelAlias
                 }
                 else
                 {
@@ -188,8 +188,7 @@ class ParcelDetailViewModel(
             withContext(Dispatchers.IO)
             {
                 // 택배사 코드를 ROOM에서 택배명으로 검색
-                val courier = courierRepolmpl.getWithCode(parcelEntity!!.carrier)
-
+                val courier = courierRepolmpl.getWithCode(parcelEntity.carrier)
 
 
                 // 프로그레스(택배의 경로 내용이 있을 때
@@ -199,7 +198,7 @@ class ParcelDetailViewModel(
 
                     for (item in parcelItem!!.progresses)
                     {
-                        val date = changeDateFormat(item!!.time!!)
+                        val date = DateUtil.changeDateFormat(item!!.time!!)
                         val spliteDate = date!!.split(" ")
                         val dateObj = Date(spliteDate[0], spliteDate[1])
                         val progress = Progress(
@@ -215,10 +214,10 @@ class ParcelDetailViewModel(
 
                 item.postValue(
                     ParcelDetailItem(
-                        regDt = parcelEntity!!.regDt,
+                        regDt = parcelEntity.regDt,
                         alias = alias,
                         courier = courier!!,
-                        waybilNym = parcelEntity!!.trackNum,
+                        waybilNym = parcelEntity.trackNum,
                         deliverStatus = deliveryStatus,
                         progress = progressList
                     )
@@ -234,19 +233,28 @@ class ParcelDetailViewModel(
     // 로컬에 저장된 택배 인포를 로드
     fun requestLocalParcel(parcelId: ParcelId)
     {
-        // 로컬 호출 동시에 서버에 택배 상태 업데이트 상태 체크
-        requestRemoteParcel(parcelId = parcelId)
+        getUpdateValue(){
+            isDirectUpdate = it != null && it
 
-        CoroutineScope(Dispatchers.Main).launch{
-            withContext(Dispatchers.Default){
-                parcelEntity = parcelRepoImpl.getLocalParcelById(
-                    parcelUid = parcelId.parcelUid,
-                    regDt = parcelId.regDt
-                )
+            requestRemoteParcel(parcelId = parcelId)
+
+            if(!isDirectUpdate)
+            {
+                // 로컬 호출 동시에 서버에 택배 상태 업데이트 상태 체크
+                CoroutineScope(Dispatchers.Main).launch {
+                    withContext(Dispatchers.Default) {
+                        parcelEntity = parcelRepoImpl.getLocalParcelById(
+                            parcelUid = parcelId.parcelUid,
+                            regDt = parcelId.regDt
+                        )
+                    }
+
+                    updateParcelItem(parcelEntity!!)
+                }
             }
-
-            updateParcelItem(parcelEntity!!)
         }
+
+
     }
 
     // 택배의 이동 상태(indicator)의 값을 리스트 형식으로 반환
@@ -294,25 +302,6 @@ class ParcelDetailViewModel(
         return _statusList
     }
 
-    // dateTime => yyyy-MM-dd'T'HH"mm:ss.SSS'Z -> yyyy-MM-dd HHmm
-    fun changeDateFormat(dateTime: String): String?
-    {
-        val oldFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
-        oldFormat.timeZone = TimeZone.getTimeZone("KST")
-        val newFormat = SimpleDateFormat("yy/MM/dd HH:mm:ss")
-
-        return try
-        {
-            val oldDate = oldFormat.parse(dateTime)
-            newFormat.format(oldDate)
-        }
-        catch (e: ParseException)
-        {
-            Log.e(TAG, e.toString())
-            null
-        }
-    }
-
 
     private fun requestRemoteParcel(parcelId: ParcelId)
     {
@@ -325,7 +314,8 @@ class ParcelDetailViewModel(
             {
                 override fun onFailure(call: Call<APIResult<Parcel?>>, t: Throwable)
                 {
-                    Log.d(TAG, "에러 ${t.message}")
+                    SopoLog.e("택배 상세 내역 에러 => ${t.message}", t)
+                    isBeUpdated.postValue(false)
                 }
 
                 override fun onResponse(
@@ -337,13 +327,37 @@ class ParcelDetailViewModel(
                     {
                         200 ->
                         {
-                            val parcel = response.body()!!.data ?: return
-                            Log.d(TAG, "정상 $parcel")
-                            parcelEntity!!.update(parcel = parcel)
-                            isUpdate.postValue(true)
+                            val res = response.body()
+                            val parcel = res!!.data ?: return
+
+                            SopoLog.d("택배 상세 내역 결과 값 => $parcel")
+
+                            if (res.message == "CHANGED")
+                            {
+                                // 업데이트 변경 가능
+                                parcelEntity!!.update(parcel = parcel)
+
+                                if(!isDirectUpdate) isBeUpdated.postValue(true)
+                                else updateIsBeUpdated(parcelId.regDt, parcelId.parcelUid)
+
+                                updateIsBeUpdated(parcelId.regDt, parcelId.parcelUid)
+                            }
+                            else
+                            {
+                                // 업데이트 할게 없음
+                                isBeUpdated.postValue(false)
+                            }
                         }
-                        400 -> Log.d(TAG, "정상 ${response.errorBody()}")
-                        else -> Log.d(TAG, "에러러러")
+                        400 ->
+                        {
+                            Log.d(TAG, "택배 상세 내역 에러 => ${response.errorBody()}")
+                            isBeUpdated.postValue(false)
+                        }
+                        else ->
+                        {
+                            Log.d(TAG, "택배 상세 내역 에러 => ${response.errorBody()}")
+                            isBeUpdated.postValue(false)
+                        }
                     }
                 }
 
@@ -356,6 +370,28 @@ class ParcelDetailViewModel(
         val timeLineRvAdapter = TimeLineRvAdapter()
         timeLineRvAdapter.setItemList(list as MutableList<Progress?>)
         adapter.postValue(timeLineRvAdapter)
+    }
+
+    fun updateIsBeUpdated(regDt: String, parcelUid: String)
+    {
+        CoroutineScope(Dispatchers.Default).launch {
+            parcelManagementRepoImpl.updateIsBeUpdate(regDt, parcelUid)
+        }
+    }
+
+    fun getUpdateValue(cb : (Boolean?) -> Unit){
+
+        CoroutineScope(Dispatchers.Main).launch {
+            var update : LiveData<Int?>? = null
+            withContext(Dispatchers.Default){
+                update = parcelRepoImpl.isBeingUpdateParcel(parcelUid = parcelId.value?.parcelUid?:"", regDt = parcelId.value?.regDt?:"")
+            }
+
+            update?.observeForever{
+                if(it != null && it == 1) cb.invoke(true)
+                else cb.invoke(false)
+            }
+        }
     }
 
     fun onBackClicked()

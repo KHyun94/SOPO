@@ -82,6 +82,7 @@ val appModule = module {
         ParcelDetailViewModel(
             get(),
             get(),
+            get(),
             get()
         )
     }

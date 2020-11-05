@@ -26,7 +26,7 @@ object SopoLog
         Log.v(tag?: "$TAG.d", str)
     }
 
-    fun e(str : String, e : Exception?, tag : String?)
+    fun e(str : String, e : Throwable?, tag : String? = null)
     {
         Log.e(tag?: "$TAG.e", "$str\n${e.toString()}", e)
     }

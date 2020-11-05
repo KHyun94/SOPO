@@ -88,12 +88,12 @@ interface ParcelAPI
 //>>>>>>> feature-revise
 
     // 0915 추가 - 택배 상태 업데이트 체크 api
-    @POST("/api/v1/sopo-api/delivery/{email}/parcels/refreshing")
+    @POST("/api/v1/sopo-api/delivery/{email}/parcels/refresh")
     @Headers("Accept: application/json")
     suspend fun parcelsRefreshing(@Path("email") email: String): APIResult<String?>
 
     // 1002 단일 택배 업데이트 및 가져오기
-    @POST("/api/v1/sopo-api/delivery/{email}/parcel/{regDt}/{parcelUid}/refreshing")
+    @POST("/api/v1/sopo-api/delivery/{email}/parcel/{regDt}/{parcelUid}/refresh")
     @Headers("Accept: application/json")
     fun parcelRefreshing(
         @Path("email") email: String,

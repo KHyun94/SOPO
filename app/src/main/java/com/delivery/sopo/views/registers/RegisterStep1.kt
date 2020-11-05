@@ -266,14 +266,15 @@ class RegisterStep1 : Fragment()
         Log.d(TAG, "OnResume")
 
         // 0922 kh 추가사항 - 클립보드에 저장되어있는 운송장 번호가 로컬에 등록된 택배가 있을 때, 안띄어주는 로직 추가
-        val text = ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE, parcelRepolmpl)
+        ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE, parcelRepolmpl){
+            val isRegister = binding.vm?.waybilNum?.value.isNullOrEmpty()
 
-        val isRegister = binding.vm?.waybilNum?.value.isNullOrEmpty()
-
-        if (!(text.isEmpty() || !isRegister))
-        {
-            binding.vm?.clipboardStr?.value = text
+            if (!(it.isEmpty() || !isRegister))
+            {
+                binding.vm?.clipboardStr?.value = it
+            }
         }
+
     }
 
     companion object
