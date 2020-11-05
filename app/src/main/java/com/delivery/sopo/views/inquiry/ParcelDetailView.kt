@@ -81,6 +81,9 @@ class ParcelDetailView : Fragment()
         bindViewSetting(inflater = inflater, container = container)
         setObserve()
 
+        // todo 임시 강제적으로 뷰를 앞으로 끌어옴
+        binding.tvSubtext.bringToFront()
+
         // 택배 info LiveData 데이터 입력
         binding.vm!!.parcelId.value = ParcelId(regDt!!, parcelUId!!)
 
