@@ -31,8 +31,6 @@ import com.delivery.sopo.views.main.MainView
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
 import kotlinx.android.synthetic.main.main_view.*
-import kotlinx.android.synthetic.main.main_view.layout_main
-import kotlinx.android.synthetic.main.parcel_detail_view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -108,7 +106,7 @@ class ParcelDetailView : Fragment()
             "업데이트",
             R.color.MAIN_WHITE,
             View.OnClickListener {
-                binding.vm!!.updateParcelItem(binding.vm!!.parcelEntity!!)
+                binding.vm!!.updateParcelItem(binding.vm!!.parcelEntity.value!!)
                 parentView.alert_message_bar.onDismiss()
             })
         return binding.root
@@ -205,7 +203,7 @@ class ParcelDetailView : Fragment()
                     {
                         Log.d(TAG, "ParcelDetailView:: BackPressListener")
 
-                        if(slideViewStatus == 0)
+                        if (slideViewStatus == 0)
                         {
                             requireActivity().supportFragmentManager.popBackStack()
                         }
@@ -226,7 +224,14 @@ class ParcelDetailView : Fragment()
         binding.vm!!.parcelId.observe(this, Observer {
             if (it != null)
             {
-                binding.vm!!.requestLocalParcel(it)
+                binding.vm!!.requestParcelDetailData(it)
+            }
+        })
+
+        binding.vm!!.parcelEntity.observe(this, Observer {
+            if (it != null)
+            {
+                binding.vm!!.updateParcelItem(it)
             }
         })
 
@@ -254,7 +259,7 @@ class ParcelDetailView : Fragment()
         binding.vm!!.isBeUpdated.observe(this, Observer {
             if (it != null && it == true)
             {
-                SopoLog.d("상세 페이지 업데이트 여부 체크 ${it?:"NULL"}")
+                SopoLog.d("상세 페이지 업데이트 여부 체크 ${it ?: "NULL"}")
 
                 parentView.alert_message_bar.onStart(null)
             }
@@ -305,7 +310,7 @@ class ParcelDetailView : Fragment()
         linearParams.rightMargin = SizeUtil.changeDpToPx(activity!!, 9.0f)
 
         // 기존에 있는 자식 뷰를 초기화
-        if(baseLayout.childCount > 0) baseLayout.removeAllViews()
+        if (baseLayout.childCount > 0) baseLayout.removeAllViews()
 
         for (item in list)
         {
@@ -411,7 +416,7 @@ class ParcelDetailView : Fragment()
         {
             override fun handleOnBackPressed()
             {
-                if(slideViewStatus == 0)
+                if (slideViewStatus == 0)
                 {
                     requireActivity().supportFragmentManager.popBackStack()
                 }
@@ -439,7 +444,11 @@ class ParcelDetailView : Fragment()
         private val IS_BE_UPDATED = "IS_BE_UPDATED"
 
         // 해당 프래그먼트를 인스턴스화 할 때 무조건 newInstance로 호출해야한다.
-        fun newInstance(parcelUId: String, regDt: String, isBeUpdated : Boolean = false): ParcelDetailView
+        fun newInstance(
+            parcelUId: String,
+            regDt: String,
+            isBeUpdated: Boolean = false
+        ): ParcelDetailView
         {
             val fragment = ParcelDetailView()
 

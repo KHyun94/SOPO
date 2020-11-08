@@ -209,56 +209,7 @@ class SplashView : BasicView<SplashViewBinding>(
                         }
                     }
                 }
-
             })
-
-//        NetworkManager.getPrivateUserAPI(userRepo.getEmail(), userRepo.getApiPwd())
-//            .requestAutoLogin(userRepo.getDeviceInfo(), userRepo.getJoinType(), null)
-//            .observeOn(AndroidSchedulers.mainThread())
-//            .subscribeOn(Schedulers.io())
-//            .subscribe(
-//                {
-//
-//
-//                    if (it.code == ResponseCode.SUCCESS.CODE)
-//                    {
-//                        startActivity(Intent(parentActivity, MainView::class.java))
-//                        finish()
-//                    }
-//                    else
-//                    {
-//                        GeneralDialog(
-//                            parentActivity,
-//                            "오류",
-//                            CodeUtil.returnCodeMsg(it.code),
-//                            null,
-//                            Pair("네", { it ->
-//                                it.dismiss()
-//                                Log.d(TAG, "TESTESTSETSETS")
-//                                userRepo.removeUserRepo()
-//                                startActivity(Intent(parentActivity, IntroView::class.java))
-//                                finish()
-//                            })
-//                        ).show(
-//                            supportFragmentManager.beginTransaction(),
-//                            "TAG"
-//                        )
-//                    }
-//                },
-//                {
-//                    GeneralDialog(
-//                        parentActivity,
-//                        "오류",
-//                        CodeUtil.returnCodeMsg(it.message!!),
-//                        null,
-//                        Pair("네", { it ->
-//                            it.dismiss()
-//                        })
-//                    ).show(
-//                        supportFragmentManager.beginTransaction(),
-//                        "TAG"
-//                    )
-//                })
     }
 
     private fun requestPermission(permissionArray: Array<String>)

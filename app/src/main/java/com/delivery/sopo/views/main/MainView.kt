@@ -23,6 +23,7 @@ import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.UserAPI
 import com.delivery.sopo.networks.dto.JsonPatchDto
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.services.PowerManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.main.MainViewModel
@@ -77,6 +78,8 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         super.onCreate(savedInstanceState)
         updateFCMToken()
         init()
+
+        PowerManager.checkWhiteList(this)
     }
 
     private fun init()

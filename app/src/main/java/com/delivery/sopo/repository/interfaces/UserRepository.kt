@@ -2,6 +2,9 @@ package com.delivery.sopo.repository.interfaces
 
 interface UserRepository
 {
+
+    fun getUserNickname() :String
+    fun setUserNickname(nickname : String)
     fun getEmail(): String
     fun setEmail(email: String)
     fun getApiPwd(): String

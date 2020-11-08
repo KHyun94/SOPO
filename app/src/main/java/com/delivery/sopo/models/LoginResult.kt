@@ -7,6 +7,8 @@ import java.io.Serializable
 data class LoginResult(
     @SerializedName("userName")
     val userName: String,
+    @SerializedName("nickName")
+    val userNickname : String?,
     @SerializedName("status")
     val status: Int,
     @SerializedName("regDt")

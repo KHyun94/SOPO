@@ -3,6 +3,7 @@ package com.delivery.sopo.database.room.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.util.SopoLog
 
 @Entity(
     tableName = "PARCEL",
@@ -70,6 +71,9 @@ data class ParcelEntity(
     var status: Int
 ){
     fun update(parcel: Parcel){
+
+        SopoLog.d("ParcelEntity Update => $parcel")
+
         this.parcelAlias = parcel.parcelAlias
         this.inqueryResult = parcel.inqueryResult
         this.inqueryHash = parcel.inqueryHash
