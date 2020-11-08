@@ -3,7 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <import type="androidx.lifecycle.MutableLiveData"/>
+
+        <import type="androidx.lifecycle.MutableLiveData" />
+
+        <import type="android.view.View" />
 
         <variable
             name="OnDownClicked"
@@ -39,24 +42,24 @@
                     style="@style/H2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="11dp"
                     android:includeFontPadding="false"
                     android:text="택배조회"
-                    android:textColor="@color/COLOR_GRAY_800"
-                    android:layout_centerVertical="true"/>
+                    android:textColor="@color/COLOR_GRAY_800" />
 
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="14dp"
-                    android:background="@drawable/ic_clear_btn"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:onClick="@{OnDownClicked}"/>
+                    android:layout_margin="14dp"
+                    android:background="@drawable/ic_clear_btn"
+                    android:onClick="@{OnDownClicked}"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
             </RelativeLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -140,8 +143,8 @@
                         <ImageView
                             android:layout_width="41dp"
                             android:layout_height="41dp"
-                            app:setImage="@{item.courier.iconRes}"
-                            android:padding="10sp"/>
+                            android:padding="10sp"
+                            app:setImage="@{item.courier.iconRes}" />
                     </LinearLayout>
 
 
@@ -178,8 +181,8 @@
                             android:gravity="center">
 
                             <TextView
-                                style="@style/H3"
                                 android:id="@+id/tv_waybil_num"
+                                style="@style/H3"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
@@ -208,12 +211,23 @@
                     android:background="@color/COLOR_GRAY_100"
                     app:layout_constraintTop_toBottomOf="@id/layout_parcel_info" />
 
+                <TextView
+                    style="@style/H5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="38dp"
+                    android:text="@string/IS_NOT_REGISTERED_PARCEL_PROGRESS_DATA"
+                    android:visibility="@{(item.progress != null &amp;&amp; item.progress.size() > 0) ? View.GONE : View.VISIBLE}"
+                    app:layout_constraintLeft_toRightOf="parent"
+                    app:layout_constraintRight_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/v_empty2" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_time_line"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginHorizontal="24dp"
-                    android:layout_marginTop="37dp"
+                    android:layout_marginTop="38dp"
                     android:nestedScrollingEnabled="false"
                     android:overScrollMode="never"
                     app:layout_constraintLeft_toRightOf="parent"

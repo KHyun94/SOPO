@@ -32,7 +32,6 @@ import java.util.function.Function
 
 class MenuFragment : Fragment()
 {
-
     private val userRepoImpl: UserRepoImpl by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
     private val timeCountRepoImpl: TimeCountRepoImpl by inject()
@@ -174,6 +173,7 @@ class MenuFragment : Fragment()
                     Pair("확인", View.OnClickListener {
                         edit.observe(this@MenuFragment, Observer {
                             SopoLog.d("입력 값 = > $it")
+                            binding.vm!!.updateUserNickname(it)
                             AlertUtil.onDismiss()
                         })
                     }),

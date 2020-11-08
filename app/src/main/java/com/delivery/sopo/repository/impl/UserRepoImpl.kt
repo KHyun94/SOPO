@@ -1,11 +1,24 @@
 package com.delivery.sopo.repository.impl
 
+import com.delivery.sopo.R
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.shared.SharedPrefHelper
 import com.delivery.sopo.repository.interfaces.UserRepository
+import com.delivery.sopo.util.SopoLog
 
 //todo kh impl로 수정할
 class UserRepoImpl(private val shared: SharedPrefHelper) : UserRepository
 {
+    override fun getUserNickname(): String
+    {
+        return shared.getUserNickname() ?: ""
+    }
+
+    override fun setUserNickname(nickname: String)
+    {
+        shared.setUserNickname(nickname)
+    }
+
     override fun getEmail(): String
     {
         return shared.getUserEmail() ?: ""

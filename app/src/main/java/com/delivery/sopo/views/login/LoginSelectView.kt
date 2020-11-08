@@ -300,6 +300,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                                     userRepoImpl.setRegisterDate(user.regDt)
                                     userRepoImpl.setStatus(user.status)
                                     userRepoImpl.setSNSUId(kakaoUserId)
+                                    userRepoImpl.setUserNickname(user.userNickname?:"")
 
                                     startActivity(Intent(parentActivity, MainView::class.java))
                                     finish()

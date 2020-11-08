@@ -143,8 +143,9 @@
                     style="@style/H5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/MENU_VIEW_PLEASE_SET_NICK_NAME"
-                    android:textColor="@color/COLOR_GRAY_400"
+                    android:text="@{vm.userNickname}"
+                    android:hint="@string/MENU_VIEW_PLEASE_SET_NICK_NAME"
+                    android:textColor="@color/MAIN_BLACK"
                     android:onClick="@{()->vm.onUpdateClicked()}"/>
 
                 <TextView
