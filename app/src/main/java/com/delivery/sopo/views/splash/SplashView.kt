@@ -7,6 +7,7 @@ import android.provider.Settings
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
@@ -28,6 +29,7 @@ import com.delivery.sopo.viewmodels.splash.SplashViewModel
 import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.intro.IntroView
 import com.tbruyelle.rxpermissions2.RxPermissions
+import kotlinx.android.synthetic.main.splash_view.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import retrofit2.Call
@@ -54,16 +56,19 @@ class SplashView : BasicView<SplashViewBinding>(
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-
         rxPermission = RxPermissions.getInstance(applicationContext)
-
-//        PowerManager.checkWhiteList(SOPOApp.INSTANCE)
     }
 
     override fun bindView()
     {
         binding.vm = splashVM
         binding.executePendingBindings()
+
+        Glide
+            .with(this)
+            .asGif()
+            .load(R.drawable.ic_splash_ani_box)
+            .into(binding.ivSopoBoxAni)
     }
 
     override fun setObserver()

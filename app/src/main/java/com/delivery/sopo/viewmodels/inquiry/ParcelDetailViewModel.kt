@@ -242,8 +242,8 @@ class ParcelDetailViewModel(
     fun requestParcelDetailData(parcelId: ParcelId)
     {
         // 서버로 해당 택배 상태 업데이트 요청 -> 서비스로 조회
-       // requestRemoteParcel(parcelId = parcelId)
-        requestLocalParcel(parcelId = parcelId)
+        requestRemoteParcel(parcelId = parcelId)
+//        requestLocalParcel(parcelId = parcelId)
     }
 
     // 로컬에 저장된 택배 인포를 로드

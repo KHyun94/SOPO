@@ -1,13 +1,20 @@
 package com.delivery.sopo
 
+import android.app.AlarmManager
 import android.app.Application
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.os.SystemClock
 import android.util.Log
+import android.widget.Toast
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.di.appModule
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.services.AlarmReceiver
 import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.OtherUtil
@@ -25,6 +32,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import java.util.*
 
 class SOPOApp : Application()
 {
@@ -47,6 +55,8 @@ class SOPOApp : Application()
             androidContext(this@SOPOApp)
             modules(appModule)
         }
+
+        alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
         Log.d(TAG, "${OtherUtil.getDeviceID(SOPOApp.INSTANCE)}")
 
@@ -83,6 +93,9 @@ class SOPOApp : Application()
         getInitViewPagerNumber(){
             currentPage.postValue(it)
         }
+
+        // todo 푸시 후 처리
+//        registerAlarm()
     }
 
     private fun getInitViewPagerNumber(cb : ((Int) -> Unit))
@@ -110,10 +123,29 @@ class SOPOApp : Application()
        }
     }
 
+    fun registerAlarm()
+    {
+        val cal = Calendar.getInstance()
+        cal.add(Calendar.MINUTE, 10)
+
+        Toast.makeText(this, "알람매니저 등록", Toast.LENGTH_LONG).show()
+        val intent = Intent(this, AlarmReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
+
+        when
+        {
+            Build.VERSION.SDK_INT >= 23 -> alarmManager.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + cal.timeInMillis, pendingIntent)
+            Build.VERSION.SDK_INT >= 19 -> alarmManager.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, cal.timeInMillis, pendingIntent)
+            else -> alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + cal.timeInMillis, pendingIntent)
+        }
+    }
+
     companion object
     {
         lateinit var INSTANCE: Context
         lateinit var auth: FirebaseAuth
+
+        lateinit var alarmManager : AlarmManager
 
         var currentPage = SingleLiveEvent<Int?>()
     }

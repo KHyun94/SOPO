@@ -10,6 +10,13 @@ import retrofit2.http.*
 
 interface UserAPI
 {
+    @PATCH("api/v1/sopo-api/user-management/{email}/user/deviceInfo")
+    @Headers("Accept: application/json")
+    fun requestTmpDeviceInfo(
+        @Path("email") email: String,
+        @Query("jwtToken") jwtToken : String
+    ) : Call<APIResult<String?>>
+
     // 카카오 로그인 시 Firebase 토큰으로 변경하는 Api ------------------------------------------------
     @GET("api/v1/sopo-api/user-management/{email}/user/firebase/auth-token")
     @Headers("Accept: application/json")

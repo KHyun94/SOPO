@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
@@ -72,6 +73,11 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
     {
         binding.vm = loginSelectVM
         binding.lifecycleOwner = this
+
+        Glide.with(this)
+            .asGif()
+            .load(R.drawable.ic_login_ani_box)
+            .into(binding.imageView2)
     }
 
     override fun setObserver()
@@ -366,11 +372,13 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
         jsonPatchList.add(SopoJsonPatch("replace", "/deviceInfo", OtherUtil.getDeviceID(SOPOApp.INSTANCE)))
 
         publicRetro.create(UserAPI::class.java)
-            .patchUser(
-                email = email,
-                jwt = jwtToken,
-                jsonPatch = JsonPatchDto(jsonPatchList)
-            ).enqueue(object : Callback<APIResult<String?>>
+            .requestTmpDeviceInfo(email, jwtToken)
+//            .patchUser(
+//                email = email,
+//                jwt = jwtToken,
+//                jsonPatch = JsonPatchDto(jsonPatchList)
+//            )
+            .enqueue(object : Callback<APIResult<String?>>
             {
                 override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
                 {

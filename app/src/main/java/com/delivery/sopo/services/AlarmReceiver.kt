@@ -13,7 +13,16 @@ import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.PowerManager
+import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
+import com.delivery.sopo.services.workmanager.OneTimeWorker
+import com.delivery.sopo.services.workmanager.SOPOWorkeManager
+import java.util.concurrent.TimeUnit
 
 
 class AlarmReceiver : BroadcastReceiver()
@@ -33,13 +42,14 @@ class AlarmReceiver : BroadcastReceiver()
         val powerManager = context.getSystemService(POWER_SERVICE) as PowerManager
 
         cpuWakeLock = powerManager.newWakeLock(
-            PowerManager.ACQUIRE_CAUSES_WAKEUP,
+            (PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.ON_AFTER_RELEASE or PowerManager.PARTIAL_WAKE_LOCK),
             "app:alarm"
         )
 
         cpuWakeLock!!.acquire()
 
-        testNoti(context)
+        Toast.makeText(context, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", Toast.LENGTH_LONG).show()
+        testNoti(context = context)
 
         if(wifiLock != null) {
             wifiLock!!.release();
@@ -101,6 +111,7 @@ class AlarmReceiver : BroadcastReceiver()
         //알림 요청시에 사용한 번호를 알림제거 할 수 있음.
         //notificationManager.cancel(1);
     }
+
     companion object
     {
         private var cpuWakeLock: PowerManager.WakeLock? = null
