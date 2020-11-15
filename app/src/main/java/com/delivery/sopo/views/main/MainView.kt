@@ -258,12 +258,15 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     override fun setObserver()
     {
+        // todo 업데이트 시
         binding.vm!!.cntOfBeUpdate.observe(this, Observer {
 
-            SopoLog.d("업데이트 가능 여부 택배 갯수: $it", null)
+            SopoLog.d("업데이트 가능 여부 택배 갯수 ${it}!!!!!!!!!!!!!!!!!!!!!")
 
-            if (it > 0)
+            if (binding.vm!!.isInitUpdate && it > 0)
             {
+                SopoLog.d("업데이트 가능 여부 택배 갯수: $it", null)
+
                 binding.alertMessageBar.run {
                     setText("${it}개의 새로운 배송정보가 있어요.")
                     setTextColor(R.color.MAIN_WHITE)
@@ -332,30 +335,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                 ).show(supportFragmentManager, "tag")
             }
         })
-
-        if (isInit)
-        {
-            binding.vm!!.registeredParcelCnt.observe(this, Observer {
-                if (it > 0)
-                {
-//                    binding.vpMain.setCurrentItem(3, true)
-                    isInit = false
-                    Log.d(TAG, "진행 중인 택배가 있음")
-                }
-                else
-                {
-//                    binding.vpMain.setCurrentItem(0, true)
-                    isInit = false
-                    Log.d(TAG, "진행 중인 택배가 없음")
-                }
-            })
-        }
     }
-
-//    override fun onBackPressed()
-//    {
-////        onMainBackPressListener!!.onBackPressed()
-//    }
 
     fun onCompleteRegister()
     {

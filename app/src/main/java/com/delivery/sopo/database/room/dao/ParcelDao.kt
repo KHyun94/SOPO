@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import com.delivery.sopo.database.room.entity.ParcelEntity
+import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.ParcelId
 
 @Dao
 interface ParcelDao
@@ -38,6 +40,10 @@ interface ParcelDao
 
     @Query("SELECT * FROM PARCEL WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
     suspend fun getById(regDt: String, parcelUid: String): ParcelEntity?
+
+    // 업데이트 가능한 택배의 InquiryHash 값을 SELECT
+    @Query("SELECT p.* FROM PARCEL as p INNER JOIN PARCEL_MANAGEMENT as pm where p.REG_DT = pm.REG_DT AND p.PARCEL_UID = pm.PARCEL_UID AND pm.isBeUpdate = 1")
+    fun getUpdatableInquiryHash(): List<ParcelEntity?>
 
     @Query("SELECT pm.isBeUpdate FROM PARCEL as p INNER JOIN PARCEL_MANAGEMENT as pm where p.REG_DT = pm.REG_DT AND p.PARCEL_UID = pm.PARCEL_UID AND p.REG_DT = :regDt AND p.PARCEL_UID = :parcelUid AND p.DELIVERY_STATUS != 'delivered'")
     fun isBeingUpdateParcel(regDt: String, parcelUid: String): LiveData<Int?>

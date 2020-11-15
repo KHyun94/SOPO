@@ -27,15 +27,11 @@ object NotificationImpl: Notification
         val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
-//        val inboxStyle = NotificationCompat.InboxStyle()
-//        inboxStyle.addLine(parcel.parcelAlias)
-
         val nBuilder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.mipmap.app_icon)
             .setContentTitle("SOPO")
             .setContentText("[${parcel.parcelAlias}]가 ${DeliveryStatusEnum.valueOf(newDeliveryStatus).msg}(으)로 상태가 변경되었습니다.")
             .setAutoCancel(true)
-//            .setStyle(inboxStyle)
             .setSound(defaultSoundUri)
             .setVibrate(longArrayOf(1000, 1000))
             .setLights(Color.WHITE, 1500, 1500)

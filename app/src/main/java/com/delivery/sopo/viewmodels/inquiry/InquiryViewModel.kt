@@ -101,11 +101,6 @@ class InquiryViewModel(
     val cntOfBeDelivered: LiveData<Int>
         get() = _cntOfBeDelivered
 
-    // 업데이트 여부
-    private val _cntOfBeUpdate = parcelManagementRepoImpl.getIsUpdateCntLiveData()
-    val cntOfBeUpdate: LiveData<Int>
-        get() = _cntOfBeUpdate
-
     private val _isShowDeleteSnackBar = MutableLiveData<Boolean>()
     val isShowDeleteSnackBar: LiveData<Boolean>
         get() = _isShowDeleteSnackBar

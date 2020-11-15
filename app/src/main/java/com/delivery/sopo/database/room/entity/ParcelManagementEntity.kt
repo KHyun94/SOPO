@@ -30,6 +30,11 @@ data class ParcelManagementEntity(
     )
     var isBeUpdate: Int = 0,
     @ColumnInfo(
+        name = "isUnidentified",
+        typeAffinity = ColumnInfo.INTEGER
+    )
+    var isUnidentified: Int = 0,
+    @ColumnInfo(
         name = "isBeDelivered",
         typeAffinity = ColumnInfo.INTEGER
     )

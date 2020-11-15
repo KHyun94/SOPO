@@ -5,30 +5,35 @@ import java.lang.Exception
 
 object SopoLog
 {
-    val TAG = "LOG.SOPO"
+    val TAG = "[LOG.SOPO"
 
     fun v(str : String, tag : String?)
     {
-        Log.v(tag?: "$TAG.v", str)
+        val _tag = if(tag == null) "${TAG}.v]" else "${TAG}.${tag}.v]"
+        Log.v(_tag, str)
     }
 
     fun i(str : String, tag : String?)
     {
-        Log.i(tag?: "$TAG.i", str)
+        val _tag = if(tag == null) "${TAG}.i]" else "${TAG}.${tag}.i]"
+        Log.i(_tag, str)
     }
     fun d(str : String, tag : String? = null)
     {
-        Log.d(tag?: "$TAG.d", str)
+        val _tag = if(tag == null) "${TAG}.d]" else "${TAG}.${tag}.d]"
+        Log.d(_tag, str)
     }
 
     fun w(str : String, tag : String?)
     {
-        Log.v(tag?: "$TAG.d", str)
+        val _tag = if(tag == null) "${TAG}.w]" else "${TAG}.${tag}.w]"
+        Log.v(_tag, str)
     }
 
     fun e(str : String, e : Throwable?, tag : String? = null)
     {
-        Log.e(tag?: "$TAG.e", "$str\n${e.toString()}", e)
+        val _tag = if(tag == null) "${TAG}.e]" else "${TAG}.${tag}.e]"
+        Log.e(_tag, "$str\n${e.toString()}", e)
     }
 
 }

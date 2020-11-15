@@ -23,6 +23,7 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
 
     override suspend fun getRemoteOngoingParcels(): MutableList<Parcel>? = NetworkManager.privateRetro.create(
         ParcelAPI::class.java).getParcelsOngoing(email = userRepoImpl.getEmail()).data
+
     override suspend fun getRemoteOngoingParcel(regDt: String, parcelUid: String): Parcel? = NetworkManager
                                                             .privateRetro.create(ParcelAPI::class.java)
                                                             .getParcel( email = userRepoImpl.getEmail(),
@@ -62,6 +63,8 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
         return appDatabase.parcelDao().getOngoingData()?.map(ParcelMapper::parcelEntityToParcel)
     }
 
+    override suspend fun getUpdatableInquiryHash(): List<ParcelEntity?> = appDatabase.parcelDao().getUpdatableInquiryHash()
+
     override fun getSoonDataCntLiveData(): LiveData<Int>
     {
         return appDatabase.parcelDao().getSoonDataCntLiveData()
@@ -93,8 +96,8 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
         return appDatabase.parcelDao().update(parcel)
     }
 
-    override suspend fun updateEntities(parcelList: List<ParcelEntity>) {
-        appDatabase.parcelDao().update(parcelList)
+    override suspend fun updateEntities(parcelList: List<Parcel>) {
+        appDatabase.parcelDao().update(parcelList.map(ParcelMapper::parcelToParcelEntity))
     }
 
     override suspend fun deleteRemoteParcels(): APIResult<String?>? {

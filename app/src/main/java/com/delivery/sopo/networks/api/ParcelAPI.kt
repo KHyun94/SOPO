@@ -110,4 +110,13 @@ interface ParcelAPI
         @Path("parcelUid") parcelUid : String,
         @Body jsonPATCH: JsonArray
     ): Call<APIResult<ParcelEntity?>>
+
+
+    // 1113
+    // 배송중 & 곧 도착 리스트 가져오는 api
+    @GET("api/v1/sopo-api/delivery/{email}/parcels/ongoing")
+    @Headers("Accept: application/json")
+    fun getParcelsOngoingTmp(
+        @Path("email") email: String
+    ): Call<APIResult<MutableList<Parcel>?>?>
 }

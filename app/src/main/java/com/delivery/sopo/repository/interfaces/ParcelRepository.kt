@@ -20,6 +20,9 @@ interface ParcelRepository {
    fun getLocalCompleteParcels(): List<Parcel>
    suspend fun getLocalOngoingParcels(): List<Parcel>?
 
+
+   suspend fun getUpdatableInquiryHash() : List<ParcelEntity?>
+
    fun getSoonDataCntLiveData(): LiveData<Int>
    fun getOngoingDataCntLiveData(): LiveData<Int>
 
@@ -27,7 +30,7 @@ interface ParcelRepository {
    suspend fun insertEntities(parcelList: List<Parcel>)
 
    suspend fun updateEntity(parcel: ParcelEntity): Int
-    suspend fun updateEntities(parcelList: List<ParcelEntity>)
+    suspend fun updateEntities(parcelList: List<Parcel>)
 
    suspend fun deleteLocalParcels(parcelIdList: List<ParcelId>)
    suspend fun deleteRemoteParcels(): APIResult<String?>?

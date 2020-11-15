@@ -15,7 +15,8 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase):
         return appDatabase.parcelManagementDao().getIsDeleteCntLiveData()
     }
 
-    override fun getIsUpdateCntLiveData(): LiveData<Int> {
+    override fun getIsUpdateCntLiveData(): LiveData<Int>
+    {
         return appDatabase.parcelManagementDao().getIsUpdateCntLiveData()
     }
 

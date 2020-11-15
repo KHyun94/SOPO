@@ -9,6 +9,7 @@ import com.delivery.sopo.networks.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import com.delivery.sopo.views.splash.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -29,15 +30,18 @@ class FirebaseService: FirebaseMessagingService()
 
     private fun alertUpdateParcel(remoteMessage: RemoteMessage, intent: Intent, fcmPushDto: FcmPushDTO){
         CoroutineScope(Dispatchers.IO).launch {
-            val localOngoingParcels = parcelRepo.getLocalParcelById(fcmPushDto.regDt, fcmPushDto.parcelUid)
-            Log.d(TAG, "CoroutineScope`s parcel list : $localOngoingParcels")
+
+            // 업데이트 사항이 있는 택배를 로컬 DB에서 조회
+           val localOngoingParcels = parcelRepo.getLocalParcelById(fcmPushDto.regDt, fcmPushDto.parcelUid)
+
+            SopoLog.d("Update Parcel Data => ${localOngoingParcels?:"조회 결과 없음."}", "FirebaseService")
+
             // 만약에.. 내부 데이터베이스에 검색된 택배가 없다면.. 알람을 띄우지 않는다.
             localOngoingParcels?.let {
 
                 // 현재 해당 택배가 가지고 있는 배송 상태와 fcm으로 넘어온 배송상태가 다른 경우만 노티피케이션을 띄운다!
                 if(it.deliveryStatus != fcmPushDto.deliveryStatus && it.status == 1){
-                    parcelManagementRepo.getEntity(fcmPushDto.regDt, fcmPushDto.parcelUid)?.let {
-                        entity ->
+                    parcelManagementRepo.getEntity(fcmPushDto.regDt, fcmPushDto.parcelUid)?.let { entity ->
                             // 기본적으로 fcm으로 데이터가 업데이트 됐다고 수신 받은것이니 isBeUpdate를 1로 save해서 앱에 차후에 업데이트 해야함을 알림.
                             entity.apply {
                                 isBeUpdate = 1
