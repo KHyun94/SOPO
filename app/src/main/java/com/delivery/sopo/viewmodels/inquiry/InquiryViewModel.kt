@@ -43,21 +43,20 @@ class InquiryViewModel(
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
-    // 진행 중인 리스트 데이터
-    private val _ongoingList by lazy {
-        Transformations.map(parcelRepoImpl.getLocalOngoingParcelsLiveData()) {
-            ParcelMapper.parcelListToInquiryItemList(it as MutableList<Parcel>)
-        }
-    }
-    val ongoingList: LiveData<MutableList<InquiryListItem>>
-        get() = _ongoingList
+    private var _ongoingList = Transformations.map(parcelRepoImpl.getLocalOngoingParcelsLiveData()) {
 
-    //  배송완료 리스트 데이터
-    private val _completeList by lazy {
-        Transformations.map(parcelRepoImpl.getLocalCompleteParcelsLiveData()) {
+        it.forEach { parcel ->
+            SopoLog.d("진행 중인 택배 $parcel && 사이즈 ${it.size}")
+        }
+
+        ParcelMapper.parcelListToInquiryItemList(it as MutableList<Parcel>)
+    }
+    val ongoingList: LiveData<MutableList<InquiryListItem>> get() = _ongoingList
+
+    private val _completeList = Transformations.map(parcelRepoImpl.getLocalCompleteParcelsLiveData()) {
             ParcelMapper.parcelListToInquiryItemList(it as MutableList<Parcel>)
         }
-    }
+
     val completeList: LiveData<MutableList<InquiryListItem>>
         get() = _completeList
 
@@ -75,11 +74,6 @@ class InquiryViewModel(
     private val _isSelectAll = MutableLiveData<Boolean>()
     val isSelectAll: LiveData<Boolean>
         get() = _isSelectAll
-
-    // '프로그래스 바' 표출 여부
-//    private val _isLoading = MutableLiveData<Boolean>()
-//    val isLoading: LiveData<Boolean>
-//        get() = _isLoading
 
     var isLoading = SingleLiveEvent<Boolean?>()
 
@@ -105,10 +99,6 @@ class InquiryViewModel(
     val isShowDeleteSnackBar: LiveData<Boolean>
         get() = _isShowDeleteSnackBar
 
-    private val _isForceUpdateFinish = MutableLiveData<Boolean>()
-    val isForceUpdateFinish: LiveData<Boolean>
-        get() = _isForceUpdateFinish
-
     private val _currentTimeCount = timeCountRepoImpl.getCurrentTimeCountLiveData()
     val currentTimeCount: LiveData<TimeCountEntity?>
         get() = _currentTimeCount
@@ -128,11 +118,11 @@ class InquiryViewModel(
     init
     {
         cntOfSelectedItem.value = 0
-        _isForceUpdateFinish.value = false
         _isMoreView.value = false
         _isRemovable.value = false
         _isSelectAll.value = false
         _screenStatus.value = ScreenStatusEnum.ONGOING
+
         sendRemovedData()
         checkIsNeedForceUpdate()
     }
@@ -357,22 +347,20 @@ class InquiryViewModel(
             // 현재 가지고 있는 아이템의 수가 0개라면 새로고침 한다.
             if (parcelRepoImpl.getOnGoingDataCnt() == 0)
             {
+                SopoLog.d(tag = "InquiryVM", str = "시점 파악")
                 refreshOngoing()
-                _isForceUpdateFinish.postValue(true)
                 return@launch
             }
-            else
-            {
-                val beUpdateParcelCnt = parcelManagementRepoImpl.getIsUpdateCnt()
-                // View에 postValue로 값을 전달하기 전 '앱을 시작했을떄 강제 업데이트'를 해야하기 때문에 refreshOngoing()을 호출하여 강제 업데이트
-                if (beUpdateParcelCnt > 0)
-                {
-                    refreshOngoing()
-                    _isForceUpdateFinish.postValue(true)
-                    return@launch
-                }
-            }
-            _isForceUpdateFinish.postValue(true)
+//            else
+//            {
+//                val beUpdateParcelCnt = parcelManagementRepoImpl.getIsUpdateCnt()
+//                // View에 postValue로 값을 전달하기 전 '앱을 시작했을떄 강제 업데이트'를 해야하기 때문에 refreshOngoing()을 호출하여 강제 업데이트
+//                if (beUpdateParcelCnt > 0)
+//                {
+//                    refreshOngoing()
+//                    return@launch
+//                }
+//            }
         }
     }
 

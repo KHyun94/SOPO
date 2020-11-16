@@ -480,8 +480,11 @@ class InquiryListAdapter(
         }
     }
 
-    fun setDataList(listItem: MutableList<InquiryListItem>)
+    fun setDataList(listItem: MutableList<InquiryListItem>?)
     {
+        if(listItem == null)
+            return
+
         this.list = when (itemTypeEnum)
         {
             InquiryItemTypeEnum.Soon ->

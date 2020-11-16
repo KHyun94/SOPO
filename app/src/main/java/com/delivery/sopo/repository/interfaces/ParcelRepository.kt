@@ -20,9 +20,6 @@ interface ParcelRepository {
    fun getLocalCompleteParcels(): List<Parcel>
    suspend fun getLocalOngoingParcels(): List<Parcel>?
 
-
-   suspend fun getUpdatableInquiryHash() : List<ParcelEntity?>
-
    fun getSoonDataCntLiveData(): LiveData<Int>
    fun getOngoingDataCntLiveData(): LiveData<Int>
 

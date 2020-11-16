@@ -59,11 +59,11 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
         return appDatabase.parcelDao().getComplete().map(ParcelMapper::parcelEntityToParcel)
     }
 
-    override suspend fun getLocalOngoingParcels(): List<Parcel>? {
-        return appDatabase.parcelDao().getOngoingData()?.map(ParcelMapper::parcelEntityToParcel)
+    override suspend fun getLocalOngoingParcels(): List<Parcel> {
+        return appDatabase.parcelDao().getOngoingData().map(ParcelMapper::parcelEntityToParcel)
     }
 
-    override suspend fun getUpdatableInquiryHash(): List<ParcelEntity?> = appDatabase.parcelDao().getUpdatableInquiryHash()
+//    override suspend fun getUpdatableInquiryHash(): List<ParcelEntity?> = appDatabase.parcelDao().getUpdatableInquiryHash()
 
     override fun getSoonDataCntLiveData(): LiveData<Int>
     {

@@ -83,49 +83,9 @@ class InquiryView : Fragment()
 
     // todo viewModelFactory를 koin으로 변경
     private val inquiryVm : InquiryViewModel by viewModel()
-//    private val inquiryVm: InquiryViewModel by lazy {
-//        ViewModelProvider(
-//            requireActivity(),
-//            InquiryViewModelFactory(
-//                userRepoImpl,
-//                parcelRepoImpl,
-//                parcelManagementRepoImpl,
-//                timeCountRepoImpl
-//            )
-//        ).get(InquiryViewModel::class.java)
-//    }
+
     private var progressBar: CustomProgressBar? = null
     private var refreshDelay: Boolean = false
-
-    @SuppressLint("SourceLockedOrientationActivity")
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View
-    {
-        binding = SopoInquiryViewBinding.inflate(inflater, container, false)
-        progressBar = CustomProgressBar(activity!!)
-        parentView = activity as MainView
-        viewBinding()
-        setObserver()
-
-        return binding.root
-    }
-
-    @SuppressLint("ClickableViewAccessibility", "RestrictedApi")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
-    {
-        super.onViewCreated(view, savedInstanceState)
-
-        initViewSetting()
-        setListener()
-        image_inquiry_popup_menu.setOnClickListener {
-            openInquiryMenu(it)
-        }
-    }
-
-    var callback: OnBackPressedCallback? = null
 
     override fun onAttach(context: Context)
     {
@@ -161,6 +121,38 @@ class InquiryView : Fragment()
         requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
     }
 
+
+    @SuppressLint("SourceLockedOrientationActivity")
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View
+    {
+        binding = SopoInquiryViewBinding.inflate(inflater, container, false)
+        progressBar = CustomProgressBar(activity!!)
+        parentView = activity as MainView
+        viewBinding()
+        setObserver()
+
+        return binding.root
+    }
+
+    @SuppressLint("ClickableViewAccessibility", "RestrictedApi")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
+        super.onViewCreated(view, savedInstanceState)
+
+        initViewSetting()
+        setListener()
+        image_inquiry_popup_menu.setOnClickListener {
+            openInquiryMenu(it)
+        }
+    }
+
+    var callback: OnBackPressedCallback? = null
+
+
     override fun onDetach()
     {
         super.onDetach()
@@ -181,6 +173,8 @@ class InquiryView : Fragment()
             mutableListOf(),
             InquiryItemTypeEnum.Soon
         )
+
+        SopoLog.d("과연 몇개일까? ===> ${binding.vm!!.ongoingList.value?.size?:"NULL"}")
 
         soonArrivalListAdapter.setOnParcelClickListener(_mClickListener = getParcelClicked())
 
@@ -329,6 +323,8 @@ class InquiryView : Fragment()
 
         // 배송중 , 등록된 택배 리스트
         inquiryVm.ongoingList.observe(this, Observer {
+
+            SopoLog.d(tag = "MainInquiry", str = "진행 중인 택배 갯수 => ${it.size}")
             soonArrivalListAdapter.setDataList(it)
             registeredSopoListAdapter.setDataList(it)
 
