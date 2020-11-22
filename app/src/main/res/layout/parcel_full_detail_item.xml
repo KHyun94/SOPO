@@ -144,7 +144,8 @@
                             android:layout_width="41dp"
                             android:layout_height="41dp"
                             android:padding="10sp"
-                            app:setImage="@{item.courier.iconRes}" />
+                            app:setImage="@{item.courier.iconRes}"
+                            app:setDefaultImage="@{0}"/>
                     </LinearLayout>
 
 

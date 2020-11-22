@@ -30,13 +30,11 @@ import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.views.main.MainView
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
-import kotlinx.android.synthetic.main.main_view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
 
 class ParcelDetailView : Fragment()
 {
@@ -101,14 +99,7 @@ class ParcelDetailView : Fragment()
             Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
         }
 
-        parentView.alert_message_bar.setText("업데이트 사항이 있습니다.")
-        parentView.alert_message_bar.setOnCancelClicked(
-            "업데이트",
-            R.color.MAIN_WHITE,
-            View.OnClickListener {
-                binding.vm!!.updateParcelItem(binding.vm!!.parcelEntity.value!!)
-                parentView.alert_message_bar.onDismiss()
-            })
+
         return binding.root
     }
 
@@ -224,6 +215,7 @@ class ParcelDetailView : Fragment()
         binding.vm!!.parcelId.observe(this, Observer {
             if (it != null)
             {
+                binding.vm!!.updateIsUnidentifiedToZero(it)
                 binding.vm!!.requestParcelDetailData(it)
             }
         })
@@ -256,12 +248,34 @@ class ParcelDetailView : Fragment()
             }
         })
 
-        binding.vm!!.isBeUpdated.observe(this, Observer {
-            if (it != null && it == true)
-            {
-                SopoLog.d("상세 페이지 업데이트 여부 체크 ${it ?: "NULL"}")
+        binding.vm!!.isUpdate.observe(this, Observer {
 
-                parentView.alert_message_bar.onStart(null)
+            when (it)
+            {
+                true ->
+                {
+                    parentView.getAlertMessageBar().run {
+                        setText("업데이트 사항이 있습니다.")
+                        setOnCancelClicked("업데이트", null, View.OnClickListener {
+                            binding.vm!!.getRemoteParcel()
+                        })
+                        onStart(null)
+                    }
+                }
+                false ->
+                {
+                    parentView.getAlertMessageBar().run {
+                        setText("업데이트 도중 에러가 발생했습니다.")
+                        setOnCancelClicked("재시도", null, View.OnClickListener {
+                            binding.vm!!.requestParcelDetailData(ParcelId(regDt!!, parcelUId!!))
+                        })
+                        onStart(null)
+                    }
+                }
+                null ->
+                {
+
+                }
             }
         })
 
@@ -283,7 +297,7 @@ class ParcelDetailView : Fragment()
             {
                 if (it)
                 {
-                    binding.layoutMain.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+                    binding.layoutMain.panelState = PanelState.COLLAPSED
                     binding.vm!!.isDown.call()
                 }
             }

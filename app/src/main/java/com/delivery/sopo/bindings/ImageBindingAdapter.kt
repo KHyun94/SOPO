@@ -9,10 +9,9 @@ import com.delivery.sopo.util.OtherUtil
 object ImageBindingAdapter
 {
     @JvmStatic
-    @BindingAdapter("setImage")
-    fun bindSetterImage(view: ImageView, res: Int)
+    @BindingAdapter("setImage", "setDefaultImage")
+    fun bindSetterImage(view: ImageView, res: Int, defaultRes :Int = 0)
     {
-
         try
         {
             val mimeTypedValue = OtherUtil.getResourceExtension(res)
@@ -24,12 +23,14 @@ object ImageBindingAdapter
                     Glide.with(view.context)
                         .asGif()
                         .load(res)
+                        .placeholder(defaultRes)
                         .into(view)
                 }
                 else ->
                 {
                     Glide.with(view.context)
                         .load(res)
+                        .placeholder(0)
                         .into(view)
                 }
             }

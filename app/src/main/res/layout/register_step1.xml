@@ -111,7 +111,8 @@
                     android:layout_marginEnd="6dp"
                     android:layout_centerVertical="true"
                     android:visibility="@{(vm.courier.courierName.length() > 0)?View.VISIBLE:View.GONE}"
-                    app:setImage="@{vm.courier.clickRes}" />
+                    app:setImage="@{vm.courier.clickRes}"
+                    setDefaultImage="@{0}"/>
 
                 <TextView
                     style="@style/H3"

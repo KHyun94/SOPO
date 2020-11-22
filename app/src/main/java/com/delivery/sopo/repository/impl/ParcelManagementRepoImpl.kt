@@ -40,6 +40,9 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase):
         return appDatabase.parcelManagementDao().getCancelIsBeDelete()
     }
 
+    // 업데이트 미확인 체크용도
+    override suspend fun getIsUnidentifiedByParcelId(regDt: String, parcelUid: String) = appDatabase.parcelManagementDao().getIsUnidentifiedByParcelId(regDt, parcelUid)
+
     override fun insertEntity(parcelManagementEntity: ParcelManagementEntity){
         appDatabase.parcelManagementDao().insert(parcelManagementEntity)
     }
@@ -59,7 +62,7 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase):
         appDatabase.parcelManagementDao().update(parcelManagementEntityList)
     }
 
-    override suspend fun updateIsBeUpdate(regDt: String, parcelUid: String) = appDatabase.parcelManagementDao().updateIsBeUpdateToZero(regDt, parcelUid)
+    override suspend fun updateIsBeUpdate(regDt: String, parcelUid: String, status : Int?) = appDatabase.parcelManagementDao().updateIsBeUpdate(regDt, parcelUid, status)
 
     override fun getEntity(regDt: String, parcelUid: String): ParcelManagementEntity? {
         return appDatabase.parcelManagementDao().getById(regDt, parcelUid)
@@ -74,6 +77,8 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase):
             appDatabase.parcelManagementDao().updateIsBeDeleteToOne(parcelId.regDt, parcelId.parcelUid, TimeUtil.getDateTime())
         }
     }
+
+    override fun updateIsUnidentified(regDt: String, parcelUid: String, value: Int) = appDatabase.parcelManagementDao().updateIsUnidentified(regDt, parcelUid, value)
 
 //    override suspend fun insertRemoteParcelManagementToBeDelete(parcelIdList: List<ParcelId>){
 //        // 만약 서버에서 가져온 데이터가 이미 존재한다면..?

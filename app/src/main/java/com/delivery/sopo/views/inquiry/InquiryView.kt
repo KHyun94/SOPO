@@ -20,7 +20,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -42,10 +41,7 @@ import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
-import com.delivery.sopo.viewmodels.factory.InquiryViewModelFactory
-import com.delivery.sopo.viewmodels.factory.MainViewModelFactory
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
-import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
@@ -82,7 +78,7 @@ class InquiryView : Fragment()
     private val appDatabase: AppDatabase by inject()
 
     // todo viewModelFactory를 koin으로 변경
-    private val inquiryVm : InquiryViewModel by viewModel()
+    private val inquiryVm: InquiryViewModel by viewModel()
 
     private var progressBar: CustomProgressBar? = null
     private var refreshDelay: Boolean = false
@@ -168,13 +164,12 @@ class InquiryView : Fragment()
 
         soonArrivalListAdapter = InquiryListAdapter(
             parcelRepoImpl,
-            this,
             inquiryVm.cntOfSelectedItem,
             mutableListOf(),
             InquiryItemTypeEnum.Soon
         )
 
-        SopoLog.d("과연 몇개일까? ===> ${binding.vm!!.ongoingList.value?.size?:"NULL"}")
+        SopoLog.d("과연 몇개일까? ===> ${binding.vm!!.ongoingList.value?.size ?: "NULL"}")
 
         soonArrivalListAdapter.setOnParcelClickListener(_mClickListener = getParcelClicked())
 
@@ -182,7 +177,6 @@ class InquiryView : Fragment()
 
         registeredSopoListAdapter = InquiryListAdapter(
             parcelRepoImpl,
-            this,
             inquiryVm.cntOfSelectedItem,
             mutableListOf(),
             InquiryItemTypeEnum.Registered
@@ -194,7 +188,6 @@ class InquiryView : Fragment()
 
         completeListAdapter = InquiryListAdapter(
             parcelRepoImpl,
-            this,
             inquiryVm.cntOfSelectedItem,
             mutableListOf(),
             InquiryItemTypeEnum.Complete
@@ -535,7 +528,7 @@ class InquiryView : Fragment()
     {
         return object : OnParcelClickListener
         {
-            override fun onItemClicked(view: View, type:Int, parcelId: ParcelId)
+            override fun onItemClicked(view: View, type: Int, parcelId: ParcelId)
             {
                 FragmentTypeEnum.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(
                     parcelUId = parcelId.parcelUid,
@@ -548,7 +541,7 @@ class InquiryView : Fragment()
                 )
             }
 
-            override fun onItemLongClicked(view: View, type:Int, parcelId: ParcelId)
+            override fun onItemLongClicked(view: View, type: Int, parcelId: ParcelId)
             {
                 val edit = MutableLiveData<String>()
 
@@ -561,7 +554,7 @@ class InquiryView : Fragment()
                             binding.vm!!.patchParcelAlias(parcelId, it)
                             AlertUtil.onDismiss()
 
-                            if(type == 0)
+                            if (type == 0)
                             {
                                 binding.vm!!.refreshOngoing()
                             }
@@ -575,7 +568,6 @@ class InquiryView : Fragment()
                     Function {
                         edit.value = it
                     })
-
             }
 
         }

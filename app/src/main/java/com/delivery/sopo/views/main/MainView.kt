@@ -30,6 +30,7 @@ import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.menus.LockScreenView
+import com.delivery.sopo.views.widget.AlertMessageBar
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.main_view.*
@@ -336,6 +337,9 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             }
         })
     }
+
+    fun getAlertMessageBar() = binding.alertMessageBar
+
 
     fun onCompleteRegister()
     {

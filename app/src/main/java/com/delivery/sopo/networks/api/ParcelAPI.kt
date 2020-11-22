@@ -32,6 +32,17 @@ interface ParcelAPI
         @Query("regDt") regDt: String
     ): APIResult<Parcel?>
 
+    @GET("api/v1/sopo-api/delivery/{email}/parcel")
+    @Headers("Accept: application/json")
+    fun getOneParcel(
+        @Path("email") email: String,
+        // 택배 고유 uid
+        @Query("parcelUid") parcelUid: String,
+        // 등록일자
+        @Query("regDt") regDt: String
+    ): Call<APIResult<Parcel?>>
+
+
     @GET("api/v1/sopo-api/delivery/{email}/months")
     @Headers("Accept: application/json")
     suspend fun getMonths( @Path("email") email: String): APIResult<MutableList<TimeCountDTO>>

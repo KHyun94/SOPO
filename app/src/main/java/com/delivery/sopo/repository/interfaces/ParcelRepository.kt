@@ -37,4 +37,5 @@ interface ParcelRepository {
    suspend fun getOnGoingDataCnt() : Int?
 
    suspend fun isBeingUpdateParcel(regDt: String, parcelUid: String): LiveData<Int?>
+   fun getIsUnidentifiedLiveData(regDt: String, parcelUid: String): LiveData<Int?>
 }

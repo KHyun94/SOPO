@@ -43,6 +43,9 @@ interface ParcelDao
 //    @Query("SELECT p.* FROM PARCEL as p INNER JOIN PARCEL_MANAGEMENT as pm where p.REG_DT = pm.REG_DT AND p.PARCEL_UID = pm.PARCEL_UID AND p.STATUS = 1  AND p.DELIVERY_STATUS <> 'delivered'")
 //    fun getUpdatableInquiryHash(): List<ParcelEntity?>
 
+    @Query("SELECT pm.isUnidentified FROM PARCEL as p INNER JOIN PARCEL_MANAGEMENT as pm where p.REG_DT = pm.REG_DT AND p.PARCEL_UID = pm.PARCEL_UID AND p.REG_DT = :regDt AND p.PARCEL_UID = :parcelUid AND p.DELIVERY_STATUS != 'delivered'")
+    fun getIsUnidentifiedLiveData(regDt: String, parcelUid: String): LiveData<Int?>
+
     @Query("SELECT pm.isBeUpdate FROM PARCEL as p INNER JOIN PARCEL_MANAGEMENT as pm where p.REG_DT = pm.REG_DT AND p.PARCEL_UID = pm.PARCEL_UID AND p.REG_DT = :regDt AND p.PARCEL_UID = :parcelUid AND p.DELIVERY_STATUS != 'delivered'")
     fun isBeingUpdateParcel(regDt: String, parcelUid: String): LiveData<Int?>
 

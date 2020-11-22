@@ -7,9 +7,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.DeliveryStatusConst
+import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.SelectItem
+import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.*
 import com.delivery.sopo.networks.NetworkManager
@@ -18,6 +20,7 @@ import com.delivery.sopo.repository.impl.CourierRepolmpl
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
@@ -67,8 +70,10 @@ class ParcelDetailViewModel(
     // 상세 화면 Full Down
     var isDown = SingleLiveEvent<Boolean>()
 
-    var isBeUpdated = MutableLiveData<Boolean?>()
-    var isDirectUpdate = false
+    var isUpdate = MutableLiveData<Boolean?>()
+
+    // todo 상세 조회단 임시 업데이트 객체
+    var tmpParcel: ParcelEntity? = null
 
     init
     {
@@ -149,7 +154,7 @@ class ParcelDetailViewModel(
                     DeliveryStatusConst.OUT_FOR_DELIVERRY ->
                     {
                         subTitle.postValue("집배원이 배달을 시작했습니다.")
-                        statusBg.postValue(R.drawable.ic_parcel_out_of_delivery)
+                        statusBg.postValue(R.drawable.ic_parcel_out_for_delivery)
                         "동네도착"
                     }
                     DeliveryStatusConst.DELIVERED ->
@@ -239,45 +244,6 @@ class ParcelDetailViewModel(
         }
     }
 
-    fun requestParcelDetailData(parcelId: ParcelId)
-    {
-        // 서버로 해당 택배 상태 업데이트 요청 -> 서비스로 조회
-        requestRemoteParcel(parcelId = parcelId)
-//        requestLocalParcel(parcelId = parcelId)
-    }
-
-    // 로컬에 저장된 택배 인포를 로드
-    fun requestLocalParcel(parcelId: ParcelId)
-    {
-        CoroutineScope(Dispatchers.Main).launch {
-            withContext(Dispatchers.Default) {
-                val result = isBeUpdateParcel()
-                isDirectUpdate = result.value != null && result.value == 1
-            }
-
-            // 바로 업데이트 여부 / true => snackbar 없이 바로 업데이트 / false => snackbar를 띄운 후 업데이트
-//            isDirectUpdate = it != null && it
-
-            SopoLog.d("택배 프로세스 상세 업데이트 여부 ${isDirectUpdate}")
-
-            if (!isDirectUpdate)
-            {
-                // 로컬 호출 동시에 서버에 택배 상태 업데이트 상태 체크
-                withContext(Dispatchers.Default) {
-                    // 해당 ParcelEntity 라이브데이터를 옵저빙해서 UI 변환
-                    _parcelEntity.postValue(
-                        // Parcel ID로 로컬 DB에 저장되어있는 Parcel 데이터를 호출
-                        parcelRepoImpl.getLocalParcelById(
-                            parcelUid = parcelId.parcelUid,
-                            regDt = parcelId.regDt
-                        )
-                    )
-                }
-            }
-
-        }
-    }
-
     // 택배의 이동 상태(indicator)의 값을 리스트 형식으로 반환 / true => 현재 상태
     private fun getDeliveryStatusIndicator(deliveryStatus: String): MutableList<SelectItem<String>>
     {
@@ -320,6 +286,34 @@ class ParcelDetailViewModel(
     }
 
 
+    fun requestParcelDetailData(parcelId: ParcelId)
+    {
+        // 서버로 해당 택배 상태 업데이트 요청 -> 서비스로 조회
+        parcelId.let {
+            requestRemoteParcel(parcelId = it)
+            requestLocalParcel(parcelId = it)
+        }
+    }
+
+    // 로컬에 저장된 택배 인포를 로드
+    private fun requestLocalParcel(parcelId: ParcelId)
+    {
+        CoroutineScope(Dispatchers.Main).launch {
+
+            // 로컬 호출 동시에 서버에 택배 상태 업데이트 상태 체크
+            withContext(Dispatchers.Default) {
+                // 해당 ParcelEntity 라이브데이터를 옵저빙해서 UI 변환
+                _parcelEntity.postValue(
+                    // Parcel ID로 로컬 DB에 저장되어있는 Parcel 데이터를 호출
+                    parcelRepoImpl.getLocalParcelById(
+                        parcelUid = parcelId.parcelUid,
+                        regDt = parcelId.regDt
+                    )
+                )
+            }
+        }
+    }
+
     private fun requestRemoteParcel(parcelId: ParcelId)
     {
         NetworkManager.privateRetro.create(ParcelAPI::class.java)
@@ -332,7 +326,7 @@ class ParcelDetailViewModel(
                 override fun onFailure(call: Call<APIResult<Parcel?>>, t: Throwable)
                 {
                     SopoLog.e("택배 상세 내역 에러 => ${t.message}", t)
-                    isBeUpdated.postValue(false)
+                    isUpdate.postValue(false)
                 }
 
                 override fun onResponse(
@@ -344,6 +338,16 @@ class ParcelDetailViewModel(
                     {
                         200 ->
                         {
+                            /*
+                                todo 현재 성공 시 업데이트 여부 스낵바 호출
+
+                                todo 업데이트 시
+                                  isBeUpdate, isUnidentified는 업데이트 필요 x
+                                  UI 업데이트 및 ROOM에 저장
+
+                                 todo 업데이트 X
+                                  parcel_management - isBeupdate -> 1로 업데이트
+                             */
                             val res = response.body()
                             val parcel = res!!.data ?: return
 
@@ -352,30 +356,90 @@ class ParcelDetailViewModel(
                             if (res.message == "CHANGED")
                             {
                                 // 업데이트 변경 가능 true 일 때 스낵바를 호출
-                                if (isDirectUpdate) updateIsBeUpdate(
-                                    parcelId.regDt,
-                                    parcelId.parcelUid
-                                )
-                                else isBeUpdated.postValue(true)
+                                isUpdate.postValue(true)
+                                updateIsBeUpdate(parcelId.regDt, parcelId.parcelUid, 1)
+                                tmpParcel = ParcelMapper.parcelToParcelEntity(parcel)
                             }
                             else
                             {
                                 // 업데이트 할게 없음
-                                isBeUpdated.postValue(false)
+                                isUpdate.postValue(null)
                             }
-
-                            updateIsBeUpdate(parcelId.regDt, parcelId.parcelUid)
-                            _parcelEntity.postValue(ParcelMapper.parcelToParcelEntity(parcel))
                         }
+                        204 ->
+                        {
+                            // 업데이트 할게 없음
+                            isUpdate.postValue(null)
+                        }
+                        303 ->
+                        {
+                            /*
+                            todo 업데이트 여부 스낵바 호출
+
+                            todo 업데이트 시
+                             Get parcel로 해당 택배 업데이트 및 ROOM에 저장
+                             이 때 isUnidentified는 1로 업데이트 해 줄 필요가 없습니다.
+                             UI 업데이트 및 ROOM에 저장
+
+                            todo 업데이트 X
+                             parcel_management - isBeupdate -> 1로 업데이트
+                             */
+
+                            isUpdate.postValue(true)
+                        }
+
                         400 ->
                         {
                             Log.d(TAG, "택배 상세 내역 에러 => ${response.errorBody()}")
-                            isBeUpdated.postValue(false)
+                            isUpdate.postValue(false)
                         }
                         else ->
                         {
                             Log.d(TAG, "택배 상세 내역 에러 => ${response.errorBody()}")
-                            isBeUpdated.postValue(false)
+                            isUpdate.postValue(false)
+                        }
+                    }
+                }
+            })
+    }
+
+    fun getRemoteParcel()
+    {
+        NetworkManager.privateRetro.create(ParcelAPI::class.java)
+            .getOneParcel(userRepoImpl.getEmail(), parcelId.value!!.regDt, parcelId.value!!.parcelUid)
+            .enqueue(object : Callback<APIResult<Parcel?>>{
+                override fun onFailure(call: Call<APIResult<Parcel?>>, t: Throwable)
+                {
+                    SopoLog.e("GET 단일 택배 실패", t)
+                }
+
+                override fun onResponse(
+                    call: Call<APIResult<Parcel?>>,
+                    response: Response<APIResult<Parcel?>>
+                )
+                {
+                    // ROOM에 업데이트
+                    //
+                    updateParcelItem(tmpParcel!!)
+
+                    val httpStatusCode = response.code()
+
+                    Log.d("LOG.SOPO", "뭐지? $httpStatusCode")
+
+                    // http status code 200
+                    when (httpStatusCode)
+                    {
+                        200 ->
+                        {
+                            _parcelEntity.postValue(tmpParcel)
+                            updateIsBeUpdate(parcelId.value!!.regDt, parcelId.value!!.parcelUid, 0)
+                        }
+                        400 ->
+                        {
+                        }
+                        else ->
+                        {
+                            Log.d("LOG.SOPO", "알 수 없는 에러!!!!")
                         }
                     }
                 }
@@ -383,6 +447,7 @@ class ParcelDetailViewModel(
             })
 
     }
+
 
     // Full Detail View의 리사이클러뷰 어댑터 세팅
     private fun setAdapter(list: List<Progress?>)
@@ -392,10 +457,10 @@ class ParcelDetailViewModel(
         adapter.postValue(timeLineRvAdapter)
     }
 
-    fun updateIsBeUpdate(regDt: String, parcelUid: String)
+    fun updateIsBeUpdate(regDt: String, parcelUid: String, status : Int?)
     {
         CoroutineScope(Dispatchers.Default).launch {
-            parcelManagementRepoImpl.updateIsBeUpdate(regDt, parcelUid)
+            parcelManagementRepoImpl.updateIsBeUpdate(regDt, parcelUid, status)
         }
     }
 
@@ -410,6 +475,36 @@ class ParcelDetailViewModel(
     fun onBackClicked()
     {
         isBack.value = true
+    }
+
+    fun updateIsUnidentifiedToZero(parcelId: ParcelId)
+    {
+        CoroutineScope(Dispatchers.Default).launch {
+
+            val value = parcelManagementRepoImpl.getIsUnidentifiedByParcelId(
+                regDt = parcelId.regDt,
+                parcelUid = parcelId.parcelUid
+            )
+
+            if (value == 1)
+            {
+                val a = parcelManagementRepoImpl.updateIsUnidentified(
+                    regDt = parcelId.regDt,
+                    parcelUid = parcelId.parcelUid,
+                    value = 0
+                )
+                SopoLog.d("update=>${a}")
+            }
+            else
+            {
+                val a = parcelManagementRepoImpl.updateIsUnidentified(
+                    regDt = parcelId.regDt,
+                    parcelUid = parcelId.parcelUid,
+                    value = 0
+                )
+                SopoLog.d("Test update=>${a}")
+            }
+        }
     }
 
     fun onDownClicked(): View.OnClickListener

@@ -43,20 +43,12 @@ class InquiryViewModel(
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
-    private var _ongoingList = Transformations.map(parcelRepoImpl.getLocalOngoingParcelsLiveData()) {
-
-        it.forEach { parcel ->
-            SopoLog.d("진행 중인 택배 $parcel && 사이즈 ${it.size}")
-        }
-
-        ParcelMapper.parcelListToInquiryItemList(it as MutableList<Parcel>)
-    }
+    private var _ongoingList
+            = Transformations.map(parcelRepoImpl.getLocalOngoingParcelsLiveData()) { ParcelMapper.parcelListToInquiryItemList(it as MutableList<Parcel>) }
     val ongoingList: LiveData<MutableList<InquiryListItem>> get() = _ongoingList
 
-    private val _completeList = Transformations.map(parcelRepoImpl.getLocalCompleteParcelsLiveData()) {
-            ParcelMapper.parcelListToInquiryItemList(it as MutableList<Parcel>)
-        }
-
+    private val _completeList
+            = Transformations.map(parcelRepoImpl.getLocalCompleteParcelsLiveData()) { ParcelMapper.parcelListToInquiryItemList(it as MutableList<Parcel>) }
     val completeList: LiveData<MutableList<InquiryListItem>>
         get() = _completeList
 

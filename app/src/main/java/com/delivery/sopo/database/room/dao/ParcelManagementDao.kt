@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import com.delivery.sopo.database.room.entity.ParcelManagementEntity
+import com.delivery.sopo.models.parcel.ParcelId
 
 @Dao
 interface ParcelManagementDao
@@ -26,6 +27,12 @@ interface ParcelManagementDao
     @Query("SELECT COUNT(*) FROM PARCEL_MANAGEMENT WHERE isBeUpdate = 1")
     fun getIsUpdateCnt(): Int
 
+    @Query("SELECT isUnidentified FROM PARCEL_MANAGEMENT WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
+    fun getIsUnidentifiedByParcelId(regDt: String, parcelUid: String) : Int
+
+    @Query("UPDATE PARCEL_MANAGEMENT SET isUnidentified = :value WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
+    fun updateIsUnidentified(regDt: String, parcelUid: String, value : Int) : Int
+
     @Query("SELECT COUNT(*) FROM PARCEL_MANAGEMENT WHERE isBeDelivered = 1")
     fun getIsDeliveredCnt(): Int
 
@@ -38,8 +45,8 @@ interface ParcelManagementDao
     @Query("UPDATE PARCEL_MANAGEMENT SET isBeDelivered = 0")
     fun updateTotalIsBeDeliveredToZero()
 
-    @Query("UPDATE PARCEL_MANAGEMENT SET isBeUpdate = 0 WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
-    fun updateIsBeUpdateToZero(regDt: String, parcelUid: String)
+    @Query("UPDATE PARCEL_MANAGEMENT SET isBeUpdate = :status WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
+    fun updateIsBeUpdate(regDt: String, parcelUid: String, status : Int? = 0)
 
     @Query("UPDATE PARCEL_MANAGEMENT SET isBeDelete = 1 , AUDIT_DTE = :auditDte WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
     fun updateIsBeDeleteToOne(regDt: String, parcelUid: String, auditDte: String)

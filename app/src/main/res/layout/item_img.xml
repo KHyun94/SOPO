@@ -26,6 +26,7 @@
             <ImageView
                 android:id="@+id/iv_img"
                 app:setImage="@{img}"
+                app:setDefaultImage="@{0}"
                 android:layout_width="88sp"
                 android:layout_height="88sp"
                 android:layout_margin="10sp"

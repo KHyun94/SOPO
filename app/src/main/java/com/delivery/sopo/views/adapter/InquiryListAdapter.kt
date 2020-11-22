@@ -9,10 +9,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.delivery.sopo.BR
@@ -27,19 +24,11 @@ import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.util.SizeUtil
-import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.koin.android.ext.android.inject
-import org.koin.java.KoinJavaComponent.inject
 
 class InquiryListAdapter(
     private val parcelRepoImpl: ParcelRepoImpl,
-    private val lifecycleOwner: LifecycleOwner,
     private val cntOfSelectedItem: MutableLiveData<Int>,
     private var list: MutableList<InquiryListItem>,
     private val itemTypeEnum: InquiryItemTypeEnum
@@ -68,7 +57,7 @@ class InquiryListAdapter(
         fun bind(inquiryListItem: InquiryListItem)
         {
             binding.apply {
-                setVariable(BR.ongoingInquiryData,  inquiryListItem)
+                setVariable(BR.ongoingInquiryData, inquiryListItem)
             }
         }
     }
@@ -139,8 +128,8 @@ class InquiryListAdapter(
                 holder.bind(inquiryListData)
                 holder.itemView.tag = inquiryListData
 
-                inquiryListData.setUpdateValue(parcelRepoImpl){
-                    if(it != null && it == true)
+                inquiryListData.setUpdateValue(parcelRepoImpl) {
+                    if (it != null && it)
                         holder.itemView.iv_red_dot.visibility = View.VISIBLE
                     else
                         holder.itemView.iv_red_dot.visibility = View.GONE
@@ -153,7 +142,7 @@ class InquiryListAdapter(
                     DeliveryStatusEnum.information_received.code ->
                     {
                         holder.ongoingBinding.root.apply {
-                            this.iv_red_dot.visibility = View.VISIBLE
+//                            this.iv_red_dot.visibility = View.VISIBLE
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_registered)
                             this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_300)
                             this.tv_delivery_status.text = "송장등록"
@@ -281,7 +270,7 @@ class InquiryListAdapter(
                 }
 
                 holder.itemView.cv_ongoing_parent.setOnLongClickListener {
-                    if (mClickListener != null)
+                    if (!isRemovable && mClickListener != null)
                     {
                         mClickListener!!.onItemLongClicked(
                             view = it,
@@ -338,7 +327,7 @@ class InquiryListAdapter(
                 }
 
                 holder.itemView.cv_complete_parent.setOnLongClickListener {
-                    if (mClickListener != null)
+                    if (!isRemovable && mClickListener != null)
                     {
                         mClickListener!!.onItemLongClicked(
                             view = it,
@@ -482,7 +471,7 @@ class InquiryListAdapter(
 
     fun setDataList(listItem: MutableList<InquiryListItem>?)
     {
-        if(listItem == null)
+        if (listItem == null)
             return
 
         this.list = when (itemTypeEnum)
