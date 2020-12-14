@@ -14,7 +14,6 @@ import kotlinx.android.synthetic.main.intro_view.*
 
 class IntroView : AppCompatActivity()
 {
-
     var numOfPage = 0
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -23,9 +22,9 @@ class IntroView : AppCompatActivity()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.intro_view)
         requestedOrientation = SCREEN_ORIENTATION_PORTRAIT
+
         var viewPager: ViewPager = findViewById(R.id.viewPager)
-        var introPageAdapter: IntroPageAdapter =
-            IntroPageAdapter(this)
+        var introPageAdapter: IntroPageAdapter = IntroPageAdapter(this)
         viewPager.adapter = introPageAdapter
 
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener
@@ -42,17 +41,6 @@ class IntroView : AppCompatActivity()
             override fun onPageSelected(pos: Int)
             {
                 numOfPage = pos
-
-                // 인트로 마지막 페이지에서 건너뛰기 Gone 처리
-                if (pos < viewPager.adapter!!.count - 1)
-                {
-                    tv_skip.visibility = View.VISIBLE
-                }
-                else
-                {
-                    tv_skip.visibility = View.GONE
-                }
-
 
                 indicator.selectDot(pos)
             }
@@ -76,12 +64,6 @@ class IntroView : AppCompatActivity()
                 startActivity(intent)
                 finish()
             }
-        }
-
-        tv_skip.setOnClickListener {
-            val intent = Intent(this, LoginSelectView::class.java)
-            startActivity(intent)
-            finish()
         }
     }
 

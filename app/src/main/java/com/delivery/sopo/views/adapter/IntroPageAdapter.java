@@ -39,9 +39,6 @@ public class IntroPageAdapter extends PagerAdapter {
                 case 1:
                     view = inflater.inflate(R.layout.intro_view_2, container, false);
                     break;
-                case 2:
-                    view = inflater.inflate(R.layout.intro_view_3, container, false);
-                    break;
             }
         }
 
@@ -61,7 +58,7 @@ public class IntroPageAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return 2;
     }
 
     @Override

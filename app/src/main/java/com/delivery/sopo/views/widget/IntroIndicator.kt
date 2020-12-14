@@ -34,9 +34,9 @@ class IntroIndicator : LinearLayout {
         for (i in 0 until cnt) {
             imgDot.add(ImageView(mContext).apply {
                 setPadding(
-                    SizeUtil.changeDpToPx(mContext!!, 10.0f),
+                    SizeUtil.changeDpToPx(mContext!!, 8.0f),
                     0,
-                    SizeUtil.changeDpToPx(mContext!!, 10.0f),
+                    SizeUtil.changeDpToPx(mContext!!, 8.0f),
                     0
                 )
             })

@@ -17,19 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="0sp"
         android:layout_weight="10"
-        android:background="@color/COLOR_MAIN_BLUE_50">
-
-        <TextView
-            style="@style/H4"
-            android:id="@+id/tv_skip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="30sp"
-            android:padding="10sp"
-            android:text="@string/INTRO_SKIP"
-            android:textColor="@color/COLOR_MAIN_BLUE_700" />
+        android:background="@color/MAIN_WHITE">
 
         <com.delivery.sopo.views.widget.IntroIndicator
             android:id="@+id/indicator"
