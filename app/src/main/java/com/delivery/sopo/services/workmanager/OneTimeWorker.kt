@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,9 +27,8 @@ class OneTimeWorker(val context: Context, params: WorkerParameters) : CoroutineW
 
     override suspend fun doWork(): Result
     {
-        Log.d(TAG, "Period Time Worker Service Start!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        SopoLog.d( tag = TAG, str = "Period Time Worker Service Start!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
-        testNoti(SOPOApp.INSTANCE)
 //        CoroutineScope(Dispatchers.Main).launch {
 //            withContext(Dispatchers.Main)
 //            {

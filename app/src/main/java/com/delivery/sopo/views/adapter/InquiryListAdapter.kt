@@ -24,6 +24,7 @@ import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.util.SizeUtil
+import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
 
@@ -256,7 +257,7 @@ class InquiryListAdapter(
                     }
                     else
                     {
-                        Log.d(TAG, "33333")
+                        SopoLog.d( tag = TAG, str = "33333")
 
                         if (mClickListener != null)
                         {

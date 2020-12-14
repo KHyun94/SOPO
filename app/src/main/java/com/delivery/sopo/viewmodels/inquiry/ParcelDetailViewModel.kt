@@ -117,8 +117,8 @@ class ParcelDetailViewModel(
 
                 parcelItem = gson.fromJson<ParcelItem?>(subStr, type)
 
-                Log.d(TAG, "==>> ${parcelEntity.toString()}")
-                Log.d(TAG, "==>> ${parcelItem.toString()}")
+                SopoLog.d( tag = TAG, str = "==>> ${parcelEntity.toString()}")
+                SopoLog.d( tag = TAG, str = "==>> ${parcelItem.toString()}")
                 //----------------------------------------------------------------------------------
             }
 
@@ -167,7 +167,7 @@ class ParcelDetailViewModel(
                     {
                         subTitle.postValue("상품을 조회할 수 없습니다.")
                         statusBg.postValue(0)
-                        Log.d(TAG, parcelEntity.deliveryStatus)
+                        SopoLog.d( tag = TAG, str = parcelEntity.deliveryStatus)
                         "에러상태"
                     }
                 }
@@ -238,7 +238,7 @@ class ParcelDetailViewModel(
                 )
             }
 
-            Log.d(TAG, "Detail Item => ${item.value}")
+            SopoLog.d( tag = TAG, str = "Detail Item => ${item.value}")
 
             setAdapter(progressList)
         }
@@ -390,12 +390,12 @@ class ParcelDetailViewModel(
 
                         400 ->
                         {
-                            Log.d(TAG, "택배 상세 내역 에러 => ${response.errorBody()}")
+                            SopoLog.d( tag = TAG, str = "택배 상세 내역 에러 => ${response.errorBody()}")
                             isUpdate.postValue(false)
                         }
                         else ->
                         {
-                            Log.d(TAG, "택배 상세 내역 에러 => ${response.errorBody()}")
+                            SopoLog.d( tag = TAG, str = "택배 상세 내역 에러 => ${response.errorBody()}")
                             isUpdate.postValue(false)
                         }
                     }

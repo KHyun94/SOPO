@@ -69,10 +69,10 @@ class FirebaseService: FirebaseMessagingService()
     override fun onMessageReceived(remoteMessage: RemoteMessage){
         if (remoteMessage.data.isNotEmpty())
         {
-            Log.d(TAG, "onMessageReceived: " + remoteMessage.data.toString())
-            Log.d(TAG, "remoteMessage : ${remoteMessage.notification}")
+            SopoLog.d( tag = TAG, str = "onMessageReceived: " + remoteMessage.data.toString())
+            SopoLog.d( tag = TAG, str = "remoteMessage : ${remoteMessage.notification}")
             val fcmPushDto = Gson().fromJson(remoteMessage.data.toString(), FcmPushDTO::class.java)
-            Log.d(TAG, "fromJson : $fcmPushDto")
+            SopoLog.d( tag = TAG, str = "fromJson : $fcmPushDto")
             when (fcmPushDto.notificationId)
             {
                 // 사용자에게 택배 상태가 업데이트되었다고 알려줌
@@ -112,11 +112,11 @@ class FirebaseService: FirebaseMessagingService()
 
     override fun onNewToken(s: String){
         super.onNewToken(s)
-        Log.d(TAG, "onNewToken: $s")
+        SopoLog.d( tag = TAG, str = "onNewToken: $s")
         sendTokenToServer(s)
     }
 
     private fun sendTokenToServer(token: String){
-        Log.d(TAG, "sendTokenToServer: $token")
+        SopoLog.d( tag = TAG, str = "sendTokenToServer: $token")
     }
 }

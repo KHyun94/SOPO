@@ -88,7 +88,7 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
             true
         }
         catch (e: EmptyStackException){
-            Log.e(TAG, "STACK IS ALREADY EMPTY!!, you try to pop item even if stack is already empty!!")
+            SopoLog.d( tag = TAG, str = "STACK IS ALREADY EMPTY!!, you try to pop item even if stack is already empty!!")
             false
         }
     }

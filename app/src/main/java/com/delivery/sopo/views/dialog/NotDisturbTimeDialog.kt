@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
+import com.delivery.sopo.util.SopoLog
 import com.google.android.material.tabs.TabLayout.*
 import kotlinx.android.synthetic.main.set_not_disturb_time_dialog.*
 import kotlinx.android.synthetic.main.set_not_disturb_time_dialog.view.*
@@ -68,12 +69,12 @@ class NotDisturbTimeDialog : DialogFragment {
     private fun setClickEvent(){
 
         layoutView.tv_cancelBtn.setOnClickListener {
-            Log.d(TAG, "Ok button")
+            SopoLog.d( tag = TAG, str = "Ok button")
             dismiss()
         }
 
         layoutView.tv_okBtn.setOnClickListener {
-            Log.d(TAG, "Ok button")
+            SopoLog.d( tag = TAG, str = "Ok button")
         }
     }
 

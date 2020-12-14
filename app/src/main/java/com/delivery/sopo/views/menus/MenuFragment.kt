@@ -85,7 +85,7 @@ class MenuFragment : Fragment()
                 {
                     override fun handleOnBackPressed()
                     {
-                        Log.d(TAG, "MenuFragment:: BackPressListener")
+                        SopoLog.d( tag = TAG, str = "MenuFragment:: BackPressListener")
 
                         isMainMenu = binding.constraintFragmentBase.visibility == View.GONE
 
@@ -115,7 +115,7 @@ class MenuFragment : Fragment()
                         }
                         else
                         {
-                            Log.d(TAG, "Sub MenuFragment:: BackPressListener")
+                            SopoLog.d( tag = TAG, str = "Sub MenuFragment:: BackPressListener")
                             binding.vm!!.popView()
                         }
 

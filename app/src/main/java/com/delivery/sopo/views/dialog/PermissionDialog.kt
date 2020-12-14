@@ -54,7 +54,6 @@ class PermissionDialog : DialogFragment
 
     private fun setClickEvent()
     {
-
         layoutView.btn_ok.setOnClickListener {
             if (onOkClickListener == null)
             {

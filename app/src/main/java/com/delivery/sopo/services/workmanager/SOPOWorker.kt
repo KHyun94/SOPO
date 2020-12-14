@@ -11,6 +11,7 @@ import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -22,21 +23,31 @@ import org.koin.core.inject
 class SOPOWorker(val context: Context, private val params: WorkerParameters) :
     CoroutineWorker(context, params), KoinComponent
 {
-    val appDatabase: AppDatabase by inject()
-
-    private val TAG = "LOG.SOPO"
-
+    private val appDatabase: AppDatabase by inject()
     private val userRepoImpl: UserRepoImpl by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
 
-    suspend fun patchParcels(): APIResult<String?>?
+    private val TAG = "SopoWorker"
+
+    // Room 내 등록된 택배(진행 중)의 갯수 > 0 == true != false
+    private suspend fun isEnrolledParcel(): Boolean
     {
+        val cnt = parcelRepoImpl.getOnGoingDataCnt() ?: 0
+        SopoLog.d(tag = "$TAG.isEnrolledParcel", str = "등록된 소포의 갯수 => $cnt")
+        return cnt > 0
+    }
+
+    // Room 내 저장된 택배들을 서버로 조회 요청
+    private suspend fun patchParcels(): APIResult<String?>?
+    {
+        // 유저 이메일
         val email = userRepoImpl.getEmail()
+
+        SopoLog.d(tag = "$TAG.patchParcels", str = "유저 이메일 ===> $email")
 
         if (isEnrolledParcel())
         {
-            Log.d(TAG, "Enabled Work Manager")
-            Log.d(TAG, "is Enrolled Parcel => YES")
+            SopoLog.d(tag = "$TAG.patchParcels", str = "is Enrolled Parcel => YES")
 
             return NetworkManager.privateRetro.create(ParcelAPI::class.java)
                 .parcelsRefreshing(email = email)
@@ -44,69 +55,47 @@ class SOPOWorker(val context: Context, private val params: WorkerParameters) :
         else
         {
             // 조회 안함 및 period worker 제거
-            Log.d(TAG, "Disenabled Work Manager")
-            Log.d(TAG, "is Enrolled Parcel => NO")
+            SopoLog.d(tag = "$TAG.patchParcels", str = "is Enrolled Parcel => NO")
             return null
         }
     }
 
-    private suspend fun isEnrolledParcel(): Boolean
-    {
-        val cnt = parcelRepoImpl.getOnGoingDataCnt() ?: 0
-        Log.d(TAG, "등록된 소포의 갯수 => $cnt")
-        return cnt > 0
-    }
 
-    override suspend fun doWork(): Result = coroutineScope {
+    // worker의 실행 메서드
+   override suspend fun doWork(): Result = coroutineScope {
         withContext(Dispatchers.Default) {
 
-            val cnt = appDatabase.workDao().getCnt()
+//            val cnt = appDatabase.workDao().getCnt()
+//            if (cnt == null || cnt == 0)
+//            {
+//                Result.success()
+////                Result.failure()
+//            }
+//            else
+//            {
+//
+//            }
+            val result = patchParcels()
 
-            if (cnt == null || cnt == 0)
+            if (result != null)
             {
-                Result.success()
-//                Result.failure()
-            }
-            else
-            {
-                val result = patchParcels()
+                SopoLog.d(tag= "$TAG.doWork", str = "Work Service => $result")
 
-                if (result != null)
+                if (result.code == "0000")
                 {
-                    Log.i(TAG, "Work Service => $result")
+                    SopoLog.d(tag = "$TAG.doWork", str = "Success to build Worker  $result")
 
-                    if (result.code == "0000")
-                    {
-                        Log.d(TAG, "Success to build Worker  $result")
-
-                        appDatabase.logDao()
-                            .insert(
-                                LogEntity(
-                                    no = 0,
-                                    msg = "Success to PATCH work manager",
-                                    uuid = "1",
-                                    regDt = TimeUtil.getDateTime()
-                                )
+                    appDatabase.logDao()
+                        .insert(
+                            LogEntity(
+                                no = 0,
+                                msg = "Success to PATCH work manager",
+                                uuid = "1",
+                                regDt = TimeUtil.getDateTime()
                             )
+                        )
 
-                        Result.success()
-                    }
-                    else
-                    {
-                        appDatabase.logDao()
-                            .insert(
-                                LogEntity(
-                                    no = 0,
-                                    msg = "Failure to PATCH work manager",
-                                    uuid = "1",
-                                    regDt = TimeUtil.getDateTime()
-                                )
-                            )
-
-
-                        Log.d(TAG, "Fail to build Worker  $result")
-                        Result.failure()
-                    }
+                    Result.success()
                 }
                 else
                 {
@@ -114,19 +103,34 @@ class SOPOWorker(val context: Context, private val params: WorkerParameters) :
                         .insert(
                             LogEntity(
                                 no = 0,
-                                msg = "Connect Fail to PATCH work manager",
+                                msg = "Failure to PATCH work manager, Because Of ErrorCode $result",
                                 uuid = "1",
                                 regDt = TimeUtil.getDateTime()
                             )
                         )
 
 
-                    Log.i(TAG, "Work Service Fail")
-
-                    Result.success()
+                    SopoLog.d(tag = TAG, str = "Fail to build Worker  $result")
+                    Result.failure()
                 }
             }
+            else
+            {
+                appDatabase.logDao()
+                    .insert(
+                        LogEntity(
+                            no = 0,
+                            msg = "Connect Fail to PATCH work manager becuase result null",
+                            uuid = "1",
+                            regDt = TimeUtil.getDateTime()
+                        )
+                    )
 
+
+                Log.i(TAG, "Work Service Fail")
+
+                Result.failure()
+            }
 
         }
     }

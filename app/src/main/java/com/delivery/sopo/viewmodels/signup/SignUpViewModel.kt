@@ -15,6 +15,7 @@ import com.delivery.sopo.firebase.FirebaseUserManagement
 import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.UserAPI
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.kakao.usermgmt.api.UserApi
@@ -116,7 +117,7 @@ class SignUpViewModel : ViewModel()
             validateResult.value = tmp
         }
 
-        Log.d(TAG, "SignUp Click!!!!!!!!!!!!!")
+        SopoLog.d( tag = TAG, str = "SignUp Click!!!!!!!!!!!!!")
     }
 
     // EditText 유효성 검사 가시성
@@ -147,7 +148,7 @@ class SignUpViewModel : ViewModel()
 
         if (focus)
         {
-            Log.d(TAG, "Focus In $type")
+            SopoLog.d( tag = TAG, str = "Focus In $type")
             setVisibleState(type = type, errorState = GONE, corState = GONE)
 
             if (type == InfoConst.EMAIL)
@@ -155,7 +156,7 @@ class SignUpViewModel : ViewModel()
         }
         else
         {
-            Log.d(TAG, "Focus Out $type")
+            SopoLog.d( tag = TAG, str = "Focus Out $type")
 
             when (type)
             {
@@ -168,7 +169,7 @@ class SignUpViewModel : ViewModel()
                         emailValidateText.value = "이메일을 입력해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
                         validateResult.value = onCheckValidate()
-                        Log.d(TAG, "Email is Empty")
+                        SopoLog.d( tag = TAG, str = "Email is Empty")
 
                         return@FocusChangeCallback
                     }
@@ -181,7 +182,7 @@ class SignUpViewModel : ViewModel()
                         // 이메일이 중복 이메일이거나 초기화되었을 때 중복 api로 통신
                         if (isDuplicate)
                         {
-                            Log.d(TAG, "Duplicate Check Start!!!")
+                            SopoLog.d( tag = TAG, str = "Duplicate Check Start!!!")
                             onCheckDuplicatedEmail(email = email.value!!)
 
                             return@FocusChangeCallback
@@ -199,7 +200,7 @@ class SignUpViewModel : ViewModel()
                     else
                     {
                         emailStatusType.value = 0
-                        Log.d(TAG, "PLZ Check Email Validate")
+                        SopoLog.d( tag = TAG, str = "PLZ Check Email Validate")
                         emailValidateText.value = "이메일 형식을 확인해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
                     }
@@ -209,14 +210,14 @@ class SignUpViewModel : ViewModel()
                 }
                 InfoConst.PASSWORD ->
                 {
-                    Log.d(TAG, "Focus out $type ${pwd.value}")
+                    SopoLog.d( tag = TAG, str = "Focus out $type ${pwd.value}")
 
                     // 비밀번호 란이 공백일 때
                     if (TextUtils.isEmpty(pwd.value))
                     {
                         pwdStatusType.value = 0
 
-                        Log.d(TAG, "pwd is empty")
+                        SopoLog.d( tag = TAG, str = "pwd is empty")
 
                         pwdValidateText.value = "비밀번호를 입력해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
@@ -260,7 +261,7 @@ class SignUpViewModel : ViewModel()
                 }
                 InfoConst.RE_PASSWORD ->
                 {
-                    Log.d(TAG, "type $type re_pwd ${rePwd.value}")
+                    SopoLog.d( tag = TAG, str = "type $type re_pwd ${rePwd.value}")
 
                     // 비밀번호가 최소 1자리 이상일 때
                     if (pwd.value!!.isNotEmpty())
@@ -338,7 +339,7 @@ class SignUpViewModel : ViewModel()
     {
         if (isEmailCorVisible.value != VISIBLE)
         {
-            Log.d(TAG, "Validate Fail Email ")
+            SopoLog.d( tag = TAG, str = "Validate Fail Email ")
             emailStatusType.value = 0
             return ValidateResult(
                 result = false,
@@ -352,7 +353,7 @@ class SignUpViewModel : ViewModel()
         {
 
             pwdStatusType.value = 0
-            Log.d(TAG, "Validate Fail PWD ")
+            SopoLog.d( tag = TAG, str = "Validate Fail PWD ")
 
             return ValidateResult(
                 result = false,
@@ -366,7 +367,7 @@ class SignUpViewModel : ViewModel()
         {
 
             rePwdStatusType.value = 0
-            Log.d(TAG, "Validate Fail PWD ")
+            SopoLog.d( tag = TAG, str = "Validate Fail PWD ")
 
             return ValidateResult(
                 result = false,
@@ -379,7 +380,7 @@ class SignUpViewModel : ViewModel()
         if (!isAgree.value!!)
         {
 
-            Log.d(TAG, "Validate Fail Agree ")
+            SopoLog.d( tag = TAG, str = "Validate Fail Agree ")
 
 
             return ValidateResult(
@@ -391,7 +392,7 @@ class SignUpViewModel : ViewModel()
         }
 
 
-        Log.d(TAG, "Validate Success ")
+        SopoLog.d( tag = TAG, str = "Validate Success ")
 
 
         return ValidateResult(result = true, msg = "", data = null, showType = InfoConst.NON_SHOW)
@@ -409,7 +410,7 @@ class SignUpViewModel : ViewModel()
                         // todo 성공 코드('0000')이 아닐 때 중복 이메일이라고 표시(임시)
                         isDuplicate = if (it.code == "0000") it.data!! else false
 
-                        Log.d(TAG, "Duplicate Result => $isDuplicate")
+                        SopoLog.d( tag = TAG, str = "Duplicate Result => $isDuplicate")
 
                         // isDuplicate가 false일 때 사용 가능 이메일
                         if (!isDuplicate)
@@ -420,7 +421,7 @@ class SignUpViewModel : ViewModel()
                                 errorState = GONE,
                                 corState = VISIBLE
                             )
-                            Log.d(TAG, "it is possible to use Email!!!")
+                            SopoLog.d( tag = TAG, str = "it is possible to use Email!!!")
                         }
                         else
                         {
@@ -432,7 +433,7 @@ class SignUpViewModel : ViewModel()
                                 errorState = VISIBLE,
                                 corState = GONE
                             )
-                            Log.d(TAG, "it is Duplicate Email!!!")
+                            SopoLog.d( tag = TAG, str = "it is Duplicate Email!!!")
                         }
 
                         validateResult.value = onCheckValidate()
@@ -456,7 +457,7 @@ class SignUpViewModel : ViewModel()
 
     fun signUpWithFirebase(email: String, pwd: String)
     {
-        Log.d(TAG, "Firebase Sign Up Start~!!!")
+        SopoLog.d( tag = TAG, str = "Firebase Sign Up Start~!!!")
 
         FirebaseUserManagement.firebaseCreateUser(email, pwd)
             .addOnCompleteListener {
@@ -466,11 +467,11 @@ class SignUpViewModel : ViewModel()
                     {
                         val user = SOPOApp.auth.currentUser
 
-                        Log.d(TAG, "Firebase Sign Up User - ${user?.email ?: "이메일 없음"}")
+                        SopoLog.d( tag = TAG, str = "Firebase Sign Up User - ${user?.email ?: "이메일 없음"}")
 
                         FirebaseUserManagement.firebaseSendEmail(user!!)
                             ?.addOnCompleteListener {
-                                Log.d(TAG, "Firebase Send Auth Email")
+                                SopoLog.d( tag = TAG, str = "Firebase Send Auth Email")
 
                                 val bundle = Bundle()
                                 bundle.putString(FirebaseAnalytics.Param.METHOD, "email")
@@ -496,12 +497,12 @@ class SignUpViewModel : ViewModel()
                                     )
                                 }
 
-                                Log.d(TAG, validateResult.value.toString())
+                                SopoLog.d( tag = TAG, str = validateResult.value.toString())
                             }
                     }
                     else ->
                     {
-                        Log.d(TAG, "에러${it.exception?.commonMessageResId}")
+                        SopoLog.d( tag = TAG, str = "에러${it.exception?.commonMessageResId}")
                         // 회원가입 실패
                         validateResult.value = ValidateResult(
                             result = false,

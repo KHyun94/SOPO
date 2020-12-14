@@ -2,30 +2,29 @@ package com.delivery.sopo.views.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
-import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.JoinTypeConst
 import com.delivery.sopo.databinding.LoginSelectViewBinding
 import com.delivery.sopo.enums.ResponseCodeEnum
 import com.delivery.sopo.firebase.FirebaseUserManagement
-import com.delivery.sopo.abstracts.BasicView
-import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.LoginResult
 import com.delivery.sopo.models.SopoJsonPatch
-import com.delivery.sopo.networks.api.LoginAPI
+import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.NetworkManager.publicRetro
+import com.delivery.sopo.networks.api.LoginAPI
 import com.delivery.sopo.networks.api.UserAPI
-import com.delivery.sopo.networks.dto.JsonPatchDto
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.OtherUtil
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
+import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.signup.SignUpView
 import com.google.gson.Gson
@@ -43,7 +42,7 @@ import retrofit2.Response
 
 class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_view)
 {
-    private val userRepoImpl : UserRepoImpl by inject()
+    private val userRepoImpl: UserRepoImpl by inject()
 
     private val loginSelectVM: LoginSelectViewModel by viewModel()
     private var sessionCallback: ISessionCallback? = null
@@ -53,7 +52,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
     var kakaoUserId = ""
     var firebaseUserId = ""
 
-    var progressBar : CustomProgressBar? = null
+    var progressBar: CustomProgressBar? = null
 
     init
     {
@@ -122,14 +121,14 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                                 }
                                 else
                                 {
-                                    Log.d(TAG, "카카오 에러: ${it}")
+                                    SopoLog.e(tag = TAG, str = "카카오 에러: ${it}", e = null)
                                 }
                             }
                         }
 
                         override fun onSessionOpenFailed(exception: KakaoException)
                         {
-                            Log.d(TAG, "카카오 세션 에러: ${exception}")
+                            SopoLog.e(tag = TAG, str = "카카오 세션 에러: ${exception}", e = exception)
                         }
                     }
 
@@ -192,7 +191,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                                 FirebaseUserManagement.firebaseCustomTokenLogin(token = customToken)
                                     .addOnCompleteListener {
 
-                                        Log.d(TAG, "kakao ${it.result.user?.email}")
+                                        SopoLog.d(tag = TAG, str = "kakao ${it.result.user?.email}")
 
                                         firebaseUserId = it.result?.user?.uid!!
 
@@ -200,8 +199,10 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                                         it.result?.user?.updateEmail(email)
                                             ?.addOnCompleteListener {
 
-                                                Log.d(TAG, "Firebase!!!!!!!!!!!!${firebaseUserId}")
-
+                                                SopoLog.d(
+                                                    tag = TAG,
+                                                    str = "Firebase!!!!!!!!!!!!${firebaseUserId}"
+                                                )
 
                                                 requestKakaoLogin(
                                                     email = email,
@@ -215,7 +216,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                             else
                             {
                                 progressBar!!.onCloseDialog()
-                                Log.d(TAG, "error code ${result?.code}")
+                                SopoLog.e(tag = TAG, str = "error code ${result?.code}", e = null)
 
                                 GeneralDialog(
                                     act = parentActivity,
@@ -233,7 +234,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                         else ->
                         {
                             progressBar!!.onCloseDialog()
-                            Log.d(TAG, "error code ${result?.code}")
+                            SopoLog.e(tag = TAG, str = "error code ${result?.code}", e = null)
 
                             GeneralDialog(
                                 act = parentActivity,
@@ -293,7 +294,8 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                                 {
                                     val gson = Gson()
 
-                                    val type = object : TypeToken<LoginResult?>() {}.type
+                                    val type = object : TypeToken<LoginResult?>()
+                                    {}.type
 
                                     val reader = gson.toJson(result.data)
 
@@ -306,7 +308,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                                     userRepoImpl.setRegisterDate(user.regDt)
                                     userRepoImpl.setStatus(user.status)
                                     userRepoImpl.setSNSUId(kakaoUserId)
-                                    userRepoImpl.setUserNickname(user.userNickname?:"")
+                                    userRepoImpl.setUserNickname(user.userNickname ?: "")
 
                                     startActivity(Intent(parentActivity, MainView::class.java))
                                     finish()
@@ -369,7 +371,13 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
     fun updateDeviceInfo(email: String, jwtToken: String)
     {
         val jsonPatchList = mutableListOf<SopoJsonPatch>()
-        jsonPatchList.add(SopoJsonPatch("replace", "/deviceInfo", OtherUtil.getDeviceID(SOPOApp.INSTANCE)))
+        jsonPatchList.add(
+            SopoJsonPatch(
+                "replace",
+                "/deviceInfo",
+                OtherUtil.getDeviceID(SOPOApp.INSTANCE)
+            )
+        )
 
         publicRetro.create(UserAPI::class.java)
             .requestTmpDeviceInfo(email, jwtToken)

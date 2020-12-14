@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.CustomToastMsgBinding
+import com.delivery.sopo.util.SopoLog
 import com.google.android.material.snackbar.Snackbar
 
 object CustomAlertMsg
@@ -32,7 +33,7 @@ object CustomAlertMsg
 
         if(isClick){
             binding.ivClear.setOnClickListener {
-                Log.d(TAG, "click click click click click click click click click click")
+                SopoLog.d( tag = TAG, str = "click click click click click click click click click click")
                 t.cancel()
             }
 

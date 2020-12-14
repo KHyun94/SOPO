@@ -30,7 +30,6 @@ import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.menus.LockScreenView
-import com.delivery.sopo.views.widget.AlertMessageBar
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.main_view.*
@@ -61,8 +60,6 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     private var transaction: FragmentTransaction? = null
 
-    private var isInit = true
-
     var currentPage = MutableLiveData<Int?>()
 
     init
@@ -70,8 +67,8 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         TAG += "MainView"
         transaction = supportFragmentManager.beginTransaction()
         NetworkManager.initPrivateApi(id = userRepoImpl.getEmail(), pwd = userRepoImpl.getApiPwd())
-        Log.d(TAG, "ID = ${userRepoImpl.getEmail()}")
-        Log.d(TAG, "ID = ${userRepoImpl.getApiPwd()}")
+        SopoLog.d( tag = TAG, str = "ID = ${userRepoImpl.getEmail()}")
+        SopoLog.d( tag = TAG, str = "ID = ${userRepoImpl.getApiPwd()}")
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -207,7 +204,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                 // 0923 kh 등록 성공
                 if (p0 == 1 && isRegister)
                 {
-                    Log.d(TAG, "등록 성공 메인 뷰")
+                    SopoLog.d( tag = TAG, str = "등록 성공 메인 뷰")
                     onCompleteRegister()
                     isRegister = false
                 }
@@ -225,7 +222,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
             val token = task.result!!.token
 
-            Log.d(TAG, "FCM - $token")
+            SopoLog.d( tag = TAG, str = "FCM - $token")
             val jsonPatchList = mutableListOf<SopoJsonPatch>()
             jsonPatchList.add(SopoJsonPatch("replace", "/fcmToken", token))
 
@@ -234,13 +231,14 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                     email = userRepoImpl.getEmail(),
                     jwt = token,
                     jsonPatch = JsonPatchDto(jsonPatchList)
-                ).enqueue(object : Callback<APIResult<String?>>{
+                ).enqueue(object : Callback<APIResult<String?>>
+                {
                     override fun onResponse(
                         call: Call<APIResult<String?>>,
                         response: Response<APIResult<String?>>
                     )
                     {
-                        Log.d(TAG, response.message())
+                        SopoLog.d( tag = TAG, str = response.message())
                     }
 
                     override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
@@ -260,13 +258,13 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     override fun setObserver()
     {
         // todo 업데이트 시
-        binding.vm!!.cntOfBeUpdate.observe(this, Observer {
+        SOPOApp.cntOfBeUpdate.observeForever {
 
-            SopoLog.d("업데이트 가능 여부 택배 갯수 ${it}!!!!!!!!!!!!!!!!!!!!!")
+            SopoLog.d(tag = "MainView", str = "업데이트 가능 여부 택배 갯수 ${it}!!!!!!!!!!!!!!!!!!!!!")
 
             if (binding.vm!!.isInitUpdate && it > 0)
             {
-                SopoLog.d("업데이트 가능 여부 택배 갯수: $it", null)
+                SopoLog.d(str = "True 업데이트 가능 여부 택배 갯수: $it", tag = "MainView")
 
                 binding.alertMessageBar.run {
                     setText("${it}개의 새로운 배송정보가 있어요.")
@@ -295,11 +293,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                     onStart(null)
                 }
             }
-            else
-            {
-
-            }
-        })
+        }
 
         mainVm.isSetOfSecurity.observe(this, Observer {
             it?.also {
@@ -346,6 +340,13 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         isRegister = true
         binding.vpMain.currentItem = 1
         inquiryVm.refreshOngoing()
+    }
+
+    override fun onDestroy()
+    {
+        super.onDestroy()
+
+//        if (cntOfBeUpdateObserver != null) SOPOApp.cntOfBeUpdate.removeObserver(cntOfBeUpdateObserver!!)
     }
 
     companion object

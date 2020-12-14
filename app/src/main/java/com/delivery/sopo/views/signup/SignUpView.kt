@@ -8,6 +8,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.databinding.SignUpViewBinding
 import com.delivery.sopo.abstracts.BasicView
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.viewmodels.signup.SignUpViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -71,7 +72,7 @@ class SignUpView : BasicView<SignUpViewBinding>(R.layout.sign_up_view)
                         }
                         InfoConst.CUSTOM_TOAST_MSG ->
                         {
-                            Log.d(TAG, "토스트 메시지 ${it.msg}")
+                            SopoLog.d( tag = TAG, str = "토스트 메시지 ${it.msg}")
                             CustomAlertMsg.floatingUpperSnackBAr(
                                 context = parentActivity,
                                 msg = it.msg,

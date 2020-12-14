@@ -1,6 +1,7 @@
 package com.delivery.sopo.thirdpartyapi.kako
 
 import android.util.Log
+import com.delivery.sopo.util.SopoLog
 import com.kakao.auth.ISessionCallback
 import com.kakao.network.ErrorResult
 import com.kakao.usermgmt.UserManagement
@@ -18,7 +19,7 @@ class SessionCallback : ISessionCallback {
 
     override fun onSessionOpenFailed(exception: KakaoException) {
         if (exception != null) {
-            Log.e(TAG, "exception : $exception")
+            SopoLog.d( tag = TAG, str = "exception : $exception")
         }
     }
 

@@ -22,6 +22,7 @@ import com.delivery.sopo.networks.dto.JsonPatchDto
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.OtherUtil
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.viewmodels.signup.FocusChangeCallback
 import com.google.gson.Gson
@@ -178,7 +179,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
     {
         if (isEmailCorVisible.value != View.VISIBLE)
         {
-            Log.d(TAG, "Validate Fail Email ")
+            SopoLog.d( tag = TAG, str = "Validate Fail Email ")
             emailStatusType.value = 0
             return ValidateResult(
                 result = false,
@@ -191,7 +192,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
         if (isPwdCorVisible.value != View.VISIBLE)
         {
 
-            Log.d(TAG, "Validate Fail PWD ")
+            SopoLog.d( tag = TAG, str = "Validate Fail PWD ")
             pwdStatusType.value = 0
             return ValidateResult(
                 result = false,
@@ -217,10 +218,10 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
                 .addOnCompleteListener {
                     if (it.isSuccessful)
                     {
-                        Log.d(TAG, "Firebase Login")
+                        SopoLog.d( tag = TAG, str = "Firebase Login")
                         if (SOPOApp.auth.currentUser?.isEmailVerified!!)
                         {
-                            Log.d(TAG, "Auth Email")
+                            SopoLog.d( tag = TAG, str = "Auth Email")
 
                             uid = it.result?.user?.uid!!
 
@@ -234,14 +235,14 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
                         }
                         else
                         {
-                            Log.d(TAG, "Not Auth Email")
+                            SopoLog.d( tag = TAG, str = "Not Auth Email")
                             validateResult.value =
                                 ValidateResult(false, "이메일 인증을 해주세요.", 1, InfoConst.CUSTOM_DIALOG)
                         }
                     }
                     else
                     {
-                        Log.d(TAG, "Firebase Login Fail ${it.exception?.message}")
+                        SopoLog.d( tag = TAG, str = "Firebase Login Fail ${it.exception?.message}")
                         validateResult.value = ValidateResult(
                             false,
                             "이메일 인증을 해주세요.",
@@ -377,7 +378,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
                             {
                                 ResponseCodeEnum.SUCCESS.CODE ->
                                 {
-                                    Log.d(TAG, "What the fuck ${result.data.toString()}")
+                                    SopoLog.d( tag = TAG, str = "What the fuck ${result.data.toString()}")
                                     val gson = Gson()
 
                                     val type = object : TypeToken<LoginResult?>()

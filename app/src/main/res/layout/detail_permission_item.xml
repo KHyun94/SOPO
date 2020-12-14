@@ -14,7 +14,7 @@
             android:layout_width="37sp"
             android:layout_height="37sp"
             android:layout_gravity="center"
-            android:background="@drawable/ic_tmp_oval" />
+            android:background="@drawable/ic_permission_save" />
 
     </LinearLayout>
 
@@ -27,7 +27,8 @@
             style="@style/H5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="테스트 권한 이름"
+            android:text="저장 권한"
+            android:includeFontPadding="false"
             android:fontFamily="@font/spoqa_han_sans_bold"
             android:textColor="@color/COLOR_GRAY_800" />
 
@@ -36,7 +37,8 @@
             style="@style/H5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="권한 설명"
+            android:includeFontPadding="false"
+            android:text="계정 정보 및 택배 데이터 보관"
             android:textColor="@color/COLOR_GRAY_500" />
 
     </LinearLayout>

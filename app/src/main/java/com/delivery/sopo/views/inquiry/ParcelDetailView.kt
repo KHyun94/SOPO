@@ -192,7 +192,7 @@ class ParcelDetailView : Fragment()
                 {
                     override fun handleOnBackPressed()
                     {
-                        Log.d(TAG, "ParcelDetailView:: BackPressListener")
+                        SopoLog.d( tag = TAG, str = "ParcelDetailView:: BackPressListener")
 
                         if (slideViewStatus == 0)
                         {
@@ -405,8 +405,8 @@ class ParcelDetailView : Fragment()
             binding.layoutMain.panelHeight = height
 //            binding.layoutTail.layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, height)
 
-//            Log.d(TAG, "바텀 리니어 높이 => ${binding.layoutTail.height}")
-//            Log.d(TAG, "드로어 높이 => ${binding.layoutMain.panelHeight}")
+//            SopoLog.d( tag = TAG, str = "바텀 리니어 높이 => ${binding.layoutTail.height}")
+//            SopoLog.d( tag = TAG, str = "드로어 높이 => ${binding.layoutMain.panelHeight}")
         }
 
         view.viewTreeObserver.run {

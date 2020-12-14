@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.work.*
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.entity.WorkEntity
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,9 +28,14 @@ object SOPOWorkeManager
 
 
     private fun getWorkConstraint(): Constraints =
-        Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+        Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).setRequiresDeviceIdle(true).build()
 
-    private inline fun <reified T : ListenableWorker> getWorkRequest(intervalMin: Long, contrains: Constraints): PeriodicWorkRequest = PeriodicWorkRequestBuilder<T>(intervalMin, TimeUnit.MINUTES).setConstraints(contrains).build()
+    private inline fun <reified T : ListenableWorker> getWorkRequest(
+        intervalMin: Long,
+        contrains: Constraints
+    ): PeriodicWorkRequest =
+        PeriodicWorkRequestBuilder<T>(intervalMin, TimeUnit.MINUTES).setConstraints(contrains)
+            .build()
 
     fun updateWorkManager(context: Context, appDatabase: AppDatabase)
     {
@@ -39,65 +45,63 @@ object SOPOWorkeManager
 
             withContext(Dispatchers.IO) {
 
-                val works = appDatabase.workDao().getAll()
+//                val works = appDatabase.workDao().getAll()
 
                 var workUUID: UUID? = null
-                var workRequest: PeriodicWorkRequest? = null
+                var workRequest: Any? = null
 
-                if (works == null || works.isEmpty())
-                {
-                    Log.d(TAG, "워크매니저 새로 등록")
-                    // work 인스턴스화
-                    workRequest =
-                        getWorkRequest<SOPOWorker>(
-                            15,
-                            getWorkConstraint()
+                SopoLog.d( tag = TAG, str = "워크매니저 새로 등록")
+
+                // work 인스턴스화
+                workRequest = OneTimeWorkRequestBuilder<SOPOWorker>()
+                    .setConstraints(getWorkConstraint())
+                    .build()
+
+                // work UUID
+                workUUID = workRequest.id
+                //work manager 등록
+                workManager.enqueueUniqueWork("Parcel", ExistingWorkPolicy.REPLACE, workRequest)
+
+                // 등록한 workRequest의 UUID를 Room에 저장
+                appDatabase.workDao()
+                    .insert(
+                        WorkEntity(
+                            workUUID = workUUID.toString(),
+                            workRegDt = TimeUtil.getDateTime()
                         )
+                    )
 
-                    // work UUID
-                    workUUID = workRequest.id
-                    //work manager 등록
-                    workManager.enqueue(workRequest)
-
-                    // 등록한 workRequest의 UUID를 Room에 저장
-                    appDatabase.workDao()
-                        .insert(
-                            WorkEntity(
-                                workUUID = workUUID.toString(),
-                                workRegDt = TimeUtil.getDateTime()
-                            )
-                        )
-
-                    // 워크 상태 조회
-                    _workInfo = workManager.getWorkInfoByIdLiveData(workUUID) as MutableLiveData<WorkInfo?>
-                }
-                else
-                {
-                    val workEntity = works[works.size - 1]
-                    Log.d(TAG, "워크매니저 이미 등록 ===> $workEntity")
-                    _workInfo = workManager.getWorkInfoByIdLiveData(UUID.fromString(workEntity.workUUID)) as MutableLiveData<WorkInfo?>
-                }
-
+                // 워크 상태 조회
+                _workInfo = workManager.getWorkInfoByIdLiveData(workUUID) as MutableLiveData<WorkInfo?>
             }
         }
 
     }
 
-    fun cancelWork(context : Context)
+    fun cancelWork(context: Context)
     {
         val workManager = WorkManager.getInstance(context)
         workManager.cancelAllWork()
     }
 
-    fun requestOneTimeWorker(context : Context)
+    fun requestPeriodTimeWorker(context: Context)
     {
         val workManager = WorkManager.getInstance(context)
         val workRequest = PeriodicWorkRequestBuilder<OneTimeWorker>(15, TimeUnit.MINUTES).build()
 
-        Log.d(TAG, "Period Service Manager GO!!")
+        SopoLog.d( tag = TAG, str = "Period Service Manager GO!!")
 
         workManager.enqueue(workRequest)
     }
 
+    fun requestOneTimeWorker(context: Context)
+    {
+        val workManager = WorkManager.getInstance(context)
+        val workRequest = OneTimeWorkRequestBuilder<SOPOWorker>().build()
+
+        SopoLog.d( tag = TAG, str = "One Service Manager GO!!")
+
+        workManager.enqueue(workRequest)
+    }
 
 }

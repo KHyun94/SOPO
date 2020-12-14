@@ -286,17 +286,17 @@ class InquiryView : Fragment()
 
             if (it != null)
             {
-                Log.d(TAG, "")
+                SopoLog.d( tag = TAG, str = "")
 
-                Log.d(TAG, "1. isLoading")
+                SopoLog.d( tag = TAG, str = "1. isLoading")
                 if (it)
                 {
-                    Log.d(TAG, "2. isLoading true")
+                    SopoLog.d( tag = TAG, str = "2. isLoading true")
                     progressBar!!.onStartDialog()
                 }
                 else
                 {
-                    Log.d(TAG, "3. isLoading false")
+                    SopoLog.d( tag = TAG, str = "3. isLoading false")
                     progressBar!!.onCloseDialog()
                     binding.vm!!.isLoading.call()
 
@@ -309,7 +309,7 @@ class InquiryView : Fragment()
             }
             else
             {
-                Log.d(TAG, "4. isLoading null")
+                SopoLog.d( tag = TAG, str = "4. isLoading null")
                 progressBar!!.onCloseDialog()
             }
         })
@@ -710,7 +710,7 @@ class InquiryView : Fragment()
                 if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) // 리스트뷰의 마지막
                 {
                     val spinnerMonthTv = tv_spinner_month.text.toString()
-                    Log.d(TAG, "[배송완료 - 다른 날짜의 데이터 조회] 선택된 년월 : $spinnerMonthTv")
+                    SopoLog.d( tag = TAG, str = "[배송완료 - 다른 날짜의 데이터 조회] 선택된 년월 : $spinnerMonthTv")
                     inquiryVm.getCompleteListWithPaging(
                         MenuMapper.titleToInquiryDate(
                             tv_spinner_month.text.toString()
@@ -886,5 +886,13 @@ class InquiryView : Fragment()
                 }
             }
         }, 2000)
+    }
+
+    // 다른 화면으로 넘어갔을 때
+    override fun onResume()
+    {
+        super.onResume()
+
+        SopoLog.d("onResume")
     }
 }

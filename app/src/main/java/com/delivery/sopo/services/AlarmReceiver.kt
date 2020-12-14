@@ -1,5 +1,7 @@
 package com.delivery.sopo.services
 
+//import androidx.work.OneTimeWorkRequest
+//import androidx.work.WorkManager
 import android.R
 import android.app.Notification
 import android.app.NotificationChannel
@@ -14,19 +16,33 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.PowerManager
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.PeriodicWorkRequestBuilder
-import androidx.work.WorkManager
-import com.delivery.sopo.services.workmanager.OneTimeWorker
-import com.delivery.sopo.services.workmanager.SOPOWorkeManager
-import java.util.concurrent.TimeUnit
+import com.delivery.sopo.database.room.AppDatabase
+import com.delivery.sopo.database.room.entity.LogEntity
+import com.delivery.sopo.models.api.APIResult
+import com.delivery.sopo.networks.NetworkManager
+import com.delivery.sopo.networks.api.ParcelAPI
+import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.TimeUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.java.KoinJavaComponent.inject
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class AlarmReceiver : BroadcastReceiver()
 {
+    private val appDatabase : AppDatabase by inject(clazz = AppDatabase::class.java)
+    private val userRepoImpl : UserRepoImpl by inject(clazz = UserRepoImpl::class.java)
+    private val parcelRepoImpl : ParcelRepoImpl by inject(clazz = ParcelRepoImpl::class.java)
+
+    private val TAG = "AlarmReceiver"
+
     override fun onReceive(context: Context?, intent: Intent?)
     {
         if (cpuWakeLock != null) return
@@ -46,23 +62,28 @@ class AlarmReceiver : BroadcastReceiver()
             "app:alarm"
         )
 
-        cpuWakeLock!!.acquire()
+        cpuWakeLock!!.acquire(10*60*1000L /*10 minutes*/)
 
-        Toast.makeText(context, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", Toast.LENGTH_LONG).show()
-        testNoti(context = context)
+//        test(context)
+        testNoti(context, "Tile", "Message")
+    }
 
-        if(wifiLock != null) {
+    private fun releaseLock()
+    {
+        if (wifiLock != null)
+        {
             wifiLock!!.release();
             wifiLock = null;
         }
 
-        if (cpuWakeLock != null) {
+        if (cpuWakeLock != null)
+        {
             cpuWakeLock!!.release();
             cpuWakeLock = null;
         }
     }
 
-    private fun testNoti(context: Context)
+    fun testNoti(context: Context, msg : String, title : String)
     {
         //알림(Notification)을 관리하는 관리자 객체를 운영체제(Context)로부터 소환하기
         val notificationManager =
@@ -98,8 +119,8 @@ class AlarmReceiver : BroadcastReceiver()
 
         //상태바를 드래그하여 아래로 내리면 보이는
         //알림창(확장 상태바)의 설정
-        builder.setContentTitle("Title") //알림창 제목
-        builder.setContentText("Messages....") //알림창 내용
+        builder.setContentTitle(title) //알림창 제목
+        builder.setContentText(msg) //알림창 내용
         //알림창의 큰 이미지
 
         //건축가에게 알림 객체 생성하도록
@@ -108,9 +129,115 @@ class AlarmReceiver : BroadcastReceiver()
         //알림매니저에게 알림(Notify) 요청
         notificationManager!!.notify(1, notification)
 
+        releaseLock()
         //알림 요청시에 사용한 번호를 알림제거 할 수 있음.
         //notificationManager.cancel(1);
     }
+
+    // ===============================================================================================================================================   private val TAG = "SopoWorker"
+
+    // Room 내 등록된 택배(진행 중)의 갯수 > 0 == true != false
+    private suspend fun isEnrolledParcel(): Boolean
+    {
+        val cnt = parcelRepoImpl.getOnGoingDataCnt() ?: 0
+        SopoLog.d(tag = "$TAG.isEnrolledParcel", str = "등록된 소포의 갯수 => $cnt")
+        return cnt > 0
+    }
+
+    // Room 내 저장된 택배들을 서버로 조회 요청
+    private suspend fun patchParcels(): APIResult<String?>?
+    {
+        // 유저 이메일
+        val email = userRepoImpl.getEmail()
+
+        SopoLog.d(tag = "$TAG.patchParcels", str = "유저 이메일 ===> $email")
+
+        if (isEnrolledParcel())
+        {
+            SopoLog.d(tag = "$TAG.patchParcels", str = "is Enrolled Parcel => YES")
+
+            return NetworkManager.privateRetro.create(ParcelAPI::class.java)
+                .parcelsRefreshing(email = email)
+        }
+        else
+        {
+            // 조회 안함 및 period worker 제거
+            SopoLog.d(tag = "$TAG.patchParcels", str = "is Enrolled Parcel => NO")
+            return null
+        }
+    }
+
+
+    // worker의 실행 메서드
+    fun test(context: Context)
+    {
+        CoroutineScope(Dispatchers.Main).launch {
+            withContext(Dispatchers.Default) {
+
+                val result = patchParcels()
+
+                if (result != null)
+                {
+                    SopoLog.d(tag = "$TAG.doWork", str = "Work Service => $result")
+
+                    if (result.code == "0000")
+                    {
+                        SopoLog.d(tag = "$TAG.doWork", str = "Success to build Worker  $result")
+
+                        appDatabase.logDao()
+                            .insert(
+                                LogEntity(
+                                    no = 0,
+                                    msg = "Success to PATCH work manager",
+                                    uuid = "1",
+                                    regDt = TimeUtil.getDateTime()
+                                )
+                            )
+
+                        val time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA)
+                        testNoti(context = context, msg = "Update Patch 성공!!!", title = "Update Success $time")
+                    }
+                    else
+                    {
+                        appDatabase.logDao()
+                            .insert(
+                                LogEntity(
+                                    no = 0,
+                                    msg = "Failure to PATCH work manager, Because Of ErrorCode $result",
+                                    uuid = "1",
+                                    regDt = TimeUtil.getDateTime()
+                                )
+                            )
+
+                        val time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA)
+                        testNoti(context = context, msg = "Update Patch 실패!!!", title = "Update Fail $time")
+                        SopoLog.d(tag = TAG, str = "Fail to build Worker  $result")
+                    }
+                }
+                else
+                {
+                    appDatabase.logDao()
+                        .insert(
+                            LogEntity(
+                                no = 0,
+                                msg = "Connect Fail to PATCH work manager becuase result null",
+                                uuid = "1",
+                                regDt = TimeUtil.getDateTime()
+                            )
+                        )
+
+
+                    Log.i(TAG, "Work Service Fail")
+                    val time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA)
+                    testNoti(context = context, msg = "Update Patch 실패!!!", title = "Update Fail $time")
+                }
+
+            }
+
+            releaseLock()
+        }
+    }
+
 
     companion object
     {

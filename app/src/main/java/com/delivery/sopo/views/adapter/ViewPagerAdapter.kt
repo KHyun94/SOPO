@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.inquiry.InquiryMainFrame
 import com.delivery.sopo.views.inquiry.InquiryView
 import com.delivery.sopo.views.menus.MenuFragment
@@ -42,7 +43,7 @@ class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
     }
     override fun getItem(position: Int): Fragment
     {
-        Log.d(TAG, "pos => ${position}")
+        SopoLog.d( tag = TAG, str = "pos => ${position}")
 
         return when (position)
         {

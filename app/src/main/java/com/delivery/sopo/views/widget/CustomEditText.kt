@@ -11,6 +11,7 @@ import android.widget.RelativeLayout
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.util.SizeUtil
+import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.custom_edit_text.view.*
 
 
@@ -182,13 +183,13 @@ class CustomEditText : LinearLayout
         {
             0 ->
             {
-                Log.d(TAG, "Red")
+                SopoLog.d( tag = TAG, str = "Red")
                 tv_title.setTextColor(resources.getColor(R.color.COLOR_MAIN_RED_500))
                 v_underline.setBackgroundResource(R.color.COLOR_MAIN_RED_500)
             }
             1 ->
             {
-                Log.d(TAG, "Blue")
+                SopoLog.d( tag = TAG, str = "Blue")
                 tv_title.setTextColor(resources.getColor(R.color.COLOR_MAIN_BLUE_700))
                 v_underline.setBackgroundResource(R.color.COLOR_MAIN_BLUE_700)
 
@@ -196,13 +197,13 @@ class CustomEditText : LinearLayout
             2 ->
             {
 
-                Log.d(TAG, "Black")
+                SopoLog.d( tag = TAG, str = "Black")
                 tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
                 v_underline.setBackgroundResource(R.color.MAIN_BLACK)
             }
             else ->
             {
-                Log.d(TAG, "Black & Gray")
+                SopoLog.d( tag = TAG, str = "Black & Gray")
                 tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
                 v_underline.setBackgroundResource(R.color.COLOR_GRAY_200)
             }

@@ -20,6 +20,7 @@ import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.services.workmanager.SOPOWorkeManager
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep3ViewModel
 import com.delivery.sopo.views.main.MainView
@@ -83,7 +84,7 @@ class RegisterStep3 : Fragment()
                 callback = object : OnBackPressedCallback(true){
                     override fun handleOnBackPressed()
                     {
-                        Log.d(TAG, "Register Step::3 BackPressListener")
+                        SopoLog.d( tag = TAG, str = "Register Step::3 BackPressListener")
                         requireActivity().supportFragmentManager.popBackStack()
                     }
 
@@ -115,7 +116,7 @@ class RegisterStep3 : Fragment()
             {
                 if(it.result)
                 {
-                    Log.d(TAG, "등록 성공 $it")
+                    SopoLog.d( tag = TAG, str = "등록 성공 $it")
 
                     SOPOWorkeManager.updateWorkManager(context!!, appDatabase = appDatabase)
 
@@ -172,7 +173,7 @@ class RegisterStep3 : Fragment()
         callback = object : OnBackPressedCallback(true){
             override fun handleOnBackPressed()
             {
-                Log.d(TAG, "Register Step::3 BackPressListener")
+                SopoLog.d( tag = TAG, str = "Register Step::3 BackPressListener")
                 requireActivity().supportFragmentManager.popBackStack()
             }
 
