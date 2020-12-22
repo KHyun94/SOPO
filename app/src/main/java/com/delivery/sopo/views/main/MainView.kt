@@ -24,6 +24,7 @@ import com.delivery.sopo.networks.api.UserAPI
 import com.delivery.sopo.networks.dto.JsonPatchDto
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.PowerManager
+import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.main.MainViewModel
@@ -345,6 +346,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     override fun onDestroy()
     {
         super.onDestroy()
+        OtherUtil.clearCache(SOPOApp.INSTANCE)
 
 //        if (cntOfBeUpdateObserver != null) SOPOApp.cntOfBeUpdate.removeObserver(cntOfBeUpdateObserver!!)
     }

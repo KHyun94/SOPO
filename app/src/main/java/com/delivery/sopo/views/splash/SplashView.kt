@@ -3,6 +3,7 @@ package com.delivery.sopo.views.splash
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
@@ -34,13 +35,12 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class SplashView : BasicView<SplashViewBinding>(
-    layoutRes = R.layout.splash_view
-)
+class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view)
 {
+    private val splashVm: SplashViewModel by viewModel()
+
     private val userRepoImpl: UserRepoImpl by inject()
 
-    private val splashVM: SplashViewModel by viewModel()
     lateinit var rxPermission: RxPermissions
     lateinit var permissionDialog: PermissionDialog
 
@@ -48,7 +48,6 @@ class SplashView : BasicView<SplashViewBinding>(
     {
         TAG += this.javaClass.simpleName
         parentActivity = this@SplashView
-        SopoLog.d(tag = TAG, str = "What is $TAG")
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -59,19 +58,16 @@ class SplashView : BasicView<SplashViewBinding>(
 
     override fun bindView()
     {
-        binding.vm = splashVM
+        binding.vm = splashVm
         binding.executePendingBindings()
-
-        Glide
-            .with(this)
-            .asGif()
-            .load(R.drawable.ic_splash_ani_box)
-            .into(binding.ivSopoBoxAni)
     }
 
     override fun setObserver()
     {
-        moveToActivity()
+        Handler().postDelayed(Runnable {  moveToActivity() }
+            , 2000)
+
+
     }
 
     private fun isPermissionGrant(permissionArray: Array<String>): Boolean
@@ -80,10 +76,7 @@ class SplashView : BasicView<SplashViewBinding>(
 
         for (p in permissionArray)
         {
-            isGrant = ContextCompat.checkSelfPermission(
-                parentActivity,
-                p
-            ) == PackageManager.PERMISSION_GRANTED
+            isGrant = ContextCompat.checkSelfPermission(parentActivity, p) == PackageManager.PERMISSION_GRANTED
         }
 
         return isGrant
@@ -91,11 +84,13 @@ class SplashView : BasicView<SplashViewBinding>(
 
     private fun moveToActivity()
     {
-        binding.vm?.navigator!!.observe(this, Observer {
+
+        binding.vm!!.navigator.observe(this, Observer {
             when (it)
             {
                 NavigatorConst.TO_PERMISSION ->
                 {
+                    // 권한 설정이 안되어있을 경우, 권한 허용 요청 다이얼로그 생성
                     if (!isPermissionGrant(PermissionConst.PERMISSION_ARRAY))
                     {
                         // NOT PERMISSION GRANT
@@ -108,7 +103,7 @@ class SplashView : BasicView<SplashViewBinding>(
                     }
                     else
                     {
-                        binding.vm?.requestAfterActivity()
+                        binding.vm!!.requestAfterActivity()
                     }
                 }
                 NavigatorConst.TO_INTRO ->
@@ -223,7 +218,7 @@ class SplashView : BasicView<SplashViewBinding>(
                     {
                         if (it)
                         {
-                            splashVM.requestAfterActivity()
+                            splashVm.requestAfterActivity()
                         }
                         else
                         {
@@ -243,7 +238,7 @@ class SplashView : BasicView<SplashViewBinding>(
                     },
                     {
                         SopoLog.d(tag = TAG, str = "Permission Error => $it")
-                        splashVM.navigator.value = NavigatorConst.TO_INTRO
+                        splashVm.navigator.value = NavigatorConst.TO_INTRO
                     }
                 )
         }

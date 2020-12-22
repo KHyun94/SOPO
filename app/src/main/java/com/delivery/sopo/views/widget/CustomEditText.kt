@@ -1,15 +1,21 @@
 package com.delivery.sopo.views.widget
 
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.AttributeSet
 import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.custom_edit_text.view.*
@@ -77,6 +83,9 @@ class CustomEditText : LinearLayout
                 R.styleable.CustomEditText_focusColor,
                 resources.getColor(R.color.COLOR_MAIN_BLUE_700)
             )
+
+            val test = typedArray?.getResourceId(R.styleable.CustomEditText_android_nextFocusDown, 0)
+            et_input_text.nextFocusDownId = test?:0
         }
 
         et_input_text.setText(text ?: "")
@@ -208,7 +217,65 @@ class CustomEditText : LinearLayout
                 v_underline.setBackgroundResource(R.color.COLOR_GRAY_200)
             }
         }
+    }
 
+    fun setOnClearListener(context: Context?)
+    {
+        if(context != null)
+        {
+            Glide.with(context)
+                .load(R.drawable.ic_clear_btn)
+                .into(iv_right_mark)
 
+            et_input_text.addTextChangedListener(
+                object : TextWatcher
+                {
+                    override fun beforeTextChanged(
+                        charSequence: CharSequence,
+                        i: Int,
+                        i1: Int,
+                        i2: Int
+                    )
+                    {
+                    }
+
+                    override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int)
+                    {
+                    }
+
+                    override fun afterTextChanged(editable: Editable)
+                    {
+                        if(editable.toString().isNotEmpty()) iv_right_mark.visibility = View.VISIBLE
+                        else iv_right_mark.visibility = View.GONE
+                    }
+                }
+            )
+
+            iv_right_mark.setOnClickListener {
+                et_input_text.setText("")
+                tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
+                v_underline.setBackgroundResource(R.color.COLOR_GRAY_200)
+            }
+        }
+        else
+        {
+            iv_right_mark.run {
+                setBackgroundResource(0)
+                setOnClickListener(null)
+            }
+        }
+
+    }
+
+    fun setOnKeyListener(cb : ((View, Int, KeyEvent) -> Unit)){
+        et_input_text.setOnKeyListener { v, keyCode, event ->
+            cb.invoke(v, keyCode, event)
+            return@setOnKeyListener false
+        }
+    }
+
+    fun etClearFocus()
+    {
+        et_input_text.clearFocus()
     }
 }

@@ -13,10 +13,11 @@
         android:layout_marginBottom="16sp">
 
         <TextView
-            style="@style/H3"
             android:id="@+id/tv_title"
+            style="@style/H3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:includeFontPadding="false"
             android:text="이메일"
             android:textColor="@color/MAIN_BLACK"
             app:layout_constraintBottom_toTopOf="parent"
@@ -34,12 +35,13 @@
             android:visibility="gone" />
 
         <TextView
-            style="@style/H6"
             android:id="@+id/tv_description_text"
+            style="@style/H6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
+            android:includeFontPadding="false"
             android:text="등록된 이메일이 아닙니다."
             android:textColor="@color/COLOR_MAIN_RED_500"
             android:visibility="gone" />
@@ -52,11 +54,12 @@
         android:layout_height="wrap_content">
 
         <EditText
-            style="@style/H3"
             android:id="@+id/et_input_text"
+            style="@style/H3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@null"
+            android:includeFontPadding="false"
             android:lines="1"
             android:paddingBottom="5sp"
             android:singleLine="true"
@@ -68,7 +71,7 @@
             android:layout_height="20sp"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="5sp"
-            android:background="@drawable/ic_blue_ok"
+            android:src="@drawable/ic_blue_ok"
             android:visibility="gone" />
 
         <View

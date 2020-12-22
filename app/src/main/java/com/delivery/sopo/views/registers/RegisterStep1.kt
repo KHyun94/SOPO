@@ -3,7 +3,7 @@ package com.delivery.sopo.views.registers
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +22,7 @@ import com.delivery.sopo.repository.impl.CourierRepolmpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
@@ -263,10 +264,21 @@ class RegisterStep1 : Fragment()
     {
         super.onResume()
 
-        SopoLog.d( tag = TAG, str = "OnResume")
+        SopoLog.d(tag = TAG, str = "OnResume")
+
+        binding.customEtTrackNum.setOnClearListener(context)
+
+        binding.customEtTrackNum.setOnKeyListener { v, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER)
+            {
+                binding.vm!!.setInputViewStatus()
+                OtherUtil.hideKeyboardSoft(activity!!)
+                binding.customEtTrackNum.etClearFocus()
+            }
+        }
 
         // 0922 kh 추가사항 - 클립보드에 저장되어있는 운송장 번호가 로컬에 등록된 택배가 있을 때, 안띄어주는 로직 추가
-        ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE, parcelRepolmpl){
+        ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE, parcelRepolmpl) {
             val isRegister = binding.vm?.waybilNum?.value.isNullOrEmpty()
 
             if (!(it.isEmpty() || !isRegister))

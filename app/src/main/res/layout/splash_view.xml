@@ -26,46 +26,17 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_bias="0.3"/>
 
-        <com.airbnb.lottie.LottieAnimationView
+        <ImageView
             android:id="@+id/iv_sopo_box_ani"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/iv_sopo_text" />
+            app:layout_constraintTop_toBottomOf="@+id/iv_sopo_text"
+            app:setImage="@{vm.splashImg}"
+            app:setDefaultImage="@{0}"/>
 
 
-        <!--        <ImageView-->
-        <!--            android:id="@+id/image_splash_icon"-->
-        <!--            android:layout_width="70dp"-->
-        <!--            android:layout_height="50dp"-->
-        <!--            android:src="@drawable/ic_splash_icon"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintHorizontal_bias="0.5"-->
-        <!--            app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--            app:layout_constraintRight_toRightOf="parent"-->
-        <!--            app:layout_constraintTop_toTopOf="parent"-->
-        <!--            app:layout_constraintVertical_bias="0.25" />-->
-
-        <!--        <ImageView-->
-        <!--            android:id="@+id/image_splash_logo"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginTop="18dp"-->
-        <!--            android:src="@drawable/ic_splash_logo"-->
-        <!--            app:layout_constraintEnd_toEndOf="@+id/image_splash_icon"-->
-        <!--            app:layout_constraintStart_toStartOf="@+id/image_splash_icon"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/image_splash_icon" />-->
-
-        <!--        <ImageView-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:background="@drawable/ic_splash_background"-->
-        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--            app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--            app:layout_constraintRight_toRightOf="parent"-->
-        <!--            app:layout_constraintTop_toTopOf="parent"-->
-        <!--            app:layout_constraintVertical_bias="0.8"/>-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

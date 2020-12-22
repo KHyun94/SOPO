@@ -1,5 +1,6 @@
 package com.delivery.sopo
 
+import android.app.Activity
 import android.app.AlarmManager
 import android.app.Application
 import android.app.PendingIntent
@@ -56,6 +57,7 @@ class SOPOApp : Application()
         super.onCreate()
 
         INSTANCE = this@SOPOApp
+        activity = Activity()
 
         startKoin {
             androidContext(this@SOPOApp)
@@ -102,23 +104,21 @@ class SOPOApp : Application()
 
 //        cntOfBeUpdate = parcelManagementRepoImpl.getIsUpdateCntLiveData()
 
-        // todo 푸시 후 처리
-        registerAlarm()
-
-
-        CoroutineScope(Dispatchers.Default).launch {
-
-            val list = appDatabase.logDao().getAll()
-
-            var i = 0
-
-            list?.forEach {
-                SopoLog.d("${++i}번째 로그 ====> $it")
-            }
-        }
-
+//        // todo 푸시 후 처리
+//        registerAlarm()
+//
+//
+//        CoroutineScope(Dispatchers.Default).launch {
+//
+//            val list = appDatabase.logDao().getAll()
+//
+//            var i = 0
+//
+//            list?.forEach {
+//                SopoLog.d("${++i}번째 로그 ====> $it")
+//            }
+//        }
     }
-
 
     private fun getInitViewPagerNumber(cb: ((Int) -> Unit))
     {
@@ -180,7 +180,7 @@ class SOPOApp : Application()
     {
         lateinit var INSTANCE: Context
         lateinit var auth: FirebaseAuth
-
+        lateinit var activity: Activity
         lateinit var alarmManager: AlarmManager
 
         var currentPage = SingleLiveEvent<Int?>()

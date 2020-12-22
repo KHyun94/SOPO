@@ -48,12 +48,25 @@ class RegisterStep1ViewModel : ViewModel()
         return null
     }
 
+    // 해당 뷰의 UI 및 색상 변환
+    fun setInputViewStatus()
+    {
+        if (waybilNum.value != null && waybilNum.value!!.isNotEmpty())
+            waybilNoStatusType.value = 2
+        else
+            waybilNoStatusType.value = -1
+    }
+
     fun onMoveStep2Clicked()
     {
+        setInputViewStatus()
+
         if (waybilNum.value!!.length > 8)
         {
             if (courier.value == null || courier.value!!.courierName.isEmpty())
+            {
                 moveFragment.value = FragmentTypeEnum.REGISTER_STEP2.NAME
+            }
         }
         else
         {
@@ -63,11 +76,14 @@ class RegisterStep1ViewModel : ViewModel()
 
     fun onMoveStep3Clicked()
     {
+        setInputViewStatus()
         moveFragment.value = FragmentTypeEnum.REGISTER_STEP3.NAME
     }
 
     fun onReselectClicked()
     {
+        setInputViewStatus()
+
         if (waybilNum.value!!.length > 8)
         {
             if (courier.value != null && !courier.value!!.courierName.isEmpty())
