@@ -4,18 +4,15 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
-import android.util.Log
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.custom_edit_text.view.*
@@ -192,13 +189,13 @@ class CustomEditText : LinearLayout
         {
             0 ->
             {
-                SopoLog.d( tag = TAG, str = "Red")
+                SopoLog.d(tag = TAG, msg = "Red")
                 tv_title.setTextColor(resources.getColor(R.color.COLOR_MAIN_RED_500))
                 v_underline.setBackgroundResource(R.color.COLOR_MAIN_RED_500)
             }
             1 ->
             {
-                SopoLog.d( tag = TAG, str = "Blue")
+                SopoLog.d(tag = TAG, msg = "Blue")
                 tv_title.setTextColor(resources.getColor(R.color.COLOR_MAIN_BLUE_700))
                 v_underline.setBackgroundResource(R.color.COLOR_MAIN_BLUE_700)
 
@@ -206,13 +203,13 @@ class CustomEditText : LinearLayout
             2 ->
             {
 
-                SopoLog.d( tag = TAG, str = "Black")
+                SopoLog.d(tag = TAG, msg = "Black")
                 tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
                 v_underline.setBackgroundResource(R.color.MAIN_BLACK)
             }
             else ->
             {
-                SopoLog.d( tag = TAG, str = "Black & Gray")
+                SopoLog.d(tag = TAG, msg = "Black & Gray")
                 tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
                 v_underline.setBackgroundResource(R.color.COLOR_GRAY_200)
             }

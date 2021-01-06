@@ -72,7 +72,7 @@ data class ParcelEntity(
 ){
     fun update(parcel: Parcel){
 
-        SopoLog.d("ParcelEntity Update => $parcel")
+        SopoLog.d(msg = "ParcelEntity Update => $parcel")
 
         this.parcelAlias = parcel.parcelAlias
         this.inqueryResult = parcel.inqueryResult

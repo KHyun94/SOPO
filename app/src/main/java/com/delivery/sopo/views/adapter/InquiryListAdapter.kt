@@ -257,7 +257,7 @@ class InquiryListAdapter(
                     }
                     else
                     {
-                        SopoLog.d( tag = TAG, str = "33333")
+                        SopoLog.d(tag = TAG, msg = "33333")
 
                         if (mClickListener != null)
                         {

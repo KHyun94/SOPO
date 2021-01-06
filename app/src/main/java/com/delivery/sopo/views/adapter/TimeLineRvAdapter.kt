@@ -1,6 +1,5 @@
 package com.delivery.sopo.views.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
@@ -23,7 +22,7 @@ class TimeLineRvAdapter : RecyclerView.Adapter<TimeLineViewHolder>()
         val inflater = LayoutInflater.from(parent.context)
         val binding: TimeLineItemBinding =
             DataBindingUtil.inflate(inflater, R.layout.time_line_item, parent, false)
-        SopoLog.d( tag = TAG, str = "RecyclerView TimeLine onCreateViewHolder")
+        SopoLog.d(tag = TAG, msg = "RecyclerView TimeLine onCreateViewHolder")
         return TimeLineViewHolder(binding = binding)
     }
 
@@ -35,7 +34,7 @@ class TimeLineRvAdapter : RecyclerView.Adapter<TimeLineViewHolder>()
     {
         val iv = holder.itemBindingUtil.ivTimeLineOval
 
-        SopoLog.d( tag = TAG, str = "마지막 사이즈 ${list.size - 1}")
+        SopoLog.d(tag = TAG, msg = "마지막 사이즈 ${list.size - 1}")
 
         if(position == list.size -1){
             holder.itemBindingUtil.vTimeLineBar.setBackgroundResource(0)

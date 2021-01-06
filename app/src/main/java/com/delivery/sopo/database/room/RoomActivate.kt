@@ -1,7 +1,6 @@
 package com.delivery.sopo.database.room
 
 import android.content.Context
-import android.util.Log
 import com.delivery.sopo.R
 import com.delivery.sopo.R.drawable.*
 import com.delivery.sopo.extensions.removeSpace
@@ -32,7 +31,7 @@ object RoomActivate
                 roomDBHelper = AppDatabase.getInstance(context = context)
 
                 rowCnt = roomDBHelper.courierDao().getAllCnt()
-                SopoLog.d( tag = TAG, str = "Room All Select row cnt => ${rowCnt}")
+                SopoLog.d(tag = TAG, msg = "Room All Select row cnt => ${rowCnt}")
 
                 if (rowCnt == 0)
                 {
@@ -326,7 +325,7 @@ object RoomActivate
                     roomDBHelper.courierDao().insert(courierList)
 
                     rowCnt = roomDBHelper.courierDao().getAllCnt()
-                    SopoLog.d( tag = TAG, str = "insert 확인 => ${rowCnt}")
+                    SopoLog.d(tag = TAG, msg = "insert 확인 => ${rowCnt}")
                 }
 
             }
@@ -334,7 +333,7 @@ object RoomActivate
         }
         catch (e: Exception)
         {
-            SopoLog.d( tag = TAG, str = "Room Error ${e.message}")
+            SopoLog.d(tag = TAG, msg = "Room Error ${e.message}")
         }
 
     }
@@ -369,7 +368,7 @@ object RoomActivate
                     {
                         _waybilNum.contains('-') ->
                         {
-                            SopoLog.d( tag = TAG, str = "waybil ${_waybilNum}")
+                            SopoLog.d(tag = TAG, msg = "waybil ${_waybilNum}")
                             parserList = _waybilNum.split('-') as ArrayList<String>
                         }
                         _waybilNum.contains('_') ->
@@ -418,7 +417,7 @@ object RoomActivate
 
                             for (i in parserList)
                             {
-                                SopoLog.d( tag = TAG, str = "$i -=> ${i.length}")
+                                SopoLog.d(tag = TAG, msg = "$i -=> ${i.length}")
                             }
 
                             if (front.length == 3 && middle.length == 4 && back.length - 1 == 4)
@@ -447,7 +446,7 @@ object RoomActivate
                             }
                             else if (front.length == 4 && middle.length == 4 && back.length - 1 == 4)
                             {
-                                SopoLog.d( tag = TAG, str = "cu or 롯데 $front - $middle - $back")
+                                SopoLog.d(tag = TAG, msg = "cu or 롯데 $front - $middle - $back")
                                 //롯데 or CU 편의점 택배
                                 returnList!!.add(
                                     CourierItem(
@@ -576,7 +575,7 @@ object RoomActivate
 
             for (i in returnList!!)
             {
-                SopoLog.d( tag = TAG, str = "택배사 $i")
+                SopoLog.d(tag = TAG, msg = "택배사 $i")
             }
 
             return returnList

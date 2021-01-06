@@ -158,12 +158,12 @@ class ParcelDetailView : Fragment()
                 CoroutineScope(Dispatchers.Main).launch {
                     if (slideoffsetC < 0.1 && previousState == SlidingUpPanelLayout.PanelState.DRAGGING)
                     {
-                        SopoLog.d("닫힘 -> pre {$previousState } cur {$newState }", null)
+                        SopoLog.d(null, "닫힘 -> pre {$previousState } cur {$newState }")
                         binding.layoutMain.panelState = PanelState.COLLAPSED
                     }
                     else if (slideoffsetC == 1.0f && previousState == PanelState.DRAGGING)
                     {
-                        SopoLog.d("열림 -> pre {$previousState } cur {$newState }", null)
+                        SopoLog.d(null, "열림 -> pre {$previousState } cur {$newState }")
                         binding.layoutMain.panelState = PanelState.EXPANDED
                     }
                 }
@@ -192,7 +192,7 @@ class ParcelDetailView : Fragment()
                 {
                     override fun handleOnBackPressed()
                     {
-                        SopoLog.d( tag = TAG, str = "ParcelDetailView:: BackPressListener")
+                        SopoLog.d(tag = TAG, msg = "ParcelDetailView:: BackPressListener")
 
                         if (slideViewStatus == 0)
                         {

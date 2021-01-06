@@ -1,25 +1,27 @@
 package com.delivery.sopo.viewmodels.login
 
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst
-import com.delivery.sopo.consts.JoinTypeConst
 import com.delivery.sopo.enums.ResponseCodeEnum
+import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.extensions.commonMessageResId
-import com.delivery.sopo.firebase.FirebaseUserManagement
-import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.models.LoginResult
+import com.delivery.sopo.firebase.FirebaseManagementImpl
+import com.delivery.sopo.mapper.OauthMapper
+import com.delivery.sopo.models.OauthResult
 import com.delivery.sopo.models.SopoJsonPatch
 import com.delivery.sopo.models.ValidateResult
-import com.delivery.sopo.networks.api.LoginAPI
+import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.NetworkManager
+import com.delivery.sopo.networks.api.LoginAPICall
 import com.delivery.sopo.networks.api.UserAPI
+import com.delivery.sopo.networks.api.UserAPICall
 import com.delivery.sopo.networks.dto.JsonPatchDto
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.services.network_handler.Result
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
@@ -27,6 +29,9 @@ import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.viewmodels.signup.FocusChangeCallback
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -179,7 +184,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
     {
         if (isEmailCorVisible.value != View.VISIBLE)
         {
-            SopoLog.d( tag = TAG, str = "Validate Fail Email ")
+            SopoLog.d(tag = TAG, msg = "Validate Fail Email ")
             emailStatusType.value = 0
             return ValidateResult(
                 result = false,
@@ -192,7 +197,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
         if (isPwdCorVisible.value != View.VISIBLE)
         {
 
-            SopoLog.d( tag = TAG, str = "Validate Fail PWD ")
+            SopoLog.d(tag = TAG, msg = "Validate Fail PWD ")
             pwdStatusType.value = 0
             return ValidateResult(
                 result = false,
@@ -214,38 +219,36 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
 
         if (validateResult.value?.result == true)
         {
-            FirebaseUserManagement.firebaseGeneralLogin(email = email.value!!, pwd = pwd.value!!)
+            FirebaseManagementImpl.firebaseGeneralLogin(email = email.value!!, pwd = pwd.value!!)
                 .addOnCompleteListener {
                     if (it.isSuccessful)
                     {
-                        SopoLog.d( tag = TAG, str = "Firebase Login")
+                        SopoLog.d(tag = TAG, msg = "Firebase Login")
                         if (SOPOApp.auth.currentUser?.isEmailVerified!!)
                         {
-                            SopoLog.d( tag = TAG, str = "Auth Email")
+                            SopoLog.d(tag = TAG, msg = "Auth Email")
 
                             uid = it.result?.user?.uid!!
 
-                            requestLogin(
+                            requestLoginWithOauth(
                                 email = email.value.toString(),
-                                pwd = pwd.value.toString(),
-                                deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE),
-                                joinType = "self",
-                                uid = uid
+                                password = pwd.value.toString(),
+                                deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE)
                             )
                         }
                         else
                         {
-                            SopoLog.d( tag = TAG, str = "Not Auth Email")
+                            SopoLog.d(tag = TAG, msg = "Not Auth Email ===> ${it.result.user?.uid}")
                             validateResult.value =
                                 ValidateResult(false, "이메일 인증을 해주세요.", 1, InfoConst.CUSTOM_DIALOG)
                         }
                     }
                     else
                     {
-                        SopoLog.d( tag = TAG, str = "Firebase Login Fail ${it.exception?.message}")
+                        SopoLog.d(tag = TAG, msg = "Firebase Login Fail ${it.exception?.message}")
                         validateResult.value = ValidateResult(
                             false,
-                            "이메일 인증을 해주세요.",
+                            it.exception?.message ?: "",
                             it.exception?.commonMessageResId,
                             InfoConst.CUSTOM_DIALOG
                         )
@@ -272,72 +275,253 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
 
     fun authJwtToken(jwtToken: String)
     {
-        val jsonPatchList = mutableListOf<SopoJsonPatch>()
-        jsonPatchList.add(SopoJsonPatch("replace", "/deviceInfo", OtherUtil.getDeviceID(SOPOApp.INSTANCE)))
+        CoroutineScope(Dispatchers.IO).launch {
 
-        NetworkManager.publicRetro.create(UserAPI::class.java)
-            .patchUser(
-                email = email.value.toString(),
-                jwt = jwtToken,
-                jsonPatch = JsonPatchDto(jsonPatchList)
-            ).enqueue(object : Callback<APIResult<String?>>
-            {
-                override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
-                {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onResponse(
-                    call: Call<APIResult<String?>>,
-                    response: Response<APIResult<String?>>
+            val jsonPatchList = mutableListOf<SopoJsonPatch>()
+            jsonPatchList.add(
+                SopoJsonPatch(
+                    "replace",
+                    "/deviceInfo",
+                    OtherUtil.getDeviceID(SOPOApp.INSTANCE)
                 )
+            )
+
+            val result = UserAPICall().patchUser(
+                email = userRepoImpl.getEmail(),
+                jwtToken = jwtToken,
+                jsonPatch = JsonPatchDto(jsonPatchList)
+            )
+
+            when (result)
+            {
+                is Result.Success ->
                 {
-                    val httpStatusCode = response.code()
+                    val apiResult = result.data
 
-                    val result = response.body()
-
-                    when (httpStatusCode)
+                    if (apiResult.code == ResponseCodeEnum.SUCCESS.CODE)
                     {
-                        200 ->
+                        requestLoginWithOauth(
+                            email = email.value.toString(),
+                            password = pwd.value.toString(),
+                            deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE)
+                        )
+                    }
+                    else
+                    {
+                        validateResult.postValue(
+                            ValidateResult(
+                                false,
+                                CodeUtil.returnCodeMsg(apiResult.code),
+                                jwtToken,
+                                InfoConst.CUSTOM_DIALOG
+                            )
+                        )
+                    }
+                }
+                is Result.Error ->
+                {
+                    val exception = result.exception as APIException
+                    val apiResult = exception.data()
+
+                    validateResult.postValue(
+                        ValidateResult(
+                            false,
+                            CodeUtil.returnCodeMsg(apiResult?.code),
+                            jwtToken,
+                            InfoConst.CUSTOM_DIALOG
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    private fun requestLoginWithOauth(email: String, password: String, deviceInfo: String)
+    {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = LoginAPICall().requestOauth(email, deviceInfo, password)
+
+            when (result)
+            {
+                is Result.Success ->
+                {
+                    SopoLog.d(msg = "requestOauth Success => ${result}")
+
+                    val gson = Gson()
+
+                    val type = object : TypeToken<OauthResult>()
+                    {}.type
+
+                    val reader = gson.toJson(result.data)
+
+                    val data = gson.fromJson<OauthResult>(reader, type)
+
+                    OauthMapper.objectToEntity(email, data)
+
+                    if (data.expiresIn == "0")
+                    {
+                        requestRefreshOauth(
+                            email,
+                            data.refreshToken,
+                            OtherUtil.getDeviceID(SOPOApp.INSTANCE)
+                        )
+                    }
+                    else
+                    {
+                        userRepoImpl.setEmail(email = email)
+                        userRepoImpl.setDeviceInfo(info = deviceInfo)
+                        userRepoImpl.setJoinType(joinType = "self")
+                        userRepoImpl.setStatus(1)
+
+                        validateResult.postValue(
+                            ValidateResult(
+                                true,
+                                "",
+                                result,
+                                InfoConst.NON_SHOW
+                            )
+                        )
+
+                    }
+                }
+                is Result.Error ->
+                {
+                    SopoLog.e(msg = "requestOauth Fail => ${result}")
+                    val exception = result.exception as APIException
+                    val apiResult = exception.data()
+
+                    SopoLog.d(msg = "API Result => ${apiResult} \n code = {${apiResult?.code}")
+
+                    when (apiResult?.code)
+                    {
+                        ResponseCodeEnum.ALREADY_LOGGED_IN.CODE ->
                         {
-                            if (result?.code == ResponseCodeEnum.SUCCESS.CODE)
-                            {
-                                requestLogin(
-                                    email = email.value.toString(),
-                                    pwd = pwd.value.toString(),
-                                    deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE),
-                                    joinType = JoinTypeConst.SELF,
-                                    uid = uid
-                                )
-                            }
-                            else
-                            {
-                                validateResult.value =
-                                    ValidateResult(
-                                        false,
-                                        CodeUtil.returnCodeMsg(result?.code),
-                                        jwtToken,
-                                        InfoConst.CUSTOM_DIALOG
-                                    )
-                            }
-                        }
-                        else ->
-                        {
-                            validateResult.value =
+                            SopoLog.d(msg = "Already_logged_in")
+
+                            val jwtToken = apiResult.data as String
+
+                            validateResult.postValue(
                                 ValidateResult(
                                     false,
-                                    CodeUtil.returnCodeMsg(result?.code),
+                                    CodeUtil.returnCodeMsg(apiResult.code),
                                     jwtToken,
                                     InfoConst.CUSTOM_DIALOG
                                 )
+                            )
+                        }
+                        else ->
+                        {
+                            validateResult.postValue(
+                                ValidateResult(
+                                    false,
+                                    CodeUtil.returnCodeMsg(exception.data()?.code),
+                                    null,
+                                    InfoConst.CUSTOM_DIALOG
+                                )
+                            )
                         }
                     }
-
                 }
+            }
 
-            })
+        }
     }
 
+    private fun requestRefreshOauth(email: String, refreshToken: String, deviceInfo: String)
+    {
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = LoginAPICall().requestRefreshOauth(
+                email = email,
+                refreshToken = refreshToken,
+                deviceInfo = deviceInfo
+            )
+
+            when (result)
+            {
+                is Result.Success ->
+                {
+                    SopoLog.d(msg = "requestOauth Success => ${result}")
+
+                    val gson = Gson()
+
+                    val type = object : TypeToken<OauthResult>()
+                    {}.type
+
+                    val reader = gson.toJson(result.data)
+
+                    val data = gson.fromJson<OauthResult>(reader, type)
+
+                    OauthMapper.objectToEntity(email, data)
+
+                    if (data.expiresIn == "0")
+                    {
+                        requestRefreshOauth(
+                            email,
+                            data.refreshToken,
+                            OtherUtil.getDeviceID(SOPOApp.INSTANCE)
+                        )
+                    }
+                    else
+                    {
+                        userRepoImpl.setEmail(email = email)
+                        userRepoImpl.setDeviceInfo(info = deviceInfo)
+                        userRepoImpl.setJoinType(joinType = "self")
+                        userRepoImpl.setStatus(1)
+
+                        validateResult.postValue(
+                            ValidateResult(
+                                true,
+                                "",
+                                result,
+                                InfoConst.NON_SHOW
+                            )
+                        )
+
+                    }
+                }
+                is Result.Error ->
+                {
+                    SopoLog.e(msg = "requestOauth Fail => ${result}")
+                    val exception = result.exception as APIException
+                    val apiResult = exception.data()
+
+                    SopoLog.d(msg = "API Result => ${apiResult} \n code = {${apiResult?.code}")
+
+                    when (apiResult?.code)
+                    {
+                        ResponseCodeEnum.ALREADY_LOGGED_IN.CODE ->
+                        {
+                            SopoLog.d(msg = "Already_logged_in")
+
+                            val jwtToken = apiResult.data as String
+
+                            validateResult.postValue(
+                                ValidateResult(
+                                    false,
+                                    CodeUtil.returnCodeMsg(apiResult.code),
+                                    jwtToken,
+                                    InfoConst.CUSTOM_DIALOG
+                                )
+                            )
+                        }
+                        else ->
+                        {
+                            validateResult.postValue(
+                                ValidateResult(
+                                    false,
+                                    CodeUtil.returnCodeMsg(exception.data()?.code),
+                                    null,
+                                    InfoConst.CUSTOM_DIALOG
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+/*
     private fun requestLogin(
         email: String,
         pwd: String,
@@ -378,7 +562,10 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
                             {
                                 ResponseCodeEnum.SUCCESS.CODE ->
                                 {
-                                    SopoLog.d( tag = TAG, str = "What the fuck ${result.data.toString()}")
+                                    SopoLog.d(
+                                        tag = TAG,
+                                        msg = "What the fuck ${result.data.toString()}"
+                                    )
                                     val gson = Gson()
 
                                     val type = object : TypeToken<LoginResult?>()
@@ -441,4 +628,6 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
                 }
             })
     }
+
+ */
 }

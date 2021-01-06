@@ -1,8 +1,8 @@
 package com.delivery.sopo.networks
 
 import com.delivery.sopo.BuildConfig
-import com.delivery.sopo.consts.NetworkConst
 import com.google.gson.GsonBuilder
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -12,9 +12,9 @@ import java.util.concurrent.TimeUnit
 
 object NetworkManager
 {
-    private val CONNECT_TIMEOUT: Long = 15
-    private val WRITE_TIMEOUT: Long = 15
-    private val READ_TIMEOUT: Long = 15
+    private const val CONNECT_TIMEOUT: Long = 15
+    private const val WRITE_TIMEOUT: Long = 15
+    private const val READ_TIMEOUT: Long = 15
 
     lateinit var mOKHttpClient: OkHttpClient
     lateinit var mRetrofit: Retrofit
@@ -27,6 +27,57 @@ object NetworkManager
         this.privateId = id
         this.privatePwd = pwd
     }
+
+    val joinRetro : Retrofit
+        get()
+        {
+            val httpLoggingInterceptor = HttpLoggingInterceptor()
+            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+
+            mOKHttpClient = OkHttpClient().newBuilder().apply {
+                addInterceptor(httpLoggingInterceptor)
+                connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+                writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+                readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+            }.build()
+
+            val gson = GsonBuilder()
+            gson.setLenient()
+
+            return Retrofit.Builder()
+                .baseUrl(BuildConfig.API_URL)
+                .client(mOKHttpClient)
+                .addConverterFactory(GsonConverterFactory.create(gson.create()))
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build()
+        }
+
+    val oauthRetro : Retrofit
+        get()
+        {
+            val basicAuthInterceptor = BasicAuthInterceptor("sopo-aos", "sopoAndroid!!@@")
+            val httpLoggingInterceptor = HttpLoggingInterceptor()
+            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+
+            mOKHttpClient = OkHttpClient().newBuilder().apply {
+                addInterceptor(httpLoggingInterceptor)
+                addInterceptor(basicAuthInterceptor)
+                connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+                writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+                readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+            }.build()
+
+            val gson = GsonBuilder()
+            gson.setLenient()
+
+            return Retrofit.Builder()
+                .baseUrl(BuildConfig.API_URL)
+                .client(mOKHttpClient)
+                .addConverterFactory(GsonConverterFactory.create(gson.create()))
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build()
+        }
 
     val privateRetro: Retrofit
         get()
@@ -50,6 +101,7 @@ object NetworkManager
                 .baseUrl(BuildConfig.API_URL)
                 .client(mOKHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson.create()))
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
         }
@@ -63,7 +115,7 @@ object NetworkManager
                     BuildConfig.PUBLIC_API_ACCOUNT_ID,
                     BuildConfig.PUBLIC_API_ACCOUNT_PASSWORD
                 )
-//                BasicAuthInterceptor(NetworkConst.REAL_API_ID, NetworkConst.REAL_API_PWD)
+
             val httpLoggingInterceptor = HttpLoggingInterceptor()
             httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -82,6 +134,7 @@ object NetworkManager
                 .baseUrl(BuildConfig.API_URL)
                 .client(mOKHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson.create()))
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
         }

@@ -24,7 +24,7 @@ abstract class BasicView<T:ViewDataBinding>(@LayoutRes val layoutRes:Int) : AppC
         bindView()
         setObserver()
 
-        SopoLog.d(tag = TAG, str = "Parent Activity!!!!")
+        SopoLog.d(tag = TAG, msg = "Parent Activity!!!!")
 
     }
 }

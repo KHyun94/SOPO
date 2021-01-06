@@ -90,7 +90,7 @@ class InquiryListItem(
             }
 
             update?.observeForever{
-                SopoLog.d("[${parcel.parcelAlias}] => $it")
+                SopoLog.d(msg = "[${parcel.parcelAlias}] => $it")
 
                 isUnidentified = it != null && it  == 1
 

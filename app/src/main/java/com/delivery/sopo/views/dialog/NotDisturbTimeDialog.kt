@@ -4,7 +4,6 @@ import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
@@ -69,12 +68,12 @@ class NotDisturbTimeDialog : DialogFragment {
     private fun setClickEvent(){
 
         layoutView.tv_cancelBtn.setOnClickListener {
-            SopoLog.d( tag = TAG, str = "Ok button")
+            SopoLog.d(tag = TAG, msg = "Ok button")
             dismiss()
         }
 
         layoutView.tv_okBtn.setOnClickListener {
-            SopoLog.d( tag = TAG, str = "Ok button")
+            SopoLog.d(tag = TAG, msg = "Ok button")
         }
     }
 

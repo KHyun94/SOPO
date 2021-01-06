@@ -1,7 +1,6 @@
 package com.delivery.sopo.services
 
 import android.content.Intent
-import android.util.Log
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.mapper.ParcelMapper
@@ -34,7 +33,10 @@ class FirebaseService: FirebaseMessagingService()
             // 업데이트 사항이 있는 택배를 로컬 DB에서 조회
            val localOngoingParcels = parcelRepo.getLocalParcelById(fcmPushDto.regDt, fcmPushDto.parcelUid)
 
-            SopoLog.d("Update Parcel Data => ${localOngoingParcels?:"조회 결과 없음."}", "FirebaseService")
+            SopoLog.d(
+                "FirebaseService",
+                "Update Parcel Data => ${localOngoingParcels?:"조회 결과 없음."}"
+            )
 
             // 만약에.. 내부 데이터베이스에 검색된 택배가 없다면.. 알람을 띄우지 않는다.
             localOngoingParcels?.let {
@@ -69,10 +71,10 @@ class FirebaseService: FirebaseMessagingService()
     override fun onMessageReceived(remoteMessage: RemoteMessage){
         if (remoteMessage.data.isNotEmpty())
         {
-            SopoLog.d( tag = TAG, str = "onMessageReceived: " + remoteMessage.data.toString())
-            SopoLog.d( tag = TAG, str = "remoteMessage : ${remoteMessage.notification}")
+            SopoLog.d(tag = TAG, msg = "onMessageReceived: " + remoteMessage.data.toString())
+            SopoLog.d(tag = TAG, msg = "remoteMessage : ${remoteMessage.notification}")
             val fcmPushDto = Gson().fromJson(remoteMessage.data.toString(), FcmPushDTO::class.java)
-            SopoLog.d( tag = TAG, str = "fromJson : $fcmPushDto")
+            SopoLog.d(tag = TAG, msg = "fromJson : $fcmPushDto")
             when (fcmPushDto.notificationId)
             {
                 // 사용자에게 택배 상태가 업데이트되었다고 알려줌
@@ -112,11 +114,11 @@ class FirebaseService: FirebaseMessagingService()
 
     override fun onNewToken(s: String){
         super.onNewToken(s)
-        SopoLog.d( tag = TAG, str = "onNewToken: $s")
+        SopoLog.d(tag = TAG, msg = "onNewToken: $s")
         sendTokenToServer(s)
     }
 
     private fun sendTokenToServer(token: String){
-        SopoLog.d( tag = TAG, str = "sendTokenToServer: $token")
+        SopoLog.d(tag = TAG, msg = "sendTokenToServer: $token")
     }
 }

@@ -3,7 +3,6 @@ package com.delivery.sopo.views.inquiry
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
@@ -103,11 +102,11 @@ class InquiryView : Fragment()
                     )
                     snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
 
-                    SopoLog.d("InquiryView::1 BackPressListener = 종료를 위해 한번 더 클릭", null)
+                    SopoLog.d(null, "InquiryView::1 BackPressListener = 종료를 위해 한번 더 클릭")
                 }
                 else
                 {
-                    SopoLog.d("InquiryView::1 BackPressListener = 종료", null)
+                    SopoLog.d(null, "InquiryView::1 BackPressListener = 종료")
                     ActivityCompat.finishAffinity(activity!!)
                     System.exit(0)
                 }
@@ -169,7 +168,7 @@ class InquiryView : Fragment()
             InquiryItemTypeEnum.Soon
         )
 
-        SopoLog.d("과연 몇개일까? ===> ${binding.vm!!.ongoingList.value?.size ?: "NULL"}")
+        SopoLog.d(msg = "과연 몇개일까? ===> ${binding.vm!!.ongoingList.value?.size ?: "NULL"}")
 
         soonArrivalListAdapter.setOnParcelClickListener(_mClickListener = getParcelClicked())
 
@@ -256,11 +255,11 @@ class InquiryView : Fragment()
                             )
                             snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
 
-                            SopoLog.d("InquiryView::1 BackPressListener = 종료를 위해 한번 더 클릭", null)
+                            SopoLog.d(null, "InquiryView::1 BackPressListener = 종료를 위해 한번 더 클릭")
                         }
                         else
                         {
-                            SopoLog.d("InquiryView::1 BackPressListener = 종료", null)
+                            SopoLog.d(null, "InquiryView::1 BackPressListener = 종료")
                             ActivityCompat.finishAffinity(activity!!)
                             System.exit(0)
                         }
@@ -286,17 +285,17 @@ class InquiryView : Fragment()
 
             if (it != null)
             {
-                SopoLog.d( tag = TAG, str = "")
+                SopoLog.d(tag = TAG, msg = "")
 
-                SopoLog.d( tag = TAG, str = "1. isLoading")
+                SopoLog.d(tag = TAG, msg = "1. isLoading")
                 if (it)
                 {
-                    SopoLog.d( tag = TAG, str = "2. isLoading true")
+                    SopoLog.d(tag = TAG, msg = "2. isLoading true")
                     progressBar!!.onStartDialog()
                 }
                 else
                 {
-                    SopoLog.d( tag = TAG, str = "3. isLoading false")
+                    SopoLog.d(tag = TAG, msg = "3. isLoading false")
                     progressBar!!.onCloseDialog()
                     binding.vm!!.isLoading.call()
 
@@ -309,7 +308,7 @@ class InquiryView : Fragment()
             }
             else
             {
-                SopoLog.d( tag = TAG, str = "4. isLoading null")
+                SopoLog.d(tag = TAG, msg = "4. isLoading null")
                 progressBar!!.onCloseDialog()
             }
         })
@@ -317,7 +316,7 @@ class InquiryView : Fragment()
         // 배송중 , 등록된 택배 리스트
         inquiryVm.ongoingList.observe(this, Observer {
 
-            SopoLog.d(tag = "MainInquiry", str = "진행 중인 택배 갯수 => ${it.size}")
+            SopoLog.d(tag = "MainInquiry", msg = "진행 중인 택배 갯수 => ${it.size}")
             soonArrivalListAdapter.setDataList(it)
             registeredSopoListAdapter.setDataList(it)
 
@@ -550,7 +549,7 @@ class InquiryView : Fragment()
                     "택배의 별칭을 입력해주세요.",
                     Pair("확인", View.OnClickListener {
                         edit.observe(this@InquiryView, Observer {
-                            SopoLog.d("입력 값 = > $it")
+                            SopoLog.d(msg = "입력 값 = > $it")
                             binding.vm!!.patchParcelAlias(parcelId, it)
                             AlertUtil.onDismiss()
 
@@ -710,7 +709,7 @@ class InquiryView : Fragment()
                 if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) // 리스트뷰의 마지막
                 {
                     val spinnerMonthTv = tv_spinner_month.text.toString()
-                    SopoLog.d( tag = TAG, str = "[배송완료 - 다른 날짜의 데이터 조회] 선택된 년월 : $spinnerMonthTv")
+                    SopoLog.d(tag = TAG, msg = "[배송완료 - 다른 날짜의 데이터 조회] 선택된 년월 : $spinnerMonthTv")
                     inquiryVm.getCompleteListWithPaging(
                         MenuMapper.titleToInquiryDate(
                             tv_spinner_month.text.toString()
@@ -893,6 +892,6 @@ class InquiryView : Fragment()
     {
         super.onResume()
 
-        SopoLog.d("onResume")
+        SopoLog.d(msg = "onResume")
     }
 }

@@ -2,7 +2,6 @@ package com.delivery.sopo.viewmodels.signup
 
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -10,17 +9,29 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst
+import com.delivery.sopo.enums.ResponseCodeEnum
+import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.extensions.commonMessageResId
-import com.delivery.sopo.firebase.FirebaseUserManagement
+import com.delivery.sopo.firebase.FirebaseManagementImpl
+import com.delivery.sopo.models.OauthResult
 import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.networks.NetworkManager
+import com.delivery.sopo.networks.api.LoginAPICall
 import com.delivery.sopo.networks.api.UserAPI
+import com.delivery.sopo.services.network_handler.Result
+import com.delivery.sopo.util.CodeUtil
+import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.kakao.usermgmt.api.UserApi
+import com.google.firebase.auth.FirebaseUser
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers.io
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 typealias FocusChangeCallback = (String, Boolean) -> Unit
 
@@ -117,7 +128,7 @@ class SignUpViewModel : ViewModel()
             validateResult.value = tmp
         }
 
-        SopoLog.d( tag = TAG, str = "SignUp Click!!!!!!!!!!!!!")
+        SopoLog.d(tag = TAG, msg = "SignUp Click!!!!!!!!!!!!!")
     }
 
     // EditText 유효성 검사 가시성
@@ -148,15 +159,16 @@ class SignUpViewModel : ViewModel()
 
         if (focus)
         {
-            SopoLog.d( tag = TAG, str = "Focus In $type")
+            SopoLog.d(tag = TAG, msg = "Focus In $type")
             setVisibleState(type = type, errorState = GONE, corState = GONE)
 
             if (type == InfoConst.EMAIL)
                 isDuplicate = true
+
         }
         else
         {
-            SopoLog.d( tag = TAG, str = "Focus Out $type")
+            SopoLog.d(tag = TAG, msg = "Focus Out $type")
 
             when (type)
             {
@@ -169,7 +181,7 @@ class SignUpViewModel : ViewModel()
                         emailValidateText.value = "이메일을 입력해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
                         validateResult.value = onCheckValidate()
-                        SopoLog.d( tag = TAG, str = "Email is Empty")
+                        SopoLog.d(tag = TAG, msg = "Email is Empty")
 
                         return@FocusChangeCallback
                     }
@@ -182,7 +194,7 @@ class SignUpViewModel : ViewModel()
                         // 이메일이 중복 이메일이거나 초기화되었을 때 중복 api로 통신
                         if (isDuplicate)
                         {
-                            SopoLog.d( tag = TAG, str = "Duplicate Check Start!!!")
+                            SopoLog.d(tag = TAG, msg = "Duplicate Check Start!!!")
                             onCheckDuplicatedEmail(email = email.value!!)
 
                             return@FocusChangeCallback
@@ -200,7 +212,7 @@ class SignUpViewModel : ViewModel()
                     else
                     {
                         emailStatusType.value = 0
-                        SopoLog.d( tag = TAG, str = "PLZ Check Email Validate")
+                        SopoLog.d(tag = TAG, msg = "PLZ Check Email Validate")
                         emailValidateText.value = "이메일 형식을 확인해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
                     }
@@ -210,14 +222,14 @@ class SignUpViewModel : ViewModel()
                 }
                 InfoConst.PASSWORD ->
                 {
-                    SopoLog.d( tag = TAG, str = "Focus out $type ${pwd.value}")
+                    SopoLog.d(tag = TAG, msg = "Focus out $type ${pwd.value}")
 
                     // 비밀번호 란이 공백일 때
                     if (TextUtils.isEmpty(pwd.value))
                     {
                         pwdStatusType.value = 0
 
-                        SopoLog.d( tag = TAG, str = "pwd is empty")
+                        SopoLog.d(tag = TAG, msg = "pwd is empty")
 
                         pwdValidateText.value = "비밀번호를 입력해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
@@ -261,7 +273,7 @@ class SignUpViewModel : ViewModel()
                 }
                 InfoConst.RE_PASSWORD ->
                 {
-                    SopoLog.d( tag = TAG, str = "type $type re_pwd ${rePwd.value}")
+                    SopoLog.d(tag = TAG, msg = "type $type re_pwd ${rePwd.value}")
 
                     // 비밀번호가 최소 1자리 이상일 때
                     if (pwd.value!!.isNotEmpty())
@@ -339,7 +351,7 @@ class SignUpViewModel : ViewModel()
     {
         if (isEmailCorVisible.value != VISIBLE)
         {
-            SopoLog.d( tag = TAG, str = "Validate Fail Email ")
+            SopoLog.d(tag = TAG, msg = "Validate Fail Email ")
             emailStatusType.value = 0
             return ValidateResult(
                 result = false,
@@ -353,7 +365,7 @@ class SignUpViewModel : ViewModel()
         {
 
             pwdStatusType.value = 0
-            SopoLog.d( tag = TAG, str = "Validate Fail PWD ")
+            SopoLog.d(tag = TAG, msg = "Validate Fail PWD ")
 
             return ValidateResult(
                 result = false,
@@ -367,7 +379,7 @@ class SignUpViewModel : ViewModel()
         {
 
             rePwdStatusType.value = 0
-            SopoLog.d( tag = TAG, str = "Validate Fail PWD ")
+            SopoLog.d(tag = TAG, msg = "Validate Fail PWD ")
 
             return ValidateResult(
                 result = false,
@@ -379,9 +391,7 @@ class SignUpViewModel : ViewModel()
 
         if (!isAgree.value!!)
         {
-
-            SopoLog.d( tag = TAG, str = "Validate Fail Agree ")
-
+            SopoLog.d(tag = TAG, msg = "Validate Fail Agree ")
 
             return ValidateResult(
                 result = false,
@@ -392,7 +402,7 @@ class SignUpViewModel : ViewModel()
         }
 
 
-        SopoLog.d( tag = TAG, str = "Validate Success ")
+        SopoLog.d(tag = TAG, msg = "Validate Success ")
 
 
         return ValidateResult(result = true, msg = "", data = null, showType = InfoConst.NON_SHOW)
@@ -410,7 +420,7 @@ class SignUpViewModel : ViewModel()
                         // todo 성공 코드('0000')이 아닐 때 중복 이메일이라고 표시(임시)
                         isDuplicate = if (it.code == "0000") it.data!! else false
 
-                        SopoLog.d( tag = TAG, str = "Duplicate Result => $isDuplicate")
+                        SopoLog.d(tag = TAG, msg = "Duplicate Result => $isDuplicate")
 
                         // isDuplicate가 false일 때 사용 가능 이메일
                         if (!isDuplicate)
@@ -421,7 +431,7 @@ class SignUpViewModel : ViewModel()
                                 errorState = GONE,
                                 corState = VISIBLE
                             )
-                            SopoLog.d( tag = TAG, str = "it is possible to use Email!!!")
+                            SopoLog.d(tag = TAG, msg = "it is possible to use Email!!!")
                         }
                         else
                         {
@@ -433,7 +443,7 @@ class SignUpViewModel : ViewModel()
                                 errorState = VISIBLE,
                                 corState = GONE
                             )
-                            SopoLog.d( tag = TAG, str = "it is Duplicate Email!!!")
+                            SopoLog.d(tag = TAG, msg = "it is Duplicate Email!!!")
                         }
 
                         validateResult.value = onCheckValidate()
@@ -457,9 +467,9 @@ class SignUpViewModel : ViewModel()
 
     fun signUpWithFirebase(email: String, pwd: String)
     {
-        SopoLog.d( tag = TAG, str = "Firebase Sign Up Start~!!!")
+        SopoLog.d(tag = TAG, msg = "Firebase Sign Up Start~!!!")
 
-        FirebaseUserManagement.firebaseCreateUser(email, pwd)
+        FirebaseManagementImpl.firebaseCreateUser(email, pwd)
             .addOnCompleteListener {
                 when
                 {
@@ -467,42 +477,23 @@ class SignUpViewModel : ViewModel()
                     {
                         val user = SOPOApp.auth.currentUser
 
-                        SopoLog.d( tag = TAG, str = "Firebase Sign Up User - ${user?.email ?: "이메일 없음"}")
+                        SopoLog.d(
+                            tag = TAG,
+                            msg = "Firebase Sign Up User - ${user?.email ?: "이메일 없음"}"
+                        )
 
-                        FirebaseUserManagement.firebaseSendEmail(user!!)
-                            ?.addOnCompleteListener {
-                                SopoLog.d( tag = TAG, str = "Firebase Send Auth Email")
+                        requestSelfJoin(
+                            email,
+                            pwd,
+                            OtherUtil.getDeviceID(SOPOApp.INSTANCE),
+                            user?.uid!!
+                        )
 
-                                val bundle = Bundle()
-                                bundle.putString(FirebaseAnalytics.Param.METHOD, "email")
-                                FirebaseAnalytics.getInstance(SOPOApp.INSTANCE)
-                                    .logEvent(FirebaseAnalytics.Event.SIGN_UP, bundle)
 
-                                if (it.isSuccessful)
-                                {
-                                    validateResult.value = ValidateResult(
-                                        result = true,
-                                        msg = "",
-                                        data = "Success",
-                                        showType = InfoConst.CUSTOM_DIALOG
-                                    )
-                                }
-                                else
-                                {
-                                    validateResult.value = ValidateResult(
-                                        result = false,
-                                        msg = "이메일 인증 메일 전송에 실패했습니다. 다시 한번 시도해주세요.",
-                                        data = null,
-                                        showType = InfoConst.CUSTOM_DIALOG
-                                    )
-                                }
-
-                                SopoLog.d( tag = TAG, str = validateResult.value.toString())
-                            }
                     }
                     else ->
                     {
-                        SopoLog.d( tag = TAG, str = "에러${it.exception?.commonMessageResId}")
+                        SopoLog.d(tag = TAG, msg = "에러${it.exception?.commonMessageResId}")
                         // 회원가입 실패
                         validateResult.value = ValidateResult(
                             result = false,
@@ -514,4 +505,93 @@ class SignUpViewModel : ViewModel()
                 }
             }
     }
+
+    // 자체 회원가입
+    private fun requestSelfJoin(email: String, password: String, deviceInfo: String, uid: String)
+    {
+        SopoLog.d(tag = TAG, msg = "requestSelfJoin call()")
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val result = LoginAPICall().requestSelfJoin(email, deviceInfo, password, uid)
+
+            when (result)
+            {
+                is Result.Success ->
+                {
+                    SopoLog.d(msg = "Success To requestSelfJoin => ${result}")
+
+                    if (result.data.code == ResponseCodeEnum.SUCCESS.CODE)
+                    {
+                        sendFirebaseAuthEmail(SOPOApp.auth.currentUser)
+                    }
+                    else
+                    {
+                        validateResult.value = ValidateResult(
+                            false,
+                            CodeUtil.returnCodeMsg(result.data.code),
+                            null,
+                            InfoConst.CUSTOM_DIALOG
+                        )
+                    }
+                }
+                is Result.Error ->
+                {
+                    SopoLog.e(msg = "Fail To requestSelfJoin => ${result}")
+
+                    val exception = result.exception as APIException
+
+                    validateResult.value = ValidateResult(
+                        false,
+                        CodeUtil.returnCodeMsg(exception.data()?.code),
+                        null,
+                        InfoConst.CUSTOM_DIALOG
+                    )
+                }
+            }
+
+        }
+    }
+
+    private fun sendFirebaseAuthEmail(user: FirebaseUser?)
+    {
+        FirebaseManagementImpl.firebaseSendEmail(user)
+        {
+            if (it == null)
+            {
+                validateResult.value = ValidateResult(
+                    result = false,
+                    msg = "이메일 인증 메일 전송에 실패했습니다. 다시 한번 시도해주세요.",
+                    data = null,
+                    showType = InfoConst.CUSTOM_DIALOG
+                )
+
+                return@firebaseSendEmail
+            }
+
+            if(!it.isSuccessful)
+            {
+                validateResult.value = ValidateResult(
+                    result = false,
+                    msg = "이메일 인증 메일 전송에 실패했습니다. 다시 한번 시도해주세요.",
+                    data = null,
+                    showType = InfoConst.CUSTOM_DIALOG
+                )
+            }
+            else
+            {
+                val bundle = Bundle()
+                bundle.putString(FirebaseAnalytics.Param.METHOD, "email")
+                FirebaseAnalytics.getInstance(SOPOApp.INSTANCE)
+                    .logEvent(FirebaseAnalytics.Event.SIGN_UP, bundle)
+
+                validateResult.value = ValidateResult(
+                    result = true,
+                    msg = "",
+                    data = "Success",
+                    showType = InfoConst.CUSTOM_DIALOG
+                )
+            }
+        }
+    }
+
 }

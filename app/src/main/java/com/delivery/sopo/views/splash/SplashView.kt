@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Handler
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import com.bumptech.glide.Glide
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.abstracts.BasicView
@@ -54,20 +53,20 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
     {
         super.onCreate(savedInstanceState)
         rxPermission = RxPermissions.getInstance(applicationContext)
+
+
     }
 
     override fun bindView()
     {
         binding.vm = splashVm
+        binding.lifecycleOwner = this
         binding.executePendingBindings()
     }
 
     override fun setObserver()
     {
-        Handler().postDelayed(Runnable {  moveToActivity() }
-            , 2000)
-
-
+        Handler().postDelayed(Runnable { moveToActivity() }, 2500)
     }
 
     private fun isPermissionGrant(permissionArray: Array<String>): Boolean
@@ -76,7 +75,10 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
 
         for (p in permissionArray)
         {
-            isGrant = ContextCompat.checkSelfPermission(parentActivity, p) == PackageManager.PERMISSION_GRANTED
+            isGrant = ContextCompat.checkSelfPermission(
+                parentActivity,
+                p
+            ) == PackageManager.PERMISSION_GRANTED
         }
 
         return isGrant
@@ -84,7 +86,6 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
 
     private fun moveToActivity()
     {
-
         binding.vm!!.navigator.observe(this, Observer {
             when (it)
             {
@@ -119,7 +120,7 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
         })
     }
 
-    fun requestAutoLogin()
+    private fun requestAutoLogin()
     {
         NetworkManager.initPrivateApi(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
 
@@ -127,10 +128,10 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
 
         NetworkManager.privateRetro.create(LoginAPI::class.java)
             .requestAutoLogin(
-                OtherUtil.getDeviceID(SOPOApp.INSTANCE),
-                userRepoImpl.getJoinType(),
-                firebaseUser?.uid!!,
-                userRepoImpl.getSNSUId()
+                deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE),
+                joinType = userRepoImpl.getJoinType(),
+                uid = firebaseUser?.uid!!,
+                kakaoUserId = userRepoImpl.getSNSUId()
             ).enqueue(object : Callback<APIResult<LoginResult?>>
             {
                 override fun onFailure(call: Call<APIResult<LoginResult?>>, t: Throwable)
@@ -210,6 +211,7 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
             })
     }
 
+    // 권한 요청
     private fun requestPermission(permissionArray: Array<String>)
     {
         rxPermission.run {
@@ -218,27 +220,29 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
                     {
                         if (it)
                         {
-                            splashVm.requestAfterActivity()
+                            // 권한 O
+                            binding.vm!!.requestAfterActivity()
                         }
                         else
                         {
+                            // 권한 X
                             GeneralDialog(
                                 act = parentActivity,
-                                title = "알림",
-                                msg = "쾌적한 앱 사용을 위해 권한을 허가해주세요.",
+                                title = getString(R.string.DIALOG_ALARM),
+                                msg = getString(R.string.DIALOG_PERMISSION_REQ_MSG),
                                 detailMsg = null,
                                 rHandler = Pair(
-                                    first = "네",
+                                    first = getString(R.string.DIALOG_OK),
                                     second = { it ->
                                         it.dismiss()
                                         finish()
                                     })
-                            ).show(supportFragmentManager, "tag")
+                            ).show(supportFragmentManager, "permission")
                         }
                     },
                     {
-                        SopoLog.d(tag = TAG, str = "Permission Error => $it")
-                        splashVm.navigator.value = NavigatorConst.TO_INTRO
+                        SopoLog.e(tag = TAG, msg = "Permission Error => $it", e = it)
+                        binding.vm!!.navigator.value = NavigatorConst.TO_INTRO
                     }
                 )
         }

@@ -1,7 +1,6 @@
 package com.delivery.sopo.views.signup
 
 import android.content.Intent
-import android.util.Log
 import androidx.lifecycle.Observer
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.R
@@ -72,7 +71,7 @@ class SignUpView : BasicView<SignUpViewBinding>(R.layout.sign_up_view)
                         }
                         InfoConst.CUSTOM_TOAST_MSG ->
                         {
-                            SopoLog.d( tag = TAG, str = "토스트 메시지 ${it.msg}")
+                            SopoLog.d(tag = TAG, msg = "토스트 메시지 ${it.msg}")
                             CustomAlertMsg.floatingUpperSnackBAr(
                                 context = parentActivity,
                                 msg = it.msg,

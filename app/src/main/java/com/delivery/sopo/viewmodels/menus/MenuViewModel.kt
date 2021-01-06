@@ -1,11 +1,9 @@
 package com.delivery.sopo.viewmodels.menus
 
-import android.util.Log
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.extensions.MutableLiveDataExtension.popItem
 import com.delivery.sopo.extensions.MutableLiveDataExtension.pushItem
@@ -17,9 +15,7 @@ import com.delivery.sopo.networks.dto.JsonPatchDto
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
-import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
-import com.google.gson.annotations.SerializedName
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -66,7 +62,7 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
     init {
         _userEmail.value = userRepoImpl.getEmail()
         _userNickname.value = userRepoImpl.getUserNickname()
-        SopoLog.d("Menu 닉네임 => ${userNickname.value}")
+        SopoLog.d(msg = "Menu 닉네임 => ${userNickname.value}")
         _viewStack.value = Stack()
         isUpdate.value = false
 
@@ -88,14 +84,17 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
             true
         }
         catch (e: EmptyStackException){
-            SopoLog.d( tag = TAG, str = "STACK IS ALREADY EMPTY!!, you try to pop item even if stack is already empty!!")
+            SopoLog.d(
+                tag = TAG,
+                msg = "STACK IS ALREADY EMPTY!!, you try to pop item even if stack is already empty!!"
+            )
             false
         }
     }
 
     fun onUpdateClicked()
     {
-        SopoLog.d("닉네임 변경 클릭")
+        SopoLog.d(msg = "닉네임 변경 클릭")
         isUpdate.value = true
     }
 
@@ -107,13 +106,13 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
         NetworkManager.privateRetro.create(UserAPI::class.java)
             .patchUser(
                 email = userRepoImpl.getEmail(),
-                jwt = null,
+                jwtToken = null,
                 jsonPatch = JsonPatchDto(jsonPatchList)
             )
             .enqueue(object : Callback<APIResult<String?>>{
                 override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
                 {
-                    SopoLog.d("에러 $t")
+                    SopoLog.d(msg = "에러 $t")
                 }
 
                 override fun onResponse(
@@ -123,12 +122,12 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
                 {
                     if(response.code() == 200)
                     {
-                        SopoLog.d("닉네임 변경 => ${response.body()}")
+                        SopoLog.d(msg = "닉네임 변경 => ${response.body()}")
                         userRepoImpl.setUserNickname(nickname)
                         _userNickname.value = nickname
                     }
                     else
-                        SopoLog.d("닉네임 변경 => ${response.errorBody()}")
+                        SopoLog.d(msg = "닉네임 변경 => ${response.errorBody()}")
                 }
 
             })

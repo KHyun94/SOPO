@@ -1,7 +1,6 @@
 package com.delivery.sopo.services.workmanager
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.work.*
@@ -50,7 +49,7 @@ object SOPOWorkeManager
                 var workUUID: UUID? = null
                 var workRequest: Any? = null
 
-                SopoLog.d( tag = TAG, str = "워크매니저 새로 등록")
+                SopoLog.d(tag = TAG, msg = "워크매니저 새로 등록")
 
                 // work 인스턴스화
                 workRequest = OneTimeWorkRequestBuilder<SOPOWorker>()
@@ -89,7 +88,7 @@ object SOPOWorkeManager
         val workManager = WorkManager.getInstance(context)
         val workRequest = PeriodicWorkRequestBuilder<OneTimeWorker>(15, TimeUnit.MINUTES).build()
 
-        SopoLog.d( tag = TAG, str = "Period Service Manager GO!!")
+        SopoLog.d(tag = TAG, msg = "Period Service Manager GO!!")
 
         workManager.enqueue(workRequest)
     }
@@ -99,7 +98,7 @@ object SOPOWorkeManager
         val workManager = WorkManager.getInstance(context)
         val workRequest = OneTimeWorkRequestBuilder<SOPOWorker>().build()
 
-        SopoLog.d( tag = TAG, str = "One Service Manager GO!!")
+        SopoLog.d(tag = TAG, msg = "One Service Manager GO!!")
 
         workManager.enqueue(workRequest)
     }

@@ -1,9 +1,7 @@
 package com.delivery.sopo.views.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
@@ -16,12 +14,7 @@ import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.launchActivitiy
-import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
-import com.delivery.sopo.models.SopoJsonPatch
-import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.api.UserAPI
-import com.delivery.sopo.networks.dto.JsonPatchDto
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.PowerManager
 import com.delivery.sopo.util.OtherUtil
@@ -32,63 +25,130 @@ import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.menus.LockScreenView
 import com.google.android.material.tabs.TabLayout
-import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.main_view.*
 import kotlinx.android.synthetic.main.tap_item.view.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 {
-    val appDatabase: AppDatabase by inject()
-
-    private var onMainBackPressListener: OnMainBackPressListener? = null
-
-    fun setOnBackPressListener(listenerMain: OnMainBackPressListener)
-    {
-        this.onMainBackPressListener = listenerMain
-    }
-
     private val mainVm: MainViewModel by viewModel()
     private val inquiryVm: InquiryViewModel by viewModel()
 
+    private val userRepoImpl: UserRepoImpl by inject()
+    val appDatabase: AppDatabase by inject()
+
     lateinit var viewPagerAdapter: ViewPagerAdapter
     lateinit var pageChangeListener: ViewPager.OnPageChangeListener
-    private val userRepoImpl: UserRepoImpl by inject()
-
-    private var transaction: FragmentTransaction? = null
 
     var currentPage = MutableLiveData<Int?>()
 
     init
     {
         TAG += "MainView"
-        transaction = supportFragmentManager.beginTransaction()
+
+        // set private api header
         NetworkManager.initPrivateApi(id = userRepoImpl.getEmail(), pwd = userRepoImpl.getApiPwd())
-        SopoLog.d( tag = TAG, str = "ID = ${userRepoImpl.getEmail()}")
-        SopoLog.d( tag = TAG, str = "ID = ${userRepoImpl.getApiPwd()}")
+
+        SopoLog.d(tag = TAG, msg = "ID = ${userRepoImpl.getEmail()}")
+        SopoLog.d(tag = TAG, msg = "PWD = ${userRepoImpl.getApiPwd()}")
+        SopoLog.d(tag = TAG, msg = "NICKNAME = ${userRepoImpl.getUserNickname()}")
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        updateFCMToken()
-        init()
 
+        binding.vm!!.adapter.value = ViewPagerAdapter(supportFragmentManager, 3)
+        initUI()
         PowerManager.checkWhiteList(this)
     }
 
-    private fun init()
+    override fun bindView()
     {
-        viewpagerSetting()
-        tabLayoutSetting()
+        binding.vm = mainVm
     }
 
-    private fun setCurrentTab()
+    override fun setObserver()
     {
+        /** 화면 패스워드 설정 **/
+        binding.vm!!.isSetOfSecurity.observe(this, Observer {
+            it?.also {
+                this.launchActivitiy<LockScreenView> {
+                    putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
+                }
+            }
+        })
+
+        binding.vm!!.tabLayoutVisibility.observe(this, Observer {
+
+            binding.tlMain.run {
+                when (it)
+                {
+                    View.VISIBLE -> visibility = View.VISIBLE
+                    View.INVISIBLE -> visibility = View.INVISIBLE
+                    View.GONE -> visibility = View.GONE
+                }
+            }
+        })
+
+        binding.vm!!.errorMsg.observe(this, Observer {
+            if (it != null && it.isNotEmpty())
+            {
+                GeneralDialog(
+                    act = this@MainView,
+                    title = "에러",
+                    msg = it,
+                    detailMsg = null,
+                    rHandler = Pair(
+                        first = "네",
+                        second = { it ->
+                            userRepoImpl.removeUserRepo()
+                            it.dismiss()
+                            finish()
+                        })
+                ).show(supportFragmentManager, "tag")
+            }
+        })
+
+        // todo 업데이트 시
+        SOPOApp.cntOfBeUpdate.observeForever {
+
+            SopoLog.d(tag = "MainView", msg = "업데이트 가능 여부 택배 갯수 ${it}!!!!!!!!!!!!!!!!!!!!!")
+
+            if (binding.vm!!.isInitUpdate && it > 0)
+            {
+                SopoLog.d(tag = "MainView", msg = "True 업데이트 가능 여부 택배 갯수: $it")
+
+                binding.alertMessageBar.run {
+                    setText("${it}개의 새로운 배송정보가 있어요.")
+                    setTextColor(R.color.MAIN_WHITE)
+                    setOnCancelClicked("업데이트", R.color.MAIN_WHITE, View.OnClickListener {
+                        when (currentPage.value)
+                        {
+                            NavigatorConst.REGISTER_TAB ->
+                            {
+                                binding.vpMain.currentItem = 1
+                                inquiryVm.refreshOngoing()
+                            }
+                            NavigatorConst.INQUIRY_TAB ->
+                            {
+                                inquiryVm.refreshOngoing()
+                            }
+                            NavigatorConst.MY_MENU_TAB ->
+                            {
+                                binding.vpMain.currentItem = 1
+                                inquiryVm.refreshOngoing()
+                            }
+                        }
+
+                        this.onDismiss()
+                    })
+                    onStart(null)
+                }
+            }
+        }
+
         SOPOApp.currentPage.observe(this, Observer {
             if (it != null)
             {
@@ -107,6 +167,30 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
             }
         })
+    }
+
+    fun getAlertMessageBar() = binding.alertMessageBar
+
+    fun onCompleteRegister()
+    {
+        isRegister = true
+        binding.vpMain.currentItem = 1
+        inquiryVm.refreshOngoing()
+    }
+
+    override fun onDestroy()
+    {
+        super.onDestroy()
+        OtherUtil.clearCache(SOPOApp.INSTANCE)
+
+//        if (cntOfBeUpdateObserver != null) SOPOApp.cntOfBeUpdate.removeObserver(cntOfBeUpdateObserver!!)
+    }
+
+
+    private fun initUI()
+    {
+        viewpagerSetting()
+        tabLayoutSetting()
     }
 
     private fun tabSetting(v: TabLayout)
@@ -140,9 +224,10 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         }
     }
 
+
     private fun tabLayoutSetting()
     {
-        val tb = tablayout_bottom_tab
+        val tb = binding.tlMain
 
         tb.run {
             setupWithViewPager(vp_main)
@@ -191,7 +276,6 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         viewPagerAdapter = ViewPagerAdapter(supportFragmentManager, 3)
         pageChangeListener = object : ViewPager.OnPageChangeListener
         {
-
             override fun onPageScrollStateChanged(p0: Int)
             {
             }
@@ -205,7 +289,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                 // 0923 kh 등록 성공
                 if (p0 == 1 && isRegister)
                 {
-                    SopoLog.d( tag = TAG, str = "등록 성공 메인 뷰")
+                    SopoLog.d(tag = TAG, msg = "등록 성공 메인 뷰")
                     onCompleteRegister()
                     isRegister = false
                 }
@@ -214,142 +298,9 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
         vp_main.adapter = viewPagerAdapter
         vp_main.addOnPageChangeListener(pageChangeListener)
-        setCurrentTab()
+
     }
 
-    private fun updateFCMToken()
-    {
-        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
-
-            val token = task.result!!.token
-
-            SopoLog.d( tag = TAG, str = "FCM - $token")
-            val jsonPatchList = mutableListOf<SopoJsonPatch>()
-            jsonPatchList.add(SopoJsonPatch("replace", "/fcmToken", token))
-
-            NetworkManager.privateRetro.create(UserAPI::class.java)
-                .patchUser(
-                    email = userRepoImpl.getEmail(),
-                    jwt = token,
-                    jsonPatch = JsonPatchDto(jsonPatchList)
-                ).enqueue(object : Callback<APIResult<String?>>
-                {
-                    override fun onResponse(
-                        call: Call<APIResult<String?>>,
-                        response: Response<APIResult<String?>>
-                    )
-                    {
-                        SopoLog.d( tag = TAG, str = response.message())
-                    }
-
-                    override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
-                    {
-                        Log.e(TAG, t.localizedMessage)
-                    }
-                })
-        }
-    }
-
-    override fun bindView()
-    {
-        binding.vm = mainVm
-        binding.executePendingBindings()
-    }
-
-    override fun setObserver()
-    {
-        // todo 업데이트 시
-        SOPOApp.cntOfBeUpdate.observeForever {
-
-            SopoLog.d(tag = "MainView", str = "업데이트 가능 여부 택배 갯수 ${it}!!!!!!!!!!!!!!!!!!!!!")
-
-            if (binding.vm!!.isInitUpdate && it > 0)
-            {
-                SopoLog.d(str = "True 업데이트 가능 여부 택배 갯수: $it", tag = "MainView")
-
-                binding.alertMessageBar.run {
-                    setText("${it}개의 새로운 배송정보가 있어요.")
-                    setTextColor(R.color.MAIN_WHITE)
-                    setOnCancelClicked("업데이트", R.color.MAIN_WHITE, View.OnClickListener {
-                        when (currentPage.value)
-                        {
-                            NavigatorConst.REGISTER_TAB ->
-                            {
-                                binding.vpMain.currentItem = 1
-                                inquiryVm.refreshOngoing()
-                            }
-                            NavigatorConst.INQUIRY_TAB ->
-                            {
-                                inquiryVm.refreshOngoing()
-                            }
-                            NavigatorConst.MY_MENU_TAB ->
-                            {
-                                binding.vpMain.currentItem = 1
-                                inquiryVm.refreshOngoing()
-                            }
-                        }
-
-                        this.onDismiss()
-                    })
-                    onStart(null)
-                }
-            }
-        }
-
-        mainVm.isSetOfSecurity.observe(this, Observer {
-            it?.also {
-                this.launchActivitiy<LockScreenView> {
-                    putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
-                }
-            }
-        })
-
-        mainVm.tabLayoutVisibility.observe(this, Observer {
-            when (it)
-            {
-                View.VISIBLE -> tablayout_bottom_tab.visibility = View.VISIBLE
-                View.INVISIBLE -> tablayout_bottom_tab.visibility = View.INVISIBLE
-                View.GONE -> tablayout_bottom_tab.visibility = View.GONE
-            }
-        })
-
-        mainVm.errorMsg.observe(this, Observer {
-            if (it != null && it.isNotEmpty())
-            {
-                GeneralDialog(
-                    act = this@MainView,
-                    title = "에러",
-                    msg = it,
-                    detailMsg = null,
-                    rHandler = Pair(
-                        first = "네",
-                        second = { it ->
-                            userRepoImpl.removeUserRepo()
-                            it.dismiss()
-                            finish()
-                        })
-                ).show(supportFragmentManager, "tag")
-            }
-        })
-    }
-
-    fun getAlertMessageBar() = binding.alertMessageBar
-
-
-    fun onCompleteRegister()
-    {
-        isRegister = true
-        binding.vpMain.currentItem = 1
-        inquiryVm.refreshOngoing()
-    }
-
-    override fun onDestroy()
-    {
-        super.onDestroy()
-        OtherUtil.clearCache(SOPOApp.INSTANCE)
-
-//        if (cntOfBeUpdateObserver != null) SOPOApp.cntOfBeUpdate.removeObserver(cntOfBeUpdateObserver!!)
-    }
 
     companion object
     {

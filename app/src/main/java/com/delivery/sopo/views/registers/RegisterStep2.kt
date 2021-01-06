@@ -3,19 +3,16 @@ package com.delivery.sopo.views.registers
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterStep2Binding
 import com.delivery.sopo.enums.FragmentTypeEnum
-import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.FragmentManager
@@ -74,7 +71,7 @@ class RegisterStep2 : Fragment()
                 callback = object : OnBackPressedCallback(true){
                     override fun handleOnBackPressed()
                     {
-                        SopoLog.d( tag = TAG, str = "Register Step::2 BackPressListener")
+                        SopoLog.d(tag = TAG, msg = "Register Step::2 BackPressListener")
                         requireActivity().supportFragmentManager.popBackStack()
                     }
 
@@ -160,7 +157,7 @@ class RegisterStep2 : Fragment()
         callback = object : OnBackPressedCallback(true){
             override fun handleOnBackPressed()
             {
-                SopoLog.d( tag = TAG, str = "Register Step::2 BackPressListener")
+                SopoLog.d(tag = TAG, msg = "Register Step::2 BackPressListener")
                 requireActivity().supportFragmentManager.popBackStack()
             }
 

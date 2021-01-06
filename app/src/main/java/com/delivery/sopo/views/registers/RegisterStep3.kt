@@ -2,12 +2,10 @@ package com.delivery.sopo.views.registers
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -16,7 +14,6 @@ import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.databinding.RegisterStep3Binding
 import com.delivery.sopo.enums.FragmentTypeEnum
-import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.services.workmanager.SOPOWorkeManager
 import com.delivery.sopo.util.FragmentManager
@@ -84,7 +81,7 @@ class RegisterStep3 : Fragment()
                 callback = object : OnBackPressedCallback(true){
                     override fun handleOnBackPressed()
                     {
-                        SopoLog.d( tag = TAG, str = "Register Step::3 BackPressListener")
+                        SopoLog.d(tag = TAG, msg = "Register Step::3 BackPressListener")
                         requireActivity().supportFragmentManager.popBackStack()
                     }
 
@@ -116,7 +113,7 @@ class RegisterStep3 : Fragment()
             {
                 if(it.result)
                 {
-                    SopoLog.d( tag = TAG, str = "등록 성공 $it")
+                    SopoLog.d(tag = TAG, msg = "등록 성공 $it")
 
                     SOPOWorkeManager.updateWorkManager(context!!, appDatabase = appDatabase)
 
@@ -173,7 +170,7 @@ class RegisterStep3 : Fragment()
         callback = object : OnBackPressedCallback(true){
             override fun handleOnBackPressed()
             {
-                SopoLog.d( tag = TAG, str = "Register Step::3 BackPressListener")
+                SopoLog.d(tag = TAG, msg = "Register Step::3 BackPressListener")
                 requireActivity().supportFragmentManager.popBackStack()
             }
 

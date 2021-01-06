@@ -117,11 +117,11 @@ class RegisterStep1 : Fragment()
                     )
                     snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
 
-                    SopoLog.d("Register Step::1 BackPressListener = 종료를 위해 한번 더 클릭", null)
+                    SopoLog.d(null, "Register Step::1 BackPressListener = 종료를 위해 한번 더 클릭")
                 }
                 else
                 {
-                    SopoLog.d("Register Step::1 BackPressListener = 종료", null)
+                    SopoLog.d(null, "Register Step::1 BackPressListener = 종료")
                     ActivityCompat.finishAffinity(activity!!)
                     System.exit(0)
                 }
@@ -160,11 +160,11 @@ class RegisterStep1 : Fragment()
                             )
                             snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
 
-                            SopoLog.d("Register Step::1 BackPressListener = 종료를 위해 한번 더 클릭", null)
+                            SopoLog.d(null, "Register Step::1 BackPressListener = 종료를 위해 한번 더 클릭")
                         }
                         else
                         {
-                            SopoLog.d("Register Step::1 BackPressListener = 종료", null)
+                            SopoLog.d(null, "Register Step::1 BackPressListener = 종료")
                             ActivityCompat.finishAffinity(activity!!)
                             System.exit(0)
                         }
@@ -264,7 +264,7 @@ class RegisterStep1 : Fragment()
     {
         super.onResume()
 
-        SopoLog.d(tag = TAG, str = "OnResume")
+        SopoLog.d(tag = TAG, msg = "OnResume")
 
         binding.customEtTrackNum.setOnClearListener(context)
 

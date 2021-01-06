@@ -1,6 +1,5 @@
 package com.delivery.sopo.util
 
-import android.util.Log
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -21,7 +20,7 @@ object DateUtil
         }
         catch (e: ParseException)
         {
-            SopoLog.e("Data Format Change Error", e)
+            SopoLog.e(msg = "Data Format Change Error", e = e)
             null
         }
     }

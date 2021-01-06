@@ -111,7 +111,7 @@ class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
                                         GeneralDialog(
                                             act = parentActivity,
                                             title = "오류",
-                                            msg = "알 수 없는 오류",
+                                            msg = res.msg,
                                             detailMsg = null,
                                             rHandler = Pair(
                                                 first = "확인",

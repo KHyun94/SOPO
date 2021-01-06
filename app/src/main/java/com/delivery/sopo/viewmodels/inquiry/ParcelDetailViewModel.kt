@@ -7,11 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.DeliveryStatusConst
-import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.SelectItem
-import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.*
 import com.delivery.sopo.networks.NetworkManager
@@ -20,7 +18,6 @@ import com.delivery.sopo.repository.impl.CourierRepolmpl
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
-import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
@@ -117,8 +114,8 @@ class ParcelDetailViewModel(
 
                 parcelItem = gson.fromJson<ParcelItem?>(subStr, type)
 
-                SopoLog.d( tag = TAG, str = "==>> ${parcelEntity.toString()}")
-                SopoLog.d( tag = TAG, str = "==>> ${parcelItem.toString()}")
+                SopoLog.d(tag = TAG, msg = "==>> ${parcelEntity.toString()}")
+                SopoLog.d(tag = TAG, msg = "==>> ${parcelItem.toString()}")
                 //----------------------------------------------------------------------------------
             }
 
@@ -167,7 +164,7 @@ class ParcelDetailViewModel(
                     {
                         subTitle.postValue("상품을 조회할 수 없습니다.")
                         statusBg.postValue(0)
-                        SopoLog.d( tag = TAG, str = parcelEntity.deliveryStatus)
+                        SopoLog.d(tag = TAG, msg = parcelEntity.deliveryStatus)
                         "에러상태"
                     }
                 }
@@ -238,7 +235,7 @@ class ParcelDetailViewModel(
                 )
             }
 
-            SopoLog.d( tag = TAG, str = "Detail Item => ${item.value}")
+            SopoLog.d(tag = TAG, msg = "Detail Item => ${item.value}")
 
             setAdapter(progressList)
         }
@@ -325,7 +322,7 @@ class ParcelDetailViewModel(
             {
                 override fun onFailure(call: Call<APIResult<Parcel?>>, t: Throwable)
                 {
-                    SopoLog.e("택배 상세 내역 에러 => ${t.message}", t)
+                    SopoLog.e(msg = "택배 상세 내역 에러 => ${t.message}", e = t)
                     isUpdate.postValue(false)
                 }
 
@@ -351,7 +348,7 @@ class ParcelDetailViewModel(
                             val res = response.body()
                             val parcel = res!!.data ?: return
 
-                            SopoLog.d("택배 상세 내역 결과 값 => $parcel")
+                            SopoLog.d(msg = "택배 상세 내역 결과 값 => $parcel")
 
                             if (res.message == "CHANGED")
                             {
@@ -390,12 +387,12 @@ class ParcelDetailViewModel(
 
                         400 ->
                         {
-                            SopoLog.d( tag = TAG, str = "택배 상세 내역 에러 => ${response.errorBody()}")
+                            SopoLog.d(tag = TAG, msg = "택배 상세 내역 에러 => ${response.errorBody()}")
                             isUpdate.postValue(false)
                         }
                         else ->
                         {
-                            SopoLog.d( tag = TAG, str = "택배 상세 내역 에러 => ${response.errorBody()}")
+                            SopoLog.d(tag = TAG, msg = "택배 상세 내역 에러 => ${response.errorBody()}")
                             isUpdate.postValue(false)
                         }
                     }
@@ -410,7 +407,7 @@ class ParcelDetailViewModel(
             .enqueue(object : Callback<APIResult<Parcel?>>{
                 override fun onFailure(call: Call<APIResult<Parcel?>>, t: Throwable)
                 {
-                    SopoLog.e("GET 단일 택배 실패", t)
+                    SopoLog.e(msg = "GET 단일 택배 실패", e = t)
                 }
 
                 override fun onResponse(
@@ -493,7 +490,7 @@ class ParcelDetailViewModel(
                     parcelUid = parcelId.parcelUid,
                     value = 0
                 )
-                SopoLog.d("update=>${a}")
+                SopoLog.d(msg = "update=>${a}")
             }
             else
             {
@@ -502,7 +499,7 @@ class ParcelDetailViewModel(
                     parcelUid = parcelId.parcelUid,
                     value = 0
                 )
-                SopoLog.d("Test update=>${a}")
+                SopoLog.d(msg = "Test update=>${a}")
             }
         }
     }

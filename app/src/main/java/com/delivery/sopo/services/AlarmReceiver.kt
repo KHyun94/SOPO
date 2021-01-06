@@ -140,7 +140,7 @@ class AlarmReceiver : BroadcastReceiver()
     private suspend fun isEnrolledParcel(): Boolean
     {
         val cnt = parcelRepoImpl.getOnGoingDataCnt() ?: 0
-        SopoLog.d(tag = "$TAG.isEnrolledParcel", str = "등록된 소포의 갯수 => $cnt")
+        SopoLog.d(tag = "$TAG.isEnrolledParcel", msg = "등록된 소포의 갯수 => $cnt")
         return cnt > 0
     }
 
@@ -150,11 +150,11 @@ class AlarmReceiver : BroadcastReceiver()
         // 유저 이메일
         val email = userRepoImpl.getEmail()
 
-        SopoLog.d(tag = "$TAG.patchParcels", str = "유저 이메일 ===> $email")
+        SopoLog.d(tag = "$TAG.patchParcels", msg = "유저 이메일 ===> $email")
 
         if (isEnrolledParcel())
         {
-            SopoLog.d(tag = "$TAG.patchParcels", str = "is Enrolled Parcel => YES")
+            SopoLog.d(tag = "$TAG.patchParcels", msg = "is Enrolled Parcel => YES")
 
             return NetworkManager.privateRetro.create(ParcelAPI::class.java)
                 .parcelsRefreshing(email = email)
@@ -162,7 +162,7 @@ class AlarmReceiver : BroadcastReceiver()
         else
         {
             // 조회 안함 및 period worker 제거
-            SopoLog.d(tag = "$TAG.patchParcels", str = "is Enrolled Parcel => NO")
+            SopoLog.d(tag = "$TAG.patchParcels", msg = "is Enrolled Parcel => NO")
             return null
         }
     }
@@ -178,11 +178,11 @@ class AlarmReceiver : BroadcastReceiver()
 
                 if (result != null)
                 {
-                    SopoLog.d(tag = "$TAG.doWork", str = "Work Service => $result")
+                    SopoLog.d(tag = "$TAG.doWork", msg = "Work Service => $result")
 
                     if (result.code == "0000")
                     {
-                        SopoLog.d(tag = "$TAG.doWork", str = "Success to build Worker  $result")
+                        SopoLog.d(tag = "$TAG.doWork", msg = "Success to build Worker  $result")
 
                         appDatabase.logDao()
                             .insert(
@@ -211,7 +211,7 @@ class AlarmReceiver : BroadcastReceiver()
 
                         val time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA)
                         testNoti(context = context, msg = "Update Patch 실패!!!", title = "Update Fail $time")
-                        SopoLog.d(tag = TAG, str = "Fail to build Worker  $result")
+                        SopoLog.d(tag = TAG, msg = "Fail to build Worker  $result")
                     }
                 }
                 else

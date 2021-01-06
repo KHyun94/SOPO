@@ -1,6 +1,5 @@
 package com.delivery.sopo.views.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -60,13 +59,13 @@ class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
 
         if (items != null)
         {
-            SopoLog.d( tag = TAG, str = "$position")
+            SopoLog.d(tag = TAG, msg = "$position")
             val selectItem = items!![position]
             holder.onBind(selectItem)
         }
         else
         {
-            SopoLog.d( tag = TAG, str = "no item")
+            SopoLog.d(tag = TAG, msg = "no item")
         }
     }
 
@@ -98,7 +97,7 @@ class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
 
                 if (paste != null)
                 {
-                    SopoLog.d( tag = TAG, str = "Paste => $paste")
+                    SopoLog.d(tag = TAG, msg = "Paste => $paste")
                     val layout = paste!!.first as LinearLayout
 
                     (paste!!.first as LinearLayout).setBackgroundResource(R.drawable.border_non_click_img)
@@ -144,7 +143,7 @@ class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
 
                         paste = Pair(binding.layoutItem, item)
 
-                        SopoLog.d( tag = TAG, str = "item ===> $item")
+                        SopoLog.d(tag = TAG, msg = "item ===> $item")
                     }
                 }
 

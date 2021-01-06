@@ -8,16 +8,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.SystemClock
-import android.util.Log
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.RoomActivate
-import com.delivery.sopo.database.room.entity.LogEntity
 import com.delivery.sopo.di.appModule
-import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.api.ParcelAPI
+import com.delivery.sopo.models.OauthResult
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
@@ -26,7 +22,6 @@ import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.TimeUtil
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -66,7 +61,7 @@ class SOPOApp : Application()
 
         alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-        SopoLog.d(tag = TAG, str = "${OtherUtil.getDeviceID(SOPOApp.INSTANCE)}")
+        SopoLog.d(tag = TAG, msg = "${OtherUtil.getDeviceID(SOPOApp.INSTANCE)}")
 
 
         //Firebase Init
@@ -89,11 +84,6 @@ class SOPOApp : Application()
         else
         {
             accessToken = Session.getCurrentSession().tokenInfo
-        }
-
-        // FCM TOKEN
-        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
-            SopoLog.d(tag = TAG, str = "토큰 발행: " + task.result!!.token)
         }
 
         RoomActivate.initCourierDB(this)
@@ -187,5 +177,7 @@ class SOPOApp : Application()
 
         val cntOfBeUpdate: LiveData<Int>
             get() = SOPOApp().parcelManagementRepoImpl.getIsUpdateCntLiveData()
+
+        var token : OauthResult? = null
     }
 }

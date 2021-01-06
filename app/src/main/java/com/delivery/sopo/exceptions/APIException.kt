@@ -1,25 +1,43 @@
 package com.delivery.sopo.exceptions
 
-import com.delivery.sopo.enums.ResponseCodeEnum
-import java.lang.RuntimeException
+import android.util.Log
+import com.delivery.sopo.models.api.APIResult
+import com.google.gson.Gson
+import okhttp3.ResponseBody
 
-class APIException : RuntimeException
+class APIException : Exception
 {
-    val responseEnumEnum: ResponseCodeEnum
-    val httpStatus: Int
-    override val message: String
+    var responseMessage: String? = null
+    var responseCode: Int? = null
+    var errorBody: ResponseBody? = null
+    var t: Throwable? = null
 
-    constructor(responseCodeEnum: ResponseCodeEnum)
+    constructor(t: Throwable)
     {
-        this.responseEnumEnum = responseCodeEnum
-        this.message = responseCodeEnum.MSG
-        this.httpStatus = responseCodeEnum.HTTP_STATUS
+        this.responseMessage = t.message
+        this.t = t
     }
 
-    constructor(responseCodeEnum: ResponseCodeEnum, extraMessage: String)
+    constructor(responseMessage: String, responseCode: Int, errorBody: ResponseBody?)
     {
-        this.responseEnumEnum = responseCodeEnum
-        this.message = responseCodeEnum.MSG + " : " + extraMessage
-        this.httpStatus = responseCodeEnum.HTTP_STATUS
+        this.responseMessage = responseMessage
+        this.responseCode = responseCode
+        this.errorBody = errorBody
     }
+
+    constructor(responseMessage: String, responseCode: Int, errorBody: ResponseBody?, t: Throwable)
+    {
+        this.responseMessage = responseMessage
+        this.responseCode = responseCode
+        this.errorBody = errorBody
+        this.t = t
+    }
+
+    fun data(): APIResult<*>?
+    {
+        val errorReader = errorBody!!.charStream()
+
+        return Gson().fromJson(errorReader, APIResult::class.java)
+    }
+
 }

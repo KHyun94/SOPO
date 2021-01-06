@@ -65,7 +65,7 @@ val appModule = module {
     viewModel { SplashViewModel(get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { SignUpViewModel() }
-    viewModel { LoginSelectViewModel() }
+    viewModel { LoginSelectViewModel(get()) }
     viewModel { MainViewModel(get(), get(), get(), get()) }
     viewModel { LockScreenViewModel(get(), get()) }
     viewModel { SettingViewModel(get(), get()) }
