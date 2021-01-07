@@ -165,6 +165,13 @@ class SignUpViewModel : ViewModel()
             if (type == InfoConst.EMAIL)
                 isDuplicate = true
 
+            when (type)
+            {
+                InfoConst.EMAIL -> emailStatusType.value = 1
+                InfoConst.PASSWORD -> pwdStatusType.value = 1
+                InfoConst.RE_PASSWORD -> rePwdStatusType.value = 1
+            }
+
         }
         else
         {

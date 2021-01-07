@@ -23,47 +23,24 @@ import org.koin.dsl.module
 
 val appModule = module {
 
-    single {
-        SharedPref(androidApplication())
-    }
-
+    single { SharedPref(androidApplication()) }
     single {
         SharedPrefHelper(
             get(),
             androidApplication()
         )
     }
-
-    single {
-        UserRepoImpl(get())
-    }
-
-    single {
-        AppDatabase.getInstance(get())
-    }
-
-    single {
-        CourierRepolmpl(get())
-    }
-
-    single {
-        ParcelRepoImpl(get(), get())
-    }
-
-    single {
-        ParcelManagementRepoImpl(get())
-    }
-
-    single {
-        TimeCountRepoImpl(get(), get())
-    }
-
-    single {
-        AppPasswordRepoImpl(get())
-    }
+    single { UserRepoImpl(get()) }
+    single { AppDatabase.getInstance(get()) }
+    single { CourierRepolmpl(get()) }
+    single { ParcelRepoImpl(get(), get()) }
+    single { ParcelManagementRepoImpl(get()) }
+    single { TimeCountRepoImpl(get(), get()) }
+    single { AppPasswordRepoImpl(get()) }
+    single { OauthRepoImpl(get()) }
 
     viewModel { SplashViewModel(get()) }
-    viewModel { LoginViewModel(get()) }
+    viewModel { LoginViewModel(get(), get()) }
     viewModel { SignUpViewModel() }
     viewModel { LoginSelectViewModel(get()) }
     viewModel { MainViewModel(get(), get(), get(), get()) }
@@ -78,14 +55,7 @@ val appModule = module {
 
     viewModel { InquiryMainViewModel() }
     viewModel { MenuMainViewModel() }
-    viewModel {
-        ParcelDetailViewModel(
-            get(),
-            get(),
-            get(),
-            get()
-        )
-    }
+    viewModel { ParcelDetailViewModel(get(), get(), get(), get()) }
 
     viewModel { RegisterStep1ViewModel() }
     viewModel { RegisterStep2ViewModel(get()) }

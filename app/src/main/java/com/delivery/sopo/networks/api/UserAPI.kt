@@ -61,7 +61,7 @@ interface UserAPI
 
     // 특정 값을 변경 및 삭제 등 수정 요청 api
     @PATCH("/api/v1/sopo-api/user/deviceInfo")
-    fun test(
+    suspend fun test(
         @Header("Content-Type") contentType: String = "application/json",
         @Query("jwtToken") jwtToken: String,
         @Query("email") email: String,

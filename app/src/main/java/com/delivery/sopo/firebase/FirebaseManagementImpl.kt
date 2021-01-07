@@ -24,7 +24,7 @@ object FirebaseManagementImpl : FirebaseManagement
     }
 
     @Throws(FirebaseException::class)
-    override fun firebaseCustomTokenLogin(token: String, callback : FirebaseCustomTokenLoginCallback)
+    override fun firebaseCustomTokenLogin(token: String, callback: FirebaseLoginCallback)
     {
         SopoLog.d(tag = TAG, msg = "firebaseCustomTokenLogin call()")
 
@@ -34,10 +34,14 @@ object FirebaseManagementImpl : FirebaseManagement
     }
 
     @Throws(FirebaseException::class)
-    override fun firebaseUpdateEmail(email: String, task : Task<AuthResult>, callback : FirebaseVoidCallback)
+    override fun firebaseUpdateEmail(
+        email: String,
+        task: Task<AuthResult>,
+        callback: FirebaseVoidCallback
+    )
     {
         SopoLog.d(tag = TAG, msg = "firebaseUpdateEmail call()")
-        if(task.result.user != null)
+        if (task.result.user != null)
         {
             task.result.user!!.updateEmail(email).addOnCompleteListener {
                 callback.invoke(it)
@@ -53,7 +57,7 @@ object FirebaseManagementImpl : FirebaseManagement
     fun firebaseSendEmail(auth: FirebaseUser?, callback: FirebaseVoidCallback)
     {
         SopoLog.d(tag = TAG, msg = "firebaseUpdateEmail call()")
-        if(auth == null)
+        if (auth == null)
         {
             callback.invoke(null)
             return
@@ -61,7 +65,7 @@ object FirebaseManagementImpl : FirebaseManagement
 
         auth.sendEmailVerification().addOnCompleteListener {
             callback.invoke(it)
-         return@addOnCompleteListener
+            return@addOnCompleteListener
         }
     }
 
@@ -77,7 +81,15 @@ object FirebaseManagementImpl : FirebaseManagement
         return SOPOApp.auth.signInWithEmailAndPassword(email, pwd)
     }
 
-
+//    Task<AuthResult>
+    @Throws(FirebaseException::class)
+    fun firebaseSelfLogin(email: String, pwd: String, callback : FirebaseLoginCallback)
+    {
+        SopoLog.d(tag = TAG, msg = "firebaseSelfLogin() call!!!")
+        SOPOApp.auth.signInWithEmailAndPassword(email, pwd).addOnCompleteListener {
+            callback.invoke(it)
+        }
+    }
 
 
 }

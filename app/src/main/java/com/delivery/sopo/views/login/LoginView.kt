@@ -3,145 +3,132 @@ package com.delivery.sopo.views.login
 import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
-import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.InfoConst
-import com.delivery.sopo.databinding.LoginViewBinding
 import com.delivery.sopo.abstracts.BasicView
+import com.delivery.sopo.databinding.LoginViewBinding
+import com.delivery.sopo.models.ErrorResult
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
+import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.login.LoginViewModel
+import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
 {
-
-    private val loginVM: LoginViewModel by viewModel()
+    private val loginVm: LoginViewModel by viewModel()
+    private var progressBar : CustomProgressBar? = null
 
     init
     {
         TAG += this.javaClass.simpleName
         parentActivity = this@LoginView
+        progressBar = CustomProgressBar(this)
     }
 
     override fun bindView()
     {
-        binding.vm = loginVM
+        binding.vm = loginVm
         binding.executePendingBindings()
     }
 
     override fun setObserver()
     {
-        binding.vm?.run {
-            this.validateResult.observe(this@LoginView, Observer { res ->
+        binding.vm!!.isProgress.observe(this, Observer {
+            if(it == null) return@Observer
 
-                if (res.result)
+            if(progressBar == null) progressBar = CustomProgressBar(this)
+
+            if(it)
+            {
+                progressBar!!.onStartDialog()
+            }
+            else
+            {
+                progressBar!!.onCloseDialog()
+                progressBar = null
+            }
+        })
+
+        binding.vm!!.result.observe(this, Observer {
+
+            if (it == null) return@Observer
+
+            if (it.successResult != null)
+            {
+                SopoLog.d(msg = "성공 발생 => ${it.successResult}")
+                if (it.successResult!!.data != null)
                 {
-                    if (res.data != null)
-                    {
-                        // 모든 유효성 검사 통과
-                        startActivity(Intent(this@LoginView, MainView::class.java))
-                        finish()
-                    }
-
+                    startActivity(Intent(this@LoginView, MainView::class.java))
+                    finish()
                 }
-                else
+            }
+            else if (it.errorResult != null)
+            {
+                SopoLog.e(msg = "에러 발생 => ${it.errorResult}")
+                when (it.errorResult!!.errorType)
                 {
-                    when (res.showType)
+                    ErrorResult.ERROR_TYPE_NON -> { }
+                    ErrorResult.ERROR_TYPE_TOAST ->
                     {
-                        InfoConst.NON_SHOW ->
-                        {
-                            return@Observer
-                        }
-                        InfoConst.CUSTOM_TOAST_MSG ->
-                        {
-                            CustomAlertMsg.floatingUpperSnackBAr(
-                                context = parentActivity,
-                                msg = res.msg,
-                                isClick = true
-                            )
+                        CustomAlertMsg.floatingUpperSnackBAr(
+                            context = parentActivity,
+                            msg = it.errorResult!!.errorMsg,
+                            isClick = true
+                        )
+                        return@Observer
+                    }
+                    ErrorResult.ERROR_TYPE_DIALOG ->
+                    {
+                        var msg = ""
+                        val code = it.errorResult!!.codeEnum?.CODE
 
-                            return@Observer
-                        }
-                        InfoConst.CUSTOM_DIALOG ->
+                        when (it.errorResult!!.data)
                         {
-                            if (res.result && res.data != null)
+                            is Int -> msg = getString(it.errorResult!!.data as Int)
+                            is String ->
                             {
-                                return@Observer
-                            }
-                            else
-                            {
-                                when (res.data)
-                                {
-                                    null ->
-                                    {
-                                        GeneralDialog(
-                                            act = parentActivity,
-                                            title = "오류",
-                                            msg = res.msg,
-                                            detailMsg = null,
-                                            rHandler = Pair(
-                                                first = "네",
-                                                second = { it -> it.dismiss() })
-                                        ).show(supportFragmentManager, "tag")
-                                    }
-                                    is String ->
-                                    {
-                                        val token = res.data as String
+                                val jwtToken = it.errorResult!!.data as String
 
-                                        GeneralDialog(
-                                            act = parentActivity,
-                                            title = "오류",
-                                            msg = res.msg,
-                                            detailMsg = null,
-                                            rHandler = Pair(
-                                                first = "네",
-                                                second = { it ->
-                                                    this.authJwtToken(jwtToken = token)
-                                                    it.dismiss()
-                                                }),
-                                            lHandler = Pair(
-                                                first = "아니오",
-                                                second = { it -> it.dismiss() })
-                                        ).show(supportFragmentManager, "tag")
-                                    }
-                                    else ->
-                                    {
-                                        GeneralDialog(
-                                            act = parentActivity,
-                                            title = "오류",
-                                            msg = res.msg,
-                                            detailMsg = null,
-                                            rHandler = Pair(
-                                                first = "확인",
-                                                second = { it ->
-                                                    it.dismiss()
-                                                })
-                                        ).show(supportFragmentManager, "tag")
-                                    }
-                                }
+                                msg = it.errorResult!!.errorMsg
+
+                                GeneralDialog(
+                                    act = parentActivity,
+                                    title = "오류",
+                                    msg = msg,
+                                    detailMsg = code,
+                                    rHandler = Pair(
+                                        first = "네",
+                                        second = { it ->
+                                            binding.vm!!.authJwtToken(jwtToken = jwtToken)
+                                            it.dismiss()
+                                        }),
+                                    lHandler = Pair(first = "아니오", second = null)
+                                ).show(supportFragmentManager, "tag")
 
                                 return@Observer
                             }
+                            else -> msg = it.errorResult!!.errorMsg
+                        }
 
-                        }
-                        InfoConst.ERROR_ACTIVITY ->
-                        {
-                            return@Observer
-                        }
+                        GeneralDialog(
+                            act = parentActivity,
+                            title = "오류",
+                            msg = msg,
+                            detailMsg = code,
+                            rHandler = Pair(first = "네", second = null)
+                        ).show(supportFragmentManager, "tag")
+                    }
+                    ErrorResult.ERROR_TYPE_SCREEN ->
+                    {
+                    }
+                    else ->
+                    {
                     }
                 }
-
-            })
-
-        }
+            }
+        })
     }
-
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-
-    }
-
 }

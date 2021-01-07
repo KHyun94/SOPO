@@ -35,8 +35,6 @@ class CustomEditText : LinearLayout
     private var underLineWidth: Int = ViewGroup.LayoutParams.MATCH_PARENT
     private var underLineHeight: Int = SizeUtil.changeSpToPx(SOPOApp.INSTANCE, 2.0f)
 
-    private var completeUnderLineColor = resources.getColor(R.color.COLOR_MAIN_RED_700)
-
     constructor(context: Context?) : super(context)
     {
         initSetting(context, null)
@@ -62,8 +60,7 @@ class CustomEditText : LinearLayout
 
         if (attrs != null)
         {
-            val typedArray =
-                context?.obtainStyledAttributes(attrs, R.styleable.CustomEditText, 0, 0)
+            val typedArray = context?.obtainStyledAttributes(attrs, R.styleable.CustomEditText, 0, 0)
             text = typedArray?.getString(R.styleable.CustomEditText_text)
             title = typedArray?.getString(R.styleable.CustomEditText_title)
             hint = typedArray?.getString(R.styleable.CustomEditText_hint)
@@ -81,8 +78,9 @@ class CustomEditText : LinearLayout
                 resources.getColor(R.color.COLOR_MAIN_BLUE_700)
             )
 
-            val test = typedArray?.getResourceId(R.styleable.CustomEditText_android_nextFocusDown, 0)
-            et_input_text.nextFocusDownId = test?:0
+            val test =
+                typedArray?.getResourceId(R.styleable.CustomEditText_android_nextFocusDown, 0)
+            et_input_text.nextFocusDownId = test ?: 0
         }
 
         et_input_text.setText(text ?: "")
@@ -183,6 +181,14 @@ class CustomEditText : LinearLayout
         }
     }
 
+    companion object{
+        const val STATUS_COLOR_RED = 0
+        const val STATUS_COLOR_BLUE = 1
+        const val STATUS_COLOR_BLACK = 2
+        const val STATUS_COLOR_ELSE = -1
+
+    }
+
     fun updateStatusColor(type: Int)
     {
         when (type)
@@ -218,7 +224,7 @@ class CustomEditText : LinearLayout
 
     fun setOnClearListener(context: Context?)
     {
-        if(context != null)
+        if (context != null)
         {
             Glide.with(context)
                 .load(R.drawable.ic_clear_btn)
@@ -242,7 +248,8 @@ class CustomEditText : LinearLayout
 
                     override fun afterTextChanged(editable: Editable)
                     {
-                        if(editable.toString().isNotEmpty()) iv_right_mark.visibility = View.VISIBLE
+                        if (editable.toString().isNotEmpty()) iv_right_mark.visibility =
+                            View.VISIBLE
                         else iv_right_mark.visibility = View.GONE
                     }
                 }
@@ -264,7 +271,8 @@ class CustomEditText : LinearLayout
 
     }
 
-    fun setOnKeyListener(cb : ((View, Int, KeyEvent) -> Unit)){
+    fun setOnKeyListener(cb: ((View, Int, KeyEvent) -> Unit))
+    {
         et_input_text.setOnKeyListener { v, keyCode, event ->
             cb.invoke(v, keyCode, event)
             return@setOnKeyListener false
