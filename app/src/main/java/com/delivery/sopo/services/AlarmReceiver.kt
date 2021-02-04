@@ -17,6 +17,7 @@ import android.os.Build
 import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.entity.LogEntity
 import com.delivery.sopo.models.api.APIResult
@@ -156,7 +157,7 @@ class AlarmReceiver : BroadcastReceiver()
         {
             SopoLog.d(tag = "$TAG.patchParcels", msg = "is Enrolled Parcel => YES")
 
-            return NetworkManager.privateRetro.create(ParcelAPI::class.java)
+            return NetworkManager.retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java)
                 .parcelsRefreshing(email = email)
         }
         else
