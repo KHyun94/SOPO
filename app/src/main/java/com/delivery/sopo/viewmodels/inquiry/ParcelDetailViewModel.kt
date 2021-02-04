@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.DeliveryStatusConst
 import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.mapper.ParcelMapper
@@ -313,7 +314,7 @@ class ParcelDetailViewModel(
 
     private fun requestRemoteParcel(parcelId: ParcelId)
     {
-        NetworkManager.privateRetro.create(ParcelAPI::class.java)
+        NetworkManager.retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java)
             .parcelRefreshing(
                 email = userRepoImpl.getEmail(),
                 parcelUid = parcelId.parcelUid,
@@ -402,7 +403,7 @@ class ParcelDetailViewModel(
 
     fun getRemoteParcel()
     {
-        NetworkManager.privateRetro.create(ParcelAPI::class.java)
+        NetworkManager.retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java)
             .getOneParcel(userRepoImpl.getEmail(), parcelId.value!!.regDt, parcelId.value!!.parcelUid)
             .enqueue(object : Callback<APIResult<Parcel?>>{
                 override fun onFailure(call: Call<APIResult<Parcel?>>, t: Throwable)
@@ -417,7 +418,7 @@ class ParcelDetailViewModel(
                 {
                     // ROOM에 업데이트
                     //
-                    updateParcelItem(tmpParcel!!)
+
 
                     val httpStatusCode = response.code()
 
@@ -428,6 +429,7 @@ class ParcelDetailViewModel(
                     {
                         200 ->
                         {
+//                            updateParcelItem(tmpParcel!!)
                             _parcelEntity.postValue(tmpParcel)
                             updateIsBeUpdate(parcelId.value!!.regDt, parcelId.value!!.parcelUid, 0)
                         }

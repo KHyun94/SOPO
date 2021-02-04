@@ -6,7 +6,7 @@ import retrofit2.Response
 
 abstract class BaseService
 {
-    protected suspend fun <T : Any> apiCall(call: suspend () -> Response<T>): Result<T>
+    protected suspend fun <T : Any> apiCall(call: suspend () -> Response<T>): NetworkResult<T>
     {
         val response: Response<T>
 
@@ -18,7 +18,7 @@ abstract class BaseService
         catch (t: Throwable)
         {
             // api 호출 실패 - network error
-            return Result.Error(null, APIException(t = t))
+            return NetworkResult.Error(null, APIException(t = t))
         }
 
         return if (!response.isSuccessful)
@@ -26,18 +26,18 @@ abstract class BaseService
             // http status code (200 ~ 300) 이외의 코드
             val errorBody : ResponseBody? = response.errorBody()
             @Suppress("BlockingMethodInNonBlockingContext")
-            Result.Error(response.code(), APIException(response.message(), response.code(), errorBody))
+            NetworkResult.Error(response.code(), APIException(response.message(), response.code(), errorBody))
         }
         else
         {
             // http status code 200 ~ 300
             return if (response.body() == null)
             {
-                Result.Error(response.code(), APIException(response.message(), response.code(), null))
+                NetworkResult.Error(response.code(), APIException(response.message(), response.code(), null))
             }
             else
             {
-                Result.Success(response.code(), response.body()!!)
+                NetworkResult.Success(response.code(), response.body()!!)
             }
         }
     }

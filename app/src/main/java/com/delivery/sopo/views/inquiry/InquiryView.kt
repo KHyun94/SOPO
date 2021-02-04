@@ -26,7 +26,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.databinding.SopoInquiryViewBinding
-import com.delivery.sopo.enums.FragmentTypeEnum
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.enums.ScreenStatusEnum
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
@@ -62,25 +62,23 @@ class InquiryView : Fragment()
 {
     private lateinit var parentView: MainView
     private val TAG = this.javaClass.simpleName
-    private val userRepoImpl: UserRepoImpl by inject()
+
     private val parcelRepoImpl: ParcelRepoImpl by inject()
-    private val parcelManagementRepoImpl: ParcelManagementRepoImpl by inject()
-    private val timeCountRepoImpl: TimeCountRepoImpl by inject()
-    private val appPasswordRepoImpl: AppPasswordRepoImpl by inject()
+
     private lateinit var binding: SopoInquiryViewBinding
+    private val inquiryVm: InquiryViewModel by viewModel()
+
     private lateinit var soonArrivalListAdapter: InquiryListAdapter
     private lateinit var registeredSopoListAdapter: InquiryListAdapter
     private lateinit var completeListAdapter: InquiryListAdapter
+
     private var menuPopUpWindow: PopupWindow? = null
     private var historyPopUpWindow: PopupWindow? = null
 
-    private val appDatabase: AppDatabase by inject()
-
-    // todo viewModelFactory를 koin으로 변경
-    private val inquiryVm: InquiryViewModel by viewModel()
-
     private var progressBar: CustomProgressBar? = null
     private var refreshDelay: Boolean = false
+
+    var callback: OnBackPressedCallback? = null
 
     override fun onAttach(context: Context)
     {
@@ -116,7 +114,6 @@ class InquiryView : Fragment()
         requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
     }
 
-
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -145,7 +142,7 @@ class InquiryView : Fragment()
         }
     }
 
-    var callback: OnBackPressedCallback? = null
+
 
 
     override fun onDetach()
@@ -236,41 +233,6 @@ class InquiryView : Fragment()
 
     private fun setObserver()
     {
-        var pressedTime: Long = 0
-
-        parentView.currentPage.observe(this, Observer {
-            if (it != null && it == 1)
-            {
-                callback = object : OnBackPressedCallback(true)
-                {
-                    override fun handleOnBackPressed()
-                    {
-                        if (System.currentTimeMillis() - pressedTime > 2000)
-                        {
-                            pressedTime = System.currentTimeMillis()
-                            val snackbar = Snackbar.make(
-                                parentView.binding.layoutMain,
-                                "한번 더 누르시면 앱이 종료됩니다.",
-                                2000
-                            )
-                            snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
-
-                            SopoLog.d(null, "InquiryView::1 BackPressListener = 종료를 위해 한번 더 클릭")
-                        }
-                        else
-                        {
-                            SopoLog.d(null, "InquiryView::1 BackPressListener = 종료")
-                            ActivityCompat.finishAffinity(activity!!)
-                            System.exit(0)
-                        }
-                    }
-
-                }
-
-                requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
-            }
-        })
-
         // 배송완료 리스트에서 해당 년월에 속해있는 택배들을 전부 삭제했을 때는 서버로 통신해서 새로고침하면 안돼고 무조건 로컬에 있는 데이터로 새로고침 해야한다.
         // (서버로 통신해서 새로고침하면 서버에 있는 데이터(우선순위가 높음)로 덮어써버리기 때문에 '삭제취소'를 통해 복구를 못함..)
         // (새로고침하면 내부에 저장된 '삭제할 데이터'들을 모두 서버로 통신하여 Remote database에서도 삭제처리(데이터 동기화)를 하고 나서 새로운 데이터를 받아옴)
@@ -299,11 +261,6 @@ class InquiryView : Fragment()
                     progressBar!!.onCloseDialog()
                     binding.vm!!.isLoading.call()
 
-
-                    SOPOWorkeManager.updateWorkManager(
-                        context = context!!,
-                        appDatabase = appDatabase
-                    )
                 }
             }
             else
@@ -529,13 +486,13 @@ class InquiryView : Fragment()
         {
             override fun onItemClicked(view: View, type: Int, parcelId: ParcelId)
             {
-                FragmentTypeEnum.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(
+                TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(
                     parcelUId = parcelId.parcelUid,
                     regDt = parcelId.regDt
                 )
                 FragmentManager.move(
                     activity!!,
-                    FragmentTypeEnum.INQUIRY_DETAIL,
+                    TabCode.INQUIRY_DETAIL,
                     InquiryMainFrame.viewId
                 )
             }

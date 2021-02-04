@@ -340,7 +340,7 @@ object RoomActivate
 
     fun recommendAutoCourier(
         context: Context,
-        waybilNum: String,
+        wayBilNum: String,
         cnt: Int,
         courierRepolmpl: CourierRepolmpl
     ): MutableList<CourierItem?>?
@@ -354,7 +354,7 @@ object RoomActivate
             runBlocking {
                 launch {
 
-                    val _waybilNum = waybilNum.removeSpace()
+                    val _wayBilNum = wayBilNum.removeSpace()
                     // - ㅐor _ 삭제 버젼
                     var mergeNum = ""
 
@@ -366,18 +366,18 @@ object RoomActivate
 
                     when
                     {
-                        _waybilNum.contains('-') ->
+                        _wayBilNum.contains('-') ->
                         {
-                            SopoLog.d(tag = TAG, msg = "waybil ${_waybilNum}")
-                            parserList = _waybilNum.split('-') as ArrayList<String>
+                            SopoLog.d(tag = TAG, msg = "waybil ${_wayBilNum}")
+                            parserList = _wayBilNum.split('-') as ArrayList<String>
                         }
-                        _waybilNum.contains('_') ->
+                        _wayBilNum.contains('_') ->
                         {
-                            parserList = _waybilNum.split('_') as ArrayList<String>
+                            parserList = _wayBilNum.split('_') as ArrayList<String>
                         }
                         else ->
                         {
-                            parserList.add(_waybilNum)
+                            parserList.add(_wayBilNum)
                         }
                     }
 

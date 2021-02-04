@@ -2,6 +2,7 @@ package com.delivery.sopo.repository.impl
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.networks.dto.TimeCountDTO
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.models.api.APIResult
@@ -21,19 +22,19 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
-    override suspend fun getRemoteOngoingParcels(): MutableList<Parcel>? = NetworkManager.privateRetro.create(
+    override suspend fun getRemoteOngoingParcels(): MutableList<Parcel>? = NetworkManager.retro(SOPOApp.oauth?.accessToken).create(
         ParcelAPI::class.java).getParcelsOngoing(email = userRepoImpl.getEmail()).data
 
     override suspend fun getRemoteOngoingParcel(regDt: String, parcelUid: String): Parcel? = NetworkManager
-                                                            .privateRetro.create(ParcelAPI::class.java)
+                                                            .retro.create(ParcelAPI::class.java)
                                                             .getParcel( email = userRepoImpl.getEmail(),
                                                                         regDt = regDt,
                                                                         parcelUid = parcelUid).data
 
-    override suspend fun getRemoteMonths(): MutableList<TimeCountDTO>? = NetworkManager.privateRetro.create(ParcelAPI::class.java).getMonths(email = userRepoImpl.getEmail()).data
+    override suspend fun getRemoteMonths(): MutableList<TimeCountDTO>? = NetworkManager.retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java).getMonths(email = userRepoImpl.getEmail()).data
 
     override suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<Parcel>? = NetworkManager
-                                                                                                        .privateRetro.create(ParcelAPI::class.java)
+                                                                                                        .retro.create(ParcelAPI::class.java)
                                                                                                         .getParcelsComplete(email = userRepoImpl.getEmail(), page = page, inquiryDate = inquiryDate).data
 
     override suspend fun getLocalParcelById(regDt: String, parcelUid: String): ParcelEntity? {
@@ -107,7 +108,7 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
     override suspend fun deleteRemoteParcels(): APIResult<String?>? {
         val beDeletedData = appDatabase.parcelDao().getBeDeletedData()
         return if(beDeletedData.isNotEmpty()){
-            NetworkManager.privateRetro.create(ParcelAPI::class.java).deleteParcels(email = userRepoImpl.getEmail(),
+            NetworkManager.retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java).deleteParcels(email = userRepoImpl.getEmail(),
                 parcelIds = DeleteParcelsDTO(beDeletedData.map(ParcelMapper::parcelEntityToParcelId) as MutableList<ParcelId>)
             )
         }
@@ -128,8 +129,8 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
     }
 
     // 0922 kh 추가사항
-    override suspend fun getSingleParcelWithWaybilNum(waybilNum : String): ParcelEntity? {
-        return appDatabase.parcelDao().getSingleParcelWithWaybilNum(waybilNum = waybilNum)
+    override suspend fun getSingleParcelWithwayBilNum(wayBilNum : String): ParcelEntity? {
+        return appDatabase.parcelDao().getSingleParcelWithwayBilNum(wayBilNum = wayBilNum)
     }
 
     override suspend fun getOnGoingDataCnt(): Int {

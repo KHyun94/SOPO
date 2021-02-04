@@ -14,7 +14,7 @@ class SessionCallback : ISessionCallback {
     var TAG = "LOG.SOPO"
 
     override fun onSessionOpened() {
-//        requestMe()
+//        requestKakaoLogin()
     }
 
     override fun onSessionOpenFailed(exception: KakaoException) {
@@ -34,7 +34,7 @@ class SessionCallback : ISessionCallback {
                 cb.invoke(errorResult)
                 Log.e(
                     TAG,
-                    "requestMe onFailure message : " + errorResult.errorMessage
+                    "requestKakaoLogin onFailure message : " + errorResult.errorMessage
                 )
             }
 
@@ -43,7 +43,7 @@ class SessionCallback : ISessionCallback {
                 cb.invoke(errorResult)
                 Log.e(
                     TAG,
-                    "requestMe onFailureForUiThread message : " + errorResult.errorMessage
+                    "requestKakaoLogin onFailureForUiThread message : " + errorResult.errorMessage
                 )
             }
 
@@ -51,7 +51,7 @@ class SessionCallback : ISessionCallback {
                 cb.invoke(errorResult)
                 Log.e(
                     TAG,
-                    "requestMe onSessionClosed message : " + errorResult.errorMessage
+                    "requestKakaoLogin onSessionClosed message : " + errorResult.errorMessage
                 )
             }
 

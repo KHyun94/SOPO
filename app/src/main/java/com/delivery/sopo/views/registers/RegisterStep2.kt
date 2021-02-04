@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterStep2Binding
-import com.delivery.sopo.enums.FragmentTypeEnum
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.FragmentManager
@@ -31,7 +31,7 @@ class RegisterStep2 : Fragment()
     private lateinit var binding: RegisterStep2Binding
     private val registerStep2Vm: RegisterStep2ViewModel by viewModel()
 
-    private var waybilNum: String? = null
+    private var wayBilNum: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -39,7 +39,7 @@ class RegisterStep2 : Fragment()
 
         if (arguments != null)
         {
-            waybilNum = arguments!!.getString("waybilNum") ?: ""
+            wayBilNum = arguments!!.getString("wayBilNum") ?: ""
         }
     }
 
@@ -52,7 +52,7 @@ class RegisterStep2 : Fragment()
         binding.vm = registerStep2Vm
         binding.lifecycleOwner = this
 
-        binding.vm!!.initAdapter(_waybilNum = waybilNum ?: "")
+        binding.vm!!.initAdapter(_wayBilNum = wayBilNum ?: "")
 
         parentView = activity as MainView
 
@@ -85,20 +85,20 @@ class RegisterStep2 : Fragment()
 
             when (it)
             {
-                FragmentTypeEnum.REGISTER_STEP3.NAME ->
+                TabCode.REGISTER_STEP3.NAME ->
                 {
                     val mHandler = Handler()
                     mHandler.postDelayed(Runnable {
 
-                        FragmentTypeEnum.REGISTER_STEP3.FRAGMENT =
+                        TabCode.REGISTER_STEP3.FRAGMENT =
                             RegisterStep3.newInstance(
-                                waybilNum,
+                                wayBilNum,
                                 binding.vm!!.selectedItem.value!!.item
                             )
 
                         FragmentManager.move(
                             activity!!,
-                            FragmentTypeEnum.REGISTER_STEP3,
+                            TabCode.REGISTER_STEP3,
                             RegisterMainFrame.viewId
                         )
                         binding.vm?.moveFragment?.value = ""
@@ -106,7 +106,7 @@ class RegisterStep2 : Fragment()
                     }, 300) // 0.5초후
                 }
 
-                FragmentTypeEnum.REGISTER_STEP2.NAME ->
+                TabCode.REGISTER_STEP2.NAME ->
                 {
                     FragmentManager.remove(activity = activity!!, fragment = this@RegisterStep2)
                     binding.vm?.moveFragment?.value = ""
@@ -124,7 +124,7 @@ class RegisterStep2 : Fragment()
                     if (item.isSelect)
                     {
                         binding.vm!!.selectedItem.value = item
-                        binding.vm!!.moveFragment.value = FragmentTypeEnum.REGISTER_STEP3.NAME
+                        binding.vm!!.moveFragment.value = TabCode.REGISTER_STEP3.NAME
                     }
                 }
 
@@ -134,13 +134,13 @@ class RegisterStep2 : Fragment()
 
     companion object
     {
-        fun newInstance(waybilNum: String?, courier: CourierItem?): RegisterStep2
+        fun newInstance(wayBilNum: String?, courier: CourierItem?): RegisterStep2
         {
             val registerStep2 = RegisterStep2()
 
             val args = Bundle()
 
-            args.putString("waybilNum", waybilNum)
+            args.putString("wayBilNum", wayBilNum)
             args.putSerializable("courier", courier)
 
             registerStep2.arguments = args

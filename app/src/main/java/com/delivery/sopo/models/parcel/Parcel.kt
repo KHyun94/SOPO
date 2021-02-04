@@ -15,9 +15,9 @@ data class Parcel(
     @SerializedName("parcelAlias")
     var parcelAlias: String,
     @SerializedName("inqueryResult")
-    var inqueryResult: String,
+    var inqueryResult: String?,
     @SerializedName("inqueryHash")
-    var inqueryHash: String,
+    var inqueryHash: String?,
     @SerializedName("deliveryStatus")
     var deliveryStatus: String,
     @SerializedName("arrivalDte")

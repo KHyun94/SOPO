@@ -2,20 +2,20 @@ package com.delivery.sopo.views.signup
 
 import android.content.Intent
 import androidx.lifecycle.Observer
-import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.InfoConst
-import com.delivery.sopo.databinding.SignUpViewBinding
 import com.delivery.sopo.abstracts.BasicView
+import com.delivery.sopo.databinding.SignUpViewBinding
+import com.delivery.sopo.extensions.launchActivity
+import com.delivery.sopo.models.ErrorResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.viewmodels.signup.SignUpViewModel
+import com.delivery.sopo.views.dialog.GeneralDialog
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SignUpView : BasicView<SignUpViewBinding>(R.layout.sign_up_view)
 {
-
-    private val signUpVM: SignUpViewModel by viewModel()
+    private val signUpVm: SignUpViewModel by viewModel()
 
     init
     {
@@ -25,95 +25,70 @@ class SignUpView : BasicView<SignUpViewBinding>(R.layout.sign_up_view)
 
     override fun bindView()
     {
-        binding.vm = signUpVM
+        binding.vm = signUpVm
     }
 
     override fun setObserver()
     {
-        binding.vm?.run {
-            this.validateResult?.observe(this@SignUpView, Observer {
+        binding.vm!!.result.observe(this, Observer {
+            if (it == null) return@Observer
 
-                if (it.result)
+            if (it.successResult != null)
+            {
+                SopoLog.d(msg = "성공 발생 => ${it.successResult}")
+
+                val successResult = it.successResult
+                val data = successResult!!.data
+
+                if (data != null)
                 {
-                    if(it.data != null){
-                        // 모든 유효성 검사 통과
-                        GeneralDialog(
-                            parentActivity,
-                            "알림",
-                            "회원가입에 성공하셨습니다.\n해당 이메일에 인증메일을 확인해주세요.",
-                            null,
-                            Pair("네", { it ->
-                                it.dismiss()
-                                startActivity(
-                                    Intent(
-                                        this@SignUpView,
-                                        SignUpClear::class.java
-                                    )
-                                )
-                                finish()
-                            })
-                        ).show(
-                            supportFragmentManager.beginTransaction(),
-                            "TAG"
-                        )
-                    }
-
-
-                    return@Observer
+                    GeneralDialog(
+                        parentActivity,
+                        "알림",
+                        successResult.successMsg,
+                        null,
+                        Pair("네", { it ->
+                            it.dismiss()
+                            Intent(this, SignUpClear::class.java).launchActivity(this)
+                            finish()
+                        })
+                    ).show(supportFragmentManager.beginTransaction(), "TAG")
                 }
-                else
-                {   // 유효성 검사 실패
-                    when (it.showType)
+
+                return@Observer
+            }
+
+            if (it.errorResult != null)
+            {
+                when (it.errorResult!!.errorType)
+                {
+                    ErrorResult.ERROR_TYPE_NON -> return@Observer
+                    ErrorResult.ERROR_TYPE_TOAST ->
                     {
-                        InfoConst.NON_SHOW ->
-                        {
-                            return@Observer
-                        }
-                        InfoConst.CUSTOM_TOAST_MSG ->
-                        {
-                            SopoLog.d(tag = TAG, msg = "토스트 메시지 ${it.msg}")
-                            CustomAlertMsg.floatingUpperSnackBAr(
-                                context = parentActivity,
-                                msg = it.msg,
-                                isClick = true
-                            )
-
-                            return@Observer
-                        }
-                        InfoConst.CUSTOM_DIALOG ->
-                        {
-                            if (it.result && it.data != null)
-                            {
-
-                                return@Observer
-                            }
-                            else
-                            {
-                                GeneralDialog(
-                                    act = parentActivity,
-                                    title = "오류",
-                                    msg = resources.getString(it.data as Int),
-                                    detailMsg = null,
-                                    rHandler = Pair(
-                                        first = "확인",
-                                        second = { it ->
-                                            it.dismiss()
-                                        })
-                                ).show(supportFragmentManager, "tag")
-
-                                return@Observer
-                            }
-
-                        }
-                        InfoConst.ERROR_ACTIVITY ->
-                        {
-                            return@Observer
-                        }
+                        CustomAlertMsg.floatingUpperSnackBAr(
+                            context = parentActivity,
+                            msg = it.errorResult!!.errorMsg,
+                            isClick = true
+                        )
+                        return@Observer
                     }
+                    ErrorResult.ERROR_TYPE_DIALOG ->
+                    {
+                        val code = it.errorResult!!.code?.CODE
+                        val msg = it.errorResult!!.errorMsg
 
+                        GeneralDialog(
+                            act = parentActivity,
+                            title = "오류",
+                            msg = msg,
+                            detailMsg = code,
+                            rHandler = Pair(first = "네", second = null)
+                        ).show(supportFragmentManager, "tag")
+                    }
+                    ErrorResult.ERROR_TYPE_SCREEN -> return@Observer
+                    else -> return@Observer
                 }
-            })
-
-        }
+            }
+        })
     }
 }

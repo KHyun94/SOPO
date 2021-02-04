@@ -57,7 +57,7 @@ class ParcelDetailView : Fragment()
     {
         super.onCreate(savedInstanceState)
 
-        NetworkManager.initPrivateApi(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
+        NetworkManager.setLogin(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
 
         if (arguments != null)
         {
@@ -86,14 +86,14 @@ class ParcelDetailView : Fragment()
         parentView = activity as MainView
 
         binding.includeSemi.ivCopy.setOnClickListener {
-            val copyText = binding.includeSemi.tvWaybilNum.text.toString()
+            val copyText = binding.includeSemi.tvWayBilNum.text.toString()
             ClipboardUtil.copyTextToClipboard(activity!!, copyText)
 
             Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
         }
 
         binding.includeFull.ivCopy.setOnClickListener {
-            val copyText = binding.includeFull.tvWaybilNum.text.toString()
+            val copyText = binding.includeFull.tvWayBilNum.text.toString()
             ClipboardUtil.copyTextToClipboard(activity!!, copyText)
 
             Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
@@ -223,7 +223,8 @@ class ParcelDetailView : Fragment()
         binding.vm!!.parcelEntity.observe(this, Observer {
             if (it != null)
             {
-                binding.vm!!.updateParcelItem(it)
+                //todo Error
+//                binding.vm!!.updateParcelItem(it)
             }
         })
 

@@ -1,12 +1,16 @@
 package com.delivery.sopo.views.login
 
 import android.content.Intent
-import android.os.Bundle
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.databinding.LoginViewBinding
+import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.models.ErrorResult
+import com.delivery.sopo.networks.handler.LoginHandler
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.CustomProgressBar
@@ -19,7 +23,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
 {
     private val loginVm: LoginViewModel by viewModel()
-    private var progressBar : CustomProgressBar? = null
+    private var progressBar: CustomProgressBar? = null
 
     init
     {
@@ -37,19 +41,7 @@ class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
     override fun setObserver()
     {
         binding.vm!!.isProgress.observe(this, Observer {
-            if(it == null) return@Observer
-
-            if(progressBar == null) progressBar = CustomProgressBar(this)
-
-            if(it)
-            {
-                progressBar!!.onStartDialog()
-            }
-            else
-            {
-                progressBar!!.onCloseDialog()
-                progressBar = null
-            }
+            progressBar!!.autoProgressbar(it)
         })
 
         binding.vm!!.result.observe(this, Observer {
@@ -59,18 +51,24 @@ class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
             if (it.successResult != null)
             {
                 SopoLog.d(msg = "성공 발생 => ${it.successResult}")
-                if (it.successResult!!.data != null)
+
+                val data = it.successResult!!.data
+
+                if (data != null)
                 {
+                    Toast.makeText(this, "성공", Toast.LENGTH_LONG).show()
                     startActivity(Intent(this@LoginView, MainView::class.java))
                     finish()
                 }
             }
-            else if (it.errorResult != null)
+
+            if (it.errorResult != null)
             {
                 SopoLog.e(msg = "에러 발생 => ${it.errorResult}")
-                when (it.errorResult!!.errorType)
+
+                when (val type = it.errorResult!!.errorType)
                 {
-                    ErrorResult.ERROR_TYPE_NON -> { }
+                    ErrorResult.ERROR_TYPE_NON -> return@Observer
                     ErrorResult.ERROR_TYPE_TOAST ->
                     {
                         CustomAlertMsg.floatingUpperSnackBAr(
@@ -82,17 +80,37 @@ class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
                     }
                     ErrorResult.ERROR_TYPE_DIALOG ->
                     {
-                        var msg = ""
-                        val code = it.errorResult!!.codeEnum?.CODE
+                        val code = it.errorResult!!.code?.CODE
+                        val data = it.errorResult!!.data
+                        val msg = it.errorResult!!.errorMsg
 
-                        when (it.errorResult!!.data)
+                        SopoLog.e(msg = "이시발 뭐지 ${data}")
+
+                        when (it.errorResult!!.code)
                         {
-                            is Int -> msg = getString(it.errorResult!!.data as Int)
-                            is String ->
+                            ResponseCode.FIREBASE_ERROR_EMAIL_VERIFIED ->
                             {
-                                val jwtToken = it.errorResult!!.data as String
-
-                                msg = it.errorResult!!.errorMsg
+                                // todo 이메일 인증 관련 다이얼로그
+                                GeneralDialog(
+                                    act = parentActivity,
+                                    title = "오류",
+                                    msg = msg,
+                                    detailMsg = code,
+                                    rHandler = Pair(
+                                        first = "재전송",
+                                        second = { it ->
+                                            FirebaseRepository.firebaseSendEmail(SOPOApp.auth.currentUser) { success, error ->
+                                               binding.vm!!.postResultValue(success, error)
+                                            }
+                                            it.dismiss()
+                                        }),
+                                    lHandler = Pair(first = "확인", second = null)
+                                ).show(supportFragmentManager, "tag")
+                            }
+                            ResponseCode.ALREADY_LOGGED_IN ->
+                            {
+                                // todo 중복 로그인 처리
+                                val jwtToken = data as String
 
                                 GeneralDialog(
                                     act = parentActivity,
@@ -102,33 +120,34 @@ class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
                                     rHandler = Pair(
                                         first = "네",
                                         second = { it ->
-                                            binding.vm!!.authJwtToken(jwtToken = jwtToken)
-                                            it.dismiss()
+                                            LoginHandler.authJwtToken(jwtToken){ successResult, errorResult ->
+                                                if(errorResult != null) SopoLog.e(msg = "에러 ${errorResult.toString()}")
+                                                if(successResult != null) SopoLog.d(msg = "성공 ${successResult.toString()}")
+
+                                                it.dismiss()
+                                            }
+
                                         }),
                                     lHandler = Pair(first = "아니오", second = null)
                                 ).show(supportFragmentManager, "tag")
-
-                                return@Observer
                             }
-                            else -> msg = it.errorResult!!.errorMsg
+                            else ->
+                            {
+                                GeneralDialog(
+                                    act = parentActivity,
+                                    title = "오류",
+                                    msg = msg,
+                                    detailMsg = code,
+                                    rHandler = Pair(first = "네", second = null)
+                                ).show(supportFragmentManager, "tag")
+                            }
                         }
-
-                        GeneralDialog(
-                            act = parentActivity,
-                            title = "오류",
-                            msg = msg,
-                            detailMsg = code,
-                            rHandler = Pair(first = "네", second = null)
-                        ).show(supportFragmentManager, "tag")
                     }
-                    ErrorResult.ERROR_TYPE_SCREEN ->
-                    {
-                    }
-                    else ->
-                    {
-                    }
+                    ErrorResult.ERROR_TYPE_SCREEN -> return@Observer
+                    else -> return@Observer
                 }
             }
+
         })
     }
 }

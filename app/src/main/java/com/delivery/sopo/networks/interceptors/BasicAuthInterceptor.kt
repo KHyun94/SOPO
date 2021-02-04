@@ -1,4 +1,4 @@
-package com.delivery.sopo.networks
+package com.delivery.sopo.networks.interceptors
 
 import okhttp3.Credentials
 import okhttp3.Interceptor

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.delivery.sopo.databinding.InquiryMainFrameBinding
-import com.delivery.sopo.enums.FragmentTypeEnum
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.viewmodels.inquiry.InquiryMainViewModel
 import com.delivery.sopo.views.main.MainView
@@ -29,7 +29,7 @@ class InquiryMainFrame : Fragment()
         viewId = binding.layoutMainFrame.id
         parentView = activity as MainView
 
-        FragmentManager.move(this.requireActivity(), FragmentTypeEnum.INQUIRY, viewId)
+        FragmentManager.move(this.requireActivity(), TabCode.INQUIRY, viewId)
 
         return binding.root
     }

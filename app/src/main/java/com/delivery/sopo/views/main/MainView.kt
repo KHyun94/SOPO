@@ -45,10 +45,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     init
     {
-        TAG += "MainView"
-
-        // set private api header
-        NetworkManager.initPrivateApi(id = userRepoImpl.getEmail(), pwd = userRepoImpl.getApiPwd())
+        TAG += this.javaClass.simpleName
 
         SopoLog.d(tag = TAG, msg = "ID = ${userRepoImpl.getEmail()}")
         SopoLog.d(tag = TAG, msg = "PWD = ${userRepoImpl.getApiPwd()}")

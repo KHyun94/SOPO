@@ -12,8 +12,10 @@ import androidx.lifecycle.LiveData
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.RoomActivate
+import com.delivery.sopo.database.room.entity.OauthEntity
 import com.delivery.sopo.di.appModule
 import com.delivery.sopo.models.OauthResult
+import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
@@ -25,7 +27,6 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.iid.FirebaseInstanceId
 import com.kakao.auth.KakaoSDK
 import com.kakao.auth.Session
 import com.kakao.auth.authorization.accesstoken.AccessToken
@@ -40,6 +41,8 @@ class SOPOApp : Application()
     val appDatabase: AppDatabase by inject()
     val userRepoImpl : UserRepoImpl by inject()
     val parcelRepoImpl: ParcelRepoImpl by inject()
+    val oauthRepoImpl : OauthRepoImpl by inject()
+
     val parcelManagementRepoImpl: ParcelManagementRepoImpl by inject()
 
     val TAG = "LOG.SOPO${this.javaClass.simpleName}"
@@ -59,10 +62,9 @@ class SOPOApp : Application()
             modules(appModule)
         }
 
+        deviceInfo = OtherUtil.getDeviceID(INSTANCE)
+
         alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        SopoLog.d(tag = TAG, msg = "${OtherUtil.getDeviceID(SOPOApp.INSTANCE)}")
-
 
         //Firebase Init
         FirebaseApp.initializeApp(this)
@@ -92,22 +94,9 @@ class SOPOApp : Application()
             currentPage.postValue(it)
         }
 
-//        cntOfBeUpdate = parcelManagementRepoImpl.getIsUpdateCntLiveData()
-
-//        // todo 푸시 후 처리
-//        registerAlarm()
-//
-//
-//        CoroutineScope(Dispatchers.Default).launch {
-//
-//            val list = appDatabase.logDao().getAll()
-//
-//            var i = 0
-//
-//            list?.forEach {
-//                SopoLog.d("${++i}번째 로그 ====> $it")
-//            }
-//        }
+        CoroutineScope(Dispatchers.Default).launch {
+            oauth = oauthRepoImpl.get(userRepoImpl.getEmail())
+        }
     }
 
     private fun getInitViewPagerNumber(cb: ((Int) -> Unit))
@@ -170,6 +159,7 @@ class SOPOApp : Application()
     {
         lateinit var INSTANCE: Context
         lateinit var auth: FirebaseAuth
+        lateinit var deviceInfo : String
         lateinit var activity: Activity
         lateinit var alarmManager: AlarmManager
 
@@ -178,6 +168,6 @@ class SOPOApp : Application()
         val cntOfBeUpdate: LiveData<Int>
             get() = SOPOApp().parcelManagementRepoImpl.getIsUpdateCntLiveData()
 
-        var token : OauthResult? = null
+        var oauth : OauthEntity? = null
     }
 }

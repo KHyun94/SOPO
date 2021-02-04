@@ -39,10 +39,10 @@ val appModule = module {
     single { AppPasswordRepoImpl(get()) }
     single { OauthRepoImpl(get()) }
 
-    viewModel { SplashViewModel(get()) }
-    viewModel { LoginViewModel(get(), get()) }
+    viewModel { SplashViewModel(get(), get()) }
+    viewModel { LoginViewModel(get()) }
     viewModel { SignUpViewModel() }
-    viewModel { LoginSelectViewModel(get()) }
+    viewModel { LoginSelectViewModel() }
     viewModel { MainViewModel(get(), get(), get(), get()) }
     viewModel { LockScreenViewModel(get(), get()) }
     viewModel { SettingViewModel(get(), get()) }

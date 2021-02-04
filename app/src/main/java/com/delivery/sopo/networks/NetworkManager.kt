@@ -1,8 +1,12 @@
 package com.delivery.sopo.networks
 
 import com.delivery.sopo.BuildConfig
+import com.delivery.sopo.networks.interceptors.BasicAuthInterceptor
+import com.delivery.sopo.networks.interceptors.OAuthInterceptor
+import com.delivery.sopo.util.SopoLog
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -12,123 +16,92 @@ import java.util.concurrent.TimeUnit
 
 object NetworkManager
 {
+    val TAG = this.javaClass.simpleName
     private const val CONNECT_TIMEOUT: Long = 15
     private const val WRITE_TIMEOUT: Long = 15
     private const val READ_TIMEOUT: Long = 15
 
     lateinit var mOKHttpClient: OkHttpClient
-    lateinit var mRetrofit: Retrofit
 
-    lateinit var privateId: String
-    lateinit var privatePwd: String
+    lateinit var apiId: String
+    lateinit var apiPassword: String
 
-    fun initPrivateApi(id: String, pwd: String)
+    var hasHeader: Boolean = false
+
+    var INTERCEPTOR_TYPE = 0
+    var isAuthenticator = true
+
+    fun setLogin(id: String?, password: String?) = if (id != null && password != null)
     {
-        this.privateId = id
-        this.privatePwd = pwd
+        this.apiId = id
+        this.apiPassword = password
+        hasHeader = true
+    }
+    else
+    {
+        hasHeader = false
     }
 
-    val joinRetro : Retrofit
-        get()
+    fun retro(vararg params : String? = emptyArray()) : Retrofit
+    {
+        INTERCEPTOR_TYPE = params.size
+        val interceptor : Interceptor? = when(INTERCEPTOR_TYPE)
         {
-            val httpLoggingInterceptor = HttpLoggingInterceptor()
-            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-
-            mOKHttpClient = OkHttpClient().newBuilder().apply {
-                addInterceptor(httpLoggingInterceptor)
-                connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
-                writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
-                readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-            }.build()
-
-            val gson = GsonBuilder()
-            gson.setLenient()
-
-            return Retrofit.Builder()
-                .baseUrl(BuildConfig.API_URL)
-                .client(mOKHttpClient)
-                .addConverterFactory(GsonConverterFactory.create(gson.create()))
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
+            1 -> OAuthInterceptor(params[0]!!)   // 파라미터 갯수 1일 때 OAuthInterceptor(Token)
+            2 -> BasicAuthInterceptor(params[0]!!, params[1]!!)   // 파라미터 갯수 2일 때 BasicAuthInterceptor (userId or userPassword)
+            else -> null
         }
 
-    val oauthRetro : Retrofit
-        get()
-        {
-            val basicAuthInterceptor = BasicAuthInterceptor("sopo-aos", "sopoAndroid!!@@")
-            val httpLoggingInterceptor = HttpLoggingInterceptor()
-            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        SopoLog.d(tag = TAG, msg = "네트워크 인증 타입 => $INTERCEPTOR_TYPE")
 
-            mOKHttpClient = OkHttpClient().newBuilder().apply {
-                addInterceptor(httpLoggingInterceptor)
-                addInterceptor(basicAuthInterceptor)
-                connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
-                writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
-                readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-            }.build()
+        val httpLoggingInterceptor = HttpLoggingInterceptor()
+        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
-            val gson = GsonBuilder()
-            gson.setLenient()
+        mOKHttpClient = OkHttpClient().newBuilder().apply {
+            addInterceptor(httpLoggingInterceptor)
+            if(interceptor != null) addInterceptor(interceptor)
+            connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+            writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
+            readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+            if(INTERCEPTOR_TYPE == 1 && isAuthenticator) authenticator(TokenAuthenticator())
+        }.build()
 
-            return Retrofit.Builder()
-                .baseUrl(BuildConfig.API_URL)
-                .client(mOKHttpClient)
-                .addConverterFactory(GsonConverterFactory.create(gson.create()))
-                .addCallAdapterFactory(CoroutineCallAdapterFactory())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
+        val gson = GsonBuilder().apply {
+            setLenient()
         }
 
-    val privateRetro: Retrofit
-        get()
-        {
-            val basicAuthInterceptor = BasicAuthInterceptor(privateId, privatePwd)
-            val httpLoggingInterceptor = HttpLoggingInterceptor()
-            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        return Retrofit.Builder()
+            .baseUrl(BuildConfig.API_URL)
+            .client(mOKHttpClient)
+            .addConverterFactory(GsonConverterFactory.create(gson.create()))
+            .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .build()
+    }
 
-            mOKHttpClient = OkHttpClient().newBuilder().apply {
-                addInterceptor(httpLoggingInterceptor)
-                addInterceptor(basicAuthInterceptor)
-                connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
-                writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
-                readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-            }.build()
 
-            val gson = GsonBuilder()
-            gson.setLenient()
-
-            return Retrofit.Builder()
-                .baseUrl(BuildConfig.API_URL)
-                .client(mOKHttpClient)
-                .addConverterFactory(GsonConverterFactory.create(gson.create()))
-                .addCallAdapterFactory(CoroutineCallAdapterFactory())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
-        }
-
-    val publicRetro: Retrofit
+    val retro: Retrofit
         get()
         {
             // 공용 API 계정
-            val basicAuthInterceptor =
-                BasicAuthInterceptor(
-                    BuildConfig.PUBLIC_API_ACCOUNT_ID,
-                    BuildConfig.PUBLIC_API_ACCOUNT_PASSWORD
-                )
+
+
+            val basicAuthInterceptor : Interceptor? = if(hasHeader) BasicAuthInterceptor(apiId, apiPassword) else null
 
             val httpLoggingInterceptor = HttpLoggingInterceptor()
             httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
             mOKHttpClient = OkHttpClient().newBuilder().apply {
                 addInterceptor(httpLoggingInterceptor)
-                addInterceptor(basicAuthInterceptor)
+                if(basicAuthInterceptor != null) addInterceptor(basicAuthInterceptor)
                 connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
                 writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
                 readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
             }.build()
 
-            val gson = GsonBuilder()
-            gson.setLenient()
+            val gson = GsonBuilder().apply {
+                setLenient()
+            }
 
             return Retrofit.Builder()
                 .baseUrl(BuildConfig.API_URL)
@@ -138,4 +111,5 @@ object NetworkManager
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
         }
+
 }

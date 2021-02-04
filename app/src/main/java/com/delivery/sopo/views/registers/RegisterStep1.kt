@@ -9,14 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.databinding.RegisterStep1Binding
-import com.delivery.sopo.enums.FragmentTypeEnum
+import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.extensions.isGreaterThanOrEqual
+import com.delivery.sopo.models.BindView
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.repository.impl.CourierRepolmpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
@@ -27,187 +28,137 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
 import com.delivery.sopo.views.main.MainView
+import com.delivery.sopo.views.widget.CustomEditText.Companion.STATUS_COLOR_BLUE
+import com.delivery.sopo.views.widget.CustomEditText.Companion.STATUS_COLOR_ELSE
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.system.exitProcess
 
 class RegisterStep1 : Fragment()
 {
-    private val TAG = "LOG.SOPO"
+    private val TAG = this.javaClass.simpleName
 
-    private lateinit var parentView: MainView
+    private lateinit var parentView : MainView
 
-    private lateinit var binding: RegisterStep1Binding
-    private val registerStep1Vm: RegisterStep1ViewModel by viewModel()
-    private val courierRepolmpl: CourierRepolmpl by inject()
-    private val parcelRepolmpl: ParcelRepoImpl by inject()
+    private lateinit var binding : RegisterStep1Binding
+    private val vm : RegisterStep1ViewModel by viewModel()
 
-    private var waybilNum: String? = null
-    private var courier: CourierItem? = null
-    private var returnType: Int? = null
+    private val courierRepoImpl : CourierRepolmpl by inject()
+    private val parcelRepoImpl : ParcelRepoImpl by inject()
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
+    private var wayBilNum : String? = null
+    private var courier : CourierItem? = null
+    private var returnType : Int? = null
 
-        if (arguments != null)
-        {
-            arguments.run {
-                waybilNum = this?.getString("waybilNum") ?: ""
-                courier = this?.getSerializable("courier") as CourierItem?
-                returnType = this?.getInt("returnType") ?: 0
-            }
-        }
-    }
+    // todo 추 후 각 페이지에 중복되어있는 로직을 통합 처리 예정
+    var callback : OnBackPressedCallback? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View?
-    {
-        parentView = activity as MainView
-
-        binding = DataBindingUtil.inflate(inflater, R.layout.register_step1, container, false)
-        binding.vm = registerStep1Vm
-        binding.lifecycleOwner = this
-
-        setObserve()
-
-        if (waybilNum != null && waybilNum!!.isNotEmpty())
-        {
-            binding.vm!!.waybilNum.value = waybilNum
-        }
-
-        if (courier != null)
-        {
-            binding.vm!!.courier.value = courier
-        }
-
-        // 0922 kh 등록 완료 시 조회탭으로 이동
-        if (returnType != null && returnType == 1)
-        {
-            val handler = Handler()
-            handler.post {
-                parentView.onCompleteRegister()
-            }
-        }
-
-        return binding.root
-    }
-
-    var callback: OnBackPressedCallback? = null
-
-    override fun onAttach(context: Context)
+    override fun onAttach(context : Context)
     {
         super.onAttach(context)
 
-        var pressedTime: Long = 0
+        parentView = activity as MainView
+        callback = onBackClickListener()
 
-        callback = object : OnBackPressedCallback(true)
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+    }
+
+    private fun onBackClickListener () : OnBackPressedCallback
+    {
+        var pressedTime : Long = 0
+
+        return object : OnBackPressedCallback(true)
         {
             override fun handleOnBackPressed()
             {
                 if (System.currentTimeMillis() - pressedTime > 2000)
                 {
                     pressedTime = System.currentTimeMillis()
-                    val snackbar = Snackbar.make(
-                        parentView.binding.layoutMain,
-                        "한번 더 누르시면 앱이 종료됩니다.",
-                        2000
-                    )
-                    snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
-
-                    SopoLog.d(null, "Register Step::1 BackPressListener = 종료를 위해 한번 더 클릭")
+                    Snackbar.make(binding.layoutRegister, "한번 더 누르시면 앱이 종료됩니다.", 2000)
+                        .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
                 }
                 else
                 {
-                    SopoLog.d(null, "Register Step::1 BackPressListener = 종료")
                     ActivityCompat.finishAffinity(activity!!)
-                    System.exit(0)
+                    exitProcess(0)
                 }
             }
-
         }
+    }
 
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+    override fun onCreate(savedInstanceState : Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+
+        // 다른 화면에서 1단계로 다시 이동할 때 전달받은 값
+        if (arguments != null) arguments.run {
+            wayBilNum = this?.getString("wayBilNum") ?: ""
+            courier = this?.getSerializable("courier") as CourierItem?
+            returnType = this?.getInt("returnType") ?: 0
+        }
+    }
+
+    override fun onCreateView(
+        inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?
+    ) : View
+    {
+        binding = RegisterStep1Binding.inflate(inflater, container, false)
+        binding.vm = vm
+
+        binding.vm!!.wayBilNum.value = wayBilNum ?: ""
+        binding.vm!!.courier.value = courier
+
+        setObserve()
+        moveToInquiryTab()
+
+        return binding.root
     }
 
     override fun onDetach()
     {
         super.onDetach()
-
-        callback!!.remove()
+        if (callback != null) callback!!.remove()
     }
 
-    fun setObserve()
+    // 등록 완료 시 조회탭으로 이동
+    private fun moveToInquiryTab()
     {
-        var pressedTime: Long = 0
+        if (returnType != null && returnType == 1) Handler().post { parentView.onCompleteRegister() }
+    }
 
-        parentView.currentPage.observe(this, Observer {
-            if (it != null && it == 0)
-            {
-                callback = object : OnBackPressedCallback(true)
-                {
-                    override fun handleOnBackPressed()
+    private fun setObserve()
+    {
+        binding.vm!!.wayBilNum.observe(this, Observer { wayBilNum ->
+
+            if (wayBilNum == null) return@Observer
+            if (wayBilNum.isNotEmpty()) binding.vm!!.clipBoardWords.value = ""
+
+            binding.vm!!.wayBilNumStatusType.value =
+                if (wayBilNum.isGreaterThanOrEqual(1)) STATUS_COLOR_BLUE
+                else STATUS_COLOR_ELSE
+
+            if(!wayBilNum.isGreaterThanOrEqual(9))
+                return@Observer
+
+            val courierList = RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, wayBilNum, 1, courierRepoImpl)
+
+            SopoLog.d(
+                tag = TAG, msg = """
+                    추천 택배 리스트 
                     {
-                        if (System.currentTimeMillis() - pressedTime > 2000)
-                        {
-                            pressedTime = System.currentTimeMillis()
-                            val snackbar = Snackbar.make(
-                                parentView.binding.layoutMain,
-                                "한번 더 누르시면 앱이 종료됩니다.",
-                                2000
-                            )
-                            snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
-
-                            SopoLog.d(null, "Register Step::1 BackPressListener = 종료를 위해 한번 더 클릭")
-                        }
-                        else
-                        {
-                            SopoLog.d(null, "Register Step::1 BackPressListener = 종료")
-                            ActivityCompat.finishAffinity(activity!!)
-                            System.exit(0)
-                        }
-
+                    ${courierList?.joinToString(",")}
                     }
+                """.trimIndent()
+            )
 
-                }
-
-                requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
-            }
-        })
-
-        binding.vm?.waybilNum?.observe(this, Observer {
-            if (it != null && it.isNotEmpty())
+            if (courierList != null && courierList.size > 0)
             {
-                binding.vm?.clipboardStr?.value = ""
+                SopoLog.d(tag= TAG, msg = """
+                        최우선 순위 >>> ${courierList[0]}
+                    """.trimIndent())
 
-                if (it.isNotEmpty())
-                {
-                    binding.vm!!.waybilNoStatusType.value = 1
-
-                }
-                else
-                {
-                    binding.vm!!.waybilNoStatusType.value = -1
-                }
-
-                if (it.length > 8)
-                {
-                    val result =
-                        RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, it, 1, courierRepolmpl)
-
-                    if (result != null && result.size > 0)
-                    {
-                        binding.vm!!.courier.postValue(result[0])
-                    }
-
-
-                }
-                else
-                {
-                    binding.vm!!.courier.value = null
-                }
+                binding.vm!!.courier.postValue(courierList[0])
             }
         })
 
@@ -219,44 +170,22 @@ class RegisterStep1 : Fragment()
             }
         })
 
-        binding.vm?.moveFragment?.observe(this, Observer {
+        binding.vm!!.moveFragment.observe(this, Observer {
             when (it)
             {
-                FragmentTypeEnum.REGISTER_STEP2.NAME ->
+                TabCode.REGISTER_STEP2.NAME ->
                 {
-                    FragmentTypeEnum.REGISTER_STEP2.FRAGMENT =
-                        RegisterStep2.newInstance(
-                            binding.vm!!.waybilNum.value,
-                            binding.vm!!.courier.value
-                        )
-
-                    FragmentManager.move(
-                        activity!!,
-                        FragmentTypeEnum.REGISTER_STEP2,
-                        RegisterMainFrame.viewId
-                    )
-                    binding.vm?.moveFragment?.value = ""
+                    TabCode.REGISTER_STEP2.FRAGMENT = RegisterStep2.newInstance(binding.vm!!.wayBilNum.value, binding.vm!!.courier.value)
+                    FragmentManager.move(parentView, TabCode.REGISTER_STEP2, RegisterMainFrame.viewId)
+                    binding.vm!!.moveFragment.value = ""
                 }
-                FragmentTypeEnum.REGISTER_STEP3.NAME ->
+                TabCode.REGISTER_STEP3.NAME ->
                 {
-                    FragmentTypeEnum.REGISTER_STEP3.FRAGMENT =
-                        RegisterStep3.newInstance(
-                            binding.vm!!.waybilNum.value,
-                            binding.vm!!.courier.value
-                        )
-
-                    FragmentManager.move(
-                        activity!!,
-                        FragmentTypeEnum.REGISTER_STEP3,
-                        RegisterMainFrame.viewId
-                    )
-                    binding.vm?.moveFragment?.value = ""
+                    TabCode.REGISTER_STEP3.FRAGMENT = RegisterStep3.newInstance(binding.vm!!.wayBilNum.value, binding.vm!!.courier.value)
+                    FragmentManager.move(parentView, TabCode.REGISTER_STEP3, RegisterMainFrame.viewId)
+                    binding.vm!!.moveFragment.value = ""
                 }
             }
-        })
-
-        binding.vm?.courier?.observe(this, Observer {
-            val courier = it
         })
     }
 
@@ -271,19 +200,18 @@ class RegisterStep1 : Fragment()
         binding.customEtTrackNum.setOnKeyListener { v, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER)
             {
-                binding.vm!!.setInputViewStatus()
                 OtherUtil.hideKeyboardSoft(activity!!)
                 binding.customEtTrackNum.etClearFocus()
             }
         }
 
         // 0922 kh 추가사항 - 클립보드에 저장되어있는 운송장 번호가 로컬에 등록된 택배가 있을 때, 안띄어주는 로직 추가
-        ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE, parcelRepolmpl) {
-            val isRegister = binding.vm?.waybilNum?.value.isNullOrEmpty()
+        ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE, parcelRepoImpl) {
+            val isRegister = binding.vm?.wayBilNum?.value.isNullOrEmpty()
 
             if (!(it.isEmpty() || !isRegister))
             {
-                binding.vm?.clipboardStr?.value = it
+                binding.vm?.clipBoardWords?.value = it
             }
         }
 
@@ -291,13 +219,13 @@ class RegisterStep1 : Fragment()
 
     companion object
     {
-        fun newInstance(waybilNum: String?, courier: CourierItem?, returnType: Int?): RegisterStep1
+        fun newInstance(wayBilNum : String?, courier : CourierItem?, returnType : Int?) : RegisterStep1
         {
             val registerStep1 = RegisterStep1()
 
             val args = Bundle()
 
-            args.putString("waybilNum", waybilNum)
+            args.putString("wayBilNum", wayBilNum)
             args.putSerializable("courier", courier)
             // 다른 프래그먼트에서 돌아왔을 때 분기 처리
             // 0: Default 1: Success To Register

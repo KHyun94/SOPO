@@ -4,9 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.entity.AppPasswordEntity
-import com.delivery.sopo.enums.ResponseCodeEnum
-import com.delivery.sopo.firebase.FirebaseManagementImpl
+import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.SopoJsonPatch
 import com.delivery.sopo.models.api.APIResult
@@ -105,7 +106,7 @@ class MainViewModel(
     {
         SopoLog.d(tag = "MainVM", msg = "isBeUpdateParcels 시작!!!!!!!")
 
-        NetworkManager.privateRetro.create(ParcelAPI::class.java)
+        NetworkManager.retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java)
             .getParcelsOngoingTmp(userRepoImpl.getEmail())
             .enqueue(object : Callback<APIResult<MutableList<Parcel>?>?>
             {
@@ -127,7 +128,7 @@ class MainViewModel(
 
                     when (response.code())
                     {
-                        ResponseCodeEnum.SUCCESS.HTTP_STATUS ->
+                        ResponseCode.SUCCESS.HTTP_STATUS ->
                         {
                             val result = response.body()
                             val remoteParcelList = result?.data
@@ -263,7 +264,7 @@ class MainViewModel(
     private fun setPrivateUserAccount()
     {
         if (userRepoImpl.getStatus() == 1)
-            NetworkManager.initPrivateApi(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
+            NetworkManager.setLogin(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
         else
             errorMsg.value = "로그인이 비정상적으로 이루어졌습니다.\n다시 로그인해주시길 바랍니다."
     }
@@ -273,7 +274,7 @@ class MainViewModel(
     {
         SopoLog.d(tag = TAG, msg = "updateFCMToken call()")
 
-        FirebaseManagementImpl.firebaseFCMResult{ task ->
+        FirebaseRepository.firebaseFCMResult{ task ->
             if(task.isSuccessful)
             {
                 val token = task.result!!.token
@@ -283,7 +284,7 @@ class MainViewModel(
                 val jsonPatchList = mutableListOf<SopoJsonPatch>()
                 jsonPatchList.add(SopoJsonPatch("replace", "/fcmToken", token))
 
-                NetworkManager.privateRetro.create(UserAPI::class.java)
+                NetworkManager.retro(SOPOApp.oauth?.accessToken).create(UserAPI::class.java)
                     .patchUser(
                         email = userRepoImpl.getEmail(),
                         jwtToken = token,

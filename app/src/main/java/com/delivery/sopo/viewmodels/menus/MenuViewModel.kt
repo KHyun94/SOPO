@@ -4,6 +4,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.extensions.MutableLiveDataExtension.popItem
 import com.delivery.sopo.extensions.MutableLiveDataExtension.pushItem
@@ -103,7 +104,7 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
         val jsonPatchList = mutableListOf<SopoJsonPatch>()
         jsonPatchList.add(SopoJsonPatch("replace", "/nickName", nickname))
 
-        NetworkManager.privateRetro.create(UserAPI::class.java)
+        NetworkManager.retro(SOPOApp.oauth?.accessToken).create(UserAPI::class.java)
             .patchUser(
                 email = userRepoImpl.getEmail(),
                 jwtToken = null,

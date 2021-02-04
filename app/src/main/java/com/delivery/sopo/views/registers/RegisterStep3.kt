@@ -13,7 +13,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.databinding.RegisterStep3Binding
-import com.delivery.sopo.enums.FragmentTypeEnum
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.services.workmanager.SOPOWorkeManager
 import com.delivery.sopo.util.FragmentManager
@@ -33,7 +33,7 @@ class RegisterStep3 : Fragment()
     private val registerStep3Vm: RegisterStep3ViewModel by viewModel()
     private val appDatabase : AppDatabase by inject()
 
-    private var waybilNum: String? = null
+    private var wayBilNum: String? = null
     private var courier: CourierItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -42,7 +42,7 @@ class RegisterStep3 : Fragment()
 
         if (arguments != null)
         {
-            waybilNum = arguments!!.getString("waybilNum") ?: ""
+            wayBilNum = arguments!!.getString("wayBilNum") ?: ""
             courier = arguments!!.getSerializable("courier") as CourierItem ?: null
         }
     }
@@ -58,9 +58,9 @@ class RegisterStep3 : Fragment()
         binding.vm = registerStep3Vm
         binding.lifecycleOwner = this
 
-        if (waybilNum != null && waybilNum!!.isNotEmpty())
+        if (wayBilNum != null && wayBilNum!!.isNotEmpty())
         {
-            binding.vm!!.waybilNum.value = waybilNum
+            binding.vm!!.wayBilNum.value = wayBilNum
         }
 
         if (courier != null)
@@ -94,14 +94,14 @@ class RegisterStep3 : Fragment()
         binding.vm!!.isRevise.observe(this, Observer {
             if (it != null && it)
             {
-                FragmentTypeEnum.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(waybilNum, courier, 0)
+                TabCode.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(wayBilNum, courier, 0)
 
                 FragmentManager.initFragment(
                     activity = activity!!,
                     viewId = RegisterMainFrame.viewId,
                     currentFragment = this@RegisterStep3,
-                    nextFragment = FragmentTypeEnum.REGISTER_STEP1.FRAGMENT,
-                    nextFragmentTag = FragmentTypeEnum.REGISTER_STEP1.NAME
+                    nextFragment = TabCode.REGISTER_STEP1.FRAGMENT,
+                    nextFragmentTag = TabCode.REGISTER_STEP1.NAME
                 )
 
                 binding.vm!!.isRevise.call()
@@ -117,14 +117,14 @@ class RegisterStep3 : Fragment()
 
                     SOPOWorkeManager.updateWorkManager(context!!, appDatabase = appDatabase)
 
-                    FragmentTypeEnum.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(null, null, 1)
+                    TabCode.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(null, null, 1)
 
                     FragmentManager.initFragment(
                         activity = activity!!,
                         viewId = RegisterMainFrame.viewId,
                         currentFragment = this@RegisterStep3,
-                        nextFragment = FragmentTypeEnum.REGISTER_STEP1.FRAGMENT,
-                        nextFragmentTag = FragmentTypeEnum.REGISTER_STEP1.NAME
+                        nextFragment = TabCode.REGISTER_STEP1.FRAGMENT,
+                        nextFragmentTag = TabCode.REGISTER_STEP1.NAME
                     )
                 }
                 else
@@ -186,13 +186,13 @@ class RegisterStep3 : Fragment()
     }
     companion object
     {
-        fun newInstance(waybilNum: String?, courier: CourierItem?): RegisterStep3
+        fun newInstance(wayBilNum: String?, courier: CourierItem?): RegisterStep3
         {
             val registerStep3 = RegisterStep3()
 
             val args = Bundle()
 
-            args.putString("waybilNum", waybilNum)
+            args.putString("wayBilNum", wayBilNum)
             args.putSerializable("courier", courier)
 
             registerStep3.arguments = args

@@ -2,9 +2,10 @@ package com.delivery.sopo.viewmodels.inquiry
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.database.room.entity.TimeCountEntity
-import com.delivery.sopo.enums.ResponseCodeEnum
+import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.enums.ScreenStatusEnum
 import com.delivery.sopo.mapper.MenuMapper
 import com.delivery.sopo.mapper.ParcelMapper
@@ -382,6 +383,12 @@ class InquiryViewModel(
                     // ParcelEntity를 관리해줄 ParcelManagementEntity도 같은 ParcelId로 저장한다.
                     if (localParcelById == null)
                     {
+                        SopoLog.d(msg =
+                        """
+                            remote 
+                            ${remote}
+                        """.trimIndent())
+
                         parcelRepoImpl.insetEntity(ParcelMapper.parcelToParcelEntity(remote))
 
                         val parcelManagement = ParcelMapper.parcelToParcelManagementEntity(
@@ -505,7 +512,7 @@ class InquiryViewModel(
     {
         viewModelScope.launch(Dispatchers.IO) {
             val parcelsRefreshing =
-                NetworkManager.privateRetro.create(ParcelAPI::class.java)
+                NetworkManager.retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java)
                     .parcelsRefreshing(userRepoImpl.getEmail())
         }
     }
@@ -548,7 +555,7 @@ class InquiryViewModel(
                 // 서버로 데이터를 삭제(상태 업데이트)하라고 요청
                 val deleteRemoteParcels = parcelRepoImpl.deleteRemoteParcels()
                 // 위 요청이 성공했다면 (삭제할 데이터가 없으면 null임)
-                if (deleteRemoteParcels?.code == ResponseCodeEnum.SUCCESS.CODE)
+                if (deleteRemoteParcels?.code == ResponseCode.SUCCESS.CODE)
                 {
                     // 해당 아이템의 status(PARCEL)를 0으로 업데이트하여 삭제 처리를 마무리
                     val isBeDeleteList = parcelManagementRepoImpl.getAll()?.let { parcelMng ->
@@ -667,7 +674,7 @@ class InquiryViewModel(
 
         SopoLog.d(null, "Parcel Alias 변경 JsonArray ===> ${jsonArray}")
 
-        NetworkManager.privateRetro.create(ParcelAPI::class.java)
+        NetworkManager.retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java)
             .patchParcel(
                 email = userRepoImpl.getEmail(),
                 parcelUid = parcelId.parcelUid,
@@ -721,7 +728,7 @@ class InquiryViewModel(
                             else
                             {
                                 Log.d("LOG.SOPO", "등록 Code ${result.code}")
-                                CodeUtil.returnCodeMsg(result.code)
+                                CodeUtil.getMsg(result.code)
                             }
 
                         }

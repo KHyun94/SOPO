@@ -3,6 +3,7 @@ package com.delivery.sopo.viewmodels.registesrs
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.CourierItem
@@ -22,7 +23,7 @@ class RegisterStep3ViewModel(
     private val userRepoImpl: UserRepoImpl
 ) : ViewModel()
 {
-    var waybilNum = MutableLiveData<String>()
+    var wayBilNum = MutableLiveData<String>()
     var courier = MutableLiveData<CourierItem>()
     var alias = MutableLiveData<String>()
 
@@ -44,13 +45,13 @@ class RegisterStep3ViewModel(
     // '등록하기' Button Click event
     fun onRegisterClicked()
     {
-        NetworkManager.privateRetro
+        NetworkManager.retro(SOPOApp.oauth?.accessToken)
             .create(ParcelAPI::class.java)
             .postParcel(
                 email = userRepoImpl.getEmail(),
                 parcelAlias = alias.value ?: "Default",
                 trackCompany = courier.value!!.courierCode,
-                trackNum = waybilNum.value!!
+                trackNum = wayBilNum.value!!
             )
             .enqueue(object : Callback<APIResult<ParcelId?>>
             {
@@ -68,7 +69,7 @@ class RegisterStep3ViewModel(
 
                     Log.d("LOG.SOPO", "뭐지? $httpStatusCode")
                     Log.d("LOG.SOPO", "뭐지? ${courier.value}")
-                    Log.d("LOG.SOPO", "뭐지? ${waybilNum.value}")
+                    Log.d("LOG.SOPO", "뭐지? ${wayBilNum.value}")
 
                     // http status code 200
                     when (httpStatusCode)
@@ -101,7 +102,7 @@ class RegisterStep3ViewModel(
                             else
                             {
                                 Log.d("LOG.SOPO", "등록 Code ${result.code}")
-                                CodeUtil.returnCodeMsg(result.code)
+                                CodeUtil.getMsg(result.code)
                             }
 
                             validate.value = ValidateResult(false, msg, null, InfoConst.CUSTOM_DIALOG)

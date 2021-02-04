@@ -43,12 +43,12 @@ data class ParcelEntity(
         name = "INQUERY_RESULT",
         typeAffinity = ColumnInfo.TEXT
     )
-    var inqueryResult: String,
+    var inqueryResult: String?,
     @ColumnInfo(
         name = "INQUERY_HASH",
         typeAffinity = ColumnInfo.TEXT
     )
-    var inqueryHash: String,
+    var inqueryHash: String?,
     @ColumnInfo(
         name = "DELIVERY_STATUS",
         typeAffinity = ColumnInfo.TEXT

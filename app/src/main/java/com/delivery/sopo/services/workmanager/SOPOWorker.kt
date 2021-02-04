@@ -49,7 +49,7 @@ class SOPOWorker(val context: Context, private val params: WorkerParameters) :
         {
             SopoLog.d(tag = "$TAG.patchParcels", msg = "is Enrolled Parcel => YES")
 
-            return NetworkManager.privateRetro.create(ParcelAPI::class.java)
+            return NetworkManager.retro.create(ParcelAPI::class.java)
                 .parcelsRefreshing(email = email)
         }
         else

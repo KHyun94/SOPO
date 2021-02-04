@@ -132,6 +132,9 @@ dependencies {
     //RxPermission
     implementation 'com.tbruyelle.rxpermissions2:rxpermissions:0.8.1@aar'
 
+    //Ted Permission(권한 라이브러리)
+    implementation 'gun0912.ted:tedpermission:2.2.3'
+
     // optional - GCMNetworkManager support
     implementation "androidx.work:work-gcm:$work_version"
 

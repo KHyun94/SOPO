@@ -21,7 +21,7 @@ abstract class AppDatabase : RoomDatabase()
     abstract fun securityDao(): AppPasswordDao
     abstract fun workDao(): WorkDao
     abstract fun logDao(): LogDao
-    abstract fun oauthDao() : OauthDao
+    abstract fun oauthDao() : OAuthDao
 
     companion object
     {

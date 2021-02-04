@@ -2,71 +2,66 @@ package com.delivery.sopo.viewmodels.registesrs
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.delivery.sopo.enums.FragmentTypeEnum
+import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.extensions.isGreaterThanOrEqual
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.viewmodels.signup.FocusChangeCallback
+import com.delivery.sopo.views.widget.CustomEditText
 
 
 class RegisterStep1ViewModel : ViewModel()
 {
-    val TAG = "LOG.SOPO.RegisterVm"
+    val TAG = this.javaClass.simpleName
 
-    private val courierList = mutableListOf<CourierItem>()
-
-    var waybilNum = MutableLiveData<String?>()
+    var wayBilNum = MutableLiveData<String?>()
 
     // 가져온 클립보드 문자열
-    var clipboardStr = SingleLiveEvent<String>()
+    var clipBoardWords = SingleLiveEvent<String>()
 
     var courier = MutableLiveData<CourierItem?>()
 
-    var waybilNoStatusType = MutableLiveData<Int>()
-    var hideKeyboard =
-        SingleLiveEvent<Boolean>()
+    var wayBilNumStatusType = MutableLiveData<Int>()
 
     var moveFragment = MutableLiveData<String>()
 
     val errorMsg = MutableLiveData<String>()
 
+    var callback : FocusChangeCallback = { type, focus ->
+
+        if (focus)
+        {
+            wayBilNumStatusType.postValue(CustomEditText.STATUS_COLOR_BLUE)
+        }
+        else
+        {
+            wayBilNumStatusType.run{
+                if (wayBilNum.value.isGreaterThanOrEqual(1)) postValue((CustomEditText.STATUS_COLOR_BLACK))
+                else postValue(CustomEditText.STATUS_COLOR_ELSE)
+            }
+        }
+
+    }
+
     init
     {
         moveFragment.value = ""
-        waybilNum.value = ""
-        clipboardStr.value = ""
-        hideKeyboard.value = false
-        waybilNoStatusType.value = -1
+        wayBilNum.value = ""
+        clipBoardWords.value = ""
+        wayBilNumStatusType.value = CustomEditText.STATUS_COLOR_ELSE
     }
 
-    var callback: FocusChangeCallback = FocusChangeCallback@{ type, focus ->
-        hideKeyboard.value = !focus
-    }
-
-    fun getCourierType(courier: String?): CourierItem?
+    fun onMoveFinalStepClicked()
     {
-        for (c in courierList) if (courier == c.courierName) return c
-        return null
+        moveFragment.value = TabCode.REGISTER_STEP3.NAME
     }
 
-    // 해당 뷰의 UI 및 색상 변환
-    fun setInputViewStatus()
+    fun onReselectCourierClicked()
     {
-        if (waybilNum.value != null && waybilNum.value!!.isNotEmpty())
-            waybilNoStatusType.value = 2
-        else
-            waybilNoStatusType.value = -1
-    }
-
-    fun onMoveStep2Clicked()
-    {
-        setInputViewStatus()
-
-        if (waybilNum.value!!.length > 8)
+        if (wayBilNum.value.isGreaterThanOrEqual(9))
         {
-            if (courier.value == null || courier.value!!.courierName.isEmpty())
-            {
-                moveFragment.value = FragmentTypeEnum.REGISTER_STEP2.NAME
-            }
+            if (courier.value != null && courier.value!!.courierName.isNotEmpty()) moveFragment.value =
+                TabCode.REGISTER_STEP2.NAME
         }
         else
         {
@@ -74,31 +69,12 @@ class RegisterStep1ViewModel : ViewModel()
         }
     }
 
-    fun onMoveStep3Clicked()
-    {
-        setInputViewStatus()
-        moveFragment.value = FragmentTypeEnum.REGISTER_STEP3.NAME
-    }
-
-    fun onReselectClicked()
-    {
-        setInputViewStatus()
-
-        if (waybilNum.value!!.length > 8)
-        {
-            if (courier.value != null && !courier.value!!.courierName.isEmpty())
-                moveFragment.value = FragmentTypeEnum.REGISTER_STEP2.NAME
-        }
-        else
-        {
-            errorMsg.value = "운송장 번호를 입력해주세요."
-        }
-    }
-
+    // clipBoardWord(클립보드에 저장된 값)을 wayBilNum(택배 운송장 번호) 입력 란으로 삽입
     fun onPasteClicked()
     {
-        waybilNum.value = clipboardStr.value
-        clipboardStr.call()
+        wayBilNum.value = clipBoardWords.value
+        clipBoardWords.call()
     }
 
 }
+
