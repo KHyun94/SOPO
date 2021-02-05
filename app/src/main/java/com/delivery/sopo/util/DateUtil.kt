@@ -1,6 +1,7 @@
 package com.delivery.sopo.util
 
 import com.delivery.sopo.extensions.toMilliSeconds
+import org.jetbrains.annotations.TestOnly
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -41,5 +42,35 @@ object DateUtil
         val currentMilliSeconds = System.currentTimeMillis()
 
         return currentMilliSeconds <= baseMilliSeconds
+    }
+
+    fun getSubscribedTime() : String
+    {
+        val format = SimpleDateFormat("HH:mm")
+        val currentTimeMillis = System.currentTimeMillis()
+        val currentDate = Date(currentTimeMillis)
+        val currentTime = format.format(currentDate)
+
+        val timeParser = currentTime.split(':')
+
+        val hour = timeParser[0]
+        val minutes = timeParser[1]
+
+        return if(minutes != "00")
+        {
+            (hour.toInt() + 1).toString().let {
+                if(it.length == 1)
+                {
+                    "0${it}"
+                }
+                else{
+                    hour
+                }
+            }
+        }
+        else
+        {
+            hour
+        }
     }
 }

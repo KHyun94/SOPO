@@ -6,11 +6,14 @@ import com.delivery.sopo.enums.ResponseCode.*
 import com.delivery.sopo.extensions.match
 import com.delivery.sopo.models.ErrorResult
 import com.delivery.sopo.models.SuccessResult
+import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import com.google.firebase.FirebaseException
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
 
 
 //todo kh firebase repository로 수정 예
@@ -244,4 +247,18 @@ object FirebaseRepository : FirebaseDataSource
         SopoLog.d(tag = TAG, msg = "firebaseSelfLogin() call!!!")
     }
 
+    /**
+     * FCM 구독 요청
+     * 등록 시 또는 앱 재설치 시 진행 중인 택배가 있을 시 구독 요청
+     * TODO topic 주제 00 ~ 24H ex) 01:01 ~ 02:00 >>> 2시 구독
+     */
+    fun subscribedToTopicInFCM()
+    {
+        val topic = DateUtil.getSubscribedTime()
+
+        FirebaseMessaging.getInstance().subscribeToTopic(topic)
+            .addOnCompleteListener { task ->
+
+            }
+    }
 }

@@ -22,6 +22,7 @@ import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.AlarmReceiver
 import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
 import com.delivery.sopo.util.ClipboardUtil
+import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
@@ -97,6 +98,8 @@ class SOPOApp : Application()
         CoroutineScope(Dispatchers.Default).launch {
             oauth = oauthRepoImpl.get(userRepoImpl.getEmail())
         }
+
+        DateUtil.getSubscribedTime()
     }
 
     private fun getInitViewPagerNumber(cb: ((Int) -> Unit))
