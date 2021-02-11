@@ -99,7 +99,7 @@ class SOPOApp : Application()
             oauth = oauthRepoImpl.get(userRepoImpl.getEmail())
         }
 
-        DateUtil.getSubscribedTime()
+        SopoLog.d(msg = "구독 시간 ${DateUtil.getSubscribedTime()}")
     }
 
     private fun getInitViewPagerNumber(cb: ((Int) -> Unit))

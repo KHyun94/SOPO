@@ -8,13 +8,18 @@ import com.delivery.sopo.models.ErrorResult
 import com.delivery.sopo.models.SuccessResult
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
+import com.google.android.gms.tasks.Task
 import com.google.firebase.FirebaseException
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.iid.InstanceIdResult
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 
+typealias FirebaseVoidCallback = (SuccessResult<String?>?, ErrorResult<String?>?) -> Unit
+typealias FirebaseUserCallback = (SuccessResult<FirebaseUser?>?, ErrorResult<String?>?) -> Unit
+typealias FirebaseFCMCallback = (Task<InstanceIdResult>) -> Unit
 
 //todo kh firebase repository로 수정 예
 object FirebaseRepository : FirebaseDataSource
@@ -252,13 +257,21 @@ object FirebaseRepository : FirebaseDataSource
      * 등록 시 또는 앱 재설치 시 진행 중인 택배가 있을 시 구독 요청
      * TODO topic 주제 00 ~ 24H ex) 01:01 ~ 02:00 >>> 2시 구독
      */
-    fun subscribedToTopicInFCM()
+    fun subscribedToTopicInFCM(callback : FirebaseVoidCallback)
     {
         val topic = DateUtil.getSubscribedTime()
+        // 01 02 03  ~ 24(00)
 
+        // 01:01 ~ => 01
         FirebaseMessaging.getInstance().subscribeToTopic(topic)
             .addOnCompleteListener { task ->
+                if(!task.isSuccessful)
+                {
+                    callback.invoke(null, ErrorResult(null, "구독 실패", ErrorResult.ERROR_TYPE_DIALOG, null, task.exception))
+                    return@addOnCompleteListener
+                }
 
+                callback.invoke(SuccessResult(SUCCESS, "", null), null)
             }
     }
 }

@@ -1,14 +1,13 @@
 package com.delivery.sopo.util
 
 import com.delivery.sopo.extensions.toMilliSeconds
-import org.jetbrains.annotations.TestOnly
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
 object DateUtil
 {
-    fun getIntToMilliSeconds(seconds: Int): Long
+    fun getIntToMilliSeconds(seconds : Int) : Long
     {
         val currentTimeMilliSeconds = System.currentTimeMillis()
         val secondsToMilliSeconds = seconds * 1000
@@ -16,7 +15,7 @@ object DateUtil
     }
 
     // dateTime => yyyy-MM-dd'T'HH"mm:ss.SSS'Z -> yyyy-MM-dd HHmm
-    fun changeDateFormat(dateTime: String): String?
+    fun changeDateFormat(dateTime : String) : String?
     {
         val oldFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
         oldFormat.timeZone = TimeZone.getTimeZone("KST")
@@ -27,16 +26,16 @@ object DateUtil
             val oldDate = oldFormat.parse(dateTime)
             newFormat.format(oldDate)
         }
-        catch (e: ParseException)
+        catch (e : ParseException)
         {
             SopoLog.e(msg = "Data Format Change Error", e = e)
             null
         }
     }
 
-    fun compareCurrentDate(date: String): Boolean
+    fun compareCurrentDate(date : String) : Boolean
     {
-        if(!ValidateUtil.isValidateDateFormat(date)) return false
+        if (!ValidateUtil.isValidateDateFormat(date)) return false
 
         val baseMilliSeconds = date.toMilliSeconds()!!
         val currentMilliSeconds = System.currentTimeMillis()
@@ -46,31 +45,35 @@ object DateUtil
 
     fun getSubscribedTime() : String
     {
-        val format = SimpleDateFormat("HH:mm")
-        val currentTimeMillis = System.currentTimeMillis()
-        val currentDate = Date(currentTimeMillis)
-        val currentTime = format.format(currentDate)
+        val calendar = Calendar.getInstance()
 
-        val timeParser = currentTime.split(':')
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minutes = calendar.get(Calendar.MINUTE)
 
-        val hour = timeParser[0]
-        val minutes = timeParser[1]
+        SopoLog.d(
+            msg = """
+            시 : $hour
+            분 : $minutes
+        """.trimIndent()
+        )
 
-        return if(minutes != "00")
+        return if (minutes > 0)
         {
-            (hour.toInt() + 1).toString().let {
-                if(it.length == 1)
-                {
-                    "0${it}"
-                }
-                else{
-                    hour
-                }
-            }
+            SopoLog.d(
+                msg = """
+            구독 시간 ${hour.toString().padStart(2, '0')}
+        """.trimIndent()
+            )
+            hour.toString().padStart(2, '0')
         }
         else
         {
-            hour
+            SopoLog.d(
+                msg = """
+            구독 시간 ${(hour + 1).toString().padStart(2, '0')}
+        """.trimIndent()
+            )
+            (hour + 1).toString().padStart(2, '0')
         }
     }
 }

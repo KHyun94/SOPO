@@ -14,6 +14,7 @@ import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.databinding.RegisterStep3Binding
 import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.services.workmanager.SOPOWorkeManager
 import com.delivery.sopo.util.FragmentManager
@@ -115,10 +116,11 @@ class RegisterStep3 : Fragment()
                 {
                     SopoLog.d(tag = TAG, msg = "등록 성공 $it")
 
-                    SOPOWorkeManager.updateWorkManager(context!!, appDatabase = appDatabase)
+//                    FirebaseRepository.subscribedToTopicInFCM { successResult, errorResult ->
+//                        if(errorResult != null)
+//                    }
 
                     TabCode.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(null, null, 1)
-
                     FragmentManager.initFragment(
                         activity = activity!!,
                         viewId = RegisterMainFrame.viewId,

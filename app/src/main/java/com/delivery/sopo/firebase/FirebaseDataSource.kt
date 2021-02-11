@@ -8,10 +8,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.iid.InstanceIdResult
 
-typealias FirebaseVoidCallback = (SuccessResult<String?>?, ErrorResult<String?>?) -> Unit
-typealias FirebaseUserCallback = (SuccessResult<FirebaseUser?>?, ErrorResult<String?>?) -> Unit
-typealias FirebaseFCMCallback = (Task<InstanceIdResult>) -> Unit
-
 interface FirebaseDataSource
 {
     fun createFirebaseAccount(email: String, password: String, callback: FirebaseUserCallback)

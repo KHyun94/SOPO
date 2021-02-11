@@ -12,11 +12,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-object SOPOWorkeManager
+object SOPOWorkeManager : KoinComponent
 {
     val TAG = "LOG.SOPO"
 
@@ -25,6 +27,7 @@ object SOPOWorkeManager
     val workInfo: LiveData<WorkInfo?>
         get() = _workInfo
 
+    private val appDatabase : AppDatabase by inject()
 
     private fun getWorkConstraint(): Constraints =
         Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).setRequiresDeviceIdle(true).build()
@@ -36,15 +39,13 @@ object SOPOWorkeManager
         PeriodicWorkRequestBuilder<T>(intervalMin, TimeUnit.MINUTES).setConstraints(contrains)
             .build()
 
-    fun updateWorkManager(context: Context, appDatabase: AppDatabase)
+    fun updateWorkManager(context: Context)
     {
         val workManager = WorkManager.getInstance(context)
 
         CoroutineScope(Dispatchers.Main).launch {
 
             withContext(Dispatchers.IO) {
-
-//                val works = appDatabase.workDao().getAll()
 
                 var workUUID: UUID? = null
                 var workRequest: Any? = null

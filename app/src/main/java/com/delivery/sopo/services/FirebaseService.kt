@@ -8,6 +8,7 @@ import com.delivery.sopo.networks.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.services.workmanager.SOPOWorkeManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import com.delivery.sopo.views.splash.SplashView
@@ -69,12 +70,14 @@ class FirebaseService: FirebaseMessagingService()
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage){
+
         if (remoteMessage.data.isNotEmpty())
         {
             SopoLog.d(tag = TAG, msg = "onMessageReceived: " + remoteMessage.data.toString())
             SopoLog.d(tag = TAG, msg = "remoteMessage : ${remoteMessage.notification}")
             val fcmPushDto = Gson().fromJson(remoteMessage.data.toString(), FcmPushDTO::class.java)
             SopoLog.d(tag = TAG, msg = "fromJson : $fcmPushDto")
+
             when (fcmPushDto.notificationId)
             {
                 // 사용자에게 택배 상태가 업데이트되었다고 알려줌
@@ -95,6 +98,10 @@ class FirebaseService: FirebaseMessagingService()
                 NotificationEnum.PUSH_FRIEND_RECOMMEND.notificationId ->
                 {
                     // Nothing to do yet..
+                }
+                NotificationEnum.PUSH_AWAKEN_DEVICE.notificationId ->
+                {
+                    SOPOWorkeManager.updateWorkManager(applicationContext)
                 }
             }
         }
