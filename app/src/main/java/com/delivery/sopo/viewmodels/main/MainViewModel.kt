@@ -9,14 +9,12 @@ import com.delivery.sopo.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.mapper.ParcelMapper
-import com.delivery.sopo.models.SopoJsonPatch
 import com.delivery.sopo.models.TestResult
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
-import com.delivery.sopo.networks.api.UserAPICall
-import com.delivery.sopo.networks.dto.JsonPatchDto
+import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
@@ -35,7 +33,10 @@ import retrofit2.Response
 
 
 class MainViewModel(
-    private val userRepoImpl : UserRepoImpl, private val parcelRepoImpl : ParcelRepoImpl, private val parcelManagementRepoImpl : ParcelManagementRepoImpl, private val appPasswordRepo : AppPasswordRepoImpl
+    private val userRepoImpl : UserRepoImpl,
+    private val parcelRepoImpl : ParcelRepoImpl,
+    private val parcelManagementRepoImpl : ParcelManagementRepoImpl,
+    private val appPasswordRepo : AppPasswordRepoImpl
 ) : ViewModel()
 {
     val TAG = "MainVm"
@@ -265,7 +266,6 @@ class MainViewModel(
         SopoLog.d(tag = TAG, msg = "updateFCMToken call()")
 
         FirebaseRepository.updateFCMToken { result ->
-
             when (result)
             {
                 is TestResult.SuccessResult<*> ->
@@ -275,14 +275,9 @@ class MainViewModel(
 
                     SopoLog.d(tag = TAG, msg = "FCM ===> $token")
 
-                    val jsonPatchList = mutableListOf<SopoJsonPatch>()
-                    jsonPatchList.add(SopoJsonPatch("replace", "/fcmToken", token))
-
                     CoroutineScope(Dispatchers.IO).launch {
-                        val result =
-                            UserAPICall().patchUser(email = userRepoImpl.getEmail(), jwtToken = token, jsonPatch = JsonPatchDto(jsonPatchList))
 
-                        when (result)
+                        when (val result = UserCall.updateFCMToken(fcmToken = token))
                         {
                             is NetworkResult.Success ->
                             {
@@ -293,7 +288,6 @@ class MainViewModel(
                                 SopoLog.d(tag = TAG, msg = "Fail To Update FCM Token ${result.exception.message}")
                             }
                         }
-
                     }
                 }
                 is TestResult.ErrorResult<*> ->

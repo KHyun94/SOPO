@@ -54,6 +54,13 @@ class SplashViewModel(
                 is NetworkResult.Success ->
                 {
                     SopoLog.d(msg = "User Info Call Success - ${result.data.toString()}")
+
+                    val userDetail = result.data.data
+
+                    userRepoImpl.setEmail(userDetail?.userName?:"")
+                    userRepoImpl.setUserNickname(userDetail?.nickname?:"")
+                    userRepoImpl.setJoinType(userDetail?.joinType?:"")
+
                     navigator.postValue(NavigatorConst.TO_MAIN)
                 }
                 is NetworkResult.Error ->

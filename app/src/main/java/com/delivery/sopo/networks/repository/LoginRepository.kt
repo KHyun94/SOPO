@@ -6,7 +6,7 @@ import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.ErrorResult
 import com.delivery.sopo.models.SuccessResult
-import com.delivery.sopo.networks.api.UserAPICall
+import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.networks.datasource.CustomTokenCallback
 import com.delivery.sopo.networks.datasource.LoginDataSource
 import com.delivery.sopo.services.network_handler.NetworkResult
@@ -14,66 +14,37 @@ import com.delivery.sopo.util.CodeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class LoginRepository : LoginDataSource
+class LoginRepository: LoginDataSource
 {
-    override suspend fun requestCustomToken(email :String, deviceInfo :String, joinType :String, kakaoUid :String, callback: CustomTokenCallback)= withContext(Dispatchers.Main) {
-        when (val result = UserAPICall().requestCustomToken(email = email, deviceInfo = SOPOApp.deviceInfo, joinType = JoinTypeConst.KAKAO, userId = kakaoUid))
-        {
-            is NetworkResult.Success ->
+    override suspend fun requestCustomToken(email: String, deviceInfo: String, joinType: String, kakaoUid: String, callback: CustomTokenCallback) =
+        withContext(Dispatchers.Main) {
+            when (val result = UserCall.requestCustomToken(email = email, deviceInfo = SOPOApp.deviceInfo, joinType = JoinTypeConst.KAKAO, userId = kakaoUid))
             {
-                val apiResult = result.data
-
-                when (val code = CodeUtil.getCode(apiResult.code))
+                is NetworkResult.Success ->
                 {
-                    ResponseCode.SUCCESS ->
+                    val apiResult = result.data
+
+                    when (val code = CodeUtil.getCode(apiResult.code))
                     {
-                        val customToken = apiResult.data ?: ""
+                        ResponseCode.SUCCESS ->
+                        {
+                            val customToken = apiResult.data ?: ""
 
-                        callback.invoke(SuccessResult(code, code.MSG, customToken), null)
-                        /**
-                         * Firebase Custom Token Login
-                         */
-
-                        /**
-                         * Firebase Custom Token Login
-                         */
-                        //                        FirebaseRepository.loginFirebaseWithCustomToken(
-                        //                            email, customToken
-                        //                        ) { success, error ->
-                        //                            if (error != null)
-                        //                            {
-                        //                                callback.invoke(null, error)
-                        //                                return@loginFirebaseWithCustomToken
-                        //                            }
-                        //
-                        //                            if (success != null)
-                        //                            {
-                        //                                val firebaseUId = SOPOApp.auth.currentUser?.uid
-                        //                                val befHashingStr = firebaseUId + uId
-                        //                                val afterHashingStr = befHashingStr.md5()
-                        //                                LoginHandler.setLogin(email, afterHashingStr)
-                        //                                LoginHandler.oAuthLogin(
-                        //                                    email, afterHashingStr, LoginHandler.deviceInfo
-                        //                                ) { success, error ->
-                        //                                    callback.invoke(success, error)
-                        //                                }
-                        //                            }
-                        //                        }
-
-                    }
-                    else ->
-                    {
-                        callback.invoke(null, ErrorResult(code = code, errorMsg = CodeUtil.getMsg(apiResult.code), errorType = ErrorResult.ERROR_TYPE_DIALOG, e = null))
+                            callback.invoke(SuccessResult(code, code.MSG, customToken), null)
+                        }
+                        else ->
+                        {
+                            callback.invoke(null, ErrorResult(code = code, errorMsg = CodeUtil.getMsg(apiResult.code), errorType = ErrorResult.ERROR_TYPE_DIALOG, e = null))
+                        }
                     }
                 }
+                is NetworkResult.Error ->
+                {
+                    val exception = result.exception as APIException
+                    val errorCode = CodeUtil.getCode(exception.data()?.code)
+                    callback.invoke(null, ErrorResult<String?>(code = errorCode, errorMsg = errorCode.MSG, errorType = ErrorResult.ERROR_TYPE_DIALOG, e = exception))
+                }
             }
-            is NetworkResult.Error ->
-            {
-                val exception = result.exception as APIException
-                val errorCode = CodeUtil.getCode(exception.data()?.code)
-                callback.invoke(null, ErrorResult<String?>(code = errorCode, errorMsg = errorCode.MSG, errorType = ErrorResult.ERROR_TYPE_DIALOG, e = exception))
-            }
-        }
 
-    }
+        }
 }

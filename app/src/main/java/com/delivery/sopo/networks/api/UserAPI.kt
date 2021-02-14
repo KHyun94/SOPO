@@ -31,15 +31,6 @@ interface UserAPI
     @Headers("Accept: application/json")
     suspend fun checkOAuthToken(@Field("token") token : String) : Response<Any>
 
-    // 특정 값을 변경 및 삭제 등 수정 요청 api
-    @PATCH("/api/v1/sopo-api/user/deviceInfo")
-    fun patchUser(
-        @Header("Content-Type") contentType: String = "application/json",
-        @Query("jwtToken") jwtToken: String?,
-        @Query("email") email: String,
-        @Body jsonPatch: JsonPatchDto
-    ): Call<APIResult<String?>>
-
     // todo 위의 api로 변경 예정
     // 특정 값을 변경 및 삭제 등 수정 요청 api
     @PATCH("/api/v1/sopo-api/user/deviceInfo")
@@ -50,41 +41,27 @@ interface UserAPI
         @Body jsonPatch: JsonPatchDto?
     ): Response<APIResult<String?>>
 
+    /**
+     * 자동 로그인 및 유저 데이터 가져오기
+     * @return Response<APIResult<UserDetail?>>
+     */
     @GET("/api/v1/sopo-api/user/detail")
     @Headers("Accept: application/json")
     suspend fun getUserInfoWithToken() : Response<APIResult<UserDetail?>>
 
+    /**
+     * FCM Token UPDATE
+     * @param fcmToken : String
+     * @return Response<APIResult<String?>>
+     */
+    @PATCH("/api/v1/sopo-api/user/fcmToken")
+    suspend fun updateFCMToken(@Query("fcmToken") fcmToken : String) : Response<APIResult<String?>>
 
-}
-
-class UserAPICall : BaseService()
-{
-    init
-    {
-        NetworkManager.setLogin(BuildConfig.PUBLIC_API_ACCOUNT_ID, BuildConfig.PUBLIC_API_ACCOUNT_PASSWORD)
-    }
-
-    private val userAPI = NetworkManager.retro.create(UserAPI::class.java)
-
-    suspend fun patchUser(email: String, jwtToken: String, jsonPatch: JsonPatchDto?): NetworkResult<APIResult<String?>>
-    {
-        val patchUser = userAPI.test(email = email, jwtToken = jwtToken, jsonPatch = jsonPatch)
-        return apiCall(call = { patchUser })
-    }
-
-    suspend fun requestCustomToken(
-        email: String,
-        deviceInfo: String,
-        joinType: String,
-        userId: String
-    ): NetworkResult<APIResult<String?>>
-    {
-        val requestCustomToken = userAPI.requestCustomToken(
-            email = email,
-            deviceInfo = deviceInfo,
-            joinType = joinType,
-            userId = userId
-        )
-        return apiCall(call = { requestCustomToken })
-    }
+    /**
+     * FCM Token UPDATE
+     * @param nickname : String
+     * @return Response<APIResult<String?>>
+     */
+    @PATCH("/api/v1/sopo-api/user/nickName")
+    suspend fun updateUserNickname(@Query("nickName") nickname : String) : Response<APIResult<String?>>
 }

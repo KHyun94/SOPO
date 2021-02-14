@@ -1,22 +1,35 @@
 package com.delivery.sopo.networks
 
 import com.delivery.sopo.BuildConfig
+import com.delivery.sopo.database.room.entity.OauthEntity
+import com.delivery.sopo.enums.NetworkEnum
+import com.delivery.sopo.networks.api.UserAPI
+import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.networks.interceptors.BasicAuthInterceptor
 import com.delivery.sopo.networks.interceptors.OAuthInterceptor
+import com.delivery.sopo.repository.impl.OauthRepoImpl
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-object NetworkManager
+object NetworkManager : KoinComponent
 {
     val TAG = this.javaClass.simpleName
+
+    val userRepoImpl : UserRepoImpl by inject()
+    val oauthRepoImpl : OauthRepoImpl by inject()
+
     private const val CONNECT_TIMEOUT: Long = 15
     private const val WRITE_TIMEOUT: Long = 15
     private const val READ_TIMEOUT: Long = 15
@@ -30,6 +43,28 @@ object NetworkManager
 
     var INTERCEPTOR_TYPE = 0
     var isAuthenticator = true
+
+    fun<T> setLoginMethod(method : NetworkEnum, clz : Class<T>) : T
+    {
+        return when(method)
+        {
+            NetworkEnum.O_AUTH_TOKEN_LOGIN ->
+            {
+                val oauth : OauthEntity?
+                runBlocking { oauth = oauthRepoImpl.get(userRepoImpl.getEmail()) }
+                SopoLog.d(tag = UserCall.TAG, msg = "토큰 정보 => ${oauth}")
+                retro(oauth?.accessToken).create(clz)
+            }
+            NetworkEnum.PUBLIC_LOGIN ->
+            {
+                retro(BuildConfig.PUBLIC_API_ACCOUNT_ID, BuildConfig.PUBLIC_API_ACCOUNT_PASSWORD).create(clz)
+            }
+            NetworkEnum.EMPTY_LOGIN ->
+            {
+                retro().create(clz)
+            }
+        }
+    }
 
     fun setLogin(id: String?, password: String?) = if (id != null && password != null)
     {

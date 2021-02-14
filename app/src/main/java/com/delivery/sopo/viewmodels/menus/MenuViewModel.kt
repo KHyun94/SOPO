@@ -12,11 +12,16 @@ import com.delivery.sopo.models.SopoJsonPatch
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.UserAPI
+import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.networks.dto.JsonPatchDto
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -101,36 +106,20 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
 
     fun updateUserNickname(nickname : String)
     {
-        val jsonPatchList = mutableListOf<SopoJsonPatch>()
-        jsonPatchList.add(SopoJsonPatch("replace", "/nickName", nickname))
+        CoroutineScope(Dispatchers.IO).launch {
 
-        NetworkManager.retro(SOPOApp.oauth?.accessToken).create(UserAPI::class.java)
-            .patchUser(
-                email = userRepoImpl.getEmail(),
-                jwtToken = null,
-                jsonPatch = JsonPatchDto(jsonPatchList)
-            )
-            .enqueue(object : Callback<APIResult<String?>>{
-                override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
+            when (val result = UserCall.updateNickname(nickname = nickname))
+            {
+                is NetworkResult.Success ->
                 {
-                    SopoLog.d(msg = "에러 $t")
+                    SopoLog.d(tag = TAG, msg = "Success To Update Nickname ${result.data.message}")
+                    _userNickname.postValue(nickname)
                 }
-
-                override fun onResponse(
-                    call: Call<APIResult<String?>>,
-                    response: Response<APIResult<String?>>
-                )
+                is NetworkResult.Error ->
                 {
-                    if(response.code() == 200)
-                    {
-                        SopoLog.d(msg = "닉네임 변경 => ${response.body()}")
-                        userRepoImpl.setUserNickname(nickname)
-                        _userNickname.value = nickname
-                    }
-                    else
-                        SopoLog.d(msg = "닉네임 변경 => ${response.errorBody()}")
+                    SopoLog.d(tag = TAG, msg = "Fail To Update Nickname ${result.exception.message}")
                 }
-
-            })
+            }
+        }
     }
 }
