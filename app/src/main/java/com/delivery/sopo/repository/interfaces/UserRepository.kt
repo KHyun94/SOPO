@@ -23,5 +23,9 @@ interface UserRepository
     fun setAppPassword(password: String)
     fun getTopic(): String
     fun setTopic(topic: String)
+    fun getDisturbStartTime(): String?
+    fun setDisturbStartTime(startTime: String)
+    fun getDisturbEndTime(): String?
+    fun setDisturbEndTime(startTime: String)
     fun removeUserRepo()
 }

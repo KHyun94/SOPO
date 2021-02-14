@@ -111,6 +111,19 @@ class UserRepoImpl(private val shared: SharedPrefHelper) : UserRepository, KoinC
        shared.setTopic(topic)
     }
 
+    override fun getDisturbStartTime() = shared.getDisturbStartTime()
+
+    override fun setDisturbStartTime(startTime: String)
+    {
+        shared.setDisturbStartTime(startTime)
+    }
+
+    override fun getDisturbEndTime() = shared.getDisturbEndTime()
+
+    override fun setDisturbEndTime(endTime: String)
+    {
+        shared.setDisturbEndTime(endTime)
+    }
 
     override fun removeUserRepo()
     {

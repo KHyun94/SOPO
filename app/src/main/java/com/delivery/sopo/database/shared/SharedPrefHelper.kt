@@ -15,6 +15,8 @@ class SharedPrefHelper(private val sharedPref: SharedPref, private val context: 
     private val SNS_UID = "SNS_UID"
     private val APP_PASSWORD = "APP_PASSWORD"
     private val FCM_TOPIC = "FCM_TOPIC"
+    private val DISTURB_START_TIME = "DISTURB_START_TIME"
+    private val DISTURB_END_TIME = "DISTURB_END_TIME"
 
     fun getUserNickname(): String?
     {
@@ -107,6 +109,20 @@ class SharedPrefHelper(private val sharedPref: SharedPref, private val context: 
     fun setTopic(topic: String)
     {
         sharedPref.setString(FCM_TOPIC, topic)
+    }
+
+    fun getDisturbStartTime() = sharedPref.getString(DISTURB_START_TIME, "00:00")
+
+    fun setDisturbStartTime(startTime: String)
+    {
+        sharedPref.setString(DISTURB_START_TIME, startTime)
+    }
+
+    fun getDisturbEndTime() = sharedPref.getString(DISTURB_END_TIME, "00:00")
+
+    fun setDisturbEndTime(endTime: String)
+    {
+        sharedPref.setString(DISTURB_END_TIME, "00:00")
     }
 
     fun getAppPassword(): String?
