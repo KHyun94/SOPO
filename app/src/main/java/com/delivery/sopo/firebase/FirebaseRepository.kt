@@ -22,6 +22,8 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+import java.util.*
+import kotlin.math.min
 
 typealias FirebaseVoidCallback = (SuccessResult<String?>?, ErrorResult<String?>?) -> Unit
 typealias FirebaseUserCallback = (SuccessResult<FirebaseUser?>?, ErrorResult<String?>?) -> Unit
@@ -268,9 +270,25 @@ object FirebaseRepository : FirebaseDataSource, KoinComponent
      * 등록 시 또는 앱 재설치 시 진행 중인 택배가 있을 시 구독 요청
      * TODO topic 주제 00 ~ 24H ex) 01:01 ~ 02:00 >>> 2시 구독
      */
-    fun subscribedToTopicInFCM(callback : FirebaseVoidCallback)
+    fun subscribedToTopicInFCM(hour: Int? = null, minutes: Int? = null, callback : FirebaseVoidCallback)
     {
-        val topic = DateUtil.getSubscribedTime()
+        var topicHour : Int
+        var topicMinutes : Int
+
+        if(hour == null || minutes == null)
+        {
+            val calendar = Calendar.getInstance()
+
+            topicHour = calendar.get(Calendar.HOUR_OF_DAY)
+            topicMinutes = calendar.get(Calendar.MINUTE)
+        }
+        else
+        {
+            topicHour = hour
+            topicMinutes = minutes
+        }
+
+        val topic = DateUtil.getSubscribedTime(topicHour, topicMinutes)
         // 01 02 03  ~ 24(00)
 
         SopoLog.d(tag = TAG, msg = "Topic >>> $topic")
@@ -313,7 +331,7 @@ object FirebaseRepository : FirebaseDataSource, KoinComponent
                 }
 
                 userRepoImpl.setTopic("")
-                callback.invoke(SuccessResult(SUCCESS, "", null), null)
+                callback.invoke(SuccessResult(SUCCESS, "구독 해제 성공 >>> $topic", null), null)
             }
     }
 }

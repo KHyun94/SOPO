@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentNotDisturbTimeBinding
+import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.NotDisturbTimeViewModel
@@ -70,6 +71,32 @@ class NotDisturbTimeFragment : Fragment()
 
                 userRepoImpl.setDisturbStartTime(startTime)
                 userRepoImpl.setDisturbEndTime(endTime)
+
+                val topicHour = endTime.substring(0, 2).toInt()
+                val topicMin = endTime.substring(3, 5).toInt()
+
+                if(userRepoImpl.getTopic().isEmpty())
+                {
+                    FirebaseRepository.subscribedToTopicInFCM(topicHour, topicMin){ s, e ->
+                        if(e!=null) SopoLog.e(tag = TAG, msg ="구독 실패 >>> ${e.errorMsg}")
+                        if(s!= null) SopoLog.d(tag = TAG, msg = "구독 성공 >>> ${s.successMsg}")
+                    }
+                }
+                else
+                {
+                    FirebaseRepository.unsubscribedToTopicInFCM{s, e->
+                        if(e!=null) SopoLog.e(tag = TAG, msg ="구독 해지 실패 >>>${e.errorMsg}")
+                        if(s!= null)
+                        {
+                            SopoLog.d(tag = TAG, msg = "구독 해지 성공 >>> ${s.successMsg}")
+
+                            FirebaseRepository.subscribedToTopicInFCM(topicHour, topicMin){ s, e ->
+                                if(e!=null) SopoLog.e(tag = TAG, msg ="구독 실패 >>> ${e.errorMsg}")
+                                if(s!= null) SopoLog.d(tag = TAG, msg = "구독 성공 >>> ${s.successMsg}")
+                            }
+                        }
+                    }
+                }
             }.show(
                 requireActivity().supportFragmentManager,
                 "NotDisturbTimeDialog"

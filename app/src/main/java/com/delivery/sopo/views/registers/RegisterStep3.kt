@@ -117,13 +117,26 @@ class RegisterStep3 : Fragment()
                 {
                     SopoLog.d(tag = TAG, msg = "등록 성공 $it")
 
-                    FirebaseRepository.unsubscribedToTopicInFCM { successResult, errorResult ->  }
+                    if(userRepoImpl.getTopic().isEmpty())
+                    {
+                        FirebaseRepository.subscribedToTopicInFCM{ s, e ->
+                            if(e!=null) SopoLog.e(tag = TAG, msg ="구독 실패 >>> ${e.errorMsg}")
+                            if(s!= null) SopoLog.d(tag = TAG, msg = "구독 성공 >>> ${s.successMsg}")
+                        }
+                    }
+                    else
+                    {
+                        FirebaseRepository.unsubscribedToTopicInFCM{s, e->
+                            if(e!=null) SopoLog.e(tag = TAG, msg ="구독 해지 실패 >>>${e.errorMsg}")
+                            if(s!= null)
+                            {
+                                SopoLog.d(tag = TAG, msg = "구독 해지 성공 >>> ${s.successMsg}")
 
-                    FirebaseRepository.subscribedToTopicInFCM { successResult, errorResult ->
-                        if(errorResult != null) {
-                            SopoLog.e(msg = "$errorResult.errorMsg")
-                        } else {
-                            SopoLog.d(msg = "${successResult?.successMsg}")
+                                FirebaseRepository.subscribedToTopicInFCM{ s, e ->
+                                    if(e!=null) SopoLog.e(tag = TAG, msg ="구독 실패 >>> ${e.errorMsg}")
+                                    if(s!= null) SopoLog.d(tag = TAG, msg = "구독 성공 >>> ${s.successMsg}")
+                                }
+                            }
                         }
                     }
 

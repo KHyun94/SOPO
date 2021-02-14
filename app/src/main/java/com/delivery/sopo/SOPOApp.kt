@@ -99,7 +99,6 @@ class SOPOApp : Application()
             oauth = oauthRepoImpl.get(userRepoImpl.getEmail())
         }
 
-        SopoLog.d(msg = "구독 시간 ${DateUtil.getSubscribedTime()}")
         SopoLog.d(msg = """
             구독 설정 시간 >>> ${userRepoImpl.getTopic()}
             구독 스코프 >>> ${FirebaseMessaging.INSTANCE_ID_SCOPE}

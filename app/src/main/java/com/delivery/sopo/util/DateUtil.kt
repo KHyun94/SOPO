@@ -45,13 +45,8 @@ object DateUtil
     }
 
 
-    fun getSubscribedTime() : String
+    fun getSubscribedTime(hour: Int, minutes: Int) : String
     {
-        val calendar = Calendar.getInstance()
-
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minutes = calendar.get(Calendar.MINUTE)
-
         SopoLog.d(
             msg = """
             시 : $hour
