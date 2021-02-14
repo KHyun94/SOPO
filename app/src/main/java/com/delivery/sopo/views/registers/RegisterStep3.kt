@@ -16,6 +16,7 @@ import com.delivery.sopo.databinding.RegisterStep3Binding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.models.CourierItem
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.workmanager.SOPOWorkeManager
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
@@ -32,7 +33,7 @@ class RegisterStep3 : Fragment()
 
     private lateinit var binding: RegisterStep3Binding
     private val registerStep3Vm: RegisterStep3ViewModel by viewModel()
-    private val appDatabase : AppDatabase by inject()
+    private val userRepoImpl : UserRepoImpl by inject()
 
     private var wayBilNum: String? = null
     private var courier: CourierItem? = null
@@ -116,9 +117,15 @@ class RegisterStep3 : Fragment()
                 {
                     SopoLog.d(tag = TAG, msg = "등록 성공 $it")
 
-//                    FirebaseRepository.subscribedToTopicInFCM { successResult, errorResult ->
-//                        if(errorResult != null)
-//                    }
+                    FirebaseRepository.unsubscribedToTopicInFCM { successResult, errorResult ->  }
+
+                    FirebaseRepository.subscribedToTopicInFCM { successResult, errorResult ->
+                        if(errorResult != null) {
+                            SopoLog.e(msg = "$errorResult.errorMsg")
+                        } else {
+                            SopoLog.d(msg = "${successResult?.successMsg}")
+                        }
+                    }
 
                     TabCode.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(null, null, 1)
                     FragmentManager.initFragment(

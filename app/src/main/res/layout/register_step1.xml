@@ -5,9 +5,7 @@
     <data>
 
         <import type="android.view.View" />
-
         <import type="com.delivery.sopo.consts.InfoConst" />
-
         <import type="com.delivery.sopo.models.CourierItem" />
 
         <variable
@@ -36,16 +34,16 @@
         <com.delivery.sopo.views.widget.CustomEditText
             android:id="@+id/custom_et_track_num"
             content="@={vm.wayBilNum}"
-            app:type="@{InfoConst.EMAIL}"
-            app:customFocusChangeListener="@{vm.callback}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="25sp"
             android:layout_marginTop="25sp"
+            app:customFocusChangeListener="@{vm.callback}"
             app:hint="운송장 번호를 입력해주세요."
             app:layout_constraintTop_toBottomOf="@id/tv_title"
             app:statusType="@{vm.wayBilNumStatusType}"
-            app:title="운송장 번호"/>
+            app:title="운송장 번호"
+            app:type="@{InfoConst.EMAIL}" />
 
         <LinearLayout
             android:id="@+id/custom_et_delivery_co"
@@ -107,17 +105,18 @@
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:layout_alignParentStart="true"
-                    android:layout_marginEnd="6dp"
                     android:layout_centerVertical="true"
+                    android:layout_marginEnd="6dp"
                     android:visibility="@{(vm.courier.courierName.length() > 0)?View.VISIBLE:View.GONE}"
-                    app:setImage="@{vm.courier.clickRes}"
-                    setDefaultImage="@{0}"/>
+                    app:setDefaultImage="@{0}"
+                    app:setImage="@{vm.courier.clickRes}" />
 
                 <TextView
+                    android:id="@+id/tv_input_text"
                     style="@style/H3"
-                    android:id="@+id/et_input_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/iv_courier"
                     android:background="@null"
                     android:hint="클릭하여 배송사를 선택해주세요."
@@ -129,7 +128,7 @@
                     android:id="@+id/v_underline"
                     android:layout_width="match_parent"
                     android:layout_height="2sp"
-                    android:layout_below="@+id/et_input_text"
+                    android:layout_below="@+id/tv_input_text"
                     android:background="@{vm.courier.courierName.length() > 0 ? @color/MAIN_BLACK : @color/COLOR_GRAY_200}" />
             </RelativeLayout>
 
@@ -151,6 +150,7 @@
 
 
         <LinearLayout
+            android:id="@+id/layout_clip_board"
             android:layout_width="match_parent"
             android:layout_height="60sp"
             android:layout_marginHorizontal="25sp"

@@ -66,11 +66,7 @@ class UserAPICall : BaseService()
 
     private val userAPI = NetworkManager.retro.create(UserAPI::class.java)
 
-    suspend fun patchUser(
-        email: String,
-        jwtToken: String,
-        jsonPatch: JsonPatchDto?
-    ): NetworkResult<APIResult<String?>>
+    suspend fun patchUser(email: String, jwtToken: String, jsonPatch: JsonPatchDto?): NetworkResult<APIResult<String?>>
     {
         val patchUser = userAPI.test(email = email, jwtToken = jwtToken, jsonPatch = jsonPatch)
         return apiCall(call = { patchUser })

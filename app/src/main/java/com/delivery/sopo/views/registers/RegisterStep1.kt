@@ -11,6 +11,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import com.bumptech.glide.Glide
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.RoomActivate
@@ -105,6 +106,7 @@ class RegisterStep1 : Fragment()
     {
         binding = RegisterStep1Binding.inflate(inflater, container, false)
         binding.vm = vm
+        binding.lifecycleOwner = this
 
         binding.vm!!.wayBilNum.value = wayBilNum ?: ""
         binding.vm!!.courier.value = courier
@@ -138,10 +140,14 @@ class RegisterStep1 : Fragment()
                 if (wayBilNum.isGreaterThanOrEqual(1)) STATUS_COLOR_BLUE
                 else STATUS_COLOR_ELSE
 
-            if(!wayBilNum.isGreaterThanOrEqual(9))
+            if (!wayBilNum.isGreaterThanOrEqual(9))
+            {
+                binding.vm!!.courier.value = null
                 return@Observer
+            }
 
-            val courierList = RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, wayBilNum, 1, courierRepoImpl)
+            val courierList =
+                RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, wayBilNum, 1, courierRepoImpl)
 
             SopoLog.d(
                 tag = TAG, msg = """
@@ -154,11 +160,13 @@ class RegisterStep1 : Fragment()
 
             if (courierList != null && courierList.size > 0)
             {
-                SopoLog.d(tag= TAG, msg = """
+                SopoLog.d(
+                    tag = TAG, msg = """
                         최우선 순위 >>> ${courierList[0]}
-                    """.trimIndent())
+                    """.trimIndent()
+                )
 
-                binding.vm!!.courier.postValue(courierList[0])
+                binding.vm!!.courier.value = (courierList[0])
             }
         })
 
@@ -207,14 +215,14 @@ class RegisterStep1 : Fragment()
 
         // 0922 kh 추가사항 - 클립보드에 저장되어있는 운송장 번호가 로컬에 등록된 택배가 있을 때, 안띄어주는 로직 추가
         ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE, parcelRepoImpl) {
-            val isRegister = binding.vm?.wayBilNum?.value.isNullOrEmpty()
+            val isRegister = binding.vm!!.wayBilNum.value.isNullOrEmpty()
 
             if (!(it.isEmpty() || !isRegister))
             {
-                binding.vm?.clipBoardWords?.value = it
+                SopoLog.d(tag = TAG, msg ="복사된 클립보드 >>> $it")
+                binding.vm!!.clipBoardWords.postValue(it)
             }
         }
-
     }
 
     companion object

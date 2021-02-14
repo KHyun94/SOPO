@@ -26,7 +26,7 @@ class FirebaseService: FirebaseMessagingService()
     private val parcelRepo: ParcelRepoImpl by inject()
     private val parcelManagementRepo: ParcelManagementRepoImpl by inject()
 
-    var TAG = "LOG.SOPO.FCM"
+    var TAG = "FirebaseService"
 
     private fun alertUpdateParcel(remoteMessage: RemoteMessage, intent: Intent, fcmPushDto: FcmPushDTO){
         CoroutineScope(Dispatchers.IO).launch {
@@ -78,6 +78,8 @@ class FirebaseService: FirebaseMessagingService()
             val fcmPushDto = Gson().fromJson(remoteMessage.data.toString(), FcmPushDTO::class.java)
             SopoLog.d(tag = TAG, msg = "fromJson : $fcmPushDto")
 
+            SopoLog.d(tag = TAG, msg = "notification!!!!!!!!!!!!!!!!! ${NotificationEnum.PUSH_AWAKEN_DEVICE.notificationId}")
+
             when (fcmPushDto.notificationId)
             {
                 // 사용자에게 택배 상태가 업데이트되었다고 알려줌
@@ -101,6 +103,12 @@ class FirebaseService: FirebaseMessagingService()
                 }
                 NotificationEnum.PUSH_AWAKEN_DEVICE.notificationId ->
                 {
+                    SopoLog.d(tag = TAG, msg = "notification!!!!!!!!!!!!!!!!! ${NotificationEnum.PUSH_AWAKEN_DEVICE.notificationId}")
+                    NotificationImpl.awakenDeviceNoti(
+                        remoteMessage = remoteMessage,
+                        context = applicationContext,
+                        intent = Intent(this, SplashView::class.java)
+                    )
                     SOPOWorkeManager.updateWorkManager(applicationContext)
                 }
             }

@@ -17,7 +17,7 @@ class RegisterStep1ViewModel : ViewModel()
     var wayBilNum = MutableLiveData<String?>()
 
     // 가져온 클립보드 문자열
-    var clipBoardWords = SingleLiveEvent<String>()
+    var clipBoardWords = MutableLiveData<String>()
 
     var courier = MutableLiveData<CourierItem?>()
 
@@ -73,7 +73,6 @@ class RegisterStep1ViewModel : ViewModel()
     fun onPasteClicked()
     {
         wayBilNum.value = clipBoardWords.value
-        clipBoardWords.call()
     }
 
 }

@@ -37,7 +37,7 @@ class TokenAuthenticator : Authenticator, KoinComponent
 
             return when (val result = requestRefreshOAuthToken())
             {
-                is TestResult.SuccessResult ->
+                is TestResult.SuccessResult<*> ->
                 {
                     val oauth = result.data as OauthResult
                     val accessToken = oauth.accessToken
@@ -46,7 +46,7 @@ class TokenAuthenticator : Authenticator, KoinComponent
 
                     getRetrofitWithoutAuthenticator(response, accessToken)
                 }
-                is TestResult.ErrorResult ->
+                is TestResult.ErrorResult<*> ->
                 {
                     SopoLog.e(tag = TAG, msg = "authenticate fail => ${result.errorMsg}")
                     null
@@ -58,7 +58,7 @@ class TokenAuthenticator : Authenticator, KoinComponent
         return null
     }
 
-    private fun requestRefreshOAuthToken() : TestResult<Any>
+    private fun requestRefreshOAuthToken() : TestResult
     {
         var oauth : OauthEntity?
 

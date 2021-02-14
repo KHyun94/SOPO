@@ -16,7 +16,7 @@ interface FirebaseDataSource
     fun firebaseSelfLogin(email: String, password: String, callback : FirebaseUserCallback)
 
     @Throws(FirebaseException::class)
-    fun firebaseFCMResult(callback: FirebaseFCMCallback)
+    fun updateFCMToken(callback: FirebaseFCMCallback)
 
     @Throws(FirebaseException::class)
     fun loginFirebaseWithCustomToken(email : String, token: String, callback: FirebaseUserCallback)

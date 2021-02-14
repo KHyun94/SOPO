@@ -14,6 +14,7 @@ class SharedPrefHelper(private val sharedPref: SharedPref, private val context: 
     private val STATUS = "STATUS"
     private val SNS_UID = "SNS_UID"
     private val APP_PASSWORD = "APP_PASSWORD"
+    private val FCM_TOPIC = "FCM_TOPIC"
 
     fun getUserNickname(): String?
     {
@@ -93,6 +94,19 @@ class SharedPrefHelper(private val sharedPref: SharedPref, private val context: 
     fun setSNSUId(uid: String)
     {
         sharedPref.setString(SNS_UID, uid)
+    }
+
+    /**
+     * FCM Topic
+     */
+    fun getTopic(): String?
+    {
+        return sharedPref.getString(FCM_TOPIC, "")
+    }
+
+    fun setTopic(topic: String)
+    {
+        sharedPref.setString(FCM_TOPIC, topic)
     }
 
     fun getAppPassword(): String?

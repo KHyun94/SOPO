@@ -575,7 +575,6 @@ class InquiryView : Fragment()
                                 override fun help(v: View)
                                 {
                                     // 도움말
-                                    inquiryVm.testFunReNewALL()
                                     menuPopUpWindow?.dismiss()
                                 }
                             })

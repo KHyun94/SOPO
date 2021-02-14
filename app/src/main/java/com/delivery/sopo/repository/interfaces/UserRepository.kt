@@ -21,5 +21,7 @@ interface UserRepository
     fun setSNSUId(uid: String)
     fun getAppPassword(): String
     fun setAppPassword(password: String)
+    fun getTopic(): String
+    fun setTopic(topic: String)
     fun removeUserRepo()
 }

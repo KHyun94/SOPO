@@ -10,18 +10,21 @@ import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.SopoJsonPatch
+import com.delivery.sopo.models.TestResult
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
-import com.delivery.sopo.networks.api.UserAPI
+import com.delivery.sopo.networks.api.UserAPICall
 import com.delivery.sopo.networks.dto.JsonPatchDto
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
+import com.google.firebase.iid.InstanceIdResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,10 +35,7 @@ import retrofit2.Response
 
 
 class MainViewModel(
-    private val userRepoImpl: UserRepoImpl,
-    private val parcelRepoImpl: ParcelRepoImpl,
-    private val parcelManagementRepoImpl: ParcelManagementRepoImpl,
-    private val appPasswordRepo: AppPasswordRepoImpl
+    private val userRepoImpl : UserRepoImpl, private val parcelRepoImpl : ParcelRepoImpl, private val parcelManagementRepoImpl : ParcelManagementRepoImpl, private val appPasswordRepo : AppPasswordRepoImpl
 ) : ViewModel()
 {
     val TAG = "MainVm"
@@ -44,14 +44,14 @@ class MainViewModel(
     val errorMsg = MutableLiveData<String?>()
 
     private val _isSetOfSecurity = MutableLiveData<AppPasswordEntity?>()
-    val isSetOfSecurity: LiveData<AppPasswordEntity?>
+    val isSetOfSecurity : LiveData<AppPasswordEntity?>
         get() = _isSetOfSecurity
 
     // 업데이트 여부
     var isInitUpdate = false
 
-    private val _cntOfBeUpdate: LiveData<Int> = parcelManagementRepoImpl.getIsUpdateCntLiveData()
-    val cntOfBeUpdate: LiveData<Int>
+    private val _cntOfBeUpdate : LiveData<Int> = parcelManagementRepoImpl.getIsUpdateCntLiveData()
+    val cntOfBeUpdate : LiveData<Int>
         get() = _cntOfBeUpdate
 
     val adapter = MutableLiveData<ViewPagerAdapter>()
@@ -71,7 +71,7 @@ class MainViewModel(
         }
     }
 
-    fun setTabLayoutVisibility(visibility: Int)
+    fun setTabLayoutVisibility(visibility : Int)
     {
         tabLayoutVisibility.value = visibility
     }
@@ -110,20 +110,18 @@ class MainViewModel(
             .getParcelsOngoingTmp(userRepoImpl.getEmail())
             .enqueue(object : Callback<APIResult<MutableList<Parcel>?>?>
             {
-                override fun onFailure(call: Call<APIResult<MutableList<Parcel>?>?>, t: Throwable)
+                override fun onFailure(call : Call<APIResult<MutableList<Parcel>?>?>, t : Throwable)
                 {
                     SopoLog.e(tag = "MainVM", msg = "업데이트 요청 실패", e = t)
                     isInitUpdate = true
                 }
 
                 override fun onResponse(
-                    call: Call<APIResult<MutableList<Parcel>?>?>,
-                    response: Response<APIResult<MutableList<Parcel>?>?>
+                    call : Call<APIResult<MutableList<Parcel>?>?>, response : Response<APIResult<MutableList<Parcel>?>?>
                 )
                 {
                     SopoLog.d(
-                        tag = "MainVM",
-                        msg = "업데이트 요청 성공 http status code[${response.code()}]"
+                        tag = "MainVM", msg = "업데이트 요청 성공 http status code[${response.code()}]"
                     )
 
                     when (response.code())
@@ -138,7 +136,7 @@ class MainViewModel(
                             if (remoteParcelList != null && remoteParcelList.size > 0)
                             {
                                 // isBeUpdate가 1인 택배들의 pk 값과 inquiry_hash값을 넣을 곳
-                                var localParcelList: List<Parcel?>
+                                var localParcelList : List<Parcel?>
 
                                 // 로컬과 서버 간 inquiry hash 값을 비교했을 때 다를 경우 넣는 곳
                                 val updateParcelList = mutableListOf<Parcel>()
@@ -171,19 +169,16 @@ class MainViewModel(
                                                 if (remote.parcelId.regDt == local!!.parcelId.regDt && remote.parcelId.parcelUid == local.parcelId.parcelUid)
                                                 {
                                                     SopoLog.d(
-                                                        tag = "MainVM",
-                                                        msg = "REMOTE ${remote.parcelAlias}의 택배 HASH => ${remote.inqueryHash}"
+                                                        tag = "MainVM", msg = "REMOTE ${remote.parcelAlias}의 택배 HASH => ${remote.inqueryHash}"
                                                     )
                                                     SopoLog.d(
-                                                        tag = "MainVM",
-                                                        msg = "LOCAL ${local.parcelAlias}의 택배 HASH => ${local.inqueryHash}"
+                                                        tag = "MainVM", msg = "LOCAL ${local.parcelAlias}의 택배 HASH => ${local.inqueryHash}"
                                                     )
 
                                                     if (remote.inqueryHash != local.inqueryHash)
                                                     {
                                                         SopoLog.d(
-                                                            tag = "MainVM",
-                                                            msg = "${remote.parcelAlias}의 택배는 업데이트할 내용이 있습니다."
+                                                            tag = "MainVM", msg = "${remote.parcelAlias}의 택배는 업데이트할 내용이 있습니다."
                                                         )
                                                         updateParcelList.add(remote)
                                                         // 비교 후 남는 parcel list는 insert 작업을 거친다.
@@ -194,8 +189,7 @@ class MainViewModel(
                                                     else
                                                     {
                                                         SopoLog.d(
-                                                            tag = "MainVM",
-                                                            msg = "${remote.parcelAlias}의 택배는 업데이트할 내용이 없습니다."
+                                                            tag = "MainVM", msg = "${remote.parcelAlias}의 택배는 업데이트할 내용이 없습니다."
                                                         )
                                                         // 비교 후 남는 parcel list는 insert 작업을 거친다.
                                                         remoteParcelList.remove(remote)
@@ -211,8 +205,7 @@ class MainViewModel(
                                         if (insertParcelList.size > 0)
                                         {
                                             SopoLog.d(
-                                                tag = "MainVM",
-                                                msg = "Insert Into Room 서버에만 존재하는 데이터 ${insertParcelList.size}"
+                                                tag = "MainVM", msg = "Insert Into Room 서버에만 존재하는 데이터 ${insertParcelList.size}"
                                             )
                                             // 택배 인서트
                                             parcelRepoImpl.insertEntities(insertParcelList)
@@ -226,8 +219,7 @@ class MainViewModel(
                                         if (updateParcelList.size > 0)
                                         {
                                             SopoLog.d(
-                                                tag = "MainVM",
-                                                msg = "Update Into Room 갱신된 데이터 ${updateParcelList.size}"
+                                                tag = "MainVM", msg = "Update Into Room 갱신된 데이터 ${updateParcelList.size}"
                                             )
                                             // 택배 업데이트
                                             parcelRepoImpl.updateEntities(updateParcelList)
@@ -263,10 +255,8 @@ class MainViewModel(
     // network private api account setting. if it failed, try to logout and finish
     private fun setPrivateUserAccount()
     {
-        if (userRepoImpl.getStatus() == 1)
-            NetworkManager.setLogin(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
-        else
-            errorMsg.value = "로그인이 비정상적으로 이루어졌습니다.\n다시 로그인해주시길 바랍니다."
+        if (userRepoImpl.getStatus() == 1) NetworkManager.setLogin(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
+        else errorMsg.value = "로그인이 비정상적으로 이루어졌습니다.\n다시 로그인해주시길 바랍니다."
     }
 
     /** Update FCM Token  **/
@@ -274,53 +264,45 @@ class MainViewModel(
     {
         SopoLog.d(tag = TAG, msg = "updateFCMToken call()")
 
-        FirebaseRepository.firebaseFCMResult{ task ->
-            if(task.isSuccessful)
+        FirebaseRepository.updateFCMToken { result ->
+
+            when (result)
             {
-                val token = task.result!!.token
+                is TestResult.SuccessResult<*> ->
+                {
+                    val data = result.data as InstanceIdResult
+                    val token = data.token
 
-                SopoLog.d(tag = TAG, msg = "FCM ===> $token")
+                    SopoLog.d(tag = TAG, msg = "FCM ===> $token")
 
-                val jsonPatchList = mutableListOf<SopoJsonPatch>()
-                jsonPatchList.add(SopoJsonPatch("replace", "/fcmToken", token))
+                    val jsonPatchList = mutableListOf<SopoJsonPatch>()
+                    jsonPatchList.add(SopoJsonPatch("replace", "/fcmToken", token))
 
-                NetworkManager.retro(SOPOApp.oauth?.accessToken).create(UserAPI::class.java)
-                    .patchUser(
-                        email = userRepoImpl.getEmail(),
-                        jwtToken = token,
-                        jsonPatch = JsonPatchDto(jsonPatchList)
-                    ).enqueue(object : Callback<APIResult<String?>>
-                    {
-                        override fun onResponse(
-                            call: Call<APIResult<String?>>,
-                            response: Response<APIResult<String?>>
-                        )
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val result =
+                            UserAPICall().patchUser(email = userRepoImpl.getEmail(), jwtToken = token, jsonPatch = JsonPatchDto(jsonPatchList))
+
+                        when (result)
                         {
-                            SopoLog.d(
-                                tag = TAG,
-                                msg = "Success To Update FCM Token ${response.message()}"
-                            )
+                            is NetworkResult.Success ->
+                            {
+                                SopoLog.d(tag = TAG, msg = "Success To Update FCM Token ${result.data.message}")
+                            }
+                            is NetworkResult.Error ->
+                            {
+                                SopoLog.d(tag = TAG, msg = "Fail To Update FCM Token ${result.exception.message}")
+                            }
                         }
 
-                        override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
-                        {
-                            SopoLog.e(
-                                tag = TAG,
-                                msg = "Fail To Update FCM Token ${t.localizedMessage}",
-                                e = t
-                            )
-                        }
-                    })
-            }
-            else
-            {
-                SopoLog.e(
-                    tag = TAG,
-                    msg = "fail to get FCM ===> ${task.exception?:"null"}",
-                    e = task.exception
-                )
+                    }
+                }
+                is TestResult.ErrorResult<*> ->
+                {
+                    SopoLog.e(tag = TAG, msg = "Fail To Update FCM Token ${result.errorMsg}", e = result.e)
+                }
             }
         }
+
 
     }
 }

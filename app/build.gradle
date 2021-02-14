@@ -1,8 +1,9 @@
-apply plugin: 'com.android.application'
-
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
-apply plugin: 'kotlin-kapt'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
+}
 
 android {
     compileSdkVersion 29
@@ -38,6 +39,7 @@ android {
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
+
     kotlinOptions {
         jvmTarget = '1.8'
     }
@@ -45,11 +47,17 @@ android {
     dataBinding {
         enabled = true
     }
+
+    viewBinding {
+        enabled = true
+    }
+
+    buildFeatures{
+        viewBinding = true
+    }
 }
 
 dependencies {
-    implementation 'androidx.wear:wear:1.0.0'
-    compileOnly 'com.google.android.wearable:wearable:2.5.0'
     def lottieVersion = "3.4.0"
     def work_version = "2.4.0"
 
@@ -152,18 +160,20 @@ dependencies {
 
     // livedata
     implementation 'android.arch.lifecycle:extensions:1.1.1'
-    kapt 'android.arch.lifecycle:compiler:1.1.1'
+    kapt 'android.arch.lifecycle:compiler:2.2.0'
     //---
 //    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
     //---
-    def lifecycle_version = '2.2.0-alpha03'
+    def lifecycle_version = '2.2.0'
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
+    implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
     //---
 
     // Room
-    implementation 'androidx.room:room-ktx:2.3.0-alpha02'
+    def room_version = "2.3.0-beta01"
+    implementation "androidx.room:room-ktx:2.3.0-alpha02"
     implementation "androidx.room:room-runtime:2.3.0-alpha02"
     annotationProcessor "androidx.room:room-compiler:2.3.0-alpha02"
     kapt "androidx.room:room-compiler:2.3.0-alpha02"

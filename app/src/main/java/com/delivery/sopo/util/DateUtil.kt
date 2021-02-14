@@ -1,6 +1,7 @@
 package com.delivery.sopo.util
 
 import com.delivery.sopo.extensions.toMilliSeconds
+import org.jetbrains.annotations.TestOnly
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -43,6 +44,7 @@ object DateUtil
         return currentMilliSeconds <= baseMilliSeconds
     }
 
+
     fun getSubscribedTime() : String
     {
         val calendar = Calendar.getInstance()
@@ -59,21 +61,25 @@ object DateUtil
 
         return if (minutes > 0)
         {
+            val topicHour = hour.toString().padStart(2, '0').padEnd(4, '0')
             SopoLog.d(
                 msg = """
-            구독 시간 ${hour.toString().padStart(2, '0')}
+            구독 시간 ${topicHour}
         """.trimIndent()
             )
-            hour.toString().padStart(2, '0')
+
+            topicHour
         }
         else
         {
+            val topicHour = (hour + 1).toString().padStart(2, '0').padEnd(4 , '0')
             SopoLog.d(
                 msg = """
-            구독 시간 ${(hour + 1).toString().padStart(2, '0')}
+            구독 시간 ${topicHour}
         """.trimIndent()
             )
-            (hour + 1).toString().padStart(2, '0')
+
+            topicHour
         }
     }
 }

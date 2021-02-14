@@ -14,6 +14,7 @@ import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.extensions.launchActivitiy
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.models.ErrorResult
+import com.delivery.sopo.models.SuccessResult
 import com.delivery.sopo.networks.call.OAuthCall
 import com.delivery.sopo.networks.handler.LoginHandler
 import com.delivery.sopo.repository.impl.OauthRepoImpl
@@ -130,8 +131,6 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                     startActivity(intent)
                     finish()
                 }
-
-
             }
 
             if (it.errorResult != null)
@@ -179,7 +178,11 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                                     act = parentActivity, title = "오류", msg = msg, detailMsg = code, rHandler = Pair(first = "네", second = { it ->
                                         LoginHandler.authJwtToken(jwtToken) { successResult, errorResult ->
                                             if (errorResult != null) SopoLog.e(msg = "에러 ${errorResult.toString()}")
-                                            if (successResult != null) SopoLog.d(msg = "성공 ${successResult.toString()}")
+                                            if (successResult != null)
+                                            {
+                                                SopoLog.d(msg = "성공 ${successResult.toString()}")
+                                                binding.vm!!.postResultValue(successResult, errorResult)
+                                            }
 
                                             it.dismiss()
                                         }

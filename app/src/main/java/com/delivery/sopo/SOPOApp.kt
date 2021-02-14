@@ -14,12 +14,11 @@ import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.database.room.entity.OauthEntity
 import com.delivery.sopo.di.appModule
-import com.delivery.sopo.models.OauthResult
+import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
-import com.delivery.sopo.services.AlarmReceiver
 import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.DateUtil
@@ -28,6 +27,7 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.messaging.FirebaseMessaging
 import com.kakao.auth.KakaoSDK
 import com.kakao.auth.Session
 import com.kakao.auth.authorization.accesstoken.AccessToken
@@ -100,6 +100,12 @@ class SOPOApp : Application()
         }
 
         SopoLog.d(msg = "구독 시간 ${DateUtil.getSubscribedTime()}")
+        SopoLog.d(msg = """
+            구독 설정 시간 >>> ${userRepoImpl.getTopic()}
+            구독 스코프 >>> ${FirebaseMessaging.INSTANCE_ID_SCOPE}
+            구독 isAutoInitEnabled >>> ${FirebaseMessaging.getInstance().isAutoInitEnabled}
+        """.trimIndent())
+
     }
 
     private fun getInitViewPagerNumber(cb: ((Int) -> Unit))
@@ -124,37 +130,6 @@ class SOPOApp : Application()
                     }
                 }
             }
-        }
-    }
-
-    fun registerAlarm()
-    {
-        val cal = Calendar.getInstance()
-        cal.add(Calendar.MINUTE, 10)
-
-//        Toast.makeText(tAhis, "알람매니저 등록", Toast.LENGTH_LONG).show()
-
-        val intent = Intent(this, AlarmReceiver::class.java)
-        val pendingIntent =
-            PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-
-        when
-        {
-            Build.VERSION.SDK_INT >= 23 -> alarmManager.setExactAndAllowWhileIdle(
-                AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + cal.timeInMillis,
-                pendingIntent
-            )
-            Build.VERSION.SDK_INT >= 19 -> alarmManager.setExact(
-                AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                cal.timeInMillis,
-                pendingIntent
-            )
-            else -> alarmManager.set(
-                AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + cal.timeInMillis,
-                pendingIntent
-            )
         }
     }
 

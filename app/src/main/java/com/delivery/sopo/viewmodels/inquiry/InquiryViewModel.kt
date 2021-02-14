@@ -507,16 +507,6 @@ class InquiryViewModel(
         }
     }
 
-    //TODO 삭제해야함
-    fun testFunReNewALL()
-    {
-        viewModelScope.launch(Dispatchers.IO) {
-            val parcelsRefreshing =
-                NetworkManager.retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java)
-                    .parcelsRefreshing(userRepoImpl.getEmail())
-        }
-    }
-
     // 배송완료 리스트를 가져오기전 초기화 작업
     private fun initCompleteList(): Job
     {

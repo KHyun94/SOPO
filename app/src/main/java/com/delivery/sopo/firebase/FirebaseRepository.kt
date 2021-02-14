@@ -3,9 +3,13 @@ package com.delivery.sopo.firebase
 import android.os.Bundle
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.ResponseCode.*
+import com.delivery.sopo.extensions.getCommonMessage
 import com.delivery.sopo.extensions.match
 import com.delivery.sopo.models.ErrorResult
 import com.delivery.sopo.models.SuccessResult
+import com.delivery.sopo.models.TestResult
+import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import com.google.android.gms.tasks.Task
@@ -16,15 +20,18 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.iid.InstanceIdResult
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
 typealias FirebaseVoidCallback = (SuccessResult<String?>?, ErrorResult<String?>?) -> Unit
 typealias FirebaseUserCallback = (SuccessResult<FirebaseUser?>?, ErrorResult<String?>?) -> Unit
-typealias FirebaseFCMCallback = (Task<InstanceIdResult>) -> Unit
-
+//typealias FirebaseFCMCallback = (Task<InstanceIdResult>) -> Unit
+typealias FirebaseFCMCallback = (TestResult) -> Unit
 //todo kh firebase repository로 수정 예
-object FirebaseRepository : FirebaseDataSource
+object FirebaseRepository : FirebaseDataSource, KoinComponent
 {
     private val TAG = this.javaClass.simpleName
+    private val userRepoImpl : UserRepoImpl by inject()
 
     /** Firebase Create Account:Firebase 계정 생성
      * @param email:String
@@ -73,13 +80,19 @@ object FirebaseRepository : FirebaseDataSource
         }
     }
 
-
-    override fun firebaseFCMResult(callback: FirebaseFCMCallback)
+    @Throws(FirebaseException::class)
+    override fun updateFCMToken(callback: FirebaseFCMCallback)
     {
-        SopoLog.d(tag = TAG, msg = "firebaseFCMResult call()")
+        SopoLog.d(tag = TAG, msg = "updateFCMToken call()")
+        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
+            if(!task.isSuccessful)
+            {
+                val code = CodeUtil.getCode(task.exception.getCommonMessage(SOPOApp.INSTANCE))
+                callback.invoke(TestResult.ErrorResult<String?>(code, code.MSG, ErrorResult.ERROR_TYPE_NON, null, task.exception))
+                return@addOnCompleteListener
+            }
 
-        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener {
-            callback.invoke(it)
+            callback.invoke(TestResult.SuccessResult<InstanceIdResult>(SUCCESS, SUCCESS.MSG, task.result))
         }
     }
 
@@ -123,8 +136,6 @@ object FirebaseRepository : FirebaseDataSource
                     callback.invoke(SuccessResult(SUCCESS, SUCCESS.MSG, null), null)
                 }
             }
-
-
         }
     }
 
@@ -262,6 +273,8 @@ object FirebaseRepository : FirebaseDataSource
         val topic = DateUtil.getSubscribedTime()
         // 01 02 03  ~ 24(00)
 
+        SopoLog.d(tag = TAG, msg = "Topic >>> $topic")
+
         // 01:01 ~ => 01
         FirebaseMessaging.getInstance().subscribeToTopic(topic)
             .addOnCompleteListener { task ->
@@ -271,6 +284,35 @@ object FirebaseRepository : FirebaseDataSource
                     return@addOnCompleteListener
                 }
 
+                userRepoImpl.setTopic(topic)
+                callback.invoke(SuccessResult(SUCCESS, "구독 성공 >>> ${topic}", null), null)
+            }
+    }
+
+    /**
+     * FCM 구독 요청
+     * 등록 시 또는 앱 재설치 시 진행 중인 택배가 있을 시 구독 요청
+     * TODO topic 주제 00 ~ 24H ex) 01:01 ~ 02:00 >>> 2시 구독
+     */
+    fun unsubscribedToTopicInFCM(callback : FirebaseVoidCallback)
+    {
+        val topic = userRepoImpl.getTopic()
+
+        if(topic == "")
+        {
+            callback.invoke(null, ErrorResult(null, "구독 해제 실패", ErrorResult.ERROR_TYPE_NON, null, null))
+            return
+        }
+
+        FirebaseMessaging.getInstance().unsubscribeFromTopic(topic)
+            .addOnCompleteListener { task ->
+                if(!task.isSuccessful)
+                {
+                    callback.invoke(null, ErrorResult(null, "구독 해제 실패", ErrorResult.ERROR_TYPE_NON, null, task.exception))
+                    return@addOnCompleteListener
+                }
+
+                userRepoImpl.setTopic("")
                 callback.invoke(SuccessResult(SUCCESS, "", null), null)
             }
     }
