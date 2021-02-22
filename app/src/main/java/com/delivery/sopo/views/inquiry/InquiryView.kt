@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
-import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.databinding.SopoInquiryViewBinding
 import com.delivery.sopo.enums.TabCode
@@ -34,7 +33,6 @@ import com.delivery.sopo.mapper.MenuMapper
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.repository.impl.*
-import com.delivery.sopo.services.workmanager.SOPOWorkeManager
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil

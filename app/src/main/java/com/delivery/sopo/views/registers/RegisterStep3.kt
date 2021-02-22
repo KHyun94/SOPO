@@ -17,7 +17,7 @@ import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.repository.impl.UserRepoImpl
-import com.delivery.sopo.services.workmanager.SOPOWorkeManager
+import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.dialog.GeneralDialog

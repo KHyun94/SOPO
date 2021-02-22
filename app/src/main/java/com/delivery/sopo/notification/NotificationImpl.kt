@@ -50,7 +50,7 @@ object NotificationImpl: Notification
         nManager.notify(30001, nBuilder.build())
     }
 
-    override fun alertUpdateParcel(remoteMessage: RemoteMessage, context: Context, intent: Intent, parcel: Parcel, newDeliveryStatus: String) {
+    override fun alertUpdateParcel(remoteMessage: RemoteMessage, context: Context, intent: Intent, message: String, newDeliveryStatus: String) {
         val channelId = "${context.packageName}SOPO"
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -60,7 +60,7 @@ object NotificationImpl: Notification
         val nBuilder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.mipmap.app_icon)
             .setContentTitle("SOPO")
-            .setContentText("[${parcel.parcelAlias}]가 ${DeliveryStatusEnum.valueOf(newDeliveryStatus).msg}(으)로 상태가 변경되었습니다.")
+            .setContentText(message)
             .setAutoCancel(true)
             .setSound(defaultSoundUri)
             .setVibrate(longArrayOf(1000, 1000))

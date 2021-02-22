@@ -1,7 +1,7 @@
 package com.delivery.sopo
 
 import com.delivery.sopo.database.room.AppDatabase
-import com.delivery.sopo.services.workmanager.SOPOWorkeManager
+import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import org.junit.Test
 import java.text.SimpleDateFormat
 import java.util.*
@@ -20,7 +20,7 @@ class ExampleUnitTest {
     fun testWithWorkManager()
     {
         val appDatabase = AppDatabase.getInstance(SOPOApp.INSTANCE)
-        SOPOWorkeManager.updateWorkManager(SOPOApp.INSTANCE, appDatabase)
+        SOPOWorkManager.updateWorkManager(SOPOApp.INSTANCE, appDatabase)
     }
 
     @Test
