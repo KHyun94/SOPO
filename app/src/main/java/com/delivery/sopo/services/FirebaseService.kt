@@ -43,29 +43,60 @@ class FirebaseService: FirebaseMessagingService()
             )
 
             // 만약에.. 내부 데이터베이스에 검색된 택배가 없다면.. 알람을 띄우지 않는다.
-            updateParcelDao.let {
+            updateParcelDao.compareDeliveryStatus {value ->
 
                 // 현재 해당 택배가 가지고 있는 배송 상태와 fcm으로 넘어온 배송상태가 다른 경우만 노티피케이션을 띄운다!
-                if(it.deliveryStatus != updateParcelDao.deliveryStatus && it.status == 1){
-                    parcelManagementRepo.getEntity(updateParcelDao.regDt, updateParcelDao.parcelUid)?.let { entity ->
-                            // 기본적으로 fcm으로 데이터가 업데이트 됐다고 수신 받은것이니 isBeUpdate를 1로 save해서 앱에 차후에 업데이트 해야함을 알림.
-                            entity.apply {
+                if(value)
+                {
+                    parcelManagementRepo.let { repoImpl ->
+
+                        val parcelManagementEntity = parcelManagementRepo.getEntity(updateParcelDao.regDt, updateParcelDao.parcelUid)
+
+                        if(parcelManagementEntity != null)
+                        {
+                            // 배송 상태가 변경 여부를 저
+                            parcelManagementEntity.apply {
                                 isBeUpdate = 1
                                 auditDte = TimeUtil.getDateTime()
                             }
+
                             // 배송 중 -> 배송완료가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
                             if(updateParcelDao.deliveryStatus == DeliveryStatusEnum.delivered.code){
-                                entity.apply { isBeDelivered = 1 }
+                                parcelManagementEntity.apply { isBeDelivered = 1 }
                             }
-                            parcelManagementRepo.insertEntity(entity)
+
+                            CoroutineScope(Dispatchers.Default).launch {
+                                repoImpl.updateEntity(parcelManagementEntity)
+                            }
+                        }
+                        else
+                        {
+                            CoroutineScope(Dispatchers.Default).launch {
+
+                                val parcelEntity = updateParcelDao.getParcel()?:return@launch
+                                val parcel = ParcelMapper.parcelEntityToParcel(parcelEntity)
+                                val parcelManagementEntity = ParcelMapper.parcelToParcelManagementEntity(parcel)
+
+                                parcelManagementEntity.apply {
+                                    isBeUpdate = 1
+                                    auditDte = TimeUtil.getDateTime()
+                                }
+
+                                // 배송 중 -> 배송완료가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
+                                if(updateParcelDao.deliveryStatus == DeliveryStatusEnum.delivered.code){
+                                    parcelManagementEntity.apply { isBeDelivered = 1 }
+                                }
+
+                                repoImpl.insertEntity(parcelManagementEntity)
+                            }
+                        }
                     }
 
                     NotificationImpl.alertUpdateParcel(
                         remoteMessage = remoteMessage,
                         context = applicationContext,
                         intent = intent,
-                        message = it.getMessage(),
-                        newDeliveryStatus = updateParcelDao.deliveryStatus
+                        message = updateParcelDao.getMessage()
                     )
                 }
             }
@@ -76,14 +107,14 @@ class FirebaseService: FirebaseMessagingService()
 
     override fun onMessageReceived(remoteMessage: RemoteMessage){
 
-        appDatabase.logDao()
-            .insert(LogEntity(no = 0, msg = "Call onMessageReceived FCM ${remoteMessage.data}", uuid = "1", regDt = TimeUtil.getDateTime()))
-
         if (remoteMessage.data.isNotEmpty())
         {
             SopoLog.d(tag = TAG, msg = "onMessageReceived: " + remoteMessage.data.toString())
 
-            val fcmPushDto = changeToObject(remoteMessage.data.toString(), FcmPushDTO::class.java)
+            val notificationId = remoteMessage.data.getValue("notificationId")
+            val data = remoteMessage.data.getValue("data")
+
+            val fcmPushDto = FcmPushDTO(notificationId, data)
 
             when (fcmPushDto.notificationId)
             {

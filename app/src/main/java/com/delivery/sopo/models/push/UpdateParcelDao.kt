@@ -7,6 +7,9 @@ import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.koin.core.KoinComponent
 import org.koin.core.inject
@@ -24,6 +27,19 @@ data class UpdateParcelDao(
 
     suspend fun getParcel() = parcelRepoImpl.getLocalParcelById(regDt, parcelUid)
 
+    fun compareDeliveryStatus(callback : (Boolean)->Unit){
+        CoroutineScope(Dispatchers.Default).launch {
+            val parcel = getParcel()
+
+            if(parcel == null)
+            {
+                callback.invoke(false)
+                return@launch
+            }
+
+            callback.invoke(parcel.deliveryStatus != deliveryStatus && parcel.status == 1)
+        }
+    }
 
     fun getMessage() : String
     {
@@ -45,7 +61,7 @@ data class UpdateParcelDao(
 
         val parcelItem = gson.fromJson<ParcelItem?>(subStr, type)
 
-        return when(parcel.deliveryStatus)
+        return when(deliveryStatus)
         {
             DeliveryStatusConst.NOT_REGISTER ->
             {

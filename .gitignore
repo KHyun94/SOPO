@@ -9,9 +9,8 @@
 # Java class files
 *.class
 
-NetworkConst.kt
 strings.xml
-google-services.json
+app/google-services.json
 
 # keystore
 keystore.properties

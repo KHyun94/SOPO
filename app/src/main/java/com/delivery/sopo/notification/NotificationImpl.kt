@@ -14,6 +14,7 @@ import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.interfaces.notification.Notification
 import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.push.UpdateParcelDao
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.TimeUtil
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -50,7 +51,7 @@ object NotificationImpl: Notification
         nManager.notify(30001, nBuilder.build())
     }
 
-    override fun alertUpdateParcel(remoteMessage: RemoteMessage, context: Context, intent: Intent, message: String, newDeliveryStatus: String) {
+    override fun alertUpdateParcel(remoteMessage: RemoteMessage, context: Context, intent: Intent, message: String) {
         val channelId = "${context.packageName}SOPO"
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
