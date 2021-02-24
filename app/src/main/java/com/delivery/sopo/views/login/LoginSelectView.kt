@@ -2,66 +2,58 @@ package com.delivery.sopo.views.login
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.Observer
-import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.consts.JoinTypeConst
-import com.delivery.sopo.databinding.LoginSelectViewBinding
-import com.delivery.sopo.enums.ResponseCodeEnum
-import com.delivery.sopo.firebase.FirebaseUserManagement
 import com.delivery.sopo.abstracts.BasicView
-import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.models.LoginResult
-import com.delivery.sopo.models.SopoJsonPatch
-import com.delivery.sopo.networks.api.LoginAPI
-import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.NetworkManager.publicRetro
-import com.delivery.sopo.networks.api.UserAPI
-import com.delivery.sopo.networks.dto.JsonPatchDto
+import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.database.room.entity.OauthEntity
+import com.delivery.sopo.databinding.LoginSelectViewBinding
+import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.exceptions.APIException
+import com.delivery.sopo.extensions.launchActivitiy
+import com.delivery.sopo.firebase.FirebaseRepository
+import com.delivery.sopo.models.ErrorResult
+import com.delivery.sopo.models.SuccessResult
+import com.delivery.sopo.networks.call.OAuthCall
+import com.delivery.sopo.networks.handler.LoginHandler
+import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
-import com.delivery.sopo.util.CodeUtil
-import com.delivery.sopo.util.OtherUtil
+import com.delivery.sopo.services.network_handler.NetworkResult
+import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
+import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.signup.SignUpView
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
-import com.kakao.usermgmt.response.MeV2Response
 import com.kakao.util.exception.KakaoException
 import kotlinx.android.synthetic.main.login_select_view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_view)
 {
     private val userRepoImpl : UserRepoImpl by inject()
+    private val oauthRepoImpl : OauthRepoImpl by inject()
+    private val loginSelectVm : LoginSelectViewModel by viewModel()
 
-    private val loginSelectVM: LoginSelectViewModel by viewModel()
-    private var sessionCallback: ISessionCallback? = null
-
-    var email = ""
-    var deviceInfo = ""
-    var kakaoUserId = ""
-    var firebaseUserId = ""
-
-    var progressBar : CustomProgressBar? = null
+    private var sessionCallback : ISessionCallback? = null
+    lateinit var progressBar : CustomProgressBar
 
     init
     {
         TAG += this.javaClass.simpleName
         parentActivity = this@LoginSelectView
-        deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?)
+    override fun onCreate(savedInstanceState : Bundle?)
     {
         super.onCreate(savedInstanceState)
 
@@ -70,380 +62,182 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
     override fun bindView()
     {
-        binding.vm = loginSelectVM
+        binding.vm = loginSelectVm
         binding.lifecycleOwner = this
     }
 
     override fun setObserver()
     {
-        loginSelectVM.loginType.observe(this, Observer {
+        loginSelectVm.loginType.observe(this, Observer {
 
             when (it)
             {
-                "LOGIN" ->
+                NavigatorConst.LOGIN ->
                 {
                     startActivity(
                         Intent(parentActivity, LoginView::class.java)
                     )
                 }
-
-                "SIGN_UP" ->
+                NavigatorConst.SIGN_UP ->
                 {
                     startActivity(
                         Intent(parentActivity, SignUpView::class.java)
                     )
                 }
-                "KAKAO_LOGIN" ->
+                NavigatorConst.KAKAO_LOGIN ->
                 {
                     btn_kakao_login.performClick()
 
-                    if (Session.getCurrentSession() != null)
-                        Session.getCurrentSession().removeCallback(sessionCallback)
+                    if (Session.getCurrentSession() != null) Session.getCurrentSession()
+                        .removeCallback(sessionCallback)
 
                     sessionCallback = object : ISessionCallback
                     {
                         override fun onSessionOpened()
                         {
-                            binding.vm?.requestMe {
-                                if (it is MeV2Response)
-                                {
-                                    progressBar!!.onStartDialog()
-
-                                    email = it.kakaoAccount.email
-                                    kakaoUserId = it.id.toString()
-
-                                    requestKakaoCustomToken(email = email, uid = kakaoUserId)
-                                }
-                                else
-                                {
-                                    Log.d(TAG, "카카오 에러: ${it}")
-                                }
-                            }
+                            binding.vm!!.requestKakaoLogin()
                         }
 
-                        override fun onSessionOpenFailed(exception: KakaoException)
+                        override fun onSessionOpenFailed(exception : KakaoException)
                         {
-                            Log.d(TAG, "카카오 세션 에러: ${exception}")
+                            SopoLog.e(tag = TAG, msg = "카카오 세션 에러: ${exception}", e = exception)
                         }
                     }
-
-
                     Session.getCurrentSession().addCallback(sessionCallback)
                 }
             }
 
         })
-    }
 
-    fun requestKakaoCustomToken(email: String, uid: String)
-    {
-        this.email = email
+        binding.vm!!.isProgress.observe(this, Observer {
+            progressBar.autoProgressbar(it)
+        })
 
-        NetworkManager.publicRetro.create(UserAPI::class.java)
-            .requestCustomToken(
-                email = email,
-                deviceInfo = deviceInfo,
-                joinType = JoinTypeConst.KAKAO,
-                userId = uid
-            ).enqueue(object : Callback<APIResult<String?>>
+        binding.vm!!.result.observe(this, Observer {
+
+            if (it == null) return@Observer
+
+            if (it.successResult != null)
             {
-                override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
-                {
-                    progressBar!!.onCloseDialog()
+                SopoLog.d(msg = "성공 발생 => ${it.successResult}")
 
-                    GeneralDialog(
-                        act = parentActivity,
-                        title = "오류",
-                        msg = t.message.toString(),
-                        detailMsg = null,
-                        rHandler = Pair(
-                            first = "네",
-                            second = { it ->
-                                it.dismiss()
-                            })
-                    ).show(supportFragmentManager, "tag")
+                val data = it.successResult!!.data
+
+                if (data != null)
+                {
+                    val intent = Intent(parentActivity, MainView::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                    finish()
                 }
+            }
 
-                override fun onResponse(
-                    call: Call<APIResult<String?>>,
-                    response: Response<APIResult<String?>>
-                )
+            if (it.errorResult != null)
+            {
+                SopoLog.e(msg = "에러 발생 => ${it.errorResult}")
+
+                when (val type = it.errorResult!!.errorType)
                 {
-
-
-                    val httpStatusCode = response.code()
-
-                    val result = response.body()
-
-                    when (httpStatusCode)
+                    ErrorResult.ERROR_TYPE_NON -> return@Observer
+                    ErrorResult.ERROR_TYPE_TOAST ->
                     {
-                        200 ->
+                        CustomAlertMsg.floatingUpperSnackBAr(
+                            context = parentActivity, msg = it.errorResult!!.errorMsg, isClick = true
+                        )
+                        return@Observer
+                    }
+                    ErrorResult.ERROR_TYPE_DIALOG ->
+                    {
+                        val code = it.errorResult!!.code?.CODE
+                        val data = it.errorResult!!.data
+                        val msg = it.errorResult!!.errorMsg
+
+                        SopoLog.e(msg = "이시발 뭐지 ${data}")
+
+                        when (it.errorResult!!.code)
                         {
-                            if (result?.code == ResponseCodeEnum.SUCCESS.CODE)
+                            ResponseCode.FIREBASE_ERROR_EMAIL_VERIFIED ->
                             {
-                                val customToken = result.data as String
-
-                                FirebaseUserManagement.firebaseCustomTokenLogin(token = customToken)
-                                    .addOnCompleteListener {
-
-                                        Log.d(TAG, "kakao ${it.result.user?.email}")
-
-                                        firebaseUserId = it.result?.user?.uid!!
-
-
-                                        it.result?.user?.updateEmail(email)
-                                            ?.addOnCompleteListener {
-
-                                                Log.d(TAG, "Firebase!!!!!!!!!!!!${firebaseUserId}")
-
-
-                                                requestKakaoLogin(
-                                                    email = email,
-                                                    deviceInfo = deviceInfo,
-                                                    kakaoUserId = kakaoUserId,
-                                                    uid = firebaseUserId
-                                                )
-                                            }
-                                    }
+                                // todo 이메일 인증 관련 다이얼로그
+                                GeneralDialog(
+                                    act = parentActivity, title = "오류", msg = msg, detailMsg = code, rHandler = Pair(first = "재전송", second = { it ->
+                                        FirebaseRepository.firebaseSendEmail(SOPOApp.auth.currentUser) { success, error ->
+                                            binding.vm!!.postResultValue(success, error)
+                                        }
+                                        it.dismiss()
+                                    }), lHandler = Pair(first = "확인", second = null)
+                                ).show(supportFragmentManager, "tag")
                             }
-                            else
+                            ResponseCode.ALREADY_LOGGED_IN ->
                             {
-                                progressBar!!.onCloseDialog()
-                                Log.d(TAG, "error code ${result?.code}")
+                                // todo 중복 로그인 처리
+                                val jwtToken = data as String
 
                                 GeneralDialog(
-                                    act = parentActivity,
-                                    title = "알림",
-                                    msg = CodeUtil.returnCodeMsg(result?.code),
-                                    detailMsg = null,
-                                    rHandler = Pair(
-                                        first = "네",
-                                        second = { it ->
+                                    act = parentActivity, title = "오류", msg = msg, detailMsg = code, rHandler = Pair(first = "네", second = { it ->
+                                        LoginHandler.authJwtToken(jwtToken) { successResult, errorResult ->
+                                            if (errorResult != null) SopoLog.e(msg = "에러 ${errorResult.toString()}")
+                                            if (successResult != null)
+                                            {
+                                                SopoLog.d(msg = "성공 ${successResult.toString()}")
+                                                binding.vm!!.postResultValue(successResult, errorResult)
+                                            }
+
                                             it.dismiss()
-                                        })
+                                        }
+
+                                    }), lHandler = Pair(first = "아니오", second = null)
+                                ).show(supportFragmentManager, "tag")
+                            }
+                            else ->
+                            {
+                                GeneralDialog(
+                                    act = parentActivity, title = "오류", msg = msg, detailMsg = code, rHandler = Pair(first = "네", second = null)
                                 ).show(supportFragmentManager, "tag")
                             }
                         }
-                        else ->
-                        {
-                            progressBar!!.onCloseDialog()
-                            Log.d(TAG, "error code ${result?.code}")
-
-                            GeneralDialog(
-                                act = parentActivity,
-                                title = "오류",
-                                msg = CodeUtil.returnCodeMsg(result?.code),
-                                detailMsg = null,
-                                rHandler = Pair(
-                                    first = "네",
-                                    second = { it ->
-                                        it.dismiss()
-                                    })
-                            ).show(supportFragmentManager, "tag")
-                        }
-
                     }
-
+                    ErrorResult.ERROR_TYPE_SCREEN -> return@Observer
+                    else -> return@Observer
                 }
-
-            })
-
-    }
-
-    fun requestKakaoLogin(email: String, deviceInfo: String, kakaoUserId: String, uid: String)
-    {
-        publicRetro.create(LoginAPI::class.java)
-            .requestKakaoLogin(
-                email = email,
-                deviceInfo = deviceInfo,
-                kakaoUserId = kakaoUserId,
-                uid = uid
-            ).enqueue(object : Callback<APIResult<Any?>>
-            {
-                override fun onFailure(call: Call<APIResult<Any?>>, t: Throwable)
-                {
-                    progressBar!!.onCloseDialog()
-                }
-
-                override fun onResponse(
-                    call: Call<APIResult<Any?>>,
-                    response: Response<APIResult<Any?>>
-                )
-                {
-                    progressBar!!.onCloseDialog()
-
-                    val httpStatusCode = response.code()
-
-                    val result = response.body()
-
-                    when (httpStatusCode)
-                    {
-
-                        ResponseCodeEnum.SUCCESS.HTTP_STATUS ->
-                        {
-                            when (result?.code)
-                            {
-                                ResponseCodeEnum.SUCCESS.CODE ->
-                                {
-                                    val gson = Gson()
-
-                                    val type = object : TypeToken<LoginResult?>() {}.type
-
-                                    val reader = gson.toJson(result.data)
-
-                                    val user = gson.fromJson<LoginResult>(reader, type)
-
-                                    userRepoImpl.setEmail(email = user.userName)
-                                    userRepoImpl.setApiPwd(pwd = user.password)
-                                    userRepoImpl.setDeviceInfo(info = deviceInfo)
-                                    userRepoImpl.setJoinType(joinType = JoinTypeConst.KAKAO)
-                                    userRepoImpl.setRegisterDate(user.regDt)
-                                    userRepoImpl.setStatus(user.status)
-                                    userRepoImpl.setSNSUId(kakaoUserId)
-
-                                    startActivity(Intent(parentActivity, MainView::class.java))
-                                    finish()
-                                }
-                                ResponseCodeEnum.ALREADY_LOGGED_IN.CODE ->
-                                {
-                                    val jwtToken = result.data as String
-
-                                    GeneralDialog(
-                                        act = parentActivity,
-                                        title = "알림",
-                                        msg = ResponseCodeEnum.ALREADY_LOGGED_IN.MSG,
-                                        detailMsg = null,
-                                        rHandler = Pair(
-                                            first = "네",
-                                            second = { it ->
-                                                it.dismiss()
-                                                updateDeviceInfo(jwtToken = jwtToken, email = email)
-                                            })
-                                    ).show(supportFragmentManager, "tag")
-                                }
-                                else ->
-                                {
-                                    GeneralDialog(
-                                        act = parentActivity,
-                                        title = "오류",
-                                        msg = CodeUtil.returnCodeMsg(result?.code),
-                                        detailMsg = null,
-                                        rHandler = Pair(
-                                            first = "네",
-                                            second = { it ->
-                                                it.dismiss()
-                                            })
-                                    ).show(supportFragmentManager, "tag")
-                                }
-                            }
-                        }
-                        else ->
-                        {
-                            GeneralDialog(
-                                act = parentActivity,
-                                title = "알림",
-                                msg = CodeUtil.returnCodeMsg(result?.code),
-                                detailMsg = null,
-                                rHandler = Pair(
-                                    first = "네",
-                                    second = { it ->
-                                        it.dismiss()
-                                    })
-                            ).show(supportFragmentManager, "tag")
-
-                        }
-                    }
-
-                }
-
-            })
-    }
-
-    fun updateDeviceInfo(email: String, jwtToken: String)
-    {
-        val jsonPatchList = mutableListOf<SopoJsonPatch>()
-        jsonPatchList.add(SopoJsonPatch("replace", "/deviceInfo", OtherUtil.getDeviceID(SOPOApp.INSTANCE)))
-
-        publicRetro.create(UserAPI::class.java)
-            .patchUser(
-                email = email,
-                jwt = jwtToken,
-                jsonPatch = JsonPatchDto(jsonPatchList)
-            ).enqueue(object : Callback<APIResult<String?>>
-            {
-                override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
-                {
-                    GeneralDialog(
-                        act = parentActivity,
-                        title = "오류",
-                        msg = CodeUtil.returnCodeMsg(t.message),
-                        detailMsg = null,
-                        rHandler = Pair(
-                            first = "네",
-                            second = { it -> it.dismiss() })
-                    ).show(supportFragmentManager, "tag")
-                }
-
-                override fun onResponse(
-                    call: Call<APIResult<String?>>,
-                    response: Response<APIResult<String?>>
-                )
-                {
-                    val httpStatusCode = response.code()
-
-                    val result = response.body()
-
-                    when (httpStatusCode)
-                    {
-                        200 ->
-                        {
-                            requestKakaoLogin(
-                                email = email,
-                                deviceInfo = deviceInfo,
-                                kakaoUserId = kakaoUserId,
-                                uid = firebaseUserId
-                            )
-                        }
-                        else ->
-                        {
-                            GeneralDialog(
-                                act = parentActivity,
-                                title = "오류",
-                                msg = CodeUtil.returnCodeMsg(result?.code),
-                                detailMsg = null,
-                                rHandler = Pair(
-                                    first = "네",
-                                    second = { it -> it.dismiss() })
-                            ).show(supportFragmentManager, "tag")
-                        }
-                    }
-
-                }
-
             }
-            )
-
+        })
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
+    fun checkOAuthToken()
     {
-        if (Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data))
-        {
-            return;
+        CoroutineScope(Dispatchers.IO).launch {
+
+            var oauth : OauthEntity
+
+            withContext(Dispatchers.Default) {
+                oauth = oauthRepoImpl.get("asle1221@naver.com")!!
+            }
+
+            when (val result = OAuthCall.checkOAuthToken(oauth.accessToken))
+            {
+                is NetworkResult.Success ->
+                {
+                    SopoLog.d(tag = "SplashView", msg = "성공 => ${result.data}")
+                }
+                is NetworkResult.Error ->
+                {
+                    SopoLog.d(tag = "SplashView", msg = "성공 => ${(result.exception as APIException)}")
+                }
+            }
         }
+    }
+
+    override fun onActivityResult(requestCode : Int, resultCode : Int, data : Intent?)
+    {
+        if (Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data)) return
         super.onActivityResult(requestCode, resultCode, data)
     }
-
-//    override fun onBackPressed()
-//    {
-//        super.onBackPressed()
-//    }
-
 
     override fun onDestroy()
     {
         super.onDestroy()
-        if (sessionCallback != null)
-            Session.getCurrentSession().removeCallback(sessionCallback)
+        if (sessionCallback != null) Session.getCurrentSession().removeCallback(sessionCallback)
     }
 }

@@ -2,7 +2,6 @@ package com.delivery.sopo.views.menus
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +31,6 @@ import java.util.function.Function
 
 class MenuFragment : Fragment()
 {
-
     private val userRepoImpl: UserRepoImpl by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
     private val timeCountRepoImpl: TimeCountRepoImpl by inject()
@@ -86,7 +84,7 @@ class MenuFragment : Fragment()
                 {
                     override fun handleOnBackPressed()
                     {
-                        Log.d(TAG, "MenuFragment:: BackPressListener")
+                        SopoLog.d(tag = TAG, msg = "MenuFragment:: BackPressListener")
 
                         isMainMenu = binding.constraintFragmentBase.visibility == View.GONE
 
@@ -103,20 +101,20 @@ class MenuFragment : Fragment()
                                 snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
 
                                 SopoLog.d(
-                                    "MenuFragment::1 BackPressListener = 종료를 위해 한번 더 클릭",
-                                    null
+                                    null,
+                                    "MenuFragment::1 BackPressListener = 종료를 위해 한번 더 클릭"
                                 )
                             }
                             else
                             {
-                                SopoLog.d("MenuFragment::1 BackPressListener = 종료", null)
+                                SopoLog.d(null, "MenuFragment::1 BackPressListener = 종료")
                                 ActivityCompat.finishAffinity(activity!!)
                                 System.exit(0)
                             }
                         }
                         else
                         {
-                            Log.d(TAG, "Sub MenuFragment:: BackPressListener")
+                            SopoLog.d(tag = TAG, msg = "Sub MenuFragment:: BackPressListener")
                             binding.vm!!.popView()
                         }
 
@@ -173,7 +171,8 @@ class MenuFragment : Fragment()
                     "사용하실 닉네임을 입력해주세요.",
                     Pair("확인", View.OnClickListener {
                         edit.observe(this@MenuFragment, Observer {
-                            SopoLog.d("입력 값 = > $it")
+                            SopoLog.d(msg = "입력 값 = > $it")
+                            binding.vm!!.updateUserNickname(it)
                             AlertUtil.onDismiss()
                         })
                     }),

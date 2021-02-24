@@ -8,6 +8,7 @@ import android.util.TypedValue
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.DrawableRes
 import com.delivery.sopo.SOPOApp
+import java.io.File
 
 
 object OtherUtil
@@ -47,4 +48,33 @@ object OtherUtil
             null
         }
     }
+
+    fun clearCache(context: Context)
+    {
+        val cacheDirFile = context.cacheDir
+
+        if (cacheDirFile != null && cacheDirFile.isDirectory)
+        {
+            clearCacheFiles(cacheDirFile)
+        }
+    }
+
+    fun clearCacheFiles(cacheDirFile: File?)
+    {
+        if (cacheDirFile == null || cacheDirFile.isFile) return
+
+        for (file in cacheDirFile.listFiles())
+        {
+            if (file.isFile)
+            {
+                if (file.exists()) file.delete()
+            }
+            else
+            {
+                clearCacheFiles(file)
+            }
+        }
+    }
+
+
 }

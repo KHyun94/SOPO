@@ -1,31 +1,31 @@
 package com.delivery.sopo.viewmodels.signup
 
-import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst
-import com.delivery.sopo.extensions.commonMessageResId
-import com.delivery.sopo.firebase.FirebaseUserManagement
-import com.delivery.sopo.models.ValidateResult
-import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.api.UserAPI
+import com.delivery.sopo.models.ErrorResult
+import com.delivery.sopo.models.SuccessResult
+import com.delivery.sopo.models.Result
+import com.delivery.sopo.networks.handler.JoinHandler
+import com.delivery.sopo.networks.repository.JoinRepository
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.kakao.usermgmt.api.UserApi
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers.io
+import com.delivery.sopo.views.widget.CustomEditText
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 typealias FocusChangeCallback = (String, Boolean) -> Unit
 
 class SignUpViewModel : ViewModel()
 {
-    val TAG = "LOG.SOPO" + this.javaClass.simpleName
+    val TAG = this.javaClass.simpleName
 
     var email = MutableLiveData<String>()
     var pwd = MutableLiveData<String>()
@@ -50,12 +50,38 @@ class SignUpViewModel : ViewModel()
     var pwdStatusType = MutableLiveData<Int>()
     var rePwdStatusType = MutableLiveData<Int>()
 
-    var validateResult = MutableLiveData<ValidateResult<Any?>>()
     var isAgree = MutableLiveData<Boolean>()
 
     var isDuplicate = true
 
+    /**
+     * 유효성 및 통신 등의 결과 객체
+     */
+    private var _result = MutableLiveData<Result<*, *>?>()
+    val result: LiveData<Result<*, *>?>
+        get() = _result
+
+    val isProgress = MutableLiveData<Boolean?>()
+
+    /**
+     * 처리에 대한 결과 세팅
+     */
+    fun <T, E> postResultValue(
+        successResult: SuccessResult<T>? = null,
+        errorResult: ErrorResult<E>? = null
+    ) = _result.postValue(Result(successResult, errorResult))
+
+    /**
+     * Progress turn on/off 비동기 value
+     */
+    fun postProgressValue(value: Boolean?) = isProgress.postValue(value)
+
     init
+    {
+        setInitValue()
+    }
+
+    private fun setInitValue()
     {
         email.value = ""
         pwd.value = ""
@@ -73,50 +99,43 @@ class SignUpViewModel : ViewModel()
         pwdValidateText.value = "비밀번호를 입력해주세요."
         rePwdValidateText.value = "비밀번호 확인을 입력해주세요."
 
-        emailStatusType.value = -1
-        pwdStatusType.value = -1
-        rePwdStatusType.value = -1
-
-        validateResult.value = ValidateResult(false, "회원정보를 입력해주세요!!", null, InfoConst.NON_SHOW)
+        emailStatusType.value = CustomEditText.STATUS_COLOR_ELSE
+        pwdStatusType.value = CustomEditText.STATUS_COLOR_ELSE
+        rePwdStatusType.value = CustomEditText.STATUS_COLOR_ELSE
 
         isAgree.value = false
     }
 
-    fun onAgreeClicked()
-    {
-        val currentStatus = isAgree.value
-        isAgree.value = !currentStatus!!
-    }
+    // 개인정보 동의 이벤트
+    fun onAgreeClicked() { isAgree.value = !isAgree.value!! }
 
     fun onSignUpClicked(v: View)
     {
-        if (!v.hasFocus())
-            v.requestFocus()
-        else
-            validateResult.value = onCheckValidate()
+        _result.value = checkValidate()
 
-        if (validateResult.value?.result == true)
+        if (_result.value!!.successResult != null)
         {
-            signUpWithFirebase(this.email.value!!, this.pwd.value!!)
+            JoinHandler.requestJoinBySelf(email = email.value!!, password = pwd.value!!, deviceInfo = SOPOApp.deviceInfo) { success, error ->
+                postResultValue(success, error)
+            }
         }
         else
         {
-
-            val type = if (validateResult.value?.showType == InfoConst.CUSTOM_DIALOG)
+            val type = if (_result.value!!.errorResult!!.errorType == ErrorResult.ERROR_TYPE_DIALOG)
             {
-                InfoConst.CUSTOM_DIALOG
+                ErrorResult.ERROR_TYPE_DIALOG
             }
             else
             {
-                InfoConst.CUSTOM_TOAST_MSG
+                ErrorResult.ERROR_TYPE_TOAST
             }
 
-            validateResult.value?.showType = type
-            val tmp = validateResult.value
-            validateResult.value = tmp
+            _result.value!!.errorResult!!.errorType = type
+            val tmp = _result.value
+            _result.value = tmp
         }
 
-        Log.d(TAG, "SignUp Click!!!!!!!!!!!!!")
+        SopoLog.d(tag = TAG, msg = "SignUp Click!!!!!!!!!!!!!")
     }
 
     // EditText 유효성 검사 가시성
@@ -126,37 +145,40 @@ class SignUpViewModel : ViewModel()
         {
             InfoConst.EMAIL ->
             {
-                isEmailErrorVisible.value = errorState
-                isEmailCorVisible.value = corState
+                isEmailErrorVisible.value = (errorState)
+                isEmailCorVisible.value = (corState)
             }
             InfoConst.PASSWORD ->
             {
-                isPwdErrorVisible.value = errorState
-                isPwdCorVisible.value = corState
+                isPwdErrorVisible.value = (errorState)
+                isPwdCorVisible.value = (corState)
             }
             InfoConst.RE_PASSWORD ->
             {
-                isRePwdErrorVisible.value = errorState
-                isRePwdCorVisible.value = corState
+                isRePwdErrorVisible.value = (errorState)
+                isRePwdCorVisible.value = (corState)
             }
         }
     }
 
-    // Custom EditText 포커스 변화 콜백
+    // CustomEditText Focus 제어
     var callback: FocusChangeCallback = FocusChangeCallback@{ type, focus ->
 
         if (focus)
         {
-            Log.d(TAG, "Focus In $type")
             setVisibleState(type = type, errorState = GONE, corState = GONE)
 
-            if (type == InfoConst.EMAIL)
-                isDuplicate = true
+            isDuplicate = type == InfoConst.EMAIL
+
+            when (type)
+            {
+                InfoConst.EMAIL -> emailStatusType.value = CustomEditText.STATUS_COLOR_BLUE
+                InfoConst.PASSWORD -> pwdStatusType.value = CustomEditText.STATUS_COLOR_BLUE
+                InfoConst.RE_PASSWORD -> rePwdStatusType.value = CustomEditText.STATUS_COLOR_BLUE
+            }
         }
         else
         {
-            Log.d(TAG, "Focus Out $type")
-
             when (type)
             {
                 InfoConst.EMAIL ->
@@ -164,12 +186,11 @@ class SignUpViewModel : ViewModel()
                     // 이메일 란이 공백일 때
                     if (TextUtils.isEmpty(email.value))
                     {
-                        emailStatusType.value = 0
+                        emailStatusType.value = CustomEditText.STATUS_COLOR_RED
                         emailValidateText.value = "이메일을 입력해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
-                        validateResult.value = onCheckValidate()
-                        Log.d(TAG, "Email is Empty")
-
+                        _result.value = checkValidate()
+                        SopoLog.d(tag = TAG, msg = "Email is Empty")
                         return@FocusChangeCallback
                     }
 
@@ -181,14 +202,13 @@ class SignUpViewModel : ViewModel()
                         // 이메일이 중복 이메일이거나 초기화되었을 때 중복 api로 통신
                         if (isDuplicate)
                         {
-                            Log.d(TAG, "Duplicate Check Start!!!")
-                            onCheckDuplicatedEmail(email = email.value!!)
-
+                            SopoLog.d(tag = TAG, msg = "Duplicate Check Start!!!")
+                            checkDuplicatedEmail(email = email.value!!)
                             return@FocusChangeCallback
                         }
                         else
                         {
-                            emailStatusType.value = 1
+                            emailStatusType.value = CustomEditText.STATUS_COLOR_BLUE
                             setVisibleState(
                                 type = InfoConst.EMAIL,
                                 errorState = GONE,
@@ -199,28 +219,30 @@ class SignUpViewModel : ViewModel()
                     else
                     {
                         emailStatusType.value = 0
-                        Log.d(TAG, "PLZ Check Email Validate")
+                        SopoLog.d(tag = TAG, msg = "PLZ Check Email Validate")
                         emailValidateText.value = "이메일 형식을 확인해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
                     }
 
                     // 이메일, 비밀번호, 비밀번호 확인, 이용약관 유효성 검사
-                    validateResult.value = onCheckValidate()
+                    _result.value = checkValidate()
+
+                    return@FocusChangeCallback
                 }
                 InfoConst.PASSWORD ->
                 {
-                    Log.d(TAG, "Focus out $type ${pwd.value}")
+                    SopoLog.d(tag = TAG, msg = "Focus out $type ${pwd.value}")
 
                     // 비밀번호 란이 공백일 때
                     if (TextUtils.isEmpty(pwd.value))
                     {
-                        pwdStatusType.value = 0
+                        pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
 
-                        Log.d(TAG, "pwd is empty")
+                        SopoLog.d(tag = TAG, msg = "pwd is empty")
 
                         pwdValidateText.value = "비밀번호를 입력해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
-                        validateResult.value = onCheckValidate()
+                        _result.value = checkValidate()
 
                         return@FocusChangeCallback
                     }
@@ -230,37 +252,39 @@ class SignUpViewModel : ViewModel()
 
                     if (isValidate)
                     {
-                        pwdStatusType.value = 1
-                        setVisibleState(type, GONE, VISIBLE)
+                        pwdStatusType.value = CustomEditText.STATUS_COLOR_BLUE
+                        setVisibleState(type = type, errorState = GONE, corState = VISIBLE)
 
                         // 유효성 통과 시 비밀번호 확인 체크
                         if (pwd.value == rePwd.value)
                         {
-                            pwdStatusType.value = 1
-                            rePwdStatusType.value = 1
+                            pwdStatusType.value = CustomEditText.STATUS_COLOR_BLUE
+                            rePwdStatusType.value = CustomEditText.STATUS_COLOR_BLUE
                             setVisibleState(InfoConst.RE_PASSWORD, GONE, VISIBLE)
                         }
                     }
                     else
                     {
-                        pwdStatusType.value = 0
+                        pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
                         pwdValidateText.value = "비밀번호 형식을 확인해주세요."
                         setVisibleState(type, VISIBLE, GONE)
 
                         // 비밀번호 일치 검사
                         if (rePwd.value!!.isNotEmpty())
                         {
-                            rePwdStatusType.value = 0
+                            rePwdStatusType.value = CustomEditText.STATUS_COLOR_RED
                             rePwdValidateText.value = "비밀번호가 일치하지 않습니다."
                             setVisibleState(InfoConst.RE_PASSWORD, VISIBLE, GONE)
                         }
                     }
 
-                    validateResult.value = onCheckValidate()
+                    _result.value = checkValidate()
+
+                    return@FocusChangeCallback
                 }
                 InfoConst.RE_PASSWORD ->
                 {
-                    Log.d(TAG, "type $type re_pwd ${rePwd.value}")
+                    SopoLog.d(tag = TAG, msg = "type $type re_pwd ${rePwd.value}")
 
                     // 비밀번호가 최소 1자리 이상일 때
                     if (pwd.value!!.isNotEmpty())
@@ -268,12 +292,13 @@ class SignUpViewModel : ViewModel()
                         // 비밀번호 확인 란이 공백일 때
                         if (TextUtils.isEmpty(rePwd.value))
                         {
-                            rePwdStatusType.value = 0
+                            rePwdStatusType.value = CustomEditText.STATUS_COLOR_RED
                             rePwdValidateText.value = "비밀번호 확인을 입력해주세요."
                             setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
-                            validateResult.value = onCheckValidate()
+                            _result.value = checkValidate()
 
                             return@FocusChangeCallback
+
                         }
 
                         val isPwdValidate = ValidateUtil.isValidatePassword(pwd = pwd.value)
@@ -281,26 +306,23 @@ class SignUpViewModel : ViewModel()
 
                         if (isPwdValidate && pwd.value == rePwd.value)
                         {
-                            rePwdStatusType.value = 1
+                            rePwdStatusType.value = CustomEditText.STATUS_COLOR_BLUE
                             // 비밀번호 유효성이 true일 때 비밀번호가 일치하는지
                             setVisibleState(InfoConst.RE_PASSWORD, GONE, VISIBLE)
                         }
                         else if (!isRePwdValidate)
                         {
-                            if (isPwdValidate)
-                                pwdStatusType.value = 1
-                            else
-                                pwdStatusType.value = 0
+                            pwdStatusType.value = if(isPwdValidate) CustomEditText.STATUS_COLOR_BLUE else CustomEditText.STATUS_COLOR_RED
 
-                            rePwdStatusType.value = 0
+                            rePwdStatusType.value = CustomEditText.STATUS_COLOR_RED
                             // 비밀번호 확인의 유효성이 false 일 때
                             rePwdValidateText.value = "비밀번호 형식을 확인해주세요."
                             setVisibleState(InfoConst.RE_PASSWORD, VISIBLE, GONE)
                         }
                         else
                         {
-                            pwdStatusType.value = 0
-                            rePwdStatusType.value = 0
+                            pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
+                            rePwdStatusType.value = CustomEditText.STATUS_COLOR_RED
                             // 비밀번호가 일치하지 않을 때
                             rePwdValidateText.value = "비밀번호가 일치하지 않습니다."
                             setVisibleState(InfoConst.RE_PASSWORD, VISIBLE, GONE)
@@ -327,190 +349,96 @@ class SignUpViewModel : ViewModel()
                         }
                     }
 
-                    validateResult.value = onCheckValidate()
+                    _result.value = checkValidate()
+
+                    return@FocusChangeCallback
                 }
             }
         }
 
     }
 
-    private fun onCheckValidate(): ValidateResult<Any?>
+    private fun checkValidate(): Result<*, *>
     {
+        SopoLog.d(msg = "checkValidate call()")
+        // email 유효성 에러
         if (isEmailCorVisible.value != VISIBLE)
         {
-            Log.d(TAG, "Validate Fail Email ")
-            emailStatusType.value = 0
-            return ValidateResult(
-                result = false,
-                msg = emailValidateText.value.toString(),
-                data = null,
-                showType = InfoConst.NON_SHOW
+            SopoLog.d(tag = TAG, msg = "Validate Fail Email ")
+            emailStatusType.value = CustomEditText.STATUS_COLOR_RED
+            return Result<Unit, Unit>(
+                errorResult = ErrorResult(
+                    code = null, errorMsg = emailValidateText.value.toString(), errorType = ErrorResult.ERROR_TYPE_NON, data = null
+                )
             )
         }
 
+        // password 유효성 에러
         if (isPwdCorVisible.value != VISIBLE)
         {
-
-            pwdStatusType.value = 0
-            Log.d(TAG, "Validate Fail PWD ")
-
-            return ValidateResult(
-                result = false,
-                msg = pwdValidateText.value.toString(),
-                data = null,
-                showType = InfoConst.NON_SHOW
+            SopoLog.d(tag = TAG, msg = "Validate Fail PWD ")
+            pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
+            return Result<Unit, Unit>(
+                errorResult = ErrorResult(
+                    code = null, errorMsg = pwdValidateText.value.toString(), errorType = ErrorResult.ERROR_TYPE_NON, data = null
+                )
             )
         }
 
         if (isRePwdCorVisible.value != VISIBLE)
         {
+            rePwdStatusType.value = CustomEditText.STATUS_COLOR_RED
+            SopoLog.d(tag = TAG, msg = "Validate Fail PWD ")
 
-            rePwdStatusType.value = 0
-            Log.d(TAG, "Validate Fail PWD ")
-
-            return ValidateResult(
-                result = false,
-                msg = rePwdValidateText.value.toString(),
-                data = null,
-                showType = InfoConst.NON_SHOW
+            return Result<Unit, Unit>(
+                errorResult = ErrorResult(
+                    code = null, errorMsg = rePwdValidateText.value.toString(), errorType = ErrorResult.ERROR_TYPE_NON, data = null
+                )
             )
         }
 
         if (!isAgree.value!!)
         {
+            SopoLog.d(tag = TAG, msg = "Validate Fail Agree ")
 
-            Log.d(TAG, "Validate Fail Agree ")
-
-
-            return ValidateResult(
-                result = false,
-                msg = "사용자 약관 이용에 동의해주세요!!!",
-                data = null,
-                showType = InfoConst.NON_SHOW
+            return Result<Unit, Unit>(
+                errorResult = ErrorResult(
+                    code = null, errorMsg = "사용자 약관 이용에 동의해주세요!!!", errorType = ErrorResult.ERROR_TYPE_NON, data = null
+                )
             )
         }
 
+        SopoLog.d(tag = TAG, msg = "Validate Success ")
 
-        Log.d(TAG, "Validate Success ")
-
-
-        return ValidateResult(result = true, msg = "", data = null, showType = InfoConst.NON_SHOW)
+        return Result<Unit?, Unit?>(
+            successResult = SuccessResult(
+                code = null, successMsg = "SUCCESS", data = null
+            )
+        )
     }
 
-    private fun onCheckDuplicatedEmail(email: String)
+    private fun checkDuplicatedEmail(email: String)
     {
-        NetworkManager.run {
-            publicRetro.create(UserAPI::class.java).requestDuplicateEmail(email)
-                .subscribeOn(io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
+        CoroutineScope(Dispatchers.IO).launch {
 
-                        // todo 성공 코드('0000')이 아닐 때 중복 이메일이라고 표시(임시)
-                        isDuplicate = if (it.code == "0000") it.data!! else false
+            JoinRepository().requestDuplicatedEmail(email = email){ success, error ->
+                isDuplicate = if(success != null) success.data?:true else error?.data?:true
 
-                        Log.d(TAG, "Duplicate Result => $isDuplicate")
-
-                        // isDuplicate가 false일 때 사용 가능 이메일
-                        if (!isDuplicate)
-                        {
-                            emailStatusType.value = 1
-                            setVisibleState(
-                                type = InfoConst.EMAIL,
-                                errorState = GONE,
-                                corState = VISIBLE
-                            )
-                            Log.d(TAG, "it is possible to use Email!!!")
-                        }
-                        else
-                        {
-                            emailStatusType.value = 0
-                            isDuplicate = true
-                            emailValidateText.value = "중복된 이메일입니다."
-                            setVisibleState(
-                                type = InfoConst.EMAIL,
-                                errorState = VISIBLE,
-                                corState = GONE
-                            )
-                            Log.d(TAG, "it is Duplicate Email!!!")
-                        }
-
-                        validateResult.value = onCheckValidate()
-                    },
-                    {
-                        isDuplicate = true
-
-                        emailValidateText.value = "알수 없는 오류"
-                        setVisibleState(
-                            type = InfoConst.EMAIL,
-                            errorState = VISIBLE,
-                            corState = GONE
-                        )
-
-                        validateResult.value = onCheckValidate()
-                    }
-                )
-        }
-
-    }
-
-    fun signUpWithFirebase(email: String, pwd: String)
-    {
-        Log.d(TAG, "Firebase Sign Up Start~!!!")
-
-        FirebaseUserManagement.firebaseCreateUser(email, pwd)
-            .addOnCompleteListener {
-                when
+                val statusColor = if(isDuplicate) CustomEditText.STATUS_COLOR_RED else CustomEditText.STATUS_COLOR_BLUE
+                val msg = if(isDuplicate)
                 {
-                    it.isSuccessful ->
-                    {
-                        val user = SOPOApp.auth.currentUser
+                    if(error != null) "알 수 없는 오류입니다." else "중복된 이메일입니다."
+                } else ""
 
-                        Log.d(TAG, "Firebase Sign Up User - ${user?.email ?: "이메일 없음"}")
+                emailStatusType.value = statusColor
+                emailValidateText.value = msg
 
-                        FirebaseUserManagement.firebaseSendEmail(user!!)
-                            ?.addOnCompleteListener {
-                                Log.d(TAG, "Firebase Send Auth Email")
-
-                                val bundle = Bundle()
-                                bundle.putString(FirebaseAnalytics.Param.METHOD, "email")
-                                FirebaseAnalytics.getInstance(SOPOApp.INSTANCE)
-                                    .logEvent(FirebaseAnalytics.Event.SIGN_UP, bundle)
-
-                                if (it.isSuccessful)
-                                {
-                                    validateResult.value = ValidateResult(
-                                        result = true,
-                                        msg = "",
-                                        data = "Success",
-                                        showType = InfoConst.CUSTOM_DIALOG
-                                    )
-                                }
-                                else
-                                {
-                                    validateResult.value = ValidateResult(
-                                        result = false,
-                                        msg = "이메일 인증 메일 전송에 실패했습니다. 다시 한번 시도해주세요.",
-                                        data = null,
-                                        showType = InfoConst.CUSTOM_DIALOG
-                                    )
-                                }
-
-                                Log.d(TAG, validateResult.value.toString())
-                            }
-                    }
-                    else ->
-                    {
-                        Log.d(TAG, "에러${it.exception?.commonMessageResId}")
-                        // 회원가입 실패
-                        validateResult.value = ValidateResult(
-                            result = false,
-                            msg = it.exception?.localizedMessage!!,
-                            data = it.exception?.commonMessageResId,
-                            showType = InfoConst.CUSTOM_DIALOG
-                        )
-                    }
-                }
+                setVisibleState(
+                    type = InfoConst.EMAIL,
+                    errorState = if(isDuplicate) VISIBLE else  GONE,
+                    corState = if(isDuplicate) GONE else VISIBLE
+                )
             }
+        }
     }
 }

@@ -1,16 +1,20 @@
 package com.delivery.sopo.views.widget
 
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.AttributeSet
-import android.util.Log
+import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import com.bumptech.glide.Glide
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.util.SizeUtil
+import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.custom_edit_text.view.*
 
 
@@ -30,8 +34,6 @@ class CustomEditText : LinearLayout
     private var focusChangeColor = resources.getColor(R.color.COLOR_GRAY_200)
     private var underLineWidth: Int = ViewGroup.LayoutParams.MATCH_PARENT
     private var underLineHeight: Int = SizeUtil.changeSpToPx(SOPOApp.INSTANCE, 2.0f)
-
-    private var completeUnderLineColor = resources.getColor(R.color.COLOR_MAIN_RED_700)
 
     constructor(context: Context?) : super(context)
     {
@@ -58,8 +60,7 @@ class CustomEditText : LinearLayout
 
         if (attrs != null)
         {
-            val typedArray =
-                context?.obtainStyledAttributes(attrs, R.styleable.CustomEditText, 0, 0)
+            val typedArray = context?.obtainStyledAttributes(attrs, R.styleable.CustomEditText, 0, 0)
             text = typedArray?.getString(R.styleable.CustomEditText_text)
             title = typedArray?.getString(R.styleable.CustomEditText_title)
             hint = typedArray?.getString(R.styleable.CustomEditText_hint)
@@ -76,6 +77,10 @@ class CustomEditText : LinearLayout
                 R.styleable.CustomEditText_focusColor,
                 resources.getColor(R.color.COLOR_MAIN_BLUE_700)
             )
+
+            val test =
+                typedArray?.getResourceId(R.styleable.CustomEditText_android_nextFocusDown, 0)
+            et_input_text.nextFocusDownId = test ?: 0
         }
 
         et_input_text.setText(text ?: "")
@@ -176,19 +181,27 @@ class CustomEditText : LinearLayout
         }
     }
 
+    companion object{
+        const val STATUS_COLOR_RED = 0
+        const val STATUS_COLOR_BLUE = 1
+        const val STATUS_COLOR_BLACK = 2
+        const val STATUS_COLOR_ELSE = -1
+
+    }
+
     fun updateStatusColor(type: Int)
     {
         when (type)
         {
             0 ->
             {
-                Log.d(TAG, "Red")
+                SopoLog.d(tag = TAG, msg = "Red")
                 tv_title.setTextColor(resources.getColor(R.color.COLOR_MAIN_RED_500))
                 v_underline.setBackgroundResource(R.color.COLOR_MAIN_RED_500)
             }
             1 ->
             {
-                Log.d(TAG, "Blue")
+                SopoLog.d(tag = TAG, msg = "Blue")
                 tv_title.setTextColor(resources.getColor(R.color.COLOR_MAIN_BLUE_700))
                 v_underline.setBackgroundResource(R.color.COLOR_MAIN_BLUE_700)
 
@@ -196,18 +209,78 @@ class CustomEditText : LinearLayout
             2 ->
             {
 
-                Log.d(TAG, "Black")
+                SopoLog.d(tag = TAG, msg = "Black")
                 tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
                 v_underline.setBackgroundResource(R.color.MAIN_BLACK)
             }
             else ->
             {
-                Log.d(TAG, "Black & Gray")
+                SopoLog.d(tag = TAG, msg = "Black & Gray")
                 tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
                 v_underline.setBackgroundResource(R.color.COLOR_GRAY_200)
             }
         }
+    }
 
+    fun setOnClearListener(context: Context?)
+    {
+        if (context != null)
+        {
+            Glide.with(context)
+                .load(R.drawable.ic_clear_btn)
+                .into(iv_right_mark)
 
+            et_input_text.addTextChangedListener(
+                object : TextWatcher
+                {
+                    override fun beforeTextChanged(
+                        charSequence: CharSequence,
+                        i: Int,
+                        i1: Int,
+                        i2: Int
+                    )
+                    {
+                    }
+
+                    override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int)
+                    {
+                    }
+
+                    override fun afterTextChanged(editable: Editable)
+                    {
+                        if (editable.toString().isNotEmpty()) iv_right_mark.visibility =
+                            View.VISIBLE
+                        else iv_right_mark.visibility = View.GONE
+                    }
+                }
+            )
+
+            iv_right_mark.setOnClickListener {
+                et_input_text.setText("")
+                tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
+                v_underline.setBackgroundResource(R.color.COLOR_GRAY_200)
+            }
+        }
+        else
+        {
+            iv_right_mark.run {
+                setBackgroundResource(0)
+                setOnClickListener(null)
+            }
+        }
+
+    }
+
+    fun setOnKeyListener(cb: ((View, Int, KeyEvent) -> Unit))
+    {
+        et_input_text.setOnKeyListener { v, keyCode, event ->
+            cb.invoke(v, keyCode, event)
+            return@setOnKeyListener false
+        }
+    }
+
+    fun etClearFocus()
+    {
+        et_input_text.clearFocus()
     }
 }

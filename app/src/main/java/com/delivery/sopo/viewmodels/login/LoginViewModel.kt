@@ -1,60 +1,67 @@
 package com.delivery.sopo.viewmodels.login
 
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst
-import com.delivery.sopo.consts.JoinTypeConst
-import com.delivery.sopo.enums.ResponseCodeEnum
-import com.delivery.sopo.extensions.commonMessageResId
-import com.delivery.sopo.firebase.FirebaseUserManagement
-import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.models.LoginResult
-import com.delivery.sopo.models.SopoJsonPatch
-import com.delivery.sopo.models.ValidateResult
-import com.delivery.sopo.networks.api.LoginAPI
-import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.api.UserAPI
-import com.delivery.sopo.networks.dto.JsonPatchDto
+import com.delivery.sopo.firebase.FirebaseRepository
+import com.delivery.sopo.models.*
+import com.delivery.sopo.networks.handler.LoginHandler
 import com.delivery.sopo.repository.impl.UserRepoImpl
-import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.OtherUtil
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.viewmodels.signup.FocusChangeCallback
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-
+import com.delivery.sopo.views.widget.CustomEditText
 
 class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
 {
-
-    val TAG = "LOG.SOPO.LoginVM"
+    private val TAG = "LOG.SOPO.LoginVm"
 
     var email = MutableLiveData<String>()
     var pwd = MutableLiveData<String>()
     var uid = ""
 
+    // CustomEditText의 에러 텍스트
     var emailValidateText = MutableLiveData<String>()
     var pwdValidateText = MutableLiveData<String>()
 
+    // CustomEditText의우측 상단 텍스트 visible
     var isEmailErrorVisible = MutableLiveData<Int>()
     var isPwdErrorVisible = MutableLiveData<Int>()
 
+    // CustomEditText의유효성 검사 통과; 우측 이미지 visible
     var isEmailCorVisible = MutableLiveData<Int>()
     var isPwdCorVisible = MutableLiveData<Int>()
 
+    // CustomEditText의 underline state
     var emailStatusType = MutableLiveData<Int>()
     var pwdStatusType = MutableLiveData<Int>()
 
-    var validateResult = MutableLiveData<ValidateResult<Any?>>()
+    // 유효성 및 통신 등의 결과 객체
+    private var _result = MutableLiveData<Result<*, *>?>()
+    val result: LiveData<Result<*, *>?>
+        get() = _result
+
+    val isProgress = MutableLiveData<Boolean?>()
+
+    fun <T, E> postResultValue(
+        successResult: SuccessResult<T>? = null,
+        errorResult: ErrorResult<E>? = null
+    ) = _result.postValue(Result(successResult, errorResult))
+
+    fun setProgressValue(value: Boolean?) = isProgress.postValue(value)
 
     init
+    {
+        setInitValue()
+    }
+
+    // UI 초기화
+    private fun setInitValue()
     {
         email.value = ""
         pwd.value = ""
@@ -68,10 +75,11 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
         emailValidateText.value = "이메일을 입력해주세요."
         pwdValidateText.value = "비밀번호를 입력해주세요."
 
-        emailStatusType.value = -1
-        pwdStatusType.value = -1
+        emailStatusType.value = CustomEditText.STATUS_COLOR_ELSE
+        pwdStatusType.value = CustomEditText.STATUS_COLOR_ELSE
     }
 
+    // CustomEditText의 success, error state 제어
     private fun setVisibleState(type: String, errorState: Int, corState: Int)
     {
         when (type)
@@ -80,6 +88,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
             {
                 isEmailErrorVisible.value = errorState
                 isEmailCorVisible.value = corState
+
             }
             InfoConst.PASSWORD ->
             {
@@ -89,11 +98,20 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
         }
     }
 
+    // CustomEditText Focus 제어
     var callback: FocusChangeCallback = FocusChangeCallback@{ type, focus ->
 
         if (focus)
         {
+            // success mark, error text Visible -> GONE
             setVisibleState(type = type, errorState = View.GONE, corState = View.GONE)
+
+            // 선택한 CustomEditText의 underline 색상을 BLUE로 변경
+            when (type)
+            {
+                InfoConst.EMAIL -> emailStatusType.value = CustomEditText.STATUS_COLOR_BLUE
+                InfoConst.PASSWORD -> pwdStatusType.value = CustomEditText.STATUS_COLOR_BLUE
+            }
         }
         else
         {
@@ -101,33 +119,42 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
             {
                 InfoConst.EMAIL ->
                 {
+                    // email text가 공백일 때
                     if (TextUtils.isEmpty(email.value))
                     {
-                        emailStatusType.value = 0
+                        emailStatusType.value = CustomEditText.STATUS_COLOR_RED
                         emailValidateText.value = "이메일을 입력해주세요."
+
                         setVisibleState(
                             type = type,
                             errorState = View.VISIBLE,
                             corState = View.GONE
                         )
-                        validateResult.value = onCheckValidate()
+
+                        /**
+                         *  email, pwd 전체 유효성 검사
+                         */
+                        _result.value = onCheckValidate()
                         return@FocusChangeCallback
                     }
 
+                    // email 단독 유효성 검사
                     val isValidate = ValidateUtil.isValidateEmail(email = email.value)
 
+                    // email 유효성 통과
                     if (isValidate)
                     {
-                        emailStatusType.value = 1
+                        emailStatusType.value = CustomEditText.STATUS_COLOR_BLUE
                         setVisibleState(
                             type = InfoConst.EMAIL,
                             errorState = View.GONE,
                             corState = View.VISIBLE
                         )
                     }
+                    // email 유효성 에러
                     else
                     {
-                        emailStatusType.value = 0
+                        emailStatusType.value = CustomEditText.STATUS_COLOR_RED
                         emailValidateText.value = "이메일 형식을 확인해주세요."
                         setVisibleState(
                             type = type,
@@ -135,309 +162,149 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
                             corState = View.GONE
                         )
                     }
-                    validateResult.value = onCheckValidate()
+                    _result.value = onCheckValidate()
                 }
                 InfoConst.PASSWORD ->
                 {
+                    // password가 공백일 때
                     if (TextUtils.isEmpty(pwd.value))
                     {
-                        pwdStatusType.value = 0
+                        pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
                         pwdValidateText.value = "비밀번호를 입력해주세요."
-                        setVisibleState(
-                            type = type,
-                            errorState = View.VISIBLE,
-                            corState = View.GONE
-                        )
-
-                        validateResult.value = onCheckValidate()
+                        setVisibleState(type, View.VISIBLE, View.GONE)
+                        _result.value = onCheckValidate()
 
                         return@FocusChangeCallback
                     }
 
+                    // password 유효성 검사
                     val isValidate = ValidateUtil.isValidatePassword(pwd = pwd.value)
 
+                    // password 유효성 검사 통과
                     if (isValidate)
                     {
-                        pwdStatusType.value = 1
+                        pwdStatusType.value = CustomEditText.STATUS_COLOR_BLUE
                         setVisibleState(type, View.GONE, View.VISIBLE)
                     }
+                    // password 유효성 에러
                     else
                     {
-                        pwdStatusType.value = 0
+                        pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
                         pwdValidateText.value = "비밀번호 형식을 확인해주세요."
                         setVisibleState(type, View.VISIBLE, View.GONE)
                     }
-
-                    validateResult.value = onCheckValidate()
+                    _result.value = onCheckValidate()
                 }
             }
         }
     }
 
-    private fun onCheckValidate(): ValidateResult<Any?>
+    // email, password 입력 상태 확인
+    private fun onCheckValidate(): Result<*, *>
     {
+        SopoLog.d(msg = "onCheckValidate call()")
+        // email 유효성 에러
         if (isEmailCorVisible.value != View.VISIBLE)
         {
-            Log.d(TAG, "Validate Fail Email ")
-            emailStatusType.value = 0
-            return ValidateResult(
-                result = false,
-                msg = emailValidateText.value.toString(),
-                data = null,
-                showType = InfoConst.NON_SHOW
+            SopoLog.d(tag = TAG, msg = "Validate Fail Email ")
+            emailStatusType.value = CustomEditText.STATUS_COLOR_RED
+            return Result<Unit, Unit>(
+                errorResult = ErrorResult(
+                    code = null, errorMsg = emailValidateText.value.toString(), errorType = ErrorResult.ERROR_TYPE_NON, data = null
+                )
             )
         }
 
+        // password 유효성 에러
         if (isPwdCorVisible.value != View.VISIBLE)
         {
-
-            Log.d(TAG, "Validate Fail PWD ")
-            pwdStatusType.value = 0
-            return ValidateResult(
-                result = false,
-                msg = pwdValidateText.value.toString(),
-                data = null,
-                showType = InfoConst.NON_SHOW
+            SopoLog.d(tag = TAG, msg = "Validate Fail PWD ")
+            pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
+            return Result<Unit, Unit>(
+                errorResult = ErrorResult(
+                    code = null, errorMsg = pwdValidateText.value.toString(), errorType = ErrorResult.ERROR_TYPE_NON, data = null
+                )
             )
         }
 
-        return ValidateResult(result = true, msg = "", data = null, showType = InfoConst.NON_SHOW)
+        return Result<Unit?, Unit?>(
+            successResult = SuccessResult(
+                code = null, successMsg = "SUCCESS", data = null
+            )
+        )
     }
 
     fun onLoginClicked(v: View)
     {
-        if (!v.hasFocus())
-            v.requestFocus()
-        else
-            validateResult.value = onCheckValidate()
+        SopoLog.d(tag = TAG, msg = "onLoginClicked() call!!!")
 
-        if (validateResult.value?.result == true)
+        _result.value = onCheckValidate()
+
+        // result가 전부 통과일 때
+        when
         {
-            FirebaseUserManagement.firebaseGeneralLogin(email = email.value!!, pwd = pwd.value!!)
-                .addOnCompleteListener {
-                    if (it.isSuccessful)
-                    {
-                        Log.d(TAG, "Firebase Login")
-                        if (SOPOApp.auth.currentUser?.isEmailVerified!!)
-                        {
-                            Log.d(TAG, "Auth Email")
-
-                            uid = it.result?.user?.uid!!
-
-                            requestLogin(
-                                email = email.value.toString(),
-                                pwd = pwd.value.toString(),
-                                deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE),
-                                joinType = "self",
-                                uid = uid
-                            )
-                        }
-                        else
-                        {
-                            Log.d(TAG, "Not Auth Email")
-                            validateResult.value =
-                                ValidateResult(false, "이메일 인증을 해주세요.", 1, InfoConst.CUSTOM_DIALOG)
-                        }
-                    }
-                    else
-                    {
-                        Log.d(TAG, "Firebase Login Fail ${it.exception?.message}")
-                        validateResult.value = ValidateResult(
-                            false,
-                            "이메일 인증을 해주세요.",
-                            it.exception?.commonMessageResId,
-                            InfoConst.CUSTOM_DIALOG
-                        )
-                    }
-                }
-
-        }
-        else
-        {
-            val type = if (validateResult.value?.showType == InfoConst.CUSTOM_DIALOG)
+            _result.value?.successResult != null ->
             {
-                InfoConst.CUSTOM_DIALOG
+                setProgressValue(true)
+
+                // Firebase email login
+                FirebaseRepository.firebaseSelfLogin(
+                    email = email.value!!, password = pwd.value!!
+                ) { s1, e1 ->
+                    if (e1 != null)
+                    {
+                        setProgressValue(false)
+                        postResultValue(successResult = s1, errorResult = e1)
+
+                        return@firebaseSelfLogin
+                    }
+
+                    if (s1 != null)
+                    {
+                        val user = s1.data
+
+                        SopoLog.d(tag = TAG, msg = "Auth Email")
+
+                        uid = user?.uid!!
+
+                        LoginHandler.oAuthLogin(email = email.value.toString(), password = pwd.value.toString(), deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE)){ s2, e2 ->
+
+                            if(e2 != null)
+                            {
+                                setProgressValue(false)
+                                postResultValue(successResult = s2, errorResult = e2)
+                            }
+
+                            if(s2 != null)
+                            {
+                                setProgressValue(false)
+                                postResultValue(successResult = s2, errorResult = e2)
+                            }
+                        }
+                    }
+
+                }
             }
-            else
+            // result가 에러일 때
+            _result.value?.errorResult != null ->
             {
-                InfoConst.CUSTOM_TOAST_MSG
+                val type = if (_result.value!!.errorResult!!.errorType == ErrorResult.ERROR_TYPE_DIALOG)
+                {
+                    ErrorResult.ERROR_TYPE_DIALOG
+                }
+                else
+                {
+                    ErrorResult.ERROR_TYPE_TOAST
+                }
+
+                _result.value!!.errorResult!!.errorType = type
+                val tmp = _result.value
+                _result.value = tmp
             }
-
-            validateResult.value?.showType = type
-            val tmp = validateResult.value
-            validateResult.value = tmp
+            else ->
+            {
+                SopoLog.d(msg = "Total Result All NULL")
+            }
         }
-    }
-
-    fun authJwtToken(jwtToken: String)
-    {
-        val jsonPatchList = mutableListOf<SopoJsonPatch>()
-        jsonPatchList.add(SopoJsonPatch("replace", "/deviceInfo", OtherUtil.getDeviceID(SOPOApp.INSTANCE)))
-
-        NetworkManager.publicRetro.create(UserAPI::class.java)
-            .patchUser(
-                email = email.value.toString(),
-                jwt = jwtToken,
-                jsonPatch = JsonPatchDto(jsonPatchList)
-            ).enqueue(object : Callback<APIResult<String?>>
-            {
-                override fun onFailure(call: Call<APIResult<String?>>, t: Throwable)
-                {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onResponse(
-                    call: Call<APIResult<String?>>,
-                    response: Response<APIResult<String?>>
-                )
-                {
-                    val httpStatusCode = response.code()
-
-                    val result = response.body()
-
-                    when (httpStatusCode)
-                    {
-                        200 ->
-                        {
-                            if (result?.code == ResponseCodeEnum.SUCCESS.CODE)
-                            {
-                                requestLogin(
-                                    email = email.value.toString(),
-                                    pwd = pwd.value.toString(),
-                                    deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE),
-                                    joinType = JoinTypeConst.SELF,
-                                    uid = uid
-                                )
-                            }
-                            else
-                            {
-                                validateResult.value =
-                                    ValidateResult(
-                                        false,
-                                        CodeUtil.returnCodeMsg(result?.code),
-                                        jwtToken,
-                                        InfoConst.CUSTOM_DIALOG
-                                    )
-                            }
-                        }
-                        else ->
-                        {
-                            validateResult.value =
-                                ValidateResult(
-                                    false,
-                                    CodeUtil.returnCodeMsg(result?.code),
-                                    jwtToken,
-                                    InfoConst.CUSTOM_DIALOG
-                                )
-                        }
-                    }
-
-                }
-
-            })
-    }
-
-    private fun requestLogin(
-        email: String,
-        pwd: String,
-        deviceInfo: String,
-        joinType: String,
-        uid: String
-    )
-    {
-        NetworkManager.publicRetro.create(LoginAPI::class.java)
-            .requestSelfLogin(
-                email = email,
-                pwd = pwd,
-                deviceInfo = deviceInfo,
-                joinType = joinType,
-                uid = uid
-            ).enqueue(object : Callback<APIResult<Any?>>
-            {
-                override fun onFailure(call: Call<APIResult<Any?>>, t: Throwable)
-                {
-                    validateResult.value =
-                        ValidateResult(false, t.message!!, 1, InfoConst.CUSTOM_DIALOG)
-                }
-
-                override fun onResponse(
-                    call: Call<APIResult<Any?>>,
-                    response: Response<APIResult<Any?>>
-                )
-                {
-                    val httpStatusCode = response.code()
-
-                    val result = response.body()
-
-                    when (httpStatusCode)
-                    {
-                        200 ->
-                        {
-                            when (result?.code)
-                            {
-                                ResponseCodeEnum.SUCCESS.CODE ->
-                                {
-                                    Log.d(TAG, "What the fuck ${result.data.toString()}")
-                                    val gson = Gson()
-
-                                    val type = object : TypeToken<LoginResult?>()
-                                    {}.type
-
-                                    val reader = gson.toJson(result.data)
-
-                                    val user = gson.fromJson<LoginResult>(reader, type)
-
-                                    userRepoImpl.setEmail(email = user.userName)
-                                    userRepoImpl.setApiPwd(pwd = user.password)
-                                    userRepoImpl.setDeviceInfo(info = deviceInfo)
-                                    userRepoImpl.setJoinType(joinType = joinType)
-                                    userRepoImpl.setRegisterDate(user.regDt)
-                                    userRepoImpl.setStatus(user.status)
-
-                                    validateResult.value =
-                                        ValidateResult(
-                                            true,
-                                            result.message,
-                                            result,
-                                            InfoConst.NON_SHOW
-                                        )
-                                }
-                                ResponseCodeEnum.ALREADY_LOGGED_IN.CODE ->
-                                {
-                                    val jwtToken = result.data as String
-
-                                    validateResult.value =
-                                        ValidateResult(
-                                            false,
-                                            CodeUtil.returnCodeMsg(result.code),
-                                            jwtToken,
-                                            InfoConst.CUSTOM_DIALOG
-                                        )
-                                }
-                                else ->
-                                {
-                                    validateResult.value =
-                                        ValidateResult(
-                                            false,
-                                            CodeUtil.returnCodeMsg(result?.code),
-                                            null,
-                                            InfoConst.CUSTOM_DIALOG
-                                        )
-                                }
-                            }
-                        }
-                        else ->
-                        {
-                            validateResult.value =
-                                ValidateResult(
-                                    false,
-                                    CodeUtil.returnCodeMsg(result?.code!!),
-                                    null,
-                                    InfoConst.CUSTOM_DIALOG
-                                )
-                        }
-                    }
-                }
-            })
     }
 }

@@ -52,6 +52,20 @@ class CustomProgressBar(private val act: FragmentActivity) : DialogFragment()
         }
     }
 
+    fun autoProgressbar(value : Boolean?){
+
+        if(value == null) return
+
+        if(value)
+        {
+            onStartDialog()
+        }
+        else
+        {
+            onCloseDialog()
+        }
+    }
+
     private fun setSetting()
     {
         isCancelable = false

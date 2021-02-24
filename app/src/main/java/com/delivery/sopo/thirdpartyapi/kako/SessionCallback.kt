@@ -1,6 +1,7 @@
 package com.delivery.sopo.thirdpartyapi.kako
 
 import android.util.Log
+import com.delivery.sopo.util.SopoLog
 import com.kakao.auth.ISessionCallback
 import com.kakao.network.ErrorResult
 import com.kakao.usermgmt.UserManagement
@@ -13,12 +14,12 @@ class SessionCallback : ISessionCallback {
     var TAG = "LOG.SOPO"
 
     override fun onSessionOpened() {
-//        requestMe()
+//        requestKakaoLogin()
     }
 
     override fun onSessionOpenFailed(exception: KakaoException) {
         if (exception != null) {
-            Log.e(TAG, "exception : $exception")
+            SopoLog.d(tag = TAG, msg = "exception : $exception")
         }
     }
 
@@ -33,7 +34,7 @@ class SessionCallback : ISessionCallback {
                 cb.invoke(errorResult)
                 Log.e(
                     TAG,
-                    "requestMe onFailure message : " + errorResult.errorMessage
+                    "requestKakaoLogin onFailure message : " + errorResult.errorMessage
                 )
             }
 
@@ -42,7 +43,7 @@ class SessionCallback : ISessionCallback {
                 cb.invoke(errorResult)
                 Log.e(
                     TAG,
-                    "requestMe onFailureForUiThread message : " + errorResult.errorMessage
+                    "requestKakaoLogin onFailureForUiThread message : " + errorResult.errorMessage
                 )
             }
 
@@ -50,7 +51,7 @@ class SessionCallback : ISessionCallback {
                 cb.invoke(errorResult)
                 Log.e(
                     TAG,
-                    "requestMe onSessionClosed message : " + errorResult.errorMessage
+                    "requestKakaoLogin onSessionClosed message : " + errorResult.errorMessage
                 )
             }
 

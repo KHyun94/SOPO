@@ -13,6 +13,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.InquiryListCompleteItemBinding
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.ParcelId
+import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
 import java.util.stream.Stream
@@ -77,7 +78,10 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
 
         holder.inquiryBinding.root.cv_ongoing_parent.setOnClickListener{
 
-            Log.d(TAG, "isSelect : ${inquiryListData.isSelected} && isRemovable : $isRemovable")
+            SopoLog.d(
+                tag = TAG,
+                msg = "isSelect : ${inquiryListData.isSelected} && isRemovable : $isRemovable"
+            )
 
             if(isRemovable && !inquiryListData.isSelected){
                 inquiryListData.isSelected = true
@@ -90,7 +94,7 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
                 viewInitialize(holder.inquiryBinding)
             }
             else{
-                Log.d(TAG, "2122")
+                SopoLog.d(tag = TAG, msg = "2122")
             }
         }
     }
@@ -129,7 +133,7 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
     }
 
     private fun viewSettingForSelected(binding: InquiryListCompleteItemBinding){
-        Log.d(TAG, "viewSettingForSelected")
+        SopoLog.d(tag = TAG, msg = "viewSettingForSelected")
         binding.root.constraint_item_part_complete.visibility = View.GONE
         binding.root.constraint_date_complete.visibility = View.GONE
         binding.root.constraint_item_part_delete_complete.visibility = View.VISIBLE
@@ -137,7 +141,7 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
     }
 
     private fun viewInitialize(binding: InquiryListCompleteItemBinding){
-        Log.d(TAG, "viewInitialize")
+        SopoLog.d(tag = TAG, msg = "viewInitialize")
         binding.root.constraint_item_part_complete.visibility = View.VISIBLE
         binding.root.constraint_date_complete.visibility = View.VISIBLE
         binding.root.constraint_item_part_delete_complete.visibility = View.GONE

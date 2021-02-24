@@ -1,57 +1,55 @@
 package com.delivery.sopo.views.registers
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterMainFrameBinding
-import com.delivery.sopo.enums.FragmentTypeEnum
-import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
-import com.delivery.sopo.views.main.MainView
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.delivery.sopo.util.SopoLog
+import java.lang.Exception
 
 class RegisterMainFrame : Fragment()
 {
-    private lateinit var binding: RegisterMainFrameBinding
-    private val registerStep1Vm: RegisterStep1ViewModel by viewModel()
+    val TAG = this.javaClass.simpleName
+    private lateinit var binding : RegisterMainFrameBinding
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View?
+        inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?
+    ) : View
     {
-        binding = DataBindingUtil.inflate(inflater, R.layout.register_main_frame, container, true)
-        binding.vm = registerStep1Vm
-        binding.lifecycleOwner = this
-
+        binding = bindView<RegisterMainFrameBinding>(inflater, R.layout.register_main_frame, container)
         viewId = binding.frameRegister.id
 
-        FragmentManager.move(this.requireActivity(),FragmentTypeEnum.REGISTER_STEP1, viewId)
+        try{
+            // Tab1로 이동
+            FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1, viewId)
+        }catch (e: Exception)
+        {
+            SopoLog.e(msg =  "아 시발 에러 ${e.message}", e = e)
+        }
+
 
         return binding.root
     }
 
-//    override fun onResume()
-//    {
-//        super.onResume()
-//        Log.d("!!!!", "RegisterMainFrame onResume() !!!!!!!!!!!!!!")
-//        parentView.setOnBackPressListener(object : OnMainBackPressListener
-//        {
-//            override fun onBackPressed()
-//            {
-//                Log.d("!!!!!!!!", "OnBackPressed RegisterStep")
-//                FragmentManager.remove(activity!!)
-//            }
-//        })
-//    }
+    fun <T : ViewDataBinding> bindView(inflater : LayoutInflater, @LayoutRes resId : Int, container : ViewGroup?) : T
+    {
+        val binding : T = DataBindingUtil.inflate(inflater, resId, container, false)
+        binding.lifecycleOwner = this
+        return binding
+    }
 
-    companion object{
+    companion object
+    {
+
+        // Register Tab의 MainFrameLayout id
         var viewId : Int = 0
     }
 }

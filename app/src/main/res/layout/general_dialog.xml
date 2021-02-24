@@ -73,7 +73,7 @@
             android:layout_gravity="center"
             android:layout_marginHorizontal="2dp"
             android:layout_marginTop="10sp"
-            android:background="#E2E2E2"
+            android:background="@color/MAIN_WHITE"
             android:gravity="center"
             android:visibility="gone"
             app:layout_constraintLeft_toRightOf="parent"

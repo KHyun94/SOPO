@@ -1,17 +1,30 @@
 package com.delivery.sopo.viewmodels.menus
 
-import android.util.Log
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.extensions.MutableLiveDataExtension.popItem
 import com.delivery.sopo.extensions.MutableLiveDataExtension.pushItem
+import com.delivery.sopo.models.SopoJsonPatch
+import com.delivery.sopo.models.api.APIResult
+import com.delivery.sopo.networks.NetworkManager
+import com.delivery.sopo.networks.api.UserAPI
+import com.delivery.sopo.networks.call.UserCall
+import com.delivery.sopo.networks.dto.JsonPatchDto
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 
 class MenuViewModel(private val userRepoImpl: UserRepoImpl,
@@ -36,6 +49,11 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
     private val _userEmail = MutableLiveData<String>()
     val userEmail: LiveData<String>
         get() = _userEmail
+    //todo 닉네임 업데이트
+
+    private val _userNickname  = MutableLiveData<String>()
+    val userNickname : LiveData<String>
+        get() = _userNickname
 
     private val _menu = MutableLiveData<MenuEnum>()
     val menu: LiveData<MenuEnum>
@@ -49,8 +67,11 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
 
     init {
         _userEmail.value = userRepoImpl.getEmail()
+        _userNickname.value = userRepoImpl.getUserNickname()
+        SopoLog.d(msg = "Menu 닉네임 => ${userNickname.value}")
         _viewStack.value = Stack()
         isUpdate.value = false
+
     }
 
     fun pushView(menu: MenuEnum){
@@ -69,14 +90,36 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
             true
         }
         catch (e: EmptyStackException){
-            Log.e(TAG, "STACK IS ALREADY EMPTY!!, you try to pop item even if stack is already empty!!")
+            SopoLog.d(
+                tag = TAG,
+                msg = "STACK IS ALREADY EMPTY!!, you try to pop item even if stack is already empty!!"
+            )
             false
         }
     }
 
     fun onUpdateClicked()
     {
-        SopoLog.d("닉네임 변경 클릭")
+        SopoLog.d(msg = "닉네임 변경 클릭")
         isUpdate.value = true
+    }
+
+    fun updateUserNickname(nickname : String)
+    {
+        CoroutineScope(Dispatchers.IO).launch {
+
+            when (val result = UserCall.updateNickname(nickname = nickname))
+            {
+                is NetworkResult.Success ->
+                {
+                    SopoLog.d(tag = TAG, msg = "Success To Update Nickname ${result.data.message}")
+                    _userNickname.postValue(nickname)
+                }
+                is NetworkResult.Error ->
+                {
+                    SopoLog.d(tag = TAG, msg = "Fail To Update Nickname ${result.exception.message}")
+                }
+            }
+        }
     }
 }

@@ -2,12 +2,10 @@ package com.delivery.sopo.views.registers
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -15,11 +13,13 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.databinding.RegisterStep3Binding
-import com.delivery.sopo.enums.FragmentTypeEnum
-import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
+import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.models.CourierItem
-import com.delivery.sopo.services.workmanager.SOPOWorkeManager
+import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep3ViewModel
 import com.delivery.sopo.views.main.MainView
@@ -33,9 +33,9 @@ class RegisterStep3 : Fragment()
 
     private lateinit var binding: RegisterStep3Binding
     private val registerStep3Vm: RegisterStep3ViewModel by viewModel()
-    private val appDatabase : AppDatabase by inject()
+    private val userRepoImpl : UserRepoImpl by inject()
 
-    private var waybilNum: String? = null
+    private var wayBilNum: String? = null
     private var courier: CourierItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -44,7 +44,7 @@ class RegisterStep3 : Fragment()
 
         if (arguments != null)
         {
-            waybilNum = arguments!!.getString("waybilNum") ?: ""
+            wayBilNum = arguments!!.getString("wayBilNum") ?: ""
             courier = arguments!!.getSerializable("courier") as CourierItem ?: null
         }
     }
@@ -60,9 +60,9 @@ class RegisterStep3 : Fragment()
         binding.vm = registerStep3Vm
         binding.lifecycleOwner = this
 
-        if (waybilNum != null && waybilNum!!.isNotEmpty())
+        if (wayBilNum != null && wayBilNum!!.isNotEmpty())
         {
-            binding.vm!!.waybilNum.value = waybilNum
+            binding.vm!!.wayBilNum.value = wayBilNum
         }
 
         if (courier != null)
@@ -83,7 +83,7 @@ class RegisterStep3 : Fragment()
                 callback = object : OnBackPressedCallback(true){
                     override fun handleOnBackPressed()
                     {
-                        Log.d(TAG, "Register Step::3 BackPressListener")
+                        SopoLog.d(tag = TAG, msg = "Register Step::3 BackPressListener")
                         requireActivity().supportFragmentManager.popBackStack()
                     }
 
@@ -96,14 +96,14 @@ class RegisterStep3 : Fragment()
         binding.vm!!.isRevise.observe(this, Observer {
             if (it != null && it)
             {
-                FragmentTypeEnum.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(waybilNum, courier, 0)
+                TabCode.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(wayBilNum, courier, 0)
 
                 FragmentManager.initFragment(
                     activity = activity!!,
                     viewId = RegisterMainFrame.viewId,
                     currentFragment = this@RegisterStep3,
-                    nextFragment = FragmentTypeEnum.REGISTER_STEP1.FRAGMENT,
-                    nextFragmentTag = FragmentTypeEnum.REGISTER_STEP1.NAME
+                    nextFragment = TabCode.REGISTER_STEP1.FRAGMENT,
+                    nextFragmentTag = TabCode.REGISTER_STEP1.NAME
                 )
 
                 binding.vm!!.isRevise.call()
@@ -115,18 +115,38 @@ class RegisterStep3 : Fragment()
             {
                 if(it.result)
                 {
-                    Log.d(TAG, "등록 성공 $it")
+                    SopoLog.d(tag = TAG, msg = "등록 성공 $it")
 
-                    SOPOWorkeManager.updateWorkManager(context!!, appDatabase = appDatabase)
+                    if(userRepoImpl.getTopic().isEmpty())
+                    {
+                        FirebaseRepository.subscribedToTopicInFCM{ s, e ->
+                            if(e!=null) SopoLog.e(tag = TAG, msg ="구독 실패 >>> ${e.errorMsg}")
+                            if(s!= null) SopoLog.d(tag = TAG, msg = "구독 성공 >>> ${s.successMsg}")
+                        }
+                    }
+                    else
+                    {
+                        FirebaseRepository.unsubscribedToTopicInFCM{s, e->
+                            if(e!=null) SopoLog.e(tag = TAG, msg ="구독 해지 실패 >>>${e.errorMsg}")
+                            if(s!= null)
+                            {
+                                SopoLog.d(tag = TAG, msg = "구독 해지 성공 >>> ${s.successMsg}")
 
-                    FragmentTypeEnum.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(null, null, 1)
+                                FirebaseRepository.subscribedToTopicInFCM{ s, e ->
+                                    if(e!=null) SopoLog.e(tag = TAG, msg ="구독 실패 >>> ${e.errorMsg}")
+                                    if(s!= null) SopoLog.d(tag = TAG, msg = "구독 성공 >>> ${s.successMsg}")
+                                }
+                            }
+                        }
+                    }
 
+                    TabCode.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(null, null, 1)
                     FragmentManager.initFragment(
                         activity = activity!!,
                         viewId = RegisterMainFrame.viewId,
                         currentFragment = this@RegisterStep3,
-                        nextFragment = FragmentTypeEnum.REGISTER_STEP1.FRAGMENT,
-                        nextFragmentTag = FragmentTypeEnum.REGISTER_STEP1.NAME
+                        nextFragment = TabCode.REGISTER_STEP1.FRAGMENT,
+                        nextFragmentTag = TabCode.REGISTER_STEP1.NAME
                     )
                 }
                 else
@@ -172,7 +192,7 @@ class RegisterStep3 : Fragment()
         callback = object : OnBackPressedCallback(true){
             override fun handleOnBackPressed()
             {
-                Log.d(TAG, "Register Step::3 BackPressListener")
+                SopoLog.d(tag = TAG, msg = "Register Step::3 BackPressListener")
                 requireActivity().supportFragmentManager.popBackStack()
             }
 
@@ -188,13 +208,13 @@ class RegisterStep3 : Fragment()
     }
     companion object
     {
-        fun newInstance(waybilNum: String?, courier: CourierItem?): RegisterStep3
+        fun newInstance(wayBilNum: String?, courier: CourierItem?): RegisterStep3
         {
             val registerStep3 = RegisterStep3()
 
             val args = Bundle()
 
-            args.putString("waybilNum", waybilNum)
+            args.putString("wayBilNum", wayBilNum)
             args.putSerializable("courier", courier)
 
             registerStep3.arguments = args

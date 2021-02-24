@@ -7,5 +7,7 @@ data class ParcelId(
     @SerializedName("regDt")
     val regDt: String,
     @SerializedName("parcelUid")
-    var parcelUid: String
+    var parcelUid: String,
+    @SerializedName("inqueryHash")
+    var inqueryHash : String? = null
 )

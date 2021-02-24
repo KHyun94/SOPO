@@ -2,7 +2,9 @@
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <data>
+
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.main.MainViewModel" />
@@ -18,33 +20,35 @@
             android:id="@+id/vp_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constrainedHeight="true"
             android:background="@color/MAIN_WHITE"
+            app:layout_constrainedHeight="true"
+            app:layout_constraintBottom_toTopOf="@+id/tl_main"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/tablayout_bottom_tab"
+            />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tl_main"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border_top_colored_gray"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:tabIndicatorColor="@android:color/transparent"
             />
 
         <com.delivery.sopo.views.widget.AlertMessageBar
             android:id="@+id/alert_message_bar"
             android:layout_width="match_parent"
             android:layout_height="54dp"
+            app:layout_constraintBottom_toTopOf="@+id/tl_main"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/tablayout_bottom_tab"
             app:markImage="@drawable/ic_blue_marker"
-            app:msgtext="테스트"/>
+            app:msgtext="테스트" />
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tablayout_bottom_tab"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/border_top_colored_gray"
-            app:tabIndicatorColor="@android:color/transparent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

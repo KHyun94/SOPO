@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+
+        <import type="com.delivery.sopo.R" />
 
         <variable
             name="vm"
@@ -70,24 +71,25 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_title"
-                    tools:text="아아아아아앙아" />
+                    app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
                 <LinearLayout
                     android:id="@+id/layout_body"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+                    app:layout_constraintBottom_toTopOf="@+id/layout_tail"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_subtext"
-                    app:layout_constraintBottom_toTopOf="@+id/layout_tail">
+                    app:layout_constraintTop_toBottomOf="@+id/tv_subtext">
 
                     <ImageView
                         android:id="@+id/iv_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        app:setDefaultImage="@{R.drawable.ic_loading_for_load_parcel}"
+                        android:src="@drawable/ic_loading_for_load_parcel"
                         app:setImage="@{vm.statusBg}" />
 
                 </LinearLayout>
@@ -96,11 +98,11 @@
                     android:id="@+id/layout_tail"
                     android:layout_width="match_parent"
                     android:layout_height="304dp"
-                    app:layout_constraintTop_toBottomOf="@+id/layout_body"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:orientation="vertical"/>
+                    app:layout_constraintTop_toBottomOf="@+id/layout_body" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -130,7 +132,6 @@
                     app:item="@{vm.item}" />
 
             </LinearLayout>
-
 
         </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 

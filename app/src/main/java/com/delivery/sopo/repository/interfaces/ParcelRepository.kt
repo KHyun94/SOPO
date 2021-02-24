@@ -27,12 +27,15 @@ interface ParcelRepository {
    suspend fun insertEntities(parcelList: List<Parcel>)
 
    suspend fun updateEntity(parcel: ParcelEntity): Int
-    suspend fun updateEntities(parcelList: List<ParcelEntity>)
+    suspend fun updateEntities(parcelList: List<Parcel>)
 
    suspend fun deleteLocalParcels(parcelIdList: List<ParcelId>)
    suspend fun deleteRemoteParcels(): APIResult<String?>?
 
    // 0922 kh 추가사항
-   suspend fun getSingleParcelWithWaybilNum(waybilNum:String) : ParcelEntity?
+   suspend fun getSingleParcelWithwayBilNum(wayBilNum:String) : ParcelEntity?
    suspend fun getOnGoingDataCnt() : Int?
+
+   suspend fun isBeingUpdateParcel(regDt: String, parcelUid: String): LiveData<Int?>
+   fun getIsUnidentifiedLiveData(regDt: String, parcelUid: String): LiveData<Int?>
 }

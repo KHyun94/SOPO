@@ -1,15 +1,17 @@
 package com.delivery.sopo.models.inquiry
 
-import com.delivery.sopo.enums.InquiryItemTypeEnum
+import androidx.lifecycle.LiveData
 import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.*
 import java.text.SimpleDateFormat
 import java.util.*
 
 class InquiryListItem(
     val parcel: Parcel,
     var isSelected: Boolean = false,
-    var isUpdated : Boolean = false,
-    val viewTypeEnum: InquiryItemTypeEnum? = null
+    var isUnidentified : Boolean = true
 ){
     val completeTimeDate: Calendar by lazy {
         val cal = Calendar.getInstance()
@@ -78,4 +80,24 @@ class InquiryListItem(
             }
         }
     }
+
+    fun setUpdateValue(parcelRepoImpl: ParcelRepoImpl, cb : (Boolean?) -> Unit){
+
+        CoroutineScope(Dispatchers.Main).launch {
+            var update : LiveData<Int?>? = null
+            withContext(Dispatchers.Default){
+               update = parcelRepoImpl.getIsUnidentifiedLiveData(parcel.parcelId.regDt, parcel.parcelId.parcelUid)
+            }
+
+            update?.observeForever{
+                SopoLog.d(msg = "[${parcel.parcelAlias}] => $it")
+
+                isUnidentified = it != null && it  == 1
+
+                cb.invoke(isUnidentified)
+            }
+        }
+    }
+
+
 }

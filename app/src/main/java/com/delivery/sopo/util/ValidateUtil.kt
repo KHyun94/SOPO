@@ -1,6 +1,7 @@
 package com.delivery.sopo.util
 
 import android.util.Patterns
+import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
 object ValidateUtil {
@@ -22,6 +23,21 @@ object ValidateUtil {
         } else {
             val matcher = Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[\$~@\$!%*^#?&])[A-Za-z\\d\$~@\$!%*#?&]{8,15}\$").matcher(pwd)
             matcher.matches()
+        }
+    }
+
+    fun isValidateDateFormat(date: String): Boolean
+    {
+        return try
+        {
+            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+            sdf.isLenient = false
+            sdf.parse(date)
+            true
+        }
+        catch (e: Exception)
+        {
+            false
         }
     }
 }

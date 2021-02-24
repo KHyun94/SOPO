@@ -5,6 +5,7 @@ import com.delivery.sopo.database.room.entity.ParcelManagementEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
+import com.delivery.sopo.util.SopoLog
 
 object ParcelMapper
 {
@@ -17,6 +18,13 @@ object ParcelMapper
     }
 
     fun parcelEntityToParcel(parcelEntity: ParcelEntity): Parcel{
+
+        SopoLog.d(msg = """
+            ParcelEntity
+            
+            ${parcelEntity}
+        """.trimIndent())
+
         return Parcel(parcelId = ParcelId(regDt = parcelEntity.regDt, parcelUid = parcelEntity.parcelUid),
             userName = parcelEntity.userName,
             trackNum = parcelEntity.trackNum,
@@ -32,6 +40,12 @@ object ParcelMapper
 
     fun parcelToParcelEntity(parcel: Parcel): ParcelEntity
     {
+        SopoLog.d(msg = """
+            Parcel
+            $parcel
+            parcel Carrier >>> ${parcel.carrier}
+        """.trimIndent())
+
         return ParcelEntity(
             regDt = parcel.parcelId.regDt,
             parcelUid = parcel.parcelId.parcelUid,

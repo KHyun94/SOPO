@@ -47,6 +47,7 @@
             <ImageView
                 android:id="@+id/iv_courier"
                 setImage="@{vm.courier.iconRes}"
+                app:setDefaultImage="@{0}"
                 android:layout_width="55dp"
                 android:layout_height="55dp"
                 android:layout_alignParentStart="true"
@@ -72,10 +73,10 @@
 
                 <TextView
                     style="@style/H3"
-                    android:id="@+id/tv_waybil_num"
+                    android:id="@+id/tv_way_bil_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{vm.waybilNum}"
+                    android:text="@{vm.wayBilNum}"
                     android:textColor="@color/COLOR_GRAY_800" />
             </LinearLayout>
 

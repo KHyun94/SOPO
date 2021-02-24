@@ -1,14 +1,15 @@
 package com.delivery.sopo.services.workmanager
 
+import android.R
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
-import android.util.Log
-import android.widget.Toast
+import android.os.Build
+import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.delivery.sopo.util.SopoLog
 
 class OneTimeWorker(val context: Context, params: WorkerParameters) : CoroutineWorker(
     context,
@@ -19,21 +20,11 @@ class OneTimeWorker(val context: Context, params: WorkerParameters) : CoroutineW
 
     override suspend fun doWork(): Result
     {
-        val a = mutableListOf<Int>(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        SopoLog.d(
+            tag = TAG,
+            msg = "Period Time Worker Service Start!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        )
 
-        Log.d(TAG, "Period Time Worker Service Start!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
-        CoroutineScope(Dispatchers.Main).launch {
-            withContext(Dispatchers.Main)
-            {
-                Toast.makeText(
-                    context,
-                    "Period Time Worker Service Start!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",
-                    Toast.LENGTH_LONG
-                ).show()
-
-            }
-        }
 
         return Result.success()
     }

@@ -5,9 +5,7 @@
     <data>
 
         <import type="android.view.View" />
-
         <import type="com.delivery.sopo.consts.InfoConst" />
-
         <import type="com.delivery.sopo.models.CourierItem" />
 
         <variable
@@ -35,7 +33,7 @@
 
         <com.delivery.sopo.views.widget.CustomEditText
             android:id="@+id/custom_et_track_num"
-            content="@={vm.waybilNum}"
+            content="@={vm.wayBilNum}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="25sp"
@@ -43,9 +41,9 @@
             app:customFocusChangeListener="@{vm.callback}"
             app:hint="운송장 번호를 입력해주세요."
             app:layout_constraintTop_toBottomOf="@id/tv_title"
-            app:statusType="@{vm.waybilNoStatusType}"
+            app:statusType="@{vm.wayBilNumStatusType}"
             app:title="운송장 번호"
-            app:type="@{InfoConst.REGISTER_TRACK_NUM}" />
+            app:type="@{InfoConst.EMAIL}" />
 
         <LinearLayout
             android:id="@+id/custom_et_delivery_co"
@@ -91,7 +89,6 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:text="등록된 이메일이 아닙니다."
                     android:textColor="@color/COLOR_MAIN_RED_500"
                     android:visibility="gone" />
 
@@ -101,23 +98,25 @@
                 android:id="@+id/layout_body"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{()->vm.onMoveStep2Clicked()}">
+                android:onClick="@{()->vm.onReselectCourierClicked()}">
 
                 <ImageView
                     android:id="@+id/iv_courier"
                     android:layout_width="28dp"
                     android:layout_height="28dp"
                     android:layout_alignParentStart="true"
-                    android:layout_marginEnd="6dp"
                     android:layout_centerVertical="true"
+                    android:layout_marginEnd="6dp"
                     android:visibility="@{(vm.courier.courierName.length() > 0)?View.VISIBLE:View.GONE}"
+                    app:setDefaultImage="@{0}"
                     app:setImage="@{vm.courier.clickRes}" />
 
                 <TextView
+                    android:id="@+id/tv_input_text"
                     style="@style/H3"
-                    android:id="@+id/et_input_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/iv_courier"
                     android:background="@null"
                     android:hint="클릭하여 배송사를 선택해주세요."
@@ -129,7 +128,7 @@
                     android:id="@+id/v_underline"
                     android:layout_width="match_parent"
                     android:layout_height="2sp"
-                    android:layout_below="@+id/et_input_text"
+                    android:layout_below="@+id/tv_input_text"
                     android:background="@{vm.courier.courierName.length() > 0 ? @color/MAIN_BLACK : @color/COLOR_GRAY_200}" />
             </RelativeLayout>
 
@@ -139,7 +138,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
-            android:onClick="@{()->vm.onReselectClicked()}"
+            android:onClick="@{()->vm.onReselectCourierClicked()}"
             android:text="@string/IS_RIGHT_COURIER"
             android:textColor="@color/COLOR_MAIN_RED_500"
             android:textSize="14sp"
@@ -151,6 +150,7 @@
 
 
         <LinearLayout
+            android:id="@+id/layout_clip_board"
             android:layout_width="match_parent"
             android:layout_height="60sp"
             android:layout_marginHorizontal="25sp"
@@ -160,7 +160,7 @@
             android:gravity="center"
             android:onClick="@{()->vm.onPasteClicked()}"
             android:orientation="horizontal"
-            android:visibility="@{(vm.clipboardStr.length() > 0) &amp;&amp; (vm.courier.courierName.length() == 0)?View.VISIBLE:View.GONE}"
+            android:visibility="@{(vm.clipBoardWords.length() > 0) &amp;&amp; (vm.courier.courierName.length() == 0)?View.VISIBLE:View.GONE}"
             app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co">
 
             <TextView
@@ -168,7 +168,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/spoqa_han_sans_regular"
-                android:text="@={vm.clipboardStr}"
+                android:text="@={vm.clipBoardWords}"
                 android:textColor="@color/COLOR_MAIN_BLUE_700"
                 android:textSize="14sp" />
 
@@ -190,9 +190,9 @@
             android:background="@drawable/border_all_rounded"
             android:backgroundTint="@color/COLOR_MAIN_BLUE_700"
             android:gravity="center"
-            android:onClick="@{()->vm.onMoveStep3Clicked()}"
+            android:onClick="@{()->vm.onMoveFinalStepClicked()}"
             android:orientation="horizontal"
-            android:visibility="@{(vm.waybilNum.length() > 0) &amp;&amp; (vm.courier.courierName.length() > 0)?View.VISIBLE:View.GONE}"
+            android:visibility="@{(vm.wayBilNum.length() > 0) &amp;&amp; (vm.courier.courierName.length() > 0)?View.VISIBLE:View.GONE}"
             app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co">
 
             <TextView

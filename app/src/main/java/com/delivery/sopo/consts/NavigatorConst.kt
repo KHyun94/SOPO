@@ -1,6 +1,11 @@
 package com.delivery.sopo.consts
 
 object NavigatorConst {
+
+    const val LOGIN = "LOGIN"
+    const val SIGN_UP = "SIGN_UP"
+    const val KAKAO_LOGIN = "KAKAO_LOGIN"
+
     const val TO_PERMISSION = "PERMISSION"
     const val TO_INTRO = "INTRO"
     const val TO_MAIN = "MAIN"

@@ -1,5 +1,7 @@
 package com.delivery.sopo.mapper
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.networks.dto.TimeCountDTO
 import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem

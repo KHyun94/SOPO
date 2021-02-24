@@ -1,34 +1,40 @@
 package com.delivery.sopo.util
 
 import android.util.Log
-import java.lang.Exception
 
 object SopoLog
 {
-    val TAG = "LOG.SOPO"
+    private val TAG = "[LOG.SOPO"
 
-    fun v(str : String, tag : String?)
+    fun v(tag: String? = null, msg: String)
     {
-        Log.v(tag?: "$TAG.v", str)
+        val _tag = if (tag == null) "${TAG}.v]" else "${TAG}.${tag}.v]"
+        Log.v(_tag, msg)
     }
 
-    fun i(str : String, tag : String?)
+    fun i(tag: String? = null, msg: String)
     {
-        Log.i(tag?: "$TAG.i", str)
-    }
-    fun d(str : String, tag : String? = null)
-    {
-        Log.d(tag?: "$TAG.d", str)
+        val _tag = if (tag == null) "${TAG}.i]" else "${TAG}.${tag}.i]"
+        Log.i(_tag, msg)
     }
 
-    fun w(str : String, tag : String?)
+    fun d(tag: String? = null, msg: String )
     {
-        Log.v(tag?: "$TAG.d", str)
+        val _tag = if (tag == null) "${TAG}.d]" else "${TAG}.${tag}.d]"
+        Log.d(_tag, msg)
     }
 
-    fun e(str : String, e : Exception?, tag : String?)
+    fun w(tag: String? = null, msg: String)
     {
-        Log.e(tag?: "$TAG.e", "$str\n${e.toString()}", e)
+        val _tag = if (tag == null) "${TAG}.w]" else "${TAG}.${tag}.w]"
+        Log.v(_tag, msg)
+    }
+
+    fun e(tag: String? = null, msg: String, e: Throwable? = null)
+    {
+        val _tag = if (tag == null) "${TAG}.e]" else "${TAG}.${tag}.e]"
+        if(e == null) Log.e(_tag, "$msg\n${e.toString()}")
+        else Log.e(_tag, "$msg\n${e.toString()}", e)
     }
 
 }

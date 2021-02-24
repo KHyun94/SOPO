@@ -2,18 +2,15 @@ package com.delivery.sopo.util
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import com.delivery.sopo.enums.FragmentTypeEnum
+import com.delivery.sopo.enums.TabCode
 
 object FragmentManager
 {
-    var currentFragment1st = FragmentTypeEnum.REGISTER_STEP1
-    var currentFragment2nd = FragmentTypeEnum.INQUIRY
-    var currentFragment3rd = FragmentTypeEnum.MY_MENU
+    var currentFragment1st = TabCode.REGISTER_STEP1
+    var currentFragment2nd = TabCode.INQUIRY
+    var currentFragment3rd = TabCode.MY_MENU
 
-    private val TAG = "LOG.SOPO.FragmentM"
-
-
-    fun move(activity: FragmentActivity, typeEnum: FragmentTypeEnum, viewId: Int)
+    fun move(activity: FragmentActivity, typeEnum: TabCode, viewId: Int)
     {
         val fm = activity.supportFragmentManager
         val transaction = fm.beginTransaction()

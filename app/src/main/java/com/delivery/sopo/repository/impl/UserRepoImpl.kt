@@ -1,11 +1,29 @@
 package com.delivery.sopo.repository.impl
 
+import com.delivery.sopo.R
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.shared.SharedPrefHelper
+import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.repository.interfaces.UserRepository
+import com.delivery.sopo.util.SopoLog
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
 //todo kh impl로 수정할
-class UserRepoImpl(private val shared: SharedPrefHelper) : UserRepository
+class UserRepoImpl(private val shared: SharedPrefHelper) : UserRepository, KoinComponent
 {
+    private val userRepoImpl : UserRepoImpl by inject()
+
+    override fun getUserNickname(): String
+    {
+        return shared.getUserNickname() ?: ""
+    }
+
+    override fun setUserNickname(nickname: String)
+    {
+        shared.setUserNickname(nickname)
+    }
+
     override fun getEmail(): String
     {
         return shared.getUserEmail() ?: ""
@@ -86,6 +104,26 @@ class UserRepoImpl(private val shared: SharedPrefHelper) : UserRepository
         shared.setAppPassword(password)
     }
 
+    override fun getTopic() = shared.getTopic()?:""
+
+    override fun setTopic(topic : String)
+    {
+       shared.setTopic(topic)
+    }
+
+    override fun getDisturbStartTime() = shared.getDisturbStartTime()
+
+    override fun setDisturbStartTime(startTime: String)
+    {
+        shared.setDisturbStartTime(startTime)
+    }
+
+    override fun getDisturbEndTime() = shared.getDisturbEndTime()
+
+    override fun setDisturbEndTime(endTime: String)
+    {
+        shared.setDisturbEndTime(endTime)
+    }
 
     override fun removeUserRepo()
     {
@@ -95,6 +133,14 @@ class UserRepoImpl(private val shared: SharedPrefHelper) : UserRepository
         setRegisterDate("")
         setStatus(0)
         setDeviceInfo("")
+
+        FirebaseRepository.unsubscribedToTopicInFCM { successResult, errorResult ->
+            if(successResult != null)
+            {
+                setTopic("")
+            }
+        }
+
     }
 
 }

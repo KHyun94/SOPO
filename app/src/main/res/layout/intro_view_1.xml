@@ -1,32 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/COLOR_MAIN_BLUE_50">
+    android:background="@color/MAIN_WHITE">
 
     <TextView
-        android:id="@+id/tv_maintext"
+        android:id="@+id/tv_intro_1_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="눈 깜짝할 사이에\n운송장을 등록하세요!"
-        android:textSize="21sp"
+        android:layout_marginStart="37dp"
+        android:layout_marginTop="94sp"
         android:fontFamily="@font/spoqa_han_sans_regular"
+        android:text="@string/INTRO_1_TITLE_TEXT"
         android:textColor="@color/COLOR_MAIN_BLUE_700"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/tv_subtext"
-        android:layout_marginStart="35sp" />
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_subtext"
-        android:layout_width="match_parent"
+        style="@style/H4"
+        android:id="@+id/tv_intro_1_sub_title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="\n카카오톡 메세지, 문자 메시지에서 운송장을\n빠르게 입력해 내 택배를 추적해보세요."
-        android:textSize="12sp"
-        android:textColor="@color/COLOR_GRAY_800"
+        android:layout_marginStart="37dp"
+        android:layout_marginTop="33dp"
         android:fontFamily="@font/spoqa_han_sans_regular"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginStart="35sp"/>
+        android:text="@string/INTRO_1_SUB_TITLE"
+        android:textColor="@color/COLOR_GRAY_800"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_intro_1_title" />
+
+    <!-- todo 이미지 테두리가 보이지 않음 -->
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="parent"
+        android:layout_marginTop="103dp"
+        android:background="@drawable/ic_intro_1_img"
+        app:layout_constraintTop_toBottomOf="@+id/tv_intro_1_sub_title"
+        android:elevation="20dp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

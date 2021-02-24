@@ -9,7 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.MenuMainFrameBinding
-import com.delivery.sopo.enums.FragmentTypeEnum
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.viewmodels.menus.MenuMainViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -28,7 +28,7 @@ class MenuMainFrame : Fragment()
         binding.vm = vm
         binding.lifecycleOwner = this
         viewId = binding.menuMainFrame.id
-        FragmentManager.move(this.requireActivity(), FragmentTypeEnum.MY_MENU, viewId)
+        FragmentManager.move(this.requireActivity(), TabCode.MY_MENU, viewId)
 
         binding.root.parent?.also {
             Log.d("!!!!!!", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! MenuMainFrame DELETE")

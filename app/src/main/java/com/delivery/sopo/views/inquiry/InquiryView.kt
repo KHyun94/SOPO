@@ -3,7 +3,6 @@ package com.delivery.sopo.views.inquiry
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
@@ -20,15 +19,13 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
-import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.databinding.SopoInquiryViewBinding
-import com.delivery.sopo.enums.FragmentTypeEnum
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.enums.ScreenStatusEnum
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
@@ -36,16 +33,12 @@ import com.delivery.sopo.mapper.MenuMapper
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.repository.impl.*
-import com.delivery.sopo.services.workmanager.SOPOWorkeManager
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
-import com.delivery.sopo.viewmodels.factory.InquiryViewModelFactory
-import com.delivery.sopo.viewmodels.factory.MainViewModelFactory
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
-import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
@@ -57,6 +50,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import java.util.function.Function
 import java.util.stream.Collectors
@@ -66,33 +60,57 @@ class InquiryView : Fragment()
 {
     private lateinit var parentView: MainView
     private val TAG = this.javaClass.simpleName
-    private val userRepoImpl: UserRepoImpl by inject()
+
     private val parcelRepoImpl: ParcelRepoImpl by inject()
-    private val parcelManagementRepoImpl: ParcelManagementRepoImpl by inject()
-    private val timeCountRepoImpl: TimeCountRepoImpl by inject()
-    private val appPasswordRepoImpl: AppPasswordRepoImpl by inject()
+
     private lateinit var binding: SopoInquiryViewBinding
+    private val inquiryVm: InquiryViewModel by viewModel()
+
     private lateinit var soonArrivalListAdapter: InquiryListAdapter
     private lateinit var registeredSopoListAdapter: InquiryListAdapter
     private lateinit var completeListAdapter: InquiryListAdapter
+
     private var menuPopUpWindow: PopupWindow? = null
     private var historyPopUpWindow: PopupWindow? = null
 
-    private val appDatabase: AppDatabase by inject()
-
-    private val inquiryVm: InquiryViewModel by lazy {
-        ViewModelProvider(
-            requireActivity(),
-            InquiryViewModelFactory(
-                userRepoImpl,
-                parcelRepoImpl,
-                parcelManagementRepoImpl,
-                timeCountRepoImpl
-            )
-        ).get(InquiryViewModel::class.java)
-    }
     private var progressBar: CustomProgressBar? = null
     private var refreshDelay: Boolean = false
+
+    var callback: OnBackPressedCallback? = null
+
+    override fun onAttach(context: Context)
+    {
+        super.onAttach(context)
+
+        var pressedTime: Long = 0
+
+        callback = object : OnBackPressedCallback(true)
+        {
+            override fun handleOnBackPressed()
+            {
+                if (System.currentTimeMillis() - pressedTime > 2000)
+                {
+                    pressedTime = System.currentTimeMillis()
+                    val snackbar = Snackbar.make(
+                        parentView.binding.layoutMain,
+                        "한번 더 누르시면 앱이 종료됩니다.",
+                        2000
+                    )
+                    snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
+
+                    SopoLog.d(null, "InquiryView::1 BackPressListener = 종료를 위해 한번 더 클릭")
+                }
+                else
+                {
+                    SopoLog.d(null, "InquiryView::1 BackPressListener = 종료")
+                    ActivityCompat.finishAffinity(activity!!)
+                    System.exit(0)
+                }
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+    }
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(
@@ -122,41 +140,8 @@ class InquiryView : Fragment()
         }
     }
 
-    var callback: OnBackPressedCallback? = null
 
-    override fun onAttach(context: Context)
-    {
-        super.onAttach(context)
 
-        var pressedTime: Long = 0
-
-        callback = object : OnBackPressedCallback(true)
-        {
-            override fun handleOnBackPressed()
-            {
-                if (System.currentTimeMillis() - pressedTime > 2000)
-                {
-                    pressedTime = System.currentTimeMillis()
-                    val snackbar = Snackbar.make(
-                        parentView.binding.layoutMain,
-                        "한번 더 누르시면 앱이 종료됩니다.",
-                        2000
-                    )
-                    snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
-
-                    SopoLog.d("InquiryView::1 BackPressListener = 종료를 위해 한번 더 클릭", null)
-                }
-                else
-                {
-                    SopoLog.d("InquiryView::1 BackPressListener = 종료", null)
-                    ActivityCompat.finishAffinity(activity!!)
-                    System.exit(0)
-                }
-            }
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
-    }
 
     override fun onDetach()
     {
@@ -172,19 +157,21 @@ class InquiryView : Fragment()
         binding.lifecycleOwner = this
 
         soonArrivalListAdapter = InquiryListAdapter(
+            parcelRepoImpl,
             inquiryVm.cntOfSelectedItem,
-            this,
             mutableListOf(),
             InquiryItemTypeEnum.Soon
         )
+
+        SopoLog.d(msg = "과연 몇개일까? ===> ${binding.vm!!.ongoingList.value?.size ?: "NULL"}")
 
         soonArrivalListAdapter.setOnParcelClickListener(_mClickListener = getParcelClicked())
 
         binding.recyclerviewSoonArrival.adapter = soonArrivalListAdapter
 
         registeredSopoListAdapter = InquiryListAdapter(
+            parcelRepoImpl,
             inquiryVm.cntOfSelectedItem,
-            this,
             mutableListOf(),
             InquiryItemTypeEnum.Registered
         )
@@ -194,8 +181,8 @@ class InquiryView : Fragment()
         binding.recyclerviewRegisteredParcel.adapter = registeredSopoListAdapter
 
         completeListAdapter = InquiryListAdapter(
+            parcelRepoImpl,
             inquiryVm.cntOfSelectedItem,
-            this,
             mutableListOf(),
             InquiryItemTypeEnum.Complete
         )
@@ -244,41 +231,6 @@ class InquiryView : Fragment()
 
     private fun setObserver()
     {
-        var pressedTime: Long = 0
-
-        parentView.currentPage.observe(this, Observer {
-            if (it != null && it == 1)
-            {
-                callback = object : OnBackPressedCallback(true)
-                {
-                    override fun handleOnBackPressed()
-                    {
-                        if (System.currentTimeMillis() - pressedTime > 2000)
-                        {
-                            pressedTime = System.currentTimeMillis()
-                            val snackbar = Snackbar.make(
-                                parentView.binding.layoutMain,
-                                "한번 더 누르시면 앱이 종료됩니다.",
-                                2000
-                            )
-                            snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
-
-                            SopoLog.d("InquiryView::1 BackPressListener = 종료를 위해 한번 더 클릭", null)
-                        }
-                        else
-                        {
-                            SopoLog.d("InquiryView::1 BackPressListener = 종료", null)
-                            ActivityCompat.finishAffinity(activity!!)
-                            System.exit(0)
-                        }
-                    }
-
-                }
-
-                requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
-            }
-        })
-
         // 배송완료 리스트에서 해당 년월에 속해있는 택배들을 전부 삭제했을 때는 서버로 통신해서 새로고침하면 안돼고 무조건 로컬에 있는 데이터로 새로고침 해야한다.
         // (서버로 통신해서 새로고침하면 서버에 있는 데이터(우선순위가 높음)로 덮어써버리기 때문에 '삭제취소'를 통해 복구를 못함..)
         // (새로고침하면 내부에 저장된 '삭제할 데이터'들을 모두 서버로 통신하여 Remote database에서도 삭제처리(데이터 동기화)를 하고 나서 새로운 데이터를 받아옴)
@@ -293,65 +245,33 @@ class InquiryView : Fragment()
 
             if (it != null)
             {
-                Log.d(TAG, "")
+                SopoLog.d(tag = TAG, msg = "")
 
-                Log.d(TAG, "1. isLoading")
+                SopoLog.d(tag = TAG, msg = "1. isLoading")
                 if (it)
                 {
-                    Log.d(TAG, "2. isLoading true")
+                    SopoLog.d(tag = TAG, msg = "2. isLoading true")
                     progressBar!!.onStartDialog()
                 }
                 else
                 {
-                    Log.d(TAG, "3. isLoading false")
+                    SopoLog.d(tag = TAG, msg = "3. isLoading false")
                     progressBar!!.onCloseDialog()
                     binding.vm!!.isLoading.call()
 
-
-                    SOPOWorkeManager.updateWorkManager(
-                        context = context!!,
-                        appDatabase = appDatabase
-                    )
                 }
             }
             else
             {
-                Log.d(TAG, "4. isLoading null")
+                SopoLog.d(tag = TAG, msg = "4. isLoading null")
                 progressBar!!.onCloseDialog()
             }
         })
-        /*
-        inquiryVm.isLoading.observe(this, Observer { isLoading ->
 
-            try
-            {
-                if (isLoading)
-                {
-                    if (!progressBar?.isAdded!!)
-                    {
-                        progressBar?.onStartDialog()
-                    }
-                    else
-                    {
-                        progressBar?.onCloseDialog()
-                    }
-                }
-                else
-                {
-                    progressBar?.onCloseDialog()
-                }
-
-            }
-            catch (e: Exception)
-            {
-                progressBar?.onCloseDialog()
-                Log.d(TAG, "Progress error $e")
-            }
-
-        })
-*/
         // 배송중 , 등록된 택배 리스트
         inquiryVm.ongoingList.observe(this, Observer {
+
+            SopoLog.d(tag = "MainInquiry", msg = "진행 중인 택배 갯수 => ${it.size}")
             soonArrivalListAdapter.setDataList(it)
             registeredSopoListAdapter.setDataList(it)
 
@@ -562,20 +482,20 @@ class InquiryView : Fragment()
     {
         return object : OnParcelClickListener
         {
-            override fun onItemClicked(view: View, type:Int, parcelId: ParcelId)
+            override fun onItemClicked(view: View, type: Int, parcelId: ParcelId)
             {
-                FragmentTypeEnum.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(
+                TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(
                     parcelUId = parcelId.parcelUid,
                     regDt = parcelId.regDt
                 )
                 FragmentManager.move(
                     activity!!,
-                    FragmentTypeEnum.INQUIRY_DETAIL,
+                    TabCode.INQUIRY_DETAIL,
                     InquiryMainFrame.viewId
                 )
             }
 
-            override fun onItemLongClicked(view: View, type:Int, parcelId: ParcelId)
+            override fun onItemLongClicked(view: View, type: Int, parcelId: ParcelId)
             {
                 val edit = MutableLiveData<String>()
 
@@ -584,11 +504,11 @@ class InquiryView : Fragment()
                     "택배의 별칭을 입력해주세요.",
                     Pair("확인", View.OnClickListener {
                         edit.observe(this@InquiryView, Observer {
-                            SopoLog.d("입력 값 = > $it")
+                            SopoLog.d(msg = "입력 값 = > $it")
                             binding.vm!!.patchParcelAlias(parcelId, it)
                             AlertUtil.onDismiss()
 
-                            if(type == 0)
+                            if (type == 0)
                             {
                                 binding.vm!!.refreshOngoing()
                             }
@@ -602,7 +522,6 @@ class InquiryView : Fragment()
                     Function {
                         edit.value = it
                     })
-
             }
 
         }
@@ -654,7 +573,6 @@ class InquiryView : Fragment()
                                 override fun help(v: View)
                                 {
                                     // 도움말
-                                    inquiryVm.testFunReNewALL()
                                     menuPopUpWindow?.dismiss()
                                 }
                             })
@@ -745,7 +663,7 @@ class InquiryView : Fragment()
                 if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) // 리스트뷰의 마지막
                 {
                     val spinnerMonthTv = tv_spinner_month.text.toString()
-                    Log.d(TAG, "[배송완료 - 다른 날짜의 데이터 조회] 선택된 년월 : $spinnerMonthTv")
+                    SopoLog.d(tag = TAG, msg = "[배송완료 - 다른 날짜의 데이터 조회] 선택된 년월 : $spinnerMonthTv")
                     inquiryVm.getCompleteListWithPaging(
                         MenuMapper.titleToInquiryDate(
                             tv_spinner_month.text.toString()
@@ -921,5 +839,13 @@ class InquiryView : Fragment()
                 }
             }
         }, 2000)
+    }
+
+    // 다른 화면으로 넘어갔을 때
+    override fun onResume()
+    {
+        super.onResume()
+
+        SopoLog.d(msg = "onResume")
     }
 }
