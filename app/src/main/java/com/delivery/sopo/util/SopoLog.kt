@@ -6,7 +6,6 @@ import java.lang.StringBuilder
 object SopoLog
 {
     val TAG = "SOPO_LOG"
-    
 
     fun v(msg: String)
     {

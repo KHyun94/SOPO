@@ -13,7 +13,7 @@ import retrofit2.http.*
 
 interface UserAPI
 {
-    @GET("api/v1/sopo-api/user/firebase/auth-token")
+    @GET("api/v1/sopo-api/join/firebase/auth-token")
     @Headers("Accept: application/json")
     suspend fun requestCustomToken(
         // 이메일

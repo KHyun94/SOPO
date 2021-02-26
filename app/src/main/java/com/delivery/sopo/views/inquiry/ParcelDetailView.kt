@@ -38,31 +38,24 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ParcelDetailView : Fragment()
 {
-    val TAG = "LOG.SOPO"
-
     private lateinit var parentView: MainView
-
-    private val userRepoImpl: UserRepoImpl by inject()
-    private val parcelRepoImpl: ParcelRepoImpl by inject()
-
     lateinit var binding: ParcelDetailViewBinding
+
     private val vm: ParcelDetailViewModel by viewModel()
 
-    private var parcelUId: String? = null
-    private var regDt: String? = null
+    private var parcelUId: String = ""
+    private var regDt: String = ""
 
-    private var slideViewStatus = 0;
+    private var slideViewStatus = 0
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
 
-        NetworkManager.setLogin(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
-
         if (arguments != null)
         {
-            parcelUId = arguments?.getString(PARCEL_UID)
-            regDt = arguments?.getString(REQ_DT)
+            parcelUId = arguments?.getString(PARCEL_UID)?:""
+            regDt = arguments?.getString(REQ_DT)?:""
         }
     }
 
@@ -77,13 +70,11 @@ class ParcelDetailView : Fragment()
         bindViewSetting(inflater = inflater, container = container)
         setObserve()
 
-        // todo 임시 강제적으로 뷰를 앞으로 끌어옴
+        binding.ivStatus.bringToFront()
         binding.tvSubtext.bringToFront()
 
         // 택배 info LiveData 데이터 입력
-        binding.vm!!.parcelId.value = ParcelId(regDt!!, parcelUId!!)
-
-        parentView = activity as MainView
+        binding.vm!!.parcelId.value = ParcelId(regDt, parcelUId)
 
         binding.includeSemi.ivCopy.setOnClickListener {
             val copyText = binding.includeSemi.tvWayBilNum.text.toString()
@@ -98,7 +89,6 @@ class ParcelDetailView : Fragment()
 
             Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
         }
-
 
         return binding.root
     }
@@ -179,8 +169,6 @@ class ParcelDetailView : Fragment()
         binding = ParcelDetailViewBinding.inflate(inflater, container, false)
         binding.vm = vm
         binding.lifecycleOwner = this
-
-        binding.ivStatus.bringToFront()
     }
 
     private fun setObserve()
