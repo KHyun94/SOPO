@@ -64,7 +64,7 @@ class NotDisturbTimeFragment : Fragment()
 
                 setDate(startTime, endTime)
 
-                SopoLog.d(tag = TAG, msg = """
+                SopoLog.d( msg = """
                     start Time >>> $startTime
                     end Time >>> $endTime
                 """.trimIndent())
@@ -78,21 +78,21 @@ class NotDisturbTimeFragment : Fragment()
                 if(userRepoImpl.getTopic().isEmpty())
                 {
                     FirebaseRepository.subscribedToTopicInFCM(topicHour, topicMin){ s, e ->
-                        if(e!=null) SopoLog.e(tag = TAG, msg ="구독 실패 >>> ${e.errorMsg}")
-                        if(s!= null) SopoLog.d(tag = TAG, msg = "구독 성공 >>> ${s.successMsg}")
+                        if(e!=null) SopoLog.e( msg ="구독 실패 >>> ${e.errorMsg}")
+                        if(s!= null) SopoLog.d( msg = "구독 성공 >>> ${s.successMsg}")
                     }
                 }
                 else
                 {
                     FirebaseRepository.unsubscribedToTopicInFCM{s, e->
-                        if(e!=null) SopoLog.e(tag = TAG, msg ="구독 해지 실패 >>>${e.errorMsg}")
+                        if(e!=null) SopoLog.e( msg ="구독 해지 실패 >>>${e.errorMsg}")
                         if(s!= null)
                         {
-                            SopoLog.d(tag = TAG, msg = "구독 해지 성공 >>> ${s.successMsg}")
+                            SopoLog.d( msg = "구독 해지 성공 >>> ${s.successMsg}")
 
                             FirebaseRepository.subscribedToTopicInFCM(topicHour, topicMin){ s, e ->
-                                if(e!=null) SopoLog.e(tag = TAG, msg ="구독 실패 >>> ${e.errorMsg}")
-                                if(s!= null) SopoLog.d(tag = TAG, msg = "구독 성공 >>> ${s.successMsg}")
+                                if(e!=null) SopoLog.e( msg ="구독 실패 >>> ${e.errorMsg}")
+                                if(s!= null) SopoLog.d( msg = "구독 성공 >>> ${s.successMsg}")
                             }
                         }
                     }

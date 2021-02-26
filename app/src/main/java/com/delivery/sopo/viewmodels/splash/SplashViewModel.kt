@@ -34,7 +34,7 @@ class SplashViewModel(
 
     fun requestAfterActivity()
     {
-        SopoLog.d(tag = TAG, msg = "로그인 상태 => ${userRepoImpl.getStatus()}")
+        SopoLog.d( msg = "로그인 상태 => ${userRepoImpl.getStatus()}")
 
         if (userRepoImpl.getStatus() == 1)
         {
@@ -89,11 +89,11 @@ class SplashViewModel(
             {
                 is NetworkResult.Success ->
                 {
-                    SopoLog.d(tag = "SplashView", msg = "성공 => ${result.data}")
+                    SopoLog.d(msg = "성공 => ${result.data}")
                 }
                 is NetworkResult.Error ->
                 {
-                    SopoLog.d(tag = "SplashView", msg = "실패 => ${(result.exception as APIException)}")
+                    SopoLog.d(msg = "실패 => ${(result.exception as APIException)}")
                 }
             }
         }

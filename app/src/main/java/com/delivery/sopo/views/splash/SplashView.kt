@@ -40,7 +40,6 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
 
     init
     {
-        TAG += this.javaClass.simpleName
         parentActivity = this@SplashView
     }
 

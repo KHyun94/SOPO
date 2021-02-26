@@ -91,7 +91,6 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
         }
         catch (e: EmptyStackException){
             SopoLog.d(
-                tag = TAG,
                 msg = "STACK IS ALREADY EMPTY!!, you try to pop item even if stack is already empty!!"
             )
             false
@@ -112,12 +111,12 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
             {
                 is NetworkResult.Success ->
                 {
-                    SopoLog.d(tag = TAG, msg = "Success To Update Nickname ${result.data.message}")
+                    SopoLog.d( msg = "Success To Update Nickname ${result.data.message}")
                     _userNickname.postValue(nickname)
                 }
                 is NetworkResult.Error ->
                 {
-                    SopoLog.d(tag = TAG, msg = "Fail To Update Nickname ${result.exception.message}")
+                    SopoLog.d( msg = "Fail To Update Nickname ${result.exception.message}")
                 }
             }
         }

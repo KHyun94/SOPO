@@ -28,10 +28,7 @@ object CustomAlertMsg
 
         if(isClick){
             binding.ivClear.setOnClickListener {
-                SopoLog.d(
-                    tag = TAG,
-                    msg = "click click click click click click click click click click"
-                )
+                SopoLog.d(msg = "click click click click click click click click click click")
                 t.cancel()
             }
 

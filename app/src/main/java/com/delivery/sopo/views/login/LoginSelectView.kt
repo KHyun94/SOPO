@@ -40,6 +40,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_view)
 {
+    var TAG = ""
+
     private val userRepoImpl : UserRepoImpl by inject()
     private val oauthRepoImpl : OauthRepoImpl by inject()
     private val loginSelectVm : LoginSelectViewModel by viewModel()
@@ -100,7 +102,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
                         override fun onSessionOpenFailed(exception : KakaoException)
                         {
-                            SopoLog.e(tag = TAG, msg = "카카오 세션 에러: ${exception}", e = exception)
+                            SopoLog.e( msg = "카카오 세션 에러: ${exception}", e = exception)
                         }
                     }
                     Session.getCurrentSession().addCallback(sessionCallback)
@@ -219,11 +221,11 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
             {
                 is NetworkResult.Success ->
                 {
-                    SopoLog.d(tag = "SplashView", msg = "성공 => ${result.data}")
+                    SopoLog.d( msg = "성공 => ${result.data}")
                 }
                 is NetworkResult.Error ->
                 {
-                    SopoLog.d(tag = "SplashView", msg = "성공 => ${(result.exception as APIException)}")
+                    SopoLog.d( msg = "성공 => ${(result.exception as APIException)}")
                 }
             }
         }

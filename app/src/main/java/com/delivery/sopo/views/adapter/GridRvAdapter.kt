@@ -59,13 +59,13 @@ class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
 
         if (items != null)
         {
-            SopoLog.d(tag = TAG, msg = "$position")
+            SopoLog.d( msg = "$position")
             val selectItem = items!![position]
             holder.onBind(selectItem)
         }
         else
         {
-            SopoLog.d(tag = TAG, msg = "no item")
+            SopoLog.d( msg = "no item")
         }
     }
 
@@ -97,7 +97,7 @@ class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
 
                 if (paste != null)
                 {
-                    SopoLog.d(tag = TAG, msg = "Paste => $paste")
+                    SopoLog.d( msg = "Paste => $paste")
                     val layout = paste!!.first as LinearLayout
 
                     (paste!!.first as LinearLayout).setBackgroundResource(R.drawable.border_non_click_img)
@@ -143,7 +143,7 @@ class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
 
                         paste = Pair(binding.layoutItem, item)
 
-                        SopoLog.d(tag = TAG, msg = "item ===> $item")
+                        SopoLog.d( msg = "item ===> $item")
                     }
                 }
 

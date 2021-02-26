@@ -19,7 +19,6 @@ class SignUpView : BasicView<SignUpViewBinding>(R.layout.sign_up_view)
 
     init
     {
-        TAG += this.javaClass.simpleName
         parentActivity = this@SignUpView
     }
 

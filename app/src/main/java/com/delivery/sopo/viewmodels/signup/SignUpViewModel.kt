@@ -135,7 +135,7 @@ class SignUpViewModel : ViewModel()
             _result.value = tmp
         }
 
-        SopoLog.d(tag = TAG, msg = "SignUp Click!!!!!!!!!!!!!")
+        SopoLog.d( msg = "SignUp Click!!!!!!!!!!!!!")
     }
 
     // EditText 유효성 검사 가시성
@@ -190,7 +190,7 @@ class SignUpViewModel : ViewModel()
                         emailValidateText.value = "이메일을 입력해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
                         _result.value = checkValidate()
-                        SopoLog.d(tag = TAG, msg = "Email is Empty")
+                        SopoLog.d( msg = "Email is Empty")
                         return@FocusChangeCallback
                     }
 
@@ -202,7 +202,7 @@ class SignUpViewModel : ViewModel()
                         // 이메일이 중복 이메일이거나 초기화되었을 때 중복 api로 통신
                         if (isDuplicate)
                         {
-                            SopoLog.d(tag = TAG, msg = "Duplicate Check Start!!!")
+                            SopoLog.d( msg = "Duplicate Check Start!!!")
                             checkDuplicatedEmail(email = email.value!!)
                             return@FocusChangeCallback
                         }
@@ -219,7 +219,7 @@ class SignUpViewModel : ViewModel()
                     else
                     {
                         emailStatusType.value = 0
-                        SopoLog.d(tag = TAG, msg = "PLZ Check Email Validate")
+                        SopoLog.d( msg = "PLZ Check Email Validate")
                         emailValidateText.value = "이메일 형식을 확인해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
                     }
@@ -231,14 +231,14 @@ class SignUpViewModel : ViewModel()
                 }
                 InfoConst.PASSWORD ->
                 {
-                    SopoLog.d(tag = TAG, msg = "Focus out $type ${pwd.value}")
+                    SopoLog.d( msg = "Focus out $type ${pwd.value}")
 
                     // 비밀번호 란이 공백일 때
                     if (TextUtils.isEmpty(pwd.value))
                     {
                         pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
 
-                        SopoLog.d(tag = TAG, msg = "pwd is empty")
+                        SopoLog.d( msg = "pwd is empty")
 
                         pwdValidateText.value = "비밀번호를 입력해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
@@ -284,7 +284,7 @@ class SignUpViewModel : ViewModel()
                 }
                 InfoConst.RE_PASSWORD ->
                 {
-                    SopoLog.d(tag = TAG, msg = "type $type re_pwd ${rePwd.value}")
+                    SopoLog.d( msg = "type $type re_pwd ${rePwd.value}")
 
                     // 비밀번호가 최소 1자리 이상일 때
                     if (pwd.value!!.isNotEmpty())
@@ -364,7 +364,7 @@ class SignUpViewModel : ViewModel()
         // email 유효성 에러
         if (isEmailCorVisible.value != VISIBLE)
         {
-            SopoLog.d(tag = TAG, msg = "Validate Fail Email ")
+            SopoLog.d( msg = "Validate Fail Email ")
             emailStatusType.value = CustomEditText.STATUS_COLOR_RED
             return Result<Unit, Unit>(
                 errorResult = ErrorResult(
@@ -376,7 +376,7 @@ class SignUpViewModel : ViewModel()
         // password 유효성 에러
         if (isPwdCorVisible.value != VISIBLE)
         {
-            SopoLog.d(tag = TAG, msg = "Validate Fail PWD ")
+            SopoLog.d( msg = "Validate Fail PWD ")
             pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
             return Result<Unit, Unit>(
                 errorResult = ErrorResult(
@@ -388,7 +388,7 @@ class SignUpViewModel : ViewModel()
         if (isRePwdCorVisible.value != VISIBLE)
         {
             rePwdStatusType.value = CustomEditText.STATUS_COLOR_RED
-            SopoLog.d(tag = TAG, msg = "Validate Fail PWD ")
+            SopoLog.d( msg = "Validate Fail PWD ")
 
             return Result<Unit, Unit>(
                 errorResult = ErrorResult(
@@ -399,7 +399,7 @@ class SignUpViewModel : ViewModel()
 
         if (!isAgree.value!!)
         {
-            SopoLog.d(tag = TAG, msg = "Validate Fail Agree ")
+            SopoLog.d( msg = "Validate Fail Agree ")
 
             return Result<Unit, Unit>(
                 errorResult = ErrorResult(
@@ -408,7 +408,7 @@ class SignUpViewModel : ViewModel()
             )
         }
 
-        SopoLog.d(tag = TAG, msg = "Validate Success ")
+        SopoLog.d( msg = "Validate Success ")
 
         return Result<Unit?, Unit?>(
             successResult = SuccessResult(

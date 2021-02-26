@@ -88,12 +88,12 @@ class NotDisturbTimeDialog : DialogFragment {
     private fun setClickEvent(){
 
         layoutView.tv_cancelBtn.setOnClickListener {
-            SopoLog.d(tag = TAG, msg = "Cancel button")
+            SopoLog.d( msg = "Cancel button")
             dismiss()
         }
 
         layoutView.tv_okBtn.setOnClickListener {
-            SopoLog.d(tag = TAG, msg = "Ok button")
+            SopoLog.d( msg = "Ok button")
 
             val startHour = layoutView.datePicker_start.hour
             val startMin = layoutView.datePicker_start.minute

@@ -45,11 +45,10 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     init
     {
-        TAG += this.javaClass.simpleName
 
-        SopoLog.d(tag = TAG, msg = "ID = ${userRepoImpl.getEmail()}")
-        SopoLog.d(tag = TAG, msg = "PWD = ${userRepoImpl.getApiPwd()}")
-        SopoLog.d(tag = TAG, msg = "NICKNAME = ${userRepoImpl.getUserNickname()}")
+        SopoLog.d( msg = "ID = ${userRepoImpl.getEmail()}")
+        SopoLog.d( msg = "PWD = ${userRepoImpl.getApiPwd()}")
+        SopoLog.d( msg = "NICKNAME = ${userRepoImpl.getUserNickname()}")
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -111,11 +110,11 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         // todo 업데이트 시
         SOPOApp.cntOfBeUpdate.observeForever {
 
-            SopoLog.d(tag = "MainView", msg = "업데이트 가능 여부 택배 갯수 ${it}!!!!!!!!!!!!!!!!!!!!!")
+            SopoLog.d(msg = "업데이트 가능 여부 택배 갯수 ${it}!!!!!!!!!!!!!!!!!!!!!")
 
             if (binding.vm!!.isInitUpdate && it > 0)
             {
-                SopoLog.d(tag = "MainView", msg = "True 업데이트 가능 여부 택배 갯수: $it")
+                SopoLog.d(msg = "True 업데이트 가능 여부 택배 갯수: $it")
 
                 binding.alertMessageBar.run {
                     setText("${it}개의 새로운 배송정보가 있어요.")
@@ -286,7 +285,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                 // 0923 kh 등록 성공
                 if (p0 == 1 && isRegister)
                 {
-                    SopoLog.d(tag = TAG, msg = "등록 성공 메인 뷰")
+                    SopoLog.d( msg = "등록 성공 메인 뷰")
                     onCompleteRegister()
                     isRegister = false
                 }

@@ -195,13 +195,13 @@ class CustomEditText : LinearLayout
         {
             0 ->
             {
-                SopoLog.d(tag = TAG, msg = "Red")
+                SopoLog.d( msg = "Red")
                 tv_title.setTextColor(resources.getColor(R.color.COLOR_MAIN_RED_500))
                 v_underline.setBackgroundResource(R.color.COLOR_MAIN_RED_500)
             }
             1 ->
             {
-                SopoLog.d(tag = TAG, msg = "Blue")
+                SopoLog.d( msg = "Blue")
                 tv_title.setTextColor(resources.getColor(R.color.COLOR_MAIN_BLUE_700))
                 v_underline.setBackgroundResource(R.color.COLOR_MAIN_BLUE_700)
 
@@ -209,13 +209,13 @@ class CustomEditText : LinearLayout
             2 ->
             {
 
-                SopoLog.d(tag = TAG, msg = "Black")
+                SopoLog.d( msg = "Black")
                 tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
                 v_underline.setBackgroundResource(R.color.MAIN_BLACK)
             }
             else ->
             {
-                SopoLog.d(tag = TAG, msg = "Black & Gray")
+                SopoLog.d( msg = "Black & Gray")
                 tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
                 v_underline.setBackgroundResource(R.color.COLOR_GRAY_200)
             }

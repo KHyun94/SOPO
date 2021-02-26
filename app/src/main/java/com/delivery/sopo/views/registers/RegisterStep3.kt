@@ -83,7 +83,7 @@ class RegisterStep3 : Fragment()
                 callback = object : OnBackPressedCallback(true){
                     override fun handleOnBackPressed()
                     {
-                        SopoLog.d(tag = TAG, msg = "Register Step::3 BackPressListener")
+                        SopoLog.d( msg = "Register Step::3 BackPressListener")
                         requireActivity().supportFragmentManager.popBackStack()
                     }
 
@@ -115,26 +115,26 @@ class RegisterStep3 : Fragment()
             {
                 if(it.result)
                 {
-                    SopoLog.d(tag = TAG, msg = "등록 성공 $it")
+                    SopoLog.d( msg = "등록 성공 $it")
 
                     if(userRepoImpl.getTopic().isEmpty())
                     {
                         FirebaseRepository.subscribedToTopicInFCM{ s, e ->
-                            if(e!=null) SopoLog.e(tag = TAG, msg ="구독 실패 >>> ${e.errorMsg}")
-                            if(s!= null) SopoLog.d(tag = TAG, msg = "구독 성공 >>> ${s.successMsg}")
+                            if(e!=null) SopoLog.e( msg ="구독 실패 >>> ${e.errorMsg}")
+                            if(s!= null) SopoLog.d( msg = "구독 성공 >>> ${s.successMsg}")
                         }
                     }
                     else
                     {
                         FirebaseRepository.unsubscribedToTopicInFCM{s, e->
-                            if(e!=null) SopoLog.e(tag = TAG, msg ="구독 해지 실패 >>>${e.errorMsg}")
+                            if(e!=null) SopoLog.e( msg ="구독 해지 실패 >>>${e.errorMsg}")
                             if(s!= null)
                             {
-                                SopoLog.d(tag = TAG, msg = "구독 해지 성공 >>> ${s.successMsg}")
+                                SopoLog.d( msg = "구독 해지 성공 >>> ${s.successMsg}")
 
                                 FirebaseRepository.subscribedToTopicInFCM{ s, e ->
-                                    if(e!=null) SopoLog.e(tag = TAG, msg ="구독 실패 >>> ${e.errorMsg}")
-                                    if(s!= null) SopoLog.d(tag = TAG, msg = "구독 성공 >>> ${s.successMsg}")
+                                    if(e!=null) SopoLog.e( msg ="구독 실패 >>> ${e.errorMsg}")
+                                    if(s!= null) SopoLog.d( msg = "구독 성공 >>> ${s.successMsg}")
                                 }
                             }
                         }
@@ -192,7 +192,7 @@ class RegisterStep3 : Fragment()
         callback = object : OnBackPressedCallback(true){
             override fun handleOnBackPressed()
             {
-                SopoLog.d(tag = TAG, msg = "Register Step::3 BackPressListener")
+                SopoLog.d( msg = "Register Step::3 BackPressListener")
                 requireActivity().supportFragmentManager.popBackStack()
             }
 

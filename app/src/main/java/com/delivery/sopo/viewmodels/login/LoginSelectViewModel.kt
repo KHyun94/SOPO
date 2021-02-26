@@ -59,7 +59,7 @@ class LoginSelectViewModel : ViewModel()
     // 카카오톡 로그인을 통해 사용자에 대한 정보를 가져온다
     fun requestKakaoLogin()
     {
-        SopoLog.d(tag = TAG, msg = "requestKakaoLogin Call()")
+        SopoLog.d( msg = "requestKakaoLogin Call()")
         
         postProgressValue(true)
         
@@ -72,7 +72,7 @@ class LoginSelectViewModel : ViewModel()
             {
                 super.onFailure(errorResult)
 
-                SopoLog.e(tag = TAG, msg = "onFailure message : " + errorResult.errorMessage, e = errorResult.exception)
+                SopoLog.e( msg = "onFailure message : " + errorResult.errorMessage, e = errorResult.exception)
 
                 postResultValue<Unit, KakaoErrorResult>(
                     null, ErrorResult(
@@ -89,7 +89,6 @@ class LoginSelectViewModel : ViewModel()
                 super.onFailureForUiThread(errorResult)
                 postProgressValue(false)
                 SopoLog.e(
-                    tag = TAG,
                     msg = "onFailureForUiThread message : " + errorResult.errorMessage,
                     e = null
                 )
@@ -107,7 +106,7 @@ class LoginSelectViewModel : ViewModel()
 
             override fun onSessionClosed(errorResult: KakaoErrorResult)
             {
-                SopoLog.e(tag = TAG, msg = "onSessionClosed message : " + errorResult.errorMessage, e = errorResult.exception)
+                SopoLog.e( msg = "onSessionClosed message : " + errorResult.errorMessage, e = errorResult.exception)
 
                 postProgressValue(false)
                 postResultValue<Unit, KakaoErrorResult>(
@@ -125,9 +124,9 @@ class LoginSelectViewModel : ViewModel()
                 val kakaoUserId = result.id.toString()
                 val kakaoNickname = result.nickname
 
-                SopoLog.d(tag= TAG, msg = "onSuccess account = $email")
-                SopoLog.d(tag= TAG, msg = "onSuccess uid = $kakaoUserId")
-                SopoLog.d(tag= TAG, msg = "onSuccess nickname = $kakaoNickname")
+                SopoLog.d(msg = "onSuccess account = $email")
+                SopoLog.d(msg = "onSuccess uid = $kakaoUserId")
+                SopoLog.d(msg = "onSuccess nickname = $kakaoNickname")
 
                 LoginHandler.requestLoginByKakao(email, kakaoUserId){ successResult, errorResult ->
                     postResultValue(successResult, errorResult)

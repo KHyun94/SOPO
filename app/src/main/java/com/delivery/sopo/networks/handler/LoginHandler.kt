@@ -140,7 +140,7 @@ object LoginHandler : KoinComponent
      */
     fun requestLoginByKakao(email : String, kakaoUid : String, callback : LoginCallback)
     {
-        SopoLog.d(tag = TAG, msg = "onKakaoLogin Call()")
+        SopoLog.d( msg = "onKakaoLogin Call()")
         /**
          * kakao custom token 생성 요청
          */

@@ -46,8 +46,6 @@ class SOPOApp : Application()
 
     val parcelManagementRepoImpl: ParcelManagementRepoImpl by inject()
 
-    val TAG = "LOG.SOPO${this.javaClass.simpleName}"
-
     var kakaoSDKAdapter: KakaoSDKAdapter? = null
     var accessToken: AccessToken? = null
 

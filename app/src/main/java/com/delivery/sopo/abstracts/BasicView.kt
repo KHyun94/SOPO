@@ -9,7 +9,6 @@ import androidx.databinding.ViewDataBinding
 import com.delivery.sopo.util.SopoLog
 
 abstract class BasicView<T:ViewDataBinding>(@LayoutRes val layoutRes:Int) : AppCompatActivity() {
-    var TAG = ""
     lateinit var parentActivity : Activity
     lateinit var binding : T
 
@@ -24,7 +23,7 @@ abstract class BasicView<T:ViewDataBinding>(@LayoutRes val layoutRes:Int) : AppC
         bindView()
         setObserver()
 
-        SopoLog.d(tag = TAG, msg = "Parent Activity!!!!")
+        SopoLog.d(msg = "Parent Activity!!!!")
 
     }
 }

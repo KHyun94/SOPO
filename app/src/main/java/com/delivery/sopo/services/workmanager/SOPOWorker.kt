@@ -1,4 +1,4 @@
-package com.delivery.sopo.services.workmanager
+ package com.delivery.sopo.services.workmanager
 
 import android.content.Context
 import androidx.work.CoroutineWorker
@@ -43,20 +43,20 @@ class SOPOWorker(val context: Context, private val params: WorkerParameters): Co
 
     override suspend fun doWork(): Result = coroutineScope {
 
-        SopoLog.d(tag = TAG, msg = "doWork() call")
+        SopoLog.d( msg = "doWork() call")
 
         when (val result = requestRefreshParcel())
         {
             is NetworkResult.Success ->
             {
-                SopoLog.d(tag = TAG, msg = "Success to PATCH work manager")
+                SopoLog.d( msg = "Success to PATCH work manager")
                 appDatabase.logDao()
                     .insert(LogEntity(no = 0, msg = "Success to PATCH work manager", uuid = "1", regDt = TimeUtil.getDateTime()))
                 Result.success()
             }
             is NetworkResult.Error ->
             {
-                SopoLog.e(tag = TAG, msg = "Fail to PATCH work manager. ${result.exception.message}")
+                SopoLog.e( msg = "Fail to PATCH work manager. ${result.exception.message}")
                 appDatabase.logDao()
                     .insert(LogEntity(no = 0, msg = "Failure to PATCH work manager, Because Of ErrorCode $result", uuid = "1", regDt = TimeUtil.getDateTime()))
 
@@ -64,7 +64,7 @@ class SOPOWorker(val context: Context, private val params: WorkerParameters): Co
             }
             else ->
             {
-                SopoLog.e(tag = TAG, msg = "Fail to PATCH work manager. Because of Result NULL")
+                SopoLog.e( msg = "Fail to PATCH work manager. Because of Result NULL")
                 appDatabase.logDao()
                     .insert(LogEntity(no = 0, msg = "Failure to PATCH work manager, Because Of ErrorCode $result", uuid = "1", regDt = TimeUtil.getDateTime()))
                 Result.failure()

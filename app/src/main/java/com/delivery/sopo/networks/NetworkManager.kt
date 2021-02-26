@@ -52,7 +52,7 @@ object NetworkManager : KoinComponent
             {
                 val oauth : OauthEntity?
                 runBlocking { oauth = oauthRepoImpl.get(userRepoImpl.getEmail()) }
-                SopoLog.d(tag = UserCall.TAG, msg = "토큰 정보 => ${oauth}")
+                SopoLog.d(msg = "토큰 정보 => ${oauth}")
                 retro(oauth?.accessToken).create(clz)
             }
             NetworkEnum.PUBLIC_LOGIN ->
@@ -87,7 +87,7 @@ object NetworkManager : KoinComponent
             else -> null
         }
 
-        SopoLog.d(tag = TAG, msg = "네트워크 인증 타입 => $INTERCEPTOR_TYPE")
+        SopoLog.d( msg = "네트워크 인증 타입 => $INTERCEPTOR_TYPE")
 
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY

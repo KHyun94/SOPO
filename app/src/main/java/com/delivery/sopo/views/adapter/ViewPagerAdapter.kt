@@ -40,7 +40,7 @@ class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
     }
     override fun getItem(position: Int): Fragment
     {
-        SopoLog.d(tag = TAG, msg = "pos => ${position}")
+        SopoLog.d( msg = "pos => ${position}")
 
         return when (position)
         {

@@ -1,40 +1,67 @@
 package com.delivery.sopo.util
 
 import android.util.Log
+import java.lang.StringBuilder
 
 object SopoLog
 {
-    private val TAG = "[LOG.SOPO"
+    val TAG = "SOPO_LOG"
+    
 
-    fun v(tag: String? = null, msg: String)
+    fun v(msg: String)
     {
-        val _tag = if (tag == null) "${TAG}.v]" else "${TAG}.${tag}.v]"
-        Log.v(_tag, msg)
+        Log.v(TAG, buildLogMsg("VERB", msg))
     }
 
-    fun i(tag: String? = null, msg: String)
+    fun i(msg: String)
     {
-        val _tag = if (tag == null) "${TAG}.i]" else "${TAG}.${tag}.i]"
-        Log.i(_tag, msg)
+        Log.i(TAG, buildLogMsg("INFO", msg))
     }
 
-    fun d(tag: String? = null, msg: String )
+    @JvmStatic
+    fun d(msg: String)
     {
-        val _tag = if (tag == null) "${TAG}.d]" else "${TAG}.${tag}.d]"
-        Log.d(_tag, msg)
+        Log.d(TAG, buildLogMsg("DEV", msg))
     }
 
-    fun w(tag: String? = null, msg: String)
+    fun w(msg: String)
     {
-        val _tag = if (tag == null) "${TAG}.w]" else "${TAG}.${tag}.w]"
-        Log.v(_tag, msg)
+        Log.w(TAG, buildLogMsg("WARN", msg))
     }
 
-    fun e(tag: String? = null, msg: String, e: Throwable? = null)
+    fun e(msg: String, e: Throwable? = null)
     {
-        val _tag = if (tag == null) "${TAG}.e]" else "${TAG}.${tag}.e]"
-        if(e == null) Log.e(_tag, "$msg\n${e.toString()}")
-        else Log.e(_tag, "$msg\n${e.toString()}", e)
+        Log.e(TAG, buildLogMsg("ERROR", msg), e)
     }
 
+    private fun buildLogMsg(type: String, message: String): String
+    {
+        val sb = StringBuilder()
+        sb.append("[")
+        sb.append(type)
+        sb.append("] ")
+
+        try
+        {
+            val ste = Thread.currentThread().stackTrace[4]
+
+            if (ste != null)
+            {
+                sb.append("[")
+                sb.append(ste.fileName.replace(".kt", ""))
+                sb.append("::")
+                sb.append(ste.methodName)
+                sb.append("] ")
+            }
+        }
+        catch (e: Exception)
+        {
+            e.printStackTrace()
+        }
+
+        sb.append(message)
+        //        if(DEBUG_FLAG) appendLog(sb.toString());
+
+        return sb.toString()
+    }
 }

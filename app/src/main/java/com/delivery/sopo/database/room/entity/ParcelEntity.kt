@@ -40,15 +40,15 @@ data class ParcelEntity(
     )
     var parcelAlias: String,
     @ColumnInfo(
-        name = "INQUERY_RESULT",
+        name = "INQUIRY_RESULT",
         typeAffinity = ColumnInfo.TEXT
     )
-    var inqueryResult: String?,
+    var inquiryResult: String?,
     @ColumnInfo(
         name = "INQUERY_HASH",
         typeAffinity = ColumnInfo.TEXT
     )
-    var inqueryHash: String?,
+    var inquiryHash: String?,
     @ColumnInfo(
         name = "DELIVERY_STATUS",
         typeAffinity = ColumnInfo.TEXT
@@ -75,8 +75,8 @@ data class ParcelEntity(
         SopoLog.d(msg = "ParcelEntity Update => $parcel")
 
         this.parcelAlias = parcel.parcelAlias
-        this.inqueryResult = parcel.inqueryResult
-        this.inqueryHash = parcel.inqueryHash
+        this.inquiryResult = parcel.inquiryResult
+        this.inquiryHash = parcel.inquiryHash
         this.deliveryStatus = parcel.deliveryStatus
         parcel.arrivalDte?.let {
             this.arrivalDte = it

@@ -28,7 +28,7 @@ object ParcelCall : BaseService(), KoinComponent
     {
         val oauth : OauthEntity?
         runBlocking { oauth = oAuthRepoImpl.get(email = email) }
-        SopoLog.d(tag = TAG, msg = "토큰 정보 => ${oauth}")
+        SopoLog.d( msg = "토큰 정보 => ${oauth}")
 
         parcelAPI = NetworkManager.retro(oauth?.accessToken).create(ParcelAPI::class.java)
     }

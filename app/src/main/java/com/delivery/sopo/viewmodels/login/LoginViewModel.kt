@@ -206,7 +206,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
         // email 유효성 에러
         if (isEmailCorVisible.value != View.VISIBLE)
         {
-            SopoLog.d(tag = TAG, msg = "Validate Fail Email ")
+            SopoLog.d( msg = "Validate Fail Email ")
             emailStatusType.value = CustomEditText.STATUS_COLOR_RED
             return Result<Unit, Unit>(
                 errorResult = ErrorResult(
@@ -218,7 +218,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
         // password 유효성 에러
         if (isPwdCorVisible.value != View.VISIBLE)
         {
-            SopoLog.d(tag = TAG, msg = "Validate Fail PWD ")
+            SopoLog.d( msg = "Validate Fail PWD ")
             pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
             return Result<Unit, Unit>(
                 errorResult = ErrorResult(
@@ -236,7 +236,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
 
     fun onLoginClicked(v: View)
     {
-        SopoLog.d(tag = TAG, msg = "onLoginClicked() call!!!")
+        SopoLog.d( msg = "onLoginClicked() call!!!")
 
         _result.value = onCheckValidate()
 
@@ -263,7 +263,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
                     {
                         val user = s1.data
 
-                        SopoLog.d(tag = TAG, msg = "Auth Email")
+                        SopoLog.d( msg = "Auth Email")
 
                         uid = user?.uid!!
 

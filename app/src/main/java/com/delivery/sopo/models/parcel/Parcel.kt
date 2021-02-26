@@ -14,10 +14,10 @@ data class Parcel(
     var carrier: String,
     @SerializedName("parcelAlias")
     var parcelAlias: String,
-    @SerializedName("inqueryResult")
-    var inqueryResult: String?,
-    @SerializedName("inqueryHash")
-    var inqueryHash: String?,
+    @SerializedName("inquiryResult")
+    var inquiryResult: String?,
+    @SerializedName("inquiryHash")
+    var inquiryHash: String?,
     @SerializedName("deliveryStatus")
     var deliveryStatus: String,
     @SerializedName("arrivalDte")
@@ -38,8 +38,8 @@ data class Parcel(
         this.carrier = parcelEntity.carrier
         this.deliveryStatus = parcelEntity.deliveryStatus
         this.parcelAlias = parcelEntity.parcelAlias
-        this.inqueryHash = parcelEntity.inqueryHash
-        this.inqueryResult = parcelEntity.inqueryResult
+        this.inquiryHash = parcelEntity.inquiryHash
+        this.inquiryResult = parcelEntity.inquiryResult
         this.status = parcelEntity.status
     }
 
@@ -52,8 +52,8 @@ data class Parcel(
         stringBuffer.append("[trackNum] : $trackNum ")
         stringBuffer.append("[carrier] : $carrier   ")
         stringBuffer.append("[parcelAlias] : $parcelAlias   ")
-        stringBuffer.append("[inqueryResult] : $inqueryResult   ")
-        stringBuffer.append("[inqueryHash] : $inqueryHash   ")
+        stringBuffer.append("[inquiryResult] : $inquiryResult   ")
+        stringBuffer.append("[inquiryHash] : $inquiryHash   ")
         stringBuffer.append("[deliveryStatus] : $deliveryStatus ")
         stringBuffer.append("[arrivalDte] : $arrivalDte ")
         stringBuffer.append("[status] : $status ")

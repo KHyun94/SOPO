@@ -37,10 +37,7 @@ class FirebaseService: FirebaseMessagingService()
 
             // 업데이트 사항이 있는 택배를 로컬 DB에서 조회
 
-            SopoLog.d(
-                "FirebaseService",
-                "Update Parcel Data => ${updateParcelDao?:"조회 결과 없음."}"
-            )
+            SopoLog.d("Update Parcel Data => ${updateParcelDao?:"조회 결과 없음."}")
 
             // 만약에.. 내부 데이터베이스에 검색된 택배가 없다면.. 알람을 띄우지 않는다.
             updateParcelDao.compareDeliveryStatus {value ->
@@ -109,7 +106,7 @@ class FirebaseService: FirebaseMessagingService()
 
         if (remoteMessage.data.isNotEmpty())
         {
-            SopoLog.d(tag = TAG, msg = "onMessageReceived: " + remoteMessage.data.toString())
+            SopoLog.d( msg = "onMessageReceived: " + remoteMessage.data.toString())
 
             val notificationId = remoteMessage.data.getValue("notificationId")
             val data = remoteMessage.data.getValue("data")
@@ -152,7 +149,7 @@ class FirebaseService: FirebaseMessagingService()
         }
 
         remoteMessage.notification?.let {
-            SopoLog.d(tag = TAG, msg = "notification!!!!!!!!!!!!!!!!! ${NotificationEnum.PUSH_AWAKEN_DEVICE.notificationId}")
+            SopoLog.d( msg = "notification!!!!!!!!!!!!!!!!! ${NotificationEnum.PUSH_AWAKEN_DEVICE.notificationId}")
             SOPOWorkManager.updateWorkManager(applicationContext)
         }
     }
@@ -171,11 +168,11 @@ class FirebaseService: FirebaseMessagingService()
 
     override fun onNewToken(s: String){
         super.onNewToken(s)
-        SopoLog.d(tag = TAG, msg = "onNewToken: $s")
+        SopoLog.d( msg = "onNewToken: $s")
         sendTokenToServer(s)
     }
 
     private fun sendTokenToServer(token: String){
-        SopoLog.d(tag = TAG, msg = "sendTokenToServer: $token")
+        SopoLog.d( msg = "sendTokenToServer: $token")
     }
 }

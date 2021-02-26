@@ -19,7 +19,7 @@ class SessionCallback : ISessionCallback {
 
     override fun onSessionOpenFailed(exception: KakaoException) {
         if (exception != null) {
-            SopoLog.d(tag = TAG, msg = "exception : $exception")
+            SopoLog.d( msg = "exception : $exception")
         }
     }
 

@@ -16,15 +16,9 @@ class OneTimeWorker(val context: Context, params: WorkerParameters) : CoroutineW
     params
 )
 {
-    val TAG = "LOG.SOPO"
-
     override suspend fun doWork(): Result
     {
-        SopoLog.d(
-            tag = TAG,
-            msg = "Period Time Worker Service Start!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-        )
-
+        SopoLog.d(msg = "Period Time Worker Service Start!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
         return Result.success()
     }

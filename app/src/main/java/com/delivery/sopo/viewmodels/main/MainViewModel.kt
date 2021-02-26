@@ -80,7 +80,7 @@ class MainViewModel(
     // 로컬 DB - Parcel Management의 'isBeUpdate'가 1인 row들이 있는지 체크
     private fun isBeUpdateParcels()
     {
-        SopoLog.d(tag = "MainVM", msg = "isBeUpdateParcels 시작!!!!!!!")
+        SopoLog.d( msg = "isBeUpdateParcels 시작!!!!!!!")
 
         var cnt = 0
 
@@ -91,12 +91,12 @@ class MainViewModel(
 
             if (cnt > 0) // 서버 DB에 업데이트된 값을 요청
             {
-                SopoLog.d(tag = "MainVM", msg = "Count('isBeUpdate') == ${cnt}, 서버로 요청!!!")
+                SopoLog.d( msg = "Count('isBeUpdate') == ${cnt}, 서버로 요청!!!")
                 requestOngoingRemoteParcels()
             }
             else
             {
-                SopoLog.d(tag = "MainVM", msg = "Count('isBeUpdate') == ${cnt}, 업데이트 사항이 없습니다!!!")
+                SopoLog.d( msg = "Count('isBeUpdate') == ${cnt}, 업데이트 사항이 없습니다!!!")
                 isInitUpdate = true
             }
         }
@@ -105,7 +105,7 @@ class MainViewModel(
     // todo TEST 해봐야합니다.
     private fun requestOngoingRemoteParcels()
     {
-        SopoLog.d(tag = "MainVM", msg = "isBeUpdateParcels 시작!!!!!!!")
+        SopoLog.d( msg = "isBeUpdateParcels 시작!!!!!!!")
 
         NetworkManager.retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java)
             .getParcelsOngoingTmp(userRepoImpl.getEmail())
@@ -113,7 +113,7 @@ class MainViewModel(
             {
                 override fun onFailure(call : Call<APIResult<MutableList<Parcel>?>?>, t : Throwable)
                 {
-                    SopoLog.e(tag = "MainVM", msg = "업데이트 요청 실패", e = t)
+                    SopoLog.e( msg = "업데이트 요청 실패", e = t)
                     isInitUpdate = true
                 }
 
@@ -122,7 +122,7 @@ class MainViewModel(
                 )
                 {
                     SopoLog.d(
-                        tag = "MainVM", msg = "업데이트 요청 성공 http status code[${response.code()}]"
+                         msg = "업데이트 요청 성공 http status code[${response.code()}]"
                     )
 
                     when (response.code())
@@ -132,7 +132,7 @@ class MainViewModel(
                             val result = response.body()
                             val remoteParcelList = result?.data
 
-                            SopoLog.d(tag = "MainVM", msg = "업데이트 API 결과 => $result")
+                            SopoLog.d( msg = "업데이트 API 결과 => $result")
 
                             if (remoteParcelList != null && remoteParcelList.size > 0)
                             {
@@ -170,16 +170,16 @@ class MainViewModel(
                                                 if (remote.parcelId.regDt == local!!.parcelId.regDt && remote.parcelId.parcelUid == local.parcelId.parcelUid)
                                                 {
                                                     SopoLog.d(
-                                                        tag = "MainVM", msg = "REMOTE ${remote.parcelAlias}의 택배 HASH => ${remote.inqueryHash}"
+                                                         msg = "REMOTE ${remote.parcelAlias}의 택배 HASH => ${remote.inquiryHash}"
                                                     )
                                                     SopoLog.d(
-                                                        tag = "MainVM", msg = "LOCAL ${local.parcelAlias}의 택배 HASH => ${local.inqueryHash}"
+                                                         msg = "LOCAL ${local.parcelAlias}의 택배 HASH => ${local.inquiryHash}"
                                                     )
 
-                                                    if (remote.inqueryHash != local.inqueryHash)
+                                                    if (remote.inquiryHash != local.inquiryHash)
                                                     {
                                                         SopoLog.d(
-                                                            tag = "MainVM", msg = "${remote.parcelAlias}의 택배는 업데이트할 내용이 있습니다."
+                                                             msg = "${remote.parcelAlias}의 택배는 업데이트할 내용이 있습니다."
                                                         )
                                                         updateParcelList.add(remote)
                                                         // 비교 후 남는 parcel list는 insert 작업을 거친다.
@@ -190,7 +190,7 @@ class MainViewModel(
                                                     else
                                                     {
                                                         SopoLog.d(
-                                                            tag = "MainVM", msg = "${remote.parcelAlias}의 택배는 업데이트할 내용이 없습니다."
+                                                             msg = "${remote.parcelAlias}의 택배는 업데이트할 내용이 없습니다."
                                                         )
                                                         // 비교 후 남는 parcel list는 insert 작업을 거친다.
                                                         remoteParcelList.remove(remote)
@@ -206,7 +206,7 @@ class MainViewModel(
                                         if (insertParcelList.size > 0)
                                         {
                                             SopoLog.d(
-                                                tag = "MainVM", msg = "Insert Into Room 서버에만 존재하는 데이터 ${insertParcelList.size}"
+                                                 msg = "Insert Into Room 서버에만 존재하는 데이터 ${insertParcelList.size}"
                                             )
                                             // 택배 인서트
                                             parcelRepoImpl.insertEntities(insertParcelList)
@@ -220,7 +220,7 @@ class MainViewModel(
                                         if (updateParcelList.size > 0)
                                         {
                                             SopoLog.d(
-                                                tag = "MainVM", msg = "Update Into Room 갱신된 데이터 ${updateParcelList.size}"
+                                                 msg = "Update Into Room 갱신된 데이터 ${updateParcelList.size}"
                                             )
                                             // 택배 업데이트
                                             parcelRepoImpl.updateEntities(updateParcelList)
@@ -263,7 +263,7 @@ class MainViewModel(
     /** Update FCM Token  **/
     private fun updateFCMToken()
     {
-        SopoLog.d(tag = TAG, msg = "updateFCMToken call()")
+        SopoLog.d( msg = "updateFCMToken call()")
 
         FirebaseRepository.updateFCMToken { result ->
             when (result)
@@ -273,7 +273,7 @@ class MainViewModel(
                     val data = result.data as InstanceIdResult
                     val token = data.token
 
-                    SopoLog.d(tag = TAG, msg = "FCM ===> $token")
+                    SopoLog.d( msg = "FCM ===> $token")
 
                     CoroutineScope(Dispatchers.IO).launch {
 
@@ -281,18 +281,18 @@ class MainViewModel(
                         {
                             is NetworkResult.Success ->
                             {
-                                SopoLog.d(tag = TAG, msg = "Success To Update FCM Token ${result.data.message}")
+                                SopoLog.d( msg = "Success To Update FCM Token ${result.data.message}")
                             }
                             is NetworkResult.Error ->
                             {
-                                SopoLog.d(tag = TAG, msg = "Fail To Update FCM Token ${result.exception.message}")
+                                SopoLog.d( msg = "Fail To Update FCM Token ${result.exception.message}")
                             }
                         }
                     }
                 }
                 is TestResult.ErrorResult<*> ->
                 {
-                    SopoLog.e(tag = TAG, msg = "Fail To Update FCM Token ${result.errorMsg}", e = result.e)
+                    SopoLog.e( msg = "Fail To Update FCM Token ${result.errorMsg}", e = result.e)
                 }
             }
         }

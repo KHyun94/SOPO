@@ -53,7 +53,7 @@ class ParcelDetailViewModel(
     val parcelEntity: LiveData<ParcelEntity?>
         get() = _parcelEntity
 
-    // parcelEntity 중 inqueryResult를 객체화시키는 용도
+    // parcelEntity 중 inquiryResult를 객체화시키는 용도
     var parcelItem: ParcelItem? = null
 
     // 상세 화면에서 사용할 데이터 객체
@@ -103,20 +103,20 @@ class ParcelDetailViewModel(
 
             withContext(Dispatchers.Default) {
 
-                // ParcelEntity 중 inqueryResult(json의 String화)를 ParcelItem으로 객체화
+                // ParcelEntity 중 inquiryResult(json의 String화)를 ParcelItem으로 객체화
                 val gson = Gson()
 
                 val type = object : TypeToken<ParcelItem?>()
                 {}.type
 
-                val reader = gson.toJson(parcelEntity.inqueryResult)
+                val reader = gson.toJson(parcelEntity.inquiryResult)
                 val replaceStr = reader.replace("\\", "")
                 val subStr = replaceStr.substring(1, replaceStr.length - 1)
 
                 parcelItem = gson.fromJson<ParcelItem?>(subStr, type)
 
-                SopoLog.d(tag = TAG, msg = "==>> ${parcelEntity.toString()}")
-                SopoLog.d(tag = TAG, msg = "==>> ${parcelItem.toString()}")
+                SopoLog.d( msg = "==>> ${parcelEntity.toString()}")
+                SopoLog.d( msg = "==>> ${parcelItem.toString()}")
                 //----------------------------------------------------------------------------------
             }
 
@@ -165,7 +165,7 @@ class ParcelDetailViewModel(
                     {
                         subTitle.postValue("상품을 조회할 수 없습니다.")
                         statusBg.postValue(0)
-                        SopoLog.d(tag = TAG, msg = parcelEntity.deliveryStatus)
+                        SopoLog.d( msg = parcelEntity.deliveryStatus)
                         "에러상태"
                     }
                 }
@@ -236,7 +236,7 @@ class ParcelDetailViewModel(
                 )
             }
 
-            SopoLog.d(tag = TAG, msg = "Detail Item => ${item.value}")
+            SopoLog.d( msg = "Detail Item => ${item.value}")
 
             setAdapter(progressList)
         }
@@ -388,12 +388,12 @@ class ParcelDetailViewModel(
 
                         400 ->
                         {
-                            SopoLog.d(tag = TAG, msg = "택배 상세 내역 에러 => ${response.errorBody()}")
+                            SopoLog.d( msg = "택배 상세 내역 에러 => ${response.errorBody()}")
                             isUpdate.postValue(false)
                         }
                         else ->
                         {
-                            SopoLog.d(tag = TAG, msg = "택배 상세 내역 에러 => ${response.errorBody()}")
+                            SopoLog.d( msg = "택배 상세 내역 에러 => ${response.errorBody()}")
                             isUpdate.postValue(false)
                         }
                     }

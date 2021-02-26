@@ -247,7 +247,7 @@ class InquiryViewModel(
     {
         viewModelScope.launch(Dispatchers.IO) {
 
-            SopoLog.d(tag = TAG, msg = "배송완료 리스트 Get Progress Start")
+            SopoLog.d( msg = "배송완료 리스트 Get Progress Start")
 
 //            _isLoading.postValue(true) // 로딩 프로그래스바 표출
             isLoading.postValue(true)
@@ -344,7 +344,6 @@ class InquiryViewModel(
             // 현재 가지고 있는 아이템의 수가 0개라면 새로고침 한다.
             if (parcelRepoImpl.getOnGoingDataCnt() == 0)
             {
-                SopoLog.d(tag = "InquiryVM", msg = "시점 파악")
                 refreshOngoing()
                 return@launch
             }
@@ -365,7 +364,7 @@ class InquiryViewModel(
     fun refreshOngoing()
     {
         viewModelScope.launch(Dispatchers.IO) {
-            SopoLog.d(tag = TAG, msg = "배송완료 리스트 Get Progress Start")
+            SopoLog.d( msg = "배송완료 리스트 Get Progress Start")
             isLoading.postValue(true)
             val remoteParcels = parcelRepoImpl.getRemoteOngoingParcels()
 
@@ -401,7 +400,6 @@ class InquiryViewModel(
                         }
 
                         SopoLog.d(
-                            tag = "InquiryVM",
                             msg = "업데이트 완료 => ${parcelManagement.toString()}"
                         )
 
@@ -410,7 +408,7 @@ class InquiryViewModel(
                     /*
                         서버로부터 받아온 데이터가 검색된 경우
                         => 기존에 있는 데이터라는 의미
-                        => [InqueryHash를 조사해서 변화했는지 체크 및(&&) 택배의 상태가 활성화(STATUS == 1)인지 체크]
+                        => [InquiryHash를 조사해서 변화했는지 체크 및(&&) 택배의 상태가 활성화(STATUS == 1)인지 체크]
                         => 바뀐게 있다면 서버 데이터를 업데이트한다.
                      */
                     else
@@ -431,7 +429,6 @@ class InquiryViewModel(
                             }
 
                             SopoLog.d(
-                                tag = "InquiryVM",
                                 msg = "업데이트 완료 => ${parcelManagement.toString()}"
                             )
 
@@ -468,7 +465,7 @@ class InquiryViewModel(
                         )
                         if (remoteOngoingParcel != null && localParcelById != null)
                         {
-                            if (remoteOngoingParcel.inqueryHash != parcel.inqueryHash)
+                            if (remoteOngoingParcel.inquiryHash != parcel.inquiryHash)
                             {
                                 parcelRepoImpl.insetEntity(localParcelById.apply {
                                     this.update(
@@ -577,7 +574,7 @@ class InquiryViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             _isShowDeleteSnackBar.postValue(false) // 삭제 스낵바 바로 dismiss
             val cancelDataList = parcelManagementRepoImpl.getCancelIsBeDelete()
-            SopoLog.d(tag = TAG, msg = "삭제 취소할 데이터 : $cancelDataList")
+            SopoLog.d( msg = "삭제 취소할 데이터 : $cancelDataList")
 
             cancelDataList?.let { parcelMngList ->
                 // PARCEL_MANAGEMENT의 isBeDelete를 0으로 다시 초기화
@@ -662,7 +659,7 @@ class InquiryViewModel(
 
         jsonArray.add(jsonObject)
 
-        SopoLog.d(null, "Parcel Alias 변경 JsonArray ===> ${jsonArray}")
+        SopoLog.d( "Parcel Alias 변경 JsonArray ===> ${jsonArray}")
 
         NetworkManager.retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java)
             .patchParcel(
@@ -684,7 +681,7 @@ class InquiryViewModel(
                 {
                     val httpStatusCode = response.code()
 
-                    SopoLog.d(null, "Alias 변경 HttpCode => $httpStatusCode")
+                    SopoLog.d("Alias 변경 HttpCode => $httpStatusCode")
 
                     // http status code 200
                     when (httpStatusCode)
@@ -697,7 +694,7 @@ class InquiryViewModel(
                             CoroutineScope(Dispatchers.Main).launch {
                                 withContext(Dispatchers.Default) {
                                     val a = parcelRepoImpl.updateEntity(result.data!!)
-                                    SopoLog.d(null, "업데이트 완료 + $a")
+                                    SopoLog.d("업데이트 완료 + $a")
                                 }
                             }
                         }
@@ -712,7 +709,7 @@ class InquiryViewModel(
 
                             val msg = if (result == null)
                             {
-                                SopoLog.e(null, "등록 null", null)
+                                SopoLog.e("등록 null", null)
                                 "알 수 없는 에러"
                             }
                             else

@@ -85,7 +85,7 @@ object FirebaseRepository : FirebaseDataSource, KoinComponent
     @Throws(FirebaseException::class)
     override fun updateFCMToken(callback: FirebaseFCMCallback)
     {
-        SopoLog.d(tag = TAG, msg = "updateFCMToken call()")
+        SopoLog.d( msg = "updateFCMToken call()")
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
             if(!task.isSuccessful)
             {
@@ -105,7 +105,7 @@ object FirebaseRepository : FirebaseDataSource, KoinComponent
         callback: FirebaseUserCallback
     )
     {
-        SopoLog.d(tag = TAG, msg = "loginFirebaseWithCustomToken call()")
+        SopoLog.d( msg = "loginFirebaseWithCustomToken call()")
 
         SOPOApp.auth.signInWithCustomToken(token).addOnCompleteListener { task ->
             val exception = task.exception
@@ -144,7 +144,7 @@ object FirebaseRepository : FirebaseDataSource, KoinComponent
     @Throws(FirebaseException::class)
     override fun updateFirebaseEmail(email: String, user: FirebaseUser, callback: FirebaseVoidCallback)
     {
-        SopoLog.d(tag = TAG, msg = "updateFirebaseEmail call()")
+        SopoLog.d( msg = "updateFirebaseEmail call()")
 
         user.updateEmail(email).addOnCompleteListener { task ->
             if (!task.isSuccessful)
@@ -262,7 +262,7 @@ object FirebaseRepository : FirebaseDataSource, KoinComponent
             }
         }
 
-        SopoLog.d(tag = TAG, msg = "firebaseSelfLogin() call!!!")
+        SopoLog.d( msg = "firebaseSelfLogin() call!!!")
     }
 
     /**
@@ -291,7 +291,7 @@ object FirebaseRepository : FirebaseDataSource, KoinComponent
         val topic = DateUtil.getSubscribedTime(topicHour, topicMinutes)
         // 01 02 03  ~ 24(00)
 
-        SopoLog.d(tag = TAG, msg = "Topic >>> $topic")
+        SopoLog.d( msg = "Topic >>> $topic")
 
         // 01:01 ~ => 01
         FirebaseMessaging.getInstance().subscribeToTopic(topic)

@@ -158,12 +158,12 @@ class ParcelDetailView : Fragment()
                 CoroutineScope(Dispatchers.Main).launch {
                     if (slideoffsetC < 0.1 && previousState == SlidingUpPanelLayout.PanelState.DRAGGING)
                     {
-                        SopoLog.d(null, "닫힘 -> pre {$previousState } cur {$newState }")
+                        SopoLog.d("닫힘 -> pre {$previousState } cur {$newState }")
                         binding.layoutMain.panelState = PanelState.COLLAPSED
                     }
                     else if (slideoffsetC == 1.0f && previousState == PanelState.DRAGGING)
                     {
-                        SopoLog.d(null, "열림 -> pre {$previousState } cur {$newState }")
+                        SopoLog.d( "열림 -> pre {$previousState } cur {$newState }")
                         binding.layoutMain.panelState = PanelState.EXPANDED
                     }
                 }
@@ -192,7 +192,7 @@ class ParcelDetailView : Fragment()
                 {
                     override fun handleOnBackPressed()
                     {
-                        SopoLog.d(tag = TAG, msg = "ParcelDetailView:: BackPressListener")
+                        SopoLog.d( msg = "ParcelDetailView:: BackPressListener")
 
                         if (slideViewStatus == 0)
                         {
@@ -406,8 +406,8 @@ class ParcelDetailView : Fragment()
             binding.layoutMain.panelHeight = height
 //            binding.layoutTail.layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, height)
 
-//            SopoLog.d( tag = TAG, str = "바텀 리니어 높이 => ${binding.layoutTail.height}")
-//            SopoLog.d( tag = TAG, str = "드로어 높이 => ${binding.layoutMain.panelHeight}")
+//            SopoLog.d( str = "바텀 리니어 높이 => ${binding.layoutTail.height}")
+//            SopoLog.d( str = "드로어 높이 => ${binding.layoutMain.panelHeight}")
         }
 
         view.viewTreeObserver.run {

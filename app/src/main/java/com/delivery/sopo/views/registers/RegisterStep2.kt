@@ -71,7 +71,7 @@ class RegisterStep2 : Fragment()
                 callback = object : OnBackPressedCallback(true){
                     override fun handleOnBackPressed()
                     {
-                        SopoLog.d(tag = TAG, msg = "Register Step::2 BackPressListener")
+                        SopoLog.d( msg = "Register Step::2 BackPressListener")
                         requireActivity().supportFragmentManager.popBackStack()
                     }
 
@@ -157,7 +157,7 @@ class RegisterStep2 : Fragment()
         callback = object : OnBackPressedCallback(true){
             override fun handleOnBackPressed()
             {
-                SopoLog.d(tag = TAG, msg = "Register Step::2 BackPressListener")
+                SopoLog.d( msg = "Register Step::2 BackPressListener")
                 requireActivity().supportFragmentManager.popBackStack()
             }
 

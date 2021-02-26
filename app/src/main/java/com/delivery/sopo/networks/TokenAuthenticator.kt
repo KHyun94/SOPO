@@ -33,7 +33,7 @@ class TokenAuthenticator : Authenticator, KoinComponent
     {
         if (response.code == 401)
         {
-            SopoLog.d(tag = TAG, msg = "authenticate call() - 401")
+            SopoLog.d( msg = "authenticate call() - 401")
 
             return when (val result = requestRefreshOAuthToken())
             {
@@ -42,19 +42,19 @@ class TokenAuthenticator : Authenticator, KoinComponent
                     val oauth = result.data as OauthResult
                     val accessToken = oauth.accessToken
 
-                    SopoLog.d(tag = TAG, msg = "authenticate success => ${accessToken}")
+                    SopoLog.d( msg = "authenticate success => ${accessToken}")
 
                     getRetrofitWithoutAuthenticator(response, accessToken)
                 }
                 is TestResult.ErrorResult<*> ->
                 {
-                    SopoLog.e(tag = TAG, msg = "authenticate fail => ${result.errorMsg}")
+                    SopoLog.e( msg = "authenticate fail => ${result.errorMsg}")
                     null
                 }
             }
         }
 
-        SopoLog.d(tag = TAG, msg = "authenticate call() - else")
+        SopoLog.d( msg = "authenticate call() - else")
         return null
     }
 
@@ -97,7 +97,7 @@ class TokenAuthenticator : Authenticator, KoinComponent
 
             if (oauthResult !is OauthResult) return TestResult.ErrorResult(LOCAL_ERROR_TYPE_MISS, LOCAL_ERROR_TYPE_MISS.MSG, ErrorResult.ERROR_TYPE_NON, null, null)
 
-            SopoLog.d(tag = TAG, msg = "requestRefreshOAuthToken => ${oauthResult}")
+            SopoLog.d( msg = "requestRefreshOAuthToken => ${oauthResult}")
 
             CoroutineScope(Dispatchers.Default).launch {
                 val entity = OauthMapper.objectToEntity(oauthResult)

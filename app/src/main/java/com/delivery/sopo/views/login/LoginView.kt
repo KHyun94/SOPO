@@ -27,7 +27,6 @@ class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
 
     init
     {
-        TAG += this.javaClass.simpleName
         parentActivity = this@LoginView
         progressBar = CustomProgressBar(this)
     }

@@ -49,13 +49,13 @@ data class UpdateParcelDao(
 
         val parcel = ParcelMapper.parcelEntityToParcel(parcelEntity)
 
-        // ParcelEntity 중 inqueryResult(json의 String화)를 ParcelItem으로 객체화
+        // ParcelEntity 중 inquiryResult(json의 String화)를 ParcelItem으로 객체화
         val gson = Gson()
 
         val type = object : TypeToken<ParcelItem?>()
         {}.type
 
-        val reader = gson.toJson(parcelEntity.inqueryResult)
+        val reader = gson.toJson(parcelEntity.inquiryResult)
         val replaceStr = reader.replace("\\", "")
         val subStr = replaceStr.substring(1, replaceStr.length - 1)
 

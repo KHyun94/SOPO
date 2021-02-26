@@ -84,7 +84,7 @@ class MenuFragment : Fragment()
                 {
                     override fun handleOnBackPressed()
                     {
-                        SopoLog.d(tag = TAG, msg = "MenuFragment:: BackPressListener")
+                        SopoLog.d( msg = "MenuFragment:: BackPressListener")
 
                         isMainMenu = binding.constraintFragmentBase.visibility == View.GONE
 
@@ -100,21 +100,18 @@ class MenuFragment : Fragment()
                                 )
                                 snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
 
-                                SopoLog.d(
-                                    null,
-                                    "MenuFragment::1 BackPressListener = 종료를 위해 한번 더 클릭"
-                                )
+                                SopoLog.d("MenuFragment::1 BackPressListener = 종료를 위해 한번 더 클릭")
                             }
                             else
                             {
-                                SopoLog.d(null, "MenuFragment::1 BackPressListener = 종료")
+                                SopoLog.d("MenuFragment::1 BackPressListener = 종료")
                                 ActivityCompat.finishAffinity(activity!!)
                                 System.exit(0)
                             }
                         }
                         else
                         {
-                            SopoLog.d(tag = TAG, msg = "Sub MenuFragment:: BackPressListener")
+                            SopoLog.d( msg = "Sub MenuFragment:: BackPressListener")
                             binding.vm!!.popView()
                         }
 

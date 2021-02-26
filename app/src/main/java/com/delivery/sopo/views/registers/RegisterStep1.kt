@@ -150,7 +150,7 @@ class RegisterStep1 : Fragment()
                 RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, wayBilNum, 1, courierRepoImpl)
 
             SopoLog.d(
-                tag = TAG, msg = """
+                msg = """
                     추천 택배 리스트 
                     {
                     ${courierList?.joinToString(",")}
@@ -161,7 +161,7 @@ class RegisterStep1 : Fragment()
             if (courierList != null && courierList.size > 0)
             {
                 SopoLog.d(
-                    tag = TAG, msg = """
+                    msg = """
                         최우선 순위 >>> ${courierList[0]}
                     """.trimIndent()
                 )
@@ -201,7 +201,7 @@ class RegisterStep1 : Fragment()
     {
         super.onResume()
 
-        SopoLog.d(tag = TAG, msg = "OnResume")
+        SopoLog.d( msg = "OnResume")
 
         binding.customEtTrackNum.setOnClearListener(context)
 
@@ -219,7 +219,7 @@ class RegisterStep1 : Fragment()
 
             if (!(it.isEmpty() || !isRegister))
             {
-                SopoLog.d(tag = TAG, msg ="복사된 클립보드 >>> $it")
+                SopoLog.d( msg ="복사된 클립보드 >>> $it")
                 binding.vm!!.clipBoardWords.postValue(it)
             }
         }

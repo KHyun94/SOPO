@@ -41,7 +41,7 @@ object SOPOWorkManager: KoinComponent
 
     fun updateWorkManager(context: Context)
     {
-        SopoLog.d(tag = TAG, msg = "updateWorkManager() call")
+        SopoLog.d( msg = "updateWorkManager() call")
 
         val workManager = WorkManager.getInstance(context)
 
@@ -50,7 +50,7 @@ object SOPOWorkManager: KoinComponent
             var workUUID: UUID? = null
             var workRequest: Any? = null
 
-            SopoLog.d(tag = TAG, msg = "Register New Worker Start!!!")
+            SopoLog.d( msg = "Register New Worker Start!!!")
 
             // work 인스턴스화
             workRequest = OneTimeWorkRequestBuilder<SOPOWorker>().build()
@@ -85,7 +85,7 @@ object SOPOWorkManager: KoinComponent
         val workManager = WorkManager.getInstance(context)
         val workRequest = PeriodicWorkRequestBuilder<OneTimeWorker>(15, TimeUnit.MINUTES).build()
 
-        SopoLog.d(tag = TAG, msg = "Period Service Manager GO!!")
+        SopoLog.d( msg = "Period Service Manager GO!!")
 
         workManager.enqueue(workRequest)
     }
@@ -95,7 +95,7 @@ object SOPOWorkManager: KoinComponent
         val workManager = WorkManager.getInstance(context)
         val workRequest = OneTimeWorkRequestBuilder<SOPOWorker>().build()
 
-        SopoLog.d(tag = TAG, msg = "One Service Manager GO!!")
+        SopoLog.d( msg = "One Service Manager GO!!")
 
         workManager.enqueue(workRequest)
     }

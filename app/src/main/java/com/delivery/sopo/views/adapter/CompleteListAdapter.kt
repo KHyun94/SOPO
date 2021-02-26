@@ -79,7 +79,6 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
         holder.inquiryBinding.root.cv_ongoing_parent.setOnClickListener{
 
             SopoLog.d(
-                tag = TAG,
                 msg = "isSelect : ${inquiryListData.isSelected} && isRemovable : $isRemovable"
             )
 
@@ -94,7 +93,7 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
                 viewInitialize(holder.inquiryBinding)
             }
             else{
-                SopoLog.d(tag = TAG, msg = "2122")
+                SopoLog.d( msg = "2122")
             }
         }
     }
@@ -133,7 +132,7 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
     }
 
     private fun viewSettingForSelected(binding: InquiryListCompleteItemBinding){
-        SopoLog.d(tag = TAG, msg = "viewSettingForSelected")
+        SopoLog.d( msg = "viewSettingForSelected")
         binding.root.constraint_item_part_complete.visibility = View.GONE
         binding.root.constraint_date_complete.visibility = View.GONE
         binding.root.constraint_item_part_delete_complete.visibility = View.VISIBLE
@@ -141,7 +140,7 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
     }
 
     private fun viewInitialize(binding: InquiryListCompleteItemBinding){
-        SopoLog.d(tag = TAG, msg = "viewInitialize")
+        SopoLog.d( msg = "viewInitialize")
         binding.root.constraint_item_part_complete.visibility = View.VISIBLE
         binding.root.constraint_date_complete.visibility = View.VISIBLE
         binding.root.constraint_item_part_delete_complete.visibility = View.GONE
