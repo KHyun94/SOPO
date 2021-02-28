@@ -8,7 +8,6 @@ import com.delivery.sopo.database.room.entity.LogEntity
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
@@ -36,7 +35,7 @@ class SOPOWorker(val context: Context, private val params: WorkerParameters): Co
     {
         return when (isEnrolledParcel())
         {
-            true -> ParcelCall.requestRefreshParcel()
+            true -> ParcelCall.requestRefreshParcels()
             false -> null
         }
     }

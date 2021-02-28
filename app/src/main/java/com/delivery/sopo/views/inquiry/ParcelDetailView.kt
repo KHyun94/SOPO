@@ -3,7 +3,6 @@ package com.delivery.sopo.views.inquiry
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,13 +18,11 @@ import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.parcel.ParcelId
-import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.views.main.MainView
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
@@ -33,7 +30,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ParcelDetailView : Fragment()
@@ -43,6 +39,7 @@ class ParcelDetailView : Fragment()
 
     private val vm: ParcelDetailViewModel by viewModel()
 
+    private lateinit var parcelId : ParcelId
     private var parcelUId: String = ""
     private var regDt: String = ""
 
@@ -52,10 +49,10 @@ class ParcelDetailView : Fragment()
     {
         super.onCreate(savedInstanceState)
 
-        if (arguments != null)
-        {
-            parcelUId = arguments?.getString(PARCEL_UID)?:""
-            regDt = arguments?.getString(REQ_DT)?:""
+        parentView = activity as MainView
+
+        arguments?.run {
+            parcelId = ParcelId(parcelUid = getString(PARCEL_UID)?:"", regDt= getString(REQ_DT)?:"")
         }
     }
 
@@ -65,28 +62,26 @@ class ParcelDetailView : Fragment()
         savedInstanceState: Bundle?
     ): View?
     {
-        parentView = activity as MainView
-
-        bindViewSetting(inflater = inflater, container = container)
+        bindView(inflater = inflater, container = container)
         setObserve()
 
+        // TODO 상세 내역 상태 텍스트, 이미지를 맨 앞으로 순서 변경
         binding.ivStatus.bringToFront()
         binding.tvSubtext.bringToFront()
 
         // 택배 info LiveData 데이터 입력
-        binding.vm!!.parcelId.value = ParcelId(regDt, parcelUId)
+        binding.vm!!.parcelId.value = parcelId
 
+        // TODO include view를 사용했을 때 parameter로 clickListener 셋 할 필요 있음
         binding.includeSemi.ivCopy.setOnClickListener {
             val copyText = binding.includeSemi.tvWayBilNum.text.toString()
             ClipboardUtil.copyTextToClipboard(activity!!, copyText)
-
             Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
         }
 
         binding.includeFull.ivCopy.setOnClickListener {
             val copyText = binding.includeFull.tvWayBilNum.text.toString()
             ClipboardUtil.copyTextToClipboard(activity!!, copyText)
-
             Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
         }
 
@@ -97,7 +92,6 @@ class ParcelDetailView : Fragment()
     {
         super.onDestroyView()
         binding.root.parent?.also {
-            Log.d("!!!!!!", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ParcelDetailView DELETE")
             (it as ViewGroup).removeView(binding.root)
         }
     }
@@ -106,34 +100,38 @@ class ParcelDetailView : Fragment()
     {
         super.onActivityCreated(savedInstanceState)
 
-        var slideoffsetC: Float = 0.0f
+        var _slideOffset: Float = 0.0f
 
         binding.layoutMain.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener
         {
             override fun onPanelSlide(panel: View?, slideOffset: Float)
             {
-//                Log.i(TAG, "onPanelSlide, offset $slideOffset")
-                slideoffsetC = slideOffset
+                _slideOffset = slideOffset
+
                 CoroutineScope(Dispatchers.Main).launch {
-                    if (slideoffsetC < 0.1)
+
+                    when
                     {
-                        // 테두리
-                        binding.layoutDrawer.setBackgroundResource(R.drawable.border_drawer)
+                        _slideOffset < 0.1 ->
+                        {
+                            // 테두리
+                            binding.layoutDrawer.setBackgroundResource(R.drawable.border_drawer)
 
-                        binding.includeSemi.root.visibility = View.VISIBLE
-                        binding.includeFull.root.visibility = View.GONE
+                            binding.includeSemi.root.visibility = View.VISIBLE
+                            binding.includeFull.root.visibility = View.GONE
 
-                        slideViewStatus = 0
-                    }
-                    else
-                    {
-                        // 테두리
-                        binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
+                            slideViewStatus = 0
+                        }
+                        else ->
+                        {
+                            // 테두리
+                            binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
 
-                        binding.includeSemi.root.visibility = View.GONE
-                        binding.includeFull.root.visibility = View.VISIBLE
+                            binding.includeSemi.root.visibility = View.GONE
+                            binding.includeFull.root.visibility = View.VISIBLE
 
-                        slideViewStatus = 1
+                            slideViewStatus = 1
+                        }
                     }
                 }
 
@@ -146,12 +144,12 @@ class ParcelDetailView : Fragment()
             )
             {
                 CoroutineScope(Dispatchers.Main).launch {
-                    if (slideoffsetC < 0.1 && previousState == SlidingUpPanelLayout.PanelState.DRAGGING)
+                    if (_slideOffset < 0.1 && previousState == SlidingUpPanelLayout.PanelState.DRAGGING)
                     {
                         SopoLog.d("닫힘 -> pre {$previousState } cur {$newState }")
                         binding.layoutMain.panelState = PanelState.COLLAPSED
                     }
-                    else if (slideoffsetC == 1.0f && previousState == PanelState.DRAGGING)
+                    else if (_slideOffset == 1.0f && previousState == PanelState.DRAGGING)
                     {
                         SopoLog.d( "열림 -> pre {$previousState } cur {$newState }")
                         binding.layoutMain.panelState = PanelState.EXPANDED
@@ -164,7 +162,7 @@ class ParcelDetailView : Fragment()
     }
 
     // binding setting
-    private fun bindViewSetting(inflater: LayoutInflater, container: ViewGroup?)
+    private fun bindView(inflater: LayoutInflater, container: ViewGroup?)
     {
         binding = ParcelDetailViewBinding.inflate(inflater, container, false)
         binding.vm = vm
@@ -204,7 +202,7 @@ class ParcelDetailView : Fragment()
             if (it != null)
             {
                 binding.vm!!.updateIsUnidentifiedToZero(it)
-                binding.vm!!.requestParcelDetailData(it)
+                binding.vm!!.requestRemoteParcel(parcelId = it)
             }
         })
 
@@ -212,7 +210,7 @@ class ParcelDetailView : Fragment()
             if (it != null)
             {
                 //todo Error
-//                binding.vm!!.updateParcelItem(it)
+                binding.vm!!.updateParcelItem(it)
             }
         })
 
@@ -237,6 +235,13 @@ class ParcelDetailView : Fragment()
             }
         })
 
+        val progress = CustomProgressBar(this@ParcelDetailView.parentView)
+
+        binding.vm!!.isProgress.observe(this, Observer { isProgress ->
+
+            progress.autoProgressbar(isProgress)
+        })
+
         binding.vm!!.isUpdate.observe(this, Observer {
 
             when (it)
@@ -246,7 +251,7 @@ class ParcelDetailView : Fragment()
                     parentView.getAlertMessageBar().run {
                         setText("업데이트 사항이 있습니다.")
                         setOnCancelClicked("업데이트", null, View.OnClickListener {
-                            binding.vm!!.getRemoteParcel()
+                            binding.vm!!.getRemoteParcel(ParcelId(regDt, parcelUId))
                         })
                         onStart(null)
                     }
@@ -256,7 +261,7 @@ class ParcelDetailView : Fragment()
                     parentView.getAlertMessageBar().run {
                         setText("업데이트 도중 에러가 발생했습니다.")
                         setOnCancelClicked("재시도", null, View.OnClickListener {
-                            binding.vm!!.requestParcelDetailData(ParcelId(regDt!!, parcelUId!!))
+                            binding.vm!!.requestRemoteParcel(ParcelId(regDt, parcelUId))
                         })
                         onStart(null)
                     }
@@ -392,10 +397,6 @@ class ParcelDetailView : Fragment()
         val globalListener = ViewTreeObserver.OnGlobalLayoutListener {
             val height = view.height
             binding.layoutMain.panelHeight = height
-//            binding.layoutTail.layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, height)
-
-//            SopoLog.d( str = "바텀 리니어 높이 => ${binding.layoutTail.height}")
-//            SopoLog.d( str = "드로어 높이 => ${binding.layoutMain.panelHeight}")
         }
 
         view.viewTreeObserver.run {

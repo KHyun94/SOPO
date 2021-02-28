@@ -34,7 +34,7 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
     override suspend fun getRemoteMonths(): MutableList<TimeCountDTO>? = NetworkManager.retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java).getMonths(email = userRepoImpl.getEmail()).data
 
     override suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<Parcel>? = NetworkManager
-                                                                                                        .retro.create(ParcelAPI::class.java)
+                                                                                                        .retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java)
                                                                                                         .getParcelsComplete(email = userRepoImpl.getEmail(), page = page, inquiryDate = inquiryDate).data
 
     override suspend fun getLocalParcelById(regDt: String, parcelUid: String): ParcelEntity? {

@@ -100,8 +100,6 @@ class FirebaseService: FirebaseMessagingService()
         }
     }
 
-    fun<T> changeToObject(jsonStr:String, obj: Class<T>) = Gson().fromJson(jsonStr, obj)
-
     override fun onMessageReceived(remoteMessage: RemoteMessage){
 
         if (remoteMessage.data.isNotEmpty())
@@ -146,11 +144,6 @@ class FirebaseService: FirebaseMessagingService()
                     SOPOWorkManager.updateWorkManager(applicationContext)
                 }
             }
-        }
-
-        remoteMessage.notification?.let {
-            SopoLog.d( msg = "notification!!!!!!!!!!!!!!!!! ${NotificationEnum.PUSH_AWAKEN_DEVICE.notificationId}")
-            SOPOWorkManager.updateWorkManager(applicationContext)
         }
     }
 

@@ -1,8 +1,11 @@
 package com.delivery.sopo.networks.call
 
 import com.delivery.sopo.database.room.entity.OauthEntity
+import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.APIResult
+import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.repository.impl.OauthRepoImpl
@@ -33,9 +36,21 @@ object ParcelCall : BaseService(), KoinComponent
         parcelAPI = NetworkManager.retro(oauth?.accessToken).create(ParcelAPI::class.java)
     }
 
-    suspend fun requestRefreshParcel() : NetworkResult<APIResult<String?>>
+    suspend fun getSingleParcel(parcelId: ParcelId) : NetworkResult<APIResult<Parcel?>>
     {
-        val result = parcelAPI.requestRefreshParcel(email = email)
+        val result = parcelAPI.getSingleParcel(email = email, regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
+        return apiCall(call = {result})
+    }
+
+    suspend fun requestRefreshParcels() : NetworkResult<APIResult<String?>>
+    {
+        val result = parcelAPI.requestRefreshParcels(email = email)
+        return apiCall(call = { result })
+    }
+
+    suspend fun requestRefreshParcel(parcelId : ParcelId) : NetworkResult<APIResult<Any?>>
+    {
+        val result = parcelAPI.requestRefreshParcel(email = email, regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
         return apiCall(call = { result })
     }
 }

@@ -33,6 +33,11 @@ object SopoLog
         Log.e(TAG, buildLogMsg("ERROR", msg), e)
     }
 
+    fun api(msg: String)
+    {
+        Log.d(TAG, buildLogMsg("API", msg))
+    }
+
     private fun buildLogMsg(type: String, message: String): String
     {
         val sb = StringBuilder()

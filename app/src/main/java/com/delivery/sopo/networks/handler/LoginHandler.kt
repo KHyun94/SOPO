@@ -62,9 +62,7 @@ object LoginHandler : KoinComponent
     {
         setLogin(email, password)
         CoroutineScope(Dispatchers.IO).launch {
-            when (val result = LoginAPICall().requestOauth(
-                email = email, password = password, deviceInfo = deviceInfo
-            ))
+            when (val result = LoginAPICall().requestOauth(email = email, password = password, deviceInfo = deviceInfo))
             {
                 is NetworkResult.Success ->
                 {

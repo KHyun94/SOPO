@@ -13,5 +13,5 @@ data class ParcelDetailItem(
     val waybilNym: String,
     // 택배 상세 정보
     val deliverStatus: String?,
-    val progress: MutableList<Progress?>?
+    val progress: MutableList<Progress>?
 )
