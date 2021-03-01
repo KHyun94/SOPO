@@ -27,14 +27,16 @@ import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
 class InquiryListAdapter(
-    private val parcelRepoImpl: ParcelRepoImpl,
-    private val cntOfSelectedItem: MutableLiveData<Int>,
-    private var list: MutableList<InquiryListItem>,
+    private val cntOfSelectedItemForDelete: MutableLiveData<Int>,
+    private var list: MutableList<InquiryListItem> = mutableListOf(),
     private val itemTypeEnum: InquiryItemTypeEnum
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>()
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), KoinComponent
 {
+    private val parcelRepoImpl : ParcelRepoImpl by inject()
     private var mClickListener: OnParcelClickListener? = null
 
     fun setOnParcelClickListener(_mClickListener: OnParcelClickListener)
@@ -246,13 +248,13 @@ class InquiryListAdapter(
                     if (isRemovable && !inquiryListData.isSelected)
                     {
                         inquiryListData.isSelected = true
-                        cntOfSelectedItem.value = (cntOfSelectedItem.value ?: 0) + 1
+                        cntOfSelectedItemForDelete.value = (cntOfSelectedItemForDelete.value ?: 0) + 1
                         ongoingViewSelected(holder.ongoingBinding)
                     }
                     else if (isRemovable && inquiryListData.isSelected)
                     {
                         inquiryListData.isSelected = false
-                        cntOfSelectedItem.value = (cntOfSelectedItem.value ?: 0) - 1
+                        cntOfSelectedItemForDelete.value = (cntOfSelectedItemForDelete.value ?: 0) - 1
                         ongoingViewInitialize(holder.ongoingBinding)
                     }
                     else
@@ -305,13 +307,13 @@ class InquiryListAdapter(
                     if (isRemovable && !inquiryListData.isSelected)
                     {
                         inquiryListData.isSelected = true
-                        cntOfSelectedItem.value = (cntOfSelectedItem.value ?: 0) + 1
+                        cntOfSelectedItemForDelete.value = (cntOfSelectedItemForDelete.value ?: 0) + 1
                         completeViewSelected(holder.completeBinding)
                     }
                     else if (isRemovable && inquiryListData.isSelected)
                     {
                         inquiryListData.isSelected = false
-                        cntOfSelectedItem.value = (cntOfSelectedItem.value ?: 0) - 1
+                        cntOfSelectedItemForDelete.value = (cntOfSelectedItemForDelete.value ?: 0) - 1
                         completeViewInitialize(holder.completeBinding)
                     }
                     else
@@ -352,7 +354,7 @@ class InquiryListAdapter(
                 if (!item.isSelected)
                 {
                     item.isSelected = true
-                    cntOfSelectedItem.value = (cntOfSelectedItem.value ?: 0) + 1
+                    cntOfSelectedItemForDelete.value = (cntOfSelectedItemForDelete.value ?: 0) + 1
                 }
             }
             notifyDataSetChanged()
@@ -363,7 +365,7 @@ class InquiryListAdapter(
             {
                 item.isSelected = false
             }
-            cntOfSelectedItem.value = 0
+            cntOfSelectedItemForDelete.value = 0
             notifyDataSetChanged()
         }
     }

@@ -28,7 +28,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegisterStep3 : Fragment()
 {
-    private val TAG = "LOG.SOPO"
     private lateinit var parentView : MainView
 
     private lateinit var binding: RegisterStep3Binding
@@ -42,11 +41,10 @@ class RegisterStep3 : Fragment()
     {
         super.onCreate(savedInstanceState)
 
-        if (arguments != null)
-        {
-            wayBilNum = arguments!!.getString("wayBilNum") ?: ""
-            courier = arguments!!.getSerializable("courier") as CourierItem ?: null
-        }
+
+        wayBilNum = arguments?.getString("wayBilNum") ?: ""
+        courier = arguments?.getSerializable("courier") as CourierItem ?: null
+
     }
 
     override fun onCreateView(

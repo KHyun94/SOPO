@@ -22,14 +22,10 @@ class SplashViewModel(
     val TAG = this.javaClass.simpleName
 
     var navigator = MutableLiveData<String>()
-    var splashImg = MutableLiveData<Int>()
 
     init
     {
         navigator.value = NavigatorConst.TO_PERMISSION
-        splashImg.value = R.drawable.ic_splash_ani_box
-
-//        checkOAuthToken()
     }
 
     fun requestAfterActivity()

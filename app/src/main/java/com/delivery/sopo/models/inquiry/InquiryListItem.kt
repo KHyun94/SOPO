@@ -13,19 +13,11 @@ class InquiryListItem(
     var isSelected: Boolean = false,
     var isUnidentified : Boolean = true
 ){
-    val completeTimeDate: Calendar by lazy {
-        val cal = Calendar.getInstance()
-        parcel.arrivalDte?.let {
-            cal.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(parcel!!.arrivalDte!!.replace("T", " "))
-        }
-        cal
+    private val completeTimeDate: Calendar by lazy {
+        Calendar.getInstance().apply { this.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(parcel.arrivalDte?.replace("T", " ")) }
     }
-    val ongoingTimeDate: Calendar by lazy {
-        val cal = Calendar.getInstance()
-        parcel.auditDte.let {
-            cal.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(parcel.auditDte.replace("T", " "))
-        }
-        cal
+    private val ongoingTimeDate: Calendar by lazy {
+        Calendar.getInstance().apply { this.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(parcel.auditDte.replace("T", " ")) }
     }
 
     private fun getParseString(): String{

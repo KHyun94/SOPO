@@ -31,7 +31,7 @@ object NotificationImpl: Notification
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         val nBuilder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.mipmap.app_icon)
+            .setSmallIcon(R.drawable.ic_icon_notification)
             .setContentTitle("SOPO")
             .setContentText("디바이스 어웨이큰 상태가 변경되었습니다. ${TimeUtil.getDateTime()}")
             .setAutoCancel(true)

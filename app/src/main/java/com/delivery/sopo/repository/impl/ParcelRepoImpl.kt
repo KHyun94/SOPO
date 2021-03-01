@@ -2,6 +2,7 @@ package com.delivery.sopo.repository.impl
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.networks.dto.TimeCountDTO
 import com.delivery.sopo.database.room.AppDatabase
@@ -20,7 +21,6 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
                      private val appDatabase: AppDatabase):
     ParcelRepository
 {
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
     override suspend fun getRemoteOngoingParcels(): MutableList<Parcel>? = NetworkManager.retro(SOPOApp.oauth?.accessToken).create(
         ParcelAPI::class.java).getParcelsOngoing(email = userRepoImpl.getEmail()).data
@@ -41,10 +41,10 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
         return appDatabase.parcelDao().getById(regDt,parcelUid)
     }
 
-    override fun getLocalOngoingParcelsLiveData(): LiveData<List<Parcel>> {
-        return Transformations.map(appDatabase.parcelDao().getOngoingLiveData()){
-            entity ->
-             entity.map(ParcelMapper::parcelEntityToParcel)
+    // 배송 중인 택배 리스트를 LiveData로 받기
+    override fun getLocalOngoingParcelsAsLiveData(): LiveData<List<Parcel>> {
+        return Transformations.map(appDatabase.parcelDao().getOngoingLiveData()){ entityList ->
+            entityList.map(ParcelMapper::parcelEntityToParcel)
         }
     }
 
@@ -64,8 +64,6 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
         return appDatabase.parcelDao().getOngoingData().map(ParcelMapper::parcelEntityToParcel)
     }
 
-//    override suspend fun getUpdatableInquiryHash(): List<ParcelEntity?> = appDatabase.parcelDao().getUpdatableInquiryHash()
-
     override fun getSoonDataCntLiveData(): LiveData<Int>
     {
         return appDatabase.parcelDao().getSoonDataCntLiveData()
@@ -80,6 +78,11 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
     override fun getIsUnidentifiedLiveData(regDt: String, parcelUid: String): LiveData<Int?>
     {
         return appDatabase.parcelDao().getIsUnidentifiedLiveData(regDt, parcelUid)
+    }
+
+    override fun getLocalOnGoingParcelCnt(): LiveData<Int>
+    {
+        return appDatabase.parcelDao().getOngoingDataCntLiveData()
     }
 
     override suspend fun insertEntities(parcelList: List<Parcel>) {

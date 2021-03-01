@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <import type="com.delivery.sopo.R" />
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.splash.SplashViewModel" />
@@ -33,7 +33,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_sopo_text"
-            app:setImage="@{vm.splashImg}"
+            app:setImage="@{R.drawable.ic_splash_ani_box}"
             app:setDefaultImage="@{0}"/>
 
 

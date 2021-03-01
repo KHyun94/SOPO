@@ -15,7 +15,7 @@ interface ParcelRepository {
    suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<Parcel>?
 
    suspend fun getLocalParcelById(regDt: String, parcelUid: String): ParcelEntity?
-   fun getLocalOngoingParcelsLiveData(): LiveData<List<Parcel>>
+
    fun getLocalCompleteParcelsLiveData(): LiveData<List<Parcel>>
    fun getLocalCompleteParcels(): List<Parcel>
    suspend fun getLocalOngoingParcels(): List<Parcel>?
@@ -38,4 +38,10 @@ interface ParcelRepository {
 
    suspend fun isBeingUpdateParcel(regDt: String, parcelUid: String): LiveData<Int?>
    fun getIsUnidentifiedLiveData(regDt: String, parcelUid: String): LiveData<Int?>
+
+   // 배송 상태인 택배의 갯수
+   fun getLocalOnGoingParcelCnt() : LiveData<Int>
+
+   // 배송 중인 택배 리스트를 LiveData로 받기
+   fun getLocalOngoingParcelsAsLiveData(): LiveData<List<Parcel>>
 }

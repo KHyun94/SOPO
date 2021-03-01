@@ -144,6 +144,8 @@
       <option name="FINALLY_ON_NEW_LINE" value="true" />
       <option name="CALL_PARAMETERS_WRAP" value="0" />
       <option name="METHOD_PARAMETERS_WRAP" value="0" />
+      <option name="METHOD_PARAMETERS_LPAREN_ON_NEXT_LINE" value="false" />
+      <option name="METHOD_PARAMETERS_RPAREN_ON_NEXT_LINE" value="false" />
       <option name="EXTENDS_LIST_WRAP" value="0" />
       <option name="METHOD_CALL_CHAIN_WRAP" value="5" />
       <option name="FIELD_ANNOTATION_WRAP" value="0" />
