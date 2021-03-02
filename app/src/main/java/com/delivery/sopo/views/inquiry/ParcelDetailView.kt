@@ -188,12 +188,8 @@ class ParcelDetailView : Fragment()
                         {
                             binding.layoutMain.panelState = PanelState.COLLAPSED
                         }
-
-
                     }
-
                 }
-
                 requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
             }
         })

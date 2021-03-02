@@ -36,6 +36,12 @@ object ParcelCall : BaseService(), KoinComponent
         parcelAPI = NetworkManager.retro(oauth?.accessToken).create(ParcelAPI::class.java)
     }
 
+    suspend fun registerParcel(trackCompany: String, trackNum: String, parcelAlias: String):NetworkResult<APIResult<ParcelId?>>
+    {
+        val result = parcelAPI.registerParcel(email = email, trackCompany = trackCompany, trackNum = trackNum, parcelAlias = parcelAlias)
+        return apiCall(call = {result})
+    }
+
     suspend fun getSingleParcel(parcelId: ParcelId) : NetworkResult<APIResult<Parcel?>>
     {
         val result = parcelAPI.getSingleParcel(email = email, regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)

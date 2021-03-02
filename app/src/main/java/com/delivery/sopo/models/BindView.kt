@@ -9,11 +9,13 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
+import com.delivery.sopo.BR
+import com.delivery.sopo.util.SopoLog
 import java.lang.Exception
 
 class BindView<T : ViewDataBinding>
 {
-    var binding : T? = null
+    private lateinit var binding : T
     var activity : FragmentActivity? = null
     @LayoutRes
     var resId : Int = 0
@@ -21,7 +23,7 @@ class BindView<T : ViewDataBinding>
     var container : ViewGroup? = null
     var vm : ViewModel? = null
     /** 0 : Activity 1 : Fragment */
-    var TYPE = 0
+    private var TYPE : Int
 
     constructor(activity : FragmentActivity, @LayoutRes resId : Int)
     {
@@ -40,7 +42,7 @@ class BindView<T : ViewDataBinding>
         TYPE = BIND_TYPE_FRAGMENT
     }
 
-    fun bindView() : T?
+    fun bindView() : T
     {
         binding = when(TYPE)
         {
@@ -52,18 +54,40 @@ class BindView<T : ViewDataBinding>
             {
                 DataBindingUtil.inflate(inflater!!, resId, container, false)
             }
-            else -> return null
+            else -> DataBindingUtil.setContentView<T>(activity!!.parent, resId)
         }
 
-        binding!!.lifecycleOwner = activity
-        binding!!.executePendingBindings()
+        binding.lifecycleOwner = activity
 
         return binding
+    }
+
+    fun setExecutePendingBindings()
+    {
+        try
+        {
+            binding.executePendingBindings()
+        }
+        catch (e:Exception)
+        {
+            throw e
+        }
+    }
+
+    fun<T:ViewModel> setViewModel(vm: T)
+    {
+        try
+        {
+            binding.setVariable(BR.vm, vm)
+        }
+        catch (e:Exception)
+        {
+            throw e
+        }
     }
 
     companion object{
         const val BIND_TYPE_ACTIVITY = 0
         const val BIND_TYPE_FRAGMENT = 1
     }
-
 }

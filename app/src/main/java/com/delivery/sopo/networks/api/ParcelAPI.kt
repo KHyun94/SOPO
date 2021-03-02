@@ -13,15 +13,23 @@ import retrofit2.http.*
 
 interface ParcelAPI
 {
+    /**
+     * 단일 택배 등록 요청
+     * @param email
+     * @param parcelAlias
+     * @param trackCompany
+     * @param trackNum
+     * @return Response<APIResult<ParcelId?>>
+     */
     @FormUrlEncoded
     @POST("api/v1/sopo-api/delivery/{email}/parcel")
     @Headers("Accept: application/json")
-    fun postParcel(
+    suspend fun registerParcel(
         @Path("email") email: String,
-        @Field("parcelAlias") parcelAlias: String?,
+        @Field("") parcelAlias: String?,
         @Field("trackCompany") trackCompany: String,
         @Field("trackNum") trackNum: String
-    ): Call<APIResult<ParcelId?>>
+    ): Response<APIResult<ParcelId?>>
 
     @GET("api/v1/sopo-api/delivery/{email}/parcel")
     @Headers("Accept: application/json")

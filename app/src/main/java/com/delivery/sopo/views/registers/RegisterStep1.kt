@@ -53,44 +53,47 @@ class RegisterStep1 : Fragment()
     private var returnType : Int? = null
 
     // todo 추 후 각 페이지에 중복되어있는 로직을 통합 처리 예정
-    var callback : OnBackPressedCallback? = null
+    var callback: OnBackPressedCallback? = null
 
-    override fun onAttach(context : Context)
+    override fun onAttach(context: Context)
     {
         super.onAttach(context)
 
-        parentView = activity as MainView
-        callback = onBackClickListener()
+        var pressedTime: Long = 0
 
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
-    }
-
-    private fun onBackClickListener () : OnBackPressedCallback
-    {
-        var pressedTime : Long = 0
-
-        return object : OnBackPressedCallback(true)
+        callback = object : OnBackPressedCallback(true)
         {
             override fun handleOnBackPressed()
             {
                 if (System.currentTimeMillis() - pressedTime > 2000)
                 {
                     pressedTime = System.currentTimeMillis()
-                    Snackbar.make(binding.layoutRegister, "한번 더 누르시면 앱이 종료됩니다.", 2000)
-                        .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
+                    val snackbar = Snackbar.make(
+                        parentView.binding.layoutMain,
+                        "한번 더 누르시면 앱이 종료됩니다.",
+                        2000
+                    )
+                    snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
+
+                    SopoLog.d("RegisterStep1::1 BackPressListener = 종료를 위해 한번 더 클릭")
                 }
                 else
                 {
+                    SopoLog.d( "RegisterStep1::1 BackPressListener = 종료")
                     ActivityCompat.finishAffinity(activity!!)
-                    exitProcess(0)
+                    System.exit(0)
                 }
             }
         }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
     }
 
     override fun onCreate(savedInstanceState : Bundle?)
     {
         super.onCreate(savedInstanceState)
+
+        parentView = activity as MainView
 
         // 다른 화면에서 1단계로 다시 이동할 때 전달받은 값
         if (arguments != null) arguments.run {
@@ -120,7 +123,7 @@ class RegisterStep1 : Fragment()
     override fun onDetach()
     {
         super.onDetach()
-        if (callback != null) callback!!.remove()
+        callback?.remove()
     }
 
     // 등록 완료 시 조회탭으로 이동
@@ -131,6 +134,45 @@ class RegisterStep1 : Fragment()
 
     private fun setObserve()
     {
+        var pressedTime: Long = 0
+
+        parentView.currentPage.observe(this, Observer {
+            if (it != null && it == 0)
+            {
+                callback = object : OnBackPressedCallback(true)
+                {
+                    override fun handleOnBackPressed()
+                    {
+                        SopoLog.d( msg = "RegisterStep1:: BackPressListener")
+
+                        if (System.currentTimeMillis() - pressedTime > 2000)
+                        {
+                            pressedTime = System.currentTimeMillis()
+                            val snackbar = Snackbar.make(
+                                parentView.binding.layoutMain,
+                                "한번 더 누르시면 앱이 종료됩니다.",
+                                2000
+                            )
+                            snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
+
+                            SopoLog.d("MenuFragment::1 BackPressListener = 종료를 위해 한번 더 클릭")
+                        }
+                        else
+                        {
+                            SopoLog.d("RegisterStep1::1 BackPressListener = 종료")
+                            ActivityCompat.finishAffinity(activity!!)
+                            System.exit(0)
+                        }
+
+                    }
+
+                }
+
+                requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+            }
+        })
+
+
         binding.vm!!.wayBilNum.observe(this, Observer { wayBilNum ->
 
             if (wayBilNum == null) return@Observer
