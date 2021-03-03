@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterStep2Binding
 import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.models.BindView
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.FragmentManager
@@ -22,10 +23,8 @@ import com.delivery.sopo.views.adapter.GridRvAdapter
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class RegisterStep2 : Fragment()
+class RegisterStep2: Fragment()
 {
-    val TAG = "LOG.SOPO"
-
     private lateinit var parentView: MainView
 
     private lateinit var binding: RegisterStep2Binding
@@ -37,27 +36,20 @@ class RegisterStep2 : Fragment()
     {
         super.onCreate(savedInstanceState)
 
-        if (arguments != null)
-        {
-            wayBilNum = arguments!!.getString("wayBilNum") ?: ""
-        }
+        parentView = activity as MainView
+
+        wayBilNum = arguments?.getString("wayBilNum") ?: ""
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         binding = DataBindingUtil.inflate(inflater, R.layout.register_step2, container, false)
         binding.vm = registerStep2Vm
         binding.lifecycleOwner = this
 
-        binding.vm!!.initAdapter(_wayBilNum = wayBilNum ?: "")
-
-        parentView = activity as MainView
+        binding.vm!!.setAdapter(_wayBilNum = wayBilNum ?: "")
 
         setObserve()
-
 
         return binding.root
     }
@@ -66,12 +58,13 @@ class RegisterStep2 : Fragment()
     fun setObserve()
     {
         parentView.currentPage.observe(this, Observer {
-            if(it != null && it == 0)
+            if (it != null && it == 0)
             {
-                callback = object : OnBackPressedCallback(true){
+                callback = object: OnBackPressedCallback(true)
+                {
                     override fun handleOnBackPressed()
                     {
-                        SopoLog.d( msg = "Register Step::2 BackPressListener")
+                        SopoLog.d(msg = "Register Step::2 BackPressListener")
                         requireActivity().supportFragmentManager.popBackStack()
                     }
 
@@ -90,17 +83,23 @@ class RegisterStep2 : Fragment()
                     val mHandler = Handler()
                     mHandler.postDelayed(Runnable {
 
-                        TabCode.REGISTER_STEP3.FRAGMENT =
-                            RegisterStep3.newInstance(
-                                wayBilNum,
-                                binding.vm!!.selectedItem.value!!.item
-                            )
+                        if(wayBilNum == null || wayBilNum == "")
+                        {
+                            TabCode.REGISTER_STEP1.FRAGMENT =
+                                RegisterStep1.newInstance(wayBilNum, binding.vm!!.selectedItem.value!!.item, 0)
 
-                        FragmentManager.move(
-                            activity!!,
-                            TabCode.REGISTER_STEP3,
-                            RegisterMainFrame.viewId
-                        )
+                            FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1, RegisterMainFrame.viewId)
+                        }
+                        else
+                        {
+                            TabCode.REGISTER_STEP3.FRAGMENT =
+                                RegisterStep3.newInstance(wayBilNum, binding.vm!!.selectedItem.value!!.item)
+
+                            FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP3, RegisterMainFrame.viewId)
+                        }
+
+
+
                         binding.vm?.moveFragment?.value = ""
 
                     }, 300) // 0.5초후
@@ -115,7 +114,7 @@ class RegisterStep2 : Fragment()
         })
 
         binding.vm!!.adapter.observe(this, Observer {
-            it?.setOnItemClickListener(object : GridRvAdapter.OnItemClickListener<List<SelectItem<CourierItem>>>
+            it?.setOnItemClickListener(object: GridRvAdapter.OnItemClickListener<List<SelectItem<CourierItem>>>
             {
                 override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<CourierItem>>)
                 {
@@ -148,16 +147,17 @@ class RegisterStep2 : Fragment()
         }
     }
 
-    var callback : OnBackPressedCallback? = null
+    var callback: OnBackPressedCallback? = null
 
     override fun onAttach(context: Context)
     {
         super.onAttach(context)
 
-        callback = object : OnBackPressedCallback(true){
+        callback = object: OnBackPressedCallback(true)
+        {
             override fun handleOnBackPressed()
             {
-                SopoLog.d( msg = "Register Step::2 BackPressListener")
+                SopoLog.d(msg = "Register Step::2 BackPressListener")
                 requireActivity().supportFragmentManager.popBackStack()
             }
 

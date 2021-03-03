@@ -26,7 +26,7 @@ interface ParcelAPI
     @Headers("Accept: application/json")
     suspend fun registerParcel(
         @Path("email") email: String,
-        @Field("") parcelAlias: String?,
+        @Field("parcelAlias") parcelAlias: String?,
         @Field("trackCompany") trackCompany: String,
         @Field("trackNum") trackNum: String
     ): Response<APIResult<ParcelId?>>

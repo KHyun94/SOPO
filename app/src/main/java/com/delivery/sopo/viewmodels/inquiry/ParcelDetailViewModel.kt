@@ -1,22 +1,17 @@
 package com.delivery.sopo.viewmodels.inquiry
 
-import android.util.Log
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.DeliveryStatusConst
 import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.SelectItem
-import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.*
-import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.networks.call.ParcelCall
-import com.delivery.sopo.repository.impl.CourierRepolmpl
+import com.delivery.sopo.repository.impl.CourierRepoImpl
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
@@ -26,18 +21,14 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.views.adapter.TimeLineRvAdapter
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class ParcelDetailViewModel(
     private val userRepoImpl: UserRepoImpl,
-    private val courierRepolmpl: CourierRepolmpl,
+    private val courierRepoImpl: CourierRepoImpl,
     private val parcelRepoImpl: ParcelRepoImpl,
     private val parcelManagementRepoImpl: ParcelManagementRepoImpl
 ) : ViewModel()
@@ -192,7 +183,7 @@ class ParcelDetailViewModel(
             withContext(Dispatchers.IO)
             {
                 // ParcelEntity의 택배사 코드를 이용하여 택배사 정보를 로컬 DB에서 읽어온다.
-                val courier = courierRepolmpl.getWithCode(parcelEntity.carrier)
+                val courier = courierRepoImpl.getWithCode(parcelEntity.carrier)
 
                 // 프로그레스(택배의 경로 내용이 있을 때 RecyclerView 없을 땐 텍스트로 없다고 표시)
                 if (parcelItem != null)

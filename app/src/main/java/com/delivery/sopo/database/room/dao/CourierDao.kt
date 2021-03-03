@@ -38,6 +38,8 @@ interface CourierDao
     @Query("SELECT courierName, courierCode, clickRes, nonClickRes, iconRes FROM COURIER WHERE NOT(minLen <= :len AND maxLen >= :len) AND courierName != :param1 AND courierName != :param2 ORDER BY priority DESC LIMIT :cnt")
     suspend fun getWithoutLenAndCondition2(len:Int, param1:String, param2:String, cnt : Int) : List<CourierItem?>
 
+    @Query("SELECT * FROM COURIER WHERE courierCode = :courierCode")
+    suspend fun getCourierEntityWithCode(courierCode: String) : CourierEntity
 
     @Insert(onConflict = REPLACE)
     suspend fun insert(courierEntity: CourierEntity)

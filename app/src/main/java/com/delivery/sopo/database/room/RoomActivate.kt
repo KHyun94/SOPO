@@ -6,7 +6,7 @@ import com.delivery.sopo.R.drawable.*
 import com.delivery.sopo.extensions.removeSpace
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.database.room.entity.CourierEntity
-import com.delivery.sopo.repository.impl.CourierRepolmpl
+import com.delivery.sopo.repository.impl.CourierRepoImpl
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -335,14 +335,13 @@ object RoomActivate
         {
             SopoLog.d( msg = "Room Error ${e.message}")
         }
-
     }
 
     fun recommendAutoCourier(
         context: Context,
         wayBilNum: String,
         cnt: Int,
-        courierRepolmpl: CourierRepolmpl
+        courierRepoImpl: CourierRepoImpl
     ): MutableList<CourierItem?>?
     {
         roomDBHelper = AppDatabase.getInstance(context = context)
@@ -368,7 +367,6 @@ object RoomActivate
                     {
                         _wayBilNum.contains('-') ->
                         {
-                            SopoLog.d( msg = "waybil ${_wayBilNum}")
                             parserList = _wayBilNum.split('-') as ArrayList<String>
                         }
                         _wayBilNum.contains('_') ->
@@ -415,11 +413,6 @@ object RoomActivate
                             middle = parserList[1]
                             back = parserList[2]
 
-                            for (i in parserList)
-                            {
-                                SopoLog.d( msg = "$i -=> ${i.length}")
-                            }
-
                             if (front.length == 3 && middle.length == 4 && back.length - 1 == 4)
                             {
                                 //로젠 택배
@@ -446,7 +439,6 @@ object RoomActivate
                             }
                             else if (front.length == 4 && middle.length == 4 && back.length - 1 == 4)
                             {
-                                SopoLog.d( msg = "cu or 롯데 $front - $middle - $back")
                                 //롯데 or CU 편의점 택배
                                 returnList!!.add(
                                     CourierItem(
@@ -514,13 +506,13 @@ object RoomActivate
                         0 ->
                         {
                             returnList =
-                                courierRepolmpl.getWithLen(
+                                courierRepoImpl.getWithLen(
                                     len = mergeNum.length,
                                     cnt = cnt
                                 )
 
                             returnList!!.addAll(
-                                courierRepolmpl.getWithoutLen(
+                                courierRepoImpl.getWithoutLen(
                                     len = mergeNum.length,
                                     cnt = cnt
                                 ) as Collection<CourierItem>
@@ -531,7 +523,7 @@ object RoomActivate
                         1 ->
                         {
                             returnList!!.addAll(
-                                courierRepolmpl.getWithLenAndCondition1(
+                                courierRepoImpl.getWithLenAndCondition1(
                                     len = mergeNum.length,
                                     param1 = returnList!!.get(0)!!.courierName,
                                     cnt = cnt
@@ -540,7 +532,7 @@ object RoomActivate
 
 
                             returnList!!.addAll(
-                                courierRepolmpl.getWithoutLenAndCondition1(
+                                courierRepoImpl.getWithoutLenAndCondition1(
                                     len = mergeNum.length,
                                     param1 = returnList!!.get(0)!!.courierName,
                                     cnt = cnt
@@ -552,7 +544,7 @@ object RoomActivate
                         2 ->
                         {
                             returnList!!.addAll(
-                                courierRepolmpl.getWithLenAndCondition2(
+                                courierRepoImpl.getWithLenAndCondition2(
                                     len = mergeNum.length,
                                     param1 = returnList!!.get(0)!!.courierName,
                                     param2 = returnList!!.get(1)!!.courierName,
@@ -561,7 +553,7 @@ object RoomActivate
                             )
 
                             returnList!!.addAll(
-                                courierRepolmpl.getWithoutLenAndCondition2(
+                                courierRepoImpl.getWithoutLenAndCondition2(
                                     len = mergeNum.length,
                                     param1 = returnList!!.get(0)!!.courierName,
                                     param2 = returnList!!.get(1)!!.courierName,
@@ -571,11 +563,6 @@ object RoomActivate
                         }
                     }
                 }
-            }
-
-            for (i in returnList!!)
-            {
-                SopoLog.d( msg = "택배사 $i")
             }
 
             return returnList

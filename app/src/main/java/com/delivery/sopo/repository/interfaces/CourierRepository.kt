@@ -1,6 +1,7 @@
 package com.delivery.sopo.repository.interfaces
 
 import com.delivery.sopo.database.room.RoomActivate
+import com.delivery.sopo.database.room.entity.CourierEntity
 import com.delivery.sopo.models.CourierItem
 
 interface CourierRepository
@@ -12,4 +13,5 @@ interface CourierRepository
     suspend fun getWithoutLenAndCondition1(len:Int, cnt:Int, param1:String) : MutableList<CourierItem?>?
     suspend fun getWithLenAndCondition2(len:Int, cnt:Int, param1:String, param2: String) : MutableList<CourierItem?>?
     suspend fun getWithoutLenAndCondition2(len:Int, cnt:Int, param1:String, param2: String) : MutableList<CourierItem?>?
+    suspend fun getCourierEntityWithCode(courierCode: String) : CourierEntity
 }

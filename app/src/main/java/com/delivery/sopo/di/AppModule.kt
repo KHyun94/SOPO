@@ -32,7 +32,7 @@ val appModule = module {
     }
     single { UserRepoImpl(get()) }
     single { AppDatabase.getInstance(get()) }
-    single { CourierRepolmpl(get()) }
+    single { CourierRepoImpl(get()) }
     single { ParcelRepoImpl(get(), get()) }
     single { ParcelManagementRepoImpl(get()) }
     single { TimeCountRepoImpl(get(), get()) }
@@ -57,7 +57,7 @@ val appModule = module {
     viewModel { MenuMainViewModel() }
     viewModel { ParcelDetailViewModel(get(), get(), get(), get()) }
 
-    viewModel { RegisterStep1ViewModel() }
+    viewModel { RegisterStep1ViewModel(get()) }
     viewModel { RegisterStep2ViewModel(get()) }
     viewModel { RegisterStep3ViewModel(get()) }
 }

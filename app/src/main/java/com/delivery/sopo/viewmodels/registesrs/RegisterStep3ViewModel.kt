@@ -57,16 +57,6 @@ class RegisterStep3ViewModel(
     {
         _isProgress.value = true
 
-        check(wayBilNum.value.isGreaterThanOrEqual(9)){
-            _result.postValue(TestResult.ErrorResult<String>(errorMsg = "송장 번호를 다시 확인해주세요.", errorType = ErrorResult.ERROR_TYPE_DIALOG))
-            _isProgress.postValue(false)
-        }
-
-        check(courier.value != null){
-            _result.postValue(TestResult.ErrorResult<String>(errorMsg = "택배사를 다시 확인해주세요.", errorType = ErrorResult.ERROR_TYPE_DIALOG))
-            _isProgress.postValue(false)
-        }
-
         CoroutineScope(Dispatchers.IO).launch {
             when(val result = ParcelCall.registerParcel(parcelAlias = alias.value ?: wayBilNum.value!!, trackCompany = courier.value!!.courierCode, trackNum = wayBilNum.value!!))
             {

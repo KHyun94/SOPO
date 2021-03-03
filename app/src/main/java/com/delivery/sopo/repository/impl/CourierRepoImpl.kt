@@ -1,10 +1,11 @@
 package com.delivery.sopo.repository.impl
 
 import com.delivery.sopo.database.room.AppDatabase
+import com.delivery.sopo.database.room.entity.CourierEntity
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.repository.interfaces.CourierRepository
 
-class CourierRepolmpl(
+class CourierRepoImpl(
     private val appDB: AppDatabase
 ) : CourierRepository
 {
@@ -89,5 +90,11 @@ class CourierRepolmpl(
                 param2 = param2,
                 cnt = cnt
             ) as MutableList<CourierItem?>
+    }
+
+    override suspend fun getCourierEntityWithCode(courierCode: String): CourierEntity
+    {
+        return appDB.courierDao()
+            .getCourierEntityWithCode(courierCode = courierCode)
     }
 }

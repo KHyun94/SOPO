@@ -20,7 +20,7 @@ import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.adapter.GridRvAdapter.GridRvViewHolder
 
-class GridRvAdapter(private var items: ArrayList<SelectItem<CourierItem>>?) :
+class GridRvAdapter(private var items: List<SelectItem<CourierItem>>?) :
     RecyclerView.Adapter<GridRvViewHolder>()
 {
     var isClicked = MutableLiveData<Boolean>()
