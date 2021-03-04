@@ -14,11 +14,9 @@ import com.delivery.sopo.util.setting.GridSpacingItemDecoration
 
 class RegisterStep2ViewModel(private val courierRepoImpl: CourierRepoImpl) : ViewModel()
 {
-    val TAG = "LOG.SOPO.RegisterVm"
-
     var courierList = arrayListOf<CourierItem?>()
-    var itemList = listOf<SelectItem<CourierItem>>()
-    var selectedItem = MutableLiveData<SelectItem<CourierItem>?>()
+    var itemList = listOf<SelectItem<CourierItem?>>()
+    var selectedItem = MutableLiveData<SelectItem<CourierItem?>>()
     var wayBilNum = MutableLiveData<String>()
     var moveFragment = MutableLiveData<String>()
     var hideKeyboard = SingleLiveEvent<Boolean>()
@@ -46,7 +44,7 @@ class RegisterStep2ViewModel(private val courierRepoImpl: CourierRepoImpl) : Vie
             courierList =  RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, wayBilNum.value!!, RoomActivate.rowCnt,courierRepoImpl) as ArrayList<CourierItem?>
 
             itemList = courierList.flatMap {
-                listOf(SelectItem(it!!, false))
+                listOf(SelectItem(it, false))
             }
 
             adapter.postValue(GridRvAdapter(items = itemList))

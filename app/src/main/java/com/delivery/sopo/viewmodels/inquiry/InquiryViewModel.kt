@@ -362,66 +362,39 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
     // 배송 중, 등록된 택배의 전체 새로고침
     fun refreshOngoing()
     {
-        viewModelScope.launch(Dispatchers.IO) {
-            SopoLog.d(msg = "배송완료 리스트 Get Progress Start")
-            isLoading.postValue(true)
-            val remoteParcels = parcelRepoImpl.getRemoteOngoingParcels()
+        try
+        {
+            viewModelScope.launch(Dispatchers.IO) {
+                SopoLog.d(msg = "배송완료 리스트 Get Progress Start")
+                isLoading.postValue(true)
+                val remoteParcels = parcelRepoImpl.getRemoteOngoingParcels()
 
-            // 서버로부터 데이터를 받아온 값이 널이 아니라면
-            remoteParcels?.let {
+                // 서버로부터 데이터를 받아온 값이 널이 아니라면
+                remoteParcels?.let {
 
-                // 서버로부터 받아온 데이터(ParcelId로 검색)로 로컬 db에 검색이 되는지 확인한다.
-                for (remote in it)
-                {
-                    val localParcelById = parcelRepoImpl.getLocalParcelById(
-                        remote.parcelId.regDt, remote.parcelId.parcelUid
-                    )
-                    // 서버로부터 받아온 데이터가 검색되지 않았을 경우 => 새로운 데이터라는 의미 => 로컬에 저장한다.
-                    // ParcelEntity를 관리해줄 ParcelManagementEntity도 같은 ParcelId로 저장한다.
-                    if (localParcelById == null)
+                    // 서버로부터 받아온 데이터(ParcelId로 검색)로 로컬 db에 검색이 되는지 확인한다.
+                    for (remote in it)
                     {
-                        SopoLog.d(
-                            msg = """
+                        val localParcelById = parcelRepoImpl.getLocalParcelById(
+                            remote.parcelId.regDt, remote.parcelId.parcelUid
+                        )
+                        // 서버로부터 받아온 데이터가 검색되지 않았을 경우 => 새로운 데이터라는 의미 => 로컬에 저장한다.
+                        // ParcelEntity를 관리해줄 ParcelManagementEntity도 같은 ParcelId로 저장한다.
+                        if (localParcelById == null)
+                        {
+                            SopoLog.d(
+                                msg = """
                             remote 
                             ${remote}
                         """.trimIndent()
-                        )
+                            )
 
-                        parcelRepoImpl.insetEntity(ParcelMapper.parcelToParcelEntity(remote))
-
-                        val parcelManagement = ParcelMapper.parcelToParcelManagementEntity(
-                            remote
-                        )
-
-                        parcelManagement.run {
-                            isBeUpdate = 0
-                            isUnidentified = 0
-                        }
-
-                        SopoLog.d(
-                            msg = "업데이트 완료 => ${parcelManagement.toString()}"
-                        )
-
-                        parcelManagementRepoImpl.insertEntity(parcelManagement)
-                    }
-                    /*
-                        서버로부터 받아온 데이터가 검색된 경우
-                        => 기존에 있는 데이터라는 의미
-                        => [InquiryHash를 조사해서 변화했는지 체크 및(&&) 택배의 상태가 활성화(STATUS == 1)인지 체크]
-                        => 바뀐게 있다면 서버 데이터를 업데이트한다.
-                     */
-                    else
-                    {
-                        if (localParcelById.status == 1)
-                        {
-                            SopoLog.d(msg = "InquiryVm => Parcel_Management의 'isBeUpdate'를 1 -> 0으로 초기화 작업")
-
-                            parcelRepoImpl.updateEntity(ParcelMapper.parcelToParcelEntity(remote))
+                            parcelRepoImpl.insetEntity(ParcelMapper.parcelToParcelEntity(remote))
 
                             val parcelManagement = ParcelMapper.parcelToParcelManagementEntity(
                                 remote
                             )
-                            // 업데이트 성공했으니 isBeUpdate를 0으로 다시 초기화시켜준다.
+
                             parcelManagement.run {
                                 isBeUpdate = 0
                                 isUnidentified = 0
@@ -433,53 +406,89 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
 
                             parcelManagementRepoImpl.insertEntity(parcelManagement)
                         }
-                    }
-                }
-            }
-
-            // 로컬에 존재하지만 새로고침하여 서버로부터 받아온 데이터 중에는 없는 데이터
-            // (서버에서는 Delivered , 로컬에서는 out_for_delivery)
-            // => 새로고침을 하여 GET /parcels로 받아온 데이터는 서버의 데이터베이스 기준 onGoing에 해당하는 택배들만 가져옴
-            // => 따라서 로컬에서는 out_for_delivery로 배송 출발 상태(delivered 직전 상태)지만 서버에서는 delivered 상태면 새로고침 대상에서 제외됨.
-            // => 이런 데이터들은 각각 GET /parcel로 요청하여 새로고침한다.
-            parcelRepoImpl.getLocalOngoingParcels()?.let { localList ->
-                remoteParcels?.let { remoteList ->
-                    val filteredLocalList = localList as MutableList
-                    for (remoteParcel in remoteList)
-                    {
-                        filteredLocalList.removeIf {
-                            (it.parcelId.regDt == remoteParcel.parcelId.regDt) && (it.parcelId.parcelUid == remoteParcel.parcelId.parcelUid)
-                        }
-                    }
-
-                    for (parcel in filteredLocalList)
-                    {
-                        val remoteOngoingParcel = parcelRepoImpl.getRemoteOngoingParcel(
-                            regDt = parcel.parcelId.regDt, parcelUid = parcel.parcelId.parcelUid
-                        )
-                        val localParcelById = parcelRepoImpl.getLocalParcelById(
-                            regDt = parcel.parcelId.regDt, parcelUid = parcel.parcelId.parcelUid
-                        )
-                        if (remoteOngoingParcel != null && localParcelById != null)
+                        /*
+                            서버로부터 받아온 데이터가 검색된 경우
+                            => 기존에 있는 데이터라는 의미
+                            => [InquiryHash를 조사해서 변화했는지 체크 및(&&) 택배의 상태가 활성화(STATUS == 1)인지 체크]
+                            => 바뀐게 있다면 서버 데이터를 업데이트한다.
+                         */
+                        else
                         {
-                            if (remoteOngoingParcel.inquiryHash != parcel.inquiryHash)
+                            if (localParcelById.status == 1)
                             {
-                                parcelRepoImpl.insetEntity(localParcelById.apply {
-                                    this.update(
-                                        remoteOngoingParcel
-                                    )
-                                })
-                                parcelManagementRepoImpl.initializeIsBeUpdate(
-                                    localParcelById.regDt, localParcelById.parcelUid
+                                SopoLog.d(msg = "InquiryVm => Parcel_Management의 'isBeUpdate'를 1 -> 0으로 초기화 작업")
+
+                                parcelRepoImpl.updateEntity(ParcelMapper.parcelToParcelEntity(remote))
+
+                                val parcelManagement = ParcelMapper.parcelToParcelManagementEntity(
+                                    remote
                                 )
+                                // 업데이트 성공했으니 isBeUpdate를 0으로 다시 초기화시켜준다.
+                                parcelManagement.run {
+                                    isBeUpdate = 0
+                                    isUnidentified = 0
+                                }
+
+                                SopoLog.d(
+                                    msg = "업데이트 완료 => ${parcelManagement.toString()}"
+                                )
+
+                                parcelManagementRepoImpl.insertEntity(parcelManagement)
                             }
                         }
                     }
                 }
+
+                // 로컬에 존재하지만 새로고침하여 서버로부터 받아온 데이터 중에는 없는 데이터
+                // (서버에서는 Delivered , 로컬에서는 out_for_delivery)
+                // => 새로고침을 하여 GET /parcels로 받아온 데이터는 서버의 데이터베이스 기준 onGoing에 해당하는 택배들만 가져옴
+                // => 따라서 로컬에서는 out_for_delivery로 배송 출발 상태(delivered 직전 상태)지만 서버에서는 delivered 상태면 새로고침 대상에서 제외됨.
+                // => 이런 데이터들은 각각 GET /parcel로 요청하여 새로고침한다.
+                parcelRepoImpl.getLocalOngoingParcels()?.let { localList ->
+                    remoteParcels?.let { remoteList ->
+                        val filteredLocalList = localList as MutableList
+                        for (remoteParcel in remoteList)
+                        {
+                            filteredLocalList.removeIf {
+                                (it.parcelId.regDt == remoteParcel.parcelId.regDt) && (it.parcelId.parcelUid == remoteParcel.parcelId.parcelUid)
+                            }
+                        }
+
+                        for (parcel in filteredLocalList)
+                        {
+                            val remoteOngoingParcel = parcelRepoImpl.getRemoteOngoingParcel(
+                                regDt = parcel.parcelId.regDt, parcelUid = parcel.parcelId.parcelUid
+                            )
+                            val localParcelById = parcelRepoImpl.getLocalParcelById(
+                                regDt = parcel.parcelId.regDt, parcelUid = parcel.parcelId.parcelUid
+                            )
+                            if (remoteOngoingParcel != null && localParcelById != null)
+                            {
+                                if (remoteOngoingParcel.inquiryHash != parcel.inquiryHash)
+                                {
+                                    parcelRepoImpl.insetEntity(localParcelById.apply {
+                                        this.update(
+                                            remoteOngoingParcel
+                                        )
+                                    })
+                                    parcelManagementRepoImpl.initializeIsBeUpdate(
+                                        localParcelById.regDt, localParcelById.parcelUid
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+                //            _isLoading.postValue(false)
+                isLoading.postValue(false)
             }
-            //            _isLoading.postValue(false)
-            isLoading.postValue(false)
         }
+        catch (e: Exception)
+        {
+            SopoLog.e("refreshOngoing() Error >>>", e)
+        }
+
+
     }
 
     // 배송완료 리스트의 전체 새로고침

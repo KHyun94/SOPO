@@ -20,11 +20,10 @@ import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.adapter.GridRvAdapter.GridRvViewHolder
 
-class GridRvAdapter(private var items: List<SelectItem<CourierItem>>?) :
-    RecyclerView.Adapter<GridRvViewHolder>()
+class GridRvAdapter(private var items: List<SelectItem<CourierItem?>>?): RecyclerView.Adapter<GridRvViewHolder>()
 {
     var isClicked = MutableLiveData<Boolean>()
-    var paste: Pair<View, SelectItem<CourierItem>>? = null
+    var paste: Pair<View, SelectItem<CourierItem?>>? = null
 
     init
     {
@@ -36,9 +35,9 @@ class GridRvAdapter(private var items: List<SelectItem<CourierItem>>?) :
         fun onItemClicked(v: View, pos: Int, item: T)
     }
 
-    var mListener: OnItemClickListener<List<SelectItem<CourierItem>>>? = null
+    var mListener: OnItemClickListener<List<SelectItem<CourierItem?>>>? = null
 
-    fun setOnItemClickListener(listener: OnItemClickListener<List<SelectItem<CourierItem>>>)
+    fun setOnItemClickListener(listener: OnItemClickListener<List<SelectItem<CourierItem?>>>)
     {
         this.mListener = listener
     }
@@ -56,17 +55,12 @@ class GridRvAdapter(private var items: List<SelectItem<CourierItem>>?) :
 
     override fun onBindViewHolder(holder: GridRvViewHolder, position: Int)
     {
+        if (items == null || items?.get(position)?.item == null) return
 
-        if (items != null)
-        {
-            SopoLog.d( msg = "$position")
-            val selectItem = items!![position]
-            holder.onBind(selectItem)
-        }
-        else
-        {
-            SopoLog.d( msg = "no item")
-        }
+        SopoLog.d(msg = "$position")
+        val selectItem = items!![position]
+        holder.onBind(selectItem)
+
     }
 
     override fun getItemId(position: Int): Long
@@ -84,7 +78,7 @@ class GridRvAdapter(private var items: List<SelectItem<CourierItem>>?) :
         return items?.size ?: 0
     }
 
-    inner class GridRvViewHolder(binding: ItemImgBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class GridRvViewHolder(binding: ItemImgBinding): RecyclerView.ViewHolder(binding.root)
     {
         init
         {
@@ -97,7 +91,7 @@ class GridRvAdapter(private var items: List<SelectItem<CourierItem>>?) :
 
                 if (paste != null)
                 {
-                    SopoLog.d( msg = "Paste => $paste")
+                    SopoLog.d(msg = "Paste => $paste")
                     val layout = paste!!.first as LinearLayout
 
                     (paste!!.first as LinearLayout).setBackgroundResource(R.drawable.border_non_click_img)
@@ -105,7 +99,7 @@ class GridRvAdapter(private var items: List<SelectItem<CourierItem>>?) :
                     paste!!.second.isSelect = false
 
                     Glide.with(layout.getChildAt(0).context)
-                        .load(paste!!.second.item.nonClickRes)
+                        .load(paste!!.second.item?.nonClickRes)
                         .apply(requestOptions)
                         .into(layout.getChildAt(0) as ImageView)
                 }
@@ -121,7 +115,7 @@ class GridRvAdapter(private var items: List<SelectItem<CourierItem>>?) :
                         if (item.isSelect)
                         {
                             Glide.with(binding.ivImg.context)
-                                .load(item.item.nonClickRes)
+                                .load(item.item?.nonClickRes)
                                 .apply(requestOptions)
                                 .into(binding.ivImg)
 
@@ -130,7 +124,7 @@ class GridRvAdapter(private var items: List<SelectItem<CourierItem>>?) :
                         else
                         {
                             Glide.with(binding.ivImg.context)
-                                .load(item.item.clickRes)
+                                .load(item.item?.clickRes)
                                 .apply(requestOptions)
                                 .into(binding.ivImg)
 
@@ -143,7 +137,7 @@ class GridRvAdapter(private var items: List<SelectItem<CourierItem>>?) :
 
                         paste = Pair(binding.layoutItem, item)
 
-                        SopoLog.d( msg = "item ===> $item")
+                        SopoLog.d(msg = "item ===> $item")
                     }
                 }
 
@@ -151,16 +145,16 @@ class GridRvAdapter(private var items: List<SelectItem<CourierItem>>?) :
             }
         }
 
-        fun onBind(selectItem: SelectItem<CourierItem>)
+        fun onBind(selectItem: SelectItem<CourierItem?>)
         {
             if (selectItem.isSelect)
             {
-                binding.setVariable(BR.img, selectItem.item.clickRes)
+                binding.setVariable(BR.img, selectItem.item?.clickRes)
                 binding.setVariable(BR.isClick, selectItem.isSelect)
             }
             else
             {
-                binding.setVariable(BR.img, selectItem.item.nonClickRes)
+                binding.setVariable(BR.img, selectItem.item?.nonClickRes)
                 binding.setVariable(BR.isClick, selectItem.isSelect)
             }
         }

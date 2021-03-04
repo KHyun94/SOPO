@@ -114,9 +114,9 @@ class RegisterStep2: Fragment()
         })
 
         binding.vm!!.adapter.observe(this, Observer {
-            it?.setOnItemClickListener(object: GridRvAdapter.OnItemClickListener<List<SelectItem<CourierItem>>>
+            it?.setOnItemClickListener(object: GridRvAdapter.OnItemClickListener<List<SelectItem<CourierItem?>>>
             {
-                override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<CourierItem>>)
+                override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<CourierItem?>>)
                 {
                     val item = items[pos]
 
