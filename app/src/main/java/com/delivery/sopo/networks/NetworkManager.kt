@@ -98,10 +98,13 @@ object NetworkManager : KoinComponent
 
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
+
+
         mOKHttpClient = OkHttpClient().newBuilder().apply {
             addInterceptor(httpLoggingInterceptor)
             if(interceptor != null) addInterceptor(interceptor)
             connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+            followRedirects(false)
             writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
             readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
             if(INTERCEPTOR_TYPE == 1 && isAuthenticator) authenticator(TokenAuthenticator())

@@ -40,8 +40,6 @@ class ParcelDetailView : Fragment()
     private val vm: ParcelDetailViewModel by viewModel()
 
     private lateinit var parcelId : ParcelId
-    private var parcelUId: String = ""
-    private var regDt: String = ""
 
     private var slideViewStatus = 0
 
@@ -247,7 +245,8 @@ class ParcelDetailView : Fragment()
                     parentView.getAlertMessageBar().run {
                         setText("업데이트 사항이 있습니다.")
                         setOnCancelClicked("업데이트", null, View.OnClickListener {
-                            binding.vm!!.getRemoteParcel(ParcelId(regDt, parcelUId))
+                            binding.vm!!.getRemoteParcel(parcelId)
+                            onDismiss()
                         })
                         onStart(null)
                     }
@@ -257,7 +256,7 @@ class ParcelDetailView : Fragment()
                     parentView.getAlertMessageBar().run {
                         setText("업데이트 도중 에러가 발생했습니다.")
                         setOnCancelClicked("재시도", null, View.OnClickListener {
-                            binding.vm!!.requestRemoteParcel(ParcelId(regDt, parcelUId))
+                            binding.vm!!.requestRemoteParcel(parcelId)
                         })
                         onStart(null)
                     }

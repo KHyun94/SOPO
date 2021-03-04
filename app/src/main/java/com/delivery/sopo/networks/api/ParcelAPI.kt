@@ -126,13 +126,13 @@ interface ParcelAPI
      * @param parcelUid
      * @return parcel
      */
-    @GET("api/v1/sopo-api/delivery/{email}/parcel")
+    @GET("/api/v1/sopo-api/delivery/{email}/parcel/{regDt}/{parcelUid}")
     @Headers("Accept: application/json")
-    fun getSingleParcel(
+    suspend fun getSingleParcel(
         @Path("email") email: String,
-        // 택배 고유 uid
-        @Query("parcelUid") parcelUid: String,
         // 등록일자
-        @Query("regDt") regDt: String
+        @Path("regDt") regDt: String,
+        // 택배 고유 uid
+        @Path("parcelUid") parcelUid: String
     ): Response<APIResult<Parcel?>>
 }

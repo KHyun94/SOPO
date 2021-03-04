@@ -88,6 +88,7 @@ class ParcelDetailViewModel(
     // 택배 상세 UI 세팅
     fun updateParcelItem(parcelEntity: ParcelEntity)
     {
+        SopoLog.d("updateParcelItem() call")
         var progressList: MutableList<Progress> = mutableListOf()
         var deliveryStatus = ""
 
@@ -322,6 +323,8 @@ class ParcelDetailViewModel(
 
     fun getRemoteParcel(parcelId: ParcelId)
     {
+        SopoLog.d("getRemoteParcel() call >>> ${parcelId.toString()}")
+
         CoroutineScope(Dispatchers.IO).launch {
             when(val result = ParcelCall.getSingleParcel(parcelId = parcelId))
             {
@@ -331,7 +334,9 @@ class ParcelDetailViewModel(
                     updateIsBeUpdate(parcelId, 0)
                 }
                 is NetworkResult.Error ->
-                {}
+                {
+                    SopoLog.e("error >>> ${(result.exception as APIException)}", (result.exception as APIException).t)
+                }
             }
         }
     }

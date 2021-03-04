@@ -1,8 +1,6 @@
 package com.delivery.sopo.networks.call
 
 import com.delivery.sopo.database.room.entity.OauthEntity
-import com.delivery.sopo.database.room.entity.ParcelEntity
-import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
