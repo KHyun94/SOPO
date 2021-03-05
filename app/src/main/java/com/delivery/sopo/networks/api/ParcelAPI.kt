@@ -100,7 +100,7 @@ interface ParcelAPI
      */
     @POST("/api/v1/sopo-api/delivery/{email}/parcels/refresh")
     @Headers("Accept: application/json")
-    suspend fun requestRefreshParcels(@Path("email") email: String): Response<APIResult<String?>>
+    suspend fun requestParcelForRefreshs(@Path("email") email: String): Response<APIResult<String?>>
 
     /**
      * 택배 리스트 단일 업데이트 요청
@@ -113,7 +113,7 @@ interface ParcelAPI
      */
     @POST("/api/v1/sopo-api/delivery/{email}/parcel/{regDt}/{parcelUid}/refresh")
     @Headers("Accept: application/json")
-    suspend fun requestRefreshParcel(
+    suspend fun requestParcelForRefresh(
         @Path("email") email: String,
         @Path("regDt") regDt : String,
         @Path("parcelUid") parcelUid : String

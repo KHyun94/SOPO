@@ -7,8 +7,13 @@ import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.DeliveryStatusConst
 import com.delivery.sopo.database.room.entity.ParcelEntity
+import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.consts.ResultTypeConst
+import com.delivery.sopo.consts.UpdateConst
 import com.delivery.sopo.exceptions.APIException
+import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.SelectItem
+import com.delivery.sopo.models.TestResult
 import com.delivery.sopo.models.parcel.*
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.repository.impl.CourierRepoImpl
@@ -40,8 +45,8 @@ class ParcelDetailViewModel(
     val statusList = MutableLiveData<MutableList<SelectItem<String>>?>()
     var adapter = MutableLiveData<TimeLineRvAdapter?>()
 
-    private val _parcelEntity = MutableLiveData<ParcelEntity?>()
-    val parcelEntity: LiveData<ParcelEntity?>
+    private val _parcelEntity = MutableLiveData<ParcelEntity>()
+    val parcelEntity: LiveData<ParcelEntity>
         get() = _parcelEntity
 
     // parcelEntity 중 inquiryResult를 객체화시키는 용도
@@ -61,14 +66,17 @@ class ParcelDetailViewModel(
     var isDown = SingleLiveEvent<Boolean>()
 
     // 업데이트 여부
-    var isUpdate = MutableLiveData<Boolean?>()
-
-    // todo 상세 조회단 임시 업데이트 객체
-    var tmpParcel: ParcelEntity? = null
+    private val _isUpdate = MutableLiveData<Int>()
+    val isUpdate: LiveData<Int>
+    get() = _isUpdate
 
     private val _isProgress = MutableLiveData<Boolean>()
     val isProgress: LiveData<Boolean>
         get() = _isProgress
+
+    private val _result = MutableLiveData<TestResult>()
+    val result : LiveData<TestResult>
+    get() = _result
 
     init
     {
@@ -252,73 +260,62 @@ class ParcelDetailViewModel(
     {
         SopoLog.d("requestLocalParcel(${parcelId}) call")
 
-        CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(Dispatchers.Default).launch {
 
-            // 로컬 호출 동시에 서버에 택배 상태 업데이트 상태 체크
-            withContext(Dispatchers.Default) {
-
-                // 해당 ParcelEntity 라이브데이터를 옵저빙해서 UI 변환
-                _parcelEntity.postValue(
-                    // Parcel ID로 로컬 DB에 저장되어있는 Parcel 데이터를 호출
-                    parcelRepoImpl.getLocalParcelById(
-                        parcelUid = parcelId.parcelUid,
-                        regDt = parcelId.regDt
-                    )
-                )
-
-                _isProgress.postValue(false)
-            }
+            // 로컬 데이터 옵저빙
+            _parcelEntity.postValue(parcelRepoImpl.getLocalParcelById(parcelId = parcelId))
+            _isProgress.postValue(false)
         }
     }
 
+    // remote data를 요청과 동시에
     fun requestRemoteParcel(parcelId: ParcelId)
     {
-        CoroutineScope(Dispatchers.IO).launch {
-            when(val result = ParcelCall.requestRefreshParcel(parcelId))
-            {
-                is NetworkResult.Success ->
-                {
-                   SopoLog.d("success to requestRemoteParcel()")
-                    requestLocalParcel(parcelId = parcelId)
-                }
-                is NetworkResult.Error ->
-                {
-                    val error = result.exception as APIException
-                    SopoLog.e(msg = "(${result.statusCode})택배 상세 내역 에러 => (${error.responseCode}) ${error.responseCode}", e = error)
-                    requestLocalParcel(parcelId = parcelId)
+        SopoLog.d("requestRemoteParcel(${parcelId}) call")
 
-                    when(result.statusCode)
+        requestRemoteParcel(parcelId)
+
+        // remote data를 갱신하도록 서버에 요
+        try{
+            CoroutineScope(Dispatchers.IO).launch {
+                when(val result = ParcelCall.requestParcelForRefresh(parcelId))
+                {
+                    is NetworkResult.Success ->
                     {
-                        204 ->
-                        {
-                            // 업데이트 할게 없음
-                            SopoLog.d("상세 내역 업데이트할 요소가 없습니다.")
-                            isUpdate.postValue(null)
-                        }
-                        303 ->
-                        {
-                            /*
-                           todo 업데이트 여부 스낵바 호출
+                        SopoLog.d("success to requestRemoteParcel()")
+                    }
+                    is NetworkResult.Error ->
+                    {
+                        val error = result.exception as APIException
+                        SopoLog.e(msg = "(${result.statusCode})택배 상세 내역 에러 => (${error.responseCode}) ${error.responseCode}", e = error)
 
-                           todo 업데이트 시
-                            Get parcel로 해당 택배 업데이트 및 ROOM에 저장
-                            이 때 isUnidentified는 1로 업데이트 해 줄 필요가 없습니다.
-                            UI 업데이트 및 ROOM에 저장
-
-                           todo 업데이트 X
-                            parcel_management - isBeupdate -> 1로 업데이트
-                            */
-                            SopoLog.d("상세 내역 업데이트할 요소가있습니다.")
-                            isUpdate.postValue(true)
-                        }
-                        else ->
+                        // TODO SUCCESS로 이동 204 303 등은 body가 null이어서 현재는 에러로 빠짐
+                        when(result.statusCode)
                         {
-                            isUpdate.postValue(false)
+                            204 ->
+                            {
+                                // 업데이트 할게 없음
+                                SopoLog.d("상세 내역 업데이트할 요소가 없습니다.")
+                                _isUpdate.postValue(UpdateConst.FAILURE)
+                            }
+                            303 ->
+                            {
+                                SopoLog.d("상세 내역 업데이트할 요소가있습니다.")
+                                _isUpdate.postValue(UpdateConst.SUCCESS)
+                            }
+                            else ->
+                            {
+                                SopoLog.e("${error.responseMessage}", error)
+                            }
                         }
                     }
                 }
             }
+        } finally
+        {
+
         }
+
     }
 
     fun getRemoteParcel(parcelId: ParcelId)
@@ -330,8 +327,26 @@ class ParcelDetailViewModel(
             {
                 is NetworkResult.Success ->
                 {
-                    _parcelEntity.postValue(tmpParcel)
-                    updateIsBeUpdate(parcelId, 0)
+                    val apiResult = result.data
+                    val parcel = apiResult.data
+
+                    SopoLog.d("""
+                        getRemoteParcel() success
+                        parcel >>> $parcel
+                    """.trimIndent())
+
+                    if(parcel == null)
+                    {
+                        _result.postValue(TestResult.ErrorResult<String>(code = ResponseCode.SEARCH_PARCEL_NULL_ERROR, errorMsg = "택배 정보를 불러오는데 실패했습니다.", errorType = ResultTypeConst.ErrorType.ERROR_TYPE_DIALOG, data = null, e = null))
+                        return@launch
+                    }
+
+                    _parcelEntity.postValue(ParcelMapper.parcelToParcelEntity(parcel))
+
+                    withContext(Dispatchers.Default)
+                    {
+                        updateIsBeUpdate(parcelId, UpdateConst.DEACTIVATE)
+                    }
                 }
                 is NetworkResult.Error ->
                 {
@@ -341,11 +356,9 @@ class ParcelDetailViewModel(
         }
     }
 
-    fun updateIsBeUpdate(parcelId: ParcelId, status : Int?)
+    private suspend fun updateIsBeUpdate(parcelId: ParcelId, status : Int?)
     {
-        CoroutineScope(Dispatchers.Default).launch {
-            parcelManagementRepoImpl.updateIsBeUpdate(parcelId.regDt, parcelId.parcelUid, status)
-        }
+        parcelManagementRepoImpl.updateIsBeUpdate(parcelId.regDt, parcelId.parcelUid, status)
     }
 
     private suspend fun isBeUpdateParcel(): LiveData<Int?>
@@ -361,32 +374,21 @@ class ParcelDetailViewModel(
         isBack.value = true
     }
 
+    //
     fun updateIsUnidentifiedToZero(parcelId: ParcelId)
     {
         CoroutineScope(Dispatchers.Default).launch {
 
-            val value = parcelManagementRepoImpl.getIsUnidentifiedByParcelId(
-                regDt = parcelId.regDt,
-                parcelUid = parcelId.parcelUid
-            )
+            val value = parcelManagementRepoImpl.getIsUnidentifiedByParcelId(parcelId = parcelId)
 
-            if (value == 1)
+            SopoLog.d("update 정상적으로 값이 들어오는지 체크 $value")
+
+            if (value == UpdateConst.ACTIVATE)
             {
-                val a = parcelManagementRepoImpl.updateIsUnidentified(
-                    regDt = parcelId.regDt,
-                    parcelUid = parcelId.parcelUid,
-                    value = 0
+                parcelManagementRepoImpl.updateIsUnidentified(
+                    parcelId = parcelId,
+                    value = UpdateConst.DEACTIVATE
                 )
-                SopoLog.d(msg = "update=>${a}")
-            }
-            else
-            {
-                val a = parcelManagementRepoImpl.updateIsUnidentified(
-                    regDt = parcelId.regDt,
-                    parcelUid = parcelId.parcelUid,
-                    value = 0
-                )
-                SopoLog.d(msg = "Test update=>${a}")
             }
         }
     }

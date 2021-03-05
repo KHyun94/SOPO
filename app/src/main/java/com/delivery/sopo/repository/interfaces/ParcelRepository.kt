@@ -14,7 +14,7 @@ interface ParcelRepository {
 
    suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<Parcel>?
 
-   suspend fun getLocalParcelById(regDt: String, parcelUid: String): ParcelEntity?
+   suspend fun getLocalParcelById(parcelId: ParcelId): ParcelEntity?
 
    fun getLocalCompleteParcelsLiveData(): LiveData<List<Parcel>>
    fun getLocalCompleteParcels(): List<Parcel>

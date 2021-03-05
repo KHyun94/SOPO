@@ -46,15 +46,15 @@ object ParcelCall : BaseService(), KoinComponent
         return apiCall(call = {result})
     }
 
-    suspend fun requestRefreshParcels() : NetworkResult<APIResult<String?>>
+    suspend fun requestParcelForRefreshs() : NetworkResult<APIResult<String?>>
     {
-        val result = parcelAPI.requestRefreshParcels(email = email)
+        val result = parcelAPI.requestParcelForRefreshs(email = email)
         return apiCall(call = { result })
     }
 
-    suspend fun requestRefreshParcel(parcelId : ParcelId) : NetworkResult<APIResult<Any?>>
+    suspend fun requestParcelForRefresh(parcelId : ParcelId) : NetworkResult<APIResult<Any?>>
     {
-        val result = parcelAPI.requestRefreshParcel(email = email, regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
+        val result = parcelAPI.requestParcelForRefresh(email = email, regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
         return apiCall(call = { result })
     }
 }

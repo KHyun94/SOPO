@@ -2,6 +2,7 @@ package com.delivery.sopo.models.push
 
 import com.delivery.sopo.consts.DeliveryStatusConst
 import com.delivery.sopo.mapper.ParcelMapper
+import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.models.parcel.ParcelItem
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.google.gson.Gson
@@ -25,7 +26,7 @@ data class UpdateParcelDao(
 {
     private val parcelRepoImpl : ParcelRepoImpl by inject()
 
-    suspend fun getParcel() = parcelRepoImpl.getLocalParcelById(regDt, parcelUid)
+    suspend fun getParcel() = parcelRepoImpl.getLocalParcelById(ParcelId(regDt, parcelUid))
 
     fun compareDeliveryStatus(callback : (Boolean)->Unit){
         CoroutineScope(Dispatchers.Default).launch {

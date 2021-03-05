@@ -37,8 +37,8 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
                                                                                                         .retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java)
                                                                                                         .getParcelsComplete(email = userRepoImpl.getEmail(), page = page, inquiryDate = inquiryDate).data
 
-    override suspend fun getLocalParcelById(regDt: String, parcelUid: String): ParcelEntity? {
-        return appDatabase.parcelDao().getById(regDt,parcelUid)
+    override suspend fun getLocalParcelById(parcelId: ParcelId): ParcelEntity? {
+        return appDatabase.parcelDao().getById(parcelId.regDt, parcelId.parcelUid)
     }
 
     // 배송 중인 택배 리스트를 LiveData로 받기

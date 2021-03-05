@@ -14,6 +14,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.UpdateConst
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
 import com.delivery.sopo.models.SelectItem
@@ -193,19 +194,12 @@ class ParcelDetailView : Fragment()
         })
 
         binding.vm!!.parcelId.observe(this, Observer {
-            if (it != null)
-            {
-                binding.vm!!.updateIsUnidentifiedToZero(it)
-                binding.vm!!.requestRemoteParcel(parcelId = it)
-            }
+            binding.vm!!.updateIsUnidentifiedToZero(it)
+            binding.vm!!.requestRemoteParcel(parcelId = it)
         })
 
         binding.vm!!.parcelEntity.observe(this, Observer {
-            if (it != null)
-            {
-                //todo Error
-                binding.vm!!.updateParcelItem(it)
-            }
+            binding.vm!!.updateParcelItem(it)
         })
 
         binding.vm!!.statusList.observe(this, Observer {
@@ -240,7 +234,7 @@ class ParcelDetailView : Fragment()
 
             when (it)
             {
-                true ->
+                UpdateConst.SUCCESS ->
                 {
                     parentView.getAlertMessageBar().run {
                         setText("업데이트 사항이 있습니다.")
@@ -251,7 +245,7 @@ class ParcelDetailView : Fragment()
                         onStart(null)
                     }
                 }
-                false ->
+                UpdateConst.FAILURE ->
                 {
                     parentView.getAlertMessageBar().run {
                         setText("업데이트 도중 에러가 발생했습니다.")
@@ -260,10 +254,6 @@ class ParcelDetailView : Fragment()
                         })
                         onStart(null)
                     }
-                }
-                null ->
-                {
-
                 }
             }
         })

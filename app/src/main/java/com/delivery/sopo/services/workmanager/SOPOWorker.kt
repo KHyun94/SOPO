@@ -31,11 +31,11 @@ class SOPOWorker(val context: Context, private val params: WorkerParameters): Co
     }
 
     // Room 내 저장된 택배들을 서버로 조회 요청
-    private suspend fun requestRefreshParcel(): NetworkResult<APIResult<String?>>?
+    private suspend fun requestParcelForRefresh(): NetworkResult<APIResult<String?>>?
     {
         return when (isEnrolledParcel())
         {
-            true -> ParcelCall.requestRefreshParcels()
+            true -> ParcelCall.requestParcelForRefreshs()
             false -> null
         }
     }
@@ -44,7 +44,7 @@ class SOPOWorker(val context: Context, private val params: WorkerParameters): Co
 
         SopoLog.d( msg = "doWork() call")
 
-        when (val result = requestRefreshParcel())
+        when (val result = requestParcelForRefresh())
         {
             is NetworkResult.Success ->
             {
