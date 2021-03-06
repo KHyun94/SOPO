@@ -18,7 +18,7 @@ class CourierRepoImpl(
             ) as MutableList<CourierItem?>
     }
 
-    override suspend fun getWithCode(code: String): CourierItem?
+    override suspend fun getCourierWithCode(code: String): CourierItem?
     {
         return appDB.courierDao().getWithCode(code = code)
     }

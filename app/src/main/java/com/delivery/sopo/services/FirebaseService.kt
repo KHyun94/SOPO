@@ -2,7 +2,6 @@ package com.delivery.sopo.services
 
 import android.content.Intent
 import com.delivery.sopo.database.room.AppDatabase
-import com.delivery.sopo.database.room.entity.LogEntity
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.mapper.ParcelMapper
@@ -17,7 +16,6 @@ import com.delivery.sopo.util.TimeUtil
 import com.delivery.sopo.views.splash.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,7 +56,7 @@ class FirebaseService: FirebaseMessagingService()
                             }
 
                             // 배송 중 -> 배송완료가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
-                            if(updateParcelDao.deliveryStatus == DeliveryStatusEnum.delivered.code){
+                            if(updateParcelDao.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE){
                                 parcelManagementEntity.apply { isBeDelivered = 1 }
                             }
 
@@ -80,7 +78,7 @@ class FirebaseService: FirebaseMessagingService()
                                 }
 
                                 // 배송 중 -> 배송완료가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
-                                if(updateParcelDao.deliveryStatus == DeliveryStatusEnum.delivered.code){
+                                if(updateParcelDao.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE){
                                     parcelManagementEntity.apply { isBeDelivered = 1 }
                                 }
 

@@ -199,12 +199,14 @@ class ParcelDetailView : Fragment()
         })
 
         binding.vm!!.parcelEntity.observe(this, Observer {
-            binding.vm!!.updateParcelItem(it)
+            binding.vm!!.updateParcelToUI(it)
         })
 
         binding.vm!!.statusList.observe(this, Observer {
             if (it != null)
             {
+                SopoLog.d("StatusList !!!!!!!!!!!!! ${it}")
+
                 setIndicatorView(
                     topView = binding.includeSemi.layoutAddView,
                     bottomView = null,
@@ -226,7 +228,6 @@ class ParcelDetailView : Fragment()
         val progress = CustomProgressBar(this@ParcelDetailView.parentView)
 
         binding.vm!!.isProgress.observe(this, Observer { isProgress ->
-
             progress.autoProgressbar(isProgress)
         })
 

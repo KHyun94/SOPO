@@ -142,7 +142,7 @@ class InquiryListAdapter(
                 when (data.deliveryStatus)
                 {
                     //상품 준비중
-                    DeliveryStatusEnum.information_received.code ->
+                    DeliveryStatusEnum.INFORMATION_RECEIVED.CODE ->
                     {
                         holder.ongoingBinding.root.apply {
 //                            this.iv_red_dot.visibility = View.VISIBLE
@@ -158,7 +158,7 @@ class InquiryListAdapter(
                         }
                     }
                     //상품 인수
-                    DeliveryStatusEnum.at_pickup.code ->
+                    DeliveryStatusEnum.AT_PICKUP.CODE ->
                     {
                         holder.ongoingBinding.root.apply {
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_before)
@@ -173,7 +173,7 @@ class InquiryListAdapter(
                         }
                     }
                     //상품 이동 중
-                    DeliveryStatusEnum.in_transit.code ->
+                    DeliveryStatusEnum.IN_TRANSIT.CODE ->
                     {
                         holder.ongoingBinding.root.apply {
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_ing)
@@ -188,7 +188,7 @@ class InquiryListAdapter(
                         }
                     }
                     //배송 출발
-                    DeliveryStatusEnum.out_for_delivery.code ->
+                    DeliveryStatusEnum.OUT_OF_DELIVERY.CODE ->
                     {
                         holder.ongoingBinding.root.apply {
                             Glide.with(this.context).asGif().load(R.drawable.start_delivery)
@@ -211,7 +211,7 @@ class InquiryListAdapter(
                         }
                     }
                     //배송 도착
-                    DeliveryStatusEnum.delivered.code ->
+                    DeliveryStatusEnum.DELIVERED.CODE ->
                     {
                         // Nothing to do!!
                     }
@@ -482,19 +482,19 @@ class InquiryListAdapter(
             InquiryItemTypeEnum.Soon ->
             {
                 listItem.filter {
-                    it.parcel.deliveryStatus == DeliveryStatusEnum.out_for_delivery.code
+                    it.parcel.deliveryStatus == DeliveryStatusEnum.OUT_OF_DELIVERY.CODE
                 }.toMutableList()
             }
             InquiryItemTypeEnum.Registered ->
             {
                 listItem.filter {
-                    it.parcel.deliveryStatus != DeliveryStatusEnum.out_for_delivery.code && it.parcel.deliveryStatus != DeliveryStatusEnum.delivered.code
+                    it.parcel.deliveryStatus != DeliveryStatusEnum.OUT_OF_DELIVERY.CODE && it.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
                 }.toMutableList()
             }
             InquiryItemTypeEnum.Complete ->
             {
                 listItem.filter {
-                    it.parcel.deliveryStatus == DeliveryStatusEnum.delivered.code
+                    it.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
                 }.toMutableList()
             }
         }

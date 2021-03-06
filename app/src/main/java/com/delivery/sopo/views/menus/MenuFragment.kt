@@ -40,7 +40,7 @@ class MenuFragment : Fragment()
             MenuViewModelFactory(userRepoImpl, parcelRepoImpl, timeCountRepoImpl)
         ).get(MenuViewModel::class.java)
     }
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
+
     private lateinit var menuView: FragmentActivity
     private lateinit var binding: MenuViewBinding
     private lateinit var parentView: MainView
@@ -60,7 +60,6 @@ class MenuFragment : Fragment()
 
         viewBinding()
         setObserver()
-        setListener()
 
         return binding.root
     }
@@ -70,7 +69,6 @@ class MenuFragment : Fragment()
     {
         binding.vm = menuVm
         binding.lifecycleOwner = this
-        binding.executePendingBindings() // 즉 바인딩
     }
 
     fun setObserver()
@@ -124,7 +122,6 @@ class MenuFragment : Fragment()
         })
 
         menuVm.menu.observe(this, Observer {
-
             when (it)
             {
                 MenuEnum.NOTICE ->
@@ -151,13 +148,9 @@ class MenuFragment : Fragment()
                 {
                     move(menuView, NotDisturbTimeFragment(), 0)
                 }
-                else ->
-                {
-                }
             }
         })
 
-        // todo nickname 업데이트 api 줘...
         binding.vm!!.isUpdate.observe(this, Observer {
             if (it)
             {
@@ -186,15 +179,8 @@ class MenuFragment : Fragment()
     private fun move(activity: FragmentActivity, fragment: Fragment, animation: Int)
     {
         val transaction = activity.supportFragmentManager.beginTransaction()
+        transaction.addToBackStack(null)
         transaction.replace(R.id.frame_menu, fragment).commitAllowingStateLoss()
-    }
-
-    private fun setListener()
-    {
-        binding.root.relative_profile.setOnClickListener {
-
-        }
-
     }
 
     var callback: OnBackPressedCallback? = null

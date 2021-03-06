@@ -30,11 +30,6 @@ class MenuMainFrame : Fragment()
         viewId = binding.menuMainFrame.id
         FragmentManager.move(this.requireActivity(), TabCode.MY_MENU, viewId)
 
-        binding.root.parent?.also {
-            Log.d("!!!!!!", "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! MenuMainFrame DELETE")
-            (it as ViewGroup).removeView(binding.root)
-        }
-
         return binding.root
     }
 
