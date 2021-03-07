@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="25dp"
             android:textSize="14sp"
-            android:textColor="@color/COLOR_MAIN_BLUE_700"
+            android:textColor="@color/COLOR_MAIN_700"
             android:fontFamily="@font/spoqa_han_sans_regular"
             android:text="@string/FAQ_VIEW_ANY_OTHER_QUESTION"
             app:layout_constraintBottom_toBottomOf="parent"

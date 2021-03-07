@@ -195,7 +195,7 @@
         android:layout_marginEnd="26dp"
         android:fontFamily="@font/spoqa_han_sans_regular"
         android:text="@string/SETTING_VIEW_CHANGE_OF_PASSWORD"
-        android:textColor="@color/COLOR_MAIN_BLUE_700"
+        android:textColor="@color/COLOR_MAIN_700"
         android:visibility="@{vm.isSetOfSecurity > 0 ? View.VISIBLE : View.GONE}"
         app:layout_constraintBottom_toBottomOf="@+id/toggleBtn"
         app:layout_constraintEnd_toEndOf="parent"

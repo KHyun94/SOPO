@@ -67,7 +67,7 @@ object ViewPagerBindingAdapter
 
 
 //                tab?.view?.iv_tab!!.iv_tab.setBackgroundResource(res)
-//                tab.view.iv_tab!!.tv_tab_name.setTextColor(SOPOApp.INSTANCE.resources.getColor(R.color.COLOR_MAIN_BLUE_700))
+//                tab.view.iv_tab!!.tv_tab_name.setTextColor(SOPOApp.INSTANCE.resources.getColor(R.color.COLOR_MAIN_700))
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?)
@@ -109,7 +109,7 @@ object ViewPagerBindingAdapter
             customView!!.run {
                 iv_tab.setBackgroundResource(R.drawable.ic_activate_register)
                 tv_tab_name.setText("등록")
-                tv_tab_name.setTextColor(resources.getColor(R.color.COLOR_MAIN_BLUE_700))
+                tv_tab_name.setTextColor(resources.getColor(R.color.COLOR_MAIN_700))
             }
         }
         if(tl.getTabAt(0)!!.customView == null) SopoLog.d(msg = "없지 왜? !ㅋㅋㅋㅋㅋㅋ")

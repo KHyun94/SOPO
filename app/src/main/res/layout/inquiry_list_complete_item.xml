@@ -50,7 +50,7 @@
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:textSize="14sp"
-                        android:textColor="@color/COLOR_MAIN_BLUE_700"
+                        android:textColor="@color/COLOR_MAIN_700"
                         android:text="@{completeInquiryData.dayOfWeek}"
                         tools:text="금"
                         />
@@ -59,7 +59,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:textColor="@color/COLOR_MAIN_BLUE_700"
+                        android:textColor="@color/COLOR_MAIN_700"
                         android:textSize="14sp"
                         android:text="@{completeInquiryData.dateOfMonth + ``}"
                         tools:text="12일"

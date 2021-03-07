@@ -1,14 +1,15 @@
 package com.delivery.sopo.views.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -30,52 +31,46 @@ import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
-class InquiryListAdapter(
-    private val cntOfSelectedItemForDelete: MutableLiveData<Int>,
-    private var list: MutableList<InquiryListItem> = mutableListOf(),
-    private val itemTypeEnum: InquiryItemTypeEnum
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), KoinComponent
+class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData<Int>, private var list: MutableList<InquiryListItem> = mutableListOf(), private val itemTypeEnum: InquiryItemTypeEnum): RecyclerView.Adapter<RecyclerView.ViewHolder>(), KoinComponent
 {
-    private val parcelRepoImpl : ParcelRepoImpl by inject()
+    private val parcelRepoImpl: ParcelRepoImpl by inject()
     private var mClickListener: OnParcelClickListener? = null
+
+
+    private val limitOfSoonListSize = 2
+
+    private var isMoreView = false
+    private var isRemovable = false
 
     fun setOnParcelClickListener(_mClickListener: OnParcelClickListener)
     {
         mClickListener = _mClickListener
     }
 
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
-
-    // TODO : CONST로 빼던지 BUILD_CONFIG로 빼야함.
-    private val limitOfSoonListSize = 2
-
-    private var isMoreView = false
-    private var isRemovable = false
-
-    class OngoingViewHolder(private val binding: InquiryListOngoingItemBinding) :
-        RecyclerView.ViewHolder(binding.root)
+    inner class OngoingViewHolder(private val binding: InquiryListOngoingItemBinding): RecyclerView.ViewHolder(binding.root)
     {
-        val ongoingBinding = binding
+        var ongoingBinding: InquiryListOngoingItemBinding = binding
 
         fun bind(inquiryListItem: InquiryListItem)
         {
-            binding.apply {
-                setVariable(BR.ongoingInquiryData, inquiryListItem)
-            }
+            ongoingBinding.setVariable(BR.ongoingInquiryData, inquiryListItem)
         }
     }
 
-    class CompleteViewHolder(private val binding: InquiryListCompleteItemBinding) :
-        RecyclerView.ViewHolder(binding.root)
+    inner class CompleteViewHolder(private val binding: InquiryListCompleteItemBinding): RecyclerView.ViewHolder(binding.root)
     {
-        val completeBinding = binding
+        val completeBinding: InquiryListCompleteItemBinding = binding
 
         fun bind(inquiryListItem: InquiryListItem)
         {
-            binding.apply {
-                completeInquiryData = inquiryListItem
-            }
+            completeBinding.completeInquiryData = inquiryListItem
         }
+    }
+
+    private fun <T: ViewDataBinding> getBinding(inflater: LayoutInflater,
+                                                @LayoutRes layoutRes: Int, parent: ViewGroup): T
+    {
+        return DataBindingUtil.inflate<T>(LayoutInflater.from(parent.context), layoutRes, parent, false)
     }
 
     // onCreateViewHolder() - 아이템 뷰를 위한 뷰홀더 객체 생성하여 리턴.
@@ -85,36 +80,21 @@ class InquiryListAdapter(
         {
             InquiryItemTypeEnum.Soon ->
             {
-                return OngoingViewHolder(
-                    DataBindingUtil.inflate(
-                        LayoutInflater.from(parent.context),
-                        R.layout.inquiry_list_ongoing_item,
-                        parent,
-                        false
-                    )
-                )
+                val binding =
+                    getBinding<InquiryListOngoingItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent)
+                return OngoingViewHolder(binding)
             }
             InquiryItemTypeEnum.Registered ->
             {
-                return OngoingViewHolder(
-                    DataBindingUtil.inflate(
-                        LayoutInflater.from(parent.context),
-                        R.layout.inquiry_list_ongoing_item,
-                        parent,
-                        false
-                    )
-                )
+                val binding =
+                    getBinding<InquiryListOngoingItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent)
+                return OngoingViewHolder(binding)
             }
             InquiryItemTypeEnum.Complete ->
             {
-                return CompleteViewHolder(
-                    DataBindingUtil.inflate(
-                        LayoutInflater.from(parent.context),
-                        R.layout.inquiry_list_complete_item,
-                        parent,
-                        false
-                    )
-                )
+                val binding =
+                    getBinding<InquiryListCompleteItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_complete_item, parent)
+                return CompleteViewHolder(binding)
             }
         }
     }
@@ -122,54 +102,53 @@ class InquiryListAdapter(
     // onBindViewHolder() - position에 해당하는 데이터를 뷰홀더의 아이템뷰에 표시.
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)
     {
-        val inquiryListData = list[position]
+        val list = list[position]
 
         when (holder)
         {
             is OngoingViewHolder ->
             {
-                holder.bind(inquiryListData)
-                holder.itemView.tag = inquiryListData
+                holder.bind(list)
+                holder.itemView.tag = list
 
-                inquiryListData.setUpdateValue(parcelRepoImpl) {
-                    if (it != null && it)
-                        holder.itemView.iv_red_dot.visibility = View.VISIBLE
-                    else
-                        holder.itemView.iv_red_dot.visibility = View.GONE
+                list.setUpdateValue() {
+                    if (it != null && it) holder.itemView.iv_red_dot.visibility = View.VISIBLE
+                    else holder.itemView.iv_red_dot.visibility = View.GONE
                 }
 
-                val data: Parcel = inquiryListData.parcel
-                when (data.deliveryStatus)
+                val parcel: Parcel = list.parcel
+
+                SopoLog.d("Delivery Status >>> ${parcel.deliveryStatus}")
+
+                when (parcel.deliveryStatus)
                 {
+                    DeliveryStatusEnum.NOT_REGISTER.CODE ->
+                    {
+                        holder.ongoingBinding.run {
+                            imageDeliveryStatus.setBackgroundResource(R.drawable.ic_parcel_status_preparing)
+                            constraintDeliveryStatusFront.setBackgroundResource(R.color.STATUS_PREPARING)
+                            tvDeliveryStatus.text = "준비중"
+                            tvDeliveryStatus.setTextColor(ContextCompat.getColor(this.root.context, R.color.COLOR_GRAY_300))
+                        }
+                    }
                     //상품 준비중
                     DeliveryStatusEnum.INFORMATION_RECEIVED.CODE ->
                     {
-                        holder.ongoingBinding.root.apply {
-//                            this.iv_red_dot.visibility = View.VISIBLE
-                            this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_registered)
-                            this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_300)
-                            this.tv_delivery_status.text = "송장등록"
-                            this.tv_delivery_status.setTextColor(
-                                ContextCompat.getColor(
-                                    this.context,
-                                    R.color.MAIN_WHITE
-                                )
-                            )
+                        holder.ongoingBinding.run {
+                            imageDeliveryStatus.setBackgroundResource(R.drawable.ic_parcel_status_preparing)
+                            constraintDeliveryStatusFront.setBackgroundResource(R.color.STATUS_PREPARING)
+                            tvDeliveryStatus.text = "준비중"
+                            tvDeliveryStatus.setTextColor(ContextCompat.getColor(this.root.context, R.color.COLOR_GRAY_300))
                         }
                     }
                     //상품 인수
                     DeliveryStatusEnum.AT_PICKUP.CODE ->
                     {
-                        holder.ongoingBinding.root.apply {
-                            this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_before)
-                            this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_GRAY_50)
-                            this.tv_delivery_status.text = "배송전"
-                            this.tv_delivery_status.setTextColor(
-                                ContextCompat.getColor(
-                                    this.context,
-                                    R.color.COLOR_GRAY_300
-                                )
-                            )
+                        holder.ongoingBinding.run {
+                            imageDeliveryStatus.setBackgroundResource(R.drawable.ic_parcel_status_pickup)
+                            constraintDeliveryStatusFront.setBackgroundResource(R.color.STATUS_PREPARING)
+                            tvDeliveryStatus.text = "상품인수"
+                            tvDeliveryStatus.setTextColor(ContextCompat.getColor(this.root.context, R.color.COLOR_MAIN_300))
                         }
                     }
                     //상품 이동 중
@@ -177,61 +156,38 @@ class InquiryListAdapter(
                     {
                         holder.ongoingBinding.root.apply {
                             this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_ing)
-                            this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_900)
+                            this.constraint_delivery_status_front.setBackgroundResource(R.color.STATUS_ING)
                             this.tv_delivery_status.text = "배송중"
                             this.tv_delivery_status.setTextColor(
                                 ContextCompat.getColor(
-                                    this.context,
-                                    R.color.MAIN_WHITE
+                                    this.context, R.color.MAIN_WHITE
                                 )
                             )
                         }
                     }
-                    //배송 출발
+                    // 동네도착
                     DeliveryStatusEnum.OUT_OF_DELIVERY.CODE ->
                     {
                         holder.ongoingBinding.root.apply {
-                            Glide.with(this.context).asGif().load(R.drawable.start_delivery)
+                            Glide.with(this.context)
+                                .asGif()
+                                .load(R.drawable.ic_parcel_status_soon)
                                 .into(this.image_delivery_status)
-                            val gifMargin = LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                            )
-                            gifMargin.height = SizeUtil.changeDpToPx(this.context, 38F)
-                            gifMargin.width = SizeUtil.changeDpToPx(this.context, 50F)
-                            this.image_delivery_status.layoutParams = gifMargin
-                            this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_700)
-                            this.tv_delivery_status.text = "배송출발"
+
+                            this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_BLUE_700)
+                            this.tv_delivery_status.text = "동네도착"
+
                             this.tv_delivery_status.setTextColor(
                                 ContextCompat.getColor(
-                                    holder.ongoingBinding.root.context,
-                                    R.color.MAIN_WHITE
+                                    holder.ongoingBinding.root.context, R.color.MAIN_WHITE
                                 )
                             )
-                        }
-                    }
-                    //배송 도착
-                    DeliveryStatusEnum.DELIVERED.CODE ->
-                    {
-                        // Nothing to do!!
-                    }
-                    else ->
-                    {
-                        holder.ongoingBinding.root.apply {
-                            this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_registered)
-                            this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_MAIN_300)
-                            this.tv_delivery_status.text = "송장등록"
-                            this.tv_delivery_status.setTextColor(
-                                ContextCompat.getColor(
-                                    this.context,
-                                    R.color.MAIN_WHITE
-                                )
-                            )
+                            this.tv_delivery_status.bringToFront()
                         }
                     }
                 }
 
-                if (inquiryListData.isSelected)
+                if (list.isSelected)
                 {
                     ongoingViewSelected(holder.ongoingBinding)
                 }
@@ -245,28 +201,28 @@ class InquiryListAdapter(
                 val onGoingView = holder.ongoingBinding.root.cv_ongoing_parent
 
                 holder.ongoingBinding.root.cv_ongoing_parent.setOnClickListener {
-                    if (isRemovable && !inquiryListData.isSelected)
+                    if (isRemovable && !list.isSelected)
                     {
-                        inquiryListData.isSelected = true
-                        cntOfSelectedItemForDelete.value = (cntOfSelectedItemForDelete.value ?: 0) + 1
+                        list.isSelected = true
+                        cntOfSelectedItemForDelete.value =
+                            (cntOfSelectedItemForDelete.value ?: 0) + 1
                         ongoingViewSelected(holder.ongoingBinding)
                     }
-                    else if (isRemovable && inquiryListData.isSelected)
+                    else if (isRemovable && list.isSelected)
                     {
-                        inquiryListData.isSelected = false
-                        cntOfSelectedItemForDelete.value = (cntOfSelectedItemForDelete.value ?: 0) - 1
+                        list.isSelected = false
+                        cntOfSelectedItemForDelete.value =
+                            (cntOfSelectedItemForDelete.value ?: 0) - 1
                         ongoingViewInitialize(holder.ongoingBinding)
                     }
                     else
                     {
-                        SopoLog.d( msg = "33333")
+                        SopoLog.d(msg = "33333")
 
                         if (mClickListener != null)
                         {
                             mClickListener!!.onItemClicked(
-                                view = it,
-                                type = 0,
-                                parcelId = inquiryListData.parcel.parcelId
+                                view = it, type = 0, parcelId = list.parcel.parcelId
                             )
                         }
                     }
@@ -276,9 +232,7 @@ class InquiryListAdapter(
                     if (!isRemovable && mClickListener != null)
                     {
                         mClickListener!!.onItemLongClicked(
-                            view = it,
-                            type = 0,
-                            parcelId = inquiryListData.parcel.parcelId
+                            view = it, type = 0, parcelId = list.parcel.parcelId
                         )
                     }
                     return@setOnLongClickListener true
@@ -286,10 +240,10 @@ class InquiryListAdapter(
             }
             is CompleteViewHolder ->
             {
-                holder.bind(inquiryListData)
-                holder.itemView.tag = inquiryListData
+                holder.bind(list)
+                holder.itemView.tag = list
 
-                if (inquiryListData.isSelected)
+                if (list.isSelected)
                 {
                     completeViewSelected(holder.completeBinding)
                 }
@@ -299,21 +253,20 @@ class InquiryListAdapter(
                 }
                 holder.completeBinding.root.cv_complete_parent.setOnClickListener {
 
-                    Log.d(
-                        TAG,
-                        "isSelect : ${inquiryListData.isSelected} && isRemovable : $isRemovable"
-                    )
+                    SopoLog.d("isSelect : ${list.isSelected} && isRemovable : $isRemovable")
 
-                    if (isRemovable && !inquiryListData.isSelected)
+                    if (isRemovable && !list.isSelected)
                     {
-                        inquiryListData.isSelected = true
-                        cntOfSelectedItemForDelete.value = (cntOfSelectedItemForDelete.value ?: 0) + 1
+                        list.isSelected = true
+                        cntOfSelectedItemForDelete.value =
+                            (cntOfSelectedItemForDelete.value ?: 0) + 1
                         completeViewSelected(holder.completeBinding)
                     }
-                    else if (isRemovable && inquiryListData.isSelected)
+                    else if (isRemovable && list.isSelected)
                     {
-                        inquiryListData.isSelected = false
-                        cntOfSelectedItemForDelete.value = (cntOfSelectedItemForDelete.value ?: 0) - 1
+                        list.isSelected = false
+                        cntOfSelectedItemForDelete.value =
+                            (cntOfSelectedItemForDelete.value ?: 0) - 1
                         completeViewInitialize(holder.completeBinding)
                     }
                     else
@@ -321,9 +274,7 @@ class InquiryListAdapter(
                         if (mClickListener != null)
                         {
                             mClickListener!!.onItemClicked(
-                                view = it,
-                                type = 1,
-                                parcelId = inquiryListData.parcel.parcelId
+                                view = it, type = 1, parcelId = list.parcel.parcelId
                             )
                         }
                     }
@@ -333,9 +284,7 @@ class InquiryListAdapter(
                     if (!isRemovable && mClickListener != null)
                     {
                         mClickListener!!.onItemLongClicked(
-                            view = it,
-                            type = 1,
-                            parcelId = inquiryListData.parcel.parcelId
+                            view = it, type = 1, parcelId = list.parcel.parcelId
                         )
                     }
                     return@setOnLongClickListener true
@@ -448,19 +397,13 @@ class InquiryListAdapter(
         {
             if (list.getOrNull(index) == null)
             {
-                Log.d(
-                    TAG,
-                    "기존 리스트에 해당 index[$index]가 존재하지 않아 list[$index]에 ${updatedList[index].parcel.parcelAlias} 아이템을 추가합니다."
-                )
+                SopoLog.d("기존 리스트에 해당 index[$index]가 존재하지 않아 list[$index]에 ${updatedList[index].parcel.parcelAlias} 아이템을 추가합니다.")
                 list.add(updatedList[index])
                 notifyIndexList.add(index)
             }
             else if (!((updatedList[index].parcel.parcelId.regDt == list[index].parcel.parcelId.regDt) && (updatedList[index].parcel.parcelId.parcelUid == list[index].parcel.parcelId.parcelUid)))
             {
-                Log.d(
-                    TAG,
-                    "index[$index]에 해당하는 ${list[index].parcel.parcelAlias}와 업데이트될 아이템(${updatedList[index].parcel.parcelAlias}) 일치하지 않아 기존 아이템에 업데이트될 아이템을 덮어씁니다."
-                )
+                SopoLog.d("index[$index]에 해당하는 ${list[index].parcel.parcelAlias}와 업데이트될 아이템(${updatedList[index].parcel.parcelAlias}) 일치하지 않아 기존 아이템에 업데이트될 아이템을 덮어씁니다.")
                 list[index] = updatedList[index]
                 notifyIndexList.add(index)
             }
@@ -472,28 +415,28 @@ class InquiryListAdapter(
         }
     }
 
-    fun setDataList(listItem: MutableList<InquiryListItem>?)
+    // 택배 리스트를 상태에 따라 분류
+    fun separateDeliveryListByStatus(list: MutableList<InquiryListItem>?)
     {
-        if (listItem == null)
-            return
+        if (list == null) return
 
         this.list = when (itemTypeEnum)
         {
             InquiryItemTypeEnum.Soon ->
             {
-                listItem.filter {
+                list.filter {
                     it.parcel.deliveryStatus == DeliveryStatusEnum.OUT_OF_DELIVERY.CODE
                 }.toMutableList()
             }
             InquiryItemTypeEnum.Registered ->
             {
-                listItem.filter {
+                list.filter {
                     it.parcel.deliveryStatus != DeliveryStatusEnum.OUT_OF_DELIVERY.CODE && it.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
                 }.toMutableList()
             }
             InquiryItemTypeEnum.Complete ->
             {
-                listItem.filter {
+                list.filter {
                     it.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
                 }.toMutableList()
             }

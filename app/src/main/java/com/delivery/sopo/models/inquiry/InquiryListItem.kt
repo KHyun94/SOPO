@@ -5,14 +5,15 @@ import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import java.text.SimpleDateFormat
 import java.util.*
 
-class InquiryListItem(
-    val parcel: Parcel,
-    var isSelected: Boolean = false,
-    var isUnidentified : Boolean = true
-){
+// TODO 추후 변경...
+class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false, var isUnidentified : Boolean = true): KoinComponent {
+    private val parcelRepoImpl: ParcelRepoImpl by inject()
+
     private val completeTimeDate: Calendar by lazy {
         Calendar.getInstance().apply { this.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(parcel.arrivalDte?.replace("T", " ")) }
     }
@@ -73,12 +74,13 @@ class InquiryListItem(
         }
     }
 
-    fun setUpdateValue(parcelRepoImpl: ParcelRepoImpl, cb : (Boolean?) -> Unit){
+    fun setUpdateValue(cb : (Boolean?) -> Unit){
 
         CoroutineScope(Dispatchers.Main).launch {
             var update : LiveData<Int?>? = null
+
             withContext(Dispatchers.Default){
-               update = parcelRepoImpl.getIsUnidentifiedLiveData(parcel.parcelId.regDt, parcel.parcelId.parcelUid)
+               update = parcelRepoImpl.getIsUnidentifiedAsLiveData(parcel.parcelId)
             }
 
             update?.observeForever{

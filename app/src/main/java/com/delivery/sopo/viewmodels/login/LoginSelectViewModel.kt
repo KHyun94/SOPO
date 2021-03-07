@@ -128,6 +128,7 @@ class LoginSelectViewModel : ViewModel()
                 SopoLog.d(msg = "onSuccess uid = $kakaoUserId")
                 SopoLog.d(msg = "onSuccess nickname = $kakaoNickname")
 
+                // TODO 카카오 이메일을 못가져왔을 때 에러 메시지 출력
                 LoginHandler.requestLoginByKakao(email, kakaoUserId){ successResult, errorResult ->
                     postResultValue(successResult, errorResult)
                     postProgressValue(false)

@@ -65,7 +65,7 @@
             android:paddingBottom="1dp"
             android:text="@{item.deliverStatus}"
             android:fontFamily="@font/spoqa_han_sans_bold"
-            android:textColor="@color/COLOR_MAIN_BLUE_700"
+            android:textColor="@color/COLOR_MAIN_700"
             app:layout_constraintLeft_toLeftOf="parent"
             android:includeFontPadding="false"
             app:layout_constraintTop_toBottomOf="@id/layout_detail_content"

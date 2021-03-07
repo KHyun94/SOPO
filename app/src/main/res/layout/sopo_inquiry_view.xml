@@ -590,7 +590,7 @@
             android:id="@+id/constraint_snack_bar"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:background="@color/COLOR_MAIN_BLUE_700"
+            android:background="@color/COLOR_MAIN_700"
             android:elevation="50dp"
             android:visibility="@{vm.isShowDeleteSnackBar ? View.GONE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"

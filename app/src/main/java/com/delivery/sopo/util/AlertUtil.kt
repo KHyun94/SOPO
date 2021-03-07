@@ -76,15 +76,15 @@ object AlertUtil
             etInputText.addTextChangedListener {
                 if (it.toString().length > 1)
                 {
-                    tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_MAIN_BLUE_700))
+                    tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_MAIN_700))
                 }
             }
 
             tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_GRAY_200))
             etInputText.addTextChangedListener {
                 if(it.toString().isNotEmpty()){
-                    tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_MAIN_BLUE_700))
-                    vFocusStatus.setBackgroundColor(context.resources.getColor(R.color.COLOR_MAIN_BLUE_700))
+                    tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_MAIN_700))
+                    vFocusStatus.setBackgroundColor(context.resources.getColor(R.color.COLOR_MAIN_700))
                     callback.apply(it.toString())
                 }
                 else

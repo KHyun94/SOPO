@@ -14,7 +14,7 @@
         android:layout_marginTop="94sp"
         android:fontFamily="@font/spoqa_han_sans_regular"
         android:text="한 눈에 파악하는\n배송 상태"
-        android:textColor="@color/COLOR_MAIN_BLUE_700"
+        android:textColor="@color/COLOR_MAIN_700"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

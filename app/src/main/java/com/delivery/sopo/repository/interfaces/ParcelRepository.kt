@@ -37,7 +37,7 @@ interface ParcelRepository {
    suspend fun getOnGoingDataCnt() : Int?
 
    suspend fun isBeingUpdateParcel(regDt: String, parcelUid: String): LiveData<Int?>
-   fun getIsUnidentifiedLiveData(regDt: String, parcelUid: String): LiveData<Int?>
+   suspend fun getIsUnidentifiedAsLiveData(parcelId: ParcelId): LiveData<Int?>
 
    // 배송 상태인 택배의 갯수
    fun getLocalOnGoingParcelCnt() : LiveData<Int>

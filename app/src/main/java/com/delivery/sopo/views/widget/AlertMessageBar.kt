@@ -27,7 +27,7 @@ class AlertMessageBar : RelativeLayout
     private var contentStr: String? = null
     private var buttonStr: String? = null
     private var markImg: Int = R.drawable.ic_blue_marker
-    private var bgColor: Int = R.color.COLOR_MAIN_BLUE_700
+    private var bgColor: Int = R.color.COLOR_MAIN_700
     private var contentTextColor: Int = R.color.MAIN_WHITE
     private var buttonTextColor: Int = R.color.MAIN_WHITE
 
@@ -72,8 +72,8 @@ class AlertMessageBar : RelativeLayout
             ) ?: R.drawable.ic_blue_marker
             bgColor = typedArray?.getResourceId(
                 R.styleable.AlertMessageBar_customBgColor,
-                R.color.COLOR_MAIN_BLUE_700
-            ) ?: R.color.COLOR_MAIN_BLUE_700
+                R.color.COLOR_MAIN_700
+            ) ?: R.color.COLOR_MAIN_700
             contentTextColor =
                 typedArray?.getResourceId(R.styleable.AlertMessageBar_textColor, R.color.MAIN_WHITE)
                     ?: R.color.MAIN_WHITE

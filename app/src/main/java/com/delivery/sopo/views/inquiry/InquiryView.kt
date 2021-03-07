@@ -25,14 +25,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
 import com.delivery.sopo.database.room.entity.TimeCountEntity
 import com.delivery.sopo.databinding.SopoInquiryViewBinding
-import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.enums.ScreenStatusEnum
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.mapper.MenuMapper
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.parcel.ParcelId
-import com.delivery.sopo.repository.impl.*
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
@@ -54,8 +53,9 @@ import java.util.*
 import java.util.function.Function
 import java.util.stream.Collectors
 import java.util.stream.Stream
+import kotlin.system.exitProcess
 
-class InquiryView : Fragment()
+class InquiryView: Fragment()
 {
     private lateinit var parentView: MainView
 
@@ -82,28 +82,27 @@ class InquiryView : Fragment()
 
         var pressedTime: Long = 0
 
-        callback = object : OnBackPressedCallback(true)
+        callback = object: OnBackPressedCallback(true)
         {
             override fun handleOnBackPressed()
             {
                 if (System.currentTimeMillis() - pressedTime > 2000)
                 {
                     pressedTime = System.currentTimeMillis()
-                    val snackbar = Snackbar.make(
-                        parentView.binding.layoutMain,
-                        "한번 더 누르시면 앱이 종료됩니다.",
-                        2000
-                    )
-                    snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
+
+                    Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply {
+                            animationMode = Snackbar.ANIMATION_MODE_SLIDE
+                        }.show()
 
                     SopoLog.d("InquiryView::1 BackPressListener = 종료를 위해 한번 더 클릭")
+
+                    return
                 }
-                else
-                {
-                    SopoLog.d( "InquiryView::1 BackPressListener = 종료")
-                    ActivityCompat.finishAffinity(activity!!)
-                    System.exit(0)
-                }
+
+                SopoLog.d("InquiryView::1 BackPressListener = 종료")
+
+                ActivityCompat.finishAffinity(activity!!)
+                exitProcess(0)
             }
         }
 
@@ -111,11 +110,7 @@ class InquiryView : Fragment()
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
         progressBar = CustomProgressBar(requireActivity())
         parentView = activity as MainView
@@ -131,7 +126,6 @@ class InquiryView : Fragment()
     {
         super.onViewCreated(view, savedInstanceState)
 
-//        initViewSetting()
         setListener()
         image_inquiry_popup_menu.setOnClickListener {
             openInquiryMenu(it)
@@ -142,7 +136,7 @@ class InquiryView : Fragment()
     {
         super.onDetach()
 
-        callback!!.remove()
+        callback?.remove()
     }
 
     private fun bindView(inflater: LayoutInflater, container: ViewGroup?)
@@ -150,12 +144,12 @@ class InquiryView : Fragment()
         SopoLog.d("bindView() call")
 
         binding = SopoInquiryViewBinding.inflate(inflater, container, false).apply {
-            this.vm = inquiryVm
-            this.lifecycleOwner = this@InquiryView
+            vm = inquiryVm
+            lifecycleOwner = this@InquiryView
         }
     }
 
-    private fun getAdapter(cntOfSelectedForDelete : MutableLiveData<Int>, inquiryItemTypeEnum: InquiryItemTypeEnum) : InquiryListAdapter
+    private fun getAdapter(cntOfSelectedForDelete: MutableLiveData<Int>, inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter
     {
         return InquiryListAdapter(cntOfSelectedItemForDelete = cntOfSelectedForDelete, itemTypeEnum = inquiryItemTypeEnum).apply {
             this.setOnParcelClickListener(getParcelClicked())
@@ -190,40 +184,14 @@ class InquiryView : Fragment()
             }
         })
 
-        binding.vm!!.isLoading.observe(this, Observer {
-
-            if (it != null)
-            {
-                SopoLog.d( msg = "")
-
-                SopoLog.d( msg = "1. isLoading")
-                if (it)
-                {
-                    SopoLog.d( msg = "2. isLoading true")
-                    progressBar.onStartDialog()
-                }
-                else
-                {
-                    SopoLog.d( msg = "3. isLoading false")
-                    progressBar.onCloseDialog()
-                    binding.vm!!.isLoading.call()
-
-                }
-            }
-            else
-            {
-                SopoLog.d( msg = "4. isLoading null")
-                progressBar.onCloseDialog()
-            }
+        binding.vm!!.isLoading.observe(this, Observer { isLoading ->
+            progressBar.autoProgressbar(isLoading)
         })
 
         // 배송중 , 등록된 택배 리스트
         binding.vm!!.ongoingList.observe(this, Observer {
-
-            SopoLog.d( msg = "Ongoing Parcel Cnt >>> ${it.size}")
-
-            soonArrivalParcelAdapter.setDataList(it)
-            registeredParcelAdapter.setDataList(it)
+            soonArrivalParcelAdapter.separateDeliveryListByStatus(it)
+            registeredParcelAdapter.separateDeliveryListByStatus(it)
 
             viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
             viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
@@ -259,13 +227,11 @@ class InquiryView : Fragment()
                 { // '배송 중' 화면
                     btn_ongoing.setTextColor(
                         ContextCompat.getColor(
-                            requireContext(),
-                            R.color.MAIN_WHITE
+                            requireContext(), R.color.MAIN_WHITE
                         )
                     )
                     btn_ongoing.background = ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.border_all_rounded_light_black
+                        requireContext(), R.drawable.border_all_rounded_light_black
                     )
                     btn_ongoing.typeface =
                         ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_bold)
@@ -273,13 +239,11 @@ class InquiryView : Fragment()
                         ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_regular)
                     btn_complete.setTextColor(
                         ContextCompat.getColor(
-                            requireContext(),
-                            R.color.COLOR_GRAY_400
+                            requireContext(), R.color.COLOR_GRAY_400
                         )
                     )
                     btn_complete.background = ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.border_all_rounded_color_gray_400
+                        requireContext(), R.drawable.border_all_rounded_color_gray_400
                     )
                 }
 
@@ -287,13 +251,11 @@ class InquiryView : Fragment()
                 { // '배송 완료' 화면
                     btn_ongoing.setTextColor(
                         ContextCompat.getColor(
-                            requireContext(),
-                            R.color.COLOR_GRAY_400
+                            requireContext(), R.color.COLOR_GRAY_400
                         )
                     )
                     btn_ongoing.background = ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.border_all_rounded_color_gray_400
+                        requireContext(), R.drawable.border_all_rounded_color_gray_400
                     )
                     btn_complete.typeface =
                         ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_regular)
@@ -301,13 +263,11 @@ class InquiryView : Fragment()
                         ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_bold)
                     btn_complete.setTextColor(
                         ContextCompat.getColor(
-                            requireContext(),
-                            R.color.MAIN_WHITE
+                            requireContext(), R.color.MAIN_WHITE
                         )
                     )
                     btn_complete.background = ContextCompat.getDrawable(
-                        requireContext(),
-                        R.drawable.border_all_rounded_light_black
+                        requireContext(), R.drawable.border_all_rounded_light_black
                     )
                 }
             }
@@ -359,8 +319,7 @@ class InquiryView : Fragment()
                 image_is_all_checked.setBackgroundResource(R.drawable.ic_checked_red)
                 tv_is_all_checked.setTextColor(
                     ContextCompat.getColor(
-                        requireActivity(),
-                        R.color.MAIN_RED
+                        requireActivity(), R.color.MAIN_RED
                     )
                 )
             }
@@ -370,8 +329,7 @@ class InquiryView : Fragment()
                 image_is_all_checked.setBackgroundResource(R.drawable.ic_checked_gray)
                 tv_is_all_checked.setTextColor(
                     ContextCompat.getColor(
-                        requireActivity(),
-                        R.color.COLOR_GRAY_400
+                        requireActivity(), R.color.COLOR_GRAY_400
                     )
                 )
             }
@@ -430,18 +388,15 @@ class InquiryView : Fragment()
 
     private fun getParcelClicked(): OnParcelClickListener
     {
-        return object : OnParcelClickListener
+        return object: OnParcelClickListener
         {
             override fun onItemClicked(view: View, type: Int, parcelId: ParcelId)
             {
                 TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(
-                    parcelUId = parcelId.parcelUid,
-                    regDt = parcelId.regDt
+                    parcelUId = parcelId.parcelUid, regDt = parcelId.regDt
                 )
                 FragmentManager.move(
-                    activity!!,
-                    TabCode.INQUIRY_DETAIL,
-                    InquiryMainFrame.viewId
+                    activity!!, TabCode.INQUIRY_DETAIL, InquiryMainFrame.viewId
                 )
             }
 
@@ -449,29 +404,24 @@ class InquiryView : Fragment()
             {
                 val edit = MutableLiveData<String>()
 
-                AlertUtil.updateValueDialog(
-                    context!!,
-                    "택배의 별칭을 입력해주세요.",
-                    Pair("확인", View.OnClickListener {
-                        edit.observe(this@InquiryView, Observer {
-                            SopoLog.d(msg = "입력 값 = > $it")
-                            binding.vm!!.patchParcelAlias(parcelId, it)
-                            AlertUtil.onDismiss()
+                AlertUtil.updateValueDialog(context!!, "택배의 별칭을 입력해주세요.", Pair("확인", View.OnClickListener {
+                    edit.observe(this@InquiryView, Observer {
+                        SopoLog.d(msg = "입력 값 = > $it")
+                        binding.vm!!.patchParcelAlias(parcelId, it)
+                        AlertUtil.onDismiss()
 
-                            if (type == 0)
-                            {
-                                binding.vm!!.refreshOngoing()
-                            }
-                            else
-                            {
-                                binding.vm!!.refreshComplete()
-                            }
-                        })
-                    }),
-                    Pair("취소", null),
-                    Function {
-                        edit.value = it
+                        if (type == 0)
+                        {
+                            binding.vm!!.refreshOngoing()
+                        }
+                        else
+                        {
+                            binding.vm!!.refreshComplete()
+                        }
                     })
+                }), Pair("취소", null), Function {
+                    edit.value = it
+                })
             }
 
         }
@@ -484,56 +434,50 @@ class InquiryView : Fragment()
             val menu = PopupMenu(requireActivity(), anchorView).menu
             requireActivity().menuInflater.inflate(R.menu.inquiry_popup_menu, menu)
 
-            val popUpView: View =
-                LayoutInflater.from(requireContext()).inflate(R.layout.popup_menu_view, null)
-                    .also { v ->
-                        val popupMenuListAdapter =
-                            PopupMenuListAdapter(MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
-                        v.recyclerview_inquiry_popup_menu.also {
-                            it.adapter = popupMenuListAdapter
-                            val dividerItemDecoration = DividerItemDecoration(
-                                requireContext(),
-                                LinearLayoutManager.VERTICAL
-                            )
-                            dividerItemDecoration.setDrawable(
-                                ContextCompat.getDrawable(
-                                    requireContext(),
-                                    R.drawable.line_divider
-                                )!!
-                            )
-                            it.addItemDecoration(dividerItemDecoration)
+            val popUpView: View = LayoutInflater.from(requireContext())
+                .inflate(R.layout.popup_menu_view, null)
+                .also { v ->
+                    val popupMenuListAdapter =
+                        PopupMenuListAdapter(MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
+                    v.recyclerview_inquiry_popup_menu.also {
+                        it.adapter = popupMenuListAdapter
+                        val dividerItemDecoration = DividerItemDecoration(
+                            requireContext(), LinearLayoutManager.VERTICAL
+                        )
+                        dividerItemDecoration.setDrawable(
+                            ContextCompat.getDrawable(
+                                requireContext(), R.drawable.line_divider
+                            )!!
+                        )
+                        it.addItemDecoration(dividerItemDecoration)
 
-                            popupMenuListAdapter.setPopUpMenuOnclick(object :
-                                PopupMenuListAdapter.InquiryPopUpMenuItemOnclick
+                        popupMenuListAdapter.setPopUpMenuOnclick(object: PopupMenuListAdapter.InquiryPopUpMenuItemOnclick
+                        {
+                            override fun removeItem(v: View)
                             {
-                                override fun removeItem(v: View)
-                                {
-                                    //삭제하기
-                                    binding.vm!!.openRemoveView()
-                                    menuPopUpWindow?.dismiss()
-                                }
+                                //삭제하기
+                                binding.vm!!.openRemoveView()
+                                menuPopUpWindow?.dismiss()
+                            }
 
-                                override fun refreshItems(v: View)
-                                {
-                                    // 새로고침
-                                    binding.vm!!.refreshOngoing()
-                                    menuPopUpWindow?.dismiss()
-                                }
+                            override fun refreshItems(v: View)
+                            {
+                                // 새로고침
+                                binding.vm!!.refreshOngoing()
+                                menuPopUpWindow?.dismiss()
+                            }
 
-                                override fun help(v: View)
-                                {
-                                    // 도움말
-                                    menuPopUpWindow?.dismiss()
-                                }
-                            })
-                        }
+                            override fun help(v: View)
+                            {
+                                // 도움말
+                                menuPopUpWindow?.dismiss()
+                            }
+                        })
                     }
+                }
 
             menuPopUpWindow = PopupWindow(
-                popUpView,
-                SizeUtil.changeDpToPx(binding.root.context, 150F),
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                true
+                popUpView, SizeUtil.changeDpToPx(binding.root.context, 150F), ViewGroup.LayoutParams.WRAP_CONTENT, true
             ).apply {
                 showAsDropDown(anchorView)
             }
@@ -546,55 +490,44 @@ class InquiryView : Fragment()
 
     // 배송완료 화면에서 년/월을 눌렀을 시 팝업 메뉴가 나온다.
     @SuppressLint("UseCompatLoadingForDrawables")
-    private fun openPopUpMonthlyUsageHistory(
-        anchorView: View,
-        timeCntDtoList: MutableList<TimeCountEntity>
-    )
+    private fun openPopUpMonthlyUsageHistory(anchorView: View, timeCntDtoList: MutableList<TimeCountEntity>)
     {
-        val historyPopUpView: View =
-            LayoutInflater.from(requireContext()).inflate(R.layout.popup_menu_view, null)
-                .also { v ->
-                    val popupMenuListAdapter =
-                        PopupMenuListAdapter(MenuMapper.timeCountDtoToMenuItemList(timeCntDtoList) as MutableList<InquiryMenuItem>)
-                    v.recyclerview_inquiry_popup_menu.also {
-                        it.adapter = popupMenuListAdapter
-                        val dividerItemDecoration =
-                            DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                        dividerItemDecoration.setDrawable(
-                            ContextCompat.getDrawable(
-                                requireContext(),
-                                R.drawable.line_divider
-                            )!!
-                        )
-                        it.addItemDecoration(dividerItemDecoration)
+        val historyPopUpView: View = LayoutInflater.from(requireContext())
+            .inflate(R.layout.popup_menu_view, null)
+            .also { v ->
+                val popupMenuListAdapter =
+                    PopupMenuListAdapter(MenuMapper.timeCountDtoToMenuItemList(timeCntDtoList) as MutableList<InquiryMenuItem>)
+                v.recyclerview_inquiry_popup_menu.also {
+                    it.adapter = popupMenuListAdapter
+                    val dividerItemDecoration =
+                        DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                    dividerItemDecoration.setDrawable(
+                        ContextCompat.getDrawable(
+                            requireContext(), R.drawable.line_divider
+                        )!!
+                    )
+                    it.addItemDecoration(dividerItemDecoration)
 
-                        popupMenuListAdapter.setHistoryPopUpItemOnclick(object :
-                            PopupMenuListAdapter.HistoryPopUpItemOnclick
+                    popupMenuListAdapter.setHistoryPopUpItemOnclick(object: PopupMenuListAdapter.HistoryPopUpItemOnclick
+                    {
+                        override fun changeTimeCount(v: View, time: String)
                         {
-                            override fun changeTimeCount(v: View, time: String)
-                            {
-                                binding.vm!!.changeTimeCount(time)
-                                historyPopUpWindow?.dismiss()
-                            }
-                        })
-                    }
+                            binding.vm!!.changeTimeCount(time)
+                            historyPopUpWindow?.dismiss()
+                        }
+                    })
                 }
+            }
         historyPopUpWindow = if (timeCntDtoList.size > 6)
         {
             PopupWindow(
-                historyPopUpView,
-                SizeUtil.changeDpToPx(binding.root.context, 120F),
-                SizeUtil.changeDpToPx(binding.root.context, 35 * 6F),
-                true
+                historyPopUpView, SizeUtil.changeDpToPx(binding.root.context, 120F), SizeUtil.changeDpToPx(binding.root.context, 35 * 6F), true
             ).apply { showAsDropDown(anchorView) }
         }
         else
         {
             PopupWindow(
-                historyPopUpView,
-                SizeUtil.changeDpToPx(binding.root.context, 120F),
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                true
+                historyPopUpView, SizeUtil.changeDpToPx(binding.root.context, 120F), ViewGroup.LayoutParams.WRAP_CONTENT, true
             ).apply { showAsDropDown(anchorView) }
         }
     }
@@ -603,6 +536,7 @@ class InquiryView : Fragment()
     {
         // 당겨서 새로고침 !
         binding.swipeRefresh.setOnRefreshListener {
+
             if (!refreshDelay)
             {
                 refreshDelay = true
@@ -620,7 +554,7 @@ class InquiryView : Fragment()
                 }
 
                 //5초후에 실행
-                Timer().schedule(object : TimerTask()
+                Timer().schedule(object: TimerTask()
                 {
                     override fun run()
                     {
@@ -629,17 +563,18 @@ class InquiryView : Fragment()
                         }
                     }
                 }, 5000)
+
+                return@setOnRefreshListener
             }
-            else
-            {
-                Toast.makeText(requireContext(), "5초 후에 다시 새로고침을 시도해주세요.", Toast.LENGTH_LONG).show()
-            }
+
+            Toast.makeText(requireContext(), "5초 후에 다시 새로고침을 시도해주세요.", Toast.LENGTH_LONG).show()
+
             binding.swipeRefresh.isRefreshing = false
         }
 
 
         // 배송완료 리스트의 마지막 행까지 내려갔다면 다음 데이터를 요청한다(페이징)
-        binding.recyclerviewCompleteParcel.addOnScrollListener(object : RecyclerView.OnScrollListener()
+        binding.recyclerviewCompleteParcel.addOnScrollListener(object: RecyclerView.OnScrollListener()
         {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
             {
@@ -648,7 +583,7 @@ class InquiryView : Fragment()
                 if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) // 리스트뷰의 마지막
                 {
                     val spinnerMonthTv = tv_spinner_month.text.toString()
-                    SopoLog.d( msg = "[배송완료 - 다른 날짜의 데이터 조회] 선택된 년월 : $spinnerMonthTv")
+                    SopoLog.d(msg = "[배송완료 - 다른 날짜의 데이터 조회] 선택된 년월 : $spinnerMonthTv")
                     binding.vm!!.getCompleteListWithPaging(
                         MenuMapper.titleToInquiryDate(
                             tv_spinner_month.text.toString()
@@ -670,7 +605,8 @@ class InquiryView : Fragment()
                             soonArrivalParcelAdapter.getSelectedListData() // '곧 도착'에서 선택된 아이템들 리스트
                         val selectedDataRegister =
                             registeredParcelAdapter.getSelectedListData() // '등록된 택배'에서 선택된 아이템들 리스트
-                        Stream.of(selectedDataSoon, selectedDataRegister).flatMap { it.stream() }
+                        Stream.of(selectedDataSoon, selectedDataRegister)
+                            .flatMap { it.stream() }
                             .collect(Collectors.toList()) // '곧 도착' 리스트와 '등록뙨 택배' 리스트에서 선택된 아이템들을 '하나'의 리스트로 합쳐 뷰모델로 보내 삭제 처리를 한다.
                     }
                     ScreenStatusEnum.COMPLETE ->
@@ -690,8 +626,7 @@ class InquiryView : Fragment()
                 dialog.dismiss()
 
                 showDeleteSnackBar()
-            }
-                .show(requireActivity().supportFragmentManager, "ConfirmDeleteDialog")
+            }.show(requireActivity().supportFragmentManager, "ConfirmDeleteDialog")
         }
     }
 
@@ -763,7 +698,7 @@ class InquiryView : Fragment()
 
         // '하단 탭'이 사라져야한다.
         parentView.binding.vm!!.setTabLayoutVisibility(GONE)
-//        mainVm.setTabLayoutVisibility(GONE)
+        //        mainVm.setTabLayoutVisibility(GONE)
     }
 
     // X 버튼으로 '삭제하기 취소'가 되었을때 화면 세팅
@@ -793,7 +728,7 @@ class InquiryView : Fragment()
         constraint_snack_bar.visibility = VISIBLE
         constraint_snack_bar.startAnimation(slideUp)
         //2초후에 실행
-        Timer().schedule(object : TimerTask()
+        Timer().schedule(object: TimerTask()
         {
             override fun run()
             {

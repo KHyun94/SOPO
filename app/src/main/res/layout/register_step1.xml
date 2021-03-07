@@ -169,7 +169,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/spoqa_han_sans_regular"
                 android:text="@={vm.clipBoardWords}"
-                android:textColor="@color/COLOR_MAIN_BLUE_700"
+                android:textColor="@color/COLOR_MAIN_700"
                 android:textSize="14sp" />
 
             <TextView
@@ -177,7 +177,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/spoqa_han_sans_regular"
                 android:text="로 등록하기"
-                android:textColor="@color/COLOR_MAIN_BLUE_700"
+                android:textColor="@color/COLOR_MAIN_700"
                 android:textSize="14sp" />
 
         </LinearLayout>
@@ -188,7 +188,7 @@
             android:layout_marginHorizontal="36sp"
             android:layout_marginTop="69sp"
             android:background="@drawable/border_all_rounded"
-            android:backgroundTint="@color/COLOR_MAIN_BLUE_700"
+            android:backgroundTint="@color/COLOR_MAIN_700"
             android:gravity="center"
             android:onClick="@{()->vm.onMove3rdStepClicked()}"
             android:orientation="horizontal"

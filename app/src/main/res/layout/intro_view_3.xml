@@ -13,7 +13,7 @@
         android:layout_marginStart="35sp"
         android:fontFamily="@font/spoqa_han_sans_regular"
         android:text="간편 입력 택배예약을 해보세요."
-        android:textColor="@color/COLOR_MAIN_BLUE_700"
+        android:textColor="@color/COLOR_MAIN_700"
         android:textSize="21sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/tv_subtext"

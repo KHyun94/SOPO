@@ -80,7 +80,7 @@ class MainViewModel(
     // 로컬 DB - Parcel Management의 'isBeUpdate'가 1인 row들이 있는지 체크
     private fun isBeUpdateParcels()
     {
-        SopoLog.d( msg = "isBeUpdateParcels 시작!!!!!!!")
+        SopoLog.d("fun isBeUpdateParcels() call")
 
         var cnt = 0
 

@@ -75,7 +75,7 @@ class CustomEditText : LinearLayout
             )
             focusColor = typedArray?.getColor(
                 R.styleable.CustomEditText_focusColor,
-                resources.getColor(R.color.COLOR_MAIN_BLUE_700)
+                resources.getColor(R.color.COLOR_MAIN_700)
             )
 
             val test =
@@ -159,7 +159,7 @@ class CustomEditText : LinearLayout
 
             focusChangeColor = if (b)
             {
-                focusColor ?: resources.getColor(R.color.COLOR_MAIN_BLUE_700)
+                focusColor ?: resources.getColor(R.color.COLOR_MAIN_700)
             }
             else
             {
@@ -202,8 +202,8 @@ class CustomEditText : LinearLayout
             1 ->
             {
                 SopoLog.d( msg = "Blue")
-                tv_title.setTextColor(resources.getColor(R.color.COLOR_MAIN_BLUE_700))
-                v_underline.setBackgroundResource(R.color.COLOR_MAIN_BLUE_700)
+                tv_title.setTextColor(resources.getColor(R.color.COLOR_MAIN_700))
+                v_underline.setBackgroundResource(R.color.COLOR_MAIN_700)
 
             }
             2 ->

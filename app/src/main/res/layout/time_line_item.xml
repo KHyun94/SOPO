@@ -68,7 +68,7 @@
             android:layout_marginStart="11dp"
             android:includeFontPadding="false"
             android:text="간선상차"
-            android:textColor="@color/COLOR_MAIN_BLUE_700"
+            android:textColor="@color/COLOR_MAIN_700"
             app:layout_constraintLeft_toRightOf="@+id/layout_status"
             app:layout_constraintTop_toTopOf="parent" />
 

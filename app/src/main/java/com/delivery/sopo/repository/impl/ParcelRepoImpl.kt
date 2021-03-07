@@ -75,9 +75,10 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
     }
 
     override suspend fun isBeingUpdateParcel(regDt: String, parcelUid: String): LiveData<Int?> = appDatabase.parcelDao().isBeingUpdateParcel(regDt, parcelUid)
-    override fun getIsUnidentifiedLiveData(regDt: String, parcelUid: String): LiveData<Int?>
+
+    override suspend fun getIsUnidentifiedAsLiveData(parcelId: ParcelId): LiveData<Int?>
     {
-        return appDatabase.parcelDao().getIsUnidentifiedLiveData(regDt, parcelUid)
+        return appDatabase.parcelDao().getIsUnidentifiedLiveData(parcelId.regDt, parcelId.parcelUid)
     }
 
     override fun getLocalOnGoingParcelCnt(): LiveData<Int>

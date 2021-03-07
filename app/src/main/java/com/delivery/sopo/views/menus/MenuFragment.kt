@@ -19,6 +19,7 @@ import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.TimeCountRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.AlertUtil
+import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.factory.MenuViewModelFactory
 import com.delivery.sopo.viewmodels.menus.MenuViewModel
@@ -112,9 +113,7 @@ class MenuFragment : Fragment()
                             SopoLog.d( msg = "Sub MenuFragment:: BackPressListener")
                             binding.vm!!.popView()
                         }
-
                     }
-
                 }
 
                 requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
@@ -138,7 +137,7 @@ class MenuFragment : Fragment()
                 }
                 MenuEnum.USE_TERMS ->
                 {
-                    move(menuView, NotDisturbTimeFragment(), 0)
+                    move(menuView, AppInfoFragment(), 0)
                 }
                 MenuEnum.APP_INFO ->
                 {
@@ -184,7 +183,6 @@ class MenuFragment : Fragment()
     }
 
     var callback: OnBackPressedCallback? = null
-
 
     override fun onDetach()
     {

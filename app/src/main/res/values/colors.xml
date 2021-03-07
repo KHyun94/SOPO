@@ -5,8 +5,7 @@
     <color name="COLOR_MAIN_RED_500">#FF7777</color>
     <color name="COLOR_MAIN_RED_700">#FF7777</color>
 
-    <color name="COLOR_MAIN_BLUE_100">#DCE7FC</color>
-    <color name="COLOR_MAIN_BLUE_700">#5C94FF</color>
+    <color name="COLOR_BLUE_700">#437DF8</color>
 
     <color name="COLOR_GRAY_50">#F9F9FB</color>
     <color name="COLOR_GRAY_100">#F1F1F4</color>
@@ -63,5 +62,7 @@
     <color name="SAMPLE_BLACK">#080808</color>
     <color name="TMP_BLACK">#1D1D1D</color>
 
+    <color name="STATUS_PREPARING">#F9F9FB</color>
+    <color name="STATUS_ING">#DDE9FA</color>
 
 </resources>
