@@ -1,13 +1,33 @@
 package com.delivery.sopo.bindings
 
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
+import androidx.annotation.ColorRes
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.delivery.sopo.util.OtherUtil
+import com.delivery.sopo.util.SopoLog
 
 object ImageBindingAdapter
 {
+
+    @JvmStatic
+    @BindingAdapter("setBackgroundColor")
+    fun bindBackgroundColor(view: View, @ColorRes colorRes: Int)
+    {
+        try
+        {
+            view.setBackgroundResource(colorRes)
+        }
+        catch (e: java.lang.Exception)
+        {
+            SopoLog.e(e.localizedMessage, e)
+            view.setBackgroundResource(0)
+        }
+
+    }
+
     @JvmStatic
     @BindingAdapter("setImage", "setDefaultImage")
     fun bindSetterImage(view: ImageView, res: Int, defaultRes :Int = 0)

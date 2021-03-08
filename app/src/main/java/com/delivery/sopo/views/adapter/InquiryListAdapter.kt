@@ -5,14 +5,12 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.InquiryListCompleteItemBinding
@@ -24,7 +22,6 @@ import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
@@ -102,92 +99,27 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
     // onBindViewHolder() - position에 해당하는 데이터를 뷰홀더의 아이템뷰에 표시.
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)
     {
-        val list = list[position]
+        val inquiryListItem: InquiryListItem = list[position]
 
         when (holder)
         {
             is OngoingViewHolder ->
             {
-                holder.bind(list)
-                holder.itemView.tag = list
+                holder.bind(inquiryListItem)
+                holder.itemView.tag = inquiryListItem
 
-                list.setUpdateValue() {
-                    if (it != null && it) holder.itemView.iv_red_dot.visibility = View.VISIBLE
-                    else holder.itemView.iv_red_dot.visibility = View.GONE
-                }
 
-                val parcel: Parcel = list.parcel
+                holder.ongoingBinding.ivRedDot.visibility = View.GONE
+
+                val parcel: Parcel = inquiryListItem.parcel
 
                 SopoLog.d("Delivery Status >>> ${parcel.deliveryStatus}")
 
-                when (parcel.deliveryStatus)
-                {
-                    DeliveryStatusEnum.NOT_REGISTER.CODE ->
-                    {
-                        holder.ongoingBinding.run {
-                            imageDeliveryStatus.setBackgroundResource(R.drawable.ic_parcel_status_preparing)
-                            constraintDeliveryStatusFront.setBackgroundResource(R.color.STATUS_PREPARING)
-                            tvDeliveryStatus.text = "준비중"
-                            tvDeliveryStatus.setTextColor(ContextCompat.getColor(this.root.context, R.color.COLOR_GRAY_300))
-                        }
-                    }
-                    //상품 준비중
-                    DeliveryStatusEnum.INFORMATION_RECEIVED.CODE ->
-                    {
-                        holder.ongoingBinding.run {
-                            imageDeliveryStatus.setBackgroundResource(R.drawable.ic_parcel_status_preparing)
-                            constraintDeliveryStatusFront.setBackgroundResource(R.color.STATUS_PREPARING)
-                            tvDeliveryStatus.text = "준비중"
-                            tvDeliveryStatus.setTextColor(ContextCompat.getColor(this.root.context, R.color.COLOR_GRAY_300))
-                        }
-                    }
-                    //상품 인수
-                    DeliveryStatusEnum.AT_PICKUP.CODE ->
-                    {
-                        holder.ongoingBinding.run {
-                            imageDeliveryStatus.setBackgroundResource(R.drawable.ic_parcel_status_pickup)
-                            constraintDeliveryStatusFront.setBackgroundResource(R.color.STATUS_PREPARING)
-                            tvDeliveryStatus.text = "상품인수"
-                            tvDeliveryStatus.setTextColor(ContextCompat.getColor(this.root.context, R.color.COLOR_MAIN_300))
-                        }
-                    }
-                    //상품 이동 중
-                    DeliveryStatusEnum.IN_TRANSIT.CODE ->
-                    {
-                        holder.ongoingBinding.root.apply {
-                            this.image_delivery_status.setBackgroundResource(R.drawable.ic_parcel_status_ing)
-                            this.constraint_delivery_status_front.setBackgroundResource(R.color.STATUS_ING)
-                            this.tv_delivery_status.text = "배송중"
-                            this.tv_delivery_status.setTextColor(
-                                ContextCompat.getColor(
-                                    this.context, R.color.MAIN_WHITE
-                                )
-                            )
-                        }
-                    }
-                    // 동네도착
-                    DeliveryStatusEnum.OUT_OF_DELIVERY.CODE ->
-                    {
-                        holder.ongoingBinding.root.apply {
-                            Glide.with(this.context)
-                                .asGif()
-                                .load(R.drawable.ic_parcel_status_soon)
-                                .into(this.image_delivery_status)
+                holder.ongoingBinding.tvDeliveryStatus.bringToFront()
 
-                            this.constraint_delivery_status_front.setBackgroundResource(R.color.COLOR_BLUE_700)
-                            this.tv_delivery_status.text = "동네도착"
 
-                            this.tv_delivery_status.setTextColor(
-                                ContextCompat.getColor(
-                                    holder.ongoingBinding.root.context, R.color.MAIN_WHITE
-                                )
-                            )
-                            this.tv_delivery_status.bringToFront()
-                        }
-                    }
-                }
 
-                if (list.isSelected)
+                if (inquiryListItem.isSelected)
                 {
                     ongoingViewSelected(holder.ongoingBinding)
                 }
@@ -201,28 +133,26 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                 val onGoingView = holder.ongoingBinding.root.cv_ongoing_parent
 
                 holder.ongoingBinding.root.cv_ongoing_parent.setOnClickListener {
-                    if (isRemovable && !list.isSelected)
+                    if (isRemovable && !inquiryListItem.isSelected)
                     {
-                        list.isSelected = true
+                        inquiryListItem.isSelected = true
                         cntOfSelectedItemForDelete.value =
                             (cntOfSelectedItemForDelete.value ?: 0) + 1
                         ongoingViewSelected(holder.ongoingBinding)
                     }
-                    else if (isRemovable && list.isSelected)
+                    else if (isRemovable && inquiryListItem.isSelected)
                     {
-                        list.isSelected = false
+                        inquiryListItem.isSelected = false
                         cntOfSelectedItemForDelete.value =
                             (cntOfSelectedItemForDelete.value ?: 0) - 1
                         ongoingViewInitialize(holder.ongoingBinding)
                     }
                     else
                     {
-                        SopoLog.d(msg = "33333")
-
                         if (mClickListener != null)
                         {
                             mClickListener!!.onItemClicked(
-                                view = it, type = 0, parcelId = list.parcel.parcelId
+                                view = it, type = 0, parcelId = inquiryListItem.parcel.parcelId
                             )
                         }
                     }
@@ -232,7 +162,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                     if (!isRemovable && mClickListener != null)
                     {
                         mClickListener!!.onItemLongClicked(
-                            view = it, type = 0, parcelId = list.parcel.parcelId
+                            view = it, type = 0, parcelId = inquiryListItem.parcel.parcelId
                         )
                     }
                     return@setOnLongClickListener true
@@ -240,10 +170,10 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
             }
             is CompleteViewHolder ->
             {
-                holder.bind(list)
-                holder.itemView.tag = list
+                holder.bind(inquiryListItem)
+                holder.itemView.tag = inquiryListItem
 
-                if (list.isSelected)
+                if (inquiryListItem.isSelected)
                 {
                     completeViewSelected(holder.completeBinding)
                 }
@@ -253,18 +183,18 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                 }
                 holder.completeBinding.root.cv_complete_parent.setOnClickListener {
 
-                    SopoLog.d("isSelect : ${list.isSelected} && isRemovable : $isRemovable")
+                    SopoLog.d("isSelect : ${inquiryListItem.isSelected} && isRemovable : $isRemovable")
 
-                    if (isRemovable && !list.isSelected)
+                    if (isRemovable && !inquiryListItem.isSelected)
                     {
-                        list.isSelected = true
+                        inquiryListItem.isSelected = true
                         cntOfSelectedItemForDelete.value =
                             (cntOfSelectedItemForDelete.value ?: 0) + 1
                         completeViewSelected(holder.completeBinding)
                     }
-                    else if (isRemovable && list.isSelected)
+                    else if (isRemovable && inquiryListItem.isSelected)
                     {
-                        list.isSelected = false
+                        inquiryListItem.isSelected = false
                         cntOfSelectedItemForDelete.value =
                             (cntOfSelectedItemForDelete.value ?: 0) - 1
                         completeViewInitialize(holder.completeBinding)
@@ -274,7 +204,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                         if (mClickListener != null)
                         {
                             mClickListener!!.onItemClicked(
-                                view = it, type = 1, parcelId = list.parcel.parcelId
+                                view = it, type = 1, parcelId = inquiryListItem.parcel.parcelId
                             )
                         }
                     }
@@ -284,7 +214,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                     if (!isRemovable && mClickListener != null)
                     {
                         mClickListener!!.onItemLongClicked(
-                            view = it, type = 1, parcelId = list.parcel.parcelId
+                            view = it, type = 1, parcelId = inquiryListItem.parcel.parcelId
                         )
                     }
                     return@setOnLongClickListener true

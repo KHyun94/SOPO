@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
         <variable
             name="ongoingInquiryData"
             type="com.delivery.sopo.models.inquiry.InquiryListItem" />
@@ -31,40 +33,44 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.2"
-                android:background="@color/COLOR_GRAY_400"
+                app:setBackgroundColor="@{ongoingInquiryData.backgroundColorResource}"
                 tools:visibility="visible">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <androidx.constraintlayout.widget.Guideline
-                        android:id="@+id/guide_1st"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layout_constraintGuide_percent="0.10"
-                        android:orientation="horizontal"/>
-
                     <ImageView
                         android:id="@+id/image_delivery_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:src="@drawable/ic_parcel_status_preparing"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/guide_2nd"
+                        app:layout_constraintBottom_toTopOf="parent"
                         app:layout_constraintLeft_toRightOf="parent"
                         app:layout_constraintRight_toLeftOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/guide_1st"/>
+                        app:layout_constraintTop_toBottomOf="parent"
+                        app:layout_constraintWidth_percent="0.33"
+                        app:setDefaultImage="@{0}"
+                        app:setImage="@{ongoingInquiryData.iconResource}"
+                        tools:src="@drawable/ic_parcel_status_preparing" />
 
                     <androidx.constraintlayout.widget.Guideline
-                        android:id="@+id/guide_2st"
+                        android:id="@+id/guide_2nd"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintGuide_percent="0.3972" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guide_3rd"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        app:layout_constraintGuide_percent="0.64"
-                        android:orientation="horizontal"/>
+                        android:orientation="horizontal"
+                        app:layout_constraintGuide_percent="0.64" />
 
                     <TextView
                         android:id="@+id/tv_delivery_status"
@@ -75,10 +81,13 @@
                         android:fontFamily="@font/spoqa_han_sans_bold"
                         android:textColor="@color/MAIN_WHITE"
                         android:textSize="10sp"
-                        tools:text="상품인수"
                         app:layout_constraintLeft_toRightOf="parent"
                         app:layout_constraintRight_toLeftOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/guide_2st"/>
+                        app:layout_constraintTop_toBottomOf="@+id/guide_3rd"
+                        app:setText="@{ongoingInquiryData.statusText}"
+                        app:setTextColor="@{ongoingInquiryData.statusTextColorResource}"
+                        tools:text="상품인수" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -111,11 +120,12 @@
                     android:id="@+id/iv_red_dot"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/oval_red_dot"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
                     android:layout_margin="10dp"
-                    android:visibility="gone"/>
+                    android:src="@drawable/oval_red_dot"
+                    android:visibility="@{ongoingInquiryData.isUnidentified()?View.VISIBLE:View.GONE}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:visibility="visible"/>
 
                 <LinearLayout
                     android:id="@+id/linear_sopo_item"

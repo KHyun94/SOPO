@@ -6,7 +6,9 @@
     <data>
 
         <import type="android.view.View" />
+
         <import type="com.delivery.sopo.R" />
+
         <import type="com.delivery.sopo.enums.ScreenStatusEnum" />
 
         <variable
@@ -35,9 +37,9 @@
             android:text="@string/INQUIRY_VIEW_MAIN_TITLE"
             android:textColor="@color/COLOR_GRAY_800"
             android:textSize="21sp"
+            android:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:visibility="visible"
             tools:visibility="visible" />
 
         <TextView
@@ -49,10 +51,10 @@
             android:text="@string/INQUIRY_VIEW_PLEASE_SELECT_ITEM_TO_DELETE"
             android:textColor="@color/COLOR_GRAY_800"
             android:textSize="17sp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/image_inquiry_popup_menu"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/image_inquiry_popup_menu"
-            android:visibility="gone"
             tools:visibility="gone" />
 
         <ImageView
@@ -76,10 +78,10 @@
             android:onClick="@{() -> vm.closeRemoveView()}"
             android:padding="10dp"
             android:src="@drawable/ic_24_x_black"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/tv_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/tv_title"
-            android:visibility="gone"
             tools:visibility="gone" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -88,8 +90,8 @@
             android:layout_height="60dp"
             android:layout_marginTop="10dp"
             android:background="@drawable/white_gradient"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title"
             android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title"
             tools:visibility="visible">
 
             <LinearLayout
@@ -161,8 +163,8 @@
             android:layout_height="40dp"
             android:layout_marginTop="10dp"
             android:onClick="@{()-> vm.toggleSelectAll()}"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title"
             android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title"
             tools:visibility="visible">
 
             <LinearLayout
@@ -300,20 +302,18 @@
                             android:id="@+id/layout_present_ongoing"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginVertical="20dp">
+                            android:layout_marginVertical="20dp"
+                            android:orientation="horizontal">
 
                             <LinearLayout
                                 android:id="@+id/layout_present_ongoing_text"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="24dp"
                                 android:gravity="center"
                                 android:orientation="vertical"
                                 app:layout_constrainedWidth="true"
                                 app:layout_constraintBottom_toTopOf="parent"
-                                app:layout_constraintRight_toLeftOf="@+id/iV_present_parcel"
-                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintRight_toLeftOf="@+id/guide_1st"
                                 app:layout_constraintTop_toBottomOf="parent">
 
                                 <TextView
@@ -333,17 +333,26 @@
 
                             </LinearLayout>
 
+                            <androidx.constraintlayout.widget.Guideline
+                                android:id="@+id/guide_1st"
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical"
+                                app:layout_constraintGuide_percent="0.36" />
+
                             <ImageView
                                 android:id="@+id/iV_present_parcel"
                                 android:layout_width="wrap_content"
-                                android:layout_height="150dp"
-                                app:layout_constraintTop_toBottomOf="parent"
-                                app:layout_constraintBottom_toTopOf="parent"
-                                app:layout_constraintEnd_toEndOf="parent"
-                                app:setImage="@{R.drawable.ic_splash_ani_box}"
-                                app:setDefaultImage="@{0}"
+                                android:layout_height="wrap_content"
+                                app:layout_constraintWidth_percent="0.33"
                                 app:layout_constrainedWidth="true"
-                                app:layout_constraintLeft_toRightOf="@+id/layout_present_ongoing_text"/>
+                                app:layout_constraintBottom_toTopOf="parent"
+                                app:layout_constraintRight_toRightOf="parent"
+                                app:layout_constraintLeft_toLeftOf="@+id/guide_1st"
+                                app:layout_constraintTop_toBottomOf="parent"
+                                app:setDefaultImage="@{0}"
+                                app:setImage="@{R.drawable.ic_inquiry_background}"
+                                tools:background="@drawable/ic_inquiry_background" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -430,7 +439,7 @@
                                 android:id="@+id/v_more_view"
                                 android:layout_width="match_parent"
                                 android:layout_height="20dp"
-                                android:visibility="gone"/>
+                                android:visibility="gone" />
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:id="@+id/constraint_registered_arrival"
@@ -658,10 +667,10 @@
             android:layout_height="50dp"
             android:background="@color/MAIN_RED"
             android:elevation="50dp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:visibility="gone"
             tools:visibility="gone">
 
             <LinearLayout
