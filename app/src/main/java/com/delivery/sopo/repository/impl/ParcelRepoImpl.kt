@@ -76,7 +76,7 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
 
     override suspend fun isBeingUpdateParcel(regDt: String, parcelUid: String): LiveData<Int?> = appDatabase.parcelDao().isBeingUpdateParcel(regDt, parcelUid)
 
-    override suspend fun getIsUnidentifiedAsLiveData(parcelId: ParcelId): LiveData<Int?>
+    override fun getIsUnidentifiedAsLiveData(parcelId: ParcelId): LiveData<Int?>
     {
         return appDatabase.parcelDao().getIsUnidentifiedLiveData(parcelId.regDt, parcelId.parcelUid)
     }

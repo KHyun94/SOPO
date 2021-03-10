@@ -4,6 +4,8 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.bumptech.glide.Glide
 import com.delivery.sopo.R
 import com.delivery.sopo.enums.DeliveryStatusEnum
@@ -43,18 +45,9 @@ class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): Koin
         postValue(getStatusTextColorResource())
     }
 
-    val isUnidentified = MutableLiveData<Boolean?>().also {value ->
-        checkIsUnidentified {
-            SopoLog.d("change isUnidentified Value >>> $it")
-            value.postValue(it)
-        }
-    }
-
-    init
-    {
-        // TODO VISIBLE에 대한 양방향 바인딩 처리?
-        checkIsUnidentified {
-            isUnidentified.postValue(it)
+    val isUnidentified: LiveData<Boolean?> = Transformations.switchMap(parcelRepoImpl.getIsUnidentifiedAsLiveData(parcel.parcelId)){
+        MutableLiveData<Int?>().map {
+            it != null && it == 1
         }
     }
 
