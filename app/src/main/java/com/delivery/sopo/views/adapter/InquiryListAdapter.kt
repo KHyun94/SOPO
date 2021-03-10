@@ -44,6 +44,16 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
         mClickListener = _mClickListener
     }
 
+    inner class ProcessStatusViewHolder<T:ViewDataBinding>(private val _binding: T): RecyclerView.ViewHolder(_binding.root)
+    {
+        val binding: T = _binding
+
+        fun bind(inquiryListItem: InquiryListItem)
+        {
+            binding.setVariable(BR.item, inquiryListItem)
+        }
+    }
+
     inner class OngoingViewHolder(private val binding: InquiryListOngoingItemBinding): RecyclerView.ViewHolder(binding.root)
     {
         var ongoingBinding: InquiryListOngoingItemBinding = binding
@@ -108,15 +118,9 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                 holder.bind(inquiryListItem)
                 holder.itemView.tag = inquiryListItem
 
-
-                holder.ongoingBinding.ivRedDot.visibility = View.GONE
-
                 val parcel: Parcel = inquiryListItem.parcel
 
-                SopoLog.d("Delivery Status >>> ${parcel.deliveryStatus}")
-
                 holder.ongoingBinding.tvDeliveryStatus.bringToFront()
-
 
 
                 if (inquiryListItem.isSelected)
@@ -129,9 +133,6 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                 }
 
                 // v: View , isRemoveable : Boolean, item : InquiryListItem
-
-                val onGoingView = holder.ongoingBinding.root.cv_ongoing_parent
-
                 holder.ongoingBinding.root.cv_ongoing_parent.setOnClickListener {
                     if (isRemovable && !inquiryListItem.isSelected)
                     {

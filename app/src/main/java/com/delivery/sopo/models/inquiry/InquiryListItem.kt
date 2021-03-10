@@ -2,6 +2,10 @@ package com.delivery.sopo.models.inquiry
 
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
+import androidx.databinding.BaseObservable
+import androidx.databinding.Observable
+import androidx.databinding.ObservableField
+import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
@@ -20,7 +24,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 // TODO 추후 변경...
-class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): KoinComponent {
+class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): KoinComponent, BaseObservable()
+{
 
     init
     {
@@ -45,11 +50,13 @@ class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): Koin
         postValue(getStatusTextColorResource())
     }
 
-    val isUnidentified: LiveData<Boolean?> = Transformations.switchMap(parcelRepoImpl.getIsUnidentifiedAsLiveData(parcel.parcelId)){
-        MutableLiveData<Int?>().map {
-            it != null && it == 1
+    val isUnidentified = ObservableField<Boolean>().also {value ->
+        checkIsUnidentified {
+            value.set(it)
+            notifyChange()
         }
     }
+
 
     private val completeTimeDate: Calendar by lazy {
         Calendar.getInstance().apply { this.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(parcel.arrivalDte?.replace("T", " ")) }

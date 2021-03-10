@@ -16,6 +16,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -143,7 +144,7 @@ class InquiryView: Fragment()
     {
         SopoLog.d("bindView() call")
 
-        binding = SopoInquiryViewBinding.inflate(inflater, container, false).apply {
+        binding = DataBindingUtil.inflate<SopoInquiryViewBinding>(inflater, R.layout.sopo_inquiry_view, container, false).apply {
             vm = inquiryVm
             lifecycleOwner = this@InquiryView
         }

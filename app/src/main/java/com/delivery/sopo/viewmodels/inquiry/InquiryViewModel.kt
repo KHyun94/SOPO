@@ -362,9 +362,11 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
     {
         try
         {
+            isLoading.postValue(true)
+
             viewModelScope.launch(Dispatchers.IO) {
                 SopoLog.d(msg = "배송완료 리스트 Get Progress Start")
-                isLoading.postValue(true)
+
                 val remoteParcels = parcelRepoImpl.getRemoteOngoingParcels()
 
                 // 서버로부터 데이터를 받아온 값이 널이 아니라면

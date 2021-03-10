@@ -122,7 +122,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     android:src="@drawable/oval_red_dot"
-                    android:visibility="@{ongoingInquiryData.isUnidentified()?View.VISIBLE:View.GONE}"
+                    android:visibility="@{ongoingInquiryData.isUnidentified()?View.VISIBLE:View.GONE, default=gone}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:visibility="visible"/>
