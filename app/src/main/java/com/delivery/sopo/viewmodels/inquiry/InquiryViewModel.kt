@@ -25,7 +25,6 @@ import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
-import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -66,7 +65,9 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
     val isSelectAll: LiveData<Boolean>
         get() = _isSelectAll
 
-    var isLoading = SingleLiveEvent<Boolean?>()
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean>
+        get() = _isLoading
 
 
     //TODO 앱 실행 후 처음만 실행 - 나중
@@ -106,10 +107,11 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
     val refreshCompleteListByOnlyLocalData: LiveData<Int>
         get() = _refreshCompleteListByOnlyLocalData
 
-    val presentOngoingParcelCntAsStr: LiveData<String> = Transformations.map(parcelRepoImpl.getLocalOnGoingParcelCnt()) { cnt -> "택배 ${cnt}개" }
+    val presentOngoingParcelCntAsStr: LiveData<String> =
+        Transformations.map(parcelRepoImpl.getLocalOnGoingParcelCnt()) { cnt -> "택배 ${cnt}개" }
 
     private val ioScope = CoroutineScope(Dispatchers.IO)
-    private val pagingManagement = PagingManagement(0, "", true)
+    private var pagingManagement = PagingManagement(0, "", true)
 
     init
     {
@@ -134,7 +136,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
     {
         _screenStatus.value = ScreenStatusEnum.COMPLETE
         _isShowDeleteSnackBar.value = false
-        if(is1st.value == true)
+        if (is1st.value == true)
         {
             refreshComplete()
             is1st.value = false
@@ -248,41 +250,41 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
     // 배송완료 리스트를 가져온다.(페이징 포함)
     fun getCompleteListWithPaging(inquiryDate: String)
     {
+        SopoLog.d(msg = "getCompleteListWithPaging() call")
+
         viewModelScope.launch(Dispatchers.IO) {
 
-            SopoLog.d(msg = "배송완료 리스트 Get Progress Start")
+            _isLoading.postValue(true) // 로딩 프로그래스바 표출
 
-            //            _isLoading.postValue(true) // 로딩 프로그래스바 표출
-            isLoading.postValue(true)
+            if (pagingManagement.inquiryDate != inquiryDate)
+            {
+                //pagingManagement에 저장된 inquiryDate랑 새로 조회하려는 데이터가 다르면 페이징 데이터 초기화 후 새로운 데이터로 조회
+                pagingManagement = PagingManagement(0, inquiryDate, true)
 
-            if (pagingManagement.InquiryDate != inquiryDate)
-            { //pagingManagement에 저장된 inquiryDate랑 새로 조회하려는 데이터가 다르면 페이징 데이터 초기화 후 새로운 데이터로 조회
-                pagingManagement.pagingNum = 0
-                pagingManagement.InquiryDate = inquiryDate
-                pagingManagement.hasNext = true
+                // TODO isNowVisible의 정체?
                 // 전체 리스트(getAll) 중 isNowVisible이 1인 Entity를(filter) 0으로 바꾼 후(forEach) 업데이트(updateEntities)
                 parcelManagementRepoImpl.getAll()?.let { list ->
                     list.filter { it.isNowVisible == 1 }.forEach { it.isNowVisible = 0 }
                     parcelManagementRepoImpl.updateEntities(list)
                 }
+
+
             }
             else
             {
                 pagingManagement.pagingNum += 1
             }
-
             // 다음에 조회할 데이터가 있다면
             if (pagingManagement.hasNext)
             {
-                val remoteCompleteParcels = parcelRepoImpl.getRemoteCompleteParcels(
-                    page = pagingManagement.pagingNum, inquiryDate = inquiryDate
-                )
+                val remoteCompleteParcels = parcelRepoImpl.getRemoteCompleteParcels(page = pagingManagement.pagingNum, inquiryDate = inquiryDate)
 
                 // null이거나 0이면 다음 데이터가 없는 것이므로 페이징 숫자를 1빼고 hasNext를 false로 바꾼다.
                 if (remoteCompleteParcels == null || remoteCompleteParcels.size == 0)
                 {
                     pagingManagement.pagingNum -= 1
                     pagingManagement.hasNext = false
+                    return@launch
                 }
                 else
                 {
@@ -312,8 +314,8 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
                     parcelRepoImpl.insertEntities(updateParcelList)
                 }
             }
-            //            _isLoading.postValue(false)
-            isLoading.postValue(false)
+
+            _isLoading.postValue(false)
         }
     }
 
@@ -344,36 +346,27 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
                 refreshOngoing()
                 return@launch
             }
-            //            else
-            //            {
-            //                val beUpdateParcelCnt = parcelManagementRepoImpl.getIsUpdateCnt()
-            //                // View에 postValue로 값을 전달하기 전 '앱을 시작했을떄 강제 업데이트'를 해야하기 때문에 refreshOngoing()을 호출하여 강제 업데이트
-            //                if (beUpdateParcelCnt > 0)
-            //                {
-            //                    refreshOngoing()
-            //                    return@launch
-            //                }
-            //            }
         }
     }
 
     // 배송 중, 등록된 택배의 전체 새로고침
     fun refreshOngoing()
     {
+        SopoLog.d("refreshOngoing() call")
+
+        _isLoading.postValue(true)
+
         try
         {
-            isLoading.postValue(true)
-
             viewModelScope.launch(Dispatchers.IO) {
-                SopoLog.d(msg = "배송완료 리스트 Get Progress Start")
 
                 val remoteParcels = parcelRepoImpl.getRemoteOngoingParcels()
 
                 // 서버로부터 데이터를 받아온 값이 널이 아니라면
-                remoteParcels?.let {
+                remoteParcels?.let {parcels ->
 
                     // 서버로부터 받아온 데이터(ParcelId로 검색)로 로컬 db에 검색이 되는지 확인한다.
-                    for (remote in it)
+                    for (remote in parcels)
                     {
                         val localParcelById = parcelRepoImpl.getLocalParcelById(remote.parcelId)
                         // 서버로부터 받아온 데이터가 검색되지 않았을 경우 => 새로운 데이터라는 의미 => 로컬에 저장한다.
@@ -476,7 +469,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
                     }
                 }
                 //            _isLoading.postValue(false)
-                isLoading.postValue(false)
+                _isLoading.postValue(false)
             }
         }
         catch (e: Exception)
@@ -584,26 +577,29 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
 
                 for (parcelMng in parcelMngList)
                 {
-                    parcelRepoImpl.getLocalParcelById(ParcelId(parcelMng.regDt, parcelMng.parcelUid))?.let {
-                        it.status = 1
-                        parcelRepoImpl.updateEntity(it)
-                    }
+                    parcelRepoImpl.getLocalParcelById(ParcelId(parcelMng.regDt, parcelMng.parcelUid))
+                        ?.let {
+                            it.status = 1
+                            parcelRepoImpl.updateEntity(it)
+                        }
                 }
                 if (getCurrentScreenStatus() == ScreenStatusEnum.COMPLETE)
                 {
                     // 복구해야할 리스트 중 아이템 하나의 도착일자 (2020-09-19 ~~)에서 TIME_COUNT의 primaryKey를 추출해서 복구해야할 TIME_COUNT를 구한다.
-                    parcelRepoImpl.getLocalParcelById(ParcelId(cancelDataList.first().regDt, cancelDataList.first().parcelUid))?.let {
-                        val timeCountPrimaryKey = TimeCountMapper.arrivalDateToTime(it.arrivalDte)
-                        timeCountRepoImpl.getLatestUpdatedEntity(timeCountPrimaryKey)
-                            ?.let { entity ->
-                                entity.count += cancelDataList.size
-                                entity.visibility =
-                                    0 // 모든 아이템(monthList)가 삭제되었을때 삭제취소를 하려면 visibility를 0으로 수정해줘야한다.
+                    parcelRepoImpl.getLocalParcelById(ParcelId(cancelDataList.first().regDt, cancelDataList.first().parcelUid))
+                        ?.let {
+                            val timeCountPrimaryKey =
+                                TimeCountMapper.arrivalDateToTime(it.arrivalDte)
+                            timeCountRepoImpl.getLatestUpdatedEntity(timeCountPrimaryKey)
+                                ?.let { entity ->
+                                    entity.count += cancelDataList.size
+                                    entity.visibility =
+                                        0 // 모든 아이템(monthList)가 삭제되었을때 삭제취소를 하려면 visibility를 0으로 수정해줘야한다.
 
-                                SopoLog.d("복구해야할 TIME_COUNT => time : ${entity.time} , count : ${entity.count}, status : ${entity.status} , auditDate : ${entity.auditDte}")
-                                timeCountRepoImpl.updateEntity(entity)
-                            }
-                    }
+                                    SopoLog.d("복구해야할 TIME_COUNT => time : ${entity.time} , count : ${entity.count}, status : ${entity.status} , auditDate : ${entity.auditDte}")
+                                    timeCountRepoImpl.updateEntity(entity)
+                                }
+                        }
                 }
             }
         }
@@ -714,13 +710,5 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
                 }
             }
         })
-    }
-
-
-    override fun onCleared()
-    {
-        super.onCleared()
-
-        isLoading.call()
     }
 }

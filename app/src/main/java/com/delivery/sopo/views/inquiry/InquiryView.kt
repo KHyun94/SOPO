@@ -565,6 +565,8 @@ class InquiryView: Fragment()
                     }
                 }, 5000)
 
+                binding.swipeRefresh.isRefreshing = false
+
                 return@setOnRefreshListener
             }
 
