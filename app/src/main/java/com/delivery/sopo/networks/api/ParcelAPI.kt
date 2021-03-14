@@ -82,15 +82,12 @@ interface ParcelAPI
         @Body jsonPATCH: JsonArray
     ): Call<APIResult<ParcelEntity?>>
 
-
-    // 1113
     // 배송중 & 곧 도착 리스트 가져오는 api
     @GET("api/v1/sopo-api/delivery/{email}/parcels/ongoing")
     @Headers("Accept: application/json")
-    fun getParcelsOngoingTmp(
+    suspend fun getOngoingParcels(
         @Path("email") email: String
-    ): Call<APIResult<MutableList<Parcel>?>?>
-
+    ): Response<APIResult<MutableList<Parcel>?>>
 
     /**
      * 택배 리스트 전체 업데이트 요청

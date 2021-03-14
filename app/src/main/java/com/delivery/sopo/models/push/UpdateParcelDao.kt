@@ -1,10 +1,12 @@
 package com.delivery.sopo.models.push
 
 import com.delivery.sopo.consts.DeliveryStatusConst
+import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.models.parcel.ParcelItem
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
@@ -28,26 +30,18 @@ data class UpdateParcelDao(
 
     suspend fun getParcel() = parcelRepoImpl.getLocalParcelById(ParcelId(regDt, parcelUid))
 
-    fun compareDeliveryStatus(callback : (Boolean)->Unit){
-        CoroutineScope(Dispatchers.Default).launch {
-            val parcel = getParcel()
-
-            if(parcel == null)
-            {
-                callback.invoke(false)
-                return@launch
-            }
-
-            callback.invoke(parcel.deliveryStatus != deliveryStatus && parcel.status == 1)
-        }
+    fun compareDeliveryStatus(parcelEntity: ParcelEntity): Boolean {
+        SopoLog.d("""
+            compareDeliveryStatus() call
+            ${parcelEntity.deliveryStatus}
+            ${deliveryStatus}
+            ${parcelEntity.status}
+        """.trimIndent())
+        return parcelEntity.deliveryStatus != deliveryStatus && parcelEntity.status == 1
     }
 
-    fun getMessage() : String
+    fun getMessage(parcelEntity: ParcelEntity) : String
     {
-        val parcelEntity  = runBlocking {
-            getParcel()
-        } ?: return "ERROR"
-
         val parcel = ParcelMapper.parcelEntityToParcel(parcelEntity)
 
         // ParcelEntity 중 inquiryResult(json의 String화)를 ParcelItem으로 객체화

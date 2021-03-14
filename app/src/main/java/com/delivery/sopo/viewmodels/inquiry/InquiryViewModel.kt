@@ -251,10 +251,10 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
     fun getCompleteListWithPaging(inquiryDate: String)
     {
         SopoLog.d(msg = "getCompleteListWithPaging() call")
-
+        _isLoading.postValue(true) // 로딩 프로그래스바 표출
         viewModelScope.launch(Dispatchers.IO) {
 
-            _isLoading.postValue(true) // 로딩 프로그래스바 표출
+
 
             if (pagingManagement.inquiryDate != inquiryDate)
             {

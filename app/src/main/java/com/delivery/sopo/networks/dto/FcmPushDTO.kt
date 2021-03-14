@@ -11,7 +11,5 @@ data class FcmPushDTO(
     val data: String
 )
 {
-    fun setUpdateParcel() = Gson().fromJson(data, UpdateParcelDao::class.java)
-
-
+    fun getUpdateParcel(): UpdateParcelDao = Gson().fromJson(data, UpdateParcelDao::class.java)
 }

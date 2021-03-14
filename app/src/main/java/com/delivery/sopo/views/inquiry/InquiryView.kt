@@ -186,6 +186,7 @@ class InquiryView: Fragment()
         })
 
         binding.vm!!.isLoading.observe(this, Observer { isLoading ->
+            SopoLog.d("isLoading >>> $isLoading")
             progressBar.autoProgressbar(isLoading)
         })
 

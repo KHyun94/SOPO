@@ -46,6 +46,13 @@ object ParcelCall : BaseService(), KoinComponent
         return apiCall(call = {result})
     }
 
+    suspend fun getOngoingParcels(): NetworkResult<APIResult<MutableList<Parcel>?>>
+    {
+        val result = parcelAPI.getOngoingParcels(email = email)
+        return apiCall(call = {result})
+    }
+
+
     suspend fun requestParcelForRefreshs() : NetworkResult<APIResult<String?>>
     {
         val result = parcelAPI.requestParcelForRefreshs(email = email)

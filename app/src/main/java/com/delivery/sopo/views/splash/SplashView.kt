@@ -52,7 +52,7 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
 
     override fun setObserver()
     {
-        Handler().postDelayed(Runnable { moveToActivity() }, 2500)
+        Handler().postDelayed(Runnable { moveToActivity() }, 500)
     }
 
     private fun moveToActivity()
