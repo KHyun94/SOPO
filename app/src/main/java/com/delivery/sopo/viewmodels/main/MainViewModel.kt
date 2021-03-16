@@ -40,8 +40,6 @@ class MainViewModel(
     private val appPasswordRepo : AppPasswordRepoImpl
 ) : ViewModel()
 {
-    val TAG = "MainVm"
-
     val tabLayoutVisibility = MutableLiveData<Int>()
     val errorMsg = MutableLiveData<String?>()
 

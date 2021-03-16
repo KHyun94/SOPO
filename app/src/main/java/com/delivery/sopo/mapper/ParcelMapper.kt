@@ -17,6 +17,14 @@ object ParcelMapper
         )
     }
 
+    fun parcelEntityToParcelManagementEntity(parcelEntity: ParcelEntity): ParcelManagementEntity
+    {
+        return ParcelManagementEntity(
+            regDt = parcelEntity.regDt,
+            parcelUid = parcelEntity.parcelUid
+        )
+    }
+
     fun parcelEntityToParcel(parcelEntity: ParcelEntity): Parcel{
 
         SopoLog.d(msg = """

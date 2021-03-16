@@ -7,8 +7,7 @@ import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.repository.interfaces.ParcelManagementRepository
 import com.delivery.sopo.util.TimeUtil
 
-class ParcelManagementRepoImpl(private val appDatabase: AppDatabase):
-    ParcelManagementRepository
+class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelManagementRepository
 {
     private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     override fun getIsDeleteCntLiveData(): LiveData<Int> {
@@ -64,8 +63,8 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase):
 
     override suspend fun updateIsBeUpdate(regDt: String, parcelUid: String, status : Int?) = appDatabase.parcelManagementDao().updateIsBeUpdate(regDt, parcelUid, status)
 
-    override fun getEntity(regDt: String, parcelUid: String): ParcelManagementEntity? {
-        return appDatabase.parcelManagementDao().getById(regDt, parcelUid)
+    override fun getEntity(parcelId: ParcelId): ParcelManagementEntity? {
+        return appDatabase.parcelManagementDao().getById(parcelId.regDt, parcelId.parcelUid)
     }
 
     override suspend fun updateTotalIsBeDeliveredToZero(){
@@ -81,7 +80,7 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase):
     override fun updateIsUnidentified(parcelId: ParcelId, value: Int) = appDatabase.parcelManagementDao().updateIsUnidentified(parcelId.regDt, parcelId.parcelUid, value)
 
     override suspend fun initializeIsBeUpdate(regDt: String, parcelUid: String){
-        getEntity(regDt, parcelUid)?.apply {
+        getEntity(ParcelId(regDt, parcelUid))?.apply {
             this.isBeUpdate = 0
             this.auditDte = TimeUtil.getDateTime()
             insertEntity(this)

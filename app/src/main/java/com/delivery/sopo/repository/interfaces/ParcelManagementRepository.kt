@@ -19,7 +19,7 @@ interface ParcelManagementRepository {
    suspend fun updateEntity(parcelManagementEntity: ParcelManagementEntity)
    suspend fun updateEntities(parcelManagementEntityList: List<ParcelManagementEntity>)
    suspend fun updateIsBeUpdate(regDt: String, parcelUid: String, status : Int?)
-   fun getEntity(regDt: String, parcelUid: String): ParcelManagementEntity?
+   fun getEntity(parcelId: ParcelId): ParcelManagementEntity?
    suspend fun initializeIsBeUpdate(regDt: String, parcelUid: String)
    suspend fun updateTotalIsBeDeliveredToZero()
    suspend fun updateIsBeDeleteToOneByParcelIdList(parcelIdList: List<ParcelId>)

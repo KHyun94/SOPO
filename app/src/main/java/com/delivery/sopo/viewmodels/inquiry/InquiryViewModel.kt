@@ -303,7 +303,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
                         else
                         {
                             parcelManagementRepoImpl.getEntity(
-                                parcel.parcelId.regDt, parcel.parcelId.parcelUid
+                                parcel.parcelId
                             )?.let { entity ->
                                 parcelManagementRepoImpl.updateEntity(entity.also {
                                     it.isNowVisible = 1

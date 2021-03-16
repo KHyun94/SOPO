@@ -16,7 +16,6 @@ object TextViewBindingAdapter
             text = content
             setTextColor(tv.context.getColor(colorRes))
         }
-
     }
 
 }

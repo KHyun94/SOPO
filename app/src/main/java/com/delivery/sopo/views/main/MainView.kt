@@ -43,14 +43,6 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     var currentPage = MutableLiveData<Int?>()
 
-    init
-    {
-
-        SopoLog.d( msg = "ID = ${userRepoImpl.getEmail()}")
-        SopoLog.d( msg = "PWD = ${userRepoImpl.getApiPwd()}")
-        SopoLog.d( msg = "NICKNAME = ${userRepoImpl.getUserNickname()}")
-    }
-
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)

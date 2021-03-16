@@ -30,6 +30,8 @@ data class UpdateParcelDao(
 
     suspend fun getParcel() = parcelRepoImpl.getLocalParcelById(ParcelId(regDt, parcelUid))
 
+    fun getParcelId() = ParcelId(regDt, parcelUid)
+
     fun compareDeliveryStatus(parcelEntity: ParcelEntity): Boolean {
         SopoLog.d("""
             compareDeliveryStatus() call

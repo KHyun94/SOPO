@@ -26,7 +26,6 @@ import java.util.*
 // TODO 추후 변경...
 class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): KoinComponent, BaseObservable()
 {
-
     init
     {
         SopoLog.d("InquiryListItem >>> ${parcel.parcelAlias}")
@@ -50,12 +49,19 @@ class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): Koin
         postValue(getStatusTextColorResource())
     }
 
-    val isUnidentified = ObservableField<Boolean>().also {value ->
-        checkIsUnidentified {
-            value.set(it)
-            notifyChange()
+//    val isUnidentified = ObservableField<Boolean>().also {value ->
+////        checkIsUnidentified {
+////            value.set(it)
+////            notifyChange()
+////        }
+//        parcelRepoImpl.getIsUnidentifiedAsLiveData(parcel.parcelId)
+//    }
+
+    val isUnidentified : LiveData<Boolean>
+        get() = parcelRepoImpl.getIsUnidentifiedAsLiveData(parcel.parcelId).map {
+            SopoLog.d("!!!!! ${parcel.trackNum} >>> ${it != null && it == 1}")
+            it != null && it == 1
         }
-    }
 
 
     private val completeTimeDate: Calendar by lazy {

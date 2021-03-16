@@ -20,6 +20,7 @@ import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import java.lang.Exception
 
@@ -27,84 +28,70 @@ class FirebaseService: FirebaseMessagingService()
 {
     private val parcelRepoImpl: ParcelRepoImpl by inject()
     private val parcelManagementRepo: ParcelManagementRepoImpl by inject()
-    private val appDatabase : AppDatabase by inject()
 
-    var TAG = "FirebaseService"
-
-    private fun alertUpdateParcel(remoteMessage: RemoteMessage, intent: Intent, updateParcelDao: UpdateParcelDao){
+    private fun alertUpdateParcel(remoteMessage: RemoteMessage, intent: Intent, updateParcelDao: UpdateParcelDao)
+    {
 
         SopoLog.d("alertUpdateParcel() call")
 
         CoroutineScope(Dispatchers.IO).launch {
 
-            val parcelEntity = parcelRepoImpl.getLocalParcelById(ParcelId(updateParcelDao.regDt, updateParcelDao.parcelUid))?:return@launch
+            val parcelEntity =
+                parcelRepoImpl.getLocalParcelById(ParcelId(updateParcelDao.regDt, updateParcelDao.parcelUid))
+                    ?: return@launch
 
             val isChange = updateParcelDao.compareDeliveryStatus(parcelEntity)
 
+            if (!isChange) return@launch
+
             // 현재 해당 택배가 가지고 있는 배송 상태와 fcm으로 넘어온 배송상태가 다른 경우만 노티피케이션을 띄운다!
-            if(isChange)
+
+            val parcelManagementEntity =
+                parcelManagementRepo.getEntity(updateParcelDao.getParcelId())
+
+            if (parcelManagementEntity == null)
             {
-                SopoLog.d("update Parcel True")
+                // 등록되지 않은 상태 entity를 저장
+                val parcelManagementEntity = ParcelMapper.parcelEntityToParcelManagementEntity(updateParcelDao.getParcel() ?: return@launch).apply {
+                    isBeUpdate = 1
+                    auditDte = TimeUtil.getDateTime()
 
-                parcelManagementRepo.let { repoImpl ->
-
-                    val parcelManagementEntity = parcelManagementRepo.getEntity(updateParcelDao.regDt, updateParcelDao.parcelUid)
-
-                    if(parcelManagementEntity != null)
-                    {
-                        // 배송 상태가 변경 여부를 저
-                        parcelManagementEntity.apply {
-                            isBeUpdate = 1
-                            auditDte = TimeUtil.getDateTime()
-                        }
-
-                        // 배송 중 -> 배송완료가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
-                        if(updateParcelDao.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE){
-                            parcelManagementEntity.apply { isBeDelivered = 1 }
-                        }
-
-                        CoroutineScope(Dispatchers.Default).launch {
-                            repoImpl.updateEntity(parcelManagementEntity)
-                        }
-                    }
-                    else
-                    {
-                        CoroutineScope(Dispatchers.Default).launch {
-
-                            val parcelEntity = updateParcelDao.getParcel()?:return@launch
-                            val parcel = ParcelMapper.parcelEntityToParcel(parcelEntity)
-                            val parcelManagementEntity = ParcelMapper.parcelToParcelManagementEntity(parcel)
-
-                            parcelManagementEntity.apply {
-                                isBeUpdate = 1
-                                auditDte = TimeUtil.getDateTime()
-                            }
-
-                            // 배송 중 -> 배송완료가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
-                            if(updateParcelDao.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE){
-                                parcelManagementEntity.apply { isBeDelivered = 1 }
-                            }
-
-                            repoImpl.insertEntity(parcelManagementEntity)
-                        }
-                    }
+                    // 배송 중 -> 배송완료가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
+                    if (updateParcelDao.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE) isBeDelivered = 1
                 }
 
-                NotificationImpl.alertUpdateParcel(
-                    remoteMessage = remoteMessage,
-                    context = applicationContext,
-                    intent = intent,
-                    message = updateParcelDao.getMessage(parcelEntity)
-                )
+                withContext(Dispatchers.Default) { parcelManagementRepo.insertEntity(parcelManagementEntity) }
+
+                NotificationImpl.alertUpdateParcel(remoteMessage = remoteMessage, context = applicationContext, intent = intent, message = updateParcelDao.getMessage(parcelEntity))
+
+                return@launch
             }
+
+            // 배송 상태가 변경 여부를 저
+            parcelManagementEntity.run {
+                isBeUpdate = 1
+                auditDte = TimeUtil.getDateTime()
+
+                // 배송 중 -> 배송완료가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
+                if (updateParcelDao.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE) isBeDelivered = 1
+            }
+
+            withContext(Dispatchers.Default) {
+                parcelManagementRepo.updateEntity(parcelManagementEntity)
+            }
+
+            NotificationImpl.alertUpdateParcel(
+                remoteMessage = remoteMessage, context = applicationContext, intent = intent, message = updateParcelDao.getMessage(parcelEntity)
+            )
         }
     }
 
-    override fun onMessageReceived(remoteMessage: RemoteMessage){
+    override fun onMessageReceived(remoteMessage: RemoteMessage)
+    {
 
         if (remoteMessage.data.isNotEmpty())
         {
-            SopoLog.d( msg = "onMessageReceived: " + remoteMessage.data.toString())
+            SopoLog.d(msg = "onMessageReceived: " + remoteMessage.data.toString())
 
             val notificationId = remoteMessage.data.getValue("notificationId")
             val data = remoteMessage.data.getValue("data")
@@ -118,14 +105,14 @@ class FirebaseService: FirebaseMessagingService()
                 {
                     val updateParcelDao = fcmPushDto.getUpdateParcel()
 
-                    SopoLog.d(""" ${NotificationEnum.PUSH_UPDATE_PARCEL} >>>
+                    SopoLog.d(
+                        """ ${NotificationEnum.PUSH_UPDATE_PARCEL} >>>
                         $updateParcelDao
-                    """.trimIndent())
+                    """.trimIndent()
+                    )
 
                     alertUpdateParcel(
-                        remoteMessage,
-                        Intent(this, SplashView::class.java),
-                        updateParcelDao
+                        remoteMessage, Intent(this, SplashView::class.java), updateParcelDao
                     )
                 }
                 // 친구 추천
@@ -141,9 +128,7 @@ class FirebaseService: FirebaseMessagingService()
                 NotificationEnum.PUSH_AWAKEN_DEVICE.notificationId ->
                 {
                     NotificationImpl.awakenDeviceNoti(
-                        remoteMessage = remoteMessage,
-                        context = applicationContext,
-                        intent = Intent(this, SplashView::class.java)
+                        remoteMessage = remoteMessage, context = applicationContext, intent = Intent(this, SplashView::class.java)
                     )
                     SOPOWorkManager.updateWorkManager(applicationContext)
                 }
@@ -151,25 +136,30 @@ class FirebaseService: FirebaseMessagingService()
         }
     }
 
-    override fun onDeletedMessages(){
+    override fun onDeletedMessages()
+    {
         super.onDeletedMessages()
     }
 
-    override fun onMessageSent(p0: String){
+    override fun onMessageSent(p0: String)
+    {
         super.onMessageSent(p0)
     }
 
-    override fun onSendError(p0: String, p1: Exception){
+    override fun onSendError(p0: String, p1: Exception)
+    {
         super.onSendError(p0, p1)
     }
 
-    override fun onNewToken(s: String){
+    override fun onNewToken(s: String)
+    {
         super.onNewToken(s)
-        SopoLog.d( msg = "onNewToken: $s")
+        SopoLog.d(msg = "onNewToken: $s")
         sendTokenToServer(s)
     }
 
-    private fun sendTokenToServer(token: String){
-        SopoLog.d( msg = "sendTokenToServer: $token")
+    private fun sendTokenToServer(token: String)
+    {
+        SopoLog.d(msg = "sendTokenToServer: $token")
     }
 }

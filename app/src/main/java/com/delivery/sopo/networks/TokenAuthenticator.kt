@@ -49,7 +49,7 @@ class TokenAuthenticator : Authenticator, KoinComponent
                 is TestResult.ErrorResult<*> ->
                 {
                     SopoLog.e( msg = "authenticate fail => ${result.errorMsg}")
-                    getRetrofitWithoutAuthenticator(response, "")
+                    null
                 }
             }
         }

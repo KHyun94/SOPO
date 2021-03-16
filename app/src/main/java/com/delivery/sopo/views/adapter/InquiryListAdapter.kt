@@ -25,6 +25,9 @@ import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
@@ -111,6 +114,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
     {
         val inquiryListItem: InquiryListItem = list[position]
 
+
         when (holder)
         {
             is OngoingViewHolder ->
@@ -122,6 +126,17 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
 
                 holder.ongoingBinding.tvDeliveryStatus.bringToFront()
 
+                CoroutineScope(Dispatchers.IO).launch {
+                    parcelRepoImpl.getIsUnidentifiedAsLiveData(parcel.parcelId)
+                }
+
+                inquiryListItem.isUnidentified.observeForever {
+                    SopoLog.d("isUnidentified >>> ${it}")
+                    if(it)
+                        holder.ongoingBinding.ivRedDot.visibility = View.VISIBLE
+                    else
+                        holder.ongoingBinding.ivRedDot.visibility = View.GONE
+                }
 
                 if (inquiryListItem.isSelected)
                 {
