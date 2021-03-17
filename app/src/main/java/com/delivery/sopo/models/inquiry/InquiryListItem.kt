@@ -49,20 +49,13 @@ class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): Koin
         postValue(getStatusTextColorResource())
     }
 
-//    val isUnidentified = ObservableField<Boolean>().also {value ->
-////        checkIsUnidentified {
-////            value.set(it)
-////            notifyChange()
-////        }
-//        parcelRepoImpl.getIsUnidentifiedAsLiveData(parcel.parcelId)
-//    }
-
-    val isUnidentified : LiveData<Boolean>
-        get() = parcelRepoImpl.getIsUnidentifiedAsLiveData(parcel.parcelId).map {
-            SopoLog.d("!!!!! ${parcel.trackNum} >>> ${it != null && it == 1}")
-            it != null && it == 1
+    val isUnidentified = ObservableField<Boolean>().apply {
+        checkIsUnidentified {
+            SopoLog.d("red dot >>> $it")
+            set(it)
+            notifyChange()
         }
-
+    }
 
     private val completeTimeDate: Calendar by lazy {
         Calendar.getInstance().apply { this.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(parcel.arrivalDte?.replace("T", " ")) }

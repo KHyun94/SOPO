@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
@@ -125,19 +126,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                 val parcel: Parcel = inquiryListItem.parcel
 
                 holder.ongoingBinding.tvDeliveryStatus.bringToFront()
-
-                CoroutineScope(Dispatchers.IO).launch {
-                    parcelRepoImpl.getIsUnidentifiedAsLiveData(parcel.parcelId)
-                }
-
-                inquiryListItem.isUnidentified.observeForever {
-                    SopoLog.d("isUnidentified >>> ${it}")
-                    if(it)
-                        holder.ongoingBinding.ivRedDot.visibility = View.VISIBLE
-                    else
-                        holder.ongoingBinding.ivRedDot.visibility = View.GONE
-                }
-
+                
                 if (inquiryListItem.isSelected)
                 {
                     ongoingViewSelected(holder.ongoingBinding)
