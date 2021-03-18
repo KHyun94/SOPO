@@ -227,21 +227,30 @@ class ParcelDetailView : Fragment()
             }
         })
 
-        binding.vm!!.isProgress.observe(this, Observer { isLoading ->
-            if(isLoading == null) return@Observer
+        binding.vm!!.isProgress.observe(this, Observer { isProgress ->
+            if(isProgress == null) return@Observer
 
             if(progressBar == null)
             {
-                progressBar = CustomProgressBar(requireActivity())
+                progressBar = CustomProgressBar()
             }
 
-            if(isLoading)
+            if(progressBar!!.isAdded)
             {
-                progressBar?.onStartDialog()
                 return@Observer
             }
 
-            progressBar?.onCloseDialog()?:return@Observer
+            if(isProgress && !progressBar!!.isAdded)
+            {
+                SopoLog.d("Progress On")
+                progressBar?.show(parentView.supportFragmentManager, "PROGRESS")
+            }
+            else if(!isProgress)
+            {
+                SopoLog.d("Progress Off")
+                progressBar?.dismiss()
+                progressBar = null
+            }
         })
 
         binding.vm!!.isUpdate.observe(this, Observer {

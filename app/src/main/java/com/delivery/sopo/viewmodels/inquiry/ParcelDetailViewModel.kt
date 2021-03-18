@@ -72,11 +72,6 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
     val result: LiveData<TestResult>
         get() = _result
 
-    init
-    {
-        _isProgress.value = true
-    }
-
     // Full Detail View의 리사이클러뷰 어댑터 세팅
     private fun setAdapter(list: List<Progress?>): TimeLineRvAdapter
     {
@@ -184,6 +179,8 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
     {
         SopoLog.d("requestRemoteParcel(${parcelId}) call")
 
+        _isProgress.postValue(true)
+
         requestLocalParcel(parcelId)
 
         // remote data를 갱신하도록 서버에 요
@@ -220,6 +217,8 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
                     }
                 }
             }
+
+            _isProgress.postValue(false)
         }
 
 

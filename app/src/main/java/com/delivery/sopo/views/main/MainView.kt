@@ -116,15 +116,18 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                         {
                             NavigatorConst.REGISTER_TAB ->
                             {
+                                SopoLog.d("Click For Update at RegisterTab")
                                 binding.vpMain.currentItem = 1
                                 inquiryVm.refreshOngoing()
                             }
                             NavigatorConst.INQUIRY_TAB ->
                             {
+                                SopoLog.d("Click For Update at InquiryTab")
                                 inquiryVm.refreshOngoing()
                             }
                             NavigatorConst.MY_MENU_TAB ->
                             {
+                                SopoLog.d("Click For Update at MenuTab")
                                 binding.vpMain.currentItem = 1
                                 inquiryVm.refreshOngoing()
                             }

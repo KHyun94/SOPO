@@ -57,7 +57,7 @@ class RegisterStep3: Fragment()
             setExecutePendingBindings()
         }
 
-        progressBar = CustomProgressBar(requireActivity())
+        progressBar = CustomProgressBar()
 
         binding.vm!!.wayBilNum.value = wayBilNum
         binding.vm!!.courier.value = courier
@@ -87,21 +87,30 @@ class RegisterStep3: Fragment()
             }
         })
 
-        binding.vm!!.isProgress.observe(this@RegisterStep3, Observer {isLoading ->
-            if(isLoading == null) return@Observer
+        binding.vm!!.isProgress.observe(this@RegisterStep3, Observer { isProgress ->
+            if(isProgress == null) return@Observer
 
             if(progressBar == null)
             {
-                progressBar = CustomProgressBar(requireActivity())
+                progressBar = CustomProgressBar()
             }
 
-            if(isLoading)
+            if(progressBar!!.isAdded)
             {
-                progressBar?.onStartDialog()
                 return@Observer
             }
 
-            progressBar?.onCloseDialog()?:return@Observer
+            if(isProgress && !progressBar!!.isAdded)
+            {
+                SopoLog.d("Progress On")
+                progressBar?.show(requireFragmentManager(), "PROGRESS")
+            }
+            else if(!isProgress)
+            {
+                SopoLog.d("Progress Off")
+                progressBar?.dismiss()
+                progressBar = null
+            }
         })
 
         binding.vm!!.isRevise.observe(this, Observer {

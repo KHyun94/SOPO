@@ -49,7 +49,6 @@
             app:markImage="@drawable/ic_blue_marker"
             app:msgtext="테스트" />
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
