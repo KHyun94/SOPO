@@ -125,6 +125,7 @@
 
         <Button
             android:id="@+id/btn_sign_up"
+            style="@android:style/ButtonBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="25sp"

@@ -44,6 +44,8 @@ class ParcelDetailView : Fragment()
 
     private var slideViewStatus = 0
 
+    private var progressBar: CustomProgressBar? = null
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -225,10 +227,21 @@ class ParcelDetailView : Fragment()
             }
         })
 
-        val progress = CustomProgressBar(this@ParcelDetailView.parentView)
+        binding.vm!!.isProgress.observe(this, Observer { isLoading ->
+            if(isLoading == null) return@Observer
 
-        binding.vm!!.isProgress.observe(this, Observer { isProgress ->
-            progress.autoProgressbar(isProgress)
+            if(progressBar == null)
+            {
+                progressBar = CustomProgressBar(requireActivity())
+            }
+
+            if(isLoading)
+            {
+                progressBar?.onStartDialog()
+                return@Observer
+            }
+
+            progressBar?.onCloseDialog()?:return@Observer
         })
 
         binding.vm!!.isUpdate.observe(this, Observer {

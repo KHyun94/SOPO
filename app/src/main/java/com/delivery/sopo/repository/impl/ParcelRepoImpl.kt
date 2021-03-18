@@ -14,6 +14,7 @@ import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
+import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.repository.interfaces.ParcelRepository
 import com.delivery.sopo.util.TimeUtil
 
@@ -24,12 +25,6 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
 
     override suspend fun getRemoteOngoingParcels(): MutableList<Parcel>? = NetworkManager.retro(SOPOApp.oauth?.accessToken).create(
         ParcelAPI::class.java).getParcelsOngoing(email = userRepoImpl.getEmail()).data
-
-    override suspend fun getRemoteOngoingParcel(regDt: String, parcelUid: String): Parcel? = NetworkManager
-                                                            .retro.create(ParcelAPI::class.java)
-                                                            .getParcel( email = userRepoImpl.getEmail(),
-                                                                        regDt = regDt,
-                                                                        parcelUid = parcelUid).data
 
     override suspend fun getRemoteMonths(): MutableList<TimeCountDTO>? = NetworkManager.retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java).getMonths(email = userRepoImpl.getEmail()).data
 

@@ -1,6 +1,7 @@
 package com.delivery.sopo.networks.call
 
 import com.delivery.sopo.database.room.entity.OauthEntity
+import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
@@ -63,5 +64,23 @@ object ParcelCall : BaseService(), KoinComponent
     {
         val result = parcelAPI.requestParcelForRefresh(email = email, regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
         return apiCall(call = { result })
+    }
+
+
+    suspend fun getSingleParcelTest(parcelId: ParcelId): APIResult<Parcel?>
+    {
+        val result = parcelAPI.getSingleParcel(email = ParcelCall.email, regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
+
+        when(val apiResult = apiCall(call = { result }))
+        {
+            is NetworkResult.Success ->
+            {
+                return apiResult.data
+            }
+            is NetworkResult.Error ->
+            {
+                throw apiResult.exception as APIException
+            }
+        }
     }
 }

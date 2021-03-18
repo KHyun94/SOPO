@@ -1,6 +1,8 @@
 package com.delivery.sopo.services.network_handler
 
 import com.delivery.sopo.exceptions.APIException
+import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.CoroutineExceptionHandler
 import okhttp3.ResponseBody
 import retrofit2.Response
 
@@ -38,5 +40,12 @@ abstract class BaseService
             NetworkResult.Success(response.code(), response.body()!!)
         }
 
+    }
+
+    protected fun errorHandler()
+    {
+        CoroutineExceptionHandler { coroutineContext, throwable ->
+            SopoLog.e("${throwable.message}", throwable)
+        }
     }
 }

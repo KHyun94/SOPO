@@ -2,6 +2,7 @@ package com.delivery.sopo.exceptions
 
 import android.util.Log
 import com.delivery.sopo.models.api.APIResult
+import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import okhttp3.ResponseBody
 
@@ -35,8 +36,8 @@ class APIException : Exception
 
     fun data(): APIResult<*>?
     {
+        SopoLog.e("메시지 에러!!!!!!!!!")
         val errorReader = errorBody!!.charStream()
-
         return Gson().fromJson(errorReader, APIResult::class.java)
     }
 

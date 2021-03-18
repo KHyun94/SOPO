@@ -11,14 +11,11 @@ import android.view.Window
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.R
+import com.delivery.sopo.util.SopoLog
 
-class CustomProgressBar(private val act: FragmentActivity) : DialogFragment()
+class CustomProgressBar(private val act: FragmentActivity): DialogFragment()
 {
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         val view = inflater.inflate(R.layout.loading, container, false)
         setSetting()
@@ -27,42 +24,19 @@ class CustomProgressBar(private val act: FragmentActivity) : DialogFragment()
 
     fun onStartDialog()
     {
-        if (!isAdded)
+        if(!isAdded)
         {
             show(act.supportFragmentManager, null)
-            Log.d("!!!!!!!", "프로그레스 정상 등록")
-        }
-        else
-        {
-            Log.d("!!!!!!!", "프로그레스 정상 등록 실패")
+            SopoLog.d( "프로그레스 정상 시작")
         }
     }
 
     fun onCloseDialog()
     {
-        if (!isAdded)
+        if(isVisible)
         {
-            Log.d("!!!!!!!", "프로그레스 정상 취소 실패")
-
-        }
-        else
-        {
-            Log.d("!!!!!!!", "프로그레스 정상 취소")
+            SopoLog.d( "프로그레스 정상 취소")
             dismiss()
-        }
-    }
-
-    fun autoProgressbar(value : Boolean?){
-
-        if(value == null) return
-
-        if(value)
-        {
-            onStartDialog()
-        }
-        else
-        {
-            onCloseDialog()
         }
     }
 

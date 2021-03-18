@@ -26,13 +26,6 @@ object ParcelMapper
     }
 
     fun parcelEntityToParcel(parcelEntity: ParcelEntity): Parcel{
-
-        SopoLog.d(msg = """
-            ParcelEntity
-            
-            ${parcelEntity}
-        """.trimIndent())
-
         return Parcel(parcelId = ParcelId(regDt = parcelEntity.regDt, parcelUid = parcelEntity.parcelUid),
             userName = parcelEntity.userName,
             trackNum = parcelEntity.trackNum,

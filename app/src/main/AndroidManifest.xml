@@ -56,7 +56,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".views.signup.SignUpView"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustPan" />
 
         <service
             android:name=".services.FirebaseService"
@@ -82,15 +82,6 @@
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/KAKAO_API_KEY" />
-
-        <receiver
-            android:name=".services.AlarmReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.sec" />
-            </intent-filter>
-        </receiver>
 
     </application>
 

@@ -1,7 +1,6 @@
 package com.delivery.sopo.views.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
@@ -10,7 +9,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
@@ -26,9 +24,6 @@ import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
@@ -360,13 +355,13 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
             InquiryItemTypeEnum.Soon ->
             {
                 list.filter {
-                    it.parcel.deliveryStatus == DeliveryStatusEnum.OUT_OF_DELIVERY.CODE
+                    it.parcel.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
                 }.toMutableList()
             }
             InquiryItemTypeEnum.Registered ->
             {
                 list.filter {
-                    it.parcel.deliveryStatus != DeliveryStatusEnum.OUT_OF_DELIVERY.CODE && it.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
+                    it.parcel.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE && it.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
                 }.toMutableList()
             }
             InquiryItemTypeEnum.Complete ->

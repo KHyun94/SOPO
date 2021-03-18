@@ -10,10 +10,6 @@ import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
@@ -78,7 +74,7 @@ data class UpdateParcelDao(
 
                 "${parcelItem?.progresses?.get(size - 1)?.location}에서 ${parcel.parcelAlias}가 출발했어요."
             }
-            DeliveryStatusConst.OUT_FOR_DELIVERRY ->
+            DeliveryStatusConst.OUT_FOR_DELIVERY ->
             {
                 "${parcelItem?.from?.name}님이 보내신 ${parcel.parcelAlias}가 우리동네에 도착했습니다!"
             }

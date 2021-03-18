@@ -6,10 +6,10 @@ import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
+import com.delivery.sopo.networks.call.ParcelCall
 
 interface ParcelRepository {
    suspend fun getRemoteOngoingParcels(): MutableList<Parcel>?
-   suspend fun getRemoteOngoingParcel(regDt: String, parcelUid: String): Parcel?
    suspend fun getRemoteMonths(): MutableList<TimeCountDTO>?
 
    suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<Parcel>?

@@ -71,7 +71,7 @@ class InquiryView: Fragment()
     private var menuPopUpWindow: PopupWindow? = null
     private var historyPopUpWindow: PopupWindow? = null
 
-    private lateinit var progressBar: CustomProgressBar
+    private var progressBar: CustomProgressBar? = null
 
     private var refreshDelay: Boolean = false
 
@@ -185,9 +185,22 @@ class InquiryView: Fragment()
             }
         })
 
-        binding.vm!!.isLoading.observe(this, Observer { isLoading ->
-            SopoLog.d("isLoading >>> $isLoading")
-            progressBar.autoProgressbar(isLoading)
+        binding.vm!!.isProgress.observe(this, Observer { isLoading ->
+            if(isLoading == null) return@Observer
+
+            if(progressBar == null)
+            {
+                progressBar = CustomProgressBar(requireActivity())
+            }
+
+            if(isLoading)
+            {
+                progressBar?.onStartDialog()
+                return@Observer
+            }
+
+            progressBar?.onCloseDialog()?:return@Observer
+
         })
 
         // 배송중 , 등록된 택배 리스트

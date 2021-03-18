@@ -87,8 +87,21 @@ class RegisterStep3: Fragment()
             }
         })
 
-        binding.vm!!.isProgress.observe(this@RegisterStep3, Observer {
-            progressBar?.autoProgressbar(it)
+        binding.vm!!.isProgress.observe(this@RegisterStep3, Observer {isLoading ->
+            if(isLoading == null) return@Observer
+
+            if(progressBar == null)
+            {
+                progressBar = CustomProgressBar(requireActivity())
+            }
+
+            if(isLoading)
+            {
+                progressBar?.onStartDialog()
+                return@Observer
+            }
+
+            progressBar?.onCloseDialog()?:return@Observer
         })
 
         binding.vm!!.isRevise.observe(this, Observer {

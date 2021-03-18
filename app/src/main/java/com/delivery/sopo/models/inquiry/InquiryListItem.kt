@@ -1,22 +1,14 @@
 package com.delivery.sopo.models.inquiry
 
-import androidx.annotation.DrawableRes
-import androidx.core.content.ContextCompat
 import androidx.databinding.BaseObservable
-import androidx.databinding.Observable
 import androidx.databinding.ObservableField
-import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.map
-import com.bumptech.glide.Glide
 import com.delivery.sopo.R
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.util.SopoLog
-import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject
@@ -145,7 +137,7 @@ class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): Koin
             //상품 이동 중
             DeliveryStatusEnum.IN_TRANSIT.CODE -> "배송중"
             // 동네도착
-            DeliveryStatusEnum.OUT_OF_DELIVERY.CODE -> "동네도착"
+            DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> "동네도착"
             else -> "에러"
        }
     }
@@ -162,7 +154,7 @@ class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): Koin
             //상품 이동 중
             DeliveryStatusEnum.IN_TRANSIT.CODE -> R.color.MAIN_WHITE
             // 동네도착
-            DeliveryStatusEnum.OUT_OF_DELIVERY.CODE -> R.color.MAIN_WHITE
+            DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.color.MAIN_WHITE
             else -> R.color.COLOR_GRAY_300
         }
     }
@@ -179,7 +171,7 @@ class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): Koin
             //상품 이동 중
             DeliveryStatusEnum.IN_TRANSIT.CODE -> R.color.STATUS_ING
             // 동네도착
-            DeliveryStatusEnum.OUT_OF_DELIVERY.CODE -> R.color.COLOR_BLUE_700
+            DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.color.COLOR_BLUE_700
             else -> R.color.STATUS_PREPARING
         }
     }
@@ -196,7 +188,7 @@ class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): Koin
             //상품 이동 중
             DeliveryStatusEnum.IN_TRANSIT.CODE -> R.drawable.ic_parcel_status_ing
             // 동네도착
-            DeliveryStatusEnum.OUT_OF_DELIVERY.CODE -> R.drawable.ic_parcel_status_soon
+            DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.drawable.ic_parcel_status_soon
             else -> 0
         }
 

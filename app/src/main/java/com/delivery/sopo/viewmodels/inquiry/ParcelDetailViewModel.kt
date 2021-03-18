@@ -87,9 +87,9 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
     // 택배 상세 UI 세팅
     fun updateParcelToUI(parcelEntity: ParcelEntity)
     {
-        SopoLog.d("updateParcelToUI() call")
+        SopoLog.d("updateParcelToUI(${parcelEntity}) call")
 
-        var progressList = mutableListOf<Progress>()
+        val progressList = mutableListOf<Progress>()
 
         CoroutineScope(Dispatchers.Main).launch {
 
@@ -104,6 +104,7 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
 
             withContext(Dispatchers.IO) {
                 // Delivery Status
+
                 DeliveryStatusConst.getDeliveryStatus(parcelEntity.deliveryStatus).let { enum ->
                     deliveryStatusEnum.postValue(enum)
                     statusList.postValue(getDeliveryStatusIndicator(deliveryStatus = enum.CODE))
@@ -149,7 +150,7 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
         val statusList = mutableListOf<SelectItem<String>>(
             SelectItem(DeliveryStatusEnum.AT_PICKUP.TITLE, false),
             SelectItem(DeliveryStatusEnum.IN_TRANSIT.TITLE, false),
-            SelectItem(DeliveryStatusEnum.OUT_OF_DELIVERY.TITLE, false),
+            SelectItem(DeliveryStatusEnum.OUT_FOR_DELIVERY.TITLE, false),
             SelectItem(DeliveryStatusEnum.DELIVERED.TITLE, false)
         )
 
@@ -158,7 +159,7 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
             DeliveryStatusConst.INFORMATION_RECEIVED -> statusList[0].isSelect = true
             DeliveryStatusConst.AT_PICKUP -> statusList[0].isSelect = true
             DeliveryStatusConst.IN_TRANSIT -> statusList[1].isSelect = true
-            DeliveryStatusConst.OUT_FOR_DELIVERRY -> statusList[2].isSelect = true
+            DeliveryStatusConst.OUT_FOR_DELIVERY -> statusList[2].isSelect = true
             DeliveryStatusConst.DELIVERED -> statusList[3].isSelect = true
         }
 

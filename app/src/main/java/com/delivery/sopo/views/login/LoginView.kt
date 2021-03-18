@@ -39,8 +39,22 @@ class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
 
     override fun setObserver()
     {
-        binding.vm!!.isProgress.observe(this, Observer {
-            progressBar!!.autoProgressbar(it)
+        binding.vm!!.isProgress.observe(this, Observer {isLoading ->
+            if(isLoading == null) return@Observer
+
+            if(progressBar == null)
+            {
+                progressBar = CustomProgressBar(this)
+            }
+
+            if(isLoading)
+            {
+                progressBar?.onStartDialog()
+                return@Observer
+            }
+
+            progressBar?.onCloseDialog()?:return@Observer
+
         })
 
         binding.vm!!.result.observe(this, Observer {
@@ -120,8 +134,8 @@ class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
                                         first = "네",
                                         second = { it ->
                                             LoginHandler.authJwtToken(jwtToken){ successResult, errorResult ->
-                                                if(errorResult != null) SopoLog.e(msg = "에러 ${errorResult.toString()}")
-                                                if(successResult != null) SopoLog.d(msg = "성공 ${successResult.toString()}")
+                                                if(errorResult != null) SopoLog.e(msg = "에러 $errorResult")
+                                                if(successResult != null) SopoLog.d(msg = "성공 $successResult")
 
                                                 it.dismiss()
                                             }

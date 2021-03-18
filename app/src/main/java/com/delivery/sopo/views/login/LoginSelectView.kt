@@ -47,7 +47,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
     private val loginSelectVm : LoginSelectViewModel by viewModel()
 
     private var sessionCallback : ISessionCallback? = null
-    lateinit var progressBar : CustomProgressBar
+    var progressBar : CustomProgressBar? = null
 
     init
     {
@@ -111,8 +111,21 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
         })
 
-        binding.vm!!.isProgress.observe(this, Observer {
-            progressBar.autoProgressbar(it)
+        binding.vm!!.isProgress.observe(this, Observer { isLoading ->
+            if(isLoading == null) return@Observer
+
+            if(progressBar == null)
+            {
+                progressBar = CustomProgressBar(this)
+            }
+
+            if(isLoading)
+            {
+                progressBar?.onStartDialog()
+                return@Observer
+            }
+
+            progressBar?.onCloseDialog()?:return@Observer
         })
 
         binding.vm!!.result.observe(this, Observer {
