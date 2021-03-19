@@ -232,25 +232,13 @@ class ParcelDetailView : Fragment()
 
             if(progressBar == null)
             {
-                progressBar = CustomProgressBar()
+                progressBar = CustomProgressBar(parentView)
             }
 
-            if(progressBar!!.isAdded)
-            {
-                return@Observer
+            progressBar?.onStartProgress(isProgress){isDismiss ->
+                if(isDismiss) progressBar = null
             }
 
-            if(isProgress && !progressBar!!.isAdded)
-            {
-                SopoLog.d("Progress On")
-                progressBar?.show(parentView.supportFragmentManager, "PROGRESS")
-            }
-            else if(!isProgress)
-            {
-                SopoLog.d("Progress Off")
-                progressBar?.dismiss()
-                progressBar = null
-            }
         })
 
         binding.vm!!.isUpdate.observe(this, Observer {

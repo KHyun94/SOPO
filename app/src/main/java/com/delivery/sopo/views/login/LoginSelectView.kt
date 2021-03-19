@@ -58,8 +58,6 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
     override fun onCreate(savedInstanceState : Bundle?)
     {
         super.onCreate(savedInstanceState)
-
-        progressBar = CustomProgressBar()
     }
 
     override fun bindView()
@@ -116,25 +114,13 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
             if(progressBar == null)
             {
-                progressBar = CustomProgressBar()
+                progressBar = CustomProgressBar(this)
             }
 
-            if(progressBar!!.isAdded)
-            {
-                return@Observer
+            progressBar?.onStartProgress(isProgress){isDismiss ->
+                if(isDismiss) progressBar = null
             }
 
-            if(isProgress && !progressBar!!.isAdded)
-            {
-                SopoLog.d("Progress On")
-                progressBar?.show(supportFragmentManager, "PROGRESS")
-            }
-            else if(!isProgress)
-            {
-                SopoLog.d("Progress Off")
-                progressBar?.dismiss()
-                progressBar = null
-            }
         })
 
         binding.vm!!.result.observe(this, Observer {

@@ -170,7 +170,6 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
 
             // 로컬 데이터 옵저빙
             _parcelEntity.postValue(parcelRepoImpl.getLocalParcelById(parcelId = parcelId))
-            _isProgress.postValue(false)
         }
     }
 
@@ -179,7 +178,6 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
     {
         SopoLog.d("requestRemoteParcel(${parcelId}) call")
 
-        _isProgress.postValue(true)
 
         requestLocalParcel(parcelId)
 
@@ -218,7 +216,6 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
                 }
             }
 
-            _isProgress.postValue(false)
         }
 
 

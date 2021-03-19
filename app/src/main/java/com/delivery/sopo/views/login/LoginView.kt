@@ -28,7 +28,6 @@ class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
     init
     {
         parentActivity = this@LoginView
-        progressBar = CustomProgressBar()
     }
 
     override fun bindView()
@@ -39,30 +38,18 @@ class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
 
     override fun setObserver()
     {
-        binding.vm!!.isProgress.observe(this, Observer {isProgress ->
+        binding.vm!!.isProgress.observe(this, Observer { isProgress ->
             if(isProgress == null) return@Observer
 
             if(progressBar == null)
             {
-                progressBar = CustomProgressBar()
+                progressBar = CustomProgressBar(this)
             }
 
-            if(progressBar!!.isAdded)
-            {
-                return@Observer
+            progressBar?.onStartProgress(isProgress){isDismiss ->
+                if(isDismiss) progressBar = null
             }
 
-            if(isProgress && !progressBar!!.isAdded)
-            {
-                SopoLog.d("Progress On")
-                progressBar?.show(supportFragmentManager, "PROGRESS")
-            }
-            else if(!isProgress)
-            {
-                SopoLog.d("Progress Off")
-                progressBar?.dismiss()
-                progressBar = null
-            }
         })
 
         binding.vm!!.result.observe(this, Observer {

@@ -113,7 +113,6 @@ class InquiryView: Fragment()
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
-        progressBar = CustomProgressBar()
         parentView = activity as MainView
         bindView(inflater, container)
         setAdapters()
@@ -190,20 +189,13 @@ class InquiryView: Fragment()
 
             if(progressBar == null)
             {
-                progressBar = CustomProgressBar()
+                progressBar = CustomProgressBar(parentView)
             }
 
-            if(isProgress && !progressBar!!.isAdded)
-            {
-                SopoLog.d("Progress On")
-                progressBar?.show(requireFragmentManager(), "PROGRESS")
+            progressBar?.onStartProgress(isProgress){isDismiss ->
+                if(isDismiss) progressBar = null
             }
-            else if(!isProgress)
-            {
-                SopoLog.d("Progress Off")
-                progressBar?.dismiss()
-                progressBar = null
-            }
+
         })
 
         // 배송중 , 등록된 택배 리스트

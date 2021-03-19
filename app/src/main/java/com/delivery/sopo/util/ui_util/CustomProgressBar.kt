@@ -1,5 +1,6 @@
 package com.delivery.sopo.util.ui_util
 
+import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -8,18 +9,54 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.R
 import com.delivery.sopo.util.SopoLog
 
-class CustomProgressBar: DialogFragment()
+class CustomProgressBar(val activity: AppCompatActivity?): DialogFragment()
 {
+    var ssibalCheck = false
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         val view = inflater.inflate(R.layout.loading, container, false)
         setSetting()
         return view
+    }
+
+    fun onStartProgress(isProgress: Boolean, callback: ((Boolean)->Unit)){
+
+        SopoLog.d("onStartProgress() call")
+
+        if(activity == null)
+        {
+            SopoLog.e("No Activity")
+            return
+        }
+
+        if(ssibalCheck)
+        {
+            SopoLog.d("ssibal Check")
+            ssibalCheck = false
+            dismiss()
+        }
+
+        if(!isAdded && isProgress)
+        {
+            SopoLog.d("Turn On ProgressBar")
+            show(activity.supportFragmentManager, "Progress")
+            ssibalCheck = true
+            return
+        }
+
+        if(!isProgress)
+        {
+            SopoLog.d("Turn Off ProgressBar")
+            dismiss()
+            callback.invoke(true)
+        }
     }
 
     private fun setSetting()

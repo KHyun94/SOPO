@@ -171,7 +171,12 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
 
     fun refreshCompleteListByOnlyLocalData()
     {
+        SopoLog.d("refreshCompleteListByOnlyLocalData() call")
+
         viewModelScope.launch(Dispatchers.IO) {
+
+            _isProgress.postValue(true)
+
             //  monthList가 1개 있었을 경우 => 2개 있었을 경우 =>
             timeCountRepoImpl.getCurrentTimeCount()?.let {
                 it.visibility = 0
@@ -195,6 +200,8 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
                     timeCountRepoImpl.updateEntities(list)
                 }
             }
+
+            _isProgress.postValue(false)
         }
     }
 
@@ -251,72 +258,75 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
     // 배송완료 리스트를 가져온다.(페이징 포함)
     fun getCompleteListWithPaging(inquiryDate: String)
     {
-            SopoLog.d(msg = "getCompleteListWithPaging() call")
-            _isProgress.postValue(true) // 로딩 프로그래스바 표출
-            viewModelScope.launch(Dispatchers.IO) {
+        SopoLog.d(msg = "getCompleteListWithPaging() call")
+        viewModelScope.launch(Dispatchers.IO) {
 
-                if (pagingManagement.inquiryDate != inquiryDate)
+            _isProgress.postValue(true)
+
+            if (pagingManagement.inquiryDate != inquiryDate)
+            {
+                //pagingManagement에 저장된 inquiryDate랑 새로 조회하려는 데이터가 다르면 페이징 데이터 초기화 후 새로운 데이터로 조회
+                pagingManagement = PagingManagement(0, inquiryDate, true)
+
+                // TODO isNowVisible의 정체?
+                // 전체 리스트(getAll) 중 isNowVisible이 1인 Entity를(filter) 0으로 바꾼 후(forEach) 업데이트(updateEntities)
+                parcelManagementRepoImpl.getAll()?.let { list ->
+                    list.filter { it.isNowVisible == 1 }.forEach { it.isNowVisible = 0 }
+                    parcelManagementRepoImpl.updateEntities(list)
+                }
+
+
+            }
+            else
+            {
+                pagingManagement.pagingNum += 1
+            }
+            // 다음에 조회할 데이터가 있다면
+            if (pagingManagement.hasNext)
+            {
+                val remoteCompleteParcels =
+                    parcelRepoImpl.getRemoteCompleteParcels(page = pagingManagement.pagingNum, inquiryDate = inquiryDate)
+
+                // null이거나 0이면 다음 데이터가 없는 것이므로 페이징 숫자를 1빼고 hasNext를 false로 바꾼다.
+                if (remoteCompleteParcels == null || remoteCompleteParcels.size == 0)
                 {
-                    //pagingManagement에 저장된 inquiryDate랑 새로 조회하려는 데이터가 다르면 페이징 데이터 초기화 후 새로운 데이터로 조회
-                    pagingManagement = PagingManagement(0, inquiryDate, true)
-
-                    // TODO isNowVisible의 정체?
-                    // 전체 리스트(getAll) 중 isNowVisible이 1인 Entity를(filter) 0으로 바꾼 후(forEach) 업데이트(updateEntities)
-                    parcelManagementRepoImpl.getAll()?.let { list ->
-                        list.filter { it.isNowVisible == 1 }.forEach { it.isNowVisible = 0 }
-                        parcelManagementRepoImpl.updateEntities(list)
-                    }
-
-
+                    pagingManagement.pagingNum -= 1
+                    pagingManagement.hasNext = false
+                    _isProgress.postValue(false)
+                    return@launch
                 }
                 else
                 {
-                    pagingManagement.pagingNum += 1
-                }
-                // 다음에 조회할 데이터가 있다면
-                if (pagingManagement.hasNext)
-                {
-                    val remoteCompleteParcels = parcelRepoImpl.getRemoteCompleteParcels(page = pagingManagement.pagingNum, inquiryDate = inquiryDate)
-
-                    // null이거나 0이면 다음 데이터가 없는 것이므로 페이징 숫자를 1빼고 hasNext를 false로 바꾼다.
-                    if (remoteCompleteParcels == null || remoteCompleteParcels.size == 0)
+                    remoteCompleteParcels.sortByDescending { it.arrivalDte } // 도착한 시간을 기준으로 내림차순으로 정렬
+                    val updateParcelList = mutableListOf<Parcel>() // list에 모았다가 한번에 업데이트
+                    for (parcel in remoteCompleteParcels)
                     {
-                        pagingManagement.pagingNum -= 1
-                        pagingManagement.hasNext = false
-                        _isProgress.postValue(false)
-                        return@launch
-                    }
-                    else
-                    {
-                        remoteCompleteParcels.sortByDescending { it.arrivalDte } // 도착한 시간을 기준으로 내림차순으로 정렬
-                        val updateParcelList = mutableListOf<Parcel>() // list에 모았다가 한번에 업데이트
-                        for (parcel in remoteCompleteParcels)
+                        val localParcelById = parcelRepoImpl.getLocalParcelById(parcel.parcelId)
+                        updateParcelList.add(parcel)
+                        if (localParcelById == null)
                         {
-                            val localParcelById = parcelRepoImpl.getLocalParcelById(parcel.parcelId)
-                            updateParcelList.add(parcel)
-                            if (localParcelById == null)
-                            {
-                                parcelManagementRepoImpl.insertEntity(ParcelMapper.parcelToParcelManagementEntity(
-                                    parcel
-                                ).also { it.isNowVisible = 1 })
-                            }
-                            else
-                            {
-                                parcelManagementRepoImpl.getEntity(
-                                    parcel.parcelId
-                                )?.let { entity ->
-                                    parcelManagementRepoImpl.updateEntity(entity.also {
-                                        it.isNowVisible = 1
-                                    })
-                                }
+                            parcelManagementRepoImpl.insertEntity(ParcelMapper.parcelToParcelManagementEntity(
+                                parcel
+                            ).also { it.isNowVisible = 1 })
+                        }
+                        else
+                        {
+                            parcelManagementRepoImpl.getEntity(
+                                parcel.parcelId
+                            )?.let { entity ->
+                                parcelManagementRepoImpl.updateEntity(entity.also {
+                                    it.isNowVisible = 1
+                                })
                             }
                         }
-                        parcelRepoImpl.insertEntities(updateParcelList)
-
-                        _isProgress.postValue(false)
                     }
+                    parcelRepoImpl.insertEntities(updateParcelList)
+
+                    _isProgress.postValue(false)
+
                 }
             }
+        }
 
 
     }
@@ -356,16 +366,16 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
     {
         SopoLog.d("refreshOngoing() call")
 
-        _isProgress.postValue(true)
-
         try
         {
             viewModelScope.launch(Dispatchers.IO) {
 
+                _isProgress.postValue(true)
+
                 val remoteParcels = parcelRepoImpl.getRemoteOngoingParcels()
 
                 // 서버로부터 데이터를 받아온 값이 널이 아니라면
-                remoteParcels?.let {parcels ->
+                remoteParcels?.let { parcels ->
 
                     // 서버로부터 받아온 데이터(ParcelId로 검색)로 로컬 db에 검색이 되는지 확인한다.
                     for (remote in parcels)
@@ -429,6 +439,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
                                 parcelManagementRepoImpl.insertEntity(parcelManagement)
                             }
                         }
+
                     }
                 }
 
@@ -449,7 +460,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
 
                         for (parcel in filteredLocalList)
                         {
-//                            val result = ParcelCall.getSingleParcelTest(parcel.parcelId)
+                            //                            val result = ParcelCall.getSingleParcelTest(parcel.parcelId)
                             val result = ParcelCall.getSingleParcelTest(ParcelId("", ""))
 
                             val remoteOngoingParcel = result.data
@@ -472,12 +483,13 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
                         }
                     }
                 }
-                //            _isLoading.postValue(false)
+
                 _isProgress.postValue(false)
             }
         }
         catch (e: Exception)
         {
+            _isProgress.postValue(false)
             SopoLog.e("refreshOngoing() Error >>>", e)
         }
 
