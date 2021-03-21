@@ -7,6 +7,7 @@ import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.models.push.UpdateParcelDao
+import com.delivery.sopo.models.push.UpdatedParcelInfo
 import com.delivery.sopo.networks.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
@@ -29,30 +30,30 @@ class FirebaseService: FirebaseMessagingService()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
     private val parcelManagementRepo: ParcelManagementRepoImpl by inject()
 
-    private fun alertUpdateParcel(remoteMessage: RemoteMessage, intent: Intent, updateParcelDao: UpdateParcelDao)
+    private fun alertUpdateParcel(remoteMessage: RemoteMessage, intent: Intent, data: UpdatedParcelInfo)
     {
+        SopoLog.d("alertUpdateParcel() call >>> ${data.updatedParcelId.size}개 업데이트 준비 중")
 
-        SopoLog.d("alertUpdateParcel() call")
+        val cntOfUpdatedParcel = data.updatedParcelId.size
+
+        if(cntOfUpdatedParcel == 0) return
 
         CoroutineScope(Dispatchers.IO).launch {
 
-            val parcelEntity =
-                parcelRepoImpl.getLocalParcelById(ParcelId(updateParcelDao.regDt, updateParcelDao.parcelUid))
-                    ?: return@launch
+            val msgList = mutableListOf<String>()
 
-            val isChange = updateParcelDao.compareDeliveryStatus(parcelEntity)
+            data.updatedParcelId.forEach {updateParcelDao ->
 
-            if (!isChange) return@launch
+                val parcelEntity = parcelRepoImpl.getLocalParcelById(ParcelId(updateParcelDao.regDt, updateParcelDao.parcelUid)) ?: return@launch
 
-            // 현재 해당 택배가 가지고 있는 배송 상태와 fcm으로 넘어온 배송상태가 다른 경우만 노티피케이션을 띄운다!
+                // DeliveryStatus 변경됐을 시 True
+                val isChange = updateParcelDao.compareDeliveryStatus(parcelEntity)
 
-            val parcelManagementEntity =
-                parcelManagementRepo.getEntity(updateParcelDao.getParcelId())
+                if (!isChange) return@launch
 
-            if (parcelManagementEntity == null)
-            {
-                // 등록되지 않은 상태 entity를 저장
-                val parcelManagementEntity = ParcelMapper.parcelEntityToParcelManagementEntity(updateParcelDao.getParcel() ?: return@launch).apply {
+                // 현재 해당 택배가 가지고 있는 배송 상태와 fcm으로 넘어온 배송상태가 다른 경우만 노티피케이션을 띄운다!
+                val parcelManagementEntity = parcelManagementRepo.getEntity(updateParcelDao.getParcelId()) ?: ParcelMapper.parcelEntityToParcelManagementEntity(updateParcelDao.getParcel() ?: return@launch).apply {
+
                     isBeUpdate = 1
                     auditDte = TimeUtil.getDateTime()
 
@@ -62,27 +63,16 @@ class FirebaseService: FirebaseMessagingService()
 
                 withContext(Dispatchers.Default) { parcelManagementRepo.insertEntity(parcelManagementEntity) }
 
-                NotificationImpl.alertUpdateParcel(remoteMessage = remoteMessage, context = applicationContext, intent = intent, message = updateParcelDao.getMessage(parcelEntity))
-
-                return@launch
+                with(updateParcelDao.getMessage(parcelEntity)){
+                    SopoLog.d("Noti Msg >>> $this")
+                    msgList.add(this)
+                }
             }
 
-            // 배송 상태가 변경 여부를 저
-            parcelManagementEntity.run {
-                isBeUpdate = 1
-                auditDte = TimeUtil.getDateTime()
-
-                // 배송 중 -> 배송완료가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
-                if (updateParcelDao.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE) isBeDelivered = 1
+            msgList.forEach {
+                NotificationImpl.alertUpdateParcel(remoteMessage = remoteMessage, context = applicationContext, intent = intent, message = *arrayOf(it))
             }
 
-            withContext(Dispatchers.Default) {
-                parcelManagementRepo.updateEntity(parcelManagementEntity)
-            }
-
-            NotificationImpl.alertUpdateParcel(
-                remoteMessage = remoteMessage, context = applicationContext, intent = intent, message = updateParcelDao.getMessage(parcelEntity)
-            )
         }
     }
 
@@ -103,17 +93,12 @@ class FirebaseService: FirebaseMessagingService()
                 // 사용자에게 택배 상태가 업데이트되었다고 알려줌
                 NotificationEnum.PUSH_UPDATE_PARCEL.notificationId ->
                 {
-                    val updateParcelDao = fcmPushDto.getUpdateParcel()
+                    val updatedParcelList = fcmPushDto.getUpdateParcel()
 
-                    SopoLog.d(
-                        """ ${NotificationEnum.PUSH_UPDATE_PARCEL} >>>
-                        $updateParcelDao
-                    """.trimIndent()
-                    )
+                    SopoLog.d("${NotificationEnum.PUSH_UPDATE_PARCEL}")
 
-                    alertUpdateParcel(
-                        remoteMessage, Intent(this, SplashView::class.java), updateParcelDao
-                    )
+                    // TODO 업데이트 조회 화면으로 이동
+                    alertUpdateParcel(remoteMessage, Intent(this, SplashView::class.java), updatedParcelList)
                 }
                 // 친구 추천
                 NotificationEnum.PUSH_FRIEND_RECOMMEND.notificationId ->

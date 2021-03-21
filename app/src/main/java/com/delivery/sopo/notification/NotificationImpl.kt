@@ -16,6 +16,7 @@ import com.delivery.sopo.interfaces.notification.Notification
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.push.UpdateParcelDao
 import com.delivery.sopo.util.DateUtil
+import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.TimeUtil
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -51,7 +52,7 @@ object NotificationImpl: Notification
         nManager.notify(30001, nBuilder.build())
     }
 
-    override fun alertUpdateParcel(remoteMessage: RemoteMessage, context: Context, intent: Intent, message: String) {
+    override fun alertUpdateParcel(remoteMessage: RemoteMessage, context: Context, intent: Intent, vararg message: String) {
         val channelId = "${context.packageName}SOPO"
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
@@ -60,22 +61,28 @@ object NotificationImpl: Notification
 
         val nBuilder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.mipmap.app_icon)
-            .setContentTitle("SOPO")
-            .setContentText(message)
+            .setContentTitle("SOPO ${message[0]}")
             .setAutoCancel(true)
+            .setStyle(NotificationCompat.InboxStyle().also { style ->
+                message.forEach { style.addLine(it) }
+            })
+            .setColor(context.resources.getColor(R.color.COLOR_MAIN_BLUE_50))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setSound(defaultSoundUri)
             .setVibrate(longArrayOf(1000, 1000))
             .setLights(Color.WHITE, 1500, 1500)
             .setContentIntent(contentIntent)
+
         val nManager = context.getSystemService(FirebaseMessagingService.NOTIFICATION_SERVICE) as NotificationManager
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             val channel = NotificationChannel(
                 channelId,
-                NotificationEnum.PUSH_UPDATE_PARCEL.channelName,
-                NotificationManager.IMPORTANCE_DEFAULT
+                "업데이트 확인 여부",
+                NotificationManager.IMPORTANCE_HIGH
             )
             nManager.createNotificationChannel(channel)
         }
-        nManager.notify(10001, nBuilder.build())
+        nManager.notify(OtherUtil.getRandomInteger(5), nBuilder.build())
     }
 }

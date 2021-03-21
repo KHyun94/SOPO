@@ -18,11 +18,6 @@ import java.util.*
 // TODO 추후 변경...
 class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): KoinComponent, BaseObservable()
 {
-    init
-    {
-        SopoLog.d("InquiryListItem >>> ${parcel.parcelAlias}")
-    }
-
     private val parcelRepoImpl: ParcelRepoImpl by inject()
 
     val iconResource = MutableLiveData<Int>().apply {
@@ -43,7 +38,6 @@ class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): Koin
 
     val isUnidentified = ObservableField<Boolean>().apply {
         checkIsUnidentified {
-            SopoLog.d("red dot >>> $it")
             set(it)
             notifyChange()
         }

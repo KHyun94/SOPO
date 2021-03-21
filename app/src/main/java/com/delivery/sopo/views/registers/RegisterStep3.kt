@@ -96,7 +96,6 @@ class RegisterStep3: Fragment()
             progressBar?.onStartProgress(isProgress){isDismiss ->
                 if(isDismiss) progressBar = null
             }
-
         })
 
         binding.vm!!.isRevise.observe(this, Observer {

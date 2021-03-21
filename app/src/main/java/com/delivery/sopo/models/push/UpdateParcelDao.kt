@@ -30,10 +30,7 @@ data class UpdateParcelDao(
 
     fun compareDeliveryStatus(parcelEntity: ParcelEntity): Boolean {
         SopoLog.d("""
-            compareDeliveryStatus() call
-            ${parcelEntity.deliveryStatus}
-            ${deliveryStatus}
-            ${parcelEntity.status}
+            compareDeliveryStatus() call >>> [기존: ${parcelEntity.deliveryStatus} VS 변경: ${deliveryStatus}] 활성화 상태: ${parcelEntity.status}
         """.trimIndent())
         return parcelEntity.deliveryStatus != deliveryStatus && parcelEntity.status == 1
     }
@@ -72,7 +69,7 @@ data class UpdateParcelDao(
             {
                 val size = parcelItem?.progresses?.size?:0
 
-                "${parcelItem?.progresses?.get(size - 1)?.location}에서 ${parcel.parcelAlias}가 출발했어요."
+                "${parcelItem?.progresses?.get(size - 1)?.location?.name?:"위치불명"}에서 ${parcel.parcelAlias}가 출발했어요."
             }
             DeliveryStatusConst.OUT_FOR_DELIVERY ->
             {

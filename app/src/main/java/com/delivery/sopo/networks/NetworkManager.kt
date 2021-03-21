@@ -98,8 +98,6 @@ object NetworkManager : KoinComponent
 
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
-
-
         mOKHttpClient = OkHttpClient().newBuilder().apply {
             addInterceptor(httpLoggingInterceptor)
             if(interceptor != null) addInterceptor(interceptor)

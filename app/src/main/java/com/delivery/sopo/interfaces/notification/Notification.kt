@@ -7,5 +7,5 @@ import com.delivery.sopo.models.push.UpdateParcelDao
 import com.google.firebase.messaging.RemoteMessage
 
 interface Notification {
-    fun alertUpdateParcel(remoteMessage: RemoteMessage, context: Context, intent: Intent, message: String)
+    fun alertUpdateParcel(remoteMessage: RemoteMessage, context: Context, intent: Intent, vararg message: String)
 }

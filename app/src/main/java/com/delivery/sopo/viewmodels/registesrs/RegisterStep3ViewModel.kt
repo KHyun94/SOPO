@@ -39,7 +39,7 @@ class RegisterStep3ViewModel(
 
     val isRevise = SingleLiveEvent<Boolean>()
 
-    private var _isProgress = MutableLiveData<Boolean>().apply { value = false }
+    private var _isProgress = MutableLiveData<Boolean>()
     val isProgress : LiveData<Boolean>
     get() = _isProgress
 
@@ -55,8 +55,6 @@ class RegisterStep3ViewModel(
     // '등록하기' Button Click event
     fun onRegisterClicked()
     {
-        _isProgress.value = true
-
         CoroutineScope(Dispatchers.IO).launch {
             when(val result = ParcelCall.registerParcel(parcelAlias = alias.value ?: wayBilNum.value!!, trackCompany = courier.value!!.courierCode, trackNum = wayBilNum.value!!))
             {
@@ -66,7 +64,7 @@ class RegisterStep3ViewModel(
                     val code = CodeUtil.getCode(data.code)
 
                     _result.postValue(TestResult.SuccessResult<ParcelId?>(code, code.MSG, data.data))
-                    _isProgress.postValue(false)
+//                    _isProgress.postValue(false)
                 }
                 is NetworkResult.Error ->
                 {
@@ -74,7 +72,6 @@ class RegisterStep3ViewModel(
                     val code = CodeUtil.getCode(error.data()?.code)
 
                     _result.postValue(TestResult.ErrorResult<String>(code, code.MSG, ErrorResult.ERROR_TYPE_DIALOG, null, error))
-                    _isProgress.postValue(false)
                 }
             }
         }

@@ -175,7 +175,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
 
         viewModelScope.launch(Dispatchers.IO) {
 
-            _isProgress.postValue(true)
+//            _isProgress.postValue(true)
 
             //  monthList가 1개 있었을 경우 => 2개 있었을 경우 =>
             timeCountRepoImpl.getCurrentTimeCount()?.let {
@@ -201,7 +201,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
                 }
             }
 
-            _isProgress.postValue(false)
+//            _isProgress.postValue(false)
         }
     }
 
@@ -261,7 +261,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
         SopoLog.d(msg = "getCompleteListWithPaging() call")
         viewModelScope.launch(Dispatchers.IO) {
 
-            _isProgress.postValue(true)
+//            _isProgress.postValue(true)
 
             if (pagingManagement.inquiryDate != inquiryDate)
             {
@@ -292,7 +292,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
                 {
                     pagingManagement.pagingNum -= 1
                     pagingManagement.hasNext = false
-                    _isProgress.postValue(false)
+//                    _isProgress.postValue(false)
                     return@launch
                 }
                 else
@@ -322,7 +322,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
                     }
                     parcelRepoImpl.insertEntities(updateParcelList)
 
-                    _isProgress.postValue(false)
+//                    _isProgress.postValue(false)
 
                 }
             }
@@ -370,7 +370,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
         {
             viewModelScope.launch(Dispatchers.IO) {
 
-                _isProgress.postValue(true)
+//                _isProgress.postValue(true)
 
                 val remoteParcels = parcelRepoImpl.getRemoteOngoingParcels()
 
@@ -484,12 +484,12 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
                     }
                 }
 
-                _isProgress.postValue(false)
+//                _isProgress.postValue(false)
             }
         }
         catch (e: Exception)
         {
-            _isProgress.postValue(false)
+//            _isProgress.postValue(false)
             SopoLog.e("refreshOngoing() Error >>>", e)
         }
 

@@ -76,5 +76,10 @@ object OtherUtil
         }
     }
 
+    fun getRandomInteger(length: Int):Int
+    {
+        val charset = "123456789"
+        return  (1..length).map { charset.random() }.joinToString("").toInt()
+    }
 
 }
