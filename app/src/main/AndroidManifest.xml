@@ -16,6 +16,10 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_MMS" />
+
     <application
         android:name=".SOPOApp"
         android:allowBackup="true"
@@ -83,6 +87,21 @@
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/KAKAO_API_KEY" />
 
+        <receiver
+            android:name=".services.SMSReceiver"
+            android:permission="android.permission.BROADCAST_WAP_PUSH" >
+            <intent-filter>
+                <action android:name="android.intent.action.DATA_SMS_RECEIVED" />
+
+                <data android:scheme="sms" />
+                <data android:host="localhost" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.provider.Telephony.WAP_PUSH_RECEIVED" />
+
+                <data android:mimeType="application/vnd.wap.mms-message" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

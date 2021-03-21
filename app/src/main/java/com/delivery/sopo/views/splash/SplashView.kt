@@ -66,9 +66,7 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
                     {
                         permissionDialog = PermissionDialog(act = parentActivity) { dialog ->
 
-                            PermissionUtil.permissionCallback(
-                                parentActivity, *PermissionConst.PERMISSION_ARRAY
-                            ) { isGranted ->
+                            PermissionUtil.permissionCallback(parentActivity, *PermissionConst.PERMISSION_ARRAY) { isGranted ->
 
                                 if (!isGranted)
                                 {
