@@ -1,6 +1,7 @@
 package com.delivery.sopo.services
 
 import android.content.Intent
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
@@ -34,10 +35,6 @@ class FirebaseService: FirebaseMessagingService()
     {
         SopoLog.d("alertUpdateParcel() call >>> ${data.updatedParcelId.size}개 업데이트 준비 중")
 
-        val cntOfUpdatedParcel = data.updatedParcelId.size
-
-        if(cntOfUpdatedParcel == 0) return
-
         CoroutineScope(Dispatchers.IO).launch {
 
             val msgList = mutableListOf<String>()
@@ -54,11 +51,20 @@ class FirebaseService: FirebaseMessagingService()
                 // 현재 해당 택배가 가지고 있는 배송 상태와 fcm으로 넘어온 배송상태가 다른 경우만 노티피케이션을 띄운다!
                 val parcelManagementEntity = parcelManagementRepo.getEntity(updateParcelDao.getParcelId()) ?: ParcelMapper.parcelEntityToParcelManagementEntity(updateParcelDao.getParcel() ?: return@launch).apply {
 
+                    SopoLog.d("parcelManagementEntity Update>>> ")
+
                     isBeUpdate = 1
                     auditDte = TimeUtil.getDateTime()
 
-                    // 배송 중 -> 배송완료가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
+                    // 배송 중 -> 배송완료]가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
                     if (updateParcelDao.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE) isBeDelivered = 1
+
+                    SopoLog.d("""
+                        parcelManagement >>> 
+                        isBeUpdate = ${isBeUpdate}
+                        auditDte = ${auditDte}
+                        isBeDelivered = ${isBeDelivered}
+                    """.trimIndent())
                 }
 
                 withContext(Dispatchers.Default) { parcelManagementRepo.insertEntity(parcelManagementEntity) }
@@ -97,7 +103,12 @@ class FirebaseService: FirebaseMessagingService()
 
                     SopoLog.d("${NotificationEnum.PUSH_UPDATE_PARCEL}")
 
-                    // TODO 업데이트 조회 화면으로 이동
+                    if(updatedParcelList.updatedParcelId.isEmpty()) return
+
+                    /**
+                     * TODO 해당 처리는 번들로 들어오는 데이터를 구분해서 전역으로 데이터를 들고 있다가
+                     *  선택한 업데이트 노티에 해당하 택배 상세 페이지로 이동
+                     */
                     alertUpdateParcel(remoteMessage, Intent(this, SplashView::class.java), updatedParcelList)
                 }
                 // 친구 추천

@@ -182,7 +182,7 @@ class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): Koin
             //상품 이동 중
             DeliveryStatusEnum.IN_TRANSIT.CODE -> R.drawable.ic_parcel_status_ing
             // 동네도착
-            DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.drawable.ic_parcel_status_soon
+            DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.drawable.test
             else -> 0
         }
 

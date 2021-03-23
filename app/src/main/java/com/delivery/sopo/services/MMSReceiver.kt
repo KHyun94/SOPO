@@ -16,18 +16,19 @@ import java.io.InputStreamReader
 import java.text.MessageFormat
 
 
-class SMSReceiver: BroadcastReceiver()
+class MMSReceiver: BroadcastReceiver()
 {
     override fun onReceive(context: Context?, intent: Intent?)
     {
         SopoLog.i("SMSReceiver - on Receiver")
 
+        context?:return
+
         try
         {
-            val runn = Runnable { parseMMS(context!!) }
-            val handler = Handler()
-            handler.postDelayed(runn, 10000) // 시간이 너무 짧으면 못 가져오는게 있더라
-
+            Handler().postDelayed(Runnable {
+                parseMMS(context)
+            }, 5000)
         }
         catch (e: Exception)
         {
@@ -51,6 +52,7 @@ class SMSReceiver: BroadcastReceiver()
         cursor.close()
         val number = parseNumber(context, id)
         val msg = parseMessage(context, id)
+
         SopoLog.d("MMSReceiver.java | parseMMS >>> |$number|$msg")
     }
 

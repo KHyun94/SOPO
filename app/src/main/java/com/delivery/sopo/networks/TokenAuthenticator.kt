@@ -25,7 +25,6 @@ import org.koin.core.inject
 
 class TokenAuthenticator : Authenticator, KoinComponent
 {
-    val TAG = this.javaClass.simpleName
     val userRepoImpl : UserRepoImpl by inject()
     val oauthRepoImpl : OauthRepoImpl by inject()
 
@@ -35,27 +34,26 @@ class TokenAuthenticator : Authenticator, KoinComponent
         {
             SopoLog.d( msg = "authenticate call() - 401")
 
-            return when (val result = requestRefreshOAuthToken())
+            when (val result = requestRefreshOAuthToken())
             {
                 is TestResult.SuccessResult<*> ->
                 {
                     val oauth = result.data as OauthResult
                     val accessToken = oauth.accessToken
 
-                    SopoLog.d( msg = "authenticate success => ${accessToken}")
+                    SopoLog.d( msg = "authenticate success => $accessToken")
 
-                    getRetrofitWithoutAuthenticator(response, accessToken)
+                    return getRetrofitWithoutAuthenticator(response, accessToken)
                 }
                 is TestResult.ErrorResult<*> ->
                 {
                     SopoLog.e( msg = "authenticate fail => ${result.errorMsg}")
-                    null
                 }
             }
         }
 
-        SopoLog.d( msg = "authenticate call() - else")
-        return null
+        SopoLog.e( msg = "authenticate call() - else")
+        return response.request
     }
 
     private fun requestRefreshOAuthToken() : TestResult

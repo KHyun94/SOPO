@@ -15,7 +15,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_ongoing_parent"
         android:layout_width="match_parent"
-        android:layout_height="90dp"
+        android:layout_height="101dp"
         app:cardBackgroundColor="@color/MAIN_WHITE"
         app:cardCornerRadius="15dp"
         app:cardElevation="3dp"
