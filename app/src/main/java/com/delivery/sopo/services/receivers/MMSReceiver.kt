@@ -1,4 +1,4 @@
-package com.delivery.sopo.services
+package com.delivery.sopo.services.receivers
 
 import android.content.BroadcastReceiver
 import android.content.ContentResolver
