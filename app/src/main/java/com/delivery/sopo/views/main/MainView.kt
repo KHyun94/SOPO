@@ -101,8 +101,9 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
         // todo 업데이트 시
         SOPOApp.cntOfBeUpdate.observeForever {
+            if(it == null) return@observeForever
 
-            SopoLog.d(msg = "업데이트 가능 여부 택배 갯수 ${it}!!!!!!!!!!!!!!!!!!!!!")
+            SopoLog.d(msg = "업데이트 가능 여부 택배 갯수 ${it}")
 
             if (binding.vm!!.isInitUpdate && it > 0)
             {
@@ -118,24 +119,27 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                             {
                                 SopoLog.d("Click For Update at RegisterTab")
                                 binding.vpMain.currentItem = 1
-                                inquiryVm.refreshOngoing()
+
                             }
                             NavigatorConst.INQUIRY_TAB ->
                             {
                                 SopoLog.d("Click For Update at InquiryTab")
-                                inquiryVm.refreshOngoing()
+
                             }
                             NavigatorConst.MY_MENU_TAB ->
                             {
                                 SopoLog.d("Click For Update at MenuTab")
                                 binding.vpMain.currentItem = 1
-                                inquiryVm.refreshOngoing()
+
                             }
                         }
+
+                        inquiryVm.refreshOngoing()
 
                         this.onDismiss()
                     })
                     onStart(null)
+                    SOPOApp.cntOfBeUpdate.postValue(0)
                 }
             }
         }

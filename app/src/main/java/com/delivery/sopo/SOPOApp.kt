@@ -9,6 +9,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.SystemClock
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.RoomActivate
@@ -140,8 +141,10 @@ class SOPOApp : Application()
 
         var currentPage = SingleLiveEvent<Int?>()
 
-        val cntOfBeUpdate: LiveData<Int>
-            get() = SOPOApp().parcelManagementRepoImpl.getIsUpdateCntLiveData()
+//        val cntOfBeUpdate: LiveData<Int>
+//            get() = SOPOApp().parcelManagementRepoImpl.getIsUpdateCntLiveData()
+
+        val cntOfBeUpdate = MutableLiveData<Int?>()
 
         var oauth : OauthEntity? = null
     }
