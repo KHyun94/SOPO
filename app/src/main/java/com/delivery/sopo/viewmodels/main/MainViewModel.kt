@@ -50,10 +50,6 @@ class MainViewModel(
     // 업데이트 여부
     var isInitUpdate = false
 
-    private val _cntOfBeUpdate : LiveData<Int> = parcelManagementRepoImpl.getIsUpdateCntLiveData()
-    val cntOfBeUpdate : LiveData<Int>
-        get() = _cntOfBeUpdate
-
     val adapter = MutableLiveData<ViewPagerAdapter>()
 
     init
@@ -92,16 +88,17 @@ class MainViewModel(
             {
                 SopoLog.d( msg = "Count('isBeUpdate') == ${cnt}, 서버로 요청!!!")
                 requestOngoingParcelsAsRemote()
+                return@launch
             }
-            else
-            {
-                SopoLog.d( msg = "Count('isBeUpdate') == ${cnt}, 업데이트 사항이 없습니다!!!")
-                isInitUpdate = true
-            }
+
+            SopoLog.d( msg = "Count('isBeUpdate') == ${cnt}, 업데이트 사항이 없습니다!!!")
+            isInitUpdate = true
         }
     }
 
-    // todo TEST 해봐야합니다.
+    /**
+     * 이슈 : 모든 택배가 미확인 상태로 변경됨 수정이 시급
+     */
     private fun requestOngoingParcelsAsRemote()
     {
         SopoLog.d( msg = "isBeUpdateParcels 시작!!!!!!!")

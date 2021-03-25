@@ -41,6 +41,9 @@ interface CourierDao
     @Query("SELECT * FROM COURIER WHERE courierCode = :courierCode")
     suspend fun getCourierEntityWithCode(courierCode: String) : CourierEntity
 
+    @Query("SELECT * FROM COURIER WHERE courierName LIKE :name")
+    fun getWithPartName(name : String) : List<CourierEntity>
+
     @Insert(onConflict = REPLACE)
     suspend fun insert(courierEntity: CourierEntity)
 

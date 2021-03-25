@@ -8,16 +8,23 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Handler
 import android.text.TextUtils
+import com.delivery.sopo.repository.impl.CourierRepoImpl
 import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.*
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
+import java.lang.Runnable
 import java.text.MessageFormat
 
 
-class MMSReceiver: BroadcastReceiver()
+class MMSReceiver: BroadcastReceiver(), KoinComponent
 {
+    private val courierRepo: CourierRepoImpl by inject()
+
     override fun onReceive(context: Context?, intent: Intent?)
     {
         SopoLog.i("SMSReceiver - on Receiver")
@@ -34,6 +41,47 @@ class MMSReceiver: BroadcastReceiver()
         {
             SopoLog.d("---> ERROR EXTRACTING MMS: " + e.localizedMessage)
         }
+    }
+
+    fun parse(msg: String) = with(msg) {
+        val index = indexOf(':')
+        substring(index+1).trim()
+    }
+
+    fun checkMessageAboutParcel(mms: String)
+    {
+        val list = mms.split("\n")
+
+        var parcelNickname: String? = null
+        var parcelWayBilNo: String? = null
+        var parcelCourier: String? = null
+
+        var cnt = 1
+
+        list.forEach { value ->
+
+            SopoLog.d("${cnt++}번째 row >>> $value")
+
+            if(value.contains("상품명")) parcelNickname = parse(value)
+            if(value.contains("운송장번호"))parcelWayBilNo = parse(value)
+            if(value.contains("택배사")) parcelCourier = parse(value).replace("택배", "")
+
+            if(parcelCourier == null && value.contains("택배"))
+            {
+
+            }
+        }
+
+        SopoLog.d("상품명>>>$parcelNickname")
+        SopoLog.d("운송장번호>>>$parcelWayBilNo")
+
+        if(parcelCourier != null)
+        {
+            val courierList = runBlocking(Dispatchers.Default) { courierRepo.getCourierEntityWithPartName("%${parcelCourier}%") }
+            SopoLog.d("택배사(${parcelCourier}) >>> ${courierList.joinToString()}")
+        }
+
+
     }
 
     private fun parseMMS(context: Context)
@@ -54,6 +102,8 @@ class MMSReceiver: BroadcastReceiver()
         val msg = parseMessage(context, id)
 
         SopoLog.d("MMSReceiver.java | parseMMS >>> |$number|$msg")
+
+        checkMessageAboutParcel(msg?:"")
     }
 
     private fun parseNumber(context: Context, id: String): String?

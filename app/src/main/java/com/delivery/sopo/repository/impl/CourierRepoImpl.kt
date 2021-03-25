@@ -97,4 +97,9 @@ class CourierRepoImpl(
         return appDB.courierDao()
             .getCourierEntityWithCode(courierCode = courierCode)
     }
+
+    fun getCourierEntityWithPartName(name:String): List<CourierEntity?>
+    {
+        return appDB.courierDao().getWithPartName(name)
+    }
 }
