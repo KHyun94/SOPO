@@ -1,7 +1,9 @@
 package com.delivery.sopo.util
 
+import android.annotation.SuppressLint
 import com.delivery.sopo.extensions.toMilliSeconds
 import org.jetbrains.annotations.TestOnly
+import java.lang.Exception
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -34,16 +36,31 @@ object DateUtil
         }
     }
 
-    fun compareCurrentDate(date : String) : Boolean
+    @SuppressLint("SimpleDateFormat")
+    fun changeDateToMilli(date: String, format: String = "yyyy-MM-dd HH:mm:ss.SSS"): Long
     {
-        if (!ValidateUtil.isValidateDateFormat(date)) return false
-
-        val baseMilliSeconds = date.toMilliSeconds()!!
-        val currentMilliSeconds = System.currentTimeMillis()
-
-        return currentMilliSeconds <= baseMilliSeconds
+        try
+        {
+            val sdf = SimpleDateFormat(format)
+            val parseDate = sdf.parse(date)
+            return parseDate?.time?:throw NullPointerException()
+        }
+        catch (e: Exception)
+        {
+            throw e
+        }
     }
 
+    /**
+     *  true refreshToken의 만료일자가 현재 시간보다 작을 경우
+     *  false 클 경우
+     */
+    fun isOverExpiredDate(expiredDate: String): Boolean
+    {
+        val currentMilliSeconds = System.currentTimeMillis()
+        val expiredDateToMilliSeconds = changeDateToMilli(expiredDate)
+        return currentMilliSeconds > expiredDateToMilliSeconds
+    }
 
     fun getSubscribedTime(hour: Int, minutes: Int) : String
     {

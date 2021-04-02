@@ -17,6 +17,7 @@ import com.delivery.sopo.extensions.launchActivitiy
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.PowerManager
+import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel

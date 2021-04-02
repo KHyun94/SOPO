@@ -34,8 +34,6 @@ import retrofit2.Response
 class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view)
 {
     private val splashVm: SplashViewModel by viewModel()
-
-    private val userRepoImpl: UserRepoImpl by inject()
     lateinit var permissionDialog: PermissionDialog
 
     init
@@ -98,7 +96,6 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
                     else
                     {
                         binding.vm!!.requestAfterActivity()
-//                        binding.vm!!.navigator.value = NavigatorConst.TO_INTRO
                     }
 
                     // 권한 설정이 안되어있을 경우, 권한 허용 요청 다이얼로그 생성

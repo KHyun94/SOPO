@@ -9,27 +9,35 @@ import android.view.Window
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.R
+import com.delivery.sopo.database.room.AppDatabase
+import com.delivery.sopo.repository.impl.OauthRepoImpl
+import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.views.dialog.GeneralDialog
+import com.delivery.sopo.views.dialog.OnAgreeClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import java.util.function.Function
 
 typealias OnTextClickListener = Pair<String?, View.OnClickListener?>
 
-object AlertUtil
+object AlertUtil: KoinComponent
 {
-    var alert : AlertDialog? = null
+    val userRepoImpl: UserRepoImpl by inject()
+    val oAuthRepoImpl: OauthRepoImpl by inject()
+    val appDataBase: AppDatabase by inject()
 
-    fun updateValueDialog(
-        context: Context,
-        title : String,
-        okListener: OnTextClickListener?,
-        cancelListener: OnTextClickListener?,
-        callback : Function<String, Unit>
-    )
+    var alert: AlertDialog? = null
+
+    fun updateValueDialog(context: Context, title: String, okListener: OnTextClickListener?, cancelListener: OnTextClickListener?, callback: Function<String, Unit>)
     {
         val constraintLayout =
             View.inflate(context, R.layout.alert_update_dialog, null) as ConstraintLayout
@@ -37,14 +45,11 @@ object AlertUtil
         val layoutMain: ConstraintLayout = constraintLayout.findViewById(R.id.layout_main)
         val etInputText: EditText = constraintLayout.findViewById(R.id.et_input_text)
         val vFocusStatus: View = constraintLayout.findViewById(R.id.v_focus_status)
-        val tvTitle : TextView = constraintLayout.findViewById(R.id.tv_title)
+        val tvTitle: TextView = constraintLayout.findViewById(R.id.tv_title)
         val tvCancelBtn: TextView = constraintLayout.findViewById(R.id.tv_cancel_btn)
         val tvOkBtn: TextView = constraintLayout.findViewById(R.id.tv_ok_btn)
 
-        alert = AlertDialog.Builder(context)
-            .setView(constraintLayout)
-            .setCancelable(false)
-            .create()
+        alert = AlertDialog.Builder(context).setView(constraintLayout).setCancelable(false).create()
 
         // 테두리 라운딩 처리
         alert!!.window?.run {
@@ -82,7 +87,8 @@ object AlertUtil
 
             tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_GRAY_200))
             etInputText.addTextChangedListener {
-                if(it.toString().isNotEmpty()){
+                if (it.toString().isNotEmpty())
+                {
                     tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_MAIN_700))
                     vFocusStatus.setBackgroundColor(context.resources.getColor(R.color.COLOR_MAIN_700))
                     callback.apply(it.toString())
@@ -100,10 +106,24 @@ object AlertUtil
 
     fun onDismiss()
     {
-        if(alert != null)
+        if (alert != null)
         {
             alert!!.dismiss()
             alert = null
         }
+    }
+
+    // refreshToken이 비정상으로 만료되었을 때 호출되는 AlertMessage 모든 내부 DB 내용 초기화 및 앱 종
+    suspend fun alertExpiredToken(activity: FragmentActivity) = withContext(Dispatchers.Default) {
+        GeneralDialog(act = activity, title = "종료", msg = "토큰 만료로 인한 앱 초기화", detailMsg = null, rHandler = Pair("확인", object: OnAgreeClickListener
+        {
+            override fun invoke(agree: GeneralDialog)
+            {
+                userRepoImpl.removeUserRepo()
+                appDataBase.clearAllTables()
+
+                activity.finishAffinity()
+            }
+        })).show(activity.supportFragmentManager, "FINISH")
     }
 }

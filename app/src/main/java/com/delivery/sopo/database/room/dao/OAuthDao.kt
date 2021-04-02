@@ -14,4 +14,6 @@ interface OAuthDao
     fun update(Oauth : OauthEntity)
     @Delete
     fun delete(Oauth : OauthEntity)
+    @Query("DELETE FROM OAUTH")
+    fun getAndDrop()
 }
