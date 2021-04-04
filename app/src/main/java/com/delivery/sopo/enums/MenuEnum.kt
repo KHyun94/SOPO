@@ -7,5 +7,6 @@ enum class MenuEnum(val title: String)
   FAQ(title = "FAQ"),
   USE_TERMS(title = "이용약관"),
   APP_INFO(title = "앱 정보"),
-  NOT_DISTURB(title = "방해금지 시간대 설정")
+  NOT_DISTURB(title = "방해금지 시간대 설정"),
+  ACCOUNT_MANAGER(title = "계정 관리")
 }

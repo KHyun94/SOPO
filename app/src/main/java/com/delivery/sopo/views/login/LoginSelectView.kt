@@ -26,6 +26,7 @@ import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.main.MainView
+import com.delivery.sopo.views.signup.SignUpStep2View
 import com.delivery.sopo.views.signup.SignUpView
 import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
@@ -80,9 +81,8 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                 }
                 NavigatorConst.SIGN_UP ->
                 {
-                    startActivity(
-                        Intent(parentActivity, SignUpView::class.java)
-                    )
+//                    startActivity(Intent(parentActivity, SignUpView::class.java))
+                    startActivity(Intent(parentActivity, SignUpStep2View::class.java))
                 }
                 NavigatorConst.KAKAO_LOGIN ->
                 {

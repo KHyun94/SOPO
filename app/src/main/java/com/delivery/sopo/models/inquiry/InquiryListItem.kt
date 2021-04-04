@@ -165,7 +165,7 @@ class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): Koin
             //상품 이동 중
             DeliveryStatusEnum.IN_TRANSIT.CODE -> R.color.STATUS_ING
             // 동네도착
-            DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.color.COLOR_BLUE_700
+            DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.color.COLOR_MAIN_700
             else -> R.color.STATUS_PREPARING
         }
     }
@@ -174,15 +174,15 @@ class InquiryListItem(val parcel: Parcel, var isSelected: Boolean = false): Koin
     {
         return when(parcel.deliveryStatus)
         {
-            DeliveryStatusEnum.NOT_REGISTER.CODE -> R.drawable.ic_parcel_status_preparing
+            DeliveryStatusEnum.NOT_REGISTER.CODE -> R.drawable.ic_inquiry_cardview_not_registered
             //상품 준비중
-            DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> R.drawable.ic_parcel_status_preparing
+            DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> R.drawable.ic_inquiry_cardview_not_registered
             //상품 인수
-            DeliveryStatusEnum.AT_PICKUP.CODE -> R.drawable.ic_parcel_status_pickup
+            DeliveryStatusEnum.AT_PICKUP.CODE -> R.drawable.ic_inquiry_cardview_at_pickup
             //상품 이동 중
-            DeliveryStatusEnum.IN_TRANSIT.CODE -> R.drawable.ic_parcel_status_ing
+            DeliveryStatusEnum.IN_TRANSIT.CODE -> R.drawable.ic_inquiry_cardview_in_transit
             // 동네도착
-            DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.drawable.test
+            DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.drawable.ic_inquiry_cardview_out_for_delivery
             else -> 0
         }
 

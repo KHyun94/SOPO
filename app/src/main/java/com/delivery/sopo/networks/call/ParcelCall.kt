@@ -37,13 +37,13 @@ object ParcelCall : BaseService(), KoinComponent
 
     suspend fun registerParcel(trackCompany: String, trackNum: String, parcelAlias: String):NetworkResult<APIResult<ParcelId?>>
     {
-        val result = parcelAPI.registerParcel(email = email, trackCompany = trackCompany, trackNum = trackNum, parcelAlias = parcelAlias)
+        val result = parcelAPI.registerParcel(trackCompany = trackCompany, trackNum = trackNum, parcelAlias = parcelAlias)
         return apiCall(call = {result})
     }
 
     suspend fun getSingleParcel(parcelId: ParcelId) : NetworkResult<APIResult<Parcel?>>
     {
-        val result = parcelAPI.getSingleParcel(email = email, regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
+        val result = parcelAPI.getSingleParcel(regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
         return apiCall(call = {result})
     }
 
@@ -62,14 +62,14 @@ object ParcelCall : BaseService(), KoinComponent
 
     suspend fun requestParcelForRefresh(parcelId : ParcelId) : NetworkResult<APIResult<Any?>>
     {
-        val result = parcelAPI.requestParcelForRefresh(email = email, regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
+        val result = parcelAPI.requestParcelForRefresh(regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
         return apiCall(call = { result })
     }
 
 
     suspend fun getSingleParcelTest(parcelId: ParcelId): APIResult<Parcel?>
     {
-        val result = parcelAPI.getSingleParcel(email = ParcelCall.email, regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
+        val result = parcelAPI.getSingleParcel(regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
 
         when(val apiResult = apiCall(call = { result }))
         {

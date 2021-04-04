@@ -13,9 +13,9 @@ import com.delivery.sopo.viewmodels.signup.SignUpViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SignUpView : BasicView<SignUpViewBinding>(R.layout.sign_up_view)
+class SignUpView: BasicView<SignUpViewBinding>(R.layout.sign_up_view)
 {
-    private val signUpVm: SignUpViewModel by viewModel()
+    private val vm: SignUpViewModel by viewModel()
 
     init
     {
@@ -24,38 +24,13 @@ class SignUpView : BasicView<SignUpViewBinding>(R.layout.sign_up_view)
 
     override fun bindView()
     {
-        binding.vm = signUpVm
+        binding.vm = vm
     }
 
     override fun setObserver()
     {
         binding.vm!!.result.observe(this, Observer {
             if (it == null) return@Observer
-
-            if (it.successResult != null)
-            {
-                SopoLog.d(msg = "성공 발생 => ${it.successResult}")
-
-                val successResult = it.successResult
-                val data = successResult!!.data
-
-                if (data != null)
-                {
-                    GeneralDialog(
-                        parentActivity,
-                        "알림",
-                        successResult.successMsg,
-                        null,
-                        Pair("네", { it ->
-                            it.dismiss()
-                            Intent(this, SignUpClear::class.java).launchActivity(this)
-                            finish()
-                        })
-                    ).show(supportFragmentManager.beginTransaction(), "TAG")
-                }
-
-                return@Observer
-            }
 
             if (it.errorResult != null)
             {
@@ -65,9 +40,7 @@ class SignUpView : BasicView<SignUpViewBinding>(R.layout.sign_up_view)
                     ErrorResult.ERROR_TYPE_TOAST ->
                     {
                         CustomAlertMsg.floatingUpperSnackBAr(
-                            context = parentActivity,
-                            msg = it.errorResult!!.errorMsg,
-                            isClick = true
+                            context = parentActivity, msg = it.errorResult!!.errorMsg, isClick = true
                         )
                         return@Observer
                     }
@@ -77,17 +50,31 @@ class SignUpView : BasicView<SignUpViewBinding>(R.layout.sign_up_view)
                         val msg = it.errorResult!!.errorMsg
 
                         GeneralDialog(
-                            act = parentActivity,
-                            title = "오류",
-                            msg = msg,
-                            detailMsg = code,
-                            rHandler = Pair(first = "네", second = null)
+                            act = parentActivity, title = "오류", msg = msg, detailMsg = code, rHandler = Pair(first = "네", second = null)
                         ).show(supportFragmentManager, "tag")
                     }
                     ErrorResult.ERROR_TYPE_SCREEN -> return@Observer
                     else -> return@Observer
                 }
             }
+
+            if (it.successResult != null)
+            {
+                SopoLog.d(msg = "성공 발생 => ${it.successResult}")
+
+                val successResult = it.successResult
+
+                GeneralDialog(parentActivity, "알림", successResult?.successMsg?:"정상적으로 회원가입 성공했습니다.\n다음 스텝을 진행해주세요.", null, Pair("네", { it ->
+                        it.dismiss()
+                        Intent(this, SignUpStep2View::class.java).launchActivity(this)
+                        finish()
+                    })
+                ).show(supportFragmentManager.beginTransaction(), "TAG")
+
+                return@Observer
+            }
+
+
         })
     }
 }

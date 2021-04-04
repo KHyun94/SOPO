@@ -18,8 +18,10 @@ interface JoinAPI
         // 디바이스 정보
         @Field("deviceInfo") deviceInfo: String,
         // Firebase uid
-        @Field("uid") firebaseUid: String
-    ): Response<APIResult<String>>
+        @Field("uid") firebaseUid: String,
+        // nickname
+        @Field("nickname") nickname: String
+        ): Response<APIResult<Unit>>
 
     // 카카오 회원가입
     @FormUrlEncoded
@@ -33,13 +35,15 @@ interface JoinAPI
         // 디바이스 정보
         @Field("deviceInfo") deviceInfo: String,
         // Firebase uid
-        @Field("kakaoUserId") kakaoUid: String,
+        @Field("kakaoUid") kakaoUid: String,
         // Firebase uid
-        @Field("uid") firebaseUid: String
+        @Field("uid") firebaseUid: String,
+        // nickname
+        @Field("nickname") nickname: String
     ):Response<APIResult<String>>
 
     // 회원가입 이메일 중복 체크
-    @GET("api/v1/sopo-api/validation/email/exist/{email}")
+    @GET("api/v1/sopo-api/join/email/exist/{email}")
     @Headers("Accept: application/json")
     suspend fun requestDuplicateEmail(
         @Path("email") email: String

@@ -5,6 +5,7 @@ object InfoConst {
     const val EMAIL = "EMAIL"
     const val PASSWORD = "PASSWORD"
     const val RE_PASSWORD = "RE_PASSWORD"
+    const val NICKNAME = "NICKNAME"
     const val AGREEMENT = "AGREEMENT"
 
     const val REGISTER_TRACK_NUM = "REGISTER_TRACK_NUM"

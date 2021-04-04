@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="com.delivery.sopo.R" />
+
+        <import type="android.view.View" />
+
+        <import type="com.delivery.sopo.consts.InfoConst" />
+
+        <variable
+            name="vm"
+            type="com.delivery.sopo.viewmodels.signup.SignUpStep2ViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="25sp"
+            android:text="마지막으로..."
+            android:textColor="@color/MAIN_BLACK"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:includeFontPadding="false"
+            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.95" />
+
+        <LinearLayout
+            android:id="@+id/layout_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24sp"
+            android:layout_marginTop="70sp"
+            android:orientation="vertical"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title"
+            app:layout_constraintVertical_bias="0.6">
+
+            <com.delivery.sopo.views.widget.CustomEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24sp"
+                android:inputType="textEmailAddress"
+                app:content="@={vm.nickname}"
+                app:type="@{InfoConst.NICKNAME}"
+                app:customFocusChangeListener="@{vm.callback}"
+                app:descriptionVisible="@{vm.isErrorVisible()}"
+                app:hint="@string/EMAIL"
+                app:markVisible="@{vm.isCorrectVisible()}"
+                app:statusType="@{vm.statusType}"
+                app:title="닉네임을 알려주세요" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_sign_up"
+            style="@android:style/ButtonBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="25sp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/border_round_white_btn"
+            android:backgroundTint="@color/COLOR_MAIN_700"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:onClick="@{()->vm.onCompleteSignUpClicked(btnSignUp)}"
+            android:paddingHorizontal="50dp"
+            android:text="로그인하고 시작하기"
+            android:textColor="@color/MAIN_WHITE"
+            android:textSize="16sp"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layout_input" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

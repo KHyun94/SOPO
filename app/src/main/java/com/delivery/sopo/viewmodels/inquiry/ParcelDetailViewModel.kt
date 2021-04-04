@@ -26,10 +26,7 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.views.adapter.TimeLineRvAdapter
 import com.google.gson.Gson
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val courierRepoImpl: CourierRepoImpl, private val parcelRepoImpl: ParcelRepoImpl, private val parcelManagementRepoImpl: ParcelManagementRepoImpl): ViewModel()
 {
@@ -109,7 +106,7 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
             withContext(Dispatchers.IO) {
 
                 // ParcelEntity의 택배사 코드를 이용하여 택배사 정보를 로컬 DB에서 읽어온다.
-                val courier = courierRepoImpl.getCourierWithCode(parcelEntity.carrier)
+                val courier = runBlocking(Dispatchers.Default) { courierRepoImpl.getCourierWithCode(parcelEntity.carrier) }
 
                 SopoLog.d("택배사 정보 >>> $courier")
 
@@ -123,6 +120,16 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
                     val progress = Progress(date = date, location = item.location!!.name, description = item.description, status = item.status)
                     progressList.add(progress)
                 }
+
+                SopoLog.d("""
+                    ParcelDetailItem >>>
+                    regDt = ${parcelEntity.regDt}, 
+                    alias = ${parcelEntity.parcelAlias}, 
+                    courier = ${courier!!}, 
+                    waybilNym = ${parcelEntity.trackNum}, 
+                    deliverStatus = ${deliveryStatusEnum.value?.TITLE}, 
+                    progress = ${progressList.joinToString()}
+                """.trimIndent())
 
                 item.postValue(
                     ParcelDetailItem(

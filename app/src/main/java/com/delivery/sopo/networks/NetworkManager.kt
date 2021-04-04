@@ -89,12 +89,14 @@ object NetworkManager : KoinComponent
 
         SopoLog.d( msg = "네트워크 인증 타입 => $INTERCEPTOR_TYPE")
 
-        val httpLoggingInterceptor = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger{
-            override fun log(message: String)
-            {
-                SopoLog.api("$message")
-            }
-        })
+//        val httpLoggingInterceptor = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger{
+//            override fun log(message: String)
+//            {
+//                SopoLog.api("$message")
+//            }
+//        })
+
+        val httpLoggingInterceptor = HttpLoggingInterceptor()
 
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
@@ -126,8 +128,6 @@ object NetworkManager : KoinComponent
         get()
         {
             // 공용 API 계정
-
-
             val basicAuthInterceptor : Interceptor? = if(hasHeader) BasicAuthInterceptor(apiId, apiPassword) else null
 
             val httpLoggingInterceptor = HttpLoggingInterceptor()
@@ -146,6 +146,7 @@ object NetworkManager : KoinComponent
             }
 
             return Retrofit.Builder()
+//                .baseUrl("http://192.168.1.4:6443/")
                 .baseUrl(BuildConfig.API_URL)
                 .client(mOKHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson.create()))

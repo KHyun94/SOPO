@@ -58,10 +58,19 @@ interface UserAPI
     suspend fun updateFCMToken(@Query("fcmToken") fcmToken : String) : Response<APIResult<String?>>
 
     /**
-     * FCM Token UPDATE
+     * Nickname UPDATE
      * @param nickname : String
      * @return Response<APIResult<String?>>
      */
-    @PATCH("/api/v1/sopo-api/user/nickName")
-    suspend fun updateUserNickname(@Query("nickName") nickname : String) : Response<APIResult<String?>>
+    @PATCH("/api/v1/sopo-api/user/nickname")
+    suspend fun updateUserNickname(@Query("nickname") nickname : String) : Response<APIResult<String?>>
+
+    /**
+     * 탈퇴
+     * @param reason : String
+     * @return Response<APIResult<String?>>
+     */
+    @POST("/api/v1/sopo-api/user/signOut")
+    suspend fun signOut(@Query("reason") reason : String) : Response<APIResult<String?>>
+
 }

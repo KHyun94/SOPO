@@ -39,7 +39,7 @@ object RoomActivate
                         CourierEntity(
                             courierNo = 0,
                             courierName = "우체국 택배",
-                            courierCode = "kr.epost",
+                            courierCode = "EPOST",
                             minLen = 13,
                             maxLen = 13,
                             priority = 0.98,
@@ -50,7 +50,7 @@ object RoomActivate
                         CourierEntity(
                             courierNo = 0,
                             courierName = "CJ대한통운",
-                            courierCode = "kr.cjlogistics",
+                            courierCode = "CJ_LOGISTICS",
                             minLen = 10,
                             maxLen = 10,
                             priority = 1.0,
@@ -61,7 +61,7 @@ object RoomActivate
                         CourierEntity(
                             courierNo = 0,
                             courierName = "로젠택배",
-                            courierCode = "kr.logen",
+                            courierCode = "LOGEN",
                             minLen = 11,
                             maxLen = 11,
                             priority = 0.97,
@@ -72,7 +72,7 @@ object RoomActivate
                         CourierEntity(
                             courierNo = 0,
                             courierName = "한진택배",
-                            courierCode = "kr.hanjin",
+                            courierCode = "HANJINS",
                             minLen = 10,
                             maxLen = 12,
                             priority = 0.96,
@@ -83,7 +83,7 @@ object RoomActivate
                         CourierEntity(
                             courierNo = 0,
                             courierName = "DHL",
-                            courierCode = "de.dhl",
+                            courierCode = "DHL",
                             minLen = 10,
                             maxLen = 10,
                             priority = 0.91,
@@ -94,7 +94,7 @@ object RoomActivate
                         CourierEntity(
                             courierNo = 0,
                             courierName = "천일택배",
-                            courierCode = "kr.chunilps",
+                            courierCode = "CHUNILPS",
                             minLen = 11,
                             maxLen = 11,
                             priority = 0.88,
@@ -105,7 +105,7 @@ object RoomActivate
                         CourierEntity(
                             courierNo = 0,
                             courierName = "CU 편의점택배",
-                            courierCode = "kr.cupost",
+                            courierCode = "CU_POST",
                             minLen = 10,
                             maxLen = 12,
                             priority = 0.95,
@@ -116,7 +116,7 @@ object RoomActivate
                         CourierEntity(
                             courierNo = 0,
                             courierName = "대신택배",
-                            courierCode = "kr.daesin",
+                            courierCode = "DAESIN",
                             minLen = 13,
                             maxLen = 13,
                             priority = 0.92,
@@ -128,7 +128,7 @@ object RoomActivate
                         CourierEntity(
                             courierNo = 0,
                             courierName = "합동택배",
-                            courierCode = "kr.hdexp",
+                            courierCode = "HDEXP",
                             minLen = 9,
                             maxLen = 16,
                             priority = 0.89,
@@ -139,7 +139,7 @@ object RoomActivate
                         CourierEntity(
                             courierNo = 0,
                             courierName = "일양로지스",
-                            courierCode = "kr.ilyanglogis",
+                            courierCode = "ILYANGLOGIS",
                             minLen = 9,
                             maxLen = 11,
                             priority = 0.86,
@@ -150,7 +150,7 @@ object RoomActivate
                         CourierEntity(
                             courierNo = 0,
                             courierName = "경동택배",
-                            courierCode = "kr.kunyoung",
+                            courierCode = "KDEXP",
                             minLen = 9,
                             maxLen = 16,
                             priority = 0.93,
@@ -161,7 +161,7 @@ object RoomActivate
                         CourierEntity(
                             courierNo = 0,
                             courierName = "건영택배",
-                            courierCode = "kr.kunyoung",
+                            courierCode = "KUNYOUNG",
                             minLen = 10,
                             maxLen = 10,
                             priority = 0.5,
@@ -171,7 +171,7 @@ object RoomActivate
                         ),
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "롯데택배", courierCode = "kr.lotte",
+                            courierName = "롯데택배", courierCode = "LOTTE",
                             minLen = 12,
                             maxLen = 12,
                             priority = 0.99,
@@ -181,7 +181,7 @@ object RoomActivate
                         ),
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "EMS", courierCode = "un.upu.ems",
+                            courierName = "EMS", courierCode = "EMS",
                             minLen = 13,
                             maxLen = 13,
                             priority = 0.94,
@@ -191,7 +191,7 @@ object RoomActivate
                         ),
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "TNT", courierCode = "nl.tnt",
+                            courierName = "TNT", courierCode = "TNT",
                             minLen = 8,
                             maxLen = 9,
                             priority = 0.5,
@@ -201,7 +201,7 @@ object RoomActivate
                         ),
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "Fedex", courierCode = "us.fedex",
+                            courierName = "Fedex", courierCode = "FEDEX",
                             minLen = 12,
                             maxLen = 12,
                             priority = 0.5,
@@ -211,7 +211,7 @@ object RoomActivate
                         ),
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "USPS", courierCode = "us.usps",
+                            courierName = "USPS", courierCode = "USPS",
                             minLen = 10,
                             maxLen = 22,
                             priority = 0.5,
@@ -223,7 +223,7 @@ object RoomActivate
                         //미확정
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "Sagawa", courierCode = "jp.sagawa",
+                            courierName = "Sagawa", courierCode = "SAGAWA",
                             minLen = 0,
                             maxLen = 0,
                             priority = 0.0,
@@ -233,7 +233,7 @@ object RoomActivate
                         ),
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "Kuroneko Yamato", courierCode = "jp.yamato",
+                            courierName = "Kuroneko Yamato", courierCode = "YAMATO",
                             minLen = 0,
                             maxLen = 0,
                             priority = 0.0,
@@ -243,7 +243,7 @@ object RoomActivate
                         ),
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "Japan Post", courierCode = "jp.yuubin",
+                            courierName = "Japan Post", courierCode = "YUUBIN",
                             minLen = 0,
                             maxLen = 0,
                             priority = 0.0,
@@ -253,7 +253,7 @@ object RoomActivate
                         ),
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "GS Postbox 택배", courierCode = "kr.cvsnet",
+                            courierName = "GS Postbox 택배", courierCode = "CVSNET",
                             minLen = 0,
                             maxLen = 0,
                             priority = 0.90,
@@ -263,7 +263,7 @@ object RoomActivate
                         ),
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "CWAY (Woori Express)", courierCode = "kr.cway",
+                            courierName = "CWAY (Woori Express)", courierCode = "CWAY",
                             minLen = 0,
                             maxLen = 0,
                             priority = 0.0,
@@ -273,7 +273,7 @@ object RoomActivate
                         ),
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "홈픽", courierCode = "kr.homepick",
+                            courierName = "홈픽", courierCode = "HOMEPICK",
                             minLen = 0,
                             maxLen = 0,
                             priority = 0.85,
@@ -283,7 +283,7 @@ object RoomActivate
                         ),
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "한서호남택배", courierCode = "kr.honamlogis",
+                            courierName = "한서호남택배", courierCode = "HONAMLOGIS",
                             minLen = 0,
                             maxLen = 0,
                             priority = 0.0,
@@ -293,7 +293,7 @@ object RoomActivate
                         ),
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "SLX", courierCode = "kr.slx",
+                            courierName = "SLX", courierCode = "SLX",
                             minLen = 0,
                             maxLen = 0,
                             priority = 0.87,
@@ -303,7 +303,7 @@ object RoomActivate
                         ),
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "성원글로벌카고", courierCode = "kr.swgexp",
+                            courierName = "성원글로벌카고", courierCode = "SWGEXP",
                             minLen = 0,
                             maxLen = 0,
                             priority = 0.0,
@@ -313,7 +313,7 @@ object RoomActivate
                         ),
                         CourierEntity(
                             courierNo = 0,
-                            courierName = "UPS", courierCode = "us.ups",
+                            courierName = "UPS", courierCode = "UPS",
                             minLen = 0,
                             maxLen = 0,
                             priority = 0.0,
@@ -442,7 +442,7 @@ object RoomActivate
                                 //롯데 or CU 편의점 택배
                                 returnList!!.add(
                                     CourierItem(
-                                        courierName = "CU 편의점 택배", courierCode = "kr.cupost",
+                                        courierName = "CU 편의점 택배", courierCode = "CU_POST",
                                         clickRes = R.drawable.ic_color_cu,
                                         nonClickRes = R.drawable.ic_gray_cu,
                                         iconRes = R.drawable.ic_color_cu
@@ -450,7 +450,7 @@ object RoomActivate
                                 )
                                 returnList!!.add(
                                     CourierItem(
-                                        courierName = "롯데택배", courierCode = "kr.lotte",
+                                        courierName = "롯데택배", courierCode = "LOTTE",
                                         clickRes = R.drawable.ic_color_lotte,
                                         nonClickRes = R.drawable.ic_gray_lotte,
                                         iconRes = R.drawable.ic_color_lotte
@@ -483,7 +483,7 @@ object RoomActivate
                             {
                                 returnList!!.add(
                                     CourierItem(
-                                        courierName = "EMS", courierCode = "un.upu.ems",
+                                        courierName = "EMS", courierCode = "EMS",
                                         clickRes = R.drawable.ic_color_ems,
                                         nonClickRes = R.drawable.ic_gray_ems,
                                         iconRes = R.drawable.ic_color_ems
@@ -491,7 +491,7 @@ object RoomActivate
                                 )
                                 returnList!!.add(
                                     CourierItem(
-                                        courierName = "USPS", courierCode = "us.usps",
+                                        courierName = "USPS", courierCode = "USPS",
                                         clickRes = R.drawable.ic_color_usps,
                                         nonClickRes = R.drawable.ic_gray_usps,
                                         iconRes = R.drawable.ic_color_usps

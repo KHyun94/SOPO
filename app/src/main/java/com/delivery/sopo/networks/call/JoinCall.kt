@@ -17,15 +17,15 @@ object JoinCall : BaseService()
         joinAPI = NetworkManager.retro.create(JoinAPI::class.java)
     }
 
-    suspend fun requestJoinBySelf(email : String, password : String, deviceInfo : String, firebaseUid : String) : NetworkResult<APIResult<String>>
+    suspend fun requestJoinBySelf(email : String, password : String, deviceInfo : String, firebaseUid : String) : NetworkResult<APIResult<Unit>>
     {
-        val request = joinAPI.requestJoinBySelf(email = email, password = password, deviceInfo = deviceInfo, firebaseUid = firebaseUid)
+        val request = joinAPI.requestJoinBySelf(email = email, password = password, deviceInfo = deviceInfo, firebaseUid = firebaseUid, nickname = "test123")
         return apiCall(call = {request})
     }
 
     suspend fun requestJoinByKakao(email : String, password : String, deviceInfo : String, kakaoUid : String, firebaseUid : String) : NetworkResult<APIResult<String>>
     {
-        val request = joinAPI.requestJoinByKakao(email = email, password = password, deviceInfo = deviceInfo, kakaoUid = kakaoUid, firebaseUid = firebaseUid)
+        val request = joinAPI.requestJoinByKakao(email = email, password = password, deviceInfo = deviceInfo, kakaoUid = kakaoUid, firebaseUid = firebaseUid, nickname = "test123")
         return apiCall(call = {request})
     }
 

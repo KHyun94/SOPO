@@ -17,7 +17,7 @@ import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.viewmodels.signup.FocusChangeCallback
 import com.delivery.sopo.views.widget.CustomEditText
 
-class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
+class LoginViewModel(val userRepoImpl: UserRepoImpl): ViewModel()
 {
     private val TAG = "LOG.SOPO.LoginVm"
 
@@ -48,10 +48,8 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
 
     val isProgress = MutableLiveData<Boolean?>()
 
-    fun <T, E> postResultValue(
-        successResult: SuccessResult<T>? = null,
-        errorResult: ErrorResult<E>? = null
-    ) = _result.postValue(Result(successResult, errorResult))
+    fun <T, E> postResultValue(successResult: SuccessResult<T>? = null, errorResult: ErrorResult<E>? = null) =
+        _result.postValue(Result(successResult, errorResult))
 
     fun setProgressValue(value: Boolean?) = isProgress.postValue(value)
 
@@ -126,9 +124,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
                         emailValidateText.value = "이메일을 입력해주세요."
 
                         setVisibleState(
-                            type = type,
-                            errorState = View.VISIBLE,
-                            corState = View.GONE
+                            type = type, errorState = View.VISIBLE, corState = View.GONE
                         )
 
                         /**
@@ -146,9 +142,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
                     {
                         emailStatusType.value = CustomEditText.STATUS_COLOR_BLUE
                         setVisibleState(
-                            type = InfoConst.EMAIL,
-                            errorState = View.GONE,
-                            corState = View.VISIBLE
+                            type = InfoConst.EMAIL, errorState = View.GONE, corState = View.VISIBLE
                         )
                     }
                     // email 유효성 에러
@@ -157,9 +151,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
                         emailStatusType.value = CustomEditText.STATUS_COLOR_RED
                         emailValidateText.value = "이메일 형식을 확인해주세요."
                         setVisibleState(
-                            type = type,
-                            errorState = View.VISIBLE,
-                            corState = View.GONE
+                            type = type, errorState = View.VISIBLE, corState = View.GONE
                         )
                     }
                     _result.value = onCheckValidate()
@@ -206,7 +198,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
         // email 유효성 에러
         if (isEmailCorVisible.value != View.VISIBLE)
         {
-            SopoLog.d( msg = "Validate Fail Email ")
+            SopoLog.d(msg = "Validate Fail Email ")
             emailStatusType.value = CustomEditText.STATUS_COLOR_RED
             return Result<Unit, Unit>(
                 errorResult = ErrorResult(
@@ -218,7 +210,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
         // password 유효성 에러
         if (isPwdCorVisible.value != View.VISIBLE)
         {
-            SopoLog.d( msg = "Validate Fail PWD ")
+            SopoLog.d(msg = "Validate Fail PWD ")
             pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
             return Result<Unit, Unit>(
                 errorResult = ErrorResult(
@@ -236,7 +228,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
 
     fun onLoginClicked(v: View)
     {
-        SopoLog.d( msg = "onLoginClicked() call!!!")
+        SopoLog.d(msg = "onLoginClicked() call!!!")
 
         _result.value = onCheckValidate()
 
@@ -263,19 +255,19 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
                     {
                         val user = s1.data
 
-                        SopoLog.d( msg = "Auth Email")
+                        SopoLog.d(msg = "Auth Email")
 
                         uid = user?.uid!!
 
-                        LoginHandler.oAuthLogin(email = email.value.toString(), password = pwd.value.toString(), deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE)){ s2, e2 ->
+                        LoginHandler.oAuthLogin(email = email.value.toString(), password = pwd.value.toString(), deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE)) { s2, e2 ->
 
-                            if(e2 != null)
+                            if (e2 != null)
                             {
                                 setProgressValue(false)
                                 postResultValue(successResult = s2, errorResult = e2)
                             }
 
-                            if(s2 != null)
+                            if (s2 != null)
                             {
                                 setProgressValue(false)
                                 postResultValue(successResult = s2, errorResult = e2)
@@ -288,14 +280,15 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl) : ViewModel()
             // result가 에러일 때
             _result.value?.errorResult != null ->
             {
-                val type = if (_result.value!!.errorResult!!.errorType == ErrorResult.ERROR_TYPE_DIALOG)
-                {
-                    ErrorResult.ERROR_TYPE_DIALOG
-                }
-                else
-                {
-                    ErrorResult.ERROR_TYPE_TOAST
-                }
+                val type =
+                    if (_result.value!!.errorResult!!.errorType == ErrorResult.ERROR_TYPE_DIALOG)
+                    {
+                        ErrorResult.ERROR_TYPE_DIALOG
+                    }
+                    else
+                    {
+                        ErrorResult.ERROR_TYPE_TOAST
+                    }
 
                 _result.value!!.errorResult!!.errorType = type
                 val tmp = _result.value

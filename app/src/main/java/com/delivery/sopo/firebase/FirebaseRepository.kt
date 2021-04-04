@@ -126,17 +126,32 @@ object FirebaseRepository : FirebaseDataSource, KoinComponent
                     return@addOnCompleteListener
                 }
 
-                if (firebaseUser?.email == null || firebaseUser.email == "" || firebaseUser.email != email)
-                {
-                    // todo update Email
+                updateFirebaseEmail(email, firebaseUser!!){successResult, errorResult ->
 
-                    callback.invoke(null, ErrorResult(FIREBASE_ERROR_NOT_UPDATE_EMAIL, FIREBASE_ERROR_NOT_UPDATE_EMAIL.MSG,  ErrorResult.ERROR_TYPE_NON,null, null))
+                    if(errorResult != null)
+                    {
+                        SopoLog.e("이메일 실패 Step1 >>> ${errorResult.errorMsg}")
+                        callback.invoke(null, ErrorResult(FIREBASE_ERROR_NOT_UPDATE_EMAIL, FIREBASE_ERROR_NOT_UPDATE_EMAIL.MSG,  ErrorResult.ERROR_TYPE_NON,null, null))
+                        return@updateFirebaseEmail
+                    }
+
+                    if (firebaseUser.email == null || firebaseUser.email == "" || firebaseUser.email != email)
+                    {
+                        // todo update Email
+                        SopoLog.d("""
+                            이메일 업데이트 실패 Step2 >>> ${firebaseUser.email}
+                            이메일 업데이트 실패 Step2 >>> ${email}
+                        """.trimIndent())
+                        callback.invoke(null, ErrorResult(FIREBASE_ERROR_NOT_UPDATE_EMAIL, FIREBASE_ERROR_NOT_UPDATE_EMAIL.MSG,  ErrorResult.ERROR_TYPE_NON,null, null))
+                    }
+                    else
+                    {
+                        // oauth login
+                        callback.invoke(SuccessResult(SUCCESS, SUCCESS.MSG, null), null)
+                    }
                 }
-                else
-                {
-                    // oauth login
-                    callback.invoke(SuccessResult(SUCCESS, SUCCESS.MSG, null), null)
-                }
+
+
             }
         }
     }

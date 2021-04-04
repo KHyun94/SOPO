@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
 object ValidateUtil {
-    val TAG = "LOG.SOPO" + this.javaClass.simpleName
 
     // 이메일 정규식 체크
     fun isValidateEmail(email: String?): Boolean {
@@ -25,6 +24,8 @@ object ValidateUtil {
             matcher.matches()
         }
     }
+
+    fun isValidateNickname(nickname: String) = Pattern.compile("^[a-zA-Z0-9가-힣]+$").matcher(nickname).matches()
 
     fun isValidateDateFormat(date: String): Boolean
     {

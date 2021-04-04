@@ -93,71 +93,6 @@
             android:visibility="@{vm.viewStack.size == 0 ? View.VISIBLE : View.INVISIBLE}"
             tools:visibility="visible">
 
-            <RelativeLayout
-                android:id="@+id/relative_profile"
-                android:layout_width="57dp"
-                android:layout_height="57dp"
-                android:layout_margin="35dp"
-                android:layout_marginHorizontal="35dp"
-                android:layout_marginStart="42dp"
-                android:background="@drawable/profile_circular_view"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/tv_circularProfile"
-                    style="@style/H2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:gravity="center"
-                    android:letterSpacing="-0.02"
-                    android:text="@{vm.viewStack.size + ``}"
-                    android:textColor="@color/MAIN_WHITE"
-                    android:textSize="21sp"
-                    android:visibility="gone"
-                    tools:visibility="gone" />
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:gravity="center"
-                    android:src="@drawable/ic_edit"
-                    android:visibility="visible" />
-            </RelativeLayout>
-
-
-            <LinearLayout
-                android:id="@+id/linear_userInfo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="@+id/relative_profile"
-                app:layout_constraintStart_toEndOf="@+id/relative_profile"
-                app:layout_constraintTop_toTopOf="@+id/relative_profile">
-
-                <TextView
-                    android:id="@+id/tv_userName"
-                    style="@style/H5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{vm.userNickname}"
-                    android:hint="@string/MENU_VIEW_PLEASE_SET_NICK_NAME"
-                    android:textColor="@color/MAIN_BLACK"
-                    android:onClick="@{()->vm.onUpdateClicked()}"/>
-
-                <TextView
-                    style="@style/H5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@{vm.userEmail}"
-                    android:textColor="@color/MAIN_BLACK"
-                    tools:text="win1692@naver.com" />
-
-            </LinearLayout>
-
             <LinearLayout
                 android:id="@+id/linear_settingPassword"
                 android:layout_width="wrap_content"
@@ -177,143 +112,47 @@
                     android:id="@+id/tv_settingPassword"
                     style="@style/H5"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="4dp"
                     android:text="@string/MENU_VIEW_PASSWORD"
                     android:textColor="@color/MAIN_BLACK" />
             </LinearLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/linear_deliveryStatus"
+            <RelativeLayout
+                android:id="@+id/relative_profile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="42dp"
-                android:orientation="horizontal"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="18dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/relative_profile">
+                app:layout_constraintTop_toBottomOf="@id/linear_settingPassword">
 
-                <LinearLayout
-                    android:id="@+id/linear_deliveryStatus_complete"
+                <ImageView
+                    android:id="@+id/iv_status"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginEnd="25dp"
+                    android:background="@color/MAIN_BLACK"/>
+
+                <TextView
+                    style="@style/H3"
+                    android:id="@+id/tv_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="67dp"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/linear_deliveryStatus_ing"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:text="테스트 문구\n입니다."
+                    android:layout_toRightOf="@id/iv_status"
+                    />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:letterSpacing="-0.06"
-                        android:text="@{vm.cntOfCompleteListItem == null ? `0` : vm.cntOfCompleteListItem+``}"
-                        android:textColor="@color/MAIN_BLACK"
-                        android:textSize="35sp"
-                        android:textStyle="bold"
-                        tools:text="12" />
-
-                    <View
-                        android:layout_width="45dp"
-                        android:layout_height="2dp"
-                        android:layout_gravity="center_horizontal"
-                        android:background="@color/COLOR_MAIN_700" />
-
-                    <TextView
-                        style="@style/H5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/MENU_VIEW_DELIVERY_STATUS_COMPLETE"
-                        android:textColor="@color/COLOR_MAIN_700" />
-
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:id="@+id/linear_deliveryStatus_ing"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:letterSpacing="-0.06"
-                        android:text="@{vm.cntOfOngoingListItem + ``}"
-                        android:textColor="@color/MAIN_BLACK"
-                        android:textSize="35sp"
-                        android:textStyle="bold"
-                        tools:text="6" />
-
-                    <View
-                        android:layout_width="45dp"
-                        android:layout_height="2dp"
-                        android:layout_gravity="center_horizontal"
-                        android:background="@color/COLOR_MAIN_700" />
-
-                    <TextView
-                        style="@style/H5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/MENU_VIEW_DELIVERY_STATUS_ONGOING"
-                        android:textColor="@color/COLOR_MAIN_700" />
-
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:id="@+id/linear_deliveryStatus_soon"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="67dp"
-                    android:orientation="vertical"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/linear_deliveryStatus_ing"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:letterSpacing="-0.06"
-                        android:text="@{vm.cntOfSoonListItem + ``}"
-                        android:textColor="@color/MAIN_BLACK"
-                        android:textSize="35sp"
-                        android:textStyle="bold"
-                        tools:text="4" />
-
-                    <View
-                        android:layout_width="45dp"
-                        android:layout_height="2dp"
-                        android:layout_gravity="center_horizontal"
-                        android:background="@color/COLOR_MAIN_700" />
-
-                    <TextView
-                        style="@style/H5"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/MENU_VIEW_DELIVERY_STATUS_SOON"
-                        android:textColor="@color/COLOR_MAIN_700" />
-
-                </LinearLayout>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </RelativeLayout>
 
             <View
                 android:id="@+id/v_dividerLine1"
                 android:layout_width="match_parent"
-                android:layout_height="8dp"
-                android:layout_marginTop="20dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="44dp"
                 android:background="@color/COLOR_GRAY_100"
-                app:layout_constraintTop_toBottomOf="@+id/linear_deliveryStatus" />
+                app:layout_constraintTop_toBottomOf="@+id/relative_profile" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_notice"

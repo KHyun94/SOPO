@@ -352,8 +352,8 @@
                                 app:layout_constraintLeft_toLeftOf="@+id/guide_1st"
                                 app:layout_constraintTop_toBottomOf="parent"
                                 app:setDefaultImage="@{0}"
-                                app:setImage="@{R.drawable.ic_inquiry_background}"
-                                tools:background="@drawable/ic_inquiry_background" />
+                                app:setImage="@{R.drawable.ic_inquiry_top_section_present_parcel}"
+                                tools:background="@drawable/ic_inquiry_top_section_present_parcel" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 

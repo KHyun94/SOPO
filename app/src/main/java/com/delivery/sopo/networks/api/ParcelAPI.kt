@@ -22,58 +22,56 @@ interface ParcelAPI
      * @return Response<APIResult<ParcelId?>>
      */
     @FormUrlEncoded
-    @POST("api/v1/sopo-api/delivery/{email}/parcel")
+    @POST("api/v1/sopo-api/delivery/parcel")
     @Headers("Accept: application/json")
     suspend fun registerParcel(
-        @Path("email") email: String,
+        
         @Field("parcelAlias") parcelAlias: String?,
         @Field("trackCompany") trackCompany: String,
         @Field("trackNum") trackNum: String
     ): Response<APIResult<ParcelId?>>
 
-    @GET("api/v1/sopo-api/delivery/{email}/parcel")
+    @GET("api/v1/sopo-api/delivery/parcel")
     @Headers("Accept: application/json")
     suspend fun getParcel(
-        @Path("email") email: String,
+        
         // 택배 고유 uid
         @Query("parcelUid") parcelUid: String,
         // 등록일자
         @Query("regDt") regDt: String
     ): APIResult<Parcel?>
 
-    @GET("api/v1/sopo-api/delivery/{email}/parcels/months")
+    @GET("api/v1/sopo-api/delivery/parcels/months")
     @Headers("Accept: application/json")
-    suspend fun getMonths( @Path("email") email: String): APIResult<MutableList<TimeCountDTO>>
+    suspend fun getMonths(): APIResult<MutableList<TimeCountDTO>>
 
     // 배송중 & 곧 도착 리스트 가져오는 api
-    @GET("api/v1/sopo-api/delivery/{email}/parcels/ongoing")
+    @GET("api/v1/sopo-api/delivery/parcels/ongoing")
     @Headers("Accept: application/json")
-    suspend fun getParcelsOngoing(
-        @Path("email") email: String
-    ): APIResult<MutableList<Parcel>?>
+    suspend fun getParcelsOngoing(): APIResult<MutableList<Parcel>?>
 
     // '배송완료' 리스트 가져오는 api
-    @GET("api/v1/sopo-api/delivery/{email}/parcels/complete")
+    @GET("api/v1/sopo-api/delivery/parcels/complete")
     @Headers("Accept: application/json")
     suspend fun getParcelsComplete(
-        @Path("email") email: String,
+        
         @Query("page") page: Int,
         @Query("inquiryDate") inquiryDate: String
     ): APIResult<MutableList<Parcel>?>
 
     @HTTP(
         method = "DELETE",
-        path = "api/v1/sopo-api/delivery/{email}/parcels",
+        path = "api/v1/sopo-api/delivery/parcels",
         hasBody = true
     )
     @Headers("Accept: application/json")
     suspend fun deleteParcels(
-        @Path("email") email: String,
+        
         @Body parcelIds: DeleteParcelsDTO
     ): APIResult<String?>
 
     // alias 변경
-    @PATCH("api/v1/sopo-api/delivery/{email}/parcel/{regDt}/{parcelUid}")
+    @PATCH("api/v1/sopo-api/delivery/parcel/{regDt}/{parcelUid}")
     @Headers("Content-Type: application/json-patch+json")
     fun patchParcel(
         @Path("email") email : String,
@@ -83,7 +81,7 @@ interface ParcelAPI
     ): Call<APIResult<ParcelEntity?>>
 
     // 배송중 & 곧 도착 리스트 가져오는 api
-    @GET("api/v1/sopo-api/delivery/{email}/parcels/ongoing")
+    @GET("api/v1/sopo-api/delivery/parcels/ongoing")
     @Headers("Accept: application/json")
     suspend fun getOngoingParcels(
         @Path("email") email: String
@@ -95,7 +93,7 @@ interface ParcelAPI
      * @param email
      * @return
      */
-    @POST("/api/v1/sopo-api/delivery/{email}/parcels/refresh")
+    @POST("/api/v1/sopo-api/delivery/parcels/refresh")
     @Headers("Accept: application/json")
     suspend fun requestParcelForRefreshs(@Path("email") email: String): Response<APIResult<String?>>
 
@@ -108,10 +106,10 @@ interface ParcelAPI
      * @httpCode 204 -> not update
      * @httpCode 303 -> update
      */
-    @POST("/api/v1/sopo-api/delivery/{email}/parcel/{regDt}/{parcelUid}/refresh")
+    @POST("/api/v1/sopo-api/delivery/parcel/{regDt}/{parcelUid}/refresh")
     @Headers("Accept: application/json")
     suspend fun requestParcelForRefresh(
-        @Path("email") email: String,
+        
         @Path("regDt") regDt : String,
         @Path("parcelUid") parcelUid : String
     ) : Response<APIResult<Any?>>
@@ -123,13 +121,15 @@ interface ParcelAPI
      * @param parcelUid
      * @return parcel
      */
-    @GET("/api/v1/sopo-api/delivery/{email}/parcel/{regDt}/{parcelUid}")
+    @GET("/api/v1/sopo-api/delivery/parcel/{regDt}/{parcelUid}")
     @Headers("Accept: application/json")
     suspend fun getSingleParcel(
-        @Path("email") email: String,
+        
         // 등록일자
         @Path("regDt") regDt: String,
         // 택배 고유 uid
         @Path("parcelUid") parcelUid: String
     ): Response<APIResult<Parcel?>>
+
+    // TODO alias 변경 api 추가해야함
 }

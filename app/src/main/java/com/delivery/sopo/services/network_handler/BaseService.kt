@@ -41,11 +41,4 @@ abstract class BaseService
         }
 
     }
-
-    protected fun errorHandler()
-    {
-        CoroutineExceptionHandler { coroutineContext, throwable ->
-            SopoLog.e("${throwable.message}", throwable)
-        }
-    }
 }

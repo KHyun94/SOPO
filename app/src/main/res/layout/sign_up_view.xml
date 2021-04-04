@@ -28,10 +28,11 @@
             android:textColor="@color/MAIN_BLACK"
             android:textSize="25sp"
             android:textStyle="bold"
+            android:includeFontPadding="false"
             app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.9" />
+            app:layout_constraintVertical_bias="0.95" />
 
         <LinearLayout
             android:id="@+id/layout_input"
