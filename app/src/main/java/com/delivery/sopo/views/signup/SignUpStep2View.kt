@@ -16,16 +16,22 @@ import java.util.regex.Pattern
 
 class SignUpStep2View: AppCompatActivity()
 {
+    private lateinit var binding: SignUpStep2ViewBinding
     private val vm: SignUpStep2ViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
 
-        val binding = DataBindingUtil.setContentView<SignUpStep2ViewBinding>(this, R.layout.sign_up_step2_view)
+        binding = DataBindingUtil.setContentView<SignUpStep2ViewBinding>(this, R.layout.sign_up_step2_view)
         binding.vm = vm
         binding.lifecycleOwner = this
 
+        setObserve()
+    }
+
+    private fun setObserve()
+    {
         binding.vm!!.nickname.observe(this@SignUpStep2View, Observer { nickname ->
 
             if(nickname.isEmpty())

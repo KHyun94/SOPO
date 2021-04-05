@@ -41,8 +41,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_view)
 {
-    var TAG = ""
-
     private val userRepoImpl : UserRepoImpl by inject()
     private val oauthRepoImpl : OauthRepoImpl by inject()
     private val loginSelectVm : LoginSelectViewModel by viewModel()
@@ -52,7 +50,6 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
     init
     {
-        TAG += this.javaClass.simpleName
         parentActivity = this@LoginSelectView
     }
 
@@ -81,8 +78,8 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                 }
                 NavigatorConst.SIGN_UP ->
                 {
-//                    startActivity(Intent(parentActivity, SignUpView::class.java))
-                    startActivity(Intent(parentActivity, SignUpStep2View::class.java))
+                    startActivity(Intent(parentActivity, SignUpView::class.java))
+//                    startActivity(Intent(parentActivity, SignUpStep2View::class.java))
                 }
                 NavigatorConst.KAKAO_LOGIN ->
                 {

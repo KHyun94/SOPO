@@ -1,7 +1,5 @@
 package com.delivery.sopo.viewmodels.signup
 
-import android.icu.text.IDNA
-import android.text.TextUtils
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,21 +7,10 @@ import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.views.widget.CustomEditText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-
-/**
- *       app:content="@={vm.email}"
-app:customFocusChangeListener="@{vm.callback}"
-app:descriptionText="@{vm.emailValidateText}"
-app:descriptionVisible="@{vm.isEmailErrorVisible()}"
-app:hint="@string/EMAIL"
-app:markVisible="@{vm.isEmailCorVisible()}"
-app:statusType="@{vm.emailStatusType}"
- */
 
 class SignUpStep2ViewModel: ViewModel()
 {
@@ -83,24 +70,25 @@ class SignUpStep2ViewModel: ViewModel()
      */
     fun onCompleteSignUpClicked(v:View)
     {
+        v.requestFocusFromTouch()
         updateNickname(nickname = nickname.value.toString())
     }
 
-    fun updateNickname(nickname: String)
+    private fun updateNickname(nickname: String)
     {
-//        CoroutineScope(Dispatchers.IO).launch {
-//            when(val result = UserCall.updateNickname(nickname))
-//            {
-//                is NetworkResult.Success ->
-//                {
-//
-//                }
-//                is NetworkResult.Error ->
-//                {
-//
-//                }
-//            }
-//        }
+        CoroutineScope(Dispatchers.IO).launch {
+            when(val result = UserCall.updateNickname(nickname))
+            {
+                is NetworkResult.Success ->
+                {
+
+                }
+                is NetworkResult.Error ->
+                {
+
+                }
+            }
+        }
 
     }
 

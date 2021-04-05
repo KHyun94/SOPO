@@ -89,13 +89,6 @@ object NetworkManager : KoinComponent
 
         SopoLog.d( msg = "네트워크 인증 타입 => $INTERCEPTOR_TYPE")
 
-//        val httpLoggingInterceptor = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger{
-//            override fun log(message: String)
-//            {
-//                SopoLog.api("$message")
-//            }
-//        })
-
         val httpLoggingInterceptor = HttpLoggingInterceptor()
 
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY

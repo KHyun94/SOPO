@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -24,11 +25,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="25sp"
+            android:includeFontPadding="false"
             android:text="마지막으로..."
             android:textColor="@color/MAIN_BLACK"
             android:textSize="25sp"
             android:textStyle="bold"
-            android:includeFontPadding="false"
             app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="parent"
@@ -52,13 +53,13 @@
                 android:layout_marginBottom="24sp"
                 android:inputType="textEmailAddress"
                 app:content="@={vm.nickname}"
-                app:type="@{InfoConst.NICKNAME}"
                 app:customFocusChangeListener="@{vm.callback}"
                 app:descriptionVisible="@{vm.isErrorVisible()}"
                 app:hint="@string/EMAIL"
                 app:markVisible="@{vm.isCorrectVisible()}"
                 app:statusType="@{vm.statusType}"
-                app:title="닉네임을 알려주세요" />
+                app:title="닉네임을 알려주세요"
+                app:type="@{InfoConst.NICKNAME}" />
 
         </LinearLayout>
 
@@ -70,17 +71,19 @@
             android:layout_marginHorizontal="25sp"
             android:layout_marginTop="40dp"
             android:background="@drawable/border_round_white_btn"
-            android:backgroundTint="@color/COLOR_MAIN_700"
+            android:backgroundTint="@{vm.statusType == 1?@color/COLOR_MAIN_700:@color/COLOR_GRAY_200}"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:onClick="@{()->vm.onCompleteSignUpClicked(btnSignUp)}"
             android:paddingHorizontal="50dp"
             android:text="로그인하고 시작하기"
-            android:textColor="@color/MAIN_WHITE"
+            android:textColor="@{vm.statusType == 1?@color/MAIN_WHITE:@color/COLOR_GRAY_400}"
             android:textSize="16sp"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_input" />
+            app:layout_constraintTop_toBottomOf="@+id/layout_input"
+            tools:backgroundTint="@color/COLOR_GRAY_200"
+            tools:textColor="@color/COLOR_GRAY_400" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
