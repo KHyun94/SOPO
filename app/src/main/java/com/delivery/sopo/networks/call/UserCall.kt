@@ -8,6 +8,7 @@ import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.UserAPI
 import com.delivery.sopo.networks.dto.JsonPatchDto
+import com.delivery.sopo.networks.handler.ResponseHandler
 import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.network_handler.BaseService
@@ -16,6 +17,7 @@ import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.runBlocking
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+import retrofit2.Response
 
 object UserCall : BaseService()
 {
@@ -33,6 +35,7 @@ object UserCall : BaseService()
     {
         userAPI = NetworkManager.setLoginMethod(NetworkEnum.PUBLIC_LOGIN, UserAPI::class.java)
         val patchUser = userAPI.test(email = email, jwtToken = jwtToken, jsonPatch = jsonPatch)
+        ResponseHandler(patchUser)
         return apiCall(call = { patchUser })
     }
 

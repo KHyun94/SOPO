@@ -81,10 +81,12 @@ class SignUpStep2ViewModel: ViewModel()
             {
                 is NetworkResult.Success ->
                 {
-
+                    SopoLog.d("Success to update nickname")
                 }
                 is NetworkResult.Error ->
                 {
+
+
 
                 }
             }
