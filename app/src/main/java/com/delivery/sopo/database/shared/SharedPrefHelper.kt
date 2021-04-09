@@ -18,12 +18,12 @@ class SharedPrefHelper(private val sharedPref: SharedPref, private val context: 
     private val DISTURB_START_TIME = "DISTURB_START_TIME"
     private val DISTURB_END_TIME = "DISTURB_END_TIME"
 
-    fun getUserNickname(): String?
+    fun getNickname(): String?
     {
         return sharedPref.getString(USER_NICKNAME, "")
     }
 
-    fun setUserNickname(userId: String)
+    fun setNickname(userId: String)
     {
         sharedPref.setString(USER_NICKNAME, userId)
     }

@@ -9,15 +9,14 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.databinding.SignUpStep2ViewBinding
 import com.delivery.sopo.util.ValidateUtil
-import com.delivery.sopo.viewmodels.signup.SignUpStep2ViewModel
+import com.delivery.sopo.viewmodels.signup.UpdateNicknameViewModel
 import com.delivery.sopo.views.widget.CustomEditText
 import org.koin.android.ext.android.inject
-import java.util.regex.Pattern
 
-class SignUpStep2View: AppCompatActivity()
+class UpdateNicknameView: AppCompatActivity()
 {
     private lateinit var binding: SignUpStep2ViewBinding
-    private val vm: SignUpStep2ViewModel by inject()
+    private val vm: UpdateNicknameViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -32,7 +31,7 @@ class SignUpStep2View: AppCompatActivity()
 
     private fun setObserve()
     {
-        binding.vm!!.nickname.observe(this@SignUpStep2View, Observer { nickname ->
+        binding.vm!!.nickname.observe(this@UpdateNicknameView, Observer { nickname ->
 
             if(nickname.isEmpty())
             {

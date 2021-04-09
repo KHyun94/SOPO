@@ -14,7 +14,7 @@ import com.delivery.sopo.viewmodels.menus.*
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep2ViewModel
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep3ViewModel
-import com.delivery.sopo.viewmodels.signup.SignUpStep2ViewModel
+import com.delivery.sopo.viewmodels.signup.UpdateNicknameViewModel
 import com.delivery.sopo.viewmodels.signup.SignUpViewModel
 import com.delivery.sopo.viewmodels.splash.SplashViewModel
 import org.koin.android.ext.koin.androidApplication
@@ -43,7 +43,7 @@ val appModule = module {
     viewModel { SplashViewModel(get(), get()) }
     viewModel { LoginViewModel(get()) }
     viewModel { SignUpViewModel() }
-    viewModel { SignUpStep2ViewModel() }
+    viewModel { UpdateNicknameViewModel(get()) }
     viewModel { LoginSelectViewModel() }
     viewModel { MainViewModel(get(), get(), get(), get()) }
     viewModel { LockScreenViewModel(get(), get()) }

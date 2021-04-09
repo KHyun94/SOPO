@@ -25,11 +25,6 @@ class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
     private val loginVm: LoginViewModel by viewModel()
     private var progressBar: CustomProgressBar? = null
 
-    init
-    {
-        parentActivity = this@LoginView
-    }
-
     override fun bindView()
     {
         binding.vm = loginVm
@@ -49,7 +44,6 @@ class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
             progressBar?.onStartProgress(isProgress){isDismiss ->
                 if(isDismiss) progressBar = null
             }
-
         })
 
         binding.vm!!.result.observe(this, Observer {

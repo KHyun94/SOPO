@@ -66,7 +66,7 @@ class SignUpView: BasicView<SignUpViewBinding>(R.layout.sign_up_view)
 
                 GeneralDialog(parentActivity, "알림", successResult?.successMsg?:"정상적으로 회원가입 성공했습니다.\n다음 스텝을 진행해주세요.", null, Pair("네", { it ->
                         it.dismiss()
-                        Intent(this, SignUpStep2View::class.java).launchActivity(this)
+                        Intent(this, UpdateNicknameView::class.java).launchActivity(this)
                         finish()
                     })
                 ).show(supportFragmentManager.beginTransaction(), "TAG")

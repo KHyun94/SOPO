@@ -14,14 +14,14 @@ class UserRepoImpl(private val shared: SharedPrefHelper) : UserRepository, KoinC
 {
     private val userRepoImpl : UserRepoImpl by inject()
 
-    override fun getUserNickname(): String
+    override fun getNickname(): String
     {
-        return shared.getUserNickname() ?: ""
+        return shared.getNickname() ?: ""
     }
 
-    override fun setUserNickname(nickname: String)
+    override fun setNickname(nickname: String)
     {
-        shared.setUserNickname(nickname)
+        shared.setNickname(nickname)
     }
 
     override fun getEmail(): String

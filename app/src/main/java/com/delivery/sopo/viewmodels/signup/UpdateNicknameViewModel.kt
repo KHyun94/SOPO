@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.networks.call.UserCall
+import com.delivery.sopo.networks.handler.ResponseHandler
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.widget.CustomEditText
@@ -12,7 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SignUpStep2ViewModel: ViewModel()
+class UpdateNicknameViewModel(private val userRepoImpl: UserRepoImpl): ViewModel()
 {
     val nickname = MutableLiveData<String>()
     val statusType = MutableLiveData<Int>()
@@ -63,11 +65,6 @@ class SignUpStep2ViewModel: ViewModel()
         }
     }
 
-    /**
-     * TODO 이메일, 패스워드와 닉네임을 다른 화면에서 입력받을 때
-     *  닉네임 입력 화면에서 취소 할 경우 어떻게 처리를 할지
-     *
-     */
     fun onCompleteSignUpClicked(v:View)
     {
         v.requestFocusFromTouch()
@@ -81,13 +78,13 @@ class SignUpStep2ViewModel: ViewModel()
             {
                 is NetworkResult.Success ->
                 {
+                    userRepoImpl.setNickname(nickname)
                     SopoLog.d("Success to update nickname")
+
                 }
                 is NetworkResult.Error ->
                 {
-
-
-
+                    SopoLog.e("Fail to update nickname")
                 }
             }
         }

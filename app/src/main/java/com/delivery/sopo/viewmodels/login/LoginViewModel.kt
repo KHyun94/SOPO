@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst
+import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.models.*
 import com.delivery.sopo.networks.handler.LoginHandler
@@ -51,7 +52,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl): ViewModel()
     fun <T, E> postResultValue(successResult: SuccessResult<T>? = null, errorResult: ErrorResult<E>? = null) =
         _result.postValue(Result(successResult, errorResult))
 
-    fun setProgressValue(value: Boolean?) = isProgress.postValue(value)
+    private fun setProgressValue(value: Boolean?) = isProgress.postValue(value)
 
     init
     {
@@ -192,112 +193,95 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl): ViewModel()
     }
 
     // email, password 입력 상태 확인
-    private fun onCheckValidate(): Result<*, *>
+    private fun onCheckValidate(): Result<Unit, Unit>
     {
         SopoLog.d(msg = "onCheckValidate call()")
         // email 유효성 에러
         if (isEmailCorVisible.value != View.VISIBLE)
         {
-            SopoLog.d(msg = "Validate Fail Email ")
+            SopoLog.e(msg = "Fail to validate email")
             emailStatusType.value = CustomEditText.STATUS_COLOR_RED
-            return Result<Unit, Unit>(
-                errorResult = ErrorResult(
-                    code = null, errorMsg = emailValidateText.value.toString(), errorType = ErrorResult.ERROR_TYPE_NON, data = null
-                )
-            )
+            return Result(errorResult = ErrorResult(code = null, errorMsg = emailValidateText.value.toString(), errorType = ErrorResult.ERROR_TYPE_NON, data = Unit))
         }
 
         // password 유효성 에러
         if (isPwdCorVisible.value != View.VISIBLE)
         {
-            SopoLog.d(msg = "Validate Fail PWD ")
+            SopoLog.d(msg = "Fail to validate password")
             pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
-            return Result<Unit, Unit>(
-                errorResult = ErrorResult(
-                    code = null, errorMsg = pwdValidateText.value.toString(), errorType = ErrorResult.ERROR_TYPE_NON, data = null
-                )
-            )
+            return Result(errorResult = ErrorResult(code = null, errorMsg = pwdValidateText.value.toString(), errorType = ErrorResult.ERROR_TYPE_NON, data = Unit))
         }
 
-        return Result<Unit?, Unit?>(
-            successResult = SuccessResult(
-                code = null, successMsg = "SUCCESS", data = null
-            )
-        )
+        return Result(successResult = SuccessResult(code = ResponseCode.SUCCESS, successMsg = "SUCCESS", data = Unit))
     }
 
     fun onLoginClicked(v: View)
     {
         SopoLog.d(msg = "onLoginClicked() call!!!")
 
+        v.requestFocusFromTouch()
+
         _result.value = onCheckValidate()
 
         // result가 전부 통과일 때
-        when
-        {
-            _result.value?.successResult != null ->
-            {
-                setProgressValue(true)
 
-                // Firebase email login
-                FirebaseRepository.firebaseSelfLogin(
-                    email = email.value!!, password = pwd.value!!
-                ) { s1, e1 ->
-                    if (e1 != null)
+        if(_result.value?.errorResult != null)
+        {
+            val type =
+                if (_result.value!!.errorResult!!.errorType == ErrorResult.ERROR_TYPE_DIALOG)
+                {
+                    ErrorResult.ERROR_TYPE_DIALOG
+                }
+                else
+                {
+                    ErrorResult.ERROR_TYPE_TOAST
+                }
+
+            _result.value!!.errorResult!!.errorType = type
+            val tmp = _result.value
+            _result.value = tmp
+            return
+        }
+
+        setProgressValue(true)
+
+
+        // Firebase email login
+        FirebaseRepository.firebaseSelfLogin(
+            email = email.value!!, password = pwd.value!!
+        ) { s1, e1 ->
+            if (e1 != null)
+            {
+                setProgressValue(false)
+                postResultValue(successResult = s1, errorResult = e1)
+
+                return@firebaseSelfLogin
+            }
+
+            if (s1 != null)
+            {
+                val user = s1.data
+
+                SopoLog.d(msg = "Auth Email")
+
+                uid = user?.uid!!
+
+                LoginHandler.oAuthLogin(email = email.value.toString(), password = pwd.value.toString(), deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE)) { s2, e2 ->
+
+                    if (e2 != null)
                     {
                         setProgressValue(false)
-                        postResultValue(successResult = s1, errorResult = e1)
-
-                        return@firebaseSelfLogin
+                        postResultValue(successResult = s2, errorResult = e2)
                     }
 
-                    if (s1 != null)
+                    if (s2 != null)
                     {
-                        val user = s1.data
-
-                        SopoLog.d(msg = "Auth Email")
-
-                        uid = user?.uid!!
-
-                        LoginHandler.oAuthLogin(email = email.value.toString(), password = pwd.value.toString(), deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE)) { s2, e2 ->
-
-                            if (e2 != null)
-                            {
-                                setProgressValue(false)
-                                postResultValue(successResult = s2, errorResult = e2)
-                            }
-
-                            if (s2 != null)
-                            {
-                                setProgressValue(false)
-                                postResultValue(successResult = s2, errorResult = e2)
-                            }
-                        }
+                        setProgressValue(false)
+                        postResultValue(successResult = s2, errorResult = e2)
                     }
-
                 }
             }
-            // result가 에러일 때
-            _result.value?.errorResult != null ->
-            {
-                val type =
-                    if (_result.value!!.errorResult!!.errorType == ErrorResult.ERROR_TYPE_DIALOG)
-                    {
-                        ErrorResult.ERROR_TYPE_DIALOG
-                    }
-                    else
-                    {
-                        ErrorResult.ERROR_TYPE_TOAST
-                    }
 
-                _result.value!!.errorResult!!.errorType = type
-                val tmp = _result.value
-                _result.value = tmp
-            }
-            else ->
-            {
-                SopoLog.d(msg = "Total Result All NULL")
-            }
         }
     }
 }

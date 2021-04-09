@@ -67,11 +67,10 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
 
     init {
         _userEmail.value = userRepoImpl.getEmail()
-        _userNickname.value = userRepoImpl.getUserNickname()
+        _userNickname.value = userRepoImpl.getNickname()
         SopoLog.d(msg = "Menu 닉네임 => ${userNickname.value}")
         _viewStack.value = Stack()
         isUpdate.value = false
-
     }
 
     fun pushView(menu: MenuEnum){

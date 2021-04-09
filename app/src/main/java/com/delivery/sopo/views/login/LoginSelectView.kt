@@ -11,10 +11,8 @@ import com.delivery.sopo.database.room.entity.OauthEntity
 import com.delivery.sopo.databinding.LoginSelectViewBinding
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.extensions.launchActivitiy
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.models.ErrorResult
-import com.delivery.sopo.models.SuccessResult
 import com.delivery.sopo.networks.call.OAuthCall
 import com.delivery.sopo.networks.handler.LoginHandler
 import com.delivery.sopo.repository.impl.OauthRepoImpl
@@ -26,7 +24,6 @@ import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.main.MainView
-import com.delivery.sopo.views.signup.SignUpStep2View
 import com.delivery.sopo.views.signup.SignUpView
 import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session

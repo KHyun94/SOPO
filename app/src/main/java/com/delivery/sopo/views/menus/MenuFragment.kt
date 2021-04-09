@@ -120,8 +120,8 @@ class MenuFragment : Fragment()
             }
         })
 
-        menuVm.menu.observe(this, Observer {
-            when (it)
+        menuVm.menu.observe(this, Observer { enum ->
+            when (enum)
             {
                 MenuEnum.NOTICE ->
                 {
@@ -146,6 +146,10 @@ class MenuFragment : Fragment()
                 MenuEnum.NOT_DISTURB ->
                 {
                     move(menuView, NotDisturbTimeFragment(), 0)
+                }
+                MenuEnum.ACCOUNT_MANAGER ->
+                {
+                    move(menuView, AccountManagerFragment(), 0)
                 }
             }
         })

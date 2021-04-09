@@ -55,7 +55,7 @@ class SplashViewModel(
                     val userDetail = result.data.data
 
                     userRepoImpl.setEmail(userDetail?.userName?:"")
-                    userRepoImpl.setUserNickname(userDetail?.nickname?:"")
+                    userRepoImpl.setNickname(userDetail?.nickname?:"")
                     userRepoImpl.setJoinType(userDetail?.joinType?:"")
 
                     navigator.postValue(NavigatorConst.TO_MAIN)

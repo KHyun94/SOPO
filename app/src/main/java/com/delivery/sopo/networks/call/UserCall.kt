@@ -62,6 +62,7 @@ object UserCall : BaseService()
         return apiCall (call = {userAPI.updateFCMToken(fcmToken = fcmToken)} )
     }
 
+    // TODO error 닉네임 설정
     suspend fun updateNickname(nickname: String): NetworkResult<APIResult<String?>>
     {
         userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)

@@ -101,7 +101,8 @@
                 android:layout_marginEnd="20dp"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                android:onClick="@{()->vm.pushView(MenuEnum.ACCOUNT_MANAGER)}">
 
                 <ImageView
                     android:layout_width="wrap_content"
