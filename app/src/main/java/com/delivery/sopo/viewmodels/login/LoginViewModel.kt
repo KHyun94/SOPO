@@ -7,18 +7,27 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst
+import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.ResponseCode
-import com.delivery.sopo.firebase.FirebaseRepository
+import com.delivery.sopo.exceptions.APIException
+import com.delivery.sopo.extensions.match
+import com.delivery.sopo.mapper.OauthMapper
 import com.delivery.sopo.models.*
-import com.delivery.sopo.networks.handler.LoginHandler
+import com.delivery.sopo.networks.api.LoginAPICall
+import com.delivery.sopo.networks.call.UserCall
+import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
-import com.delivery.sopo.util.OtherUtil
-import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ValidateUtil
+import com.delivery.sopo.services.network_handler.NetworkResult
+import com.delivery.sopo.util.*
 import com.delivery.sopo.viewmodels.signup.FocusChangeCallback
 import com.delivery.sopo.views.widget.CustomEditText
+import com.google.firebase.FirebaseException
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.*
+import java.lang.Exception
 
-class LoginViewModel(val userRepoImpl: UserRepoImpl): ViewModel()
+class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImpl): ViewModel()
 {
     private val TAG = "LOG.SOPO.LoginVm"
 
@@ -43,16 +52,13 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl): ViewModel()
     var pwdStatusType = MutableLiveData<Int>()
 
     // 유효성 및 통신 등의 결과 객체
-    private var _result = MutableLiveData<Result<*, *>?>()
-    val result: LiveData<Result<*, *>?>
+    private var _result = MutableLiveData<ResponseResult<*>>()
+    val result: LiveData<ResponseResult<*>>
         get() = _result
 
-    val isProgress = MutableLiveData<Boolean?>()
-
-    fun <T, E> postResultValue(successResult: SuccessResult<T>? = null, errorResult: ErrorResult<E>? = null) =
-        _result.postValue(Result(successResult, errorResult))
-
-    private fun setProgressValue(value: Boolean?) = isProgress.postValue(value)
+    private var _isProgress = MutableLiveData<Boolean>()
+    val isProgress: LiveData<Boolean>
+        get() = _isProgress
 
     init
     {
@@ -131,7 +137,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl): ViewModel()
                         /**
                          *  email, pwd 전체 유효성 검사
                          */
-                        _result.value = onCheckValidate()
+//                        _result.value = onCheckValidate()
                         return@FocusChangeCallback
                     }
 
@@ -155,7 +161,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl): ViewModel()
                             type = type, errorState = View.VISIBLE, corState = View.GONE
                         )
                     }
-                    _result.value = onCheckValidate()
+//                    _result.value = onCheckValidate()
                 }
                 InfoConst.PASSWORD ->
                 {
@@ -165,7 +171,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl): ViewModel()
                         pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
                         pwdValidateText.value = "비밀번호를 입력해주세요."
                         setVisibleState(type, View.VISIBLE, View.GONE)
-                        _result.value = onCheckValidate()
+//                        _result.value = onCheckValidate()
 
                         return@FocusChangeCallback
                     }
@@ -186,14 +192,14 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl): ViewModel()
                         pwdValidateText.value = "비밀번호 형식을 확인해주세요."
                         setVisibleState(type, View.VISIBLE, View.GONE)
                     }
-                    _result.value = onCheckValidate()
+//                    _result.value = onCheckValidate()
                 }
             }
         }
     }
 
     // email, password 입력 상태 확인
-    private fun onCheckValidate(): Result<Unit, Unit>
+    private fun onCheckValidate(): ResponseResult<Unit>
     {
         SopoLog.d(msg = "onCheckValidate call()")
         // email 유효성 에러
@@ -201,7 +207,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl): ViewModel()
         {
             SopoLog.e(msg = "Fail to validate email")
             emailStatusType.value = CustomEditText.STATUS_COLOR_RED
-            return Result(errorResult = ErrorResult(code = null, errorMsg = emailValidateText.value.toString(), errorType = ErrorResult.ERROR_TYPE_NON, data = Unit))
+            return ResponseResult(false, null, Unit, emailValidateText.value.toString(), DisplayEnum.TOAST_MESSAGE)
         }
 
         // password 유효성 에러
@@ -209,79 +215,124 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl): ViewModel()
         {
             SopoLog.d(msg = "Fail to validate password")
             pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
-            return Result(errorResult = ErrorResult(code = null, errorMsg = pwdValidateText.value.toString(), errorType = ErrorResult.ERROR_TYPE_NON, data = Unit))
+            return ResponseResult(false, null, Unit, pwdValidateText.value.toString(), DisplayEnum.TOAST_MESSAGE)
         }
 
-        return Result(successResult = SuccessResult(code = ResponseCode.SUCCESS, successMsg = "SUCCESS", data = Unit))
+        return ResponseResult(true, null, Unit, "Success", DisplayEnum.NON_DISPLAY)
     }
 
     fun onLoginClicked(v: View)
     {
-        SopoLog.d(msg = "onLoginClicked() call!!!")
-
-        v.requestFocusFromTouch()
-
-        _result.value = onCheckValidate()
-
-        // result가 전부 통과일 때
-
-        if(_result.value?.errorResult != null)
+        try
         {
-            val type =
-                if (_result.value!!.errorResult!!.errorType == ErrorResult.ERROR_TYPE_DIALOG)
+            SopoLog.d(msg = "onLoginClicked() call!!!")
+
+            v.requestFocusFromTouch()
+
+            onCheckValidate().let {
+                if(!it.result)
                 {
-                    ErrorResult.ERROR_TYPE_DIALOG
-                }
-                else
-                {
-                    ErrorResult.ERROR_TYPE_TOAST
-                }
-
-            _result.value!!.errorResult!!.errorType = type
-            val tmp = _result.value
-            _result.value = tmp
-            return
-        }
-
-        setProgressValue(true)
-
-
-        // Firebase email login
-        FirebaseRepository.firebaseSelfLogin(
-            email = email.value!!, password = pwd.value!!
-        ) { s1, e1 ->
-            if (e1 != null)
-            {
-                setProgressValue(false)
-                postResultValue(successResult = s1, errorResult = e1)
-
-                return@firebaseSelfLogin
-            }
-
-            if (s1 != null)
-            {
-                val user = s1.data
-
-                SopoLog.d(msg = "Auth Email")
-
-                uid = user?.uid!!
-
-                LoginHandler.oAuthLogin(email = email.value.toString(), password = pwd.value.toString(), deviceInfo = OtherUtil.getDeviceID(SOPOApp.INSTANCE)) { s2, e2 ->
-
-                    if (e2 != null)
-                    {
-                        setProgressValue(false)
-                        postResultValue(successResult = s2, errorResult = e2)
-                    }
-
-                    if (s2 != null)
-                    {
-                        setProgressValue(false)
-                        postResultValue(successResult = s2, errorResult = e2)
-                    }
+                    _result.value = it
+                    return
                 }
             }
 
+            // result가 전부 통과일 때
+
+            SopoLog.d("Firebase Login >>> ${email.value.toString()}, ${pwd.value.toString()}")
+
+            _isProgress.postValue(true)
+
+            SOPOApp.auth.signInWithEmailAndPassword(email.value.toString(), pwd.value.toString()).addOnCompleteListener { task ->
+                // 로그인 실패
+                if(!task.isSuccessful)
+                {
+                    SopoLog.e("Firebase Exception >>> ${task.exception?.message}", task.exception)
+                    val exception = task.exception as FirebaseException?
+                    val code = exception.match
+                    _result.postValue(ResponseResult(result = false, code = code, data = Unit, message = code.MSG, displayType = DisplayEnum.DIALOG))
+                    _isProgress.postValue(false)
+                    return@addOnCompleteListener
+                }
+
+                // 이메일 인증 실패
+                if(task.result.user?.isEmailVerified != true)
+                {
+                    SopoLog.e("Fail Email Verified >>> ${task.exception?.message}", task.exception)
+                    _result.postValue(ResponseResult(result = false, code = ResponseCode.FIREBASE_ERROR_EMAIL_VERIFIED, data = Unit, message = ResponseCode.FIREBASE_ERROR_EMAIL_VERIFIED.MSG, displayType = DisplayEnum.DIALOG))
+                    _isProgress.postValue(false)
+                    return@addOnCompleteListener
+                }
+
+                // 성공
+                CoroutineScope(Dispatchers.IO).launch {
+                    loginWithOAuth(email.value.toString(), pwd.value.toString())
+                }
+
+            }
         }
+        catch (e: Exception)
+        {
+            throw e
+        }
+    }
+
+    suspend fun loginWithOAuth(email: String, password: String)
+    {
+        when(val result = LoginAPICall().requestOauth(email, password, SOPOApp.deviceInfo))
+        {
+            is NetworkResult.Success ->
+            {
+                userRepoImpl.setEmail(email)
+                userRepoImpl.setApiPwd(password)
+                userRepoImpl.setStatus(1)
+
+                val oAuth = Gson().let {gson ->
+                    val type = object : TypeToken<OauthResult>() {}.type
+                    val reader = gson.toJson(result.data)
+                    val data = gson.fromJson<OauthResult>(reader, type)
+                    OauthMapper.objectToEntity(data)
+                }
+
+                SOPOApp.oAuthEntity = oAuth
+
+                withContext(Dispatchers.Default){
+                    oAuthRepo.insert(oAuth)
+                }
+
+                _isProgress.postValue(false)
+                _result.postValue(getUserInfo())
+            }
+            is NetworkResult.Error ->
+            {
+                val exception = result.exception as APIException
+                val code = exception.responseCode
+                _isProgress.postValue(false)
+                _result.postValue(ResponseResult(false, code, Unit, code.MSG, DisplayEnum.DIALOG))
+            }
+        }
+    }
+
+    suspend fun getUserInfo(): ResponseResult<UserDetail?>
+    {
+        val result = UserCall.getUserInfoWithToken()
+
+        if(result is NetworkResult.Error)
+        {
+            val exception = result.exception as APIException
+            val responseCode = exception.responseCode
+            val date = SOPOApp.oAuthEntity.let { it?.expiresIn }
+
+            return if(responseCode.HTTP_STATUS == 401 && DateUtil.isOverExpiredDate(date!!)) ResponseResult(false, responseCode, null, "로그인 기한이 만료되었습니다.\n다시 로그인해주세요.", DisplayEnum.DIALOG)
+            else ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
+        }
+
+        val apiResult = (result as NetworkResult.Success).data
+
+        userRepoImpl.setNickname(apiResult.data?.nickname?:"")
+
+        SopoLog.d("UserDetail >>> ${apiResult.data}, ${apiResult.data?.nickname}")
+
+        return ResponseResult(true, ResponseCode.SUCCESS, apiResult.data, ResponseCode.SUCCESS.MSG)
     }
 }

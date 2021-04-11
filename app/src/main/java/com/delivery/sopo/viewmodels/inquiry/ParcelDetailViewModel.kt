@@ -217,7 +217,7 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
                         else ->
                         {
                             _isUpdate.postValue(UpdateConst.FAILURE)
-                            SopoLog.e("${error.responseMessage}", error)
+                            SopoLog.e("${error.errorMessage}", error)
                         }
                     }
                 }
@@ -261,7 +261,7 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
                 }
                 is NetworkResult.Error ->
                 {
-                    SopoLog.e("error >>> ${(result.exception as APIException)}", (result.exception as APIException).t)
+//                    SopoLog.e("error >>> ${(result.exception as APIException)}", (result.exception as APIException).t)
                 }
             }
         }

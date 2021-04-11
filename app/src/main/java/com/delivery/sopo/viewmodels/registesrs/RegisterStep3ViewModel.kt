@@ -68,10 +68,10 @@ class RegisterStep3ViewModel(
                 }
                 is NetworkResult.Error ->
                 {
-                    val error = result.exception as APIException
-                    val code = CodeUtil.getCode(error.data()?.code)
+                    val exception = result.exception as APIException
+                    val code = exception.responseCode
 
-                    _result.postValue(TestResult.ErrorResult<String>(code, code.MSG, ErrorResult.ERROR_TYPE_DIALOG, null, error))
+                    _result.postValue(TestResult.ErrorResult<String>(code, code.MSG, ErrorResult.ERROR_TYPE_DIALOG, null, exception))
                 }
             }
         }

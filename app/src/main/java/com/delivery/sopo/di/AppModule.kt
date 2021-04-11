@@ -41,7 +41,7 @@ val appModule = module {
     single { OauthRepoImpl(get()) }
 
     viewModel { SplashViewModel(get(), get()) }
-    viewModel { LoginViewModel(get()) }
+    viewModel { LoginViewModel(get(), get()) }
     viewModel { SignUpViewModel() }
     viewModel { UpdateNicknameViewModel(get()) }
     viewModel { LoginSelectViewModel() }

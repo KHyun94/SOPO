@@ -12,4 +12,7 @@ data class OauthResult(
     @SerializedName("expires_in")
     val expiresIn: String,
     @SerializedName("scope")
-    val scope: String)
+    val scope: String,
+    @SerializedName("refresh_token_expire_at")
+    val refreshTokenExpiredAt: String
+)

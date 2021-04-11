@@ -41,7 +41,7 @@ class LoginRepository: LoginDataSource
                 is NetworkResult.Error ->
                 {
                     val exception = result.exception as APIException
-                    val errorCode = CodeUtil.getCode(exception.data()?.code)
+                    val errorCode = exception.responseCode
                     callback.invoke(null, ErrorResult<String?>(code = errorCode, errorMsg = errorCode.MSG, errorType = ErrorResult.ERROR_TYPE_DIALOG, e = exception))
                 }
             }

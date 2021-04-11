@@ -25,10 +25,7 @@ class ResponseHandler<T: Any?>(val response: Response<APIResult<T>>): BaseServic
             is NetworkResult.Error ->
             {
                 val exception = result.exception as APIException
-                val errorBody = exception.errorBody
-                val errorReader = errorBody?.charStream()
-                val apiResult = Gson().fromJson(errorReader, APIResult::class.java)
-                return fail(CodeUtil.getCode(apiResult.code), apiResult.data as T?)
+                return fail(exception.responseCode, exception.data() as T)
             }
         }
     }

@@ -1,8 +1,9 @@
 package com.delivery.sopo.views.signup
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
@@ -10,6 +11,9 @@ import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.databinding.SignUpStep2ViewBinding
 import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.viewmodels.signup.UpdateNicknameViewModel
+import com.delivery.sopo.views.dialog.GeneralDialog
+import com.delivery.sopo.views.dialog.OnAgreeClickListener
+import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.widget.CustomEditText
 import org.koin.android.ext.android.inject
 
@@ -31,6 +35,23 @@ class UpdateNicknameView: AppCompatActivity()
 
     private fun setObserve()
     {
+        binding.vm!!.result.observe(this@UpdateNicknameView, Observer {result ->
+            if(!result.result)
+            {
+                GeneralDialog(this@UpdateNicknameView,"오류", "닉네임 등록이 실패했습니다.\n다시 시도해주세요.", null, Pair("네",null)).show(supportFragmentManager, "DIALOG")
+                return@Observer
+            }
+
+            GeneralDialog(this@UpdateNicknameView, "성공", "정상적으로 닉네임을 등록했습니다.", null,
+            Pair("네", object : OnAgreeClickListener{ override fun invoke(agree: GeneralDialog) {
+                    val intent = Intent(this@UpdateNicknameView, MainView::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
+                    finish()
+                }
+            }))
+        })
+
         binding.vm!!.nickname.observe(this@UpdateNicknameView, Observer { nickname ->
 
             if(nickname.isEmpty())
@@ -50,7 +71,6 @@ class UpdateNicknameView: AppCompatActivity()
 
             binding.vm!!.setVisibleState(type = InfoConst.NICKNAME, errorState = View.VISIBLE, corState = View.GONE)
             binding.vm!!.statusType.value = CustomEditText.STATUS_COLOR_RED
-
         })
     }
 }

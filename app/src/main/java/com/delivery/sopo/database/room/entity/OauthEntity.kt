@@ -40,5 +40,10 @@ data class OauthEntity(
         name = "scope",
         typeAffinity = ColumnInfo.TEXT
     )
-    val scope: String
+    val scope: String,
+    @ColumnInfo(
+        name = "refresh_token_expire_at",
+        typeAffinity = ColumnInfo.TEXT
+    )
+    val refreshTokenExpiredAt: String
 )

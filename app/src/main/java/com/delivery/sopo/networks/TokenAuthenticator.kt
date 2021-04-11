@@ -53,7 +53,7 @@ class TokenAuthenticator : Authenticator, KoinComponent
         }
 
         SopoLog.e( msg = "authenticate call() - else")
-        return response.request
+        return null
     }
 
     private fun requestRefreshOAuthToken() : TestResult

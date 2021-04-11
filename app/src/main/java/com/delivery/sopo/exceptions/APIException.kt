@@ -1,44 +1,59 @@
 package com.delivery.sopo.exceptions
 
-import android.util.Log
+import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.CodeUtil
 import com.google.gson.Gson
-import okhttp3.ResponseBody
+import retrofit2.Response
 
-class APIException : Exception
+class APIException: Exception
 {
-    var responseMessage: String? = null
-    var responseCode: Int? = null
-    var errorBody: ResponseBody? = null
-    var t: Throwable? = null
+    var e: Exception = Exception("API Exception")
+    var errorMessage: String = "UNKNOWN ERROR"
+    var responseCode: ResponseCode = ResponseCode.ERROR_UNKNOWN
+    var httpStatusCode: Int = 0
 
-    constructor(t: Throwable)
+    private var apiResult: APIResult<*>? = null
+
+    constructor(e: Exception)
     {
-        this.responseMessage = t.message
-        this.t = t
+        this.e = e
+        this.errorMessage = e.message?:"UNKNOWN ERROR"
     }
 
-    constructor(responseMessage: String, responseCode: Int, errorBody: ResponseBody?)
+    constructor(errorMessage: String, responseCode: ResponseCode, httpStatusCode: Int = 500)
     {
-        this.responseMessage = responseMessage
+        this.errorMessage = errorMessage
         this.responseCode = responseCode
-        this.errorBody = errorBody
+        this.httpStatusCode = httpStatusCode
+        this.e = Exception(errorMessage)
     }
 
-    constructor(responseMessage: String, responseCode: Int, errorBody: ResponseBody?, t: Throwable)
+    fun data():Any?
     {
-        this.responseMessage = responseMessage
-        this.responseCode = responseCode
-        this.errorBody = errorBody
-        this.t = t
+        try {
+            return apiResult?.data
+        }
+        catch (e: Exception) {
+            throw e
+        }
     }
 
-    fun data(): APIResult<*>?
-    {
-        SopoLog.e("메시지 에러!!!!!!!!!")
-        val errorReader = errorBody!!.charStream()
-        return Gson().fromJson(errorReader, APIResult::class.java)
-    }
+    companion object{
 
+        lateinit var apiResult: APIResult<*>
+
+        fun<T> parse(response: Response<T>): APIException
+        {
+            val httpStatusCode = response.code()
+
+            val errorReader = response.errorBody()?.charStream()!!
+            apiResult = Gson().fromJson(errorReader, APIResult::class.java)
+
+            val responseCode = CodeUtil.getCode(apiResult.code)
+            val errorMessage = apiResult.message
+
+            return APIException(errorMessage = errorMessage, responseCode = responseCode, httpStatusCode = httpStatusCode)
+        }
+    }
 }

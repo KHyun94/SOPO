@@ -41,6 +41,7 @@ enum class ResponseCode(val CODE: String, val MSG: String, val HTTP_STATUS: Int?
     JWT_UNSUPPORTED_TOKEN("JW03","Unsupported JWT token",401),
     JWT_ILLEGALARGUMENT("JW04","JWT claims string is empty",401),
     JWT_CAN_NOT_FIND_TOKEN("JW05", "Can not find the jwt Token", 400),
+
     TOKEN_ERROR_INVALID_CLIENT("TK01", "INVALID_CLIENT", 400),
     TOKEN_ERROR_UNAUTHORIZED_CLIENT("TK02", "UNAUTHORIZED_CLIENT", 400),
     TOKEN_ERROR_INVALID_GRANT("TK03", "INVALID_GRANT", 400),
@@ -68,5 +69,7 @@ enum class ResponseCode(val CODE: String, val MSG: String, val HTTP_STATUS: Int?
     LOCAL_ERROR_TYPE_MISS("LC01", "Type Miss Match"),
     LOCAL_ERROR_NULL_POINT("LC02", "Null"),
 
-    ERROR_UNKNOWN("9999", "알수 없는 에러", 400)
+    ERROR_UNKNOWN("9999", "알수 없는 에러", 400);
+
+
 }

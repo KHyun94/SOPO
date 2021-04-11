@@ -17,8 +17,7 @@ import com.delivery.sopo.util.SopoLog
 
 class CustomProgressBar(val activity: AppCompatActivity?): DialogFragment()
 {
-    var ssibalCheck = false
-
+    private var isTurnOn = false
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         val view = inflater.inflate(R.layout.loading, container, false)
@@ -26,7 +25,7 @@ class CustomProgressBar(val activity: AppCompatActivity?): DialogFragment()
         return view
     }
 
-    fun onStartProgress(isProgress: Boolean, callback: ((Boolean)->Unit)){
+    fun onStartProgress(isProgress: Boolean, callback: (Boolean)->Unit){
 
         SopoLog.d("onStartProgress() call")
 
@@ -36,24 +35,18 @@ class CustomProgressBar(val activity: AppCompatActivity?): DialogFragment()
             return
         }
 
-        if(ssibalCheck)
+        if(isProgress && !isTurnOn && !isAdded)
         {
-            SopoLog.d("ssibal Check")
-            ssibalCheck = false
-            dismiss()
-        }
-
-        if(!isAdded && isProgress)
-        {
-            SopoLog.d("Turn On ProgressBar")
             show(activity.supportFragmentManager, "Progress")
-            ssibalCheck = true
+            SopoLog.d("Turn On ProgressBar")
+            isTurnOn = true
             return
         }
 
-        if(!isProgress)
+        if(!isProgress && isTurnOn)
         {
             SopoLog.d("Turn Off ProgressBar")
+            isTurnOn = false
             dismiss()
             callback.invoke(true)
         }

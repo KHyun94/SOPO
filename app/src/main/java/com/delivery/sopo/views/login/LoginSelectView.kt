@@ -173,27 +173,6 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                                     }), lHandler = Pair(first = "확인", second = null)
                                 ).show(supportFragmentManager, "tag")
                             }
-                            ResponseCode.ALREADY_LOGGED_IN ->
-                            {
-                                // todo 중복 로그인 처리
-                                val jwtToken = data as String
-
-                                GeneralDialog(
-                                    act = parentActivity, title = "오류", msg = msg, detailMsg = code, rHandler = Pair(first = "네", second = { it ->
-                                        LoginHandler.authJwtToken(jwtToken) { successResult, errorResult ->
-                                            if (errorResult != null) SopoLog.e(msg = "에러 ${errorResult.toString()}")
-                                            if (successResult != null)
-                                            {
-                                                SopoLog.d(msg = "성공 ${successResult.toString()}")
-                                                binding.vm!!.postResultValue(successResult, errorResult)
-                                            }
-
-                                            it.dismiss()
-                                        }
-
-                                    }), lHandler = Pair(first = "아니오", second = null)
-                                ).show(supportFragmentManager, "tag")
-                            }
                             else ->
                             {
                                 GeneralDialog(

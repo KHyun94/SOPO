@@ -1,5 +1,7 @@
 package com.delivery.sopo.views.splash
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import androidx.lifecycle.Observer
@@ -16,6 +18,7 @@ import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.LoginAPI
 import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.PermissionUtil
@@ -24,7 +27,11 @@ import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.PermissionDialog
 import com.delivery.sopo.views.intro.IntroView
 import com.delivery.sopo.views.main.MainView
+import com.delivery.sopo.views.signup.UpdateNicknameView
 import kotlinx.android.synthetic.main.splash_view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import retrofit2.Call
@@ -33,6 +40,7 @@ import retrofit2.Response
 
 class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view)
 {
+    private val userRepo: UserRepoImpl by inject()
     private val splashVm: SplashViewModel by viewModel()
     lateinit var permissionDialog: PermissionDialog
 
@@ -81,25 +89,22 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
                                                 finish()
                                             })
                                     ).show(supportFragmentManager, "permission")
+
+                                    return@permissionCallback
                                 }
-                                else
-                                {
-                                    binding.vm!!.requestAfterActivity()
-                                }
+
+                                binding.vm!!.requestAfterActivity()
                             }
 
                             dialog.dismiss()
                         }
 
                         permissionDialog.show(supportFragmentManager, "PermissionTag")
-                    }
-                    else
-                    {
-                        binding.vm!!.requestAfterActivity()
+
+                        return@Observer
                     }
 
-                    // 권한 설정이 안되어있을 경우, 권한 허용 요청 다이얼로그 생성
-
+                    binding.vm!!.requestAfterActivity()
                 }
                 NavigatorConst.TO_INTRO ->
                 {
@@ -108,11 +113,26 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
                 }
                 NavigatorConst.TO_MAIN ->
                 {
-//                    requestAutoLogin()
-                    startActivity(Intent(parentActivity, MainView::class.java))
-                    finish()
+                    goToMainOrNickname(userRepo.getNickname())
+                }
+                NavigatorConst.TO_INIT ->
+                {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        AlertUtil.alertExpiredToken(this@SplashView, binding.vm!!.errorMessage)
+                    }
                 }
             }
         })
+    }
+
+    // 정상적으로 로그인했을 때 닉네임의 여부에 따라 UpdateNicknameView or MainView로 이동
+    private fun goToMainOrNickname(nickname: String)
+    {
+        val clz = if(nickname == "") UpdateNicknameView::class.java else MainView::class.java
+
+        Intent(this@SplashView, clz).let {
+            startActivity(it)
+            finish()
+        }
     }
 }

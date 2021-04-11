@@ -1,10 +1,9 @@
 package com.delivery.sopo.networks
 
 import com.delivery.sopo.BuildConfig
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.entity.OauthEntity
 import com.delivery.sopo.enums.NetworkEnum
-import com.delivery.sopo.networks.api.UserAPI
-import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.networks.interceptors.BasicAuthInterceptor
 import com.delivery.sopo.networks.interceptors.OAuthInterceptor
 import com.delivery.sopo.repository.impl.OauthRepoImpl
@@ -25,8 +24,6 @@ import java.util.concurrent.TimeUnit
 
 object NetworkManager : KoinComponent
 {
-    val TAG = this.javaClass.simpleName
-
     val userRepoImpl : UserRepoImpl by inject()
     val oauthRepoImpl : OauthRepoImpl by inject()
 
@@ -50,8 +47,7 @@ object NetworkManager : KoinComponent
         {
             NetworkEnum.O_AUTH_TOKEN_LOGIN ->
             {
-                val oauth : OauthEntity?
-                runBlocking { oauth = oauthRepoImpl.get(userRepoImpl.getEmail()) }
+                val oauth : OauthEntity? = SOPOApp.oAuthEntity?:runBlocking { oauthRepoImpl.get(userRepoImpl.getEmail()) }
                 SopoLog.d(msg = "토큰 정보 => ${oauth}")
                 retro(oauth?.accessToken).create(clz)
             }
@@ -116,7 +112,6 @@ object NetworkManager : KoinComponent
             .build()
     }
 
-
     val retro: Retrofit
         get()
         {
@@ -139,7 +134,6 @@ object NetworkManager : KoinComponent
             }
 
             return Retrofit.Builder()
-//                .baseUrl("http://192.168.1.4:6443/")
                 .baseUrl(BuildConfig.API_URL)
                 .client(mOKHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson.create()))

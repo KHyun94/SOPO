@@ -668,7 +668,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
 
         SopoLog.d("Parcel Alias 변경 JsonArray ===> ${jsonArray}")
 
-        NetworkManager.retro(SOPOApp.oauth?.accessToken).create(ParcelAPI::class.java).patchParcel(
+        NetworkManager.retro(SOPOApp.oAuthEntity?.accessToken).create(ParcelAPI::class.java).patchParcel(
             email = userRepoImpl.getEmail(), parcelUid = parcelId.parcelUid, regDt = parcelId.regDt, jsonPATCH = jsonArray
         ).enqueue(object: Callback<APIResult<ParcelEntity?>>
         {

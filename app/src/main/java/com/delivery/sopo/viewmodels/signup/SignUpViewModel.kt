@@ -9,17 +9,26 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst
+import com.delivery.sopo.enums.DisplayEnum
+import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.extensions.match
+import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.models.ErrorResult
+import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.SuccessResult
 import com.delivery.sopo.models.Result
+import com.delivery.sopo.networks.call.JoinCall
 import com.delivery.sopo.networks.handler.JoinHandler
 import com.delivery.sopo.networks.repository.JoinRepository
+import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.views.widget.CustomEditText
+import com.google.firebase.FirebaseException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 typealias FocusChangeCallback = (String, Boolean) -> Unit
 
@@ -57,24 +66,13 @@ class SignUpViewModel : ViewModel()
     /**
      * 유효성 및 통신 등의 결과 객체
      */
-    private var _result = MutableLiveData<Result<*, *>?>()
-    val result: LiveData<Result<*, *>?>
+    private var _result = MutableLiveData<ResponseResult<*>>()
+    val result: LiveData<ResponseResult<*>>
         get() = _result
 
-    val isProgress = MutableLiveData<Boolean?>()
-
-    /**
-     * 처리에 대한 결과 세팅
-     */
-    fun <T, E> postResultValue(
-        successResult: SuccessResult<T>? = null,
-        errorResult: ErrorResult<E>? = null
-    ) = _result.postValue(Result(successResult, errorResult))
-
-    /**
-     * Progress turn on/off 비동기 value
-     */
-    fun postProgressValue(value: Boolean?) = isProgress.postValue(value)
+    private var _isProgress = MutableLiveData<Boolean>()
+    val isProgress: LiveData<Boolean>
+    get() = _isProgress
 
     init
     {
@@ -111,31 +109,68 @@ class SignUpViewModel : ViewModel()
 
     fun onSignUpClicked(v: View)
     {
-        _result.value = checkValidate()
+        v.requestFocusFromTouch()
 
-        if (_result.value!!.successResult != null)
-        {
-            JoinHandler.requestJoinBySelf(email = email.value!!, password = pwd.value!!, deviceInfo = SOPOApp.deviceInfo) { success, error ->
-                postResultValue(success, error)
+        checkValidate().let {
+            if(!it.result)
+            {
+                _result.value = it
+                return
             }
         }
-        else
-        {
-            val type = if (_result.value!!.errorResult!!.errorType == ErrorResult.ERROR_TYPE_DIALOG)
+
+        _isProgress.postValue(true)
+
+        SOPOApp.auth.createUserWithEmailAndPassword(email.value.toString(), pwd.value.toString()).addOnCompleteListener { task ->
+
+            // 회원가 실패
+            if(!task.isSuccessful)
             {
-                ErrorResult.ERROR_TYPE_DIALOG
-            }
-            else
-            {
-                ErrorResult.ERROR_TYPE_TOAST
+                SopoLog.e("Firebase Exception >>> ${task.exception?.message}", task.exception)
+                val exception = task.exception as FirebaseException?
+                val code = exception.match
+                _result.postValue(ResponseResult(result = false, code = code, data = Unit, message = code.MSG, displayType = DisplayEnum.DIALOG))
+
+                _isProgress.postValue(false)
+
+                return@addOnCompleteListener
             }
 
-            _result.value!!.errorResult!!.errorType = type
-            val tmp = _result.value
-            _result.value = tmp
+            val firebaseUser = task.result.user
+
+            CoroutineScope(Dispatchers.IO).launch {
+                when(val result = JoinCall.requestJoinBySelf(email.value.toString(), pwd.value.toString(), SOPOApp.deviceInfo, firebaseUser?.uid?:""))
+                {
+                    is NetworkResult.Success ->
+                    {
+                        if (firebaseUser != null)
+                        {
+                            FirebaseRepository.sendFirebaseAuthEmail(firebaseUser){s,e ->
+                                SopoLog.d("""
+                                send email verified
+                                Success >>> $s
+                                Error >>> $e
+                            """.trimIndent())
+                            }
+                        }
+
+                        _isProgress.postValue(false)
+                        _result.postValue(ResponseResult(true, ResponseCode.SUCCESS, Unit, "성공적으로 회원가입했습니다.\n해당 이메일에 인증메일을 확인해주세요..", DisplayEnum.DIALOG))
+                    }
+                    is NetworkResult.Error ->
+                    {
+                        val exception = result.exception
+                        val errorCode = exception.match
+
+                        _isProgress.postValue(false)
+
+                        _result.postValue(ResponseResult(false, errorCode, Unit, errorCode.MSG, DisplayEnum.DIALOG))
+                    }
+                }
+            }
         }
 
-        SopoLog.d( msg = "SignUp Click!!!!!!!!!!!!!")
+
     }
 
     // EditText 유효성 검사 가시성
@@ -189,7 +224,7 @@ class SignUpViewModel : ViewModel()
                         emailStatusType.value = CustomEditText.STATUS_COLOR_RED
                         emailValidateText.value = "이메일을 입력해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
-                        _result.value = checkValidate()
+
                         SopoLog.d( msg = "Email is Empty")
                         return@FocusChangeCallback
                     }
@@ -225,7 +260,7 @@ class SignUpViewModel : ViewModel()
                     }
 
                     // 이메일, 비밀번호, 비밀번호 확인, 이용약관 유효성 검사
-                    _result.value = checkValidate()
+
 
                     return@FocusChangeCallback
                 }
@@ -242,7 +277,7 @@ class SignUpViewModel : ViewModel()
 
                         pwdValidateText.value = "비밀번호를 입력해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
-                        _result.value = checkValidate()
+
 
                         return@FocusChangeCallback
                     }
@@ -278,7 +313,7 @@ class SignUpViewModel : ViewModel()
                         }
                     }
 
-                    _result.value = checkValidate()
+
 
                     return@FocusChangeCallback
                 }
@@ -295,7 +330,7 @@ class SignUpViewModel : ViewModel()
                             rePwdStatusType.value = CustomEditText.STATUS_COLOR_RED
                             rePwdValidateText.value = "비밀번호 확인을 입력해주세요."
                             setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
-                            _result.value = checkValidate()
+
 
                             return@FocusChangeCallback
 
@@ -349,8 +384,6 @@ class SignUpViewModel : ViewModel()
                         }
                     }
 
-                    _result.value = checkValidate()
-
                     return@FocusChangeCallback
                 }
             }
@@ -358,31 +391,24 @@ class SignUpViewModel : ViewModel()
 
     }
 
-    private fun checkValidate(): Result<*, *>
+    private fun checkValidate(): ResponseResult<*>
     {
         SopoLog.d(msg = "checkValidate call()")
+
         // email 유효성 에러
-        if (isEmailCorVisible.value != VISIBLE)
+        if (isEmailCorVisible.value != View.VISIBLE)
         {
-            SopoLog.d( msg = "Validate Fail Email ")
+            SopoLog.e(msg = "Fail to validate email")
             emailStatusType.value = CustomEditText.STATUS_COLOR_RED
-            return Result<Unit, Unit>(
-                errorResult = ErrorResult(
-                    code = null, errorMsg = emailValidateText.value.toString(), errorType = ErrorResult.ERROR_TYPE_NON, data = null
-                )
-            )
+            return ResponseResult(false, null, Unit, emailValidateText.value.toString(), DisplayEnum.TOAST_MESSAGE)
         }
 
         // password 유효성 에러
-        if (isPwdCorVisible.value != VISIBLE)
+        if (isPwdCorVisible.value != View.VISIBLE)
         {
-            SopoLog.d( msg = "Validate Fail PWD ")
+            SopoLog.d(msg = "Fail to validate password")
             pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
-            return Result<Unit, Unit>(
-                errorResult = ErrorResult(
-                    code = null, errorMsg = pwdValidateText.value.toString(), errorType = ErrorResult.ERROR_TYPE_NON, data = null
-                )
-            )
+            return ResponseResult(false, null, Unit, pwdValidateText.value.toString(), DisplayEnum.TOAST_MESSAGE)
         }
 
         if (isRePwdCorVisible.value != VISIBLE)
@@ -390,31 +416,19 @@ class SignUpViewModel : ViewModel()
             rePwdStatusType.value = CustomEditText.STATUS_COLOR_RED
             SopoLog.d( msg = "Validate Fail PWD ")
 
-            return Result<Unit, Unit>(
-                errorResult = ErrorResult(
-                    code = null, errorMsg = rePwdValidateText.value.toString(), errorType = ErrorResult.ERROR_TYPE_NON, data = null
-                )
-            )
+            return ResponseResult(false, null, Unit, rePwdValidateText.value.toString(), DisplayEnum.TOAST_MESSAGE)
         }
 
         if (!isAgree.value!!)
         {
             SopoLog.d( msg = "Validate Fail Agree ")
 
-            return Result<Unit, Unit>(
-                errorResult = ErrorResult(
-                    code = null, errorMsg = "사용자 약관 이용에 동의해주세요!!!", errorType = ErrorResult.ERROR_TYPE_NON, data = null
-                )
-            )
+            return ResponseResult(false, null, Unit, "사용자 약관 이용에 동의해주세요!!!", DisplayEnum.TOAST_MESSAGE)
         }
 
         SopoLog.d( msg = "Validate Success ")
 
-        return Result<Unit?, Unit?>(
-            successResult = SuccessResult(
-                code = null, successMsg = "SUCCESS", data = null
-            )
-        )
+        return ResponseResult(true, null, Unit, "Success", DisplayEnum.NON_DISPLAY)
     }
 
     private fun checkDuplicatedEmail(email: String)

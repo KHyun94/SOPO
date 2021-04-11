@@ -2,6 +2,7 @@ package com.delivery.sopo.util
 
 import android.content.ComponentCallbacks
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
@@ -14,11 +15,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.R
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.OnAgreeClickListener
+import com.delivery.sopo.views.login.LoginSelectView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -114,15 +117,21 @@ object AlertUtil: KoinComponent
     }
 
     // refreshToken이 비정상으로 만료되었을 때 호출되는 AlertMessage 모든 내부 DB 내용 초기화 및 앱 종
-    suspend fun alertExpiredToken(activity: FragmentActivity) = withContext(Dispatchers.Default) {
-        GeneralDialog(act = activity, title = "종료", msg = "토큰 만료로 인한 앱 초기화", detailMsg = null, rHandler = Pair("확인", object: OnAgreeClickListener
+    suspend fun alertExpiredToken(activity: FragmentActivity, message: String) = withContext(Dispatchers.Default) {
+        GeneralDialog(act = activity, title = "종료", msg = message, detailMsg = null, rHandler = Pair("확인", object: OnAgreeClickListener
         {
             override fun invoke(agree: GeneralDialog)
             {
                 userRepoImpl.removeUserRepo()
-                appDataBase.clearAllTables()
 
-                activity.finishAffinity()
+                CoroutineScope(Dispatchers.Default).launch { appDataBase.clearAllTables() }
+                SOPOApp.oAuthEntity = null
+
+                Intent(activity, LoginSelectView::class.java).let {
+                    it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    activity.startActivity(it)
+                    activity.finish()
+                }
             }
         })).show(activity.supportFragmentManager, "FINISH")
     }

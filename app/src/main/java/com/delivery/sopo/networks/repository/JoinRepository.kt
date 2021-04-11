@@ -86,8 +86,7 @@ class JoinRepository : JoinDataSource
                 is NetworkResult.Error ->
                 {
                     val exception = result.exception as APIException
-                    val errorData = exception.data()
-                    val errorCode = CodeUtil.getCode(errorData?.code)
+                    val errorCode = exception.responseCode
 
                     callback.invoke(null, ErrorResult(errorCode, errorCode.MSG, ErrorResult.ERROR_TYPE_NON, false, exception))
                 }

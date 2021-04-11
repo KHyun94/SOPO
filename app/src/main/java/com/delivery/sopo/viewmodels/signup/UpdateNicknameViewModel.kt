@@ -1,9 +1,11 @@
 package com.delivery.sopo.viewmodels.signup
 
 import android.view.View
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.consts.InfoConst
+import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.networks.handler.ResponseHandler
 import com.delivery.sopo.repository.impl.UserRepoImpl
@@ -21,6 +23,11 @@ class UpdateNicknameViewModel(private val userRepoImpl: UserRepoImpl): ViewModel
     val isCorrectVisible = MutableLiveData<Int>()
     val isErrorVisible = MutableLiveData<Int>()
 
+    // 유효성 및 통신 등의 결과 객체
+    private var _result = MutableLiveData<ResponseResult<*>>()
+    val result: LiveData<ResponseResult<*>>
+        get() = _result
+
     val callback: FocusChangeCallback = FocusChangeCallback@{ type, focus ->
         if (focus)
         {
@@ -33,7 +40,7 @@ class UpdateNicknameViewModel(private val userRepoImpl: UserRepoImpl): ViewModel
 
         SopoLog.d("Focus Out")
 
-        if(nickname.value == null || nickname.value?.length == 0)
+        if (nickname.value == null || nickname.value?.length == 0)
         {
             SopoLog.d("Fail to check validate")
             setVisibleState(type = InfoConst.NICKNAME, errorState = View.VISIBLE, corState = View.GONE)
@@ -65,30 +72,31 @@ class UpdateNicknameViewModel(private val userRepoImpl: UserRepoImpl): ViewModel
         }
     }
 
-    fun onCompleteSignUpClicked(v:View)
+    fun onCompleteSignUpClicked(v: View)
     {
         v.requestFocusFromTouch()
-        updateNickname(nickname = nickname.value.toString())
+
+        CoroutineScope(Dispatchers.IO).launch {
+            _result.postValue(updateNickname(nickname = nickname.value.toString()))
+        }
     }
 
-    private fun updateNickname(nickname: String)
+    private suspend fun updateNickname(nickname: String): ResponseResult<String>
     {
-        CoroutineScope(Dispatchers.IO).launch {
-            when(val result = UserCall.updateNickname(nickname))
+        return when (val result = UserCall.updateNickname(nickname))
+        {
+            is NetworkResult.Success ->
             {
-                is NetworkResult.Success ->
-                {
-                    userRepoImpl.setNickname(nickname)
-                    SopoLog.d("Success to update nickname")
-
-                }
-                is NetworkResult.Error ->
-                {
-                    SopoLog.e("Fail to update nickname")
-                }
+                userRepoImpl.setNickname(nickname)
+                SopoLog.d("Success to update nickname")
+                ResponseResult(true, null, nickname, "Success to update nickname")
+            }
+            is NetworkResult.Error ->
+            {
+                SopoLog.e("Fail to update nickname")
+                ResponseResult(false, null, "", "Fail to update nickname")
             }
         }
-
     }
 
 }

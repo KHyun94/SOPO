@@ -37,7 +37,7 @@ object DateUtil
     }
 
     @SuppressLint("SimpleDateFormat")
-    fun changeDateToMilli(date: String, format: String = "yyyy-MM-dd HH:mm:ss.SSS"): Long
+    fun changeDateToMilli(date: String, format: String = "yyyy.MM.dd HH:mm:ss"): Long
     {
         try
         {
@@ -59,7 +59,15 @@ object DateUtil
     {
         val currentMilliSeconds = System.currentTimeMillis()
         val expiredDateToMilliSeconds = changeDateToMilli(expiredDate)
-        return currentMilliSeconds > expiredDateToMilliSeconds
+
+        SopoLog.d("""isOverExpiredDate() call
+            
+            현재 >>> $currentMilliSeconds
+            만료 >>> $expiredDateToMilliSeconds
+            
+        """.trimIndent())
+
+        return currentMilliSeconds >= expiredDateToMilliSeconds
     }
 
     fun getSubscribedTime(hour: Int, minutes: Int) : String

@@ -9,6 +9,7 @@ object NavigatorConst {
     const val TO_PERMISSION = "PERMISSION"
     const val TO_INTRO = "INTRO"
     const val TO_MAIN = "MAIN"
+    const val TO_INIT = "INIT"
 
     const val REGISTER_TAB = 0
     const val INQUIRY_TAB = 1

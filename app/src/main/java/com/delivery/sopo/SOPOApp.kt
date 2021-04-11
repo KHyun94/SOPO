@@ -3,26 +3,19 @@ package com.delivery.sopo
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.Application
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
-import android.os.Build
-import android.os.SystemClock
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.database.room.entity.OauthEntity
 import com.delivery.sopo.di.appModule
-import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
 import com.delivery.sopo.util.ClipboardUtil
-import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
@@ -36,7 +29,6 @@ import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
-import java.util.*
 
 class SOPOApp : Application()
 {
@@ -44,8 +36,6 @@ class SOPOApp : Application()
     val userRepoImpl : UserRepoImpl by inject()
     val parcelRepoImpl: ParcelRepoImpl by inject()
     val oauthRepoImpl : OauthRepoImpl by inject()
-
-    val parcelManagementRepoImpl: ParcelManagementRepoImpl by inject()
 
     var kakaoSDKAdapter: KakaoSDKAdapter? = null
     var accessToken: AccessToken? = null
@@ -95,7 +85,7 @@ class SOPOApp : Application()
         }
 
         CoroutineScope(Dispatchers.Default).launch {
-            oauth = oauthRepoImpl.get(userRepoImpl.getEmail())
+            oAuthEntity = oauthRepoImpl.get(userRepoImpl.getEmail())
         }
 
         SopoLog.d(msg = """
@@ -146,6 +136,6 @@ class SOPOApp : Application()
 
         val cntOfBeUpdate = MutableLiveData<Int?>()
 
-        var oauth : OauthEntity? = null
+        var oAuthEntity : OauthEntity? = null
     }
 }
