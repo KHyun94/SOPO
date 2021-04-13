@@ -19,8 +19,6 @@ import com.kakao.network.ErrorResult as KakaoErrorResult
 
 class LoginSelectViewModel : ViewModel()
 {
-    private val TAG = "LoginSelectVm"
-
     val loginType = MutableLiveData<String>()
     val backgroundImage = MutableLiveData<Int>().apply { postValue(R.drawable.ic_login_ani_box) }
 

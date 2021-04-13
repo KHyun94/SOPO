@@ -10,30 +10,31 @@ import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.extensions.match
 import com.delivery.sopo.mapper.OauthMapper
-import com.delivery.sopo.models.*
+import com.delivery.sopo.models.OauthResult
+import com.delivery.sopo.models.ResponseResult
+import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.networks.api.LoginAPICall
 import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.network_handler.NetworkResult
-import com.delivery.sopo.util.*
+import com.delivery.sopo.util.DateUtil
+import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.viewmodels.signup.FocusChangeCallback
 import com.delivery.sopo.views.widget.CustomEditText
-import com.google.firebase.FirebaseException
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.*
-import java.lang.Exception
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImpl): ViewModel()
 {
-    private val TAG = "LOG.SOPO.LoginVm"
-
     var email = MutableLiveData<String>()
     var pwd = MutableLiveData<String>()
-    var uid = ""
 
     // CustomEditText의 에러 텍스트
     var emailValidateText = MutableLiveData<String>()
@@ -243,32 +244,9 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
 
             _isProgress.postValue(true)
 
-            SOPOApp.auth.signInWithEmailAndPassword(email.value.toString(), pwd.value.toString()).addOnCompleteListener { task ->
-                // 로그인 실패
-                if(!task.isSuccessful)
-                {
-                    SopoLog.e("Firebase Exception >>> ${task.exception?.message}", task.exception)
-                    val exception = task.exception as FirebaseException?
-                    val code = exception.match
-                    _result.postValue(ResponseResult(result = false, code = code, data = Unit, message = code.MSG, displayType = DisplayEnum.DIALOG))
-                    _isProgress.postValue(false)
-                    return@addOnCompleteListener
-                }
-
-                // 이메일 인증 실패
-                if(task.result.user?.isEmailVerified != true)
-                {
-                    SopoLog.e("Fail Email Verified >>> ${task.exception?.message}", task.exception)
-                    _result.postValue(ResponseResult(result = false, code = ResponseCode.FIREBASE_ERROR_EMAIL_VERIFIED, data = Unit, message = ResponseCode.FIREBASE_ERROR_EMAIL_VERIFIED.MSG, displayType = DisplayEnum.DIALOG))
-                    _isProgress.postValue(false)
-                    return@addOnCompleteListener
-                }
-
-                // 성공
-                CoroutineScope(Dispatchers.IO).launch {
-                    loginWithOAuth(email.value.toString(), pwd.value.toString())
-                }
-
+            // 성공
+            CoroutineScope(Dispatchers.IO).launch {
+                loginWithOAuth(email.value.toString(), pwd.value.toString())
             }
         }
         catch (e: Exception)

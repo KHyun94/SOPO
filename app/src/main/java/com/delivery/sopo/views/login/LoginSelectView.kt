@@ -4,17 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.database.room.entity.OauthEntity
 import com.delivery.sopo.databinding.LoginSelectViewBinding
-import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.models.ErrorResult
 import com.delivery.sopo.networks.call.OAuthCall
-import com.delivery.sopo.networks.handler.LoginHandler
 import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.network_handler.NetworkResult
@@ -159,27 +155,9 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
                         SopoLog.e(msg = "이시발 뭐지 ${data}")
 
-                        when (it.errorResult!!.code)
-                        {
-                            ResponseCode.FIREBASE_ERROR_EMAIL_VERIFIED ->
-                            {
-                                // todo 이메일 인증 관련 다이얼로그
-                                GeneralDialog(
-                                    act = parentActivity, title = "오류", msg = msg, detailMsg = code, rHandler = Pair(first = "재전송", second = { it ->
-                                        FirebaseRepository.firebaseSendEmail(SOPOApp.auth.currentUser) { success, error ->
-                                            binding.vm!!.postResultValue(success, error)
-                                        }
-                                        it.dismiss()
-                                    }), lHandler = Pair(first = "확인", second = null)
-                                ).show(supportFragmentManager, "tag")
-                            }
-                            else ->
-                            {
-                                GeneralDialog(
-                                    act = parentActivity, title = "오류", msg = msg, detailMsg = code, rHandler = Pair(first = "네", second = null)
-                                ).show(supportFragmentManager, "tag")
-                            }
-                        }
+                        GeneralDialog(
+                            act = parentActivity, title = "오류", msg = msg, detailMsg = code, rHandler = Pair(first = "네", second = null)
+                        ).show(supportFragmentManager, "tag")
                     }
                     ErrorResult.ERROR_TYPE_SCREEN -> return@Observer
                     else -> return@Observer

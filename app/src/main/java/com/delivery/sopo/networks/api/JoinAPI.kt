@@ -17,8 +17,6 @@ interface JoinAPI
         @Field("password") password: String,
         // 디바이스 정보
         @Field("deviceInfo") deviceInfo: String,
-        // Firebase uid
-        @Field("uid") firebaseUid: String,
         // nickname
         @Field("nickname") nickname: String
         ): Response<APIResult<Unit>>
@@ -36,8 +34,6 @@ interface JoinAPI
         @Field("deviceInfo") deviceInfo: String,
         // Firebase uid
         @Field("kakaoUid") kakaoUid: String,
-        // Firebase uid
-        @Field("uid") firebaseUid: String,
         // nickname
         @Field("nickname") nickname: String
     ):Response<APIResult<String>>

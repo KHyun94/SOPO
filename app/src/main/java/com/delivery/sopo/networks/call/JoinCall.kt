@@ -17,22 +17,20 @@ object JoinCall : BaseService()
         joinAPI = NetworkManager.retro.create(JoinAPI::class.java)
     }
 
-    suspend fun requestJoinBySelf(email : String, password : String, deviceInfo : String, firebaseUid : String) : NetworkResult<APIResult<Unit>>
+    // TODO 자체 회원 가입 API에 닉네임이 필요없음
+    suspend fun requestJoinBySelf(email : String, password : String, deviceInfo : String, nickname: String) : NetworkResult<APIResult<Unit>>
     {
-        val request = joinAPI.requestJoinBySelf(email = email, password = password, deviceInfo = deviceInfo, firebaseUid = firebaseUid, nickname = "")
-        return apiCall(call = {request})
+        return apiCall(call = { joinAPI.requestJoinBySelf(email = email, password = password, deviceInfo = deviceInfo, nickname = nickname) })
     }
 
-    suspend fun requestJoinByKakao(email : String, password : String, deviceInfo : String, kakaoUid : String, firebaseUid : String) : NetworkResult<APIResult<String>>
+    suspend fun requestJoinByKakao(email : String, password : String, deviceInfo : String, kakaoUid : String, nickname: String) : NetworkResult<APIResult<String>>
     {
-        val request = joinAPI.requestJoinByKakao(email = email, password = password, deviceInfo = deviceInfo, kakaoUid = kakaoUid, firebaseUid = firebaseUid, nickname = "")
-        return apiCall(call = {request})
+        return apiCall(call = { joinAPI.requestJoinByKakao(email = email, password = password, deviceInfo = deviceInfo, kakaoUid = kakaoUid,  nickname = nickname) })
     }
 
     suspend fun requestDuplicatedEmail(email: String): NetworkResult<APIResult<Boolean>>
     {
         NetworkManager.setLogin(BuildConfig.PUBLIC_API_ACCOUNT_ID, BuildConfig.PUBLIC_API_ACCOUNT_PASSWORD)
-        val request = joinAPI.requestDuplicateEmail(email = email)
-        return apiCall(call = {request})
+        return apiCall(call = { joinAPI.requestDuplicateEmail(email = email) })
     }
 }

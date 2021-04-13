@@ -1,8 +1,8 @@
 package com.delivery.sopo.networks.repository
 
 import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.extensions.match
 import com.delivery.sopo.models.ErrorResult
+import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.SuccessResult
 import com.delivery.sopo.networks.call.JoinCall
 import com.delivery.sopo.networks.datasource.DuplicateCallback
@@ -33,7 +33,7 @@ class JoinRepository : JoinDataSource
             is NetworkResult.Error ->
             {
                 val exception = result.exception as APIException
-                val errorCode = exception.match
+                val errorCode = exception.responseCode
                 callback.invoke(
                     null, ErrorResult(
                         errorCode, errorCode.MSG, ErrorResult.ERROR_TYPE_DIALOG, null, exception
@@ -48,28 +48,32 @@ class JoinRepository : JoinDataSource
         password: String,
         deviceInfo: String,
         kakaoUid : String,
-        firebaseUid: String,
-        callback: JoinCallback
-    )= withContext(Dispatchers.IO) {
-        when (val result = JoinCall.requestJoinByKakao(email, password, deviceInfo, kakaoUid, firebaseUid))
-        {
-            is NetworkResult.Success ->
+        nickname: String
+    ): ResponseResult<Unit>
+    {
+
+
+            when (val result =
+                JoinCall.requestJoinByKakao(email = email, password = password, deviceInfo = deviceInfo, kakaoUid = kakaoUid, nickname = nickname))
             {
-                val apiResult = result.data
-                val code = CodeUtil.getCode(apiResult.code)
-                callback.invoke(SuccessResult(code, code.MSG, null), null)
-            }
-            is NetworkResult.Error ->
-            {
-                val exception = result.exception as APIException
-                val errorCode = exception.match
-                callback.invoke(
-                    null, ErrorResult(
-                        errorCode, errorCode.MSG, ErrorResult.ERROR_TYPE_DIALOG, null, exception
+                is NetworkResult.Success ->
+                {
+                    val apiResult = result.data
+                    val code = CodeUtil.getCode(apiResult.code)
+                    callback.invoke(SuccessResult(code, code.MSG, null), null)
+                }
+                is NetworkResult.Error ->
+                {
+                    val exception = result.exception as APIException
+                    val errorCode = exception.responseCode
+                    callback.invoke(
+                        null, ErrorResult(
+                            errorCode, errorCode.MSG, ErrorResult.ERROR_TYPE_DIALOG, null, exception
+                        )
                     )
-                )
+                }
             }
-        }
+
     }
 
     override suspend fun requestDuplicatedEmail(email: String, callback: DuplicateCallback) =
@@ -93,32 +97,3 @@ class JoinRepository : JoinDataSource
             }
         }
 }
-
-
-/**
- *  when(val result = JoinCall.requestJoinBySelf(email, password, deviceInfo, firebaseUid))
-{
-is Result.Success ->
-{
-val apiResult = result.data
-
-when(val code = CodeUtil.getCode(apiResult.code))
-{
-ResponseCodeEnum.SUCCESS ->
-{
-// 성공하면 인증 메일 전송
-}
-else ->
-{
-// 200 이외 나올게 있나?
-}
-}
-}
-is Result.Error ->
-{
-val exception = result.exception as APIException
-val errorCode = exception.matchEnum
-}
-}
-}
- */
