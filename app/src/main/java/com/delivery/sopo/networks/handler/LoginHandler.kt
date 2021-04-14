@@ -34,11 +34,7 @@ object LoginHandler : KoinComponent
 
         //todo 임시로 kakaoUid
         CoroutineScope(Dispatchers.IO).launch {
-            JoinRepository().requestJoinByKakao(email = email, password = kakaoUid, deviceInfo = deviceInfo, kakaoUid = kakaoUid,) { success, error ->
-                //                                    oAuthLogin(email, kakaoUid, deviceInfo) { success, error ->
-                //                                        callback.invoke(success, error)
-                //                                    }
-            }
+            JoinRepository().requestJoinByKakao(email = email, password = kakaoUid, deviceInfo = deviceInfo, kakaoUid = kakaoUid, nickname = nickname)
         }
     }
 

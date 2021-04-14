@@ -1,5 +1,6 @@
 package com.delivery.sopo.networks.repository
 
+import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.ErrorResult
 import com.delivery.sopo.models.ResponseResult
@@ -51,8 +52,6 @@ class JoinRepository : JoinDataSource
         nickname: String
     ): ResponseResult<Unit>
     {
-
-
             when (val result =
                 JoinCall.requestJoinByKakao(email = email, password = password, deviceInfo = deviceInfo, kakaoUid = kakaoUid, nickname = nickname))
             {
@@ -60,17 +59,15 @@ class JoinRepository : JoinDataSource
                 {
                     val apiResult = result.data
                     val code = CodeUtil.getCode(apiResult.code)
-                    callback.invoke(SuccessResult(code, code.MSG, null), null)
+
+                    return ResponseResult(true, ResponseCode.SUCCESS, Unit, "SUCCESS")
                 }
                 is NetworkResult.Error ->
                 {
                     val exception = result.exception as APIException
                     val errorCode = exception.responseCode
-                    callback.invoke(
-                        null, ErrorResult(
-                            errorCode, errorCode.MSG, ErrorResult.ERROR_TYPE_DIALOG, null, exception
-                        )
-                    )
+
+                    return ResponseResult(false, errorCode, Unit, errorCode.MSG)
                 }
             }
 
