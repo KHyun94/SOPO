@@ -72,7 +72,6 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                 NavigatorConst.SIGN_UP ->
                 {
                     startActivity(Intent(parentActivity, SignUpView::class.java))
-//                    startActivity(Intent(parentActivity, SignUpStep2View::class.java))
                 }
                 NavigatorConst.KAKAO_LOGIN ->
                 {
@@ -113,9 +112,12 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
         })
 
-        binding.vm!!.result.observe(this, Observer {
+        binding.vm!!.result.observe(this, Observer { result ->
 
-            if (it == null) return@Observer
+            if(!result.result)
+            {
+
+            }
 
             if (it.successResult != null)
             {

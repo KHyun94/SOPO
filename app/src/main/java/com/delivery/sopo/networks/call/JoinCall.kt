@@ -23,7 +23,7 @@ object JoinCall : BaseService()
         return apiCall(call = { joinAPI.requestJoinBySelf(email = email, password = password, deviceInfo = deviceInfo, nickname = nickname) })
     }
 
-    suspend fun requestJoinByKakao(email : String, password : String, deviceInfo : String, kakaoUid : String, nickname: String) : NetworkResult<APIResult<String>>
+    suspend fun requestJoinByKakao(email : String, password : String, deviceInfo : String, kakaoUid : String, nickname: String) : NetworkResult<APIResult<Unit>>
     {
         return apiCall(call = { joinAPI.requestJoinByKakao(email = email, password = password, deviceInfo = deviceInfo, kakaoUid = kakaoUid,  nickname = nickname) })
     }

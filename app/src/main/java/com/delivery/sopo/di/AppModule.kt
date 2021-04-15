@@ -44,7 +44,7 @@ val appModule = module {
     viewModel { LoginViewModel(get(), get()) }
     viewModel { SignUpViewModel() }
     viewModel { UpdateNicknameViewModel(get()) }
-    viewModel { LoginSelectViewModel() }
+    viewModel { LoginSelectViewModel(get()) }
     viewModel { MainViewModel(get(), get(), get(), get()) }
     viewModel { LockScreenViewModel(get(), get()) }
     viewModel { SettingViewModel(get(), get()) }

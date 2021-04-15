@@ -36,7 +36,7 @@ interface JoinAPI
         @Field("kakaoUid") kakaoUid: String,
         // nickname
         @Field("nickname") nickname: String
-    ):Response<APIResult<String>>
+    ):Response<APIResult<Unit>>
 
     // 회원가입 이메일 중복 체크
     @GET("api/v1/sopo-api/join/email/exist/{email}")

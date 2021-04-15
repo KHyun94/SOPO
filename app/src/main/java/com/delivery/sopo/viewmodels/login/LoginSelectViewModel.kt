@@ -4,20 +4,38 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.enums.DisplayEnum
+import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.exceptions.APIException
+import com.delivery.sopo.extensions.md5
+import com.delivery.sopo.mapper.OauthMapper
 import com.delivery.sopo.models.ErrorResult
-import com.delivery.sopo.models.SuccessResult
-import com.delivery.sopo.models.Result
-import com.delivery.sopo.networks.handler.LoginHandler
+import com.delivery.sopo.models.OauthResult
+import com.delivery.sopo.models.ResponseResult
+import com.delivery.sopo.models.UserDetail
+import com.delivery.sopo.networks.api.LoginAPICall
+import com.delivery.sopo.networks.call.UserCall
+import com.delivery.sopo.networks.repository.JoinRepository
+import com.delivery.sopo.repository.impl.OauthRepoImpl
+import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.services.network_handler.NetworkResult
+import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.kakao.usermgmt.UserManagement
 import com.kakao.usermgmt.callback.MeV2ResponseCallback
 import com.kakao.usermgmt.response.MeV2Response
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
-
 import com.kakao.network.ErrorResult as KakaoErrorResult
 
-class LoginSelectViewModel : ViewModel()
+class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuthRepo: OauthRepoImpl) : ViewModel()
 {
     val loginType = MutableLiveData<String>()
     val backgroundImage = MutableLiveData<Int>().apply { postValue(R.drawable.ic_login_ani_box) }
@@ -25,19 +43,11 @@ class LoginSelectViewModel : ViewModel()
     /**
      * 유효성 및 통신 등의 결과 객체
      */
-    private var _result = MutableLiveData<Result<*, *>?>()
-    val result: LiveData<Result<*, *>?>
+    private var _result = MutableLiveData<ResponseResult<*>>()
+    val result: LiveData<ResponseResult<*>>
         get() = _result
 
     val isProgress = MutableLiveData<Boolean?>()
-
-    /**
-     * 처리에 대한 결과 세팅
-     */
-    fun <T, E> postResultValue(
-        successResult: SuccessResult<T>? = null,
-        errorResult: ErrorResult<E>? = null
-    ) = _result.postValue(Result(successResult, errorResult))
 
     /**
      * Progress turn on/off 비동기 value
@@ -69,37 +79,19 @@ class LoginSelectViewModel : ViewModel()
             override fun onFailure(errorResult: KakaoErrorResult)
             {
                 super.onFailure(errorResult)
-
+                postProgressValue(false)
                 SopoLog.e( msg = "onFailure message : " + errorResult.errorMessage, e = errorResult.exception)
 
-                postResultValue<Unit, KakaoErrorResult>(
-                    null, ErrorResult(
-                        errorMsg = errorResult.errorMessage,
-                        errorType = ErrorResult.ERROR_TYPE_DIALOG,
-                        data = errorResult,
-                        e = errorResult.exception
-                    )
-                )
+                // TODO KAKAO Error Response Code 필
+                _result.postValue(ResponseResult(false, null, Unit, errorResult.errorMessage))
             }
 
             override fun onFailureForUiThread(errorResult: KakaoErrorResult)
             {
                 super.onFailureForUiThread(errorResult)
                 postProgressValue(false)
-                SopoLog.e(
-                    msg = "onFailureForUiThread message : " + errorResult.errorMessage,
-                    e = null
-                )
-
-                postResultValue<Unit, KakaoErrorResult>(
-                    errorResult = ErrorResult(
-                        errorMsg = errorResult.errorMessage,
-                        errorType = ErrorResult.ERROR_TYPE_DIALOG,
-                        data = errorResult,
-                        e = errorResult.exception
-                    )
-                )
-
+                SopoLog.e(msg = "onFailureForUiThread message : " + errorResult.errorMessage, e = null)
+                _result.postValue(ResponseResult(false, null, Unit, errorResult.errorMessage))
             }
 
             override fun onSessionClosed(errorResult: KakaoErrorResult)
@@ -107,13 +99,7 @@ class LoginSelectViewModel : ViewModel()
                 SopoLog.e( msg = "onSessionClosed message : " + errorResult.errorMessage, e = errorResult.exception)
 
                 postProgressValue(false)
-                postResultValue<Unit, KakaoErrorResult>(
-                    errorResult = ErrorResult(
-                        errorMsg = errorResult.errorMessage,
-                        errorType = ErrorResult.ERROR_TYPE_DIALOG, data = errorResult,
-                        e = errorResult.exception
-                    )
-                )
+                _result.postValue(ResponseResult(false, null, Unit, errorResult.errorMessage))
             }
 
             override fun onSuccess(result: MeV2Response)
@@ -126,13 +112,75 @@ class LoginSelectViewModel : ViewModel()
                 SopoLog.d(msg = "onSuccess uid = $kakaoUserId")
                 SopoLog.d(msg = "onSuccess nickname = $kakaoNickname")
 
-                // TODO 카카오 이메일을 못가져왔을 때 에러 메시지 출력
-                LoginHandler.requestLoginByKakao(email, kakaoUserId){ successResult, errorResult ->
-                    postResultValue(successResult, errorResult)
+                val password = kakaoUserId.md5()
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    val res = JoinRepository.requestJoinByKakao(email, password, kakaoUserId, kakaoNickname)
+
+                     val loginWithOAuth(email, password)
                     postProgressValue(false)
+                    _result.postValue(res)
                 }
             }
         })
+    }
+
+    // TODO 통합 필
+    suspend fun loginWithOAuth(email: String, password: String)
+    {
+        when(val result = LoginAPICall().requestOauth(email, password, SOPOApp.deviceInfo))
+        {
+            is NetworkResult.Success ->
+            {
+                userRepo.setEmail(email)
+                userRepo.setApiPwd(password)
+                userRepo.setStatus(1)
+
+                val oAuth = Gson().let { gson ->
+                    val type = object : TypeToken<OauthResult>() {}.type
+                    val reader = gson.toJson(result.data)
+                    val data = gson.fromJson<OauthResult>(reader, type)
+                    OauthMapper.objectToEntity(data)
+                }
+
+                SOPOApp.oAuthEntity = oAuth
+
+                withContext(Dispatchers.Default){
+                    oAuthRepo.insert(oAuth)
+                }
+
+                _result.postValue(getUserInfo())
+            }
+            is NetworkResult.Error ->
+            {
+                val exception = result.exception as APIException
+                val code = exception.responseCode
+                _result.postValue(ResponseResult(false, code, Unit, code.MSG, DisplayEnum.DIALOG))
+            }
+        }
+    }
+
+    suspend fun getUserInfo(): ResponseResult<UserDetail?>
+    {
+        val result = UserCall.getUserInfoWithToken()
+
+        if(result is NetworkResult.Error)
+        {
+            val exception = result.exception as APIException
+            val responseCode = exception.responseCode
+            val date = SOPOApp.oAuthEntity.let { it?.expiresIn }
+
+            return if(responseCode.HTTP_STATUS == 401 && DateUtil.isOverExpiredDate(date!!)) ResponseResult(false, responseCode, null, "로그인 기한이 만료되었습니다.\n다시 로그인해주세요.", DisplayEnum.DIALOG)
+            else ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
+        }
+
+        val apiResult = (result as NetworkResult.Success).data
+
+        userRepo.setNickname(apiResult.data?.nickname?:"")
+
+        SopoLog.d("UserDetail >>> ${apiResult.data}, ${apiResult.data?.nickname}")
+
+        return ResponseResult(true, ResponseCode.SUCCESS, apiResult.data, ResponseCode.SUCCESS.MSG)
     }
 
 }

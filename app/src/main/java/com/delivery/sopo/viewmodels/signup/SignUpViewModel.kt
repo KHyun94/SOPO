@@ -7,28 +7,16 @@ import android.view.View.VISIBLE
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.enums.DisplayEnum
-import com.delivery.sopo.enums.ResponseCode
-import com.delivery.sopo.extensions.match
-import com.delivery.sopo.firebase.FirebaseRepository
-import com.delivery.sopo.models.ErrorResult
 import com.delivery.sopo.models.ResponseResult
-import com.delivery.sopo.models.SuccessResult
-import com.delivery.sopo.models.Result
-import com.delivery.sopo.networks.call.JoinCall
-import com.delivery.sopo.networks.handler.JoinHandler
 import com.delivery.sopo.networks.repository.JoinRepository
-import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.views.widget.CustomEditText
-import com.google.firebase.FirebaseException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 typealias FocusChangeCallback = (String, Boolean) -> Unit
 
@@ -111,66 +99,21 @@ class SignUpViewModel : ViewModel()
     {
         v.requestFocusFromTouch()
 
-        checkValidate().let {
-            if(!it.result)
+        checkValidate().let {res ->
+            if(!res.result)
             {
-                _result.value = it
+                _result.value = res
                 return
             }
         }
 
         _isProgress.postValue(true)
 
-        SOPOApp.auth.createUserWithEmailAndPassword(email.value.toString(), pwd.value.toString()).addOnCompleteListener { task ->
-
-            // 회원가 실패
-            if(!task.isSuccessful)
-            {
-                SopoLog.e("Firebase Exception >>> ${task.exception?.message}", task.exception)
-                val exception = task.exception as FirebaseException?
-                val code = exception.match
-                _result.postValue(ResponseResult(result = false, code = code, data = Unit, message = code.MSG, displayType = DisplayEnum.DIALOG))
-
-                _isProgress.postValue(false)
-
-                return@addOnCompleteListener
-            }
-
-            val firebaseUser = task.result.user
-
-            CoroutineScope(Dispatchers.IO).launch {
-                when(val result = JoinCall.requestJoinBySelf(email.value.toString(), pwd.value.toString(), SOPOApp.deviceInfo, firebaseUser?.uid?:""))
-                {
-                    is NetworkResult.Success ->
-                    {
-                        if (firebaseUser != null)
-                        {
-                            FirebaseRepository.sendFirebaseAuthEmail(firebaseUser){s,e ->
-                                SopoLog.d("""
-                                send email verified
-                                Success >>> $s
-                                Error >>> $e
-                            """.trimIndent())
-                            }
-                        }
-
-                        _isProgress.postValue(false)
-                        _result.postValue(ResponseResult(true, ResponseCode.SUCCESS, Unit, "성공적으로 회원가입했습니다.\n해당 이메일에 인증메일을 확인해주세요..", DisplayEnum.DIALOG))
-                    }
-                    is NetworkResult.Error ->
-                    {
-                        val exception = result.exception
-                        val errorCode = exception.match
-
-                        _isProgress.postValue(false)
-
-                        _result.postValue(ResponseResult(false, errorCode, Unit, errorCode.MSG, DisplayEnum.DIALOG))
-                    }
-                }
-            }
+        CoroutineScope(Dispatchers.Main).launch {
+            val res = JoinRepository.requestJoinBySelf(email = email.value.toString(), password = pwd.value.toString(), nickname = "")
+            _isProgress.postValue(false)
+            _result.postValue(res)
         }
-
-
     }
 
     // EditText 유효성 검사 가시성
@@ -435,7 +378,7 @@ class SignUpViewModel : ViewModel()
     {
         CoroutineScope(Dispatchers.IO).launch {
 
-            JoinRepository().requestDuplicatedEmail(email = email){ success, error ->
+            JoinRepository.requestDuplicatedEmail(email = email){ success, error ->
                 isDuplicate = if(success != null) success.data?:true else error?.data?:true
 
                 val statusColor = if(isDuplicate) CustomEditText.STATUS_COLOR_RED else CustomEditText.STATUS_COLOR_BLUE
