@@ -1,18 +1,15 @@
 package com.delivery.sopo.repository.impl
 
-import com.delivery.sopo.R
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.shared.SharedPrefHelper
-import com.delivery.sopo.firebase.FirebaseRepository
+import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.repository.interfaces.UserRepository
-import com.delivery.sopo.util.SopoLog
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 //todo kh impl로 수정할
-class UserRepoImpl(private val shared: SharedPrefHelper) : UserRepository, KoinComponent
+class UserRepoImpl(private val shared: SharedPrefHelper): UserRepository, KoinComponent
 {
-    private val userRepoImpl : UserRepoImpl by inject()
+    private val userRepoImpl: UserRepoImpl by inject()
 
     override fun getNickname(): String
     {
@@ -104,11 +101,11 @@ class UserRepoImpl(private val shared: SharedPrefHelper) : UserRepository, KoinC
         shared.setAppPassword(password)
     }
 
-    override fun getTopic() = shared.getTopic()?:""
+    override fun getTopic() = shared.getTopic() ?: ""
 
-    override fun setTopic(topic : String)
+    override fun setTopic(topic: String)
     {
-       shared.setTopic(topic)
+        shared.setTopic(topic)
     }
 
     override fun getDisturbStartTime() = shared.getDisturbStartTime()
@@ -134,13 +131,7 @@ class UserRepoImpl(private val shared: SharedPrefHelper) : UserRepository, KoinC
         setStatus(0)
         setDeviceInfo("")
 
-        FirebaseRepository.unsubscribedToTopicInFCM { successResult, errorResult ->
-            if(successResult != null)
-            {
-                setTopic("")
-            }
-        }
-
+        FirebaseNetwork.unsubscribedToTopicInFCM()
     }
 
 }

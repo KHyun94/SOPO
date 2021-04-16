@@ -4,18 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.entity.AppPasswordEntity
-import com.delivery.sopo.enums.ResponseCode
-import com.delivery.sopo.firebase.FirebaseRepository
+import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.mapper.ParcelMapper
-import com.delivery.sopo.models.TestResult
-import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.networks.call.ParcelCall
-import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
 import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
 import com.delivery.sopo.repository.impl.ParcelRepoImpl
@@ -23,28 +17,20 @@ import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
-import com.google.firebase.iid.InstanceIdResult
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
-class MainViewModel(
-    private val userRepoImpl : UserRepoImpl,
-    private val parcelRepoImpl : ParcelRepoImpl,
-    private val parcelManagementRepoImpl : ParcelManagementRepoImpl,
-    private val appPasswordRepo : AppPasswordRepoImpl
-) : ViewModel()
+class MainViewModel(private val userRepoImpl: UserRepoImpl, private val parcelRepoImpl: ParcelRepoImpl, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val appPasswordRepo: AppPasswordRepoImpl): ViewModel()
 {
     val tabLayoutVisibility = MutableLiveData<Int>()
     val errorMsg = MutableLiveData<String?>()
 
     private val _isSetOfSecurity = MutableLiveData<AppPasswordEntity?>()
-    val isSetOfSecurity : LiveData<AppPasswordEntity?>
+    val isSetOfSecurity: LiveData<AppPasswordEntity?>
         get() = _isSetOfSecurity
 
     // 업데이트 여부
@@ -67,7 +53,7 @@ class MainViewModel(
         }
     }
 
-    fun setTabLayoutVisibility(visibility : Int)
+    fun setTabLayoutVisibility(visibility: Int)
     {
         tabLayoutVisibility.value = visibility
     }
@@ -86,12 +72,12 @@ class MainViewModel(
 
             if (cnt > 0) // 서버 DB에 업데이트된 값을 요청
             {
-                SopoLog.d( msg = "Count('isBeUpdate') == ${cnt}, 서버로 요청!!!")
+                SopoLog.d(msg = "Count('isBeUpdate') == ${cnt}, 서버로 요청!!!")
                 requestOngoingParcelsAsRemote()
                 return@launch
             }
 
-            SopoLog.d( msg = "Count('isBeUpdate') == ${cnt}, 업데이트 사항이 없습니다!!!")
+            SopoLog.d(msg = "Count('isBeUpdate') == ${cnt}, 업데이트 사항이 없습니다!!!")
             isInitUpdate = true
         }
     }
@@ -101,25 +87,27 @@ class MainViewModel(
      */
     private fun requestOngoingParcelsAsRemote()
     {
-        SopoLog.d( msg = "isBeUpdateParcels 시작!!!!!!!")
+        SopoLog.d(msg = "isBeUpdateParcels 시작!!!!!!!")
 
         CoroutineScope(Dispatchers.Default).launch {
-            when(val result = ParcelCall.getOngoingParcels())
+            when (val result = ParcelCall.getOngoingParcels())
             {
                 is NetworkResult.Success ->
                 {
                     val apiResult = result.data
-                    val remoteParcelList = apiResult.data?:return@launch
+                    val remoteParcelList = apiResult.data ?: return@launch
 
                     if (remoteParcelList.size > 0)
                     {
-                        SopoLog.d("""
+                        SopoLog.d(
+                            """
                                     success to requestOngoingRemoteParcels
                                     ${remoteParcelList.joinToString()}
-                                """.trimIndent())
+                                """.trimIndent()
+                        )
 
                         // isBeUpdate가 1인 택배들의 pk 값과 inquiry_hash값을 넣을 곳
-                        var localParcelList : List<Parcel?>
+                        var localParcelList: List<Parcel?>
 
                         // 로컬과 서버 간 inquiry hash 값을 비교했을 때 다를 경우 넣는 곳
                         val updateParcelList = mutableListOf<Parcel>()
@@ -211,12 +199,10 @@ class MainViewModel(
                                     parcelRepoImpl.updateEntities(updateParcelList)
                                 }
 
-                                val updateManagementList =
-                                    insertParcelList + updateParcelList
+                                val updateManagementList = insertParcelList + updateParcelList
 
                                 parcelManagementRepoImpl.updateEntities(updateManagementList.map { parcel ->
-                                    val pm =
-                                        ParcelMapper.parcelToParcelManagementEntity(parcel)
+                                    val pm = ParcelMapper.parcelToParcelManagementEntity(parcel)
                                     pm.isUnidentified = 1
                                     pm
                                 })
@@ -248,40 +234,8 @@ class MainViewModel(
     /** Update FCM Token  **/
     private fun updateFCMToken()
     {
-        SopoLog.d( msg = "updateFCMToken call()")
+        SopoLog.d(msg = "updateFCMToken call()")
 
-        FirebaseRepository.updateFCMToken { result ->
-            when (result)
-            {
-                is TestResult.SuccessResult<*> ->
-                {
-                    val data = result.data as InstanceIdResult
-                    val token = data.token
-
-                    SopoLog.d( msg = "FCM ===> $token")
-
-                    CoroutineScope(Dispatchers.IO).launch {
-
-                        when (val result = UserCall.updateFCMToken(fcmToken = token))
-                        {
-                            is NetworkResult.Success ->
-                            {
-                                SopoLog.d( msg = "Success To Update FCM Token ${result.data.message}")
-                            }
-                            is NetworkResult.Error ->
-                            {
-                                SopoLog.d( msg = "Fail To Update FCM Token ${result.exception.message}")
-                            }
-                        }
-                    }
-                }
-                is TestResult.ErrorResult<*> ->
-                {
-                    SopoLog.e( msg = "Fail To Update FCM Token ${result.errorMsg}", e = result.e)
-                }
-            }
-        }
-
-
+        FirebaseNetwork.updateFCMToken()
     }
 }

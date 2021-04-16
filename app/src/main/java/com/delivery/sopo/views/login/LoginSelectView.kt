@@ -9,17 +9,13 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.database.room.entity.OauthEntity
 import com.delivery.sopo.databinding.LoginSelectViewBinding
 import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.models.ErrorResult
 import com.delivery.sopo.networks.call.OAuthCall
 import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
-import com.delivery.sopo.views.dialog.GeneralDialog
-import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.signup.SignUpView
 import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
@@ -63,17 +59,17 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
             when (it)
             {
-                NavigatorConst.LOGIN ->
+                NavigatorConst.TO_LOGIN ->
                 {
                     startActivity(
                         Intent(parentActivity, LoginView::class.java)
                     )
                 }
-                NavigatorConst.SIGN_UP ->
+                NavigatorConst.TO_SIGN_UP ->
                 {
                     startActivity(Intent(parentActivity, SignUpView::class.java))
                 }
-                NavigatorConst.KAKAO_LOGIN ->
+                NavigatorConst.TO_KAKAO_LOGIN ->
                 {
                     btn_kakao_login.performClick()
 
@@ -119,52 +115,52 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
             }
 
-            if (it.successResult != null)
-            {
-                SopoLog.d(msg = "성공 발생 => ${it.successResult}")
-
-                val data = it.successResult!!.data
-
-                if (data != null)
-                {
-                    val intent = Intent(parentActivity, MainView::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    startActivity(intent)
-                    finish()
-                }
-            }
-
-            if (it.errorResult != null)
-            {
-                SopoLog.e(msg = "에러 발생 => ${it.errorResult}")
-
-                when (val type = it.errorResult!!.errorType)
-                {
-                    ErrorResult.ERROR_TYPE_NON -> return@Observer
-                    ErrorResult.ERROR_TYPE_TOAST ->
-                    {
-                        CustomAlertMsg.floatingUpperSnackBAr(
-                            context = parentActivity, msg = it.errorResult!!.errorMsg, isClick = true
-                        )
-                        return@Observer
-                    }
-                    ErrorResult.ERROR_TYPE_DIALOG ->
-                    {
-                        val code = it.errorResult!!.code?.CODE
-                        val data = it.errorResult!!.data
-                        val msg = it.errorResult!!.errorMsg
-
-                        SopoLog.e(msg = "이시발 뭐지 ${data}")
-
-                        GeneralDialog(
-                            act = parentActivity, title = "오류", msg = msg, detailMsg = code, rHandler = Pair(first = "네", second = null)
-                        ).show(supportFragmentManager, "tag")
-                    }
-                    ErrorResult.ERROR_TYPE_SCREEN -> return@Observer
-                    else -> return@Observer
-                }
-            }
+//            if (it.successResult != null)
+//            {
+//                SopoLog.d(msg = "성공 발생 => ${it.successResult}")
+//
+//                val data = it.successResult!!.data
+//
+//                if (data != null)
+//                {
+//                    val intent = Intent(parentActivity, MainView::class.java)
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                    startActivity(intent)
+//                    finish()
+//                }
+//            }
+//
+//            if (it.errorResult != null)
+//            {
+//                SopoLog.e(msg = "에러 발생 => ${it.errorResult}")
+//
+//                when (val type = it.errorResult!!.errorType)
+//                {
+//                    ErrorResult.ERROR_TYPE_NON -> return@Observer
+//                    ErrorResult.ERROR_TYPE_TOAST ->
+//                    {
+//                        CustomAlertMsg.floatingUpperSnackBAr(
+//                            context = parentActivity, msg = it.errorResult!!.errorMsg, isClick = true
+//                        )
+//                        return@Observer
+//                    }
+//                    ErrorResult.ERROR_TYPE_DIALOG ->
+//                    {
+//                        val code = it.errorResult!!.code?.CODE
+//                        val data = it.errorResult!!.data
+//                        val msg = it.errorResult!!.errorMsg
+//
+//                        SopoLog.e(msg = "이시발 뭐지 ${data}")
+//
+//                        GeneralDialog(
+//                            act = parentActivity, title = "오류", msg = msg, detailMsg = code, rHandler = Pair(first = "네", second = null)
+//                        ).show(supportFragmentManager, "tag")
+//                    }
+//                    ErrorResult.ERROR_TYPE_SCREEN -> return@Observer
+//                    else -> return@Observer
+//                }
+//            }
         })
     }
 

@@ -11,7 +11,7 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterStep3Binding
 import com.delivery.sopo.enums.TabCode
-import com.delivery.sopo.firebase.FirebaseRepository
+import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.models.BindView
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.models.TestResult
@@ -118,28 +118,12 @@ class RegisterStep3: Fragment()
                 {
                     if (userRepoImpl.getTopic().isEmpty())
                     {
-                        FirebaseRepository.subscribedToTopicInFCM { s, e ->
-                            if (s != null) SopoLog.d(msg = "구독 성공 >>> ${s.successMsg}")
-
-                            return@subscribedToTopicInFCM
-                        }
+                        FirebaseNetwork.subscribedToTopicInFCM()
                     }
-
-                    FirebaseRepository.unsubscribedToTopicInFCM { s, e ->
-                        if (e != null)
-                        {
-                            SopoLog.e(msg = "구독 해지 실패 >>>${e.errorMsg}")
-                            return@unsubscribedToTopicInFCM
-                        }
-                        if (s != null)
-                        {
-                            SopoLog.d(msg = "구독 해지 성공 >>> ${s.successMsg}")
-
-                            FirebaseRepository.subscribedToTopicInFCM { s, e ->
-                                if (e != null) SopoLog.e(msg = "구독 실패 >>> ${e.errorMsg}")
-                                if (s != null) SopoLog.d(msg = "구독 성공 >>> ${s.successMsg}")
-                            }
-                        }
+                    else
+                    {
+                        FirebaseNetwork.unsubscribedToTopicInFCM ()
+                        FirebaseNetwork.subscribedToTopicInFCM()
                     }
 
                     TabCode.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(null, null, 1)

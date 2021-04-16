@@ -22,8 +22,6 @@ typealias FocusChangeCallback = (String, Boolean) -> Unit
 
 class SignUpViewModel : ViewModel()
 {
-    val TAG = this.javaClass.simpleName
-
     var email = MutableLiveData<String>()
     var pwd = MutableLiveData<String>()
     var rePwd = MutableLiveData<String>()
@@ -112,6 +110,14 @@ class SignUpViewModel : ViewModel()
         CoroutineScope(Dispatchers.Main).launch {
             val res = JoinRepository.requestJoinBySelf(email = email.value.toString(), password = pwd.value.toString(), nickname = "")
             _isProgress.postValue(false)
+            SopoLog.e("""
+                회원가입 결과 >>> 
+                ${res.result}
+                ${res.data}
+                ${res.message}
+                ${res.displayType}
+                ${res.toString()}
+            """.trimIndent())
             _result.postValue(res)
         }
     }
@@ -376,7 +382,7 @@ class SignUpViewModel : ViewModel()
 
     private fun checkDuplicatedEmail(email: String)
     {
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
 
             JoinRepository.requestDuplicatedEmail(email = email){ success, error ->
                 isDuplicate = if(success != null) success.data?:true else error?.data?:true
@@ -387,8 +393,8 @@ class SignUpViewModel : ViewModel()
                     if(error != null) "알 수 없는 오류입니다." else "중복된 이메일입니다."
                 } else ""
 
-                emailStatusType.value = statusColor
-                emailValidateText.value = msg
+                emailStatusType.postValue(statusColor)
+                emailValidateText.postValue(msg)
 
                 setVisibleState(
                     type = InfoConst.EMAIL,

@@ -11,13 +11,13 @@ import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.extensions.md5
 import com.delivery.sopo.mapper.OauthMapper
-import com.delivery.sopo.models.ErrorResult
 import com.delivery.sopo.models.OauthResult
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.networks.api.LoginAPICall
 import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.networks.repository.JoinRepository
+import com.delivery.sopo.networks.repository.OAuthNetworkRepo
 import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.network_handler.NetworkResult
@@ -60,9 +60,9 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
      * 2. onSignUpClicked() -> SignUpView
      * 3. onKakaoLoginClicked() -> kakao login action
      */
-    fun onLoginClicked() { loginType.value = NavigatorConst.LOGIN }
-    fun onSignUpClicked() { loginType.value = NavigatorConst.SIGN_UP }
-    fun onKakaoLoginClicked() { loginType.value = NavigatorConst.KAKAO_LOGIN }
+    fun onLoginClicked() { loginType.value = NavigatorConst.TO_LOGIN }
+    fun onSignUpClicked() { loginType.value = NavigatorConst.TO_SIGN_UP }
+    fun onKakaoLoginClicked() { loginType.value = NavigatorConst.TO_KAKAO_LOGIN }
 
     // 카카오톡 로그인을 통해 사용자에 대한 정보를 가져온다
     fun requestKakaoLogin()
@@ -117,12 +117,48 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
                 CoroutineScope(Dispatchers.Main).launch {
                     val res = JoinRepository.requestJoinByKakao(email, password, kakaoUserId, kakaoNickname)
 
-                     val loginWithOAuth(email, password)
                     postProgressValue(false)
                     _result.postValue(res)
                 }
             }
         })
+    }
+
+    fun login(email: String, password: String)
+    {
+        CoroutineScope(Dispatchers.Main).launch {
+            val oAuthRes = OAuthNetworkRepo.loginWithOAuth(email, password)
+
+            if(!oAuthRes.result)
+            {
+                _result.postValue(oAuthRes)
+                return@launch
+            }
+
+            userRepo.run {
+                setEmail(email)
+                setApiPwd(password)
+                setStatus(1)
+            }
+
+            SOPOApp.oAuthEntity = oAuthRes.data
+
+            if(userRepo.getNickname() == "")
+            {
+                val infoRes = OAuthNetworkRepo.getUserInfo()
+
+                if(!infoRes.result)
+                {
+                    _result.postValue(infoRes)
+                    return@launch
+                }
+
+
+
+
+            }
+        }
+
     }
 
     // TODO 통합 필

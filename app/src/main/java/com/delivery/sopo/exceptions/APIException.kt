@@ -13,7 +13,7 @@ class APIException: Exception
     var responseCode: ResponseCode = ResponseCode.ERROR_UNKNOWN
     var httpStatusCode: Int = 0
 
-    private var apiResult: APIResult<*>? = null
+    var apiResult: APIResult<*>? = null
 
     constructor(e: Exception)
     {

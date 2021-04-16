@@ -33,7 +33,7 @@
             android:maxAspectRatio="2.4"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".views.signup.SignUpClear"
+            android:name=".views.signup.SignUpCompleteView"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".views.login.LoginSelectView"

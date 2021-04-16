@@ -31,7 +31,14 @@ object JoinRepository
             {
                 val exception = result.exception as APIException
                 val errorCode = exception.responseCode
-                ResponseResult(false, errorCode, Unit, errorCode.MSG)
+
+                val message = if (exception.apiResult != null)
+                {
+                    exception.apiResult?.message
+                }
+                else errorCode.MSG
+
+                ResponseResult(false, errorCode, Unit, message ?: "회원가입 실")
             }
         }
     }

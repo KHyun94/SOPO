@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="vm"
+            type="com.delivery.sopo.viewmodels.signup.SignUpCompleteViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_title_welcome"
+            style="@style/H3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="138dp"
+            android:gravity="center"
+            android:text="환영합니다!\n회원가입이 완료되었습니다."
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:textColor="@color/MAIN_BLACK"
+            android:includeFontPadding="false"/>
+
+        <TextView
+            style="@style/H2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="101dp"
+            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title_welcome"
+            android:text="@{vm.email}"
+            tools:text="asle1000@gmail.com"
+            android:textColor="@color/COLOR_MAIN_700"/>
+        <Button
+            android:id="@+id/btn_move_login"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="173dp"
+            android:background="@drawable/border_round_white_btn"
+            android:backgroundTint="@color/COLOR_MAIN_700"
+            android:text="확인"
+            android:textColor="@color/MAIN_WHITE"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:onClick="@{()->vm.onCompleteClicked()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

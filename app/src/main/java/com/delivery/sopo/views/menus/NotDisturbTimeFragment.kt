@@ -8,7 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentNotDisturbTimeBinding
-import com.delivery.sopo.firebase.FirebaseRepository
+import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.NotDisturbTimeViewModel
@@ -16,8 +16,6 @@ import com.delivery.sopo.views.dialog.NotDisturbTimeDialog
 import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.widget.clockpieview.ClockPieHelper
 import kotlinx.android.synthetic.main.fragment_not_disturb_time.view.*
-import kotlinx.android.synthetic.main.set_not_disturb_time_dialog.view.*
-import org.koin.android.ext.android.bind
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
@@ -25,7 +23,6 @@ import java.util.*
 
 class NotDisturbTimeFragment : Fragment()
 {
-    private val TAG = this.javaClass.simpleName
     private val userRepoImpl : UserRepoImpl by inject()
     private val notDisturbVm: NotDisturbTimeViewModel by viewModel()
 
@@ -77,25 +74,11 @@ class NotDisturbTimeFragment : Fragment()
 
                 if(userRepoImpl.getTopic().isEmpty())
                 {
-                    FirebaseRepository.subscribedToTopicInFCM(topicHour, topicMin){ s, e ->
-                        if(e!=null) SopoLog.e( msg ="구독 실패 >>> ${e.errorMsg}")
-                        if(s!= null) SopoLog.d( msg = "구독 성공 >>> ${s.successMsg}")
-                    }
+                    FirebaseNetwork.subscribedToTopicInFCM(topicHour, topicMin)
                 }
                 else
                 {
-                    FirebaseRepository.unsubscribedToTopicInFCM{s, e->
-                        if(e!=null) SopoLog.e( msg ="구독 해지 실패 >>>${e.errorMsg}")
-                        if(s!= null)
-                        {
-                            SopoLog.d( msg = "구독 해지 성공 >>> ${s.successMsg}")
-
-                            FirebaseRepository.subscribedToTopicInFCM(topicHour, topicMin){ s, e ->
-                                if(e!=null) SopoLog.e( msg ="구독 실패 >>> ${e.errorMsg}")
-                                if(s!= null) SopoLog.d( msg = "구독 성공 >>> ${s.successMsg}")
-                            }
-                        }
-                    }
+                    FirebaseNetwork.unsubscribedToTopicInFCM()
                 }
             }.show(
                 requireActivity().supportFragmentManager,

@@ -14,6 +14,7 @@ import com.delivery.sopo.viewmodels.menus.*
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep2ViewModel
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep3ViewModel
+import com.delivery.sopo.viewmodels.signup.SignUpCompleteViewModel
 import com.delivery.sopo.viewmodels.signup.UpdateNicknameViewModel
 import com.delivery.sopo.viewmodels.signup.SignUpViewModel
 import com.delivery.sopo.viewmodels.splash.SplashViewModel
@@ -43,8 +44,9 @@ val appModule = module {
     viewModel { SplashViewModel(get(), get()) }
     viewModel { LoginViewModel(get(), get()) }
     viewModel { SignUpViewModel() }
+    viewModel { SignUpCompleteViewModel(get()) }
     viewModel { UpdateNicknameViewModel(get()) }
-    viewModel { LoginSelectViewModel(get()) }
+    viewModel { LoginSelectViewModel(get(),get()) }
     viewModel { MainViewModel(get(), get(), get(), get()) }
     viewModel { LockScreenViewModel(get(), get()) }
     viewModel { SettingViewModel(get(), get()) }
