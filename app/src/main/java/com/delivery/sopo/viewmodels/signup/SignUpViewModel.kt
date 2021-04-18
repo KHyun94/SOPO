@@ -11,6 +11,7 @@ import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.networks.repository.JoinRepository
+import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.views.widget.CustomEditText
@@ -20,7 +21,7 @@ import kotlinx.coroutines.launch
 
 typealias FocusChangeCallback = (String, Boolean) -> Unit
 
-class SignUpViewModel : ViewModel()
+class SignUpViewModel(private val userRepo: UserRepoImpl) : ViewModel()
 {
     var email = MutableLiveData<String>()
     var pwd = MutableLiveData<String>()
@@ -108,16 +109,30 @@ class SignUpViewModel : ViewModel()
         _isProgress.postValue(true)
 
         CoroutineScope(Dispatchers.Main).launch {
-            val res = JoinRepository.requestJoinBySelf(email = email.value.toString(), password = pwd.value.toString(), nickname = "")
+            val res = JoinRepository.requestJoinBySelf(email = email.value.toString(), password = pwd.value.toString(), nickname = "BLANK")
             _isProgress.postValue(false)
-            SopoLog.e("""
+            SopoLog.d("""
                 회원가입 결과 >>> 
                 ${res.result}
                 ${res.data}
                 ${res.message}
                 ${res.displayType}
-                ${res.toString()}
+                ${email.value.toString()}
+                ${pwd.value.toString()}
             """.trimIndent())
+
+            if(res.result)
+            {
+                userRepo.setEmail(email = email.value.toString())
+                userRepo.setApiPwd(pwd = pwd.value.toString())
+
+                SopoLog.d("""
+                    User Data
+                    email >>> ${email.value.toString()}, save(${userRepo.getEmail()})
+                    password >>> ${pwd.value.toString()}, save(${userRepo.getApiPwd()})
+                """.trimIndent())
+            }
+
             _result.postValue(res)
         }
     }

@@ -38,7 +38,7 @@ object JoinRepository
                 }
                 else errorCode.MSG
 
-                ResponseResult(false, errorCode, Unit, message ?: "회원가입 실")
+                ResponseResult(false, errorCode, Unit, message ?: "회원가입 실패")
             }
         }
     }

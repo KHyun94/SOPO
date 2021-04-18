@@ -9,6 +9,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.SignUpCompleteBinding
 import com.delivery.sopo.extensions.launchActivityWithAllClear
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.signup.SignUpCompleteViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.OnAgreeClickListener
@@ -62,6 +63,7 @@ class SignUpCompleteView : AppCompatActivity()
         binding.vm!!.result.observe(this, Observer {res ->
             if(!res.result)
             {
+                SopoLog.e("${res.message} >>> ${res.code}")
                 GeneralDialog(this@SignUpCompleteView, "오류", res.message, res.code?.CODE, Pair("네", object: OnAgreeClickListener{
                     override fun invoke(agree: GeneralDialog)
                     {

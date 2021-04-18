@@ -7,8 +7,9 @@ import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.UserAPI
 import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResult
+import org.koin.core.KoinComponent
 
-object UserCall : BaseService()
+object UserCall : BaseService(), KoinComponent
 {
     private lateinit var userAPI : UserAPI
 

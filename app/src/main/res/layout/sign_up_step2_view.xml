@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="25sp"
             android:includeFontPadding="false"
-            android:text="마지막으로..."
+            android:text="안녕하세요."
             android:textColor="@color/MAIN_BLACK"
             android:textSize="25sp"
             android:textStyle="bold"
