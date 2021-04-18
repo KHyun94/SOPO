@@ -9,6 +9,7 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.database.room.entity.OauthEntity
 import com.delivery.sopo.databinding.LoginSelectViewBinding
 import com.delivery.sopo.exceptions.APIException
+import com.delivery.sopo.extensions.launchActivityWithAllClear
 import com.delivery.sopo.networks.call.OAuthCall
 import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
@@ -16,7 +17,9 @@ import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
+import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.signup.SignUpView
+import com.delivery.sopo.views.signup.UpdateNicknameView
 import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
 import com.kakao.util.exception.KakaoException
@@ -90,6 +93,14 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                     }
                     Session.getCurrentSession().addCallback(sessionCallback)
                 }
+                NavigatorConst.TO_MAIN ->
+                {
+                    Intent(this, MainView::class.java).launchActivityWithAllClear(this@LoginSelectView)
+                }
+                NavigatorConst.TO_UPDATE_NICKNAME ->
+                {
+                    Intent(this, UpdateNicknameView::class.java).launchActivityWithAllClear(this@LoginSelectView)
+                }
             }
 
         })
@@ -110,10 +121,10 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
         binding.vm!!.result.observe(this, Observer { result ->
 
-            if(!result.result)
-            {
-
-            }
+//            if(!result.result)
+//            {
+//                Intent(this)
+//            }
 
 //            if (it.successResult != null)
 //            {
@@ -162,30 +173,6 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 //                }
 //            }
         })
-    }
-
-    fun checkOAuthToken()
-    {
-        CoroutineScope(Dispatchers.IO).launch {
-
-            var oauth : OauthEntity
-
-            withContext(Dispatchers.Default) {
-                oauth = oauthRepoImpl.get("asle1221@naver.com")!!
-            }
-
-            when (val result = OAuthCall.checkOAuthToken(oauth.accessToken))
-            {
-                is NetworkResult.Success ->
-                {
-                    SopoLog.d( msg = "성공 => ${result.data}")
-                }
-                is NetworkResult.Error ->
-                {
-                    SopoLog.d( msg = "성공 => ${(result.exception as APIException)}")
-                }
-            }
-        }
     }
 
     override fun onActivityResult(requestCode : Int, resultCode : Int, data : Intent?)

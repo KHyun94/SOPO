@@ -35,6 +35,9 @@ object OAuthNetworkRepo: KoinComponent
         {
             is NetworkResult.Success ->
             {
+                userRepo.setEmail(email)
+                userRepo.setApiPwd(password)
+
                 val oAuth = Gson().let { gson ->
                     val type = object : TypeToken<OauthResult>() {}.type
                     val reader = gson.toJson(result.data)

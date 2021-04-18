@@ -1,5 +1,6 @@
 package com.delivery.sopo.viewmodels.login
 
+import android.os.Handler
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -28,10 +29,7 @@ import com.google.gson.reflect.TypeToken
 import com.kakao.usermgmt.UserManagement
 import com.kakao.usermgmt.callback.MeV2ResponseCallback
 import com.kakao.usermgmt.response.MeV2Response
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.util.*
 import com.kakao.network.ErrorResult as KakaoErrorResult
 
@@ -46,6 +44,8 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
     private var _result = MutableLiveData<ResponseResult<*>>()
     val result: LiveData<ResponseResult<*>>
         get() = _result
+
+    private val navigator = MutableLiveData<String>()
 
     val isProgress = MutableLiveData<Boolean?>()
 
@@ -112,19 +112,28 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
                 SopoLog.d(msg = "onSuccess uid = $kakaoUserId")
                 SopoLog.d(msg = "onSuccess nickname = $kakaoNickname")
 
-                val password = kakaoUserId.md5()
+                val password = kakaoUserId
+//                val password = kakaoUserId.md5()
 
                 CoroutineScope(Dispatchers.Main).launch {
                     val res = JoinRepository.requestJoinByKakao(email, password, kakaoUserId, kakaoNickname)
 
+                    if(!res.result)
+                    {
+                        SopoLog.e("카카오 회원가입 실패")
+                        _result.postValue(res)
+                        return@launch
+                    }
+
+                    login(email, password, kakaoNickname)
+
                     postProgressValue(false)
-                    _result.postValue(res)
                 }
             }
         })
     }
 
-    fun login(email: String, password: String)
+    fun login(email: String, password: String, nickname: String?)
     {
         CoroutineScope(Dispatchers.Main).launch {
             val oAuthRes = OAuthNetworkRepo.loginWithOAuth(email, password)
@@ -139,12 +148,24 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
                 setEmail(email)
                 setApiPwd(password)
                 setStatus(1)
+                setNickname(nickname?:"")
             }
 
             SOPOApp.oAuthEntity = oAuthRes.data
 
+            SopoLog.d("""
+                카카오 로그인 oauth >>>
+                ${SOPOApp.oAuthEntity}
+            """.trimIndent())
+
+            withContext(Dispatchers.Default){
+                oAuthRepo.insert(oAuthRes.data!!)
+                SopoLog.d("oauth insert!!!")
+            }
+
             if(userRepo.getNickname() == "")
             {
+                SopoLog.d("nickname check!!!")
                 val infoRes = OAuthNetworkRepo.getUserInfo()
 
                 if(!infoRes.result)
@@ -153,9 +174,19 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
                     return@launch
                 }
 
+                if(infoRes.data == null || infoRes.data.nickname == "")
+                {
+                    navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
+                    return@launch
+                }
 
+                userRepo.setNickname(infoRes.data.nickname)
 
-
+                navigator.postValue(NavigatorConst.TO_MAIN)
+            }
+            else
+            {
+                navigator.postValue(NavigatorConst.TO_MAIN)
             }
         }
 

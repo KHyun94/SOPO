@@ -18,12 +18,12 @@ object JoinCall : BaseService()
     }
 
     // TODO 자체 회원 가입 API에 닉네임이 필요없음
-    suspend fun requestJoinBySelf(email : String, password : String, deviceInfo : String, nickname: String) : NetworkResult<APIResult<Unit>>
+    suspend fun requestJoinBySelf(email : String, password : String, deviceInfo : String) : NetworkResult<APIResult<Unit>>
     {
-        return apiCall(call = { joinAPI.requestJoinBySelf(email = email, password = password, deviceInfo = deviceInfo, nickname = nickname) })
+        return apiCall(call = { joinAPI.requestJoinBySelf(email = email, password = password, deviceInfo = deviceInfo) })
     }
 
-    suspend fun requestJoinByKakao(email : String, password : String, deviceInfo : String, kakaoUid : String, nickname: String) : NetworkResult<APIResult<Unit>>
+    suspend fun requestJoinByKakao(email : String, password : String, deviceInfo : String, kakaoUid : String, nickname: String?) : NetworkResult<APIResult<Unit>>
     {
         return apiCall(call = { joinAPI.requestJoinByKakao(email = email, password = password, deviceInfo = deviceInfo, kakaoUid = kakaoUid,  nickname = nickname) })
     }

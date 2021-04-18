@@ -109,7 +109,7 @@ class SignUpViewModel(private val userRepo: UserRepoImpl) : ViewModel()
         _isProgress.postValue(true)
 
         CoroutineScope(Dispatchers.Main).launch {
-            val res = JoinRepository.requestJoinBySelf(email = email.value.toString(), password = pwd.value.toString(), nickname = "BLANK")
+            val res = JoinRepository.requestJoinBySelf(email = email.value.toString(), password = pwd.value.toString())
             _isProgress.postValue(false)
             SopoLog.d("""
                 회원가입 결과 >>> 

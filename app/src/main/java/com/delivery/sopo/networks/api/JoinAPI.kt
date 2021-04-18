@@ -16,9 +16,7 @@ interface JoinAPI
         // 비밀번호
         @Field("password") password: String,
         // 디바이스 정보
-        @Field("deviceInfo") deviceInfo: String,
-        // nickname
-        @Field("nickname") nickname: String
+        @Field("deviceInfo") deviceInfo: String
         ): Response<APIResult<Unit>>
 
     // 카카오 회원가입
@@ -35,7 +33,7 @@ interface JoinAPI
         // Firebase uid
         @Field("kakaoUid") kakaoUid: String,
         // nickname
-        @Field("nickname") nickname: String
+        @Field("nickname") nickname: String?
     ):Response<APIResult<Unit>>
 
     // 회원가입 이메일 중복 체크

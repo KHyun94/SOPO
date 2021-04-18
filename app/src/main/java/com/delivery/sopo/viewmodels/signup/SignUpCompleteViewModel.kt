@@ -74,7 +74,7 @@ class SignUpCompleteViewModel(private val userRepo: UserRepoImpl, private val oA
                 oAuthRepo.insert(oAuthRes.data!!)
             }
 
-            SopoLog.d("Nickname is ${userRepo.getNickname()?:"NULL"}")
+            SopoLog.d("Nickname is ${userRepo.getNickname()}")
 
             if(userRepo.getNickname() == "")
             {

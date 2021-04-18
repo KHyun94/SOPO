@@ -11,6 +11,7 @@ import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -47,7 +48,7 @@ object NetworkManager : KoinComponent
         {
             NetworkEnum.O_AUTH_TOKEN_LOGIN ->
             {
-                val oauth : OauthEntity? = runBlocking {
+                val oauth : OauthEntity? = runBlocking(Dispatchers.Default) {
                     oauthRepoImpl.get(userRepoImpl.getEmail()).also { SOPOApp.oAuthEntity = it }
                 }?:SOPOApp.oAuthEntity
                 SopoLog.d(msg = "토큰 정보 => ${oauth}")

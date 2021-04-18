@@ -43,13 +43,13 @@ object JoinRepository
         }
     }
 
-    suspend fun requestJoinBySelf(email: String, password: String, nickname: String): ResponseResult<Unit>
+    suspend fun requestJoinBySelf(email: String, password: String): ResponseResult<Unit>
     {
-        val result = JoinCall.requestJoinBySelf(email, password, deviceInfo, nickname)
+        val result = JoinCall.requestJoinBySelf(email, password, deviceInfo)
         return requestJoin(result)
     }
 
-    suspend fun requestJoinByKakao(email: String, password: String, kakaoUid: String, nickname: String): ResponseResult<Unit>
+    suspend fun requestJoinByKakao(email: String, password: String, kakaoUid: String, nickname: String?): ResponseResult<Unit>
     {
         val result = JoinCall.requestJoinByKakao(email, password, deviceInfo, kakaoUid, nickname)
         val res = requestJoin(result)
