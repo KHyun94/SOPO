@@ -1,31 +1,17 @@
 package com.delivery.sopo.viewmodels.login
 
-import android.os.Handler
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.enums.DisplayEnum
-import com.delivery.sopo.enums.ResponseCode
-import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.extensions.md5
-import com.delivery.sopo.mapper.OauthMapper
-import com.delivery.sopo.models.OauthResult
 import com.delivery.sopo.models.ResponseResult
-import com.delivery.sopo.models.UserDetail
-import com.delivery.sopo.networks.api.LoginAPICall
-import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.networks.repository.JoinRepository
 import com.delivery.sopo.networks.repository.OAuthNetworkRepo
 import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
-import com.delivery.sopo.services.network_handler.NetworkResult
-import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.kakao.usermgmt.UserManagement
 import com.kakao.usermgmt.callback.MeV2ResponseCallback
 import com.kakao.usermgmt.response.MeV2Response
@@ -35,7 +21,7 @@ import com.kakao.network.ErrorResult as KakaoErrorResult
 
 class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuthRepo: OauthRepoImpl) : ViewModel()
 {
-    val loginType = MutableLiveData<String>()
+    val navigator = MutableLiveData<String>()
     val backgroundImage = MutableLiveData<Int>().apply { postValue(R.drawable.ic_login_ani_box) }
 
     /**
@@ -44,8 +30,6 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
     private var _result = MutableLiveData<ResponseResult<*>>()
     val result: LiveData<ResponseResult<*>>
         get() = _result
-
-    private val navigator = MutableLiveData<String>()
 
     val isProgress = MutableLiveData<Boolean?>()
 
@@ -60,9 +44,9 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
      * 2. onSignUpClicked() -> SignUpView
      * 3. onKakaoLoginClicked() -> kakao login action
      */
-    fun onLoginClicked() { loginType.value = NavigatorConst.TO_LOGIN }
-    fun onSignUpClicked() { loginType.value = NavigatorConst.TO_SIGN_UP }
-    fun onKakaoLoginClicked() { loginType.value = NavigatorConst.TO_KAKAO_LOGIN }
+    fun onLoginClicked() { navigator.value = NavigatorConst.TO_LOGIN }
+    fun onSignUpClicked() { navigator.value = NavigatorConst.TO_SIGN_UP }
+    fun onKakaoLoginClicked() { navigator.value = NavigatorConst.TO_KAKAO_LOGIN }
 
     // 카카오톡 로그인을 통해 사용자에 대한 정보를 가져온다
     fun requestKakaoLogin()
@@ -174,11 +158,22 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
                     return@launch
                 }
 
+                SopoLog.d("infoRes is true ${infoRes.result}")
+
                 if(infoRes.data == null || infoRes.data.nickname == "")
                 {
+                    SopoLog.d("""
+                        infoRes nickname is null or empty
+                        ${infoRes.data}
+                    """.trimIndent())
+
                     navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
                     return@launch
                 }
+
+                SopoLog.d("""
+                    infoRes nickname is OK >>> ${infoRes.data.nickname}
+                """.trimIndent())
 
                 userRepo.setNickname(infoRes.data.nickname)
 
@@ -192,62 +187,29 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
 
     }
 
-    // TODO 통합 필
-    suspend fun loginWithOAuth(email: String, password: String)
-    {
-        when(val result = LoginAPICall().requestOauth(email, password, SOPOApp.deviceInfo))
-        {
-            is NetworkResult.Success ->
-            {
-                userRepo.setEmail(email)
-                userRepo.setApiPwd(password)
-                userRepo.setStatus(1)
 
-                val oAuth = Gson().let { gson ->
-                    val type = object : TypeToken<OauthResult>() {}.type
-                    val reader = gson.toJson(result.data)
-                    val data = gson.fromJson<OauthResult>(reader, type)
-                    OauthMapper.objectToEntity(data)
-                }
 
-                SOPOApp.oAuthEntity = oAuth
-
-                withContext(Dispatchers.Default){
-                    oAuthRepo.insert(oAuth)
-                }
-
-                _result.postValue(getUserInfo())
-            }
-            is NetworkResult.Error ->
-            {
-                val exception = result.exception as APIException
-                val code = exception.responseCode
-                _result.postValue(ResponseResult(false, code, Unit, code.MSG, DisplayEnum.DIALOG))
-            }
-        }
-    }
-
-    suspend fun getUserInfo(): ResponseResult<UserDetail?>
-    {
-        val result = UserCall.getUserInfoWithToken()
-
-        if(result is NetworkResult.Error)
-        {
-            val exception = result.exception as APIException
-            val responseCode = exception.responseCode
-            val date = SOPOApp.oAuthEntity.let { it?.expiresIn }
-
-            return if(responseCode.HTTP_STATUS == 401 && DateUtil.isOverExpiredDate(date!!)) ResponseResult(false, responseCode, null, "로그인 기한이 만료되었습니다.\n다시 로그인해주세요.", DisplayEnum.DIALOG)
-            else ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
-        }
-
-        val apiResult = (result as NetworkResult.Success).data
-
-        userRepo.setNickname(apiResult.data?.nickname?:"")
-
-        SopoLog.d("UserDetail >>> ${apiResult.data}, ${apiResult.data?.nickname}")
-
-        return ResponseResult(true, ResponseCode.SUCCESS, apiResult.data, ResponseCode.SUCCESS.MSG)
-    }
+//    suspend fun getUserInfo(): ResponseResult<UserDetail?>
+//    {
+//        val result = UserCall.getUserInfoWithToken()
+//
+//        if(result is NetworkResult.Error)
+//        {
+//            val exception = result.exception as APIException
+//            val responseCode = exception.responseCode
+//            val date = SOPOApp.oAuthEntity.let { it?.expiresIn }
+//
+//            return if(responseCode.HTTP_STATUS == 401 && DateUtil.isOverExpiredDate(date!!)) ResponseResult(false, responseCode, null, "로그인 기한이 만료되었습니다.\n다시 로그인해주세요.", DisplayEnum.DIALOG)
+//            else ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
+//        }
+//
+//        val apiResult = (result as NetworkResult.Success).data
+//
+//        userRepo.setNickname(apiResult.data?.nickname?:"")
+//
+//        SopoLog.d("UserDetail >>> ${apiResult.data}, ${apiResult.data?.nickname}")
+//
+//        return ResponseResult(true, ResponseCode.SUCCESS, apiResult.data, ResponseCode.SUCCESS.MSG)
+//    }
 
 }

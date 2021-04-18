@@ -6,14 +6,10 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.database.room.entity.OauthEntity
 import com.delivery.sopo.databinding.LoginSelectViewBinding
-import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.extensions.launchActivityWithAllClear
-import com.delivery.sopo.networks.call.OAuthCall
 import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
-import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
@@ -24,10 +20,6 @@ import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
 import com.kakao.util.exception.KakaoException
 import kotlinx.android.synthetic.main.login_select_view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -58,7 +50,11 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
     override fun setObserver()
     {
-        loginSelectVm.loginType.observe(this, Observer {
+        loginSelectVm.navigator.observe(this, Observer {
+
+            SopoLog.d("""
+                Navigator >>> ${it}
+            """.trimIndent())
 
             when (it)
             {
@@ -120,11 +116,6 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
         })
 
         binding.vm!!.result.observe(this, Observer { result ->
-
-//            if(!result.result)
-//            {
-//                Intent(this)
-//            }
 
 //            if (it.successResult != null)
 //            {
