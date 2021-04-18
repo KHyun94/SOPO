@@ -14,7 +14,6 @@
         <attr name="focusColor" format="color"/>
         <attr name="android:nextFocusDown" format="reference|integer"/>
     </declare-styleable>
-
     <declare-styleable name="AlertMessageBar" >
         <attr name="msgtext" format="string"/>
         <attr name="buttonText" format="string"/>
