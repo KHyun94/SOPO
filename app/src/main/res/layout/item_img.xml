@@ -21,6 +21,8 @@
             android:id="@+id/layout_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
             android:background="@{isClick?@drawable/border_click_img:@drawable/border_non_click_img}">
 
             <ImageView

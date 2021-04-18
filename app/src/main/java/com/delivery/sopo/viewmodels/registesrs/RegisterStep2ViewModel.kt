@@ -24,8 +24,8 @@ class RegisterStep2ViewModel(private val courierRepoImpl: CourierRepoImpl) : Vie
     val errorMsg = MutableLiveData<String>()
 
     var adapter =  MutableLiveData<GridRvAdapter>()
-    val decoration =
-        GridSpacingItemDecoration(3, 48, true)
+    val decoration = GridSpacingItemDecoration(3, 32, true)
+//        GridSpacingItemDecoration(3, 48, true)
     val rowCnt = 3
 
     init

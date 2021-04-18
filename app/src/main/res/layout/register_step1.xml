@@ -23,13 +23,12 @@
             style="@style/H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="11dp"
             android:layout_marginHorizontal="25sp"
             android:text="운송장 등록"
             android:textColor="@color/MAIN_BLACK"
-            app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.9" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.delivery.sopo.views.widget.CustomEditText
             android:id="@+id/custom_et_track_num"
