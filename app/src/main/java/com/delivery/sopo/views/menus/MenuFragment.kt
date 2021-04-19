@@ -24,6 +24,7 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.factory.MenuViewModelFactory
 import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import com.delivery.sopo.views.main.MainView
+import com.delivery.sopo.views.signup.UpdateNicknameView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.menu_view.view.*
 import org.koin.android.ext.android.inject
@@ -150,6 +151,14 @@ class MenuFragment : Fragment()
                 MenuEnum.ACCOUNT_MANAGER ->
                 {
                     move(menuView, AccountManagerFragment(), 0)
+                }
+                MenuEnum.SIGN_OUT ->
+                {
+                    move(menuView, SignOutView(), 0)
+                }
+                MenuEnum.UPDATE_NICKNAME ->
+                {
+                    move(menuView, UpdateNicknameView(), 0)
                 }
             }
         })

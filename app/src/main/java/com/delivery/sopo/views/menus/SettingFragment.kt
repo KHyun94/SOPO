@@ -32,9 +32,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingFragment : Fragment()
 {
-
     private val settingVM: SettingViewModel by viewModel()
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     private lateinit var binding: FragmentSettingBinding
     private val userRepoImpl: UserRepoImpl by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()

@@ -10,7 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.InfoConst
-import com.delivery.sopo.databinding.SignUpStep2ViewBinding
+import com.delivery.sopo.databinding.UpdateNicknameBinding
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
@@ -19,19 +19,18 @@ import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.OnAgreeClickListener
 import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.widget.CustomEditText
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class UpdateNicknameView: AppCompatActivity()
 {
-    private lateinit var binding: SignUpStep2ViewBinding
+    private lateinit var binding: UpdateNicknameBinding
     private val vm: UpdateNicknameViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
 
-        binding = DataBindingUtil.setContentView<SignUpStep2ViewBinding>(this, R.layout.sign_up_step2_view)
+        binding = DataBindingUtil.setContentView<UpdateNicknameBinding>(this, R.layout.update_nickname)
         binding.vm = vm
         binding.lifecycleOwner = this
 

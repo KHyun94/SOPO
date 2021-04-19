@@ -14,6 +14,7 @@ import com.delivery.sopo.viewmodels.menus.*
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep2ViewModel
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep3ViewModel
+import com.delivery.sopo.viewmodels.signup.SignOutViewModel
 import com.delivery.sopo.viewmodels.signup.SignUpCompleteViewModel
 import com.delivery.sopo.viewmodels.signup.UpdateNicknameViewModel
 import com.delivery.sopo.viewmodels.signup.SignUpViewModel
@@ -56,6 +57,8 @@ val appModule = module {
     viewModel { NotDisturbTimeViewModel() }
     viewModel { InquiryViewModel(get(), get(), get(), get()) }
     viewModel { MenuViewModel(get(), get(), get()) }
+    viewModel { AccountManagerViewModel() }
+    viewModel { SignOutViewModel() }
 
     viewModel { InquiryMainViewModel() }
     viewModel { MenuMainViewModel() }

@@ -6,9 +6,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.delivery.sopo.R
+import com.delivery.sopo.databinding.SignOutViewBinding
+import com.delivery.sopo.viewmodels.menus.MenuViewModel
+import com.delivery.sopo.viewmodels.signup.SignOutViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SignOutView: Fragment()
 {
+    lateinit var binding: SignOutViewBinding
+    private val vm: SignOutViewModel by viewModel()
+    private val menuVm: MenuViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -17,7 +25,15 @@ class SignOutView: Fragment()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.sign_out_view, container, false)
+        val view = inflater.inflate(R.layout.sign_out_view, container, false)
+        bindView(view)
+        return binding.root
+    }
+
+    fun bindView(v: View)
+    {
+        binding = SignOutViewBinding.bind(v)
+        binding.vm = vm
+        binding.lifecycleOwner = this
     }
 }

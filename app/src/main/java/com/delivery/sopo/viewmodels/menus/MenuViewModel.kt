@@ -32,23 +32,7 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
                     private val timeCountRepoImpl: TimeCountRepoImpl
 ) : ViewModel(), LifecycleObserver
 {
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
-    private val _cntOfSoonListItem = parcelRepoImpl.getSoonDataCntLiveData()
-    val cntOfSoonListItem: LiveData<Int>
-        get() = _cntOfSoonListItem
-
-    private val _cntOfOngoingListItem = parcelRepoImpl.getOngoingDataCntLiveData()
-    val cntOfOngoingListItem: LiveData<Int>
-        get() = _cntOfOngoingListItem
-
-    private val _cntOfCompleteListItem = timeCountRepoImpl.getSumOfCountLiveData()
-    val cntOfCompleteListItem: LiveData<Int>
-        get() = _cntOfCompleteListItem
-
-    private val _userEmail = MutableLiveData<String>()
-    val userEmail: LiveData<String>
-        get() = _userEmail
     //todo 닉네임 업데이트
 
     private val _userNickname  = MutableLiveData<String>()
@@ -66,7 +50,6 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
     val isUpdate = MutableLiveData<Boolean>()
 
     init {
-        _userEmail.value = userRepoImpl.getEmail()
         _userNickname.value = userRepoImpl.getNickname()
         SopoLog.d(msg = "Menu 닉네임 => ${userNickname.value}")
         _viewStack.value = Stack()
@@ -74,12 +57,18 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
     }
 
     fun pushView(menu: MenuEnum){
+        SopoLog.d("Menu is Move To ${menu.title}")
+
         _viewStack.pushItem(menu)
         _menu.value = menu
     }
 
     fun popView(): Boolean{
         return try {
+            SopoLog.d("""
+                Menu leave ${_viewStack.value?.get(_viewStack.value!!.size - 1)?.title?:"없음"}
+            """.trimIndent())
+
             _viewStack.popItem()
             _viewStack.value?.also {
                 if(!it.empty()){

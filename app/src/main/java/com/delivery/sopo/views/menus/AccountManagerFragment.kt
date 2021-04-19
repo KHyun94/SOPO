@@ -5,14 +5,22 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentAccountManagerBinding
+import com.delivery.sopo.databinding.SignOutViewBinding
+import com.delivery.sopo.enums.MenuEnum
+import com.delivery.sopo.viewmodels.menus.AccountManagerViewModel
+import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import kotlinx.android.synthetic.main.fragment_account_manager.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class AccountManagerFragment: Fragment()
 {
     lateinit var binding: FragmentAccountManagerBinding
+    private val vm: AccountManagerViewModel by viewModel()
+    private val menuVm: MenuViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -22,18 +30,32 @@ class AccountManagerFragment: Fragment()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-
         val view = inflater.inflate(R.layout.fragment_account_manager, container, false)
-
-        layout_sign_out.setOnClickListener {
-
-        }
-
-        return view
+        bindView(view)
+        return binding.root
     }
 
-    companion object
+    fun bindView(v: View)
     {
+        binding = FragmentAccountManagerBinding.bind(v)
+        binding.vm = vm
+        binding.lifecycleOwner = this
+    }
 
+    fun setObserve()
+    {
+        binding.vm!!.navigator.observe(this, Observer { menu ->
+            when(menu)
+            {
+                MenuEnum.UPDATE_NICKNAME ->
+                {
+                    menuVm.pushView(menu)
+                }
+                MenuEnum.SIGN_OUT ->
+                {
+                    menuVm.pushView(menu)
+                }
+            }
+        })
     }
 }
