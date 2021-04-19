@@ -158,7 +158,7 @@ class MenuFragment : Fragment()
                 }
                 MenuEnum.UPDATE_NICKNAME ->
                 {
-                    move(menuView, UpdateNicknameView(), 0)
+//                    move(menuView, UpdateNicknameView(), 0)
                 }
             }
         })

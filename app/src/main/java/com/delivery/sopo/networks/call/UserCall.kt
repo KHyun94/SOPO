@@ -20,23 +20,6 @@ object UserCall : BaseService(), KoinComponent
         return apiCall(call = {result})
     }
 
-    suspend fun requestCustomToken(
-        email: String,
-        deviceInfo: String,
-        joinType: String,
-        userId: String
-    ): NetworkResult<APIResult<String?>>
-    {
-        userAPI = NetworkManager.setLoginMethod(NetworkEnum.PUBLIC_LOGIN, UserAPI::class.java)
-        val requestCustomToken = userAPI.requestCustomToken(
-            email = email,
-            deviceInfo = deviceInfo,
-            joinType = joinType,
-            userId = userId
-        )
-        return apiCall(call = { requestCustomToken })
-    }
-
     suspend fun updateFCMToken(fcmToken: String) : NetworkResult<APIResult<String?>>
     {
         userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
@@ -48,5 +31,10 @@ object UserCall : BaseService(), KoinComponent
     {
         userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
         return apiCall (call = {userAPI.updateUserNickname(nickname = nickname)} )
+    }
+
+    suspend fun requestSignOut(reason: String): NetworkResult<APIResult<String?>>
+    {
+        return apiCall(call = { userAPI.requestSignOut(reason) })
     }
 }

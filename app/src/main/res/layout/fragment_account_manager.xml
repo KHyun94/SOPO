@@ -23,7 +23,10 @@
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:focusableInTouchMode="true"
+            android:clickable="true"
+            android:focusable="true">
 
             <TextView
                 style="@style/H3"
@@ -50,7 +53,10 @@
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:focusableInTouchMode="true"
+            android:clickable="true"
+            android:focusable="true">
 
             <TextView
                 style="@style/H3"
@@ -75,7 +81,10 @@
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:focusableInTouchMode="true"
+            android:clickable="true"
+            android:focusable="true">
 
             <TextView
                 style="@style/H3"
@@ -101,7 +110,12 @@
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:focusableInTouchMode="true"
+            android:onClick="@{()->vm.onSignOutClicked()}"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@color/MAIN_WHITE">
 
             <TextView
                 style="@style/H3"

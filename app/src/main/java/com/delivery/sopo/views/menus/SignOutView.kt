@@ -5,17 +5,20 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import com.delivery.sopo.R
+import com.delivery.sopo.databinding.ConfirmDeleteDialogBinding
 import com.delivery.sopo.databinding.SignOutViewBinding
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.MenuViewModel
-import com.delivery.sopo.viewmodels.signup.SignOutViewModel
+import com.delivery.sopo.viewmodels.menus.SignOutViewModel
+import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SignOutView: Fragment()
 {
     lateinit var binding: SignOutViewBinding
     private val vm: SignOutViewModel by viewModel()
-    private val menuVm: MenuViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -27,6 +30,7 @@ class SignOutView: Fragment()
     {
         val view = inflater.inflate(R.layout.sign_out_view, container, false)
         bindView(view)
+        setObserve()
         return binding.root
     }
 
@@ -35,5 +39,27 @@ class SignOutView: Fragment()
         binding = SignOutViewBinding.bind(v)
         binding.vm = vm
         binding.lifecycleOwner = this
+    }
+
+    fun setObserve()
+    {
+        binding.vm!!.result.observe(this, Observer {res ->
+
+            val dialog = ConfirmDeleteDialog(requireActivity()){
+                SopoLog.d(res)
+            }
+
+            dialog.let {
+                it.setTitle("탈퇴 시 유의사항")
+                it.setSubTitle("고객의 정보가 삭제되며 복구가 불가능합니다.")
+                it.setDeleteClick("탈퇴하기")
+                it.setContent("""
+                    * 계정 개인정보(이메일, 비밀번호)
+                    * 등록하신 모든 택배 추적 정보
+                """.trimIndent())
+            }
+
+            dialog.show(activity?.supportFragmentManager!!,"")
+        })
     }
 }

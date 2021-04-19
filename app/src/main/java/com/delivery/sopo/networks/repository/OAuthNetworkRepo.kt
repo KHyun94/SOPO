@@ -82,4 +82,29 @@ object OAuthNetworkRepo: KoinComponent
         }
     }
 
+    suspend fun requestSignOut(reason: String): ResponseResult<String?>
+    {
+        when(val result = UserCall.requestSignOut(reason))
+        {
+            is NetworkResult.Success ->
+            {
+                val apiResult = (result as NetworkResult.Success).data
+
+                SopoLog.d("Success to sign out")
+
+                return ResponseResult(true, ResponseCode.SUCCESS, apiResult.data, ResponseCode.SUCCESS.MSG)
+            }
+            is NetworkResult.Error ->
+            {
+                SopoLog.d("Fail to sign out")
+
+                val exception = result.exception as APIException
+                val responseCode = exception.responseCode
+                val date = SOPOApp.oAuthEntity.let { it?.expiresIn }
+
+                return if(responseCode.HTTP_STATUS == 401 && DateUtil.isOverExpiredDate(date!!)) ResponseResult(false, responseCode, null, "로그인 기한이 만료되었습니다.\n다시 로그인해주세요.", DisplayEnum.DIALOG)
+                else ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
+            }
+        }
+    }
 }

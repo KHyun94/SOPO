@@ -9,12 +9,20 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="10dp"
-        android:paddingHorizontal="10dp">
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="4dp"
+        android:orientation="horizontal">
+
+        <!--    TODO 경고 아이콘 받아야함    -->
+        <ImageView
+            android:id="@+id/iv_title_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"/>
 
         <TextView
+            style="@style/H2"
             android:id="@+id/tv_dialog_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,13 +32,31 @@
             android:textColor="@color/MAIN_BLACK"
             android:letterSpacing="-0.02"
             android:textSize="20sp"
-            />
+            android:includeFontPadding="false" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_sub_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="4dp"
+        android:visibility="gone">
+
+        <TextView
+            style="@style/H4"
+            android:id="@+id/tv_sub_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="고객님 정보가 삭제되며 복구가 불가능합니다."
+            android:fontFamily="@font/spoqa_han_sans_bold"
+            android:textColor="@color/COLOR_MAIN_700"/>
+
     </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,42 +71,15 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
+                android:id="@+id/tv_content"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:fontFamily="@font/spoqa_han_sans_regular"
-                android:text="* 배송이 완료된 내역은 [배송완료]탭에 보관 처리됩니다."
+                android:text="* 배송이 완료된 내역은 [배송완료]탭에 보관 처리됩니다.\n* 삭제하신 내역은 복구되지 않습니다."
                 android:textSize="13sp"
                 android:textColor="@color/COLOR_GRAY_600"
-                android:letterSpacing="0.04"
-                />
+                android:letterSpacing="0.04" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                >
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:fontFamily="@font/spoqa_han_sans_regular"
-                    android:text="* 삭제하신 내역은 "
-                    android:textSize="13sp"
-                    android:textColor="@color/COLOR_GRAY_600"
-                    />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:fontFamily="@font/spoqa_han_sans_bold"
-                    android:text="복구되지 않습니다."
-                    android:textSize="13sp"
-                    android:textColor="@color/MAIN_BLACK"
-                    />
-
-            </LinearLayout>
 
         </LinearLayout>
 

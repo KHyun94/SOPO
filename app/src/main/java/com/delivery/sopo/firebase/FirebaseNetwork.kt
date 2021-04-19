@@ -83,6 +83,7 @@ object FirebaseNetwork: KoinComponent
             }
     }
 
+    // TODO Firebase Update Token 활성화
     fun updateFCMToken()
     {
         SopoLog.d( msg = "updateFCMToken call()")

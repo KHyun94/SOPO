@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <data>
+        <import type="com.delivery.sopo.R" />
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.signup.SignOutViewModel" />
+            type="com.delivery.sopo.viewmodels.menus.SignOutViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".views.menus.SignOutView">
@@ -42,17 +43,19 @@
                 android:layout_marginBottom="12dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/cb_reason1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:button="@null"
-                    android:background="@drawable/checkbox_blue_square"/>
+                    android:button="@drawable/checkbox_blue_square"
+                    android:tag="@string/SIGN_OUT_REASON1"
+                    android:onClick="@{(cbReason1)->vm.onCheckClicked(cbReason1, @string/SIGN_OUT_REASON1)}"/>
 
                 <TextView
                     style="@style/H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
-                    android:text="앱을 자주 사용하지 않습니다."
+                    android:text="@string/SIGN_OUT_REASON1"
                     android:textColor="@color/COLOR_GRAY_800"
                     android:layout_marginStart="12dp"/>
 
@@ -66,17 +69,19 @@
                 android:layout_marginBottom="12dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/cb_reason2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:button="@null"
-                    android:background="@drawable/checkbox_blue_square"/>
+                    android:button="@drawable/checkbox_blue_square"
+                    android:onClick="@{(cbReason2)->vm.onCheckClicked(cbReason2, cbReason2.tag.toString())}"
+                    android:tag="@string/SIGN_OUT_REASON2"/>
 
                 <TextView
                     style="@style/H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
-                    android:text="앱이 너무 느립니다."
+                    android:text="@string/SIGN_OUT_REASON2"
                     android:textColor="@color/COLOR_GRAY_800"
                     android:layout_marginStart="12dp"/>
 
@@ -90,17 +95,19 @@
                 android:layout_marginBottom="12dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/cb_reason3"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:button="@null"
-                    android:background="@drawable/checkbox_blue_square"/>
+                    android:layout_height="match_parent"
+                    android:button="@drawable/checkbox_blue_square"
+                    android:onClick="@{(cbReason3)->vm.onCheckClicked(cbReason3, cbReason3.tag.toString())}"
+                    android:tag="@string/SIGN_OUT_REASON1" />
 
                 <TextView
                     style="@style/H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
-                    android:text="오류가 발생해서 불편합니다."
+                    android:text="@string/SIGN_OUT_REASON3"
                     android:textColor="@color/COLOR_GRAY_800"
                     android:layout_marginStart="12dp"/>
 
@@ -114,17 +121,19 @@
                 android:layout_marginBottom="12dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/cb_reason4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:button="@null"
-                    android:background="@drawable/checkbox_blue_square"/>
+                    android:button="@drawable/checkbox_blue_square"
+                    android:onClick="@{(cbReason4)->vm.onCheckClicked(cbReason4, cbReason4.tag.toString())}"
+                    android:tag="@string/SIGN_OUT_REASON4"/>
 
                 <TextView
                     style="@style/H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
-                    android:text="다른 대체 서비스를 이용합니다."
+                    android:text="@string/SIGN_OUT_REASON4"
                     android:textColor="@color/COLOR_GRAY_800"
                     android:layout_marginStart="12dp"/>
 
@@ -138,17 +147,19 @@
                 android:layout_marginBottom="12dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/cb_reason5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:button="@null"
-                    android:background="@drawable/checkbox_blue_square"/>
+                    android:button="@drawable/checkbox_blue_square"
+                    android:onClick="@{(cbReason5)->vm.onCheckClicked(cbReason5, cbReason5.tag.toString())}"
+                    android:tag="@string/SIGN_OUT_REASON5"/>
 
                 <TextView
                     style="@style/H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
-                    android:text="배송추적이 정확하지 않은 것 같습니다."
+                    android:text="@string/SIGN_OUT_REASON5"
                     android:textColor="@color/COLOR_GRAY_800"
                     android:layout_marginStart="12dp"/>
 
@@ -163,17 +174,19 @@
                 android:layout_marginBottom="12dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
+                    android:id="@+id/cb_reason6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:button="@null"
-                    android:background="@drawable/checkbox_blue_square"/>
+                    android:button="@drawable/checkbox_blue_square"
+                    android:onClick="@{(cbReason6)->vm.onCheckClicked(cbReason6, etReason.getText().toString())}"
+                    android:tag="@string/SIGN_OUT_REASON6"/>
 
                 <TextView
                     style="@style/H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
-                    android:text="기타"
+                    android:text="@string/SIGN_OUT_REASON6"
                     android:textColor="@color/COLOR_GRAY_800"
                     android:layout_marginStart="12dp"/>
 
@@ -187,10 +200,15 @@
 
                 <EditText
                     style="@style/H4"
+                    android:id="@+id/et_reason"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:lines="4"
-                    android:background="@android:color/transparent"/>
+                    android:lines="2"
+                    android:gravity="top"
+                    android:background="@android:color/transparent"
+                    android:padding="10dp"
+                    tools:text="테스트 12345677890"
+                    android:includeFontPadding="false"/>
 
             </LinearLayout>
 

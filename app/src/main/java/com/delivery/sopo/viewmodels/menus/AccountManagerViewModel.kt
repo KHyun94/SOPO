@@ -3,11 +3,13 @@ package com.delivery.sopo.viewmodels.menus
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.delivery.sopo.R
 import com.delivery.sopo.enums.MenuEnum
+import kotlinx.android.synthetic.main.fragment_account_manager.*
 
 class AccountManagerViewModel: ViewModel()
 {
-    val _navigator = MutableLiveData<MenuEnum>()
+    private val _navigator = MutableLiveData<MenuEnum>()
     val navigator : LiveData<MenuEnum>
     get() = _navigator
 
@@ -27,7 +29,7 @@ class AccountManagerViewModel: ViewModel()
 
     fun onSignOutClicked()
     {
-        _navigator.value = MenuEnum.SIGN_OUT
+        _navigator.postValue(MenuEnum.SIGN_OUT)
     }
 
 }

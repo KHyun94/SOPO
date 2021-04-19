@@ -71,6 +71,5 @@ interface UserAPI
      * @return Response<APIResult<String?>>
      */
     @POST("/api/v1/sopo-api/user/signOut")
-    suspend fun signOut(@Query("reason") reason : String) : Response<APIResult<String?>>
-
+    suspend fun requestSignOut(@Field("reason") reason : String) : Response<APIResult<String?>>
 }
