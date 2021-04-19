@@ -1,16 +1,20 @@
 package com.delivery.sopo.viewmodels.signup
 
+import android.view.Gravity
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.consts.InfoConst
+import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.networks.handler.ResponseHandler
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.views.widget.CustomEditText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -76,6 +80,14 @@ class UpdateNicknameViewModel(private val userRepoImpl: UserRepoImpl): ViewModel
     {
         v.requestFocusFromTouch()
 
+        val isValidate = ValidateUtil.isValidateNickname(nickname = nickname.value.toString())
+
+        if(!isValidate)
+        {
+            _result.postValue(ResponseResult(false, null, Unit, "정보 입력을 완료해주세요.", DisplayEnum.TOAST_MESSAGE))
+            return
+        }
+
         CoroutineScope(Dispatchers.IO).launch {
             _result.postValue(updateNickname(nickname = nickname.value.toString()))
         }
@@ -94,7 +106,7 @@ class UpdateNicknameViewModel(private val userRepoImpl: UserRepoImpl): ViewModel
             is NetworkResult.Error ->
             {
                 SopoLog.e("Fail to update nickname")
-                ResponseResult(false, null, "", "Fail to update nickname")
+                ResponseResult(false, null, "", "Fail to update nickname", DisplayEnum.DIALOG)
             }
         }
     }

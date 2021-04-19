@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.core.view.marginTop
 import com.bumptech.glide.Glide
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
@@ -189,6 +190,14 @@ class CustomEditText : LinearLayout
 
     }
 
+    fun updateTextColor(type: Int){
+        when(type){
+            0 -> {
+                tv_title.setTextColor(resources.getColor(R.color.COLOR_GRAY_800))
+            }
+        }
+    }
+
     fun updateStatusColor(type: Int)
     {
         when (type)
@@ -210,13 +219,13 @@ class CustomEditText : LinearLayout
             {
 
                 SopoLog.d( msg = "Black")
-                tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
-                v_underline.setBackgroundResource(R.color.MAIN_BLACK)
+                tv_title.setTextColor(resources.getColor(R.color.COLOR_GRAY_800))
+                v_underline.setBackgroundResource(R.color.COLOR_GRAY_800)
             }
             else ->
             {
                 SopoLog.d( msg = "Black & Gray")
-                tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
+                tv_title.setTextColor(resources.getColor(R.color.COLOR_GRAY_800))
                 v_underline.setBackgroundResource(R.color.COLOR_GRAY_200)
             }
         }
@@ -257,7 +266,7 @@ class CustomEditText : LinearLayout
 
             iv_right_mark.setOnClickListener {
                 et_input_text.setText("")
-                tv_title.setTextColor(resources.getColor(R.color.MAIN_BLACK))
+                tv_title.setTextColor(resources.getColor(R.color.COLOR_GRAY_800))
                 v_underline.setBackgroundResource(R.color.COLOR_GRAY_200)
             }
         }

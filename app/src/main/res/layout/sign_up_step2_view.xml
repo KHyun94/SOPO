@@ -17,6 +17,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_marginTop="11dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -24,12 +25,11 @@
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="25sp"
+            android:layout_marginHorizontal="24dp"
             android:includeFontPadding="false"
-            android:text="안녕하세요."
-            android:textColor="@color/MAIN_BLACK"
-            android:textSize="25sp"
-            android:textStyle="bold"
+            android:text="@string/SIGN_UP_COMPLETE_VIEW_TITLE"
+            android:textColor="@color/COLOR_GRAY_800"
+            style="@style/H2"
             app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="parent"
@@ -39,18 +39,20 @@
             android:id="@+id/layout_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24sp"
-            android:layout_marginTop="70sp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="32dp"
             android:orientation="vertical"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_title"
             app:layout_constraintVertical_bias="0.6">
 
+            <!--  TODO app:hint를 빼야함.
+                  TODO app:textColor를 추가함. -->
             <com.delivery.sopo.views.widget.CustomEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24sp"
+                android:layout_marginBottom="24dp"
                 android:inputType="textEmailAddress"
                 app:content="@={vm.nickname}"
                 app:customFocusChangeListener="@{vm.callback}"
@@ -65,20 +67,19 @@
 
         <Button
             android:id="@+id/btn_sign_up"
-            style="@android:style/ButtonBar"
+            style="@style/H4"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="25sp"
-            android:layout_marginTop="40dp"
+            android:layout_height="56dp"
+            android:layout_marginHorizontal="25dp"
+            android:layout_marginTop="36dp"
             android:background="@drawable/border_round_white_btn"
             android:backgroundTint="@{vm.statusType == 1?@color/COLOR_MAIN_700:@color/COLOR_GRAY_200}"
             android:focusable="true"
             android:focusableInTouchMode="true"
+            android:includeFontPadding="false"
             android:onClick="@{()->vm.onCompleteSignUpClicked(btnSignUp)}"
-            android:paddingHorizontal="50dp"
-            android:text="로그인하고 시작하기"
+            android:text="시작하기"
             android:textColor="@{vm.statusType == 1?@color/MAIN_WHITE:@color/COLOR_GRAY_400}"
-            android:textSize="16sp"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_input"

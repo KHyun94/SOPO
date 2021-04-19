@@ -2,6 +2,8 @@ package com.delivery.sopo.views.signup
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -10,6 +12,7 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.SignUpCompleteBinding
 import com.delivery.sopo.extensions.launchActivityWithAllClear
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.viewmodels.signup.SignUpCompleteViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.OnAgreeClickListener

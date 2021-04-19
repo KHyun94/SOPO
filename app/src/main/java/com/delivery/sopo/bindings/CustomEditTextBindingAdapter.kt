@@ -24,6 +24,8 @@ object CustomEditTextBindingAdapter
         }
     }
 
+
+
     @JvmStatic
     @BindingAdapter("contentAttrChanged")
     fun setCustomEtInverseBindingListener(v: CustomEditText, listener: InverseBindingListener?)
@@ -111,5 +113,14 @@ object CustomEditTextBindingAdapter
         statusType: Int)
     {
         ce.updateStatusColor(statusType)
+    }
+
+    @JvmStatic
+    @BindingAdapter("titleColor")
+    fun bindUpdateTextColor(
+        ce: CustomEditText,
+        color: Int)
+    {
+        ce.updateTextColor(color)
     }
 }

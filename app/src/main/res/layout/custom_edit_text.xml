@@ -3,14 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="80sp"
+    android:minHeight="80dp"
     android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/layout_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16sp">
+        android:layout_marginBottom="24dp">
 
         <TextView
             android:id="@+id/tv_title"
@@ -19,7 +19,6 @@
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
             android:text="이메일"
-            android:textColor="@color/MAIN_BLACK"
             app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="parent" />
@@ -29,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_marginRight="5sp"
+            android:layout_marginRight="5dp"
             android:layout_toLeftOf="@+id/tv_description_text"
             android:background="@drawable/ic_red_alert"
             android:visibility="gone" />
@@ -61,23 +60,24 @@
             android:background="@null"
             android:includeFontPadding="false"
             android:lines="1"
-            android:paddingBottom="5sp"
+            android:paddingBottom="5dp"
             android:singleLine="true"
+            android:textColor="@color/COLOR_GRAY_800"
             android:textColorHint="@color/COLOR_GRAY_300" />
 
         <ImageView
             android:id="@+id/iv_right_mark"
-            android:layout_width="20sp"
-            android:layout_height="20sp"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="5sp"
+            android:layout_marginEnd="5dp"
             android:src="@drawable/ic_blue_ok"
             android:visibility="gone" />
 
         <View
             android:id="@+id/v_underline"
             android:layout_width="match_parent"
-            android:layout_height="2sp"
+            android:layout_height="2dp"
             android:layout_below="@+id/et_input_text"
             android:background="@color/COLOR_GRAY_200" />
     </RelativeLayout>

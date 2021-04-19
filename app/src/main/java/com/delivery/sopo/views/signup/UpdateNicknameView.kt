@@ -2,13 +2,16 @@ package com.delivery.sopo.views.signup
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.databinding.SignUpStep2ViewBinding
+import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.viewmodels.signup.UpdateNicknameViewModel
@@ -43,7 +46,20 @@ class UpdateNicknameView: AppCompatActivity()
             {
                 SopoLog.d("실패 닉네임 업데이트 여부 확인 ${result.result}, ${result.code}, ${result.message}")
 
-                GeneralDialog(this@UpdateNicknameView,"오류", "닉네임 등록이 실패했습니다.\n다시 시도해주세요.", null, Pair("네",null)).show(supportFragmentManager, "DIALOG")
+                when(result.displayType)
+                {
+                    DisplayEnum.TOAST_MESSAGE ->
+                    {
+                        Toast.makeText(this@UpdateNicknameView,"정보 입력을 완료해주세요.", Toast.LENGTH_LONG).apply {
+                            setGravity(Gravity.TOP, 0, 180)
+                        }.show()
+                    }
+                    DisplayEnum.DIALOG ->
+                    {
+                        GeneralDialog(this@UpdateNicknameView,"오류", "닉네임 등록이 실패했습니다.\n다시 시도해주세요.", null, Pair("네",null)).show(supportFragmentManager, "DIALOG")
+                    }
+                }
+
                 return@Observer
             }
 
