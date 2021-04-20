@@ -72,15 +72,28 @@ class ConfirmDeleteDialog : DialogFragment {
         this.handler = handler
     }
 
-    fun setUI()
+    private fun setUI()
     {
         setTitleIcon(titleIcon)
         setTitle(title)
         setSubTitle(subTitle)
         setContent(content)
+
+        if(title != null)
+        {
+            layoutView.tv_cancel.run {
+                setBackgroundResource(R.drawable.border_all_rounded_main_blue)
+                setTextColor(resources.getColor(R.color.MAIN_WHITE))
+            }
+
+            layoutView.tv_delete.run {
+                setBackgroundResource(R.drawable.border_15dp_blue_rounder)
+                setTextColor(resources.getColor(R.color.COLOR_MAIN_500))
+            }
+        }
     }
 
-    fun setTitleIcon(@DrawableRes icon: Int)
+    private fun setTitleIcon(@DrawableRes icon: Int)
     {
         Glide.with(parentActivity)
             .load(icon)
@@ -89,20 +102,20 @@ class ConfirmDeleteDialog : DialogFragment {
         layoutView.iv_title_icon.visibility = View.VISIBLE
     }
 
-    fun setTitle(title: String?)
+    private fun setTitle(title: String?)
     {
         if(title == null) return
         layoutView.tv_dialog_title.text = title
     }
 
-    fun setSubTitle(subTitle: String?)
+    private fun setSubTitle(subTitle: String?)
     {
         if(subTitle == null) return
         layoutView.tv_sub_title.text = subTitle
         layoutView.layout_sub_title.visibility = View.VISIBLE
     }
 
-    fun setContent(content: String?)
+    private fun setContent(content: String?)
     {
         if(content == null) return
         layoutView.tv_content.text = content

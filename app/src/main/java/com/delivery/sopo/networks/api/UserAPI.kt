@@ -13,34 +13,6 @@ import retrofit2.http.*
 
 interface UserAPI
 {
-    @GET("api/v1/sopo-api/join/firebase/auth-token")
-    @Headers("Accept: application/json")
-    suspend fun requestCustomToken(
-        // 이메일
-        @Query("email") email: String,
-        // 디바이스 정보
-        @Query("deviceInfo") deviceInfo: String,
-        // 회원가입 타입
-        @Query("joinType") joinType: String,
-        // 현 카카오 유니크 아이디
-        @Query("userId") userId: String
-    ): Response<APIResult<String?>>
-
-    /** 기존 발행된 access Token의 유효성 검사 */
-    @POST("api/v1/sopo-auth/oauth/check_token")
-    @Headers("Accept: application/json")
-    suspend fun checkOAuthToken(@Field("token") token : String) : Response<Any>
-
-    // todo 위의 api로 변경 예정
-    // 특정 값을 변경 및 삭제 등 수정 요청 api
-    @PATCH("/api/v1/sopo-api/user/deviceInfo")
-    suspend fun test(
-        @Header("Content-Type") contentType: String = "application/json",
-        @Query("jwtToken") jwtToken: String,
-        @Query("email") email: String,
-        @Body jsonPatch: JsonPatchDto?
-    ): Response<APIResult<String?>>
-
     /**
      * 자동 로그인 및 유저 데이터 가져오기
      * @return Response<APIResult<UserDetail?>>
@@ -71,5 +43,6 @@ interface UserAPI
      * @return Response<APIResult<String?>>
      */
     @POST("/api/v1/sopo-api/user/signOut")
-    suspend fun requestSignOut(@Field("reason") reason : String) : Response<APIResult<String?>>
+    @Headers("Accept: application/json")
+    suspend fun requestSignOut(@Query("reason") reason : String) : Response<APIResult<String?>>
 }

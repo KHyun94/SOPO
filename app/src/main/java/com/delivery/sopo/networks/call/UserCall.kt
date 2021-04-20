@@ -35,6 +35,7 @@ object UserCall : BaseService(), KoinComponent
 
     suspend fun requestSignOut(reason: String): NetworkResult<APIResult<String?>>
     {
+        userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
         return apiCall(call = { userAPI.requestSignOut(reason) })
     }
 }

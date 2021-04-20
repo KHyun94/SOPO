@@ -124,8 +124,7 @@
             android:textSize="16sp"
             android:textColor="@color/COLOR_MAIN_500"
             android:textStyle=""
-            android:fontFamily="@font/spoqa_han_sans_bold"
-            />
+            android:fontFamily="@font/spoqa_han_sans_bold" />
 
 
     </LinearLayout>

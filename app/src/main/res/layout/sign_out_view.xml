@@ -28,6 +28,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
+            android:id="@+id/layout_checkbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -40,7 +41,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="14dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
                     android:id="@+id/cb_reason1"
@@ -66,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="14dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
                     android:id="@+id/cb_reason2"
@@ -92,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="14dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
                     android:id="@+id/cb_reason3"
@@ -100,7 +101,7 @@
                     android:layout_height="match_parent"
                     android:button="@drawable/checkbox_blue_square"
                     android:onClick="@{(cbReason3)->vm.onCheckClicked(cbReason3, cbReason3.tag.toString())}"
-                    android:tag="@string/SIGN_OUT_REASON1" />
+                    android:tag="@string/SIGN_OUT_REASON3" />
 
                 <TextView
                     style="@style/H4"
@@ -118,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="14dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
                     android:id="@+id/cb_reason4"
@@ -144,7 +145,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="14dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
                     android:id="@+id/cb_reason5"
@@ -171,7 +172,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="11dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
                     android:id="@+id/cb_reason6"
@@ -194,7 +195,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="80dp"
                 android:layout_marginStart="1dp"
                 android:background="@drawable/border_white_gray">
 
@@ -204,10 +205,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:lines="2"
+                    android:maxLines="2"
                     android:gravity="top"
                     android:background="@android:color/transparent"
                     android:padding="10dp"
-                    tools:text="테스트 12345677890"
+                    android:text="@={vm.otherReason}"
+                    android:enabled="@{vm.isOtherReasonEt()}"
+                    tools:text="반짝반짝 작은 별 아름답게 비치네 반짝반짝 작은 별"
+                    android:layout_gravity="center"
+                    android:letterSpacing="-0.05"
                     android:includeFontPadding="false"/>
 
             </LinearLayout>
@@ -215,13 +221,24 @@
         </LinearLayout>
 
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"
+        <TextView
+            style="@style/H3"
+            android:id="@+id/tv_btn"
+            android:layout_width="136dp"
+            android:layout_height="43dp"
+            android:layout_marginBottom="192dp"
+            android:background="@drawable/border_all_rounded"
+            android:backgroundTint="@color/COLOR_GRAY_200"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:paddingVertical="9dp"
+            android:text="탈퇴하기"
+            android:textColor="@color/COLOR_GRAY_400"
+            app:layout_constraintTop_toBottomOf="@+id/layout_checkbox"
+            android:onClick="@{()->vm.onSignOutClicked()}"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:text="테스트" />
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
