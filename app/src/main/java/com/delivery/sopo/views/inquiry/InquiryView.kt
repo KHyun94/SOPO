@@ -607,38 +607,41 @@ class InquiryView: Fragment()
 
         // '삭제하기' 화면에서 최하단에 '~개 삭제하기' 화면을 눌렀을때 실질적으로 '삭제' 행위를 개시한다.
         constraint_delete_final.setOnClickListener {
-            ConfirmDeleteDialog(requireActivity()) { dialog ->
-
-                val selectedData = when (binding.vm!!.getCurrentScreenStatus())
+            ConfirmDeleteDialog(requireActivity(), Pair("삭제하기", object : ((ConfirmDeleteDialog) -> Unit){
+                override fun invoke(dialog: ConfirmDeleteDialog)
                 {
-                    ScreenStatusEnum.ONGOING ->
+                    val selectedData = when (binding.vm!!.getCurrentScreenStatus())
                     {
-                        val selectedDataSoon =
-                            soonArrivalParcelAdapter.getSelectedListData() // '곧 도착'에서 선택된 아이템들 리스트
-                        val selectedDataRegister =
-                            registeredParcelAdapter.getSelectedListData() // '등록된 택배'에서 선택된 아이템들 리스트
-                        Stream.of(selectedDataSoon, selectedDataRegister)
-                            .flatMap { it.stream() }
-                            .collect(Collectors.toList()) // '곧 도착' 리스트와 '등록뙨 택배' 리스트에서 선택된 아이템들을 '하나'의 리스트로 합쳐 뷰모델로 보내 삭제 처리를 한다.
+                        ScreenStatusEnum.ONGOING ->
+                        {
+                            val selectedDataSoon =
+                                soonArrivalParcelAdapter.getSelectedListData() // '곧 도착'에서 선택된 아이템들 리스트
+                            val selectedDataRegister =
+                                registeredParcelAdapter.getSelectedListData() // '등록된 택배'에서 선택된 아이템들 리스트
+                            Stream.of(selectedDataSoon, selectedDataRegister)
+                                .flatMap { it.stream() }
+                                .collect(Collectors.toList()) // '곧 도착' 리스트와 '등록뙨 택배' 리스트에서 선택된 아이템들을 '하나'의 리스트로 합쳐 뷰모델로 보내 삭제 처리를 한다.
+                        }
+                        ScreenStatusEnum.COMPLETE ->
+                        {
+                            completedParcelAdapter.getSelectedListData()
+                        }
+                        else -> mutableListOf()
                     }
-                    ScreenStatusEnum.COMPLETE ->
-                    {
-                        completedParcelAdapter.getSelectedListData()
-                    }
-                    else -> mutableListOf()
+
+                    // 선택된 데이터들을 삭제한다.
+                    binding.vm!!.removeSelectedData(selectedData as MutableList<ParcelId>)
+                    // 삭제할 데이터의 크기를 알려준다.
+                    binding.vm!!.setCntOfDelete(selectedData.size)
+
+                    // 삭제하기 화면을 종료한다.
+                    binding.vm!!.closeRemoveView()
+                    dialog.dismiss()
+
+                    showDeleteSnackBar()
                 }
 
-                // 선택된 데이터들을 삭제한다.
-                binding.vm!!.removeSelectedData(selectedData as MutableList<ParcelId>)
-                // 삭제할 데이터의 크기를 알려준다.
-                binding.vm!!.setCntOfDelete(selectedData.size)
-
-                // 삭제하기 화면을 종료한다.
-                binding.vm!!.closeRemoveView()
-                dialog.dismiss()
-
-                showDeleteSnackBar()
-            }.show(requireActivity().supportFragmentManager, "ConfirmDeleteDialog")
+            })).show(requireActivity().supportFragmentManager, "ConfirmDeleteDialog")
         }
     }
 

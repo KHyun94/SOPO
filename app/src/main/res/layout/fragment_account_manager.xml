@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.menus.AccountManagerViewModel" />
     </data>
-    
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:context=".views.menus.AccountManagerFragment">
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/linear_update"
@@ -23,10 +22,7 @@
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:focusableInTouchMode="true"
-            android:clickable="true"
-            android:focusable="true">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 style="@style/H3"
@@ -53,10 +49,7 @@
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:focusableInTouchMode="true"
-            android:clickable="true"
-            android:focusable="true">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 style="@style/H3"
@@ -81,10 +74,7 @@
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:focusableInTouchMode="true"
-            android:clickable="true"
-            android:focusable="true">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 style="@style/H3"
@@ -107,15 +97,12 @@
             android:id="@+id/layout_sign_out"
             android:layout_width="match_parent"
             android:layout_height="71dp"
+            android:background="@color/MAIN_WHITE"
+            android:onClick="@{()->vm.onSignOutClicked()}"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:focusableInTouchMode="true"
-            android:onClick="@{()->vm.onSignOutClicked()}"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="@color/MAIN_WHITE">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 style="@style/H3"
@@ -134,6 +121,6 @@
             android:visibility="invisible" />
 
     </LinearLayout>
-    
+
 </layout>
 

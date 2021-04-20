@@ -30,7 +30,6 @@
         <activity android:name=".views.signup.UpdateNicknameView"></activity>
         <activity
             android:name=".views.main.MainView"
-            android:maxAspectRatio="2.4"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".views.signup.SignUpCompleteView"

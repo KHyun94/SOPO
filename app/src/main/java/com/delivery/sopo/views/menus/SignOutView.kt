@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ConfirmDeleteDialogBinding
@@ -23,7 +24,6 @@ class SignOutView: Fragment()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
@@ -43,23 +43,22 @@ class SignOutView: Fragment()
 
     fun setObserve()
     {
-        binding.vm!!.result.observe(this, Observer {res ->
+        binding.vm!!.result.observe(this, Observer { res ->
 
-            val dialog = ConfirmDeleteDialog(requireActivity()){
-                SopoLog.d(res)
-            }
+            val dialog = ConfirmDeleteDialog(
+                requireActivity(), 0, "탈퇴 시 유의사항", "고객의 정보가 삭제되며 복구가 불가능합니다.", """
+* 계정 개인정보(이메일, 비밀번호)
+* 등록하신 모든 택배 추적 정보
+            """.trimIndent(), Pair("탈퇴하기", object: ((ConfirmDeleteDialog) -> Unit)
+                {
+                    override fun invoke(dialog: ConfirmDeleteDialog)
+                    {
+                        Toast.makeText(context, "선택 메시지 >>> $res", Toast.LENGTH_LONG).show()
+                    }
+                })
+            )
 
-            dialog.let {
-                it.setTitle("탈퇴 시 유의사항")
-                it.setSubTitle("고객의 정보가 삭제되며 복구가 불가능합니다.")
-                it.setDeleteClick("탈퇴하기")
-                it.setContent("""
-                    * 계정 개인정보(이메일, 비밀번호)
-                    * 등록하신 모든 택배 추적 정보
-                """.trimIndent())
-            }
-
-            dialog.show(activity?.supportFragmentManager!!,"")
+            dialog.show(activity?.supportFragmentManager!!, "")
         })
     }
 }

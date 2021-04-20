@@ -12,16 +12,22 @@ import com.delivery.sopo.R
 import kotlinx.android.synthetic.main.confirm_delete_dialog.*
 import kotlinx.android.synthetic.main.confirm_delete_dialog.view.*
 
+typealias OnDeleteClickListener = Pair<String,(agree: ConfirmDeleteDialog)-> Unit>
 
 class ConfirmDeleteDialog : DialogFragment {
 
     private var parentActivity: Activity
     private lateinit var layoutView: View
-    private var onOkClickListener: ((agree: ConfirmDeleteDialog) -> Unit)? = null
 
-    constructor(act: Activity, handler: (agree: ConfirmDeleteDialog) -> Unit) : super() {
+    @DrawableRes private var titleIcon: Int = 0
+    private var title: String? = null
+    private var subTitle: String? = null
+    private var content: String? = null
+    private var handler: Pair<String,(agree: ConfirmDeleteDialog)-> Unit>
+
+    constructor(act: Activity, handler: Pair<String,(agree: ConfirmDeleteDialog)-> Unit>) : super() {
         this.parentActivity = act
-        onOkClickListener = handler
+        this.handler = handler
     }
 
     override fun onCreateView(
@@ -32,14 +38,15 @@ class ConfirmDeleteDialog : DialogFragment {
         layoutView = inflater.inflate(R.layout.confirm_delete_dialog, container, false)
         setSetting()
         setClickEvent()
-
+        setUI()
         return layoutView
     }
 
     private fun setClickEvent(){
 
+        layoutView.tv_delete.text = handler.first
         layoutView.tv_delete.setOnClickListener {
-            onOkClickListener?.invoke(this)
+            handler.second.invoke(this)
         }
 
         layoutView.tv_cancel.setOnClickListener {
@@ -56,6 +63,23 @@ class ConfirmDeleteDialog : DialogFragment {
         }
     }
 
+    constructor(act: Activity, @DrawableRes titleIcon: Int, title: String, subTitle: String, content: String, handler: Pair<String,(agree: ConfirmDeleteDialog)-> Unit>) : super() {
+        this.parentActivity = act
+        this.titleIcon = titleIcon
+        this.title = title
+        this.subTitle = subTitle
+        this.content = content
+        this.handler = handler
+    }
+
+    fun setUI()
+    {
+        setTitleIcon(titleIcon)
+        setTitle(title)
+        setSubTitle(subTitle)
+        setContent(content)
+    }
+
     fun setTitleIcon(@DrawableRes icon: Int)
     {
         Glide.with(parentActivity)
@@ -65,24 +89,22 @@ class ConfirmDeleteDialog : DialogFragment {
         layoutView.iv_title_icon.visibility = View.VISIBLE
     }
 
-    fun setTitle(title: String)
+    fun setTitle(title: String?)
     {
+        if(title == null) return
         layoutView.tv_dialog_title.text = title
     }
 
-    fun setSubTitle(subTitle: String)
+    fun setSubTitle(subTitle: String?)
     {
+        if(subTitle == null) return
         layoutView.tv_sub_title.text = subTitle
         layoutView.layout_sub_title.visibility = View.VISIBLE
     }
 
-    fun setDeleteClick(text: String)
+    fun setContent(content: String?)
     {
-        layoutView.tv_delete.text = text
-    }
-
-    fun setContent(text: String)
-    {
-        layoutView.tv_content.text = text
+        if(content == null) return
+        layoutView.tv_content.text = content
     }
 }
