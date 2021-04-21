@@ -9,6 +9,7 @@ import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
 import com.delivery.sopo.viewmodels.login.LoginViewModel
+import com.delivery.sopo.viewmodels.login.ResetPasswordViewModel
 import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.viewmodels.menus.*
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
@@ -47,6 +48,7 @@ val appModule = module {
     viewModel { SignUpCompleteViewModel(get(), get()) }
     viewModel { UpdateNicknameViewModel(get()) }
     viewModel { LoginSelectViewModel(get(),get()) }
+    viewModel { ResetPasswordViewModel() }
     viewModel { MainViewModel(get(), get(), get(), get()) }
     viewModel { LockScreenViewModel(get(), get()) }
     viewModel { SettingViewModel(get(), get()) }

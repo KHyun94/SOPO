@@ -27,10 +27,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".views.signup.UpdateNicknameView"></activity>
+        <activity android:name=".views.login.ResetPasswordView"></activity>
+        <activity android:name=".views.signup.UpdateNicknameView" />
         <activity
             android:name=".views.main.MainView"
-            android:windowSoftInputMode="adjustNothing"/>
+            android:windowSoftInputMode="adjustNothing" />
         <activity
             android:name=".views.signup.SignUpCompleteView"
             android:windowSoftInputMode="adjustResize" />
