@@ -5,8 +5,10 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.abstracts.BasicView
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.LoginViewBinding
 import com.delivery.sopo.enums.DisplayEnum
+import com.delivery.sopo.extensions.launchActivity
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
@@ -90,6 +92,16 @@ class LoginView : BasicView<LoginViewBinding>(R.layout.login_view)
             Toast.makeText(this, "성공", Toast.LENGTH_LONG).show()
             startActivity(Intent(this@LoginView, MainView::class.java))
             finish()
+        })
+
+        binding.vm!!.navigator.observe(this@LoginView, Observer { navigator ->
+            when(navigator)
+            {
+                NavigatorConst.TO_RESET_PASSWORD ->
+                {
+                    Intent(this@LoginView, ResetPasswordView::class.java).launchActivity(this@LoginView)
+                }
+            }
         })
     }
 }

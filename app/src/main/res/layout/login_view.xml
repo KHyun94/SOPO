@@ -84,6 +84,7 @@
             android:textSize="14sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            android:onClick="@{()->vm.onResetPasswordClicked()}"
             app:layout_constraintTop_toBottomOf="@+id/layout_input" />
 
         <Button

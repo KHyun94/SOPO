@@ -16,7 +16,6 @@ class LockScreenViewModel(
     private val userRepoImpl: UserRepoImpl,
     private val appPasswordRepo: AppPasswordRepoImpl) : ViewModel()
 {
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
 
     var lockPassword = MutableLiveData<String>()
     var firstCheck = MutableLiveData<Boolean>()

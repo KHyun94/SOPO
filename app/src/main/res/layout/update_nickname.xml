@@ -57,7 +57,6 @@
                 app:content="@={vm.nickname}"
                 app:customFocusChangeListener="@{vm.callback}"
                 app:descriptionVisible="@{vm.isErrorVisible()}"
-                app:hint="@string/EMAIL"
                 app:markVisible="@{vm.isCorrectVisible()}"
                 app:statusType="@{vm.statusType}"
                 app:title="닉네임을 알려주세요"
@@ -66,7 +65,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/btn_sign_up"
+            android:id="@+id/btn_snd_email"
             style="@style/H4"
             android:layout_width="match_parent"
             android:layout_height="56dp"
@@ -77,7 +76,7 @@
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:includeFontPadding="false"
-            android:onClick="@{()->vm.onCompleteSignUpClicked(btnSignUp)}"
+            android:onClick="@{()->vm.onCompleteSignUpClicked(btnSndEmail)}"
             android:text="시작하기"
             android:textColor="@{vm.statusType == 1?@color/MAIN_WHITE:@color/COLOR_GRAY_400}"
             app:layout_constraintLeft_toRightOf="parent"

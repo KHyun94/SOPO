@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.InfoConst
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.APIException
@@ -60,6 +61,11 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
     private var _isProgress = MutableLiveData<Boolean>()
     val isProgress: LiveData<Boolean>
         get() = _isProgress
+
+    private var _navigator = MutableLiveData<String>()
+    val navigator: LiveData<String>
+        get() = _navigator
+
 
     init
     {
@@ -253,6 +259,11 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
         {
             throw e
         }
+    }
+
+    fun onResetPasswordClicked()
+    {
+        _navigator.postValue(NavigatorConst.TO_RESET_PASSWORD)
     }
 
     suspend fun loginWithOAuth(email: String, password: String)
