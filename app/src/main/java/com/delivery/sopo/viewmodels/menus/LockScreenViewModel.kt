@@ -61,6 +61,25 @@ class LockScreenViewModel(
             LockScreenStatusEnum.VERIFY -> {
                 verifyLockPassword(num)
             }
+            LockScreenStatusEnum.RESET -> {
+
+            }
+        }
+    }
+
+    private fun authEmailPinNumber(pinCode: String, inputPinCode: String)
+    {
+        if(pinCode != inputPinCode)
+        {
+            /**
+             * 1. 1회 실패 적립, 상단에 '비밀번호가 일치하지 않습니다.' 텍스트 띄우기
+             * 2. 핀코드 초기화
+             * 3. 2회 실패 시 화면 상 '인증메일을 재발송 하시겠어요?' 텍스트 띄우기, 상단에 '비밀번호가 일치하지 않습니다.' 텍스트 띄우기
+             * 4. '재전송' 텍스트를 클릭하면 다시 인증 메일 전송 API 요청, 기존 PIN CODE와 JWT Token을 신규 value로 변경
+             * 5. 성공적으로 인증했으면 원래 화면인 재설정 화면으로 이동. (Activity for Start)
+             */
+
+
         }
     }
 

@@ -17,9 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LockScreenView : AppCompatActivity()
 {
-
     private val lockScreenVM: LockScreenViewModel by viewModel()
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     private lateinit var binding: LockScreenViewBinding
     private var firstCheck = false
     private var firstPassword = ""
@@ -95,7 +93,28 @@ class LockScreenView : AppCompatActivity()
             }
         })
 
+        lockScreenVM.lockScreenStatusEnum.observe(this, Observer { status ->
+
+            when(status)
+            {
+                LockScreenStatusEnum.RESET ->
+                {
+
+                }
+                else ->
+                {
+
+                }
+            }
+        })
+
         lockScreenVM.verifyCnt.observe(this@LockScreenView, Observer {
+
+            if(binding.vm!!.lockScreenStatusEnum.value == LockScreenStatusEnum.RESET)
+            {
+
+                return@Observer
+            }
 
             when(it){
                 1 ->{
