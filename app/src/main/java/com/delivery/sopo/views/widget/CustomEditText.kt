@@ -22,8 +22,6 @@ import kotlinx.android.synthetic.main.custom_edit_text.view.*
 class CustomEditText : LinearLayout
 {
 
-    private val TAG = "LOG.SOPO.CustomEt"
-
     private var text: String? = null
     private var title: String? = null
     private var descriptionText: String? = null

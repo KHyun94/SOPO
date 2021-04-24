@@ -88,6 +88,7 @@ class ResetPasswordViewModel: ViewModel()
             return
         }
 
+        _result.postValue(ResponseResult(true, null, Unit, "정보 입력을 완료해주세요.", DisplayEnum.TOAST_MESSAGE))
         CoroutineScope(Dispatchers.IO).launch {
 //            _result.postValue(updateNickname(nickname = nickname.value.toString()))
         }

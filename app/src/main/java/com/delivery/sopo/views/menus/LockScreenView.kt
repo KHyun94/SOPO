@@ -1,7 +1,12 @@
 package com.delivery.sopo.views.menus
 
+import android.graphics.Color
 import android.os.Bundle
-import android.view.View.*
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -14,6 +19,7 @@ import com.delivery.sopo.viewmodels.menus.LockScreenViewModel
 import kotlinx.android.synthetic.main.lock_screen_view.*
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class LockScreenView : AppCompatActivity()
 {
@@ -88,8 +94,15 @@ class LockScreenView : AppCompatActivity()
                 finish()
             }
             else{
+
+//                val str = "글자를 바꿔주세요"
+//                val ssb = SpannableStringBuilder(str)
+//                ssb.setSpan(ForegroundColorSpan(Color.parseColor("#01AFF1")), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+//                binding.tvSub2.setText(ssb)
+
+
                 tv_errorComment.visibility = VISIBLE
-                tv_guideComment.text = "다시 입력해 주세요."
+                tv_guide_comment.text = "다시 입력해 주세요."
             }
         })
 
@@ -119,11 +132,11 @@ class LockScreenView : AppCompatActivity()
             when(it){
                 1 ->{
                     tv_errorComment.visibility = INVISIBLE
-                    tv_guideComment.text = "확인을 위해 한 번 더 입력해 주세요."
+                    tv_guide_comment.text = "확인을 위해 한 번 더 입력해 주세요."
                 }
                 2 -> {
                     tv_errorComment.visibility = VISIBLE
-                    tv_guideComment.text = "처음부터 다시 시도해 주세요."
+                    tv_guide_comment.text = "처음부터 다시 시도해 주세요."
                     firstPassword = ""
                     firstCheck = false
                 }

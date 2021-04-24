@@ -15,7 +15,7 @@
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:statusBarColor">@color/MAIN_WHITE</item>
+        <item name="android:statusBarColor">@color/COLOR_GRAY_50</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
         <item name="android:dropDownListViewStyle">@style/PopupMenuListView</item>
         <!-- 화면 로딩 오버레이 최소화 -->
@@ -37,6 +37,22 @@
         <item name="colorControlNormal">@color/MAIN_BLACK</item>
         <item name="colorControlActivated">@color/MAIN_BLACK</item>
         <item name="colorError">@color/colorAccent</item>
+    </style>
+
+    <style name="buttonBasicStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:layout_marginRight">24dp</item>
+        <item name="android:layout_marginLeft">24dp</item>
+        <item name="android:background">@drawable/border_round_white_btn</item>
+        <item name="android:backgroundTint">@color/COLOR_MAIN_700</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:textColor">@color/MAIN_WHITE</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingTop">15dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:fontFamily">@font/spoqa_han_sans_regular</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:letterSpacing">-0.04</item>
     </style>
 
 </resources>

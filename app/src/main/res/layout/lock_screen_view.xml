@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="com.delivery.sopo.enums.LockScreenStatusEnum"/>
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.menus.LockScreenViewModel" />
@@ -16,15 +17,17 @@
 
         <TextView
             style="@style/H2"
-            android:id="@+id/textView2"
+            android:id="@+id/tv_title_lock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="13dp"
-            android:text="@string/LOCK_SCREEN_VIEW_PASSWORD_TITLE"
+            android:text="@{vm.lockScreenStatusEnum != LockScreenStatusEnum.RESET?@string/LOCK_SCREEN_VIEW_APP_PASSWORD_TITLE:@string/LOCK_SCREEN_VIEW_ACCOUNT_PASSWORD_RESET_TITLE}"
             android:textColor="@color/COLOR_GRAY_800"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:includeFontPadding="false"
+            />
 
         <TextView
             style="@style/H5"
@@ -34,14 +37,15 @@
             android:layout_height="wrap_content"
             android:text="@string/LOCK_SCREEN_VIEW_INVALID_PASSWORD"
             android:textColor="@color/MAIN_RED"
-            app:layout_constraintBottom_toTopOf="@+id/tv_guideComment"
+            app:layout_constraintBottom_toTopOf="@+id/tv_guide_comment"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             />
 
+
         <TextView
             style="@style/H5"
-            android:id="@+id/tv_guideComment"
+            android:id="@+id/tv_guide_comment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="113dp"
@@ -49,7 +53,7 @@
             android:textColor="@color/COLOR_GRAY_600"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView2" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_title_lock" />
 
         <EditText
             android:visibility="visible"
@@ -58,6 +62,7 @@
             android:gravity="center"
             android:layout_weight="1"
             android:maxLength="4"
+            android:focusable="false"
             android:text="@{vm.lockPassword}"
             app:layout_constraintBottom_toTopOf="@+id/grid_numPad"
             app:layout_constraintEnd_toEndOf="parent"
@@ -72,7 +77,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_guideComment">
+            app:layout_constraintTop_toBottomOf="@+id/tv_guide_comment">
 
             <EditText
                 android:id="@+id/et_firstPassword"
@@ -140,8 +145,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.lockPasswordAction(1)}"
-                    />
+                    android:onClick="@{() -> vm.lockPasswordAction(1)}" />
 
 
                 <Button

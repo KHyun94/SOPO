@@ -163,7 +163,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
                     else
                     {
                         emailStatusType.value = CustomEditText.STATUS_COLOR_RED
-                        emailValidateText.value = "이메일 형식을 확인해주세요."
+                        emailValidateText.value = "이메일 양식을 확인해주세요."
                         setVisibleState(
                             type = type, errorState = View.VISIBLE, corState = View.GONE
                         )
@@ -196,7 +196,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
                     else
                     {
                         pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
-                        pwdValidateText.value = "비밀번호 형식을 확인해주세요."
+                        pwdValidateText.value = "비밀번호를 확인해주세요."
                         setVisibleState(type, View.VISIBLE, View.GONE)
                     }
 //                    _result.value = onCheckValidate()

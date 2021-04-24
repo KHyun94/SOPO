@@ -219,7 +219,7 @@ class SignUpViewModel(private val userRepo: UserRepoImpl) : ViewModel()
                     {
                         emailStatusType.value = 0
                         SopoLog.d( msg = "PLZ Check Email Validate")
-                        emailValidateText.value = "이메일 형식을 확인해주세요."
+                        emailValidateText.value = "이메일 양식을 확인해주세요."
                         setVisibleState(type = type, errorState = VISIBLE, corState = GONE)
                     }
 
@@ -265,7 +265,7 @@ class SignUpViewModel(private val userRepo: UserRepoImpl) : ViewModel()
                     else
                     {
                         pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
-                        pwdValidateText.value = "비밀번호 형식을 확인해주세요."
+                        pwdValidateText.value = "비밀번호를 확인해주세요."
                         setVisibleState(type, VISIBLE, GONE)
 
                         // 비밀번호 일치 검사
@@ -315,7 +315,7 @@ class SignUpViewModel(private val userRepo: UserRepoImpl) : ViewModel()
 
                             rePwdStatusType.value = CustomEditText.STATUS_COLOR_RED
                             // 비밀번호 확인의 유효성이 false 일 때
-                            rePwdValidateText.value = "비밀번호 형식을 확인해주세요."
+                            rePwdValidateText.value = "비밀번호를 확인해주세요."
                             setVisibleState(InfoConst.RE_PASSWORD, VISIBLE, GONE)
                         }
                         else
