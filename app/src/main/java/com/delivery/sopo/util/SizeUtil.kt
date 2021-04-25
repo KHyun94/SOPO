@@ -26,6 +26,31 @@ object SizeUtil {
         ).toInt()
     }
 
+    fun changePxToDp(context: Context, px: Float): Float {
+
+        var density = context.resources.displayMetrics.density
+
+        return when(density)
+        {
+            1.0f ->
+            {
+                density * 4.0f
+            }
+            1.5f ->
+            {
+                density * (8/3)
+            }
+            2.0f ->
+            {
+                density * 2.0f
+            }
+            else ->
+            {
+                px / density
+            }
+        }
+    }
+
     fun changeSpToPx(context: Context, sp: Float): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_SP, sp, context.resources.displayMetrics

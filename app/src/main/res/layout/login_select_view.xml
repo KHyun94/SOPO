@@ -164,20 +164,16 @@
             </RelativeLayout>
 
 
-            <Button
+            <TextView
                 android:id="@+id/btn_sign_up"
-                style="@style/H4"
+                style="@style/buttonBasicStyle"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="41dp"
                 android:layout_marginEnd="41dp"
-                android:background="@drawable/border_14dp_rounder"
-                android:backgroundTint="@color/PRIMARY_700"
+                android:clickable="true"
                 android:onClick="@{()->vm.onSignUpClicked()}"
-                android:text="@string/LOGIN_SELECT_JOIN_COMMENT"
-                android:textColor="@color/MAIN_WHITE"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:text="@string/LOGIN_SELECT_JOIN_COMMENT" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
