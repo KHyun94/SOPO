@@ -1,6 +1,8 @@
 package com.delivery.sopo.views.login
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
@@ -138,14 +140,25 @@ class LoginView: BasicView<LoginViewBinding>(R.layout.login_view)
         {
             InfoConst.EMAIL ->
             {
+                binding.layoutEmail.run {
+                    // 힌트 홣성화
+                    isHintEnabled = true
+                    // 내부 이너 박스 컬러 >>> GRAY_50
+                    boxBackgroundColor = resources.getColor(R.color.COLOR_GRAY_50)
+                    // endIcon >>> Visible, clear img
 
-                binding.layoutEmail.isHintEnabled = true
-                binding.layoutEmail.boxBackgroundColor = resources.getColor(R.color.COLOR_GRAY_50)
-                binding.layoutEmail.boxStrokeWidth = SizeUtil.changeDpToPx(this, 2.0f)
-                binding.layoutEmail.boxStrokeColor = resources.getColor(R.color.COLOR_MAIN_700)
-                binding.layoutEmail.isEndIconVisible = true
-                binding.layoutEmail.endIconDrawable = resources.getDrawable(R.drawable.ic_textinput_status_clear)
-                binding.layoutEmail.helperText = null
+                    error = null
+                    errorIconDrawable = null
+
+                    isEndIconVisible = true
+                    endIconMode = TextInputLayout.END_ICON_CUSTOM
+                    endIconDrawable = ContextCompat.getDrawable(this@LoginView, R.drawable.ic_textinput_status_clear)
+
+                    setEndIconOnClickListener {
+                        binding.etEmail.setText("")
+                    }
+                }
+
             }
             InfoConst.PASSWORD ->
             {
@@ -163,26 +176,11 @@ class LoginView: BasicView<LoginViewBinding>(R.layout.login_view)
         {
             InfoConst.EMAIL ->
             {
-                if(binding.vm!!.email.value.toString() == "")
-                {
-                    binding.layoutEmail.run {
-                        isHintEnabled = true
-                        boxBackgroundColor = resources.getColor(R.color.COLOR_GRAY_100)
-
-                        boxStrokeWidth = SizeUtil.changeDpToPx(this@LoginView, 0.0f)
-                        boxStrokeColor = ContextCompat.getColor(this@LoginView, R.color.COLOR_MAIN_700)
-
-                        isEndIconVisible = true
-                        endIconMode = TextInputLayout.END_ICON_CUSTOM
-                        helperText = "이메일 양식을 확인해주세요."
-                        endIconDrawable = ContextCompat.getDrawable(this@LoginView, R.drawable.ic_textinput_status_fail)
-                    }
-                    return
-                }
+                binding.layoutEmail.setEndIconOnClickListener(null)
 
                 if (!ValidateUtil.isValidateEmail(binding.vm!!.email.value.toString()))
                 {
-                    SopoLog.d("이메일 양식 확인 실패 >>>${binding.vm!!.email.value.toString()}")
+                    SopoLog.d("Email's validation is failed >>>${binding.vm!!.email.value.toString()}")
 
                     binding.layoutEmail.run {
                         isHintEnabled = true
@@ -190,16 +188,28 @@ class LoginView: BasicView<LoginViewBinding>(R.layout.login_view)
 
                         boxStrokeWidth = SizeUtil.changeDpToPx(this@LoginView, 2.0f)
                         boxStrokeColor = ContextCompat.getColor(this@LoginView, R.color.COLOR_MAIN_700)
-                        isEndIconVisible = true
-                        endIconMode = TextInputLayout.END_ICON_CUSTOM
-                        helperText = "이메일 양식을 확인해주세요."
-                        endIconDrawable = ContextCompat.getDrawable(this@LoginView, R.drawable.ic_textinput_status_fail)
+                        boxStrokeErrorColor = ColorStateList.valueOf(ContextCompat.getColor(this@LoginView, R.color.COLOR_MAIN_700))
+
+                        isEndIconVisible = false
+                        endIconDrawable = null
+
+                        error = "이메일 양식을 확인해주세요."
+                        errorIconDrawable = ContextCompat.getDrawable(this@LoginView, R.drawable.ic_textinput_status_fail)
+                        setErrorTextColor(ColorStateList.valueOf(ContextCompat.getColor(this@LoginView, R.color.COLOR_MAIN_700)))
                     }
                     return
                 }
-                SopoLog.d("이메일 양식 확인 상 >>>${binding.vm!!.email.value.toString()}")
+                SopoLog.d("Email's validation is success >>>${binding.vm!!.email.value.toString()}")
                 binding.layoutEmail.run {
+                    isHintEnabled = true
                     boxBackgroundColor = resources.getColor(R.color.COLOR_MAIN_BLUE_50)
+
+                    boxStrokeWidth = SizeUtil.changeDpToPx(this@LoginView, 0.0f)
+                    boxStrokeErrorColor = ColorStateList.valueOf(ContextCompat.getColor(this@LoginView, R.color.COLOR_MAIN_700))
+
+                    error = null
+                    errorIconDrawable = null
+
                     isEndIconVisible = true
                     endIconMode = TextInputLayout.END_ICON_CUSTOM
                     endIconDrawable = ContextCompat.getDrawable(this@LoginView, R.drawable.ic_textinput_status_success)

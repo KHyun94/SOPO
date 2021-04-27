@@ -107,20 +107,13 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
         {
             InfoConst.EMAIL ->
             {
-                val isValidate = ValidateUtil.isValidateEmail(email = email.value.toString())
-
                 /**
                  * if validate is failed,
                  * BoxBackground -> GRAY_50
                  * ErrorMessage on
                  * endIcon -> errorMark
                  */
-//                if(!isValidate)
-//                {
-//                    SopoLog.d("email validate fail >>> ${email.value.toString()}")
-//                    emailErrorMessage.postValue("이메일 양식을 확인해주세요.")
-//                    return
-//                }
+
 
                 /**
                  * if validate is succeed,
@@ -129,7 +122,6 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
                  * endIcon -> errorMark
                  * endIcon -> successMark
                  */
-                SopoLog.d("email validate success")
 
             }
             InfoConst.PASSWORD ->

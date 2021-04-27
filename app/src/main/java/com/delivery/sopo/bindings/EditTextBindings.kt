@@ -37,6 +37,6 @@ object EditTextBindings
         errorMessage: String?
     )
     {
-        layout.helperText = errorMessage
+        layout.error = errorMessage
     }
 }
