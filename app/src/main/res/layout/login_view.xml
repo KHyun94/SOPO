@@ -9,7 +9,7 @@
 
         <import type="android.view.View" />
 
-        <import type="com.delivery.sopo.consts.InfoConst" />
+        <import type="com.delivery.sopo.enums.InfoEnum" />
 
         <variable
             name="vm"
@@ -45,26 +45,27 @@
             app:layout_constraintVertical_bias="0.68">
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:id="@+id/layout_email"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundMode="outline"
-                android:hint="이메일"
-                app:hintTextColor="@color/COLOR_MAIN_700"
-                app:hintEnabled="true"
+                android:background="@color/COLOR_GRAY_50"
+                android:hint="@string/EMAIL"
                 android:textColorHint="@color/COLOR_GRAY_400"
-                app:boxStrokeWidth="0dp"
                 app:boxBackgroundColor="@color/COLOR_GRAY_100"
+                app:boxBackgroundMode="outline"
                 app:boxCornerRadiusBottomEnd="10dp"
                 app:boxCornerRadiusBottomStart="10dp"
                 app:boxCornerRadiusTopEnd="10dp"
                 app:boxCornerRadiusTopStart="10dp"
-                android:background="@color/COLOR_GRAY_50"
                 app:boxStrokeColor="@color/COLOR_MAIN_700"
+                app:boxStrokeErrorColor="@color/COLOR_MAIN_700"
+                app:boxStrokeWidth="0dp"
                 app:endIconCheckable="true"
                 app:errorEnabled="true"
-                app:boxStrokeErrorColor="@color/COLOR_MAIN_700">
+                app:errorTextColor="@color/COLOR_MAIN_700"
+                app:hintEnabled="true"
+                app:hintTextColor="@color/COLOR_MAIN_700">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_email"
@@ -72,40 +73,49 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
-                    android:text="@={vm.email}"
                     android:singleLine="true"
+                    android:text="@={vm.email}"
                     app:focusChangeListener="@{vm.focusChangeCallback}"
-                    app:type="@{InfoConst.EMAIL}" />
+                    app:type="@{InfoEnum.EMAIL}" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!--            <com.google.android.material.textfield.TextInputLayout-->
-            <!--                android:id="@+id/layout_password"-->
-            <!--                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"-->
-            <!--                android:layout_width="match_parent"-->
-            <!--                android:layout_height="wrap_content"-->
-            <!--                app:boxCornerRadiusBottomEnd="10dp"-->
-            <!--                app:boxCornerRadiusBottomStart="10dp"-->
-            <!--                app:boxCornerRadiusTopEnd="10dp"-->
-            <!--                app:boxCornerRadiusTopStart="10dp"-->
-            <!--                android:background="@color/COLOR_GRAY_50"-->
-            <!--                app:boxStrokeColor="@color/COLOR_MAIN_700"-->
-            <!--                android:textColorHint="@color/COLOR_GRAY_400"-->
-            <!--                app:hintTextColor="@color/COLOR_MAIN_700"-->
-            <!--                app:boxBackgroundColor="@color/COLOR_GRAY_100"-->
-            <!--                app:boxStrokeWidth="0dp"-->
-            <!--                android:hint="비밀번호">-->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layout_password"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/COLOR_GRAY_50"
+                android:hint="@string/PASSWORD"
+                android:textColorHint="@color/COLOR_GRAY_400"
+                app:boxBackgroundColor="@color/COLOR_GRAY_100"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxStrokeColor="@color/COLOR_MAIN_700"
+                app:boxStrokeErrorColor="@color/COLOR_MAIN_700"
+                app:boxStrokeWidth="0dp"
+                app:endIconCheckable="true"
+                app:errorEnabled="true"
+                app:errorTextColor="@color/COLOR_MAIN_700"
+                app:hintEnabled="true"
+                app:hintTextColor="@color/COLOR_MAIN_700"
+                android:layout_marginTop="8dp">
 
-            <!--                <com.google.android.material.textfield.TextInputEditText-->
-            <!--                    style="@style/H7"-->
-            <!--                    android:id="@+id/et_password"-->
-            <!--                    android:layout_width="match_parent"-->
-            <!--                    android:layout_height="wrap_content"-->
-            <!--                    android:text='@={vm.password, default=""}'-->
-            <!--                    app:type="@{InfoConst.PASSWORD}"-->
-            <!--                    app:onFocusChangeListener="@{vm.focusChangeCallback}"/>-->
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_password"
+                    style="@style/H7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:singleLine="true"
+                    android:text="@={vm.password}"
+                    app:focusChangeListener="@{vm.focusChangeCallback}"
+                    app:type="@{InfoEnum.PASSWORD}" />
 
-            <!--            </com.google.android.material.textfield.TextInputLayout>-->
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 

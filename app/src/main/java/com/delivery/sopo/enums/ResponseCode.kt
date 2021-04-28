@@ -19,6 +19,7 @@ enum class ResponseCode(val CODE: String, val MSG: String, val HTTP_STATUS: Int?
     FAIL_TO_SAVE_API_ACCOUNT("AP03", "Fail to save Api account", 400),
     FAIL_TO_SAVE_SOPO_USER("AP04", "Fail to save Sopo User", 400),
     FAIL_TO_JOIN_SOPO_USER("AP04", "Fail to join..", 400),
+    ALREADY_SIGN_OUT_USER("AP08", "Fail to join..", 400),
     INVALID_USER("AP05", "Invalid user", 400),
     FAIL_TO_GET_USER_BY_FIREBASE_UID("AP06", "Fail to get user by firebase`s uid", 400),
     FAIL_TO_UPDATE_USER_DEVICE_INFO("AP07", "Fail to update user`s device-info", 400),

@@ -1,5 +1,6 @@
 package com.delivery.sopo.viewmodels.login
 
+import android.os.Handler
 import android.view.View
 import androidx.annotation.ColorRes
 import androidx.lifecycle.LiveData
@@ -11,6 +12,7 @@ import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.DisplayEnum
+import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.mapper.OauthMapper
@@ -52,30 +54,20 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
     val navigator: LiveData<String>
         get() = _navigator
 
-    private val _focus = MutableLiveData<Triple<View, Boolean, String>>()
-    val focus: MutableLiveData<Triple<View, Boolean, String>>
+    private val _focus = MutableLiveData<Triple<View, Boolean, InfoEnum>>()
+    val focus: MutableLiveData<Triple<View, Boolean, InfoEnum>>
     get() = _focus
 
     val focusChangeCallback: FocusChangeCallback = object : FocusChangeCallback{
-        override fun invoke(v: View, hasFocus: Boolean, type: String)
+        override fun invoke(v: View, hasFocus: Boolean, type: InfoEnum)
         {
-            _focus.postValue(Triple(v, hasFocus, type))
-
-            // Focus out
-            if(!hasFocus)
-            {
-                focusOut(type)
-                return
-            }
-
-            // Focus in
-            focusIn(type)
-
+            SopoLog.i("${type.NAME} >>> $hasFocus")
+            Handler().postDelayed(Runnable { _focus.value = (Triple(v, hasFocus, type)) }, 50)
         }
 
     }
 
-    fun focusIn(type: String)
+    fun focusIn(type: InfoEnum)
     {
         SopoLog.d("${type}::focus in")
 
@@ -88,24 +80,24 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
          */
         when(type)
         {
-            InfoConst.EMAIL ->
+            InfoEnum.EMAIL ->
             {
 
             }
-            InfoConst.PASSWORD ->
+            InfoEnum.PASSWORD ->
             {
 
             }
         }
     }
 
-    fun focusOut(type: String)
+    fun focusOut(type: InfoEnum)
     {
         SopoLog.d("${type}::focus out")
 
         when(type)
         {
-            InfoConst.EMAIL ->
+            InfoEnum.EMAIL ->
             {
                 /**
                  * if validate is failed,
@@ -124,7 +116,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
                  */
 
             }
-            InfoConst.PASSWORD ->
+            InfoEnum.PASSWORD ->
             {
 
             }
@@ -142,143 +134,6 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
         email.value = ""
         password.value = ""
     }
-/*
-    // CustomEditText의 success, error state 제어
-    private fun setVisibleState(type: String, errorState: Int, corState: Int)
-    {
-        when (type)
-        {
-            InfoConst.EMAIL ->
-            {
-                isEmailErrorVisible.value = errorState
-                isEmailCorVisible.value = corState
-
-            }
-            InfoConst.PASSWORD ->
-            {
-                isPwdErrorVisible.value = errorState
-                isPwdCorVisible.value = corState
-            }
-        }
-    }
-
-    // CustomEditText Focus 제어
-    var callback: FocusChangeCallback = FocusChangeCallback@{ type, focus ->
-
-        if (focus)
-        {
-            // success mark, error text Visible -> GONE
-            setVisibleState(type = type, errorState = View.GONE, corState = View.GONE)
-
-            // 선택한 CustomEditText의 underline 색상을 BLUE로 변경
-            when (type)
-            {
-                InfoConst.EMAIL -> emailStatusType.value = CustomEditText.STATUS_COLOR_BLUE
-                InfoConst.PASSWORD -> pwdStatusType.value = CustomEditText.STATUS_COLOR_BLUE
-            }
-        }
-        else
-        {
-            when (type)
-            {
-                InfoConst.EMAIL ->
-                {
-                    // email text가 공백일 때
-                    if (TextUtils.isEmpty(email.value))
-                    {
-                        emailStatusType.value = CustomEditText.STATUS_COLOR_RED
-                        emailValidateText.value = "이메일을 입력해주세요."
-
-                        setVisibleState(
-                            type = type, errorState = View.VISIBLE, corState = View.GONE
-                        )
-
-                        /**
-                         *  email, pwd 전체 유효성 검사
-                         */
-//                        _result.value = onCheckValidate()
-                        return@FocusChangeCallback
-                    }
-
-                    // email 단독 유효성 검사
-                    val isValidate = ValidateUtil.isValidateEmail(email = email.value)
-
-                    // email 유효성 통과
-                    if (isValidate)
-                    {
-                        emailStatusType.value = CustomEditText.STATUS_COLOR_BLUE
-                        setVisibleState(
-                            type = InfoConst.EMAIL, errorState = View.GONE, corState = View.VISIBLE
-                        )
-                    }
-                    // email 유효성 에러
-                    else
-                    {
-                        emailStatusType.value = CustomEditText.STATUS_COLOR_RED
-                        emailValidateText.value = "이메일 양식을 확인해주세요."
-                        setVisibleState(
-                            type = type, errorState = View.VISIBLE, corState = View.GONE
-                        )
-                    }
-//                    _result.value = onCheckValidate()
-                }
-                InfoConst.PASSWORD ->
-                {
-                    // password가 공백일 때
-                    if (TextUtils.isEmpty(pwd.value))
-                    {
-                        pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
-                        pwdValidateText.value = "비밀번호를 입력해주세요."
-                        setVisibleState(type, View.VISIBLE, View.GONE)
-//                        _result.value = onCheckValidate()
-
-                        return@FocusChangeCallback
-                    }
-
-                    // password 유효성 검사
-                    val isValidate = ValidateUtil.isValidatePassword(pwd = pwd.value)
-
-                    // password 유효성 검사 통과
-                    if (isValidate)
-                    {
-                        pwdStatusType.value = CustomEditText.STATUS_COLOR_BLUE
-                        setVisibleState(type, View.GONE, View.VISIBLE)
-                    }
-                    // password 유효성 에러
-                    else
-                    {
-                        pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
-                        pwdValidateText.value = "비밀번호를 확인해주세요."
-                        setVisibleState(type, View.VISIBLE, View.GONE)
-                    }
-//                    _result.value = onCheckValidate()
-                }
-            }
-        }
-    }
-*/
-    // email, password 입력 상태 확인
-    private fun onCheckValidate(): ResponseResult<Unit>
-    {
-        SopoLog.d(msg = "onCheckValidate call()")
-        // email 유효성 에러
-//        if (isEmailCorVisible.value != View.VISIBLE)
-//        {
-//            SopoLog.e(msg = "Fail to validate email")
-//            emailStatusType.value = CustomEditText.STATUS_COLOR_RED
-//            return ResponseResult(false, null, Unit, emailValidateText.value.toString(), DisplayEnum.TOAST_MESSAGE)
-//        }
-//
-//        // password 유효성 에러
-//        if (isPwdCorVisible.value != View.VISIBLE)
-//        {
-//            SopoLog.d(msg = "Fail to validate password")
-//            pwdStatusType.value = CustomEditText.STATUS_COLOR_RED
-//            return ResponseResult(false, null, Unit, pwdValidateText.value.toString(), DisplayEnum.TOAST_MESSAGE)
-//        }
-
-        return ResponseResult(true, null, Unit, "Success", DisplayEnum.NON_DISPLAY)
-    }
 
     fun onLoginClicked(v: View)
     {
@@ -286,20 +141,21 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
         {
             SopoLog.d(msg = "onLoginClicked() call!!!")
 
-            v.requestFocusFromTouch()
+//            v.requestFocusFromTouch()
 
-            onCheckValidate().let {
-                if(!it.result)
-                {
-                    _result.value = it
-                    return
-                }
+            if(!(ValidateUtil.isValidateEmail(email = email.value.toString())))
+            {
+                _result.postValue(ResponseResult(false, null, null, "이메일 양식을 확인해주세요.", DisplayEnum.DIALOG))
+                return
+            }
+
+            if(!ValidateUtil.isValidatePassword(password.value.toString()))
+            {
+                _result.postValue(ResponseResult(false, null, null, "비밀번호 형식을 확인해주세요.", DisplayEnum.DIALOG))
+                return
             }
 
             // result가 전부 통과일 때
-
-            SopoLog.d("Firebase Login >>> ${email.value.toString()}, ${password.value.toString()}")
-
             _isProgress.postValue(true)
 
             // 성공
@@ -349,7 +205,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
                 val exception = result.exception as APIException
                 val code = exception.responseCode
                 _isProgress.postValue(false)
-                _result.postValue(ResponseResult(false, code, Unit, code.MSG, DisplayEnum.DIALOG))
+                _result.postValue(ResponseResult(false, code, Unit, exception.errorMessage, DisplayEnum.DIALOG))
             }
         }
     }
