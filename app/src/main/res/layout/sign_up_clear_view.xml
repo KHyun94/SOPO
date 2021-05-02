@@ -43,7 +43,7 @@
             android:textColor="@color/MAIN_WHITE"
             android:paddingVertical="10sp"
             android:paddingHorizontal="80sp"
-            android:background="@drawable/border_round_white_btn"
+            android:background="@drawable/border_all_round_15dp"
             android:backgroundTint="@color/COLOR_MAIN_700"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

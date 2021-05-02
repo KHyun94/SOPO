@@ -3,10 +3,8 @@ package com.delivery.sopo.views.registers
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -14,6 +12,7 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.database.room.RoomActivate
 import com.delivery.sopo.databinding.RegisterStep1Binding
+import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.isGreaterThanOrEqual
 import com.delivery.sopo.models.CourierItem
@@ -24,6 +23,7 @@ import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
+import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
 import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.widget.CustomEditText.Companion.STATUS_COLOR_BLUE
@@ -32,10 +32,10 @@ import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+typealias FocusChangeCallback = (String, Boolean) -> Unit
+
 class RegisterStep1: Fragment()
 {
-    private val TAG = this.javaClass.simpleName
-
     private lateinit var parentView: MainView
 
     private lateinit var binding: RegisterStep1Binding
@@ -178,10 +178,6 @@ class RegisterStep1: Fragment()
 
             if (wayBilNum.isNotEmpty()) binding.vm!!.clipBoardWords.value = ""
 
-            binding.vm!!.wayBilNumStatusType.value =
-                if (wayBilNum.isGreaterThanOrEqual(1)) STATUS_COLOR_BLUE
-                else STATUS_COLOR_ELSE
-
             if (courier == null)
             {
                 if (!wayBilNum.isGreaterThanOrEqual(9))
@@ -206,10 +202,32 @@ class RegisterStep1: Fragment()
             }
         })
 
+        binding.vm!!.focus.observe(this, Observer { focus ->
+            val res = TextInputUtil.changeFocus(requireContext(), focus)
+            binding.vm!!.validates[res.first] = res.second
+        })
+
+        binding.vm!!.validateError.observe(this, Observer { target ->
+            val message = when(target.first)
+            {
+                InfoEnum.WAYBILL_NUMBER ->
+                {
+                    binding.etEmail.requestFocus()
+                    "운송장번호를 확인해주세요."
+                }
+
+                else -> ""
+            }
+
+            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).apply {
+                setGravity(Gravity.TOP, 0, 180)
+            }.show()
+        })
+
         binding.vm!!.errorMsg.observe(this, Observer {
             if (!it.isNullOrEmpty())
             {
-                CustomAlertMsg.floatingUpperSnackBAr(this.context!!, it, true)
+                CustomAlertMsg.floatingUpperSnackBAr(requireContext(), it, true)
                 binding.vm!!.errorMsg.value = ""
             }
         })
@@ -229,6 +247,7 @@ class RegisterStep1: Fragment()
          *      이외 모든 택배사도 보여줌으로 송장번호와 택배사의 정규식이 부합하지 않더라도 등록 가능)
          *
          */
+
         binding.vm!!.moveFragment.observe(this, Observer {
             when (it)
             {
@@ -261,16 +280,6 @@ class RegisterStep1: Fragment()
         super.onResume()
 
         SopoLog.d(msg = "OnResume")
-
-        binding.customEtTrackNum.setOnClearListener(context)
-
-        binding.customEtTrackNum.setOnKeyListener { v, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_ENTER)
-            {
-                OtherUtil.hideKeyboardSoft(activity!!)
-                binding.customEtTrackNum.etClearFocus()
-            }
-        }
 
         // 0922 kh 추가사항 - 클립보드에 저장되어있는 운송장 번호가 로컬에 등록된 택배가 있을 때, 안띄어주는 로직 추가
         ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE, parcelRepoImpl) {

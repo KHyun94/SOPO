@@ -17,7 +17,7 @@ object JoinRepository
 {
     val deviceInfo = SOPOApp.deviceInfo
 
-    private fun requestJoin(result: NetworkResult<APIResult<Unit>>): ResponseResult<Unit>
+    private fun<T, E> requestJoin(result: NetworkResult<APIResult<T>>): ResponseResult<E>
     {
         return when (result)
         {
@@ -25,20 +25,20 @@ object JoinRepository
             {
                 val apiResult = result.data
                 val code = CodeUtil.getCode(apiResult.code)
-                ResponseResult(true, code, Unit, code.MSG)
+                ResponseResult(true, code, apiResult.data as E, code.MSG)
             }
             is NetworkResult.Error ->
             {
                 val exception = result.exception as APIException
                 val errorCode = exception.responseCode
-
+                val apiResult = exception.apiResult
                 val message = if (exception.apiResult != null)
                 {
                     exception.apiResult?.message
                 }
                 else errorCode.MSG
 
-                ResponseResult(false, errorCode, Unit, message ?: "회원가입 실패")
+                ResponseResult(false, errorCode, apiResult?.data as E, message ?: "알 수 없는 오류")
             }
         }
     }
@@ -46,13 +46,13 @@ object JoinRepository
     suspend fun requestJoinBySelf(email: String, password: String): ResponseResult<Unit>
     {
         val result = JoinCall.requestJoinBySelf(email, password, deviceInfo)
-        return requestJoin(result)
+        return requestJoin<Unit, Unit>(result)
     }
 
     suspend fun requestJoinByKakao(email: String, password: String, kakaoUid: String, nickname: String?): ResponseResult<Unit>
     {
         val result = JoinCall.requestJoinByKakao(email, password, deviceInfo, kakaoUid, nickname)
-        val res = requestJoin(result)
+        val res = requestJoin<Unit, Unit>(result)
 
         if(res.code == ResponseCode.ALREADY_REGISTERED_USER)
         {
@@ -62,24 +62,9 @@ object JoinRepository
         return res
     }
 
-    suspend fun requestDuplicatedEmail(email: String, callback: DuplicateCallback)
+    suspend fun requestDuplicatedEmail(email: String): ResponseResult<Boolean>
     {
-        when (val result = JoinCall.requestDuplicatedEmail(email))
-        {
-            is NetworkResult.Success ->
-            {
-                val apiResult = result.data
-                val code = CodeUtil.getCode(apiResult.code)
-
-                callback.invoke(SuccessResult(code, code.MSG, apiResult.data), null)
-            }
-            is NetworkResult.Error ->
-            {
-                val exception = result.exception as APIException
-                val errorCode = exception.responseCode
-
-                callback.invoke(null, ErrorResult(errorCode, errorCode.MSG, ErrorResult.ERROR_TYPE_NON, false, exception))
-            }
-        }
+        val result = JoinCall.requestDuplicatedEmail(email)
+        return requestJoin<Boolean, Boolean>(result)
     }
 }

@@ -59,6 +59,7 @@ class SignUpCompleteViewModel(private val userRepo: UserRepoImpl, private val oA
 
             if(!oAuthRes.result)
             {
+                _result.postValue(oAuthRes)
                 return@launch
             }
 
@@ -78,19 +79,25 @@ class SignUpCompleteViewModel(private val userRepo: UserRepoImpl, private val oA
 
             if(userRepo.getNickname() == "")
             {
+                SopoLog.d("Nickname is empty")
+
                 val infoRes = OAuthNetworkRepo.getUserInfo()
 
                 if(!infoRes.result)
                 {
+                    SopoLog.e("Nickname is error")
                     _result.postValue(infoRes)
                     return@launch
                 }
 
                 if(infoRes.data == null || infoRes.data.nickname == "")
                 {
+                    SopoLog.e("Nickname is empty, so go to update nickname")
                     navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
                     return@launch
                 }
+
+                SopoLog.e("Nickname is ${infoRes.data.nickname}, so go to main")
 
                 userRepo.setNickname(infoRes.data.nickname)
 

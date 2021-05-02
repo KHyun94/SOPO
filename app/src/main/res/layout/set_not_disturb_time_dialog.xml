@@ -9,7 +9,7 @@
     android:paddingRight="20dp"
     android:paddingBottom="10dp"
 
-    android:background="@drawable/border_round_white_btn"
+    android:background="@drawable/border_all_round_15dp"
     android:orientation="vertical">
 
     <com.google.android.material.tabs.TabLayout

@@ -8,7 +8,7 @@
 
         <import type="android.view.View" />
 
-        <import type="com.delivery.sopo.consts.InfoConst" />
+        <import type="com.delivery.sopo.enums.InfoEnum" />
 
         <variable
             name="vm"
@@ -17,80 +17,146 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/COLOR_GRAY_50">
 
         <TextView
             android:id="@+id/tv_title"
+            style="@style/H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="25sp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="11dp"
             android:text="@string/SIGN_UP"
-            android:textColor="@color/MAIN_BLACK"
-            android:textSize="25sp"
-            android:textStyle="bold"
-            android:includeFontPadding="false"
-            app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.95" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/layout_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24sp"
-            android:layout_marginTop="70sp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="32dp"
             android:orientation="vertical"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_title"
-            app:layout_constraintVertical_bias="0.6">
+            app:layout_constraintTop_toBottomOf="@id/tv_title">
 
-            <com.delivery.sopo.views.widget.CustomEditText
-                android:id="@+id/text_test"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layout_email"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24sp"
-                android:inputType="textEmailAddress"
-                app:content="@={vm.email}"
-                app:customFocusChangeListener="@{vm.callback}"
-                app:descriptionText="@{vm.emailValidateText}"
-                app:descriptionVisible="@{vm.isEmailErrorVisible()}"
-                app:hint="@string/EMAIL"
-                app:markVisible="@{vm.isEmailCorVisible()}"
-                app:statusType="@{vm.emailStatusType}"
-                app:title="@string/EMAIL"
-                app:type="@{InfoConst.EMAIL}" />
+                android:background="@color/COLOR_GRAY_50"
+                android:hint="@string/EMAIL"
+                android:textColorHint="@color/COLOR_GRAY_400"
+                app:boxBackgroundColor="@color/COLOR_GRAY_100"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxStrokeColor="@color/COLOR_MAIN_700"
+                app:boxStrokeErrorColor="@color/COLOR_MAIN_700"
+                app:boxStrokeWidth="0dp"
+                app:endIconCheckable="true"
+                app:endIconTint="@null"
+                app:errorEnabled="true"
+                app:errorIconTint="@null"
+                app:errorTextColor="@color/COLOR_MAIN_700"
+                app:hintEnabled="true"
+                app:hintTextColor="@color/COLOR_MAIN_700">
 
-            <com.delivery.sopo.views.widget.CustomEditText
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_email"
+                    style="@style/H7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:singleLine="true"
+                    android:text="@={vm.email}"
+                    app:focusChangeListener="@{vm.focusChangeCallback}"
+                    app:type="@{InfoEnum.EMAIL}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layout_password"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24sp"
-                android:inputType="textPassword"
-                app:content="@={vm.pwd}"
-                app:customFocusChangeListener="@{vm.callback}"
-                app:descriptionText="@{vm.pwdValidateText}"
-                app:descriptionVisible="@{vm.isPwdErrorVisible()}"
-                app:hint="@string/PASSWORD"
-                app:markVisible="@{vm.isPwdCorVisible()}"
-                app:statusType="@{vm.pwdStatusType}"
-                app:title="@string/PASSWORD"
-                app:type="@{InfoConst.PASSWORD}" />
+                android:layout_marginTop="8dp"
+                android:background="@color/COLOR_GRAY_50"
+                android:hint="@string/PASSWORD"
+                android:textColorHint="@color/COLOR_GRAY_400"
+                app:boxBackgroundColor="@color/COLOR_GRAY_100"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxStrokeColor="@color/COLOR_MAIN_700"
+                app:boxStrokeErrorColor="@color/COLOR_MAIN_700"
+                app:boxStrokeWidth="0dp"
+                app:endIconCheckable="true"
+                app:endIconTint="@null"
+                app:errorEnabled="true"
+                app:errorIconTint="@null"
+                app:errorTextColor="@color/COLOR_MAIN_700"
+                app:hintEnabled="true"
+                app:hintTextColor="@color/COLOR_MAIN_700">
 
-            <com.delivery.sopo.views.widget.CustomEditText
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_password"
+                    style="@style/H7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:singleLine="true"
+                    android:text="@={vm.password}"
+                    app:focusChangeListener="@{vm.focusChangeCallback}"
+                    app:type="@{InfoEnum.PASSWORD}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layout_re_password"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="40sp"
-                android:inputType="textPassword"
-                app:content="@={vm.rePwd}"
-                app:customFocusChangeListener="@{vm.callback}"
-                app:descriptionText="@{vm.rePwdValidateText}"
-                app:descriptionVisible="@{vm.isRePwdErrorVisible()}"
-                app:hint="@string/RE_PASSWORD"
-                app:markVisible="@{vm.isRePwdCorVisible()}"
-                app:statusType="@{vm.rePwdStatusType}"
-                app:title="@string/RE_PASSWORD"
-                app:type="@{InfoConst.RE_PASSWORD}" />
+                android:layout_marginTop="8dp"
+                android:background="@color/COLOR_GRAY_50"
+                android:hint="@string/RE_PASSWORD"
+                android:textColorHint="@color/COLOR_GRAY_400"
+                app:boxBackgroundColor="@color/COLOR_GRAY_100"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxStrokeColor="@color/COLOR_MAIN_700"
+                app:boxStrokeErrorColor="@color/COLOR_MAIN_700"
+                app:boxStrokeWidth="0dp"
+                app:endIconCheckable="true"
+                app:endIconTint="@null"
+                app:errorEnabled="true"
+                app:errorIconTint="@null"
+                app:errorTextColor="@color/COLOR_MAIN_700"
+                app:hintEnabled="true"
+                app:hintTextColor="@color/COLOR_MAIN_700">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_re_password"
+                    style="@style/H7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:singleLine="true"
+                    android:text="@={vm.rePassword}"
+                    app:focusChangeListener="@{vm.focusChangeCallback}"
+                    app:type="@{InfoEnum.RE_PASSWORD}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 
@@ -105,16 +171,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_input">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatCheckBox
                 android:id="@+id/cb_agreement"
                 android:layout_width="25sp"
                 android:layout_height="25sp"
                 android:layout_marginVertical="10sp"
                 android:layout_marginEnd="10sp"
-                android:onClick="@{()->vm.onAgreeClicked()}"
-                app:falseRes="@{R.drawable.ic_gray_checked}"
-                app:isClick="@{vm.isAgree()}"
-                app:trueRes="@{R.drawable.ic_color_checked}" />
+                android:button="@drawable/checkbox_blue_circle"
+                android:onClick="@{()->vm.onAgreeClicked(cbAgreement)}"/>
 
             <!-- todo font 미적용 -->
             <TextView
@@ -124,22 +188,16 @@
                 android:textSize="13sp" />
         </LinearLayout>
 
-        <Button
+        <TextView
             android:id="@+id/btn_sign_up"
-            style="@android:style/ButtonBar"
+            style="@style/buttonBasicStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="25sp"
             android:layout_marginTop="40dp"
-            android:background="@drawable/border_round_white_btn"
-            android:backgroundTint="@color/COLOR_MAIN_700"
             android:focusable="true"
             android:focusableInTouchMode="true"
             android:onClick="@{()->vm.onSignUpClicked(btnSignUp)}"
-            android:paddingHorizontal="50dp"
             android:text="@string/DO_SIGN_UP"
-            android:textColor="@color/MAIN_WHITE"
-            android:textSize="16sp"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_agreement" />

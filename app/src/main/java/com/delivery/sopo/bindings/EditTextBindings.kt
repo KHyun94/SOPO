@@ -27,9 +27,7 @@ object EditTextBindings
     )
     {
         et.setOnFocusChangeListener{v, hasFocus ->
-//            SopoLog.i("TYPE::${type.NAME} >>> $hasFocus")
             focusChangeCallback.invoke(v, hasFocus, type)
-
         }
     }
 

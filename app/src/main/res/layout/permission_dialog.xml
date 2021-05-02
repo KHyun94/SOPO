@@ -53,7 +53,7 @@
             android:id="@+id/btn_ok"
             android:layout_width="135sp"
             android:layout_height="wrap_content"
-            android:background="@drawable/border_round_white_btn"
+            android:background="@drawable/border_all_round_15dp"
             android:backgroundTint="@color/COLOR_MAIN_700"
             android:gravity="center"
             android:paddingVertical="10sp"

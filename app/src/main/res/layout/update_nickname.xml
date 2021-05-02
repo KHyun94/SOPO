@@ -9,7 +9,7 @@
 
         <import type="android.view.View" />
 
-        <import type="com.delivery.sopo.consts.InfoConst" />
+        <import type="com.delivery.sopo.enums.InfoEnum" />
 
         <variable
             name="vm"
@@ -17,23 +17,22 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_marginTop="11dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/COLOR_GRAY_50">
 
         <TextView
             android:id="@+id/tv_title"
+            style="@style/H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="11dp"
             android:includeFontPadding="false"
             android:text="@string/SIGN_UP_COMPLETE_VIEW_TITLE"
             android:textColor="@color/COLOR_GRAY_800"
-            style="@style/H2"
-            app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.95" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/layout_input"
@@ -47,38 +46,54 @@
             app:layout_constraintTop_toBottomOf="@id/tv_title"
             app:layout_constraintVertical_bias="0.6">
 
-            <!--  TODO app:hint를 빼야함.
-                  TODO app:textColor를 추가함. -->
-            <com.delivery.sopo.views.widget.CustomEditText
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/layout_nickname"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:inputType="textEmailAddress"
-                app:content="@={vm.nickname}"
-                app:customFocusChangeListener="@{vm.callback}"
-                app:descriptionVisible="@{vm.isErrorVisible()}"
-                app:markVisible="@{vm.isCorrectVisible()}"
-                app:statusType="@{vm.statusType}"
-                app:title="닉네임을 알려주세요"
-                app:type="@{InfoConst.NICKNAME}" />
+                android:layout_marginTop="8dp"
+                android:background="@color/COLOR_GRAY_50"
+                android:hint="@string/NICKNAME"
+                android:textColorHint="@color/COLOR_GRAY_400"
+                app:boxBackgroundColor="@color/COLOR_GRAY_100"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxStrokeColor="@color/COLOR_MAIN_700"
+                app:boxStrokeErrorColor="@color/COLOR_MAIN_700"
+                app:boxStrokeWidth="0dp"
+                app:endIconCheckable="true"
+                app:endIconTint="@null"
+                app:errorEnabled="true"
+                app:errorIconTint="@null"
+                app:errorTextColor="@color/COLOR_MAIN_700"
+                app:hintEnabled="true"
+                app:hintTextColor="@color/COLOR_MAIN_700">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_nickname"
+                    style="@style/H7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:text="@={vm.nickname}"
+                    app:focusChangeListener="@{vm.focusChangeCallback}"
+                    app:type="@{InfoEnum.NICKNAME}" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 
-        <Button
+        <TextView
             android:id="@+id/btn_snd_email"
-            style="@style/H4"
+            style="@style/buttonBasicStyle"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_marginHorizontal="25dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
-            android:background="@drawable/border_round_white_btn"
-            android:backgroundTint="@{vm.statusType == 1?@color/COLOR_MAIN_700:@color/COLOR_GRAY_200}"
-            android:focusable="true"
-            android:focusableInTouchMode="true"
-            android:includeFontPadding="false"
             android:onClick="@{()->vm.onCompleteSignUpClicked(btnSndEmail)}"
             android:text="시작하기"
-            android:textColor="@{vm.statusType == 1?@color/MAIN_WHITE:@color/COLOR_GRAY_400}"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_input"

@@ -11,7 +11,6 @@ import com.delivery.sopo.util.SopoLog
 
 object ImageBindingAdapter
 {
-
     @JvmStatic
     @BindingAdapter("setBackgroundColor")
     fun bindBackgroundColor(view: View, @ColorRes colorRes: Int)
@@ -61,15 +60,12 @@ object ImageBindingAdapter
                 .load(res)
                 .into(view)
         }
-
-
     }
 
     @JvmStatic
     @BindingAdapter("isClick", "trueRes", "falseRes")
     fun bindSetterSelectedImage(view: ImageView, isClick: Boolean, trueRes: Int, falseRes: Int)
     {
-
         val selectRes = if (isClick) trueRes else falseRes
 
         Glide.with(view.context)

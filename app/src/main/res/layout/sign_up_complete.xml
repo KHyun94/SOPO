@@ -38,19 +38,16 @@
             android:text="@{vm.email}"
             tools:text="asle1000@gmail.com"
             android:textColor="@color/COLOR_MAIN_700"/>
-        <Button
+
+        <TextView
+            style="@style/buttonBasicStyle"
             android:id="@+id/btn_move_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginHorizontal="24dp"
             android:layout_marginBottom="173dp"
-            android:background="@drawable/border_round_white_btn"
-            android:backgroundTint="@color/COLOR_MAIN_700"
             android:text="확인"
-            android:textColor="@color/MAIN_WHITE"
-            android:textSize="16sp"
-            android:textStyle="bold"
             android:onClick="@{()->vm.onCompleteClicked()}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="parent"

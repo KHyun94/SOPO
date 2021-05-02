@@ -37,9 +37,13 @@ import kotlinx.coroutines.withContext
 class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImpl): ViewModel()
 {
     val email = MutableLiveData<String>()
-    val emailErrorMessage = MutableLiveData<String?>()
-
     var password = MutableLiveData<String>()
+
+    val validates = mutableMapOf<InfoEnum, Boolean>()
+
+    private var _validateError = MutableLiveData<Pair<InfoEnum, Boolean>>()
+    val validateError: LiveData<Pair<InfoEnum, Boolean>>
+        get() = _validateError
 
     // 유효성 및 통신 등의 결과 객체
     private var _result = MutableLiveData<ResponseResult<*>>()
@@ -58,81 +62,15 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
     val focus: MutableLiveData<Triple<View, Boolean, InfoEnum>>
     get() = _focus
 
-    val focusChangeCallback: FocusChangeCallback = object : FocusChangeCallback{
-        override fun invoke(v: View, hasFocus: Boolean, type: InfoEnum)
-        {
+    val focusChangeCallback: FocusChangeCallback = FocusChangeCallback@{ v, hasFocus, type->
             SopoLog.i("${type.NAME} >>> $hasFocus")
             Handler().postDelayed(Runnable { _focus.value = (Triple(v, hasFocus, type)) }, 50)
-        }
-
-    }
-
-    fun focusIn(type: InfoEnum)
-    {
-        SopoLog.d("${type}::focus in")
-
-        /**
-         * progress,
-         * BoxBackground -> GRAY_50
-         * ErrorMessage off
-         * endIcon -> clearMark
-         *         -> clearEvent
-         */
-        when(type)
-        {
-            InfoEnum.EMAIL ->
-            {
-
-            }
-            InfoEnum.PASSWORD ->
-            {
-
-            }
-        }
-    }
-
-    fun focusOut(type: InfoEnum)
-    {
-        SopoLog.d("${type}::focus out")
-
-        when(type)
-        {
-            InfoEnum.EMAIL ->
-            {
-                /**
-                 * if validate is failed,
-                 * BoxBackground -> GRAY_50
-                 * ErrorMessage on
-                 * endIcon -> errorMark
-                 */
-
-
-                /**
-                 * if validate is succeed,
-                 * BoxBackground -> MAIN_BLUE_50
-                 * ErrorMessage off
-                 * endIcon -> errorMark
-                 * endIcon -> successMark
-                 */
-
-            }
-            InfoEnum.PASSWORD ->
-            {
-
-            }
-        }
     }
 
     init
     {
-        setInitValue()
-    }
-
-    // UI 초기화
-    private fun setInitValue()
-    {
-        email.value = ""
-        password.value = ""
+        validates[InfoEnum.EMAIL] = false
+        validates[InfoEnum.PASSWORD] = false
     }
 
     fun onLoginClicked(v: View)
@@ -141,18 +79,14 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
         {
             SopoLog.d(msg = "onLoginClicked() call!!!")
 
-//            v.requestFocusFromTouch()
-
-            if(!(ValidateUtil.isValidateEmail(email = email.value.toString())))
-            {
-                _result.postValue(ResponseResult(false, null, null, "이메일 양식을 확인해주세요.", DisplayEnum.DIALOG))
-                return
-            }
-
-            if(!ValidateUtil.isValidatePassword(password.value.toString()))
-            {
-                _result.postValue(ResponseResult(false, null, null, "비밀번호 형식을 확인해주세요.", DisplayEnum.DIALOG))
-                return
+            validates.forEach { (k, v) ->
+                if(!v)
+                {
+                    SopoLog.d("${k.NAME} validate is fail")
+                    _isProgress.postValue(false)
+                    _validateError.postValue(Pair(k, v))
+                    return@onLoginClicked
+                }
             }
 
             // result가 전부 통과일 때

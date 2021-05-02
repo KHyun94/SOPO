@@ -9,7 +9,7 @@ import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
-import com.delivery.sopo.viewmodels.signup.FocusChangeCallback
+import com.delivery.sopo.views.registers.FocusChangeCallback
 import com.delivery.sopo.views.widget.CustomEditText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

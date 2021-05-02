@@ -1,14 +1,18 @@
 package com.delivery.sopo.views.signup
 
 import android.content.Intent
+import android.view.Gravity
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.databinding.SignUpViewBinding
 import com.delivery.sopo.enums.DisplayEnum
+import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.launchActivity
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.CustomProgressBar
+import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.signup.SignUpViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -30,6 +34,41 @@ class SignUpView: BasicView<SignUpViewBinding>(R.layout.sign_up_view)
 
     override fun setObserver()
     {
+        binding.vm!!.focus.observe(this, Observer { focus ->
+            val res = TextInputUtil.changeFocus(this@SignUpView, focus)
+            binding.vm!!.validates[res.first] = res.second
+        })
+
+        binding.vm!!.validateError.observe(this, Observer { target ->
+            val message = when(target.first)
+            {
+                InfoEnum.EMAIL ->
+                {
+                    binding.etEmail.requestFocus()
+                    "이메일을 확인해주세요."
+                }
+                InfoEnum.PASSWORD ->
+                {
+                    binding.etPassword.requestFocus()
+                    "비밀번호 확인해주세요."
+                }
+                InfoEnum.RE_PASSWORD ->
+                {
+                    binding.etRePassword.requestFocus()
+                    "비밀번호 확인을 확인해주세요."
+                }
+                InfoEnum.AGREEMENT ->
+                {
+                    "약관을 확인해주세요."
+                }
+                else -> ""
+            }
+
+            Toast.makeText(this@SignUpView,message, Toast.LENGTH_LONG).apply {
+                setGravity(Gravity.TOP, 0, 180)
+            }.show()
+        })
+
         binding.vm!!.isProgress.observe(this, Observer {isProgress ->
             if(progressBar == null)
             {

@@ -52,7 +52,7 @@ class SignUpCompleteView : AppCompatActivity()
                 }
                 NavigatorConst.TO_UPDATE_NICKNAME ->
                 {
-                    Intent(this, MainView::class.java).launchActivityWithAllClear(this@SignUpCompleteView)
+                    Intent(this, UpdateNicknameView::class.java).launchActivityWithAllClear(this@SignUpCompleteView)
                 }
                 NavigatorConst.TO_LOGIN_SELECT ->
                 {
