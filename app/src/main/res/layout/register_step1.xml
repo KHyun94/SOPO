@@ -15,9 +15,11 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_register"
+        android:id="@+id/layout_main_register"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:focusableInTouchMode="true"
+        android:focusable="true"
         android:background="@color/COLOR_GRAY_50">
 
         <TextView
@@ -82,6 +84,20 @@
             android:backgroundTint="@color/COLOR_GRAY_100"
             android:onClick="@{()->vm.onMove2ndStepClicked()}">
 
+            <TextView
+                android:id="@+id/tv_courier_hint"
+                style="@style/H7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="배송사"
+                android:includeFontPadding="false"
+                android:text="@{vm.courier.courierName}"
+                android:textColorHint="@color/COLOR_GRAY_400"
+                android:visibility="@{(vm.courier.courierName.length() > 0)?View.GONE:View.VISIBLE}"
+                android:layout_marginVertical="18.5dp"
+                android:layout_marginStart="14dp"/>
+
             <ImageView
                 android:id="@+id/iv_courier"
                 android:layout_width="28dp"
@@ -99,12 +115,13 @@
 
             <TextView
                 android:id="@+id/tv_input_text"
-                style="@style/H3"
+                style="@style/H7"
+                android:fontFamily="@font/spoqa_han_sans_bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/iv_courier"
                 android:background="@null"
-                android:hint="배송사"
+                android:visibility="@{(vm.courier.courierName.length() > 0)?View.VISIBLE:View.GONE}"
                 android:includeFontPadding="false"
                 android:text="@{vm.courier.courierName}"
                 android:textColorHint="@color/COLOR_GRAY_300"
@@ -164,12 +181,13 @@
 
         <TextView
             style="@style/buttonBasicStyle"
+            android:id="@+id/tv_next"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{()->vm.onMove3rdStepClicked()}"
+            android:onClick="@{()->vm.onMove3rdStepClicked(tvNext)}"
             android:visibility="@{(vm.wayBilNum.length() > 0) &amp;&amp; (vm.courier.courierName.length() > 0)?View.VISIBLE:View.GONE}"
             app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co"
-            android:text="다음으"
+            android:text="다음으로"
             android:layout_marginTop="69dp"/>
 
 

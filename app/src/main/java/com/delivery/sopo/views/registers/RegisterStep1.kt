@@ -4,9 +4,11 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.SOPOApp
@@ -26,11 +28,10 @@ import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
 import com.delivery.sopo.views.main.MainView
-import com.delivery.sopo.views.widget.CustomEditText.Companion.STATUS_COLOR_BLUE
-import com.delivery.sopo.views.widget.CustomEditText.Companion.STATUS_COLOR_ELSE
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 typealias FocusChangeCallback = (String, Boolean) -> Unit
 
@@ -117,6 +118,11 @@ class RegisterStep1: Fragment()
 
         setObserve()
         moveToInquiryTab()
+
+        binding.layoutMainRegister.setOnClickListener {
+            Toast.makeText(requireContext(), "백그라운드 클릭", Toast.LENGTH_LONG).show()
+            OtherUtil.hideKeyboardSoft(requireActivity())
+        }
 
         return binding.root
     }

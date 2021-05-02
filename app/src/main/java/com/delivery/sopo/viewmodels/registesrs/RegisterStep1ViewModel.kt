@@ -2,6 +2,7 @@ package com.delivery.sopo.viewmodels.registesrs
 
 import android.os.Handler
 import android.view.View
+import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,6 +11,7 @@ import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.models.CourierItem
 import com.delivery.sopo.repository.impl.CourierRepoImpl
+import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.widget.CustomEditText
 import kotlinx.coroutines.CoroutineScope
@@ -63,8 +65,10 @@ class RegisterStep1ViewModel(private val courierRepoImpl: CourierRepoImpl) : Vie
         moveFragment.value = TabCode.REGISTER_STEP2.NAME
     }
 
-    fun onMove3rdStepClicked()
+    fun onMove3rdStepClicked(v: View)
     {
+        v.clearFocus()
+
         val courierCode = courier.value!!.courierCode
         val wayBilNum = wayBilNum.value
         CoroutineScope(Dispatchers.Default).launch {

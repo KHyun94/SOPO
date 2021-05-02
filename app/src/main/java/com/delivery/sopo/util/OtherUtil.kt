@@ -18,7 +18,7 @@ object OtherUtil
     {
         val inputMethodManager =
             act.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(act.currentFocus!!.windowToken, 0)
+        inputMethodManager.hideSoftInputFromWindow(act.currentFocus?.windowToken, 0)
     }
 
     fun getDeviceID(context: Context): String

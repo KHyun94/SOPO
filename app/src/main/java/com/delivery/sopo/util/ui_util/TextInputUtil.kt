@@ -41,6 +41,7 @@ object TextInputUtil
             // 힌트 홣성화
             isHintEnabled = true
             hint = focus.third.NAME
+
             // 내부 이너 박스 컬러 >>> GRAY_50
             boxBackgroundColor = resources.getColor(R.color.COLOR_GRAY_50)
             // endIcon >>> Visible, clear img
@@ -139,7 +140,10 @@ object TextInputUtil
         {
             textInputLayout.run {
                 isHintEnabled = true
-
+                if(infoEnum == InfoEnum.WAYBILL_NUMBER)
+                {
+                    hint = "${focus.third.NAME}를 여기에 입력하세요."
+                }
                 if(infoEnum != InfoEnum.WAYBILL_NUMBER) hint = infoEnum.NAME
                 boxBackgroundColor = resources.getColor(R.color.COLOR_GRAY_100)
 
@@ -161,6 +165,12 @@ object TextInputUtil
             textInputLayout.run {
                 isHintEnabled = true
                 hint = infoEnum.NAME
+
+                if(infoEnum == InfoEnum.WAYBILL_NUMBER)
+                {
+                    hint = "${focus.third.NAME}를 여기에 입력하세요."
+                }
+
                 boxBackgroundColor = resources.getColor(R.color.COLOR_GRAY_50)
 
                 boxStrokeWidth = SizeUtil.changeDpToPx(context, 2.0f)
@@ -187,8 +197,16 @@ object TextInputUtil
 
             if(infoEnum == InfoEnum.WAYBILL_NUMBER)
             {
-                isEndIconVisible = false
-                isErrorEnabled = false
+                boxBackgroundColor = resources.getColor(R.color.COLOR_GRAY_100)
+
+                boxStrokeWidth = SizeUtil.changeDpToPx(context, 0.0f)
+
+                isEndIconVisible = true
+                endIconDrawable = null
+
+                error = ""
+                isErrorEnabled = true
+                errorIconDrawable = null
                 return Pair(infoEnum, true)
             }
 
