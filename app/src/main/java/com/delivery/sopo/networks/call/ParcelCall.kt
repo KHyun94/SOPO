@@ -7,6 +7,7 @@ import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
+import com.delivery.sopo.networks.dto.parcels.RegisterParcelDTO
 import com.delivery.sopo.repository.impl.OauthRepoImpl
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.network_handler.BaseService
@@ -35,15 +36,15 @@ object ParcelCall : BaseService(), KoinComponent
         parcelAPI = NetworkManager.retro(oauth?.accessToken).create(ParcelAPI::class.java)
     }
 
-    suspend fun registerParcel(trackCompany: String, trackNum: String, parcelAlias: String):NetworkResult<APIResult<ParcelId?>>
+    suspend fun registerParcel(dto: RegisterParcelDTO):NetworkResult<APIResult<ParcelId?>>
     {
-        val result = parcelAPI.registerParcel(trackCompany = trackCompany, trackNum = trackNum, parcelAlias = parcelAlias)
+        val result = parcelAPI.registerParcel(dto = dto)
         return apiCall(call = {result})
     }
 
     suspend fun getSingleParcel(parcelId: ParcelId) : NetworkResult<APIResult<Parcel?>>
     {
-        val result = parcelAPI.getSingleParcel(regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
+        val result = parcelAPI.getSingleParcel(parcelId)
         return apiCall(call = {result})
     }
 
@@ -62,14 +63,14 @@ object ParcelCall : BaseService(), KoinComponent
 
     suspend fun requestParcelForRefresh(parcelId : ParcelId) : NetworkResult<APIResult<Any?>>
     {
-        val result = parcelAPI.requestParcelForRefresh(regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
+        val result = parcelAPI.requestParcelForRefresh(parcelId)
         return apiCall(call = { result })
     }
 
 
     suspend fun getSingleParcelTest(parcelId: ParcelId): APIResult<Parcel?>
     {
-        val result = parcelAPI.getSingleParcel(regDt = parcelId.regDt, parcelUid = parcelId.parcelUid)
+        val result = parcelAPI.getSingleParcel(parcelId)
 
         when(val apiResult = apiCall(call = { result }))
         {

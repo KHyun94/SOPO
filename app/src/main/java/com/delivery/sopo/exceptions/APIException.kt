@@ -41,7 +41,7 @@ class APIException: Exception
 
     companion object{
 
-        lateinit var apiResult: APIResult<*>
+        var apiResult: APIResult<*>? = null
 
         fun<T> parse(response: Response<T>): APIException
         {
@@ -50,8 +50,8 @@ class APIException: Exception
             val errorReader = response.errorBody()?.charStream()!!
             apiResult = Gson().fromJson(errorReader, APIResult::class.java)
 
-            val responseCode = CodeUtil.getCode(apiResult.code)
-            val errorMessage = apiResult.message
+            val responseCode = CodeUtil.getCode(apiResult?.code)
+            val errorMessage = apiResult?.message?:"알 수 없는 에"
 
             return APIException(errorMessage = errorMessage, responseCode = responseCode, httpStatusCode = httpStatusCode)
         }

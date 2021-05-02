@@ -7,6 +7,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.models.ResponseResult
+import com.delivery.sopo.networks.dto.joins.JoinInfoByKakaoDTO
 import com.delivery.sopo.networks.repository.JoinRepository
 import com.delivery.sopo.networks.repository.OAuthNetworkRepo
 import com.delivery.sopo.repository.impl.OauthRepoImpl
@@ -97,10 +98,11 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
                 SopoLog.d(msg = "onSuccess nickname = $kakaoNickname")
 
                 val password = kakaoUserId
-//                val password = kakaoUserId.md5()
+
+                val joinInfoByKakaoDTO = JoinInfoByKakaoDTO(email = email, password = password, deviceInfo = SOPOApp.deviceInfo, kakaoUid = kakaoUserId)
 
                 CoroutineScope(Dispatchers.Main).launch {
-                    val res = JoinRepository.requestJoinByKakao(email, password, kakaoUserId, kakaoNickname)
+                    val res = JoinRepository.requestJoinByKakao(joinInfoByKakaoDTO)
 
                     if(!res.result)
                     {
@@ -186,30 +188,4 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
         }
 
     }
-
-
-
-//    suspend fun getUserInfo(): ResponseResult<UserDetail?>
-//    {
-//        val result = UserCall.getUserInfoWithToken()
-//
-//        if(result is NetworkResult.Error)
-//        {
-//            val exception = result.exception as APIException
-//            val responseCode = exception.responseCode
-//            val date = SOPOApp.oAuthEntity.let { it?.expiresIn }
-//
-//            return if(responseCode.HTTP_STATUS == 401 && DateUtil.isOverExpiredDate(date!!)) ResponseResult(false, responseCode, null, "로그인 기한이 만료되었습니다.\n다시 로그인해주세요.", DisplayEnum.DIALOG)
-//            else ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
-//        }
-//
-//        val apiResult = (result as NetworkResult.Success).data
-//
-//        userRepo.setNickname(apiResult.data?.nickname?:"")
-//
-//        SopoLog.d("UserDetail >>> ${apiResult.data}, ${apiResult.data?.nickname}")
-//
-//        return ResponseResult(true, ResponseCode.SUCCESS, apiResult.data, ResponseCode.SUCCESS.MSG)
-//    }
-
 }

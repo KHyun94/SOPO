@@ -113,7 +113,8 @@ object NetworkManager : KoinComponent
         }
 
         return Retrofit.Builder()
-            .baseUrl(BuildConfig.API_URL)
+//            .baseUrl(BuildConfig.API_URL)
+            .baseUrl("http://192.168.219.110:6443/")
             .client(mOKHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson.create()))
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
@@ -143,7 +144,8 @@ object NetworkManager : KoinComponent
             }
 
             return Retrofit.Builder()
-                .baseUrl(BuildConfig.API_URL)
+//                .baseUrl(BuildConfig.API_URL)
+                .baseUrl("http://192.168.219.110:6443/")
                 .client(mOKHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson.create()))
                 .addCallAdapterFactory(CoroutineCallAdapterFactory())

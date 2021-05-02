@@ -4,6 +4,7 @@ import com.delivery.sopo.BuildConfig
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.JoinAPI
+import com.delivery.sopo.networks.dto.joins.JoinInfoByKakaoDTO
 import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResult
 
@@ -18,14 +19,14 @@ object JoinCall : BaseService()
     }
 
     // TODO 자체 회원 가입 API에 닉네임이 필요없음
-    suspend fun requestJoinBySelf(email : String, password : String, deviceInfo : String) : NetworkResult<APIResult<Unit>>
+    suspend fun requestJoinBySelf(joinInfoByKakaoDTO: JoinInfoByKakaoDTO) : NetworkResult<APIResult<Unit>>
     {
-        return apiCall(call = { joinAPI.requestJoinBySelf(email = email, password = password, deviceInfo = deviceInfo) })
+        return apiCall(call = { joinAPI.requestJoinBySelf(joinInfoByKakaoDTO) })
     }
 
-    suspend fun requestJoinByKakao(email : String, password : String, deviceInfo : String, kakaoUid : String, nickname: String?) : NetworkResult<APIResult<Unit>>
+    suspend fun requestJoinByKakao(joinInfoByKakaoDTO: JoinInfoByKakaoDTO) : NetworkResult<APIResult<Unit>>
     {
-        return apiCall(call = { joinAPI.requestJoinByKakao(email = email, password = password, deviceInfo = deviceInfo, kakaoUid = kakaoUid,  nickname = nickname) })
+        return apiCall(call = { joinAPI.requestJoinByKakao(joinInfoByKakaoDTO) })
     }
 
     suspend fun requestDuplicatedEmail(email: String): NetworkResult<APIResult<Boolean>>

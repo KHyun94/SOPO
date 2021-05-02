@@ -6,6 +6,7 @@ import com.delivery.sopo.database.room.dto.DeleteParcelsDTO
 import com.delivery.sopo.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
+import com.delivery.sopo.networks.dto.parcels.RegisterParcelDTO
 import com.google.gson.JsonArray
 import retrofit2.Call
 import retrofit2.Response
@@ -21,14 +22,10 @@ interface ParcelAPI
      * @param trackNum
      * @return Response<APIResult<ParcelId?>>
      */
-    @FormUrlEncoded
     @POST("api/v1/sopo-api/delivery/parcel")
     @Headers("Accept: application/json")
     suspend fun registerParcel(
-        
-        @Field("parcelAlias") parcelAlias: String?,
-        @Field("trackCompany") trackCompany: String,
-        @Field("trackNum") trackNum: String
+        @Body dto: RegisterParcelDTO
     ): Response<APIResult<ParcelId?>>
 
     @GET("api/v1/sopo-api/delivery/parcel")
@@ -66,7 +63,6 @@ interface ParcelAPI
     )
     @Headers("Accept: application/json")
     suspend fun deleteParcels(
-        
         @Body parcelIds: DeleteParcelsDTO
     ): APIResult<String?>
 
@@ -106,12 +102,10 @@ interface ParcelAPI
      * @httpCode 204 -> not update
      * @httpCode 303 -> update
      */
-    @POST("/api/v1/sopo-api/delivery/parcel/{regDt}/{parcelUid}/refresh")
+    @POST("/api/v1/sopo-api/delivery/parcel/refresh")
     @Headers("Accept: application/json")
     suspend fun requestParcelForRefresh(
-        
-        @Path("regDt") regDt : String,
-        @Path("parcelUid") parcelUid : String
+        @Body parcelId: ParcelId
     ) : Response<APIResult<Any?>>
 
     /**
@@ -121,14 +115,10 @@ interface ParcelAPI
      * @param parcelUid
      * @return parcel
      */
-    @GET("/api/v1/sopo-api/delivery/parcel/{regDt}/{parcelUid}")
+    @GET("/api/v1/sopo-api/delivery/parcel/refresh")
     @Headers("Accept: application/json")
     suspend fun getSingleParcel(
-        
-        // 등록일자
-        @Path("regDt") regDt: String,
-        // 택배 고유 uid
-        @Path("parcelUid") parcelUid: String
+        @Body parcelId: ParcelId
     ): Response<APIResult<Parcel?>>
 
     // TODO alias 변경 api 추가해야함
