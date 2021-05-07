@@ -104,16 +104,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <Button
+                <TextView
                     android:id="@+id/btn_ongoing"
                     android:layout_width="80dp"
                     android:layout_height="35dp"
                     android:layout_gravity="center"
                     android:layout_marginEnd="15dp"
                     android:background="@drawable/border_all_rounded_light_black"
+                    android:gravity="center"
+                    android:includeFontPadding="false"
                     android:onClick="@{()-> vm.setScreenStatusOngoing()}"
                     android:text="@string/INQUIRY_VIEW_ONGOING_DELIVERY"
-                    android:includeFontPadding="false"
                     android:textSize="14sp"
                     tools:textColor="@color/MAIN_WHITE" />
 
@@ -139,12 +140,13 @@
                         tools:ignore="SmallSp"
                         tools:text="1" />
 
-                    <Button
+                    <TextView
                         android:id="@+id/btn_complete"
                         android:layout_width="80dp"
                         android:layout_height="35dp"
                         android:layout_gravity="center"
                         android:background="@drawable/border_all_rounded_color_gray_400"
+                        android:gravity="center"
                         android:onClick="@{()-> vm.setScreenStatusComplete()}"
                         android:text="@string/INQUIRY_VIEW_COMPLETE_DELIVERY"
                         android:textColor="@color/COLOR_GRAY_400"
@@ -344,12 +346,12 @@
                                 android:id="@+id/iV_present_parcel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                app:layout_constraintWidth_percent="0.33"
                                 app:layout_constrainedWidth="true"
                                 app:layout_constraintBottom_toTopOf="parent"
-                                app:layout_constraintRight_toRightOf="parent"
                                 app:layout_constraintLeft_toLeftOf="@+id/guide_1st"
+                                app:layout_constraintRight_toRightOf="parent"
                                 app:layout_constraintTop_toBottomOf="parent"
+                                app:layout_constraintWidth_percent="0.33"
                                 app:setDefaultImage="@{0}"
                                 app:setImage="@{R.drawable.ic_inquiry_top_section_present_parcel}"
                                 tools:background="@drawable/ic_inquiry_top_section_present_parcel" />

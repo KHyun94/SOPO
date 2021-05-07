@@ -51,6 +51,7 @@ class APIException: Exception
             apiResult = Gson().fromJson(errorReader, APIResult::class.java)
 
             val responseCode = CodeUtil.getCode(apiResult?.code)
+
             val errorMessage = apiResult?.message?:"알 수 없는 에러"
 
             return APIException(errorMessage = errorMessage, responseCode = responseCode, httpStatusCode = httpStatusCode)

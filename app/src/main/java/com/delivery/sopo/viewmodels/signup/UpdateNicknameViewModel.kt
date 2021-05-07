@@ -23,7 +23,6 @@ import kotlinx.coroutines.launch
 class UpdateNicknameViewModel(private val userRepoImpl: UserRepoImpl): ViewModel()
 {
     val nickname = MutableLiveData<String>()
-
     val validates = mutableMapOf<InfoEnum, Boolean>()
 
     private var _validateError = MutableLiveData<Pair<InfoEnum, Boolean>>()

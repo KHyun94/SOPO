@@ -82,6 +82,30 @@ object OAuthNetworkRepo: KoinComponent
         }
     }
 
+    suspend fun requestEmailForAuth(): ResponseResult<String?>
+    {
+        when(val result = UserCall.requestEmailForAuth())
+        {
+            is NetworkResult.Success ->
+            {
+                val apiResult = result.data
+
+                SopoLog.d("Success to request email for auth")
+
+                return ResponseResult(true, ResponseCode.SUCCESS, apiResult.data, ResponseCode.SUCCESS.MSG)
+            }
+            is NetworkResult.Error ->
+            {
+                SopoLog.d("Fail to request email for auth")
+
+                val exception = result.exception as APIException
+                val responseCode = exception.responseCode
+
+                return ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
+            }
+        }
+    }
+
     suspend fun requestSignOut(reason: String): ResponseResult<String?>
     {
         when(val result = UserCall.requestSignOut(reason))

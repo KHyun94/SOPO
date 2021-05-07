@@ -38,4 +38,10 @@ object UserCall : BaseService(), KoinComponent
         userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
         return apiCall(call = { userAPI.requestSignOut(reason) })
     }
+
+    suspend fun requestEmailForAuth(): NetworkResult<APIResult<String?>>
+    {
+        userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
+        return apiCall(call = { userAPI.requestEmailForAuth() })
+    }
 }

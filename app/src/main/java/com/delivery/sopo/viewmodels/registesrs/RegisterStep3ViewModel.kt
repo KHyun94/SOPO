@@ -17,6 +17,7 @@ import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.networks.call.ParcelCall
+import com.delivery.sopo.networks.dto.parcels.RegisterParcelDTO
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.CodeUtil
@@ -55,8 +56,11 @@ class RegisterStep3ViewModel(
     // '등록하기' Button Click event
     fun onRegisterClicked()
     {
+        // TODO 각 값 유효성 검사 필요
+        val registerParcelDTO = RegisterParcelDTO(courier.value!!.courierCode, wayBilNum.value.toString(), alias.value.toString())
+
         CoroutineScope(Dispatchers.IO).launch {
-            when(val result = ParcelCall.registerParcel(parcelAlias = alias.value ?: wayBilNum.value!!, trackCompany = courier.value!!.courierCode, trackNum = wayBilNum.value!!))
+            when(val result = ParcelCall.registerParcel(registerParcelDTO))
             {
                 is NetworkResult.Success ->
                 {

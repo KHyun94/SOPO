@@ -121,6 +121,7 @@ class RegisterStep1: Fragment()
 
         binding.layoutMainRegister.setOnClickListener {
             Toast.makeText(requireContext(), "백그라운드 클릭", Toast.LENGTH_LONG).show()
+            it.requestFocus()
             OtherUtil.hideKeyboardSoft(requireActivity())
         }
 

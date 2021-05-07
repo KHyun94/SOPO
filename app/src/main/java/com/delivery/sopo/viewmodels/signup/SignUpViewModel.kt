@@ -6,9 +6,11 @@ import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.models.ResponseResult
+import com.delivery.sopo.networks.dto.joins.JoinInfoByKakaoDTO
 import com.delivery.sopo.networks.repository.JoinRepository
 import com.delivery.sopo.repository.impl.UserRepoImpl
 import com.delivery.sopo.util.SopoLog
@@ -80,9 +82,11 @@ class SignUpViewModel(private val userRepo: UserRepoImpl) : ViewModel()
                 return@onSignUpClicked
             }
         }
-        
+
+        val joinInfoByKakaoDTO = JoinInfoByKakaoDTO(email.value.toString(), password.value.toString(), SOPOApp.deviceInfo)
+
         CoroutineScope(Dispatchers.Main).launch {
-            val res = JoinRepository.requestJoinBySelf(email = email.value.toString(), password = password.value.toString())
+            val res = JoinRepository.requestJoinBySelf(joinInfoByKakaoDTO)
 
             _isProgress.postValue(false)
 

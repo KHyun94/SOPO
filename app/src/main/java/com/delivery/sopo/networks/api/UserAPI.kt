@@ -38,6 +38,19 @@ interface UserAPI
     suspend fun updateUserNickname(@Query("nickname") nickname : String) : Response<APIResult<String?>>
 
     /**
+     * Send Email For request PIN CODE
+     * @param nickname : String
+     * @return Response<APIResult<String?>>
+     *
+     * 의문
+     * 1. GET?
+     * 2. parameter는 필요 없는지
+     */
+    @GET("/api/v1/sopo-api/user/password/aut-info")
+    @Headers("Accept: application/json")
+    suspend fun requestEmailForAuth() : Response<APIResult<String?>>
+
+    /**
      * 탈퇴
      * @param reason : String
      * @return Response<APIResult<String?>>
