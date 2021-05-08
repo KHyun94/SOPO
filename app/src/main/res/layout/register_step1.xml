@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:hint="운송장번호를 여기에 입력하세요."
-                android:text="@={vm.wayBilNum}"
+                android:text="@={vm.waybillNum}"
                 app:type="@{InfoEnum.WAYBILL_NUMBER}"
                 app:focusChangeListener="@{vm.focusChangeCallback}"/>
 
@@ -185,7 +185,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="@{()->vm.onMove3rdStepClicked(tvNext)}"
-            android:visibility="@{(vm.wayBilNum.length() > 0) &amp;&amp; (vm.courier.courierName.length() > 0)?View.VISIBLE:View.GONE}"
+            android:visibility="@{(vm.waybillNum.length() > 0) &amp;&amp; (vm.courier.courierName.length() > 0)?View.VISIBLE:View.GONE}"
             app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co"
             android:text="다음으로"
             android:layout_marginTop="69dp"/>

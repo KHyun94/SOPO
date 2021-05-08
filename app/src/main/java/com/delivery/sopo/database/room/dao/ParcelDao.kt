@@ -9,8 +9,8 @@ import com.delivery.sopo.database.room.entity.ParcelEntity
 interface ParcelDao
 {
     // 로컬에서 단일 택배 조회
-    @Query("SELECT * FROM PARCEL WHERE TRACK_NUM = :wayBilNum")
-    suspend fun getSingleParcelWithwayBilNum(wayBilNum: String): ParcelEntity?
+    @Query("SELECT * FROM PARCEL WHERE TRACK_NUM = :waybillNum")
+    suspend fun getSingleParcelWithwaybillNum(waybillNum: String): ParcelEntity?
 
     @Query("SELECT * FROM PARCEL as p LEFT JOIN PARCEL_MANAGEMENT as pm ON p.REG_DT = pm.REG_DT AND p.PARCEL_UID = pm.PARCEL_UID WHERE p.STATUS = 1 AND p.DELIVERY_STATUS = 'delivered' AND pm.isNowVisible = 1")
     fun getCompleteLiveData(): LiveData<List<ParcelEntity>>

@@ -28,7 +28,7 @@ object ParcelMapper
     fun parcelEntityToParcel(parcelEntity: ParcelEntity): Parcel{
         return Parcel(parcelId = ParcelId(regDt = parcelEntity.regDt, parcelUid = parcelEntity.parcelUid),
             userName = parcelEntity.userName,
-            trackNum = parcelEntity.trackNum,
+            waybillNum = parcelEntity.waybillNum,
             carrier = parcelEntity.carrier,
             parcelAlias = parcelEntity.parcelAlias,
             inquiryResult = parcelEntity.inquiryResult,
@@ -51,7 +51,7 @@ object ParcelMapper
             regDt = parcel.parcelId.regDt,
             parcelUid = parcel.parcelId.parcelUid,
             userName = parcel.userName,
-            trackNum = parcel.trackNum,
+            waybillNum = parcel.waybillNum,
             carrier = parcel.carrier,
             parcelAlias = parcel.parcelAlias,
             inquiryResult = parcel.inquiryResult,

@@ -8,8 +8,8 @@ data class Parcel(
     var parcelId: ParcelId,
     @SerializedName("userName")
     var userName: String,
-    @SerializedName("trackNum")
-    var trackNum: String,
+    @SerializedName("waybillNum")
+    var waybillNum: String,
     @SerializedName("carrier")
     var carrier: String,
     @SerializedName("parcelAlias")
@@ -32,7 +32,7 @@ data class Parcel(
     {
         this.parcelId = ParcelId(parcelEntity.parcelUid, parcelEntity.regDt)
         this.userName = parcelEntity.userName
-        this.trackNum = parcelEntity.trackNum
+        this.waybillNum = parcelEntity.waybillNum
         this.auditDte = parcelEntity.auditDte
         this.arrivalDte = parcelEntity.arrivalDte
         this.carrier = parcelEntity.carrier
@@ -49,7 +49,7 @@ data class Parcel(
         stringBuffer.append("[regDt] : ${parcelId.regDt}    ")
         stringBuffer.append("[parcelUid] : ${parcelId.parcelUid}    ")
         stringBuffer.append("[userName] : $userName ")
-        stringBuffer.append("[trackNum] : $trackNum ")
+        stringBuffer.append("[waybillNum] : $waybillNum ")
         stringBuffer.append("[carrier] : $carrier   ")
         stringBuffer.append("[parcelAlias] : $parcelAlias   ")
         stringBuffer.append("[inquiryResult] : $inquiryResult   ")

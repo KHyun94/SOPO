@@ -24,7 +24,7 @@ class RegisterStep1ViewModel(private val courierRepoImpl: CourierRepoImpl) : Vie
 {
     val TAG = this.javaClass.simpleName
 
-    var wayBilNum = MutableLiveData<String?>()
+    var waybillNum = MutableLiveData<String?>()
     var courier = MutableLiveData<CourierItem?>()
     // 가져온 클립보드 문자열
     var clipBoardWords = MutableLiveData<String>()
@@ -70,14 +70,14 @@ class RegisterStep1ViewModel(private val courierRepoImpl: CourierRepoImpl) : Vie
         v.clearFocus()
 
         val courierCode = courier.value!!.courierCode
-        val wayBilNum = wayBilNum.value
+        val waybillNum = waybillNum.value
         CoroutineScope(Dispatchers.Default).launch {
             val courierEntity = courierRepoImpl.getCourierEntityWithCode(courierCode)
             val minLen = courierEntity.minLen
             val maxLen = courierEntity.maxLen
 
             withContext(Dispatchers.Main){
-                if(wayBilNum?.length in minLen..maxLen || minLen == 0)
+                if(waybillNum?.length in minLen..maxLen || minLen == 0)
                 {
                     moveFragment.postValue(TabCode.REGISTER_STEP3.NAME)
                 }
@@ -92,10 +92,10 @@ class RegisterStep1ViewModel(private val courierRepoImpl: CourierRepoImpl) : Vie
 
     }
 
-    // clipBoardWord(클립보드에 저장된 값)을 wayBilNum(택배 운송장 번호) 입력 란으로 삽입
+    // clipBoardWord(클립보드에 저장된 값)을 waybillNum(택배 운송장 번호) 입력 란으로 삽입
     fun onPasteClicked()
     {
-        wayBilNum.value = clipBoardWords.value
+        waybillNum.value = clipBoardWords.value
     }
 
 }

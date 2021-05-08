@@ -126,14 +126,14 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
                     regDt = ${parcelEntity.regDt}, 
                     alias = ${parcelEntity.parcelAlias}, 
                     courier = ${courier!!}, 
-                    waybilNym = ${parcelEntity.trackNum}, 
+                    waybilNym = ${parcelEntity.waybillNum}, 
                     deliverStatus = ${deliveryStatusEnum.value?.TITLE}, 
                     progress = ${progressList.joinToString()}
                 """.trimIndent())
 
                 item.postValue(
                     ParcelDetailItem(
-                        regDt = parcelEntity.regDt, alias = parcelEntity.parcelAlias, courier = courier!!, waybilNym = parcelEntity.trackNum, deliverStatus = deliveryStatusEnum.value?.TITLE, progress = progressList
+                        regDt = parcelEntity.regDt, alias = parcelEntity.parcelAlias, courier = courier!!, waybilNym = parcelEntity.waybillNum, deliverStatus = deliveryStatusEnum.value?.TITLE, progress = progressList
                     )
                 )
             }

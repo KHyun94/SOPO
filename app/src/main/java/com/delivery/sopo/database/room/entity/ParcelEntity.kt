@@ -25,10 +25,10 @@ data class ParcelEntity(
         typeAffinity = ColumnInfo.TEXT
     ) var userName: String,
     @ColumnInfo(
-        name = "TRACK_NUM",
+        name = "WAYBILL_NUM",
         typeAffinity = ColumnInfo.TEXT
     )
-    var trackNum: String,
+    var waybillNum: String,
     @ColumnInfo(
         name = "CARRIER",
         typeAffinity = ColumnInfo.TEXT

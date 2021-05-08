@@ -34,7 +34,7 @@ class RegisterStep3: Fragment()
 
     private val userRepoImpl: UserRepoImpl by inject()
 
-    private var wayBilNum: String? = null
+    private var waybillNum: String? = null
     private var courier: CourierItem? = null
 
     private var progressBar: CustomProgressBar? = null
@@ -43,7 +43,7 @@ class RegisterStep3: Fragment()
     {
         super.onCreate(savedInstanceState)
 
-        wayBilNum = arguments?.getString("wayBilNum") ?: ""
+        waybillNum = arguments?.getString("waybillNum") ?: ""
         courier = arguments?.getSerializable("courier") as CourierItem ?: null
     }
 
@@ -57,7 +57,7 @@ class RegisterStep3: Fragment()
             setExecutePendingBindings()
         }
 
-        binding.vm!!.wayBilNum.value = wayBilNum
+        binding.vm!!.waybillNum.value = waybillNum
         binding.vm!!.courier.value = courier
 
         setObserve()
@@ -101,7 +101,7 @@ class RegisterStep3: Fragment()
         binding.vm!!.isRevise.observe(this, Observer {
             if (it != null && it)
             {
-                TabCode.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(wayBilNum, courier, 0)
+                TabCode.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(waybillNum, courier, 0)
 
                 FragmentManager.initFragment(
                     activity = activity!!, viewId = RegisterMainFrame.viewId, currentFragment = this@RegisterStep3, nextFragment = TabCode.REGISTER_STEP1.FRAGMENT, nextFragmentTag = TabCode.REGISTER_STEP1.NAME
@@ -170,13 +170,13 @@ class RegisterStep3: Fragment()
 
     companion object
     {
-        fun newInstance(wayBilNum: String?, courier: CourierItem?): RegisterStep3
+        fun newInstance(waybillNum: String?, courier: CourierItem?): RegisterStep3
         {
             val registerStep3 = RegisterStep3()
 
             val args = Bundle()
 
-            args.putString("wayBilNum", wayBilNum)
+            args.putString("waybillNum", waybillNum)
             args.putSerializable("courier", courier)
 
             registerStep3.arguments = args

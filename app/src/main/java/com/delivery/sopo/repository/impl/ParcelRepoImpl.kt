@@ -126,8 +126,8 @@ class ParcelRepoImpl(private val userRepoImpl: UserRepoImpl,
     }
 
     // 0922 kh 추가사항
-    override suspend fun getSingleParcelWithwayBilNum(wayBilNum : String): ParcelEntity? {
-        return appDatabase.parcelDao().getSingleParcelWithwayBilNum(wayBilNum = wayBilNum)
+    override suspend fun getSingleParcelWithwaybillNum(waybillNum : String): ParcelEntity? {
+        return appDatabase.parcelDao().getSingleParcelWithwaybillNum(waybillNum = waybillNum)
     }
 
     override suspend fun getOnGoingDataCnt(): Int {

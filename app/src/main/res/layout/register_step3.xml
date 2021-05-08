@@ -76,7 +76,7 @@
                     android:id="@+id/tv_way_bil_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{vm.wayBilNum}"
+                    android:text="@{vm.waybillNum}"
                     android:textColor="@color/COLOR_GRAY_800" />
             </LinearLayout>
 

@@ -339,7 +339,7 @@ object RoomActivate
 
     fun recommendAutoCourier(
         context: Context,
-        wayBilNum: String,
+        waybillNum: String,
         cnt: Int,
         courierRepoImpl: CourierRepoImpl
     ): MutableList<CourierItem?>?
@@ -353,7 +353,7 @@ object RoomActivate
             runBlocking {
                 launch {
 
-                    val _wayBilNum = wayBilNum.removeSpace()
+                    val _waybillNum = waybillNum.removeSpace()
                     // - ㅐor _ 삭제 버젼
                     var mergeNum = ""
 
@@ -365,17 +365,17 @@ object RoomActivate
 
                     when
                     {
-                        _wayBilNum.contains('-') ->
+                        _waybillNum.contains('-') ->
                         {
-                            parserList = _wayBilNum.split('-') as ArrayList<String>
+                            parserList = _waybillNum.split('-') as ArrayList<String>
                         }
-                        _wayBilNum.contains('_') ->
+                        _waybillNum.contains('_') ->
                         {
-                            parserList = _wayBilNum.split('_') as ArrayList<String>
+                            parserList = _waybillNum.split('_') as ArrayList<String>
                         }
                         else ->
                         {
-                            parserList.add(_wayBilNum)
+                            parserList.add(_waybillNum)
                         }
                     }
 

@@ -19,7 +19,7 @@ interface ParcelAPI
      * @param email
      * @param parcelAlias
      * @param trackCompany
-     * @param trackNum
+     * @param waybillNum
      * @return Response<APIResult<ParcelId?>>
      */
     @POST("api/v1/sopo-api/delivery/parcel")

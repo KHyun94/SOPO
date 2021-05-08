@@ -6,8 +6,8 @@ import retrofit2.http.Field
 data class RegisterParcelDTO(
     @SerializedName("trackCompany")
     val trackCompany: String,
-    @SerializedName("trackNum")
-    val trackNum: String,
+    @SerializedName("waybillNum")
+    val waybillNum: String,
     @SerializedName("parcelAlias")
     val parcelAlias: String? = null
 )

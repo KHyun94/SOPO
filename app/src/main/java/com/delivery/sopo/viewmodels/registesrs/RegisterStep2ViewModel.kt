@@ -17,7 +17,7 @@ class RegisterStep2ViewModel(private val courierRepoImpl: CourierRepoImpl) : Vie
     var courierList = arrayListOf<CourierItem?>()
     var itemList = listOf<SelectItem<CourierItem?>>()
     var selectedItem = MutableLiveData<SelectItem<CourierItem?>>()
-    var wayBilNum = MutableLiveData<String>()
+    var waybillNum = MutableLiveData<String>()
     var moveFragment = MutableLiveData<String>()
     var hideKeyboard = SingleLiveEvent<Boolean>()
 
@@ -31,17 +31,17 @@ class RegisterStep2ViewModel(private val courierRepoImpl: CourierRepoImpl) : Vie
     init
     {
         moveFragment.value = ""
-        wayBilNum.value = ""
+        waybillNum.value = ""
         hideKeyboard.value = false
     }
 
-    fun setAdapter(_wayBilNum: String)
+    fun setAdapter(_waybillNum: String)
     {
         if(itemList.isEmpty())
         {
-            wayBilNum.value = _wayBilNum
+            waybillNum.value = _waybillNum
 
-            courierList =  RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, wayBilNum.value!!, RoomActivate.rowCnt,courierRepoImpl) as ArrayList<CourierItem?>
+            courierList =  RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, waybillNum.value!!, RoomActivate.rowCnt,courierRepoImpl) as ArrayList<CourierItem?>
 
             itemList = courierList.flatMap {
                 listOf(SelectItem(it, false))

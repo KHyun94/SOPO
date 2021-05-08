@@ -75,13 +75,13 @@ class ParcelDetailView : Fragment()
 
         // TODO include view를 사용했을 때 parameter로 clickListener 셋 할 필요 있음
         binding.includeSemi.ivCopy.setOnClickListener {
-            val copyText = binding.includeSemi.tvWayBilNum.text.toString()
+            val copyText = binding.includeSemi.tvwaybillNum.text.toString()
             ClipboardUtil.copyTextToClipboard(activity!!, copyText)
             Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
         }
 
         binding.includeFull.ivCopy.setOnClickListener {
-            val copyText = binding.includeFull.tvWayBilNum.text.toString()
+            val copyText = binding.includeFull.tvwaybillNum.text.toString()
             ClipboardUtil.copyTextToClipboard(activity!!, copyText)
             Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
         }

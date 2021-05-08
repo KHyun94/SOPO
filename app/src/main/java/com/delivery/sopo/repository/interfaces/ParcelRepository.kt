@@ -33,7 +33,7 @@ interface ParcelRepository {
    suspend fun deleteRemoteParcels(): APIResult<String?>?
 
    // 0922 kh 추가사항
-   suspend fun getSingleParcelWithwayBilNum(wayBilNum:String) : ParcelEntity?
+   suspend fun getSingleParcelWithwaybillNum(waybillNum:String) : ParcelEntity?
    suspend fun getOnGoingDataCnt() : Int?
 
    suspend fun isBeingUpdateParcel(regDt: String, parcelUid: String): LiveData<Int?>

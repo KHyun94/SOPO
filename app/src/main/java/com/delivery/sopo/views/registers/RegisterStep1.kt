@@ -45,7 +45,7 @@ class RegisterStep1: Fragment()
     private val courierRepoImpl: CourierRepoImpl by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
 
-    private var wayBilNum: String? = null
+    private var waybillNum: String? = null
     private var courier: CourierItem? = null
     private var returnType: Int? = null
 
@@ -92,14 +92,14 @@ class RegisterStep1: Fragment()
 
         // 다른 화면에서 1단계로 다시 이동할 때 전달받은 값
         arguments?.run {
-            wayBilNum = getString("wayBilNum") ?: ""
+            waybillNum = getString("waybillNum") ?: ""
             courier = getSerializable("courier") as CourierItem?
             returnType = getInt("returnType") ?: 0
 
             SopoLog.d(
                 """
                 RegisterStep1
-                운송장번호 >>> ${wayBilNum}
+                운송장번호 >>> ${waybillNum}
                 택배사 >>> ${courier}
                 반환 타입 >>> ${returnType}
             """.trimIndent()
@@ -113,7 +113,7 @@ class RegisterStep1: Fragment()
         binding.vm = vm
         binding.lifecycleOwner = this
 
-        binding.vm!!.wayBilNum.postValue(wayBilNum ?: "")
+        binding.vm!!.waybillNum.postValue(waybillNum ?: "")
         binding.vm!!.courier.postValue(courier)
 
         setObserve()
@@ -179,22 +179,22 @@ class RegisterStep1: Fragment()
         })
 
 
-        binding.vm!!.wayBilNum.observe(this, Observer { wayBilNum ->
+        binding.vm!!.waybillNum.observe(this, Observer { waybillNum ->
 
-            if (wayBilNum == null) return@Observer
+            if (waybillNum == null) return@Observer
 
-            if (wayBilNum.isNotEmpty()) binding.vm!!.clipBoardWords.value = ""
+            if (waybillNum.isNotEmpty()) binding.vm!!.clipBoardWords.value = ""
 
             if (courier == null)
             {
-                if (!wayBilNum.isGreaterThanOrEqual(9))
+                if (!waybillNum.isGreaterThanOrEqual(9))
                 {
                     binding.vm!!.courier.value = null
                     return@Observer
                 }
 
                 val courierList =
-                    RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, wayBilNum, 1, courierRepoImpl)
+                    RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, waybillNum, 1, courierRepoImpl)
 
                 if (courierList != null && courierList.size > 0)
                 {
@@ -262,19 +262,19 @@ class RegisterStep1: Fragment()
                 {
                     SopoLog.d(
                         """
-                        운송장 번호 >>> ${binding.vm!!.wayBilNum.value ?: "미입력"}
+                        운송장 번호 >>> ${binding.vm!!.waybillNum.value ?: "미입력"}
                         택배사 >>> ${binding.vm!!.courier.value ?: "미선택"}
                     """.trimIndent()
                     )
                     TabCode.REGISTER_STEP2.FRAGMENT =
-                        RegisterStep2.newInstance(binding.vm!!.wayBilNum.value, binding.vm!!.courier.value)
+                        RegisterStep2.newInstance(binding.vm!!.waybillNum.value, binding.vm!!.courier.value)
                     FragmentManager.move(parentView, TabCode.REGISTER_STEP2, RegisterMainFrame.viewId)
                     binding.vm!!.moveFragment.value = ""
                 }
                 TabCode.REGISTER_STEP3.NAME ->
                 {
                     TabCode.REGISTER_STEP3.FRAGMENT =
-                        RegisterStep3.newInstance(binding.vm!!.wayBilNum.value, binding.vm!!.courier.value)
+                        RegisterStep3.newInstance(binding.vm!!.waybillNum.value, binding.vm!!.courier.value)
                     FragmentManager.move(parentView, TabCode.REGISTER_STEP3, RegisterMainFrame.viewId)
                     binding.vm!!.moveFragment.value = ""
                 }
@@ -290,7 +290,7 @@ class RegisterStep1: Fragment()
 
         // 0922 kh 추가사항 - 클립보드에 저장되어있는 운송장 번호가 로컬에 등록된 택배가 있을 때, 안띄어주는 로직 추가
         ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE, parcelRepoImpl) {
-            val isRegister = binding.vm!!.wayBilNum.value.isNullOrEmpty()
+            val isRegister = binding.vm!!.waybillNum.value.isNullOrEmpty()
 
             if (!(it.isEmpty() || !isRegister))
             {
@@ -302,13 +302,13 @@ class RegisterStep1: Fragment()
 
     companion object
     {
-        fun newInstance(wayBilNum: String?, courier: CourierItem?, returnType: Int?): RegisterStep1
+        fun newInstance(waybillNum: String?, courier: CourierItem?, returnType: Int?): RegisterStep1
         {
             val registerStep1 = RegisterStep1()
 
             val args = Bundle()
 
-            args.putString("wayBilNum", wayBilNum)
+            args.putString("waybillNum", waybillNum)
             args.putSerializable("courier", courier)
             // 다른 프래그먼트에서 돌아왔을 때 분기 처리
             // 0: Default 1: Success To Register

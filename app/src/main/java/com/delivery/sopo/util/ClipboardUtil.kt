@@ -16,7 +16,7 @@ object ClipboardUtil
     fun copyTextToClipboard(con: Context, text: String)
     {
         val clipboard = con.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clipData = ClipData.newPlainText("wayBilNum", text)
+        val clipData = ClipData.newPlainText("waybillNum", text)
         clipboard.setPrimaryClip(clipData)
     }
 
@@ -28,7 +28,7 @@ object ClipboardUtil
             var clipboard = con.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
 
-            var wayBilNum = ""
+            var waybillNum = ""
 
             // 클립보드에 값이 있는지
             if (!(clipboard.hasPrimaryClip()))
@@ -39,20 +39,20 @@ object ClipboardUtil
             {
                 val item: ClipData.Item = clipboard.primaryClip!!.getItemAt(0)
 
-                wayBilNum = item.text.toString()
+                waybillNum = item.text.toString()
 
-                if (wayBilNum.length < 9)
+                if (waybillNum.length < 9)
                 {
-                    wayBilNum = ""
-                    cb.invoke(wayBilNum)
+                    waybillNum = ""
+                    cb.invoke(waybillNum)
                     return@launch
                 }
                 else
                 {
-                    val len = wayBilNum.length
+                    val len = waybillNum.length
                     var digitCnt = 0
 
-                    for (c in wayBilNum)
+                    for (c in waybillNum)
                         if (c.isDigit()) digitCnt++
 
                     // 클립보드에 저장된 텍스트에 일부 중 숫자 이외의 문자열 비율이 높을 경우 제외
@@ -63,15 +63,15 @@ object ClipboardUtil
 
                         if (digitRate < compareRate)
                         {
-                            wayBilNum = ""
-                            cb.invoke(wayBilNum)
+                            waybillNum = ""
+                            cb.invoke(waybillNum)
                             return@launch
                         }
                     }
                     else
                     {
-                        wayBilNum = ""
-                        cb.invoke(wayBilNum)
+                        waybillNum = ""
+                        cb.invoke(waybillNum)
                         return@launch
                     }
                 }
@@ -81,7 +81,7 @@ object ClipboardUtil
 
 
             withContext(Dispatchers.Default) {
-                parcel = parcelImpl.getSingleParcelWithwayBilNum(wayBilNum = wayBilNum)
+                parcel = parcelImpl.getSingleParcelWithwaybillNum(waybillNum = waybillNum)
                 Log.d("LOG.SOPO", "등록된 택배 Check $parcel")
             }
 
@@ -90,12 +90,12 @@ object ClipboardUtil
             if (parcel != null)
             {
                 Log.d("LOG.SOPO", "등록된 택배가 있기에, 클립보드 안띄움")
-                wayBilNum = ""
-                cb.invoke(wayBilNum)
+                waybillNum = ""
+                cb.invoke(waybillNum)
                 return@launch
             }
 
-            cb.invoke(wayBilNum)
+            cb.invoke(waybillNum)
             return@launch
         }
     }

@@ -15,6 +15,7 @@ import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.APIException
+import com.delivery.sopo.extensions.md5
 import com.delivery.sopo.mapper.OauthMapper
 import com.delivery.sopo.models.OauthResult
 import com.delivery.sopo.models.ResponseResult
@@ -94,7 +95,7 @@ class LoginViewModel(val userRepoImpl: UserRepoImpl, val oAuthRepo: OauthRepoImp
 
             // 성공
             CoroutineScope(Dispatchers.IO).launch {
-                loginWithOAuth(email.value.toString(), password.value.toString())
+                loginWithOAuth(email.value.toString(), password.value.toString().md5())
             }
         }
         catch (e: Exception)

@@ -34,7 +34,7 @@ class RegisterStep3ViewModel(
     private val userRepoImpl: UserRepoImpl
 ) : ViewModel()
 {
-    var wayBilNum = MutableLiveData<String>()
+    var waybillNum = MutableLiveData<String>()
     var courier = MutableLiveData<CourierItem>()
     var alias = MutableLiveData<String>()
 
@@ -57,7 +57,7 @@ class RegisterStep3ViewModel(
     fun onRegisterClicked()
     {
         // TODO 각 값 유효성 검사 필요
-        val registerParcelDTO = RegisterParcelDTO(courier.value!!.courierCode, wayBilNum.value.toString(), alias.value.toString())
+        val registerParcelDTO = RegisterParcelDTO(courier.value!!.courierCode, waybillNum.value.toString(), alias.value.toString())
 
         CoroutineScope(Dispatchers.IO).launch {
             when(val result = ParcelCall.registerParcel(registerParcelDTO))
