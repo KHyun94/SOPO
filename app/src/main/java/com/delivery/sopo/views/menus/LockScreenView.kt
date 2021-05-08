@@ -20,7 +20,6 @@ import kotlinx.android.synthetic.main.lock_screen_view.*
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-
 class LockScreenView : AppCompatActivity()
 {
     private val lockScreenVM: LockScreenViewModel by viewModel()

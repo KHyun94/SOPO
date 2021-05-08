@@ -8,7 +8,7 @@ import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.SuccessResult
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.call.JoinCall
-import com.delivery.sopo.networks.dto.joins.JoinInfoByKakaoDTO
+import com.delivery.sopo.networks.dto.joins.JoinInfoDTO
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
@@ -52,16 +52,16 @@ object JoinRepository
         }
     }
 
-    suspend fun requestJoinBySelf(joinInfoByKakaoDTO: JoinInfoByKakaoDTO): ResponseResult<Unit>
+    suspend fun requestJoinBySelf(joinInfoDTO: JoinInfoDTO): ResponseResult<Unit>
     {
-        val result = JoinCall.requestJoinBySelf(joinInfoByKakaoDTO = joinInfoByKakaoDTO)
-        return requestJoin<String?, Unit>(result)
+        val result = JoinCall.requestJoinBySelf(joinInfoDTO = joinInfoDTO)
+        return requestJoin<Unit, Unit>(result)
     }
 
-    suspend fun requestJoinByKakao(joinInfoByKakaoDTO: JoinInfoByKakaoDTO): ResponseResult<Unit>
+    suspend fun requestJoinByKakao(joinInfoDTO: JoinInfoDTO): ResponseResult<Unit>
     {
-        val result = JoinCall.requestJoinByKakao(joinInfoByKakaoDTO = joinInfoByKakaoDTO)
-        val res = requestJoin<String?, Unit>(result)
+        val result = JoinCall.requestJoinByKakao(joinInfoDTO = joinInfoDTO)
+        val res = requestJoin<Unit, Unit>(result)
 
         if(res.code == ResponseCode.ALREADY_REGISTERED_USER)
         {
@@ -72,9 +72,4 @@ object JoinRepository
         return res
     }
 
-    suspend fun requestDuplicatedEmail(email: String): ResponseResult<Boolean>
-    {
-        val result = JoinCall.requestDuplicatedEmail(email)
-        return requestJoin<Boolean, Boolean>(result)
-    }
 }

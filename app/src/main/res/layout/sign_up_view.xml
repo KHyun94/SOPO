@@ -68,11 +68,12 @@
                 app:hintTextColor="@color/COLOR_MAIN_700">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/et_email"
                     style="@style/H7"
+                    android:id="@+id/et_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
+                    android:maxEms="50"
                     android:singleLine="true"
                     android:text="@={vm.email}"
                     app:focusChangeListener="@{vm.focusChangeCallback}"
@@ -178,7 +179,7 @@
                 android:layout_marginVertical="10sp"
                 android:layout_marginEnd="10sp"
                 android:button="@drawable/checkbox_blue_circle"
-                android:onClick="@{()->vm.onAgreeClicked(cbAgreement)}"/>
+                android:onClick="@{()->vm.onAgreeClicked(cbAgreement)}" />
 
             <!-- todo font 미적용 -->
             <TextView

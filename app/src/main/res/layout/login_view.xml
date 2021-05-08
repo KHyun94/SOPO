@@ -76,6 +76,7 @@
                     android:inputType="textEmailAddress"
                     android:singleLine="true"
                     android:text="@={vm.email}"
+                    android:maxEms="50"
                     app:focusChangeListener="@{vm.focusChangeCallback}"
                     app:type="@{InfoEnum.EMAIL}" />
 
