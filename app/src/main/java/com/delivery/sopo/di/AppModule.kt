@@ -1,9 +1,11 @@
 package com.delivery.sopo.di
 
-import com.delivery.sopo.database.room.AppDatabase
-import com.delivery.sopo.database.shared.SharedPref
-import com.delivery.sopo.database.shared.SharedPrefHelper
-import com.delivery.sopo.repository.impl.*
+import com.delivery.sopo.data.repository.database.room.AppDatabase
+import com.delivery.sopo.data.repository.database.shared.SharedPref
+import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repository.local.user.UserSharedPrefHelper
+import com.delivery.sopo.data.repository.local.repository.*
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.viewmodels.inquiry.InquiryMainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
@@ -28,19 +30,18 @@ val appModule = module {
 
     single { SharedPref(androidApplication()) }
     single {
-        SharedPrefHelper(
-            get(),
-            androidApplication()
+        UserSharedPrefHelper(
+            get(), androidApplication()
         )
     }
-    single { UserRepoImpl(get()) }
+    single { UserLocalRepository(get()) }
     single { AppDatabase.getInstance(get()) }
-    single { CourierRepoImpl(get()) }
+    single { CarrierRepository(get()) }
     single { ParcelRepoImpl(get(), get()) }
     single { ParcelManagementRepoImpl(get()) }
     single { TimeCountRepoImpl(get(), get()) }
     single { AppPasswordRepoImpl(get()) }
-    single { OauthRepoImpl(get()) }
+    single { OAuthLocalRepository(get()) }
 
     viewModel { SplashViewModel(get(), get()) }
     viewModel { LoginViewModel(get(), get()) }

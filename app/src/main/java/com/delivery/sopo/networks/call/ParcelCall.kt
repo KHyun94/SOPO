@@ -1,6 +1,6 @@
 package com.delivery.sopo.networks.call
 
-import com.delivery.sopo.database.room.entity.OauthEntity
+import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.Parcel
@@ -8,8 +8,8 @@ import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.networks.dto.parcels.RegisterParcelDTO
-import com.delivery.sopo.repository.impl.OauthRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
@@ -20,20 +20,20 @@ import org.koin.core.inject
 object ParcelCall : BaseService(), KoinComponent
 {
     val TAG = this.javaClass.simpleName
-    val userRepoImpl : UserRepoImpl by inject()
-    val oAuthRepoImpl : OauthRepoImpl by inject()
+    val USER_LOCAL_REPOSITORY : UserLocalRepository by inject()
+    val O_AUTH_REPO_IMPL : OAuthLocalRepository by inject()
     val email : String
-        get() = userRepoImpl.getEmail()
+        get() = USER_LOCAL_REPOSITORY.getUserId()
 
     var parcelAPI : ParcelAPI
 
     init
     {
-        val oauth : OauthEntity?
-        runBlocking { oauth = oAuthRepoImpl.get(email = email) }
-        SopoLog.d( msg = "토큰 정보 => ${oauth}")
+        val OAuth : OAuthEntity?
+        runBlocking { OAuth = O_AUTH_REPO_IMPL.get(userId = email) }
+        SopoLog.d( msg = "토큰 정보 => ${OAuth}")
 
-        parcelAPI = NetworkManager.retro(oauth?.accessToken).create(ParcelAPI::class.java)
+        parcelAPI = NetworkManager.retro(OAuth?.accessToken).create(ParcelAPI::class.java)
     }
 
     suspend fun registerParcel(dto: RegisterParcelDTO):NetworkResult<APIResult<ParcelId?>>

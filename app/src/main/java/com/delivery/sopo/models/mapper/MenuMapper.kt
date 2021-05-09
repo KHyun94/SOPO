@@ -1,0 +1,40 @@
+package com.delivery.sopo.models.mapper
+
+import android.view.Menu
+import androidx.core.view.iterator
+import com.delivery.sopo.data.repository.database.room.entity.ParcelCntInfoEntity
+import com.delivery.sopo.models.inquiry.InquiryMenuItem
+
+object MenuMapper
+{
+    fun menuToMenuItemList(menu: Menu): List<InquiryMenuItem>{
+
+        val menuItemList = mutableListOf<InquiryMenuItem>()
+        for (menuItem in menu){
+            menuItemList.add(InquiryMenuItem(viewType = InquiryMenuItem.InquiryMenuType.MainMenu,
+                                      menuTitle = menuItem.title as String))
+        }
+        return menuItemList
+    }
+
+    fun timeCountDtoToMenuItemList(timeCntDtoList: MutableList<ParcelCntInfoEntity>): List<InquiryMenuItem>{
+        val menuItemList = mutableListOf<InquiryMenuItem>()
+        for(timeCnt in timeCntDtoList){
+            menuItemList.add(InquiryMenuItem(viewType = InquiryMenuItem.InquiryMenuType.CompleteHistoryList,
+                                             parcelCntInfo = timeCnt))
+        }
+        return menuItemList
+    }
+
+    fun timeToListTitle(time: String): String{
+        return time.replace("-", "년 ") + "월"
+    }
+
+    fun timeToInquiryDate(time: String): String{
+        return time.replace("-","")
+    }
+
+    fun titleToInquiryDate(title: String): String{
+        return title.replace("년 ", "").replace("월", "")
+    }
+}

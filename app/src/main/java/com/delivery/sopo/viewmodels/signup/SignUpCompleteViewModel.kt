@@ -6,19 +6,19 @@ import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.models.ResponseResult
-import com.delivery.sopo.networks.repository.OAuthNetworkRepo
-import com.delivery.sopo.repository.impl.OauthRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.remote.o_auth.OAuthRemoteRepository
+import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SignUpCompleteViewModel(private val userRepo: UserRepoImpl, private val oAuthRepo: OauthRepoImpl): ViewModel()
+class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, private val oAuthRepo: OAuthLocalRepository): ViewModel()
 {
     val email = MutableLiveData<String>().also {
-        it.postValue(userRepo.getEmail())
+        it.postValue(userLocalRepo.getUserId())
     }
 
     private var _result = MutableLiveData<ResponseResult<*>>()
@@ -35,7 +35,7 @@ class SignUpCompleteViewModel(private val userRepo: UserRepoImpl, private val oA
 
     fun onCompleteClicked()
     {
-        login(userRepo.getEmail(), userRepo.getApiPwd())
+        login(userLocalRepo.getUserId(), userLocalRepo.getUserPassword())
     }
 
     fun login(email: String, password: String)
@@ -48,7 +48,7 @@ class SignUpCompleteViewModel(private val userRepo: UserRepoImpl, private val oA
 
         CoroutineScope(Dispatchers.Main).launch {
 
-            val oAuthRes = OAuthNetworkRepo.loginWithOAuth(email, password)
+            val oAuthRes = OAuthRemoteRepository.requestLoginWithOAuth(email, password)
 
             SopoLog.d("""
                 OAuth Login >>> 
@@ -63,9 +63,9 @@ class SignUpCompleteViewModel(private val userRepo: UserRepoImpl, private val oA
                 return@launch
             }
 
-            userRepo.run {
-                setEmail(email)
-                setApiPwd(password)
+            userLocalRepo.run {
+                setUserId(email)
+                setUserPassword(password)
                 setStatus(1)
             }
 
@@ -75,13 +75,13 @@ class SignUpCompleteViewModel(private val userRepo: UserRepoImpl, private val oA
                 oAuthRepo.insert(oAuthRes.data!!)
             }
 
-            SopoLog.d("Nickname is ${userRepo.getNickname()}")
+            SopoLog.d("Nickname is ${userLocalRepo.getNickname()}")
 
-            if(userRepo.getNickname() == "")
+            if(userLocalRepo.getNickname() == "")
             {
                 SopoLog.d("Nickname is empty")
 
-                val infoRes = OAuthNetworkRepo.getUserInfo()
+                val infoRes = OAuthRemoteRepository.getUserInfo()
 
                 if(!infoRes.result)
                 {
@@ -99,7 +99,7 @@ class SignUpCompleteViewModel(private val userRepo: UserRepoImpl, private val oA
 
                 SopoLog.e("Nickname is ${infoRes.data.nickname}, so go to main")
 
-                userRepo.setNickname(infoRes.data.nickname)
+                userLocalRepo.setNickname(infoRes.data.nickname)
 
                 navigator.postValue(NavigatorConst.TO_MAIN)
             }

@@ -15,31 +15,28 @@ import androidx.lifecycle.ViewModelProvider
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.MenuViewBinding
 import com.delivery.sopo.enums.MenuEnum
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.repository.impl.TimeCountRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.TimeCountRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.AlertUtil
-import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.factory.MenuViewModelFactory
 import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import com.delivery.sopo.views.main.MainView
-import com.delivery.sopo.views.signup.UpdateNicknameView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.menu_view.view.*
 import org.koin.android.ext.android.inject
 import java.util.function.Function
 
 
 class MenuFragment : Fragment()
 {
-    private val userRepoImpl: UserRepoImpl by inject()
+    private val userLocalRepository: UserLocalRepository by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
     private val timeCountRepoImpl: TimeCountRepoImpl by inject()
     private val menuVm: MenuViewModel by lazy {
         ViewModelProvider(
             requireActivity(),
-            MenuViewModelFactory(userRepoImpl, parcelRepoImpl, timeCountRepoImpl)
+            MenuViewModelFactory(userLocalRepository, parcelRepoImpl, timeCountRepoImpl)
         ).get(MenuViewModel::class.java)
     }
 

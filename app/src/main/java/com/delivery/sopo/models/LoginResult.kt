@@ -5,8 +5,8 @@ import java.io.Serializable
 
 // 
 data class LoginResult(
-    @SerializedName("userName")
-    val userName: String,
+    @SerializedName("userId")
+    val userId: String,
     @SerializedName("nickName")
     val userNickname : String?,
     @SerializedName("status")

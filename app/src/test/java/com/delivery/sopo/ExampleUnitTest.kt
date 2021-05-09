@@ -1,6 +1,6 @@
 package com.delivery.sopo
 
-import com.delivery.sopo.database.room.AppDatabase
+import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import org.junit.Test
 import java.text.SimpleDateFormat

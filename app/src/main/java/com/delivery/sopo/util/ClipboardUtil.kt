@@ -4,8 +4,8 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.util.Log
-import com.delivery.sopo.database.room.entity.ParcelEntity
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -81,7 +81,7 @@ object ClipboardUtil
 
 
             withContext(Dispatchers.Default) {
-                parcel = parcelImpl.getSingleParcelWithwaybillNum(waybillNum = waybillNum)
+                parcel = parcelImpl.getSingleParcelWithWaybillNum(waybillNum = waybillNum)
                 Log.d("LOG.SOPO", "등록된 택배 Check $parcel")
             }
 

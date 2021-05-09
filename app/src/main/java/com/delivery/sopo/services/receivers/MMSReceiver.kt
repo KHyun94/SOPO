@@ -8,7 +8,7 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Handler
 import android.text.TextUtils
-import com.delivery.sopo.repository.impl.CourierRepoImpl
+import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
@@ -23,7 +23,7 @@ import java.text.MessageFormat
 
 class MMSReceiver: BroadcastReceiver(), KoinComponent
 {
-    private val courierRepo: CourierRepoImpl by inject()
+    private val carrierRepo: CarrierRepository by inject()
 
     override fun onReceive(context: Context?, intent: Intent?)
     {
@@ -54,7 +54,7 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
 
         var parcelNickname: String? = null
         var parcelWayBilNo: String? = null
-        var parcelCourier: String? = null
+        var parcelCarrier: String? = null
 
         var cnt = 1
 
@@ -64,9 +64,9 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
 
             if(value.contains("상품명")) parcelNickname = parse(value)
             if(value.contains("운송장번호"))parcelWayBilNo = parse(value)
-            if(value.contains("택배사")) parcelCourier = parse(value).replace("택배", "")
+            if(value.contains("택배사")) parcelCarrier = parse(value).replace("택배", "")
 
-            if(parcelCourier == null && value.contains("택배"))
+            if(parcelCarrier == null && value.contains("택배"))
             {
 
             }
@@ -75,10 +75,10 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
         SopoLog.d("상품명>>>$parcelNickname")
         SopoLog.d("운송장번호>>>$parcelWayBilNo")
 
-        if(parcelCourier != null)
+        if(parcelCarrier != null)
         {
-            val courierList = runBlocking(Dispatchers.Default) { courierRepo.getCourierEntityWithPartName("%${parcelCourier}%") }
-            SopoLog.d("택배사(${parcelCourier}) >>> ${courierList.joinToString()}")
+            val carrierList = runBlocking(Dispatchers.Default) { carrierRepo.getCarrierEntityWithPartName("%${parcelCarrier}%") }
+            SopoLog.d("택배사(${parcelCarrier}) >>> ${carrierList.joinToString()}")
         }
 
 

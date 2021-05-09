@@ -6,14 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.asSHA256
-import com.delivery.sopo.database.room.entity.AppPasswordEntity
-import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
+import com.delivery.sopo.data.repository.local.repository.AppPasswordRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LockScreenViewModel(
-    private val userRepoImpl: UserRepoImpl,
+    private val userLocalRepository: UserLocalRepository,
     private val appPasswordRepo: AppPasswordRepoImpl) : ViewModel()
 {
 
@@ -126,7 +126,7 @@ class LockScreenViewModel(
                    viewModelScope.launch(Dispatchers.IO){
                        appPasswordRepo.insertEntity(
                            AppPasswordEntity(
-                           userName = userRepoImpl.getEmail(),
+                           userId = userLocalRepository.getUserId(),
                            appPassword = lockPassword.value.toString().asSHA256
                        )
                        )

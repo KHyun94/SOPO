@@ -3,13 +3,13 @@ package com.delivery.sopo.viewmodels.inquiry
 import android.util.Log
 import androidx.lifecycle.*
 import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.database.room.entity.ParcelEntity
-import com.delivery.sopo.database.room.entity.TimeCountEntity
+import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
+import com.delivery.sopo.data.repository.database.room.entity.ParcelCntInfoEntity
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.enums.ScreenStatusEnum
-import com.delivery.sopo.mapper.MenuMapper
-import com.delivery.sopo.mapper.ParcelMapper
-import com.delivery.sopo.mapper.TimeCountMapper
+import com.delivery.sopo.models.mapper.MenuMapper
+import com.delivery.sopo.models.mapper.ParcelMapper
+import com.delivery.sopo.models.mapper.TimeCountMapper
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
@@ -19,10 +19,10 @@ import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.networks.dto.TimeCountDTO
-import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.repository.impl.TimeCountRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.TimeCountRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
@@ -35,7 +35,7 @@ import retrofit2.Callback
 import retrofit2.HttpException
 import retrofit2.Response
 
-class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parcelRepoImpl: ParcelRepoImpl, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val timeCountRepoImpl: TimeCountRepoImpl): ViewModel()
+class InquiryViewModel(private val userLocalRepository: UserLocalRepository, private val parcelRepoImpl: ParcelRepoImpl, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val timeCountRepoImpl: TimeCountRepoImpl): ViewModel()
 {
     private var _ongoingList =
         Transformations.map(parcelRepoImpl.getLocalOngoingParcelsAsLiveData()) { parcelList ->
@@ -96,12 +96,12 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
         get() = _isShowDeleteSnackBar
 
     private val _currentTimeCount = timeCountRepoImpl.getCurrentTimeCountLiveData()
-    val currentTimeCount: LiveData<TimeCountEntity?>
+    val currentParcelCntInfo: LiveData<ParcelCntInfoEntity?>
         get() = _currentTimeCount
 
     // 배송완료 조회 가능한 '년월' 리스트 데이터
     private val _monthList = timeCountRepoImpl.getAllLiveData()
-    val monthList: LiveData<MutableList<TimeCountEntity>>
+    val monthList: LiveData<MutableList<ParcelCntInfoEntity>>
         get() = _monthList
 
     private val _refreshCompleteListByOnlyLocalData = timeCountRepoImpl.getRefreshCriteriaLiveData()
@@ -601,7 +601,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
                 }
                 if (getCurrentScreenStatus() == ScreenStatusEnum.COMPLETE)
                 {
-                    // 복구해야할 리스트 중 아이템 하나의 도착일자 (2020-09-19 ~~)에서 TIME_COUNT의 primaryKey를 추출해서 복구해야할 TIME_COUNT를 구한다.
+                    // 복구해야할 리스트 중 아이템 하나의 도착일자 (2020-09-19 ~~)에서 PARCEL_CNT_INFO의 primaryKey를 추출해서 복구해야할 PARCEL_CNT_INFO를 구한다.
                     parcelRepoImpl.getLocalParcelById(ParcelId(cancelDataList.first().regDt, cancelDataList.first().parcelUid))
                         ?.let {
                             val timeCountPrimaryKey =
@@ -612,7 +612,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
                                     entity.visibility =
                                         0 // 모든 아이템(monthList)가 삭제되었을때 삭제취소를 하려면 visibility를 0으로 수정해줘야한다.
 
-                                    SopoLog.d("복구해야할 TIME_COUNT => time : ${entity.time} , count : ${entity.count}, status : ${entity.status} , auditDate : ${entity.auditDte}")
+                                    SopoLog.d("복구해야할 PARCEL_CNT_INFO => time : ${entity.time} , count : ${entity.count}, status : ${entity.status} , auditDate : ${entity.auditDte}")
                                     timeCountRepoImpl.updateEntity(entity)
                                 }
                         }
@@ -669,7 +669,7 @@ class InquiryViewModel(private val userRepoImpl: UserRepoImpl, private val parce
         SopoLog.d("Parcel Alias 변경 JsonArray ===> ${jsonArray}")
 
         NetworkManager.retro(SOPOApp.oAuthEntity?.accessToken).create(ParcelAPI::class.java).patchParcel(
-            email = userRepoImpl.getEmail(), parcelUid = parcelId.parcelUid, regDt = parcelId.regDt, jsonPATCH = jsonArray
+            email = userLocalRepository.getUserId(), parcelUid = parcelId.parcelUid, regDt = parcelId.regDt, jsonPATCH = jsonArray
         ).enqueue(object: Callback<APIResult<ParcelEntity?>>
         {
             override fun onFailure(call: Call<APIResult<ParcelEntity?>>, t: Throwable)

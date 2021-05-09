@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentNotDisturbTimeBinding
 import com.delivery.sopo.firebase.FirebaseNetwork
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.NotDisturbTimeViewModel
 import com.delivery.sopo.views.dialog.NotDisturbTimeDialog
@@ -23,7 +23,7 @@ import java.util.*
 
 class NotDisturbTimeFragment : Fragment()
 {
-    private val userRepoImpl : UserRepoImpl by inject()
+    private val userLocalRepository : UserLocalRepository by inject()
     private val notDisturbVm: NotDisturbTimeViewModel by viewModel()
 
     lateinit var binding: FragmentNotDisturbTimeBinding
@@ -66,13 +66,13 @@ class NotDisturbTimeFragment : Fragment()
                     end Time >>> $endTime
                 """.trimIndent())
 
-                userRepoImpl.setDisturbStartTime(startTime)
-                userRepoImpl.setDisturbEndTime(endTime)
+                userLocalRepository.setDisturbStartTime(startTime)
+                userLocalRepository.setDisturbEndTime(endTime)
 
                 val topicHour = endTime.substring(0, 2).toInt()
                 val topicMin = endTime.substring(3, 5).toInt()
 
-                if(userRepoImpl.getTopic().isEmpty())
+                if(userLocalRepository.getTopic().isEmpty())
                 {
                     FirebaseNetwork.subscribedToTopicInFCM(topicHour, topicMin)
                 }

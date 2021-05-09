@@ -1,6 +1,6 @@
 package com.delivery.sopo.firebase
 
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import com.google.firebase.iid.FirebaseInstanceId
@@ -11,7 +11,7 @@ import java.util.*
 
 object FirebaseNetwork: KoinComponent
 {
-    private val userRepo: UserRepoImpl by inject()
+    private val USER_LOCAL_REPO: UserLocalRepository by inject()
 
     /**
      * FCM 구독 요청
@@ -50,7 +50,7 @@ object FirebaseNetwork: KoinComponent
                     return@addOnCompleteListener
                 }
 
-                userRepo.setTopic(topic)
+                USER_LOCAL_REPO.setTopic(topic)
 //                callback.invoke(SuccessResult(SUCCESS, "구독 성공 >>> ${topic}", null), null)
             }
     }
@@ -62,7 +62,7 @@ object FirebaseNetwork: KoinComponent
      */
     fun unsubscribedToTopicInFCM()
     {
-        val topic = userRepo.getTopic()
+        val topic = USER_LOCAL_REPO.getTopic()
 
         if(topic == "")
         {
@@ -78,7 +78,7 @@ object FirebaseNetwork: KoinComponent
                     return@addOnCompleteListener
                 }
 
-                userRepo.setTopic("")
+                USER_LOCAL_REPO.setTopic("")
 //                callback.invoke(SuccessResult(SUCCESS, "구독 해제 성공 >>> $topic", null), null)
             }
     }

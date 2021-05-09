@@ -4,22 +4,20 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.view.*
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.database.room.RoomActivate
+import com.delivery.sopo.data.repository.database.room.RoomActivate
 import com.delivery.sopo.databinding.RegisterStep1Binding
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.models.CarrierDTO
+import com.delivery.sopo.data.repository.local.repository.CarrierRepository
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
 import com.delivery.sopo.extensions.isGreaterThanOrEqual
-import com.delivery.sopo.models.CourierItem
-import com.delivery.sopo.repository.impl.CourierRepoImpl
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.OtherUtil
@@ -42,11 +40,11 @@ class RegisterStep1: Fragment()
     private lateinit var binding: RegisterStep1Binding
     private val vm: RegisterStep1ViewModel by viewModel()
 
-    private val courierRepoImpl: CourierRepoImpl by inject()
+    private val carrierRepository: CarrierRepository by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
 
     private var waybillNum: String? = null
-    private var courier: CourierItem? = null
+    private var carrierDTO: CarrierDTO? = null
     private var returnType: Int? = null
 
     // todo 추 후 각 페이지에 중복되어있는 로직을 통합 처리 예정
@@ -93,14 +91,14 @@ class RegisterStep1: Fragment()
         // 다른 화면에서 1단계로 다시 이동할 때 전달받은 값
         arguments?.run {
             waybillNum = getString("waybillNum") ?: ""
-            courier = getSerializable("courier") as CourierItem?
+            carrierDTO = getSerializable("carrier") as CarrierDTO?
             returnType = getInt("returnType") ?: 0
 
             SopoLog.d(
                 """
                 RegisterStep1
                 운송장번호 >>> ${waybillNum}
-                택배사 >>> ${courier}
+                택배사 >>> ${carrierDTO}
                 반환 타입 >>> ${returnType}
             """.trimIndent()
             )
@@ -114,7 +112,7 @@ class RegisterStep1: Fragment()
         binding.lifecycleOwner = this
 
         binding.vm!!.waybillNum.postValue(waybillNum ?: "")
-        binding.vm!!.courier.postValue(courier)
+        binding.vm!!.carrierDTO.postValue(carrierDTO)
 
         setObserve()
         moveToInquiryTab()
@@ -185,26 +183,26 @@ class RegisterStep1: Fragment()
 
             if (waybillNum.isNotEmpty()) binding.vm!!.clipBoardWords.value = ""
 
-            if (courier == null)
+            if (carrierDTO == null)
             {
                 if (!waybillNum.isGreaterThanOrEqual(9))
                 {
-                    binding.vm!!.courier.value = null
+                    binding.vm!!.carrierDTO.value = null
                     return@Observer
                 }
 
-                val courierList =
-                    RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, waybillNum, 1, courierRepoImpl)
+                val carrierList =
+                    RoomActivate.recommendAutoCarrier(SOPOApp.INSTANCE, waybillNum, 1, carrierRepository)
 
-                if (courierList != null && courierList.size > 0)
+                if (carrierList != null && carrierList.size > 0)
                 {
                     SopoLog.d(
                         msg = """
-                        최우선 순위 >>> ${courierList[0]}
+                        최우선 순위 >>> ${carrierList[0]}
                     """.trimIndent()
                     )
 
-                    binding.vm!!.courier.value = (courierList[0])
+                    binding.vm!!.carrierDTO.value = (carrierList[0])
                 }
             }
         })
@@ -263,18 +261,18 @@ class RegisterStep1: Fragment()
                     SopoLog.d(
                         """
                         운송장 번호 >>> ${binding.vm!!.waybillNum.value ?: "미입력"}
-                        택배사 >>> ${binding.vm!!.courier.value ?: "미선택"}
+                        택배사 >>> ${binding.vm!!.carrierDTO.value ?: "미선택"}
                     """.trimIndent()
                     )
                     TabCode.REGISTER_STEP2.FRAGMENT =
-                        RegisterStep2.newInstance(binding.vm!!.waybillNum.value, binding.vm!!.courier.value)
+                        RegisterStep2.newInstance(binding.vm!!.waybillNum.value, binding.vm!!.carrierDTO.value)
                     FragmentManager.move(parentView, TabCode.REGISTER_STEP2, RegisterMainFrame.viewId)
                     binding.vm!!.moveFragment.value = ""
                 }
                 TabCode.REGISTER_STEP3.NAME ->
                 {
                     TabCode.REGISTER_STEP3.FRAGMENT =
-                        RegisterStep3.newInstance(binding.vm!!.waybillNum.value, binding.vm!!.courier.value)
+                        RegisterStep3.newInstance(binding.vm!!.waybillNum.value, binding.vm!!.carrierDTO.value)
                     FragmentManager.move(parentView, TabCode.REGISTER_STEP3, RegisterMainFrame.viewId)
                     binding.vm!!.moveFragment.value = ""
                 }
@@ -302,14 +300,14 @@ class RegisterStep1: Fragment()
 
     companion object
     {
-        fun newInstance(waybillNum: String?, courier: CourierItem?, returnType: Int?): RegisterStep1
+        fun newInstance(waybillNum: String?, carrierDTO: CarrierDTO?, returnType: Int?): RegisterStep1
         {
             val registerStep1 = RegisterStep1()
 
             val args = Bundle()
 
             args.putString("waybillNum", waybillNum)
-            args.putSerializable("courier", courier)
+            args.putSerializable("carrier", carrierDTO)
             // 다른 프래그먼트에서 돌아왔을 때 분기 처리
             // 0: Default 1: Success To Register
             args.putInt("returnType", returnType ?: 0)

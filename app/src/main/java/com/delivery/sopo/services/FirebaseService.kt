@@ -2,17 +2,15 @@ package com.delivery.sopo.services
 
 import android.content.Intent
 import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.database.room.AppDatabase
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
-import com.delivery.sopo.mapper.ParcelMapper
+import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.ParcelId
-import com.delivery.sopo.models.push.UpdateParcelDao
 import com.delivery.sopo.models.push.UpdatedParcelInfo
 import com.delivery.sopo.networks.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
-import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
 import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil

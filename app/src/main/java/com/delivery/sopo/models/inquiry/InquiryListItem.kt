@@ -7,8 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.R
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject

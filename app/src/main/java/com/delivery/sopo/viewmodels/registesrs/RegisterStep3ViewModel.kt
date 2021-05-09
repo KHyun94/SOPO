@@ -1,41 +1,29 @@
 package com.delivery.sopo.viewmodels.registesrs
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.extensions.isGreaterThanOrEqual
-import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.models.CourierItem
+import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.models.ErrorResult
 import com.delivery.sopo.models.TestResult
-import com.delivery.sopo.models.ValidateResult
 import com.delivery.sopo.models.parcel.ParcelId
-import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.networks.dto.parcels.RegisterParcelDTO
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.livedates.SingleLiveEvent
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class RegisterStep3ViewModel(
-    private val userRepoImpl: UserRepoImpl
+    private val userLocalRepository: UserLocalRepository
 ) : ViewModel()
 {
     var waybillNum = MutableLiveData<String>()
-    var courier = MutableLiveData<CourierItem>()
+    var carrier = MutableLiveData<CarrierDTO>()
     var alias = MutableLiveData<String>()
 
     val isRevise = SingleLiveEvent<Boolean>()
@@ -57,7 +45,7 @@ class RegisterStep3ViewModel(
     fun onRegisterClicked()
     {
         // TODO 각 값 유효성 검사 필요
-        val registerParcelDTO = RegisterParcelDTO(courier.value!!.courierCode, waybillNum.value.toString(), alias.value.toString())
+        val registerParcelDTO = RegisterParcelDTO(carrier.value!!.carrier, waybillNum.value.toString(), alias.value.toString())
 
         CoroutineScope(Dispatchers.IO).launch {
             when(val result = ParcelCall.registerParcel(registerParcelDTO))

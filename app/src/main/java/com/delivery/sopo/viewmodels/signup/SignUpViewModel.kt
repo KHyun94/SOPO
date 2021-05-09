@@ -13,13 +13,13 @@ import com.delivery.sopo.extensions.md5
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.networks.dto.joins.JoinInfoDTO
 import com.delivery.sopo.networks.repository.JoinRepository
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SignUpViewModel(private val userRepo: UserRepoImpl) : ViewModel()
+class SignUpViewModel(private val userLocalRepo: UserLocalRepository) : ViewModel()
 {
     val email = MutableLiveData<String>()
     val password = MutableLiveData<String>()
@@ -103,13 +103,13 @@ class SignUpViewModel(private val userRepo: UserRepoImpl) : ViewModel()
 
             if(res.result)
             {
-                userRepo.setEmail(email = email.value.toString())
-                userRepo.setApiPwd(pwd = password.value.toString())
+                userLocalRepo.setUserId(userId = email.value.toString())
+                userLocalRepo.setUserPassword(password = password.value.toString())
 
                 SopoLog.d("""
                     User Data
-                    email >>> ${email.value.toString()}, save(${userRepo.getEmail()})
-                    password >>> ${password.value.toString()}, save(${userRepo.getApiPwd()})
+                    email >>> ${email.value.toString()}, save(${userLocalRepo.getUserId()})
+                    password >>> ${password.value.toString()}, save(${userLocalRepo.getUserPassword()})
                 """.trimIndent())
             }
 

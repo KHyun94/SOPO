@@ -2,12 +2,12 @@ package com.delivery.sopo.networks
 
 import com.delivery.sopo.BuildConfig
 import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.database.room.entity.OauthEntity
+import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.networks.interceptors.BasicAuthInterceptor
 import com.delivery.sopo.networks.interceptors.OAuthInterceptor
-import com.delivery.sopo.repository.impl.OauthRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -25,8 +25,8 @@ import java.util.concurrent.TimeUnit
 
 object NetworkManager : KoinComponent
 {
-    val userRepoImpl : UserRepoImpl by inject()
-    val oauthRepoImpl : OauthRepoImpl by inject()
+    val USER_LOCAL_REPOSITORY : UserLocalRepository by inject()
+    val O_AUTH_LOCAL_REPOSITORY : OAuthLocalRepository by inject()
 
     private const val CONNECT_TIMEOUT: Long = 15
     private const val WRITE_TIMEOUT: Long = 15
@@ -48,11 +48,11 @@ object NetworkManager : KoinComponent
         {
             NetworkEnum.O_AUTH_TOKEN_LOGIN ->
             {
-                val oauth : OauthEntity? = runBlocking(Dispatchers.Default) {
-                    oauthRepoImpl.get(userRepoImpl.getEmail()).also { SOPOApp.oAuthEntity = it }
+                val OAuth : OAuthEntity? = runBlocking(Dispatchers.Default) {
+                    O_AUTH_LOCAL_REPOSITORY.get(USER_LOCAL_REPOSITORY.getUserId()).also { SOPOApp.oAuthEntity = it }
                 }?:SOPOApp.oAuthEntity
-                SopoLog.d(msg = "토큰 정보 => ${oauth}")
-                retro(oauth?.accessToken).create(clz)
+                SopoLog.d(msg = "토큰 정보 => ${OAuth}")
+                retro(OAuth?.accessToken).create(clz)
             }
             NetworkEnum.PUBLIC_LOGIN ->
             {

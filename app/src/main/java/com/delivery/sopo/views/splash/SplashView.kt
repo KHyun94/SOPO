@@ -1,26 +1,15 @@
 package com.delivery.sopo.views.splash
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.PermissionConst
 import com.delivery.sopo.databinding.SplashViewBinding
-import com.delivery.sopo.enums.ResponseCode
-import com.delivery.sopo.models.LoginResult
-import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.api.LoginAPI
-import com.delivery.sopo.repository.impl.OauthRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.AlertUtil
-import com.delivery.sopo.util.CodeUtil
-import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.viewmodels.splash.SplashViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
@@ -28,19 +17,15 @@ import com.delivery.sopo.views.dialog.PermissionDialog
 import com.delivery.sopo.views.intro.IntroView
 import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.signup.UpdateNicknameView
-import kotlinx.android.synthetic.main.splash_view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view)
 {
-    private val userRepo: UserRepoImpl by inject()
+    private val userLocalRepo: UserLocalRepository by inject()
     private val splashVm: SplashViewModel by viewModel()
     lateinit var permissionDialog: PermissionDialog
 
@@ -113,7 +98,7 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
                 }
                 NavigatorConst.TO_MAIN ->
                 {
-                    goToMainOrNickname(userRepo.getNickname())
+                    goToMainOrNickname(userLocalRepo.getNickname())
                 }
                 NavigatorConst.TO_INIT ->
                 {

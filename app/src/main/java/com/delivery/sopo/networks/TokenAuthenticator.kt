@@ -1,16 +1,17 @@
 package com.delivery.sopo.networks
 
+import com.delivery.sopo.BuildConfig
 import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.database.room.entity.OauthEntity
+import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 import com.delivery.sopo.enums.ResponseCode.*
-import com.delivery.sopo.mapper.OauthMapper
+import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.models.ErrorResult
-import com.delivery.sopo.models.OauthResult
+import com.delivery.sopo.models.dto.OAuthDTO
 import com.delivery.sopo.models.TestResult
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.api.OAuthAPI
-import com.delivery.sopo.repository.impl.OauthRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
@@ -25,8 +26,8 @@ import org.koin.core.inject
 
 class TokenAuthenticator : Authenticator, KoinComponent
 {
-    val userRepoImpl : UserRepoImpl by inject()
-    val oauthRepoImpl : OauthRepoImpl by inject()
+    val userLocalRepository : UserLocalRepository by inject()
+    val OAuthLocalRepository : OAuthLocalRepository by inject()
 
     override fun authenticate(route : Route?, response : Response) : Request?
     {
@@ -38,7 +39,7 @@ class TokenAuthenticator : Authenticator, KoinComponent
             {
                 is TestResult.SuccessResult<*> ->
                 {
-                    val oauth = result.data as OauthResult
+                    val oauth = result.data as OAuthDTO
                     val accessToken = oauth.accessToken
 
                     SopoLog.d( msg = "authenticate success => $accessToken")
@@ -58,21 +59,22 @@ class TokenAuthenticator : Authenticator, KoinComponent
 
     private fun requestRefreshOAuthToken() : TestResult
     {
-        var oauth : OauthEntity?
+        var OAuth : OAuthEntity?
 
         // ROOM 내 저장된 OAuth 데이터 호출
         runBlocking {
             withContext(Dispatchers.Default) {
-                oauth = oauthRepoImpl.get(userRepoImpl.getEmail())
+                OAuth = OAuthLocalRepository.get(userLocalRepository.getUserId())
             }
         }
 
         // OAuth가 null 일 때 Error 호출
-        if (oauth == null) return TestResult.ErrorResult(LOCAL_ERROR_NULL_POINT, LOCAL_ERROR_NULL_POINT.MSG, ErrorResult.ERROR_TYPE_NON, null, null)
+        if (OAuth == null) return TestResult.ErrorResult(LOCAL_ERROR_NULL_POINT, LOCAL_ERROR_NULL_POINT.MSG, ErrorResult.ERROR_TYPE_NON, null, null)
 
-        val retro = NetworkManager.retro("sopo-aos", "sopoAndroid!!@@").create(OAuthAPI::class.java)
+//        val retro = NetworkManager.retro("sopo-aos", "sopoAndroid!!@@").create(OAuthAPI::class.java)
+        val retro = NetworkManager.retro(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_PASSWORD).create(OAuthAPI::class.java)
         val result = retro.requestRefreshOAuthToken(
-            grantType = "refresh_token", email = userRepoImpl.getEmail(), refreshToken = oauth?.refreshToken
+            grantType = "refresh_token", email = userLocalRepository.getUserId(), refreshToken = OAuth?.refreshToken
                 ?: "", deviceInfo = SOPOApp.deviceInfo
         ).execute()
 
@@ -88,18 +90,18 @@ class TokenAuthenticator : Authenticator, KoinComponent
         else
         {
             val gson = Gson()
-            val type = object : TypeToken<OauthResult>()
+            val type = object : TypeToken<OAuthDTO>()
             {}.type
             val reader = gson.toJson(result.body())
-            val oauthResult = gson.fromJson<OauthResult>(reader, type)
+            val oauthResult = gson.fromJson<OAuthDTO>(reader, type)
 
-            if (oauthResult !is OauthResult) return TestResult.ErrorResult(LOCAL_ERROR_TYPE_MISS, LOCAL_ERROR_TYPE_MISS.MSG, ErrorResult.ERROR_TYPE_NON, null, null)
+            if (oauthResult !is OAuthDTO) return TestResult.ErrorResult(LOCAL_ERROR_TYPE_MISS, LOCAL_ERROR_TYPE_MISS.MSG, ErrorResult.ERROR_TYPE_NON, null, null)
 
             SopoLog.d( msg = "requestRefreshOAuthToken => ${oauthResult}")
 
             CoroutineScope(Dispatchers.Default).launch {
-                val entity = OauthMapper.objectToEntity(oauthResult)
-                oauthRepoImpl.update(entity)
+                val entity = OAuthMapper.objectToEntity(oauthResult)
+                OAuthLocalRepository.update(entity)
             }
 
 

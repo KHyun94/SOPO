@@ -3,20 +3,20 @@ package com.delivery.sopo.viewmodels.registesrs
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.database.room.RoomActivate
-import com.delivery.sopo.models.CourierItem
+import com.delivery.sopo.data.repository.database.room.RoomActivate
+import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.models.SelectItem
-import com.delivery.sopo.repository.impl.CourierRepoImpl
+import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.views.adapter.GridRvAdapter
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.setting.GridSpacingItemDecoration
 
-class RegisterStep2ViewModel(private val courierRepoImpl: CourierRepoImpl) : ViewModel()
+class RegisterStep2ViewModel(private val carrierRepo: CarrierRepository) : ViewModel()
 {
-    var courierList = arrayListOf<CourierItem?>()
-    var itemList = listOf<SelectItem<CourierItem?>>()
-    var selectedItem = MutableLiveData<SelectItem<CourierItem?>>()
+    var carrierList = arrayListOf<CarrierDTO?>()
+    var itemList = listOf<SelectItem<CarrierDTO?>>()
+    var selectedItem = MutableLiveData<SelectItem<CarrierDTO?>>()
     var waybillNum = MutableLiveData<String>()
     var moveFragment = MutableLiveData<String>()
     var hideKeyboard = SingleLiveEvent<Boolean>()
@@ -41,9 +41,9 @@ class RegisterStep2ViewModel(private val courierRepoImpl: CourierRepoImpl) : Vie
         {
             waybillNum.value = _waybillNum
 
-            courierList =  RoomActivate.recommendAutoCourier(SOPOApp.INSTANCE, waybillNum.value!!, RoomActivate.rowCnt,courierRepoImpl) as ArrayList<CourierItem?>
+            carrierList =  RoomActivate.recommendAutoCarrier(SOPOApp.INSTANCE, waybillNum.value!!, RoomActivate.rowCnt,carrierRepo) as ArrayList<CarrierDTO?>
 
-            itemList = courierList.flatMap {
+            itemList = carrierList.flatMap {
                 listOf(SelectItem(it, false))
             }
 

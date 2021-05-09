@@ -24,13 +24,13 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
-import com.delivery.sopo.database.room.entity.TimeCountEntity
+import com.delivery.sopo.data.repository.database.room.entity.ParcelCntInfoEntity
 import com.delivery.sopo.databinding.SopoInquiryViewBinding
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.enums.ScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
-import com.delivery.sopo.mapper.MenuMapper
+import com.delivery.sopo.models.mapper.MenuMapper
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.util.AlertUtil
@@ -215,7 +215,7 @@ class InquiryView: Fragment()
         })
 
         // 현재 배송완료의 년월 데이터를 tv_spinner_month에 text 적용
-        binding.vm!!.currentTimeCount.observe(this, Observer {
+        binding.vm!!.currentParcelCntInfo.observe(this, Observer {
             it?.let { entity ->
                 tv_spinner_month.text = MenuMapper.timeToListTitle(entity.time)
             }
@@ -500,7 +500,7 @@ class InquiryView: Fragment()
 
     // 배송완료 화면에서 년/월을 눌렀을 시 팝업 메뉴가 나온다.
     @SuppressLint("UseCompatLoadingForDrawables")
-    private fun openPopUpMonthlyUsageHistory(anchorView: View, timeCntDtoList: MutableList<TimeCountEntity>)
+    private fun openPopUpMonthlyUsageHistory(anchorView: View, timeCntDtoList: MutableList<ParcelCntInfoEntity>)
     {
         val historyPopUpView: View = LayoutInflater.from(requireContext())
             .inflate(R.layout.popup_menu_view, null)

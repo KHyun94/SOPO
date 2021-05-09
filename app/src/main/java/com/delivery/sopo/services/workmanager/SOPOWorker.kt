@@ -3,11 +3,11 @@
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.delivery.sopo.database.room.AppDatabase
-import com.delivery.sopo.database.room.entity.LogEntity
+import com.delivery.sopo.data.repository.database.room.AppDatabase
+import com.delivery.sopo.data.repository.database.room.entity.LogEntity
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.call.ParcelCall
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil

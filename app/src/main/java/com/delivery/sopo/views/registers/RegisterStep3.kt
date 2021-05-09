@@ -13,9 +13,9 @@ import com.delivery.sopo.databinding.RegisterStep3Binding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.models.BindView
-import com.delivery.sopo.models.CourierItem
+import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.models.TestResult
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
@@ -32,10 +32,10 @@ class RegisterStep3: Fragment()
     private lateinit var binding: RegisterStep3Binding
     private val registerStep3Vm: RegisterStep3ViewModel by viewModel()
 
-    private val userRepoImpl: UserRepoImpl by inject()
+    private val userLocalRepository: UserLocalRepository by inject()
 
     private var waybillNum: String? = null
-    private var courier: CourierItem? = null
+    private var carrierDTO: CarrierDTO? = null
 
     private var progressBar: CustomProgressBar? = null
 
@@ -44,7 +44,7 @@ class RegisterStep3: Fragment()
         super.onCreate(savedInstanceState)
 
         waybillNum = arguments?.getString("waybillNum") ?: ""
-        courier = arguments?.getSerializable("courier") as CourierItem ?: null
+        carrierDTO = arguments?.getSerializable("carrier") as CarrierDTO ?: null
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
@@ -58,7 +58,7 @@ class RegisterStep3: Fragment()
         }
 
         binding.vm!!.waybillNum.value = waybillNum
-        binding.vm!!.courier.value = courier
+        binding.vm!!.carrier.value = carrierDTO
 
         setObserve()
 
@@ -101,7 +101,7 @@ class RegisterStep3: Fragment()
         binding.vm!!.isRevise.observe(this, Observer {
             if (it != null && it)
             {
-                TabCode.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(waybillNum, courier, 0)
+                TabCode.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(waybillNum, carrierDTO, 0)
 
                 FragmentManager.initFragment(
                     activity = activity!!, viewId = RegisterMainFrame.viewId, currentFragment = this@RegisterStep3, nextFragment = TabCode.REGISTER_STEP1.FRAGMENT, nextFragmentTag = TabCode.REGISTER_STEP1.NAME
@@ -116,7 +116,7 @@ class RegisterStep3: Fragment()
             {
                 is TestResult.SuccessResult<*> ->
                 {
-                    if (userRepoImpl.getTopic().isEmpty())
+                    if (userLocalRepository.getTopic().isEmpty())
                     {
                         FirebaseNetwork.subscribedToTopicInFCM()
                     }
@@ -170,14 +170,14 @@ class RegisterStep3: Fragment()
 
     companion object
     {
-        fun newInstance(waybillNum: String?, courier: CourierItem?): RegisterStep3
+        fun newInstance(waybillNum: String?, carrierDTO: CarrierDTO?): RegisterStep3
         {
             val registerStep3 = RegisterStep3()
 
             val args = Bundle()
 
             args.putString("waybillNum", waybillNum)
-            args.putSerializable("courier", courier)
+            args.putSerializable("carrier", carrierDTO)
 
             registerStep3.arguments = args
             return registerStep3

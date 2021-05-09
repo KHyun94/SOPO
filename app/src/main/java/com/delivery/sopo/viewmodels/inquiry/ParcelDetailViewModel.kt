@@ -5,21 +5,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.consts.DeliveryStatusConst
-import com.delivery.sopo.database.room.entity.ParcelEntity
+import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.consts.ResultTypeConst
 import com.delivery.sopo.consts.UpdateConst
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.mapper.ParcelMapper
+import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.TestResult
 import com.delivery.sopo.models.parcel.*
 import com.delivery.sopo.networks.call.ParcelCall
-import com.delivery.sopo.repository.impl.CourierRepoImpl
-import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.repository.CarrierRepository
+import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
@@ -28,7 +28,7 @@ import com.delivery.sopo.views.adapter.TimeLineRvAdapter
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 
-class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val courierRepoImpl: CourierRepoImpl, private val parcelRepoImpl: ParcelRepoImpl, private val parcelManagementRepoImpl: ParcelManagementRepoImpl): ViewModel()
+class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository, private val carrierRepository: CarrierRepository, private val parcelRepoImpl: ParcelRepoImpl, private val parcelManagementRepoImpl: ParcelManagementRepoImpl): ViewModel()
 {
     // 택배 인포의 pk
     val parcelId = MutableLiveData<ParcelId>()
@@ -106,9 +106,9 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
             withContext(Dispatchers.IO) {
 
                 // ParcelEntity의 택배사 코드를 이용하여 택배사 정보를 로컬 DB에서 읽어온다.
-                val courier = runBlocking(Dispatchers.Default) { courierRepoImpl.getCourierWithCode(parcelEntity.carrier) }
+                val carrierDTO = runBlocking(Dispatchers.Default) { carrierRepository.getCarrierWithCode(parcelEntity.carrier) }
 
-                SopoLog.d("택배사 정보 >>> $courier")
+                SopoLog.d("택배사 정보 >>> $carrierDTO")
 
                 if (progressList.size > 0) progressList.clear()
 
@@ -124,16 +124,16 @@ class ParcelDetailViewModel(private val userRepoImpl: UserRepoImpl, private val 
                 SopoLog.d("""
                     ParcelDetailItem >>>
                     regDt = ${parcelEntity.regDt}, 
-                    alias = ${parcelEntity.parcelAlias}, 
-                    courier = ${courier!!}, 
-                    waybilNym = ${parcelEntity.waybillNum}, 
+                    alias = ${parcelEntity.alias}, 
+                    carrier = ${carrierDTO!!}, 
+                    waybillNum = ${parcelEntity.waybillNum}, 
                     deliverStatus = ${deliveryStatusEnum.value?.TITLE}, 
                     progress = ${progressList.joinToString()}
                 """.trimIndent())
 
                 item.postValue(
                     ParcelDetailItem(
-                        regDt = parcelEntity.regDt, alias = parcelEntity.parcelAlias, courier = courier!!, waybilNym = parcelEntity.waybillNum, deliverStatus = deliveryStatusEnum.value?.TITLE, progress = progressList
+                        regDt = parcelEntity.regDt, alias = parcelEntity.alias, carrierDTO = carrierDTO, waybillNum = parcelEntity.waybillNum, deliverStatus = deliveryStatusEnum.value?.TITLE, progress = progressList
                     )
                 )
             }

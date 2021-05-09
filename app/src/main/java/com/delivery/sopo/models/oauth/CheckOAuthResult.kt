@@ -5,8 +5,8 @@ import com.google.gson.annotations.SerializedName
 data class CheckOAuthResult(
     @SerializedName("aud")
     val aud : List<String>,
-    @SerializedName("user_name")
-    val userName : String,
+    @SerializedName("user_id")
+    val userId : String,
     @SerializedName("scope")
     val scope : String,
     @SerializedName("active")

@@ -2,8 +2,8 @@ package com.delivery.sopo.networks.api
 
 import com.delivery.sopo.networks.dto.TimeCountDTO
 import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.database.room.dto.DeleteParcelsDTO
-import com.delivery.sopo.database.room.entity.ParcelEntity
+import com.delivery.sopo.data.repository.database.room.dto.DeleteParcelsDTO
+import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.dto.parcels.RegisterParcelDTO
@@ -18,7 +18,7 @@ interface ParcelAPI
      * 단일 택배 등록 요청
      * @param email
      * @param parcelAlias
-     * @param trackCompany
+     * @param courier
      * @param waybillNum
      * @return Response<APIResult<ParcelId?>>
      */

@@ -1,7 +1,6 @@
 package com.delivery.sopo.viewmodels.menus
 
 import android.view.View
-import android.widget.CheckBox
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -10,12 +9,8 @@ import com.delivery.sopo.R
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.models.ResponseResult
-import com.delivery.sopo.networks.repository.OAuthNetworkRepo
+import com.delivery.sopo.data.repository.remote.o_auth.OAuthRemoteRepository
 import com.delivery.sopo.util.SopoLog
-import kotlinx.android.synthetic.main.sign_out_view.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class SignOutViewModel: ViewModel()
 {
@@ -76,7 +71,7 @@ class SignOutViewModel: ViewModel()
 
     suspend fun requestSignOut(reason: String)
     {
-        val res = OAuthNetworkRepo.requestSignOut(reason)
+        val res = OAuthRemoteRepository.requestSignOut(reason)
 
         if (!res.result)
         {

@@ -4,27 +4,26 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.delivery.sopo.database.room.entity.AppPasswordEntity
+import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.firebase.FirebaseNetwork
-import com.delivery.sopo.mapper.ParcelMapper
+import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.call.ParcelCall
-import com.delivery.sopo.repository.impl.AppPasswordRepoImpl
-import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.repository.AppPasswordRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class MainViewModel(private val userRepoImpl: UserRepoImpl, private val parcelRepoImpl: ParcelRepoImpl, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val appPasswordRepo: AppPasswordRepoImpl): ViewModel()
+class MainViewModel(private val userLocalRepository: UserLocalRepository, private val parcelRepoImpl: ParcelRepoImpl, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val appPasswordRepo: AppPasswordRepoImpl): ViewModel()
 {
     val tabLayoutVisibility = MutableLiveData<Int>()
     val errorMsg = MutableLiveData<String?>()
@@ -144,16 +143,16 @@ class MainViewModel(private val userRepoImpl: UserRepoImpl, private val parcelRe
                                         if (remote.parcelId.regDt == local!!.parcelId.regDt && remote.parcelId.parcelUid == local.parcelId.parcelUid)
                                         {
                                             SopoLog.d(
-                                                msg = "REMOTE ${remote.parcelAlias}의 택배 HASH => ${remote.inquiryHash}"
+                                                msg = "REMOTE ${remote.alias}의 택배 HASH => ${remote.inquiryHash}"
                                             )
                                             SopoLog.d(
-                                                msg = "LOCAL ${local.parcelAlias}의 택배 HASH => ${local.inquiryHash}"
+                                                msg = "LOCAL ${local.alias}의 택배 HASH => ${local.inquiryHash}"
                                             )
 
                                             if (remote.inquiryHash != local.inquiryHash)
                                             {
                                                 SopoLog.d(
-                                                    msg = "${remote.parcelAlias}의 택배는 업데이트할 내용이 있습니다."
+                                                    msg = "${remote.alias}의 택배는 업데이트할 내용이 있습니다."
                                                 )
                                                 updateParcelList.add(remote)
                                                 // 비교 후 남는 parcel list는 insert 작업을 거친다.
@@ -163,7 +162,7 @@ class MainViewModel(private val userRepoImpl: UserRepoImpl, private val parcelRe
                                             else
                                             {
                                                 SopoLog.d(
-                                                    msg = "${remote.parcelAlias}의 택배는 업데이트할 내용이 없습니다."
+                                                    msg = "${remote.alias}의 택배는 업데이트할 내용이 없습니다."
                                                 )
                                                 // 비교 후 남는 parcel list는 insert 작업을 거친다.
                                                 remoteIterator.remove()
@@ -227,7 +226,7 @@ class MainViewModel(private val userRepoImpl: UserRepoImpl, private val parcelRe
     // network private api account setting. if it failed, try to logout and finish
     private fun setPrivateUserAccount()
     {
-        if (userRepoImpl.getStatus() == 1) NetworkManager.setLogin(userRepoImpl.getEmail(), userRepoImpl.getApiPwd())
+        if (userLocalRepository.getStatus() == 1) NetworkManager.setLogin(userLocalRepository.getUserId(), userLocalRepository.getUserPassword())
         else errorMsg.value = "로그인이 비정상적으로 이루어졌습니다.\n다시 로그인해주시길 바랍니다."
     }
 

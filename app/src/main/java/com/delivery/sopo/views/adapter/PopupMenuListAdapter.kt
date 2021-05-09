@@ -89,7 +89,7 @@ class PopupMenuListAdapter(private var list: MutableList<InquiryMenuItem>) : Rec
                         }
                     }
                     InquiryMenuItem.InquiryMenuType.CompleteHistoryList -> {
-                        inquiryMenuData.timeCount?.also { timeCnt->
+                        inquiryMenuData.parcelCntInfo?.also { timeCnt->
                             holder.menuBinding.tvMenuText.text = timeCnt.time.replace("-", "년 ") + "월"
                             if(timeCnt.count > 0){
                                 holder.menuBinding.tvMenuText.setTextColor(ContextCompat.getColor(holder.menuBinding.root.context, R.color.MAIN_BLACK))

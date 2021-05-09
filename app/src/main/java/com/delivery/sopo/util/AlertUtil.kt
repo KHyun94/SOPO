@@ -1,6 +1,5 @@
 package com.delivery.sopo.util
 
-import android.content.ComponentCallbacks
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -10,15 +9,14 @@ import android.view.Window
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.database.room.AppDatabase
-import com.delivery.sopo.repository.impl.OauthRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.database.room.AppDatabase
+import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.OnAgreeClickListener
 import com.delivery.sopo.views.login.LoginSelectView
@@ -34,8 +32,8 @@ typealias OnTextClickListener = Pair<String?, View.OnClickListener?>
 
 object AlertUtil: KoinComponent
 {
-    val userRepoImpl: UserRepoImpl by inject()
-    val oAuthRepoImpl: OauthRepoImpl by inject()
+    val USER_LOCAL_REPOSITORY: UserLocalRepository by inject()
+    val O_AUTH_REPO_IMPL: OAuthLocalRepository by inject()
     val appDataBase: AppDatabase by inject()
 
     var alert: AlertDialog? = null
@@ -122,7 +120,7 @@ object AlertUtil: KoinComponent
         {
             override fun invoke(agree: GeneralDialog)
             {
-                userRepoImpl.removeUserRepo()
+                USER_LOCAL_REPOSITORY.removeUserRepo()
 
                 CoroutineScope(Dispatchers.Default).launch { appDataBase.clearAllTables() }
                 SOPOApp.oAuthEntity = null

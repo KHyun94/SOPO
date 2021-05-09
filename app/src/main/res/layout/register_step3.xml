@@ -9,7 +9,7 @@
 
         <import type="com.delivery.sopo.consts.InfoConst" />
 
-        <import type="com.delivery.sopo.models.CourierItem" />
+        <import type="com.delivery.sopo.models.CarrierDTO" />
 
         <variable
             name="vm"
@@ -34,7 +34,7 @@
             app:layout_constraintVertical_bias="0.9" />
 
         <RelativeLayout
-            android:id="@+id/layout_courier_info"
+            android:id="@+id/layout_carrier_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="30sp"
@@ -45,8 +45,8 @@
 
 
             <ImageView
-                android:id="@+id/iv_courier"
-                setImage="@{vm.courier.iconRes}"
+                android:id="@+id/iv_carrier"
+                setImage="@{vm.carrier.iconRes}"
                 app:setDefaultImage="@{0}"
                 android:layout_width="55dp"
                 android:layout_height="55dp"
@@ -60,20 +60,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_toEndOf="@+id/iv_courier"
+                android:layout_toEndOf="@+id/iv_carrier"
                 android:orientation="vertical">
 
                 <TextView
                     style="@style/H5"
-                    android:id="@+id/tv_courier"
+                    android:id="@+id/tv_carrier"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{vm.courier.courierName}"
+                    android:text="@{vm.carrier.carrier.NAME}"
                     android:textColor="@color/COLOR_GRAY_800" />
 
                 <TextView
                     style="@style/H3"
-                    android:id="@+id/tv_way_bil_num"
+                    android:id="@+id/tv_waybill_num"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{vm.waybillNum}"
@@ -102,7 +102,7 @@
 
         <LinearLayout
             android:id="@+id/layout_alias"
-            app:layout_constraintTop_toBottomOf="@+id/layout_courier_info"
+            app:layout_constraintTop_toBottomOf="@+id/layout_carrier_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="80sp"

@@ -1,13 +1,10 @@
 package com.delivery.sopo.views.menus
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -16,16 +13,15 @@ import com.delivery.sopo.databinding.FragmentSettingBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.extensions.launchActivitiy
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.repository.impl.TimeCountRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.TimeCountRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.viewmodels.factory.MenuViewModelFactory
 import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import com.delivery.sopo.viewmodels.menus.SettingViewModel
 import com.delivery.sopo.views.dialog.SelectNotifyKindDialog
 import com.delivery.sopo.views.main.MainView
 import kotlinx.android.synthetic.main.fragment_setting.view.*
-import kotlinx.android.synthetic.main.menu_view.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -34,7 +30,7 @@ class SettingFragment : Fragment()
 {
     private val settingVM: SettingViewModel by viewModel()
     private lateinit var binding: FragmentSettingBinding
-    private val userRepoImpl: UserRepoImpl by inject()
+    private val userLocalRepository: UserLocalRepository by inject()
     private val parcelRepoImpl: ParcelRepoImpl by inject()
     private val timeCountRepoImpl: TimeCountRepoImpl by inject()
     private lateinit var parentView: MainView
@@ -42,7 +38,7 @@ class SettingFragment : Fragment()
     private val menuVm: MenuViewModel by lazy {
         ViewModelProvider(
             requireActivity(),
-            MenuViewModelFactory(userRepoImpl, parcelRepoImpl, timeCountRepoImpl)
+            MenuViewModelFactory(userLocalRepository, parcelRepoImpl, timeCountRepoImpl)
         ).get(MenuViewModel::class.java)
     }
 

@@ -144,7 +144,7 @@
                             android:layout_width="41dp"
                             android:layout_height="41dp"
                             android:padding="10sp"
-                            app:setImage="@{item.courier.iconRes}"
+                            app:setImage="@{item.carrierDTO.iconRes}"
                             app:setDefaultImage="@{0}"/>
                     </LinearLayout>
 
@@ -166,13 +166,13 @@
                                 android:layout_marginEnd="8dp"
                                 android:includeFontPadding="false"
                                 android:lineHeight="17.76px"
-                                android:text="@{item.courier.courierName}"
+                                android:text="@{item.carrierDTO.carrier.NAME}"
                                 android:textColor="@color/COLOR_MAIN_900" />
 
                             <ImageView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:background="@drawable/ic_relative_courier" />
+                                android:background="@drawable/ic_relative_carrier" />
 
                         </LinearLayout>
 
@@ -182,13 +182,13 @@
                             android:gravity="center">
 
                             <TextView
-                                android:id="@+id/tv_way_bil_num"
+                                android:id="@+id/tv_waybill_num"
                                 style="@style/H3"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
                                 android:includeFontPadding="false"
-                                android:text="@{item.waybilNym}"
+                                android:text="@{item.waybillNum}"
                                 android:textColor="@color/COLOR_GRAY_800" />
 
                             <ImageView
@@ -196,7 +196,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/ic_paste"
-                                app:layout_constraintLeft_toRightOf="@id/tv_way_bil_num"
+                                app:layout_constraintLeft_toRightOf="@id/tv_waybill_num"
                                 app:layout_constraintTop_toBottomOf="@id/tv_alias" />
 
                         </LinearLayout>

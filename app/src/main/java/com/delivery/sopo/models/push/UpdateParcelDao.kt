@@ -1,11 +1,11 @@
 package com.delivery.sopo.models.push
 
 import com.delivery.sopo.consts.DeliveryStatusConst
-import com.delivery.sopo.database.room.entity.ParcelEntity
-import com.delivery.sopo.mapper.ParcelMapper
+import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
+import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.models.parcel.ParcelItem
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
@@ -63,17 +63,17 @@ data class UpdateParcelDao(
             }
             DeliveryStatusConst.AT_PICKUP ->
             {
-                "${parcelItem?.from?.name}님이 보내신 ${parcel.parcelAlias}가 배송을 위해 집하되었습니다."
+                "${parcelItem?.from?.name}님이 보내신 ${parcel.alias}가 배송을 위해 집하되었습니다."
             }
             DeliveryStatusConst.IN_TRANSIT->
             {
                 val size = parcelItem?.progresses?.size?:0
 
-                "${parcelItem?.progresses?.get(size - 1)?.location?.name?:"위치불명"}에서 ${parcel.parcelAlias}가 출발했어요."
+                "${parcelItem?.progresses?.get(size - 1)?.location?.name?:"위치불명"}에서 ${parcel.alias}가 출발했어요."
             }
             DeliveryStatusConst.OUT_FOR_DELIVERY ->
             {
-                "${parcelItem?.from?.name}님이 보내신 ${parcel.parcelAlias}가 우리동네에 도착했습니다!"
+                "${parcelItem?.from?.name}님이 보내신 ${parcel.alias}가 우리동네에 도착했습니다!"
             }
             DeliveryStatusConst.DELIVERED ->
             {

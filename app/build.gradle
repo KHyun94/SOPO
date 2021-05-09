@@ -24,6 +24,10 @@ android {
 
         buildConfigField("String", "PUBLIC_API_ACCOUNT_ID", keystoreProperties["PUBLIC_API_ACCOUNT_ID"])
         buildConfigField("String", "PUBLIC_API_ACCOUNT_PASSWORD", keystoreProperties["PUBLIC_API_ACCOUNT_PASSWORD"])
+
+        buildConfigField("String", "CLIENT_ID", keystoreProperties["CLIENT_ID"])
+        buildConfigField("String", "CLIENT_PASSWORD", keystoreProperties["CLIENT_PASSWORD"])
+
         buildConfigField("String", "API_URL", keystoreProperties["API_URL"])
     }
     buildTypes {

@@ -1,19 +1,19 @@
 package com.delivery.sopo.models.parcel
 
-import com.delivery.sopo.database.room.entity.ParcelEntity
+import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.google.gson.annotations.SerializedName
 
 data class Parcel(
     @SerializedName("parcelId")
     var parcelId: ParcelId,
-    @SerializedName("userName")
-    var userName: String,
+    @SerializedName("userId")
+    var userId: String,
     @SerializedName("waybillNum")
     var waybillNum: String,
     @SerializedName("carrier")
     var carrier: String,
-    @SerializedName("parcelAlias")
-    var parcelAlias: String,
+    @SerializedName("alias")
+    var alias: String,
     @SerializedName("inquiryResult")
     var inquiryResult: String?,
     @SerializedName("inquiryHash")
@@ -31,13 +31,13 @@ data class Parcel(
     fun update(parcelEntity: ParcelEntity)
     {
         this.parcelId = ParcelId(parcelEntity.parcelUid, parcelEntity.regDt)
-        this.userName = parcelEntity.userName
+        this.userId = parcelEntity.userId
         this.waybillNum = parcelEntity.waybillNum
         this.auditDte = parcelEntity.auditDte
         this.arrivalDte = parcelEntity.arrivalDte
         this.carrier = parcelEntity.carrier
         this.deliveryStatus = parcelEntity.deliveryStatus
-        this.parcelAlias = parcelEntity.parcelAlias
+        this.alias = parcelEntity.alias
         this.inquiryHash = parcelEntity.inquiryHash
         this.inquiryResult = parcelEntity.inquiryResult
         this.status = parcelEntity.status
@@ -48,10 +48,10 @@ data class Parcel(
         val stringBuffer: StringBuilder = StringBuilder()
         stringBuffer.append("[regDt] : ${parcelId.regDt}    ")
         stringBuffer.append("[parcelUid] : ${parcelId.parcelUid}    ")
-        stringBuffer.append("[userName] : $userName ")
+        stringBuffer.append("[userId] : $userId ")
         stringBuffer.append("[waybillNum] : $waybillNum ")
         stringBuffer.append("[carrier] : $carrier   ")
-        stringBuffer.append("[parcelAlias] : $parcelAlias   ")
+        stringBuffer.append("[parcelAlias] : $alias   ")
         stringBuffer.append("[inquiryResult] : $inquiryResult   ")
         stringBuffer.append("[inquiryHash] : $inquiryHash   ")
         stringBuffer.append("[deliveryStatus] : $deliveryStatus ")

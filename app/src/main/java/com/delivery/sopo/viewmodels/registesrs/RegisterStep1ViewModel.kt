@@ -2,30 +2,27 @@ package com.delivery.sopo.viewmodels.registesrs
 
 import android.os.Handler
 import android.view.View
-import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.TabCode
-import com.delivery.sopo.models.CourierItem
-import com.delivery.sopo.repository.impl.CourierRepoImpl
-import com.delivery.sopo.util.OtherUtil
+import com.delivery.sopo.models.CarrierDTO
+import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.views.widget.CustomEditText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class RegisterStep1ViewModel(private val courierRepoImpl: CourierRepoImpl) : ViewModel()
+class RegisterStep1ViewModel(private val carrierRepository: CarrierRepository) : ViewModel()
 {
     val TAG = this.javaClass.simpleName
 
     var waybillNum = MutableLiveData<String?>()
-    var courier = MutableLiveData<CourierItem?>()
+    var carrierDTO = MutableLiveData<CarrierDTO?>()
     // 가져온 클립보드 문자열
     var clipBoardWords = MutableLiveData<String>()
 
@@ -69,12 +66,12 @@ class RegisterStep1ViewModel(private val courierRepoImpl: CourierRepoImpl) : Vie
     {
         v.clearFocus()
 
-        val courierCode = courier.value!!.courierCode
+        val carrierCode = carrierDTO.value!!.carrier.CODE
         val waybillNum = waybillNum.value
         CoroutineScope(Dispatchers.Default).launch {
-            val courierEntity = courierRepoImpl.getCourierEntityWithCode(courierCode)
-            val minLen = courierEntity.minLen
-            val maxLen = courierEntity.maxLen
+            val carrierEntity = carrierRepository.getCarrierEntityWithCode(carrierCode)
+            val minLen = carrierEntity.minLen
+            val maxLen = carrierEntity.maxLen
 
             withContext(Dispatchers.Main){
                 if(waybillNum?.length in minLen..maxLen || minLen == 0)

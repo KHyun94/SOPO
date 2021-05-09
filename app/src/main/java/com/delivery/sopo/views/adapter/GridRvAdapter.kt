@@ -15,15 +15,15 @@ import com.bumptech.glide.signature.ObjectKey
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ItemImgBinding
-import com.delivery.sopo.models.CourierItem
+import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.adapter.GridRvAdapter.GridRvViewHolder
 
-class GridRvAdapter(private var items: List<SelectItem<CourierItem?>>?): RecyclerView.Adapter<GridRvViewHolder>()
+class GridRvAdapter(private var items: List<SelectItem<CarrierDTO?>>?): RecyclerView.Adapter<GridRvViewHolder>()
 {
     var isClicked = MutableLiveData<Boolean>()
-    var paste: Pair<View, SelectItem<CourierItem?>>? = null
+    var paste: Pair<View, SelectItem<CarrierDTO?>>? = null
 
     init
     {
@@ -35,9 +35,9 @@ class GridRvAdapter(private var items: List<SelectItem<CourierItem?>>?): Recycle
         fun onItemClicked(v: View, pos: Int, item: T)
     }
 
-    var mListener: OnItemClickListener<List<SelectItem<CourierItem?>>>? = null
+    var mListener: OnItemClickListener<List<SelectItem<CarrierDTO?>>>? = null
 
-    fun setOnItemClickListener(listener: OnItemClickListener<List<SelectItem<CourierItem?>>>)
+    fun setOnItemClickListener(listener: OnItemClickListener<List<SelectItem<CarrierDTO?>>>)
     {
         this.mListener = listener
     }
@@ -145,7 +145,7 @@ class GridRvAdapter(private var items: List<SelectItem<CourierItem?>>?): Recycle
             }
         }
 
-        fun onBind(selectItem: SelectItem<CourierItem?>)
+        fun onBind(selectItem: SelectItem<CarrierDTO?>)
         {
             if (selectItem.isSelect)
             {

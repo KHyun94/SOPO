@@ -10,14 +10,12 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.database.room.AppDatabase
+import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.launchActivitiy
-import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.services.PowerManager
-import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
@@ -36,7 +34,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     private val mainVm: MainViewModel by viewModel()
     private val inquiryVm: InquiryViewModel by viewModel()
 
-    private val userRepoImpl: UserRepoImpl by inject()
+    private val userLocalRepository: UserLocalRepository by inject()
     val appDatabase: AppDatabase by inject()
 
     lateinit var viewPagerAdapter: ViewPagerAdapter
@@ -92,7 +90,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                     rHandler = Pair(
                         first = "네",
                         second = { it ->
-                            userRepoImpl.removeUserRepo()
+                            userLocalRepository.removeUserRepo()
                             it.dismiss()
                             finish()
                         })

@@ -6,14 +6,13 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.database.room.AppDatabase
-import com.delivery.sopo.database.room.RoomActivate
-import com.delivery.sopo.database.room.entity.OauthEntity
+import com.delivery.sopo.data.repository.database.room.AppDatabase
+import com.delivery.sopo.data.repository.database.room.RoomActivate
+import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 import com.delivery.sopo.di.appModule
-import com.delivery.sopo.repository.impl.OauthRepoImpl
-import com.delivery.sopo.repository.impl.ParcelManagementRepoImpl
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.OtherUtil
@@ -33,9 +32,9 @@ import org.koin.core.context.startKoin
 class SOPOApp : Application()
 {
     val appDatabase: AppDatabase by inject()
-    val userRepoImpl : UserRepoImpl by inject()
+    val userLocalRepository : UserLocalRepository by inject()
     val parcelRepoImpl: ParcelRepoImpl by inject()
-    val oauthRepoImpl : OauthRepoImpl by inject()
+    val OAuthLocalRepository : OAuthLocalRepository by inject()
 
     var kakaoSDKAdapter: KakaoSDKAdapter? = null
     var accessToken: AccessToken? = null
@@ -78,18 +77,18 @@ class SOPOApp : Application()
             accessToken = Session.getCurrentSession().tokenInfo
         }
 
-        RoomActivate.initCourierDB(this)
+        RoomActivate.initializeCarrierInfoIntoDB(this)
 
         getInitViewPagerNumber() {
             currentPage.postValue(it)
         }
 
         CoroutineScope(Dispatchers.Default).launch {
-            oAuthEntity = oauthRepoImpl.get(userRepoImpl.getEmail())
+            oAuthEntity = OAuthLocalRepository.get(userLocalRepository.getUserId())
         }
 
         SopoLog.d(msg = """
-            구독 설정 시간 >>> ${userRepoImpl.getTopic()}
+            구독 설정 시간 >>> ${userLocalRepository.getTopic()}
             구독 스코프 >>> ${FirebaseMessaging.INSTANCE_ID_SCOPE}
             구독 isAutoInitEnabled >>> ${FirebaseMessaging.getInstance().isAutoInitEnabled}
         """.trimIndent())
@@ -136,6 +135,6 @@ class SOPOApp : Application()
 
         val cntOfBeUpdate = MutableLiveData<Int?>()
 
-        var oAuthEntity : OauthEntity? = null
+        var oAuthEntity : OAuthEntity? = null
     }
 }

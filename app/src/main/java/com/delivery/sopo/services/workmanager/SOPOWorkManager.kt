@@ -4,10 +4,8 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.work.*
-import com.delivery.sopo.database.room.AppDatabase
-import com.delivery.sopo.database.room.entity.WorkEntity
+import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

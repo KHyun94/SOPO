@@ -39,7 +39,7 @@ interface OAuthAPI
         // 유저 이메일
         @Field("grant_type") grantType: String,
         // 비밀번호
-        @Field("username") email: String,
+        @Field("user_id") email: String,
         // Firebase uid
         @Field("refresh_token") refreshToken : String,
         // 디바이스 정보

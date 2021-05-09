@@ -20,7 +20,7 @@ import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
 import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
@@ -327,13 +327,13 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
         {
             if (list.getOrNull(index) == null)
             {
-                SopoLog.d("기존 리스트에 해당 index[$index]가 존재하지 않아 list[$index]에 ${updatedList[index].parcel.parcelAlias} 아이템을 추가합니다.")
+                SopoLog.d("기존 리스트에 해당 index[$index]가 존재하지 않아 list[$index]에 ${updatedList[index].parcel.alias} 아이템을 추가합니다.")
                 list.add(updatedList[index])
                 notifyIndexList.add(index)
             }
             else if (!((updatedList[index].parcel.parcelId.regDt == list[index].parcel.parcelId.regDt) && (updatedList[index].parcel.parcelId.parcelUid == list[index].parcel.parcelId.parcelUid)))
             {
-                SopoLog.d("index[$index]에 해당하는 ${list[index].parcel.parcelAlias}와 업데이트될 아이템(${updatedList[index].parcel.parcelAlias}) 일치하지 않아 기존 아이템에 업데이트될 아이템을 덮어씁니다.")
+                SopoLog.d("index[$index]에 해당하는 ${list[index].parcel.alias}와 업데이트될 아이템(${updatedList[index].parcel.alias}) 일치하지 않아 기존 아이템에 업데이트될 아이템을 덮어씁니다.")
                 list[index] = updatedList[index]
                 notifyIndexList.add(index)
             }

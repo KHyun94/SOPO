@@ -8,8 +8,8 @@ import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.LoginSelectViewBinding
 import com.delivery.sopo.extensions.launchActivityWithAllClear
-import com.delivery.sopo.repository.impl.OauthRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
@@ -25,8 +25,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_view)
 {
-    private val userRepoImpl : UserRepoImpl by inject()
-    private val oauthRepoImpl : OauthRepoImpl by inject()
+    private val userLocalRepository : UserLocalRepository by inject()
+    private val OAuthLocalRepository : OAuthLocalRepository by inject()
     private val loginSelectVm : LoginSelectViewModel by viewModel()
 
     private var sessionCallback : ISessionCallback? = null

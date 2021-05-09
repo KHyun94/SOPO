@@ -6,21 +6,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.bindings.FocusChangeCallback
-import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.networks.call.UserCall
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ValidateUtil
-import com.delivery.sopo.views.widget.CustomEditText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class UpdateNicknameViewModel(private val userRepoImpl: UserRepoImpl): ViewModel()
+class UpdateNicknameViewModel(private val userLocalRepository: UserLocalRepository): ViewModel()
 {
     val nickname = MutableLiveData<String>()
     val validates = mutableMapOf<InfoEnum, Boolean>()
@@ -79,7 +76,7 @@ class UpdateNicknameViewModel(private val userRepoImpl: UserRepoImpl): ViewModel
             is NetworkResult.Success ->
             {
                 _isProgress.postValue(false)
-                userRepoImpl.setNickname(nickname)
+                userLocalRepository.setNickname(nickname)
                 SopoLog.d("Success to update nickname")
                 ResponseResult(true, null, nickname, "Success to update nickname")
             }

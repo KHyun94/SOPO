@@ -3,7 +3,6 @@ package com.delivery.sopo.views.login
 import android.content.Intent
 import android.view.Gravity
 import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.abstracts.BasicView
@@ -14,7 +13,6 @@ import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.launchActivity
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.util.ui_util.TextInputUtil
@@ -43,10 +41,10 @@ class LoginView: BasicView<LoginViewBinding>(R.layout.login_view)
 
         binding.vm!!.focus.observe(this, Observer { focus ->
             val res = TextInputUtil.changeFocus(this@LoginView, focus)
-            binding.vm!!.validates[res.first] = res.second
+            binding.vm!!.validities[res.first] = res.second
         })
 
-        binding.vm!!.validateError.observe(this, Observer { target ->
+        binding.vm!!.invalidity.observe(this, Observer { target ->
             val message = when(target.first)
             {
                 InfoEnum.EMAIL ->

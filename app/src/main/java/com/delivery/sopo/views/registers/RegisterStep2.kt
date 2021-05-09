@@ -13,8 +13,7 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterStep2Binding
 import com.delivery.sopo.enums.TabCode
-import com.delivery.sopo.models.BindView
-import com.delivery.sopo.models.CourierItem
+import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
@@ -114,9 +113,9 @@ class RegisterStep2: Fragment()
         })
 
         binding.vm!!.adapter.observe(this, Observer {
-            it?.setOnItemClickListener(object: GridRvAdapter.OnItemClickListener<List<SelectItem<CourierItem?>>>
+            it?.setOnItemClickListener(object: GridRvAdapter.OnItemClickListener<List<SelectItem<CarrierDTO?>>>
             {
-                override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<CourierItem?>>)
+                override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<CarrierDTO?>>)
                 {
                     val item = items[pos]
 
@@ -133,14 +132,14 @@ class RegisterStep2: Fragment()
 
     companion object
     {
-        fun newInstance(waybillNum: String?, courier: CourierItem?): RegisterStep2
+        fun newInstance(waybillNum: String?, carrierDTO: CarrierDTO?): RegisterStep2
         {
             val registerStep2 = RegisterStep2()
 
             val args = Bundle()
 
             args.putString("waybillNum", waybillNum)
-            args.putSerializable("courier", courier)
+            args.putSerializable("carrier", carrierDTO)
 
             registerStep2.arguments = args
             return registerStep2

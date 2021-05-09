@@ -6,18 +6,16 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.networks.call.UserCall
-import com.delivery.sopo.repository.impl.OauthRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.services.network_handler.NetworkResult
-import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
-class SplashViewModel(private val userRepoImpl: UserRepoImpl, private val oauthRepoImpl: OauthRepoImpl): ViewModel()
+class SplashViewModel(private val userLocalRepository: UserLocalRepository, private val OAuthLocalRepository: OAuthLocalRepository): ViewModel()
 {
     var navigator = MutableLiveData<String>()
     var errorMessage: String = ""
@@ -29,9 +27,9 @@ class SplashViewModel(private val userRepoImpl: UserRepoImpl, private val oauthR
 
     fun requestAfterActivity()
     {
-        SopoLog.d(msg = "로그인 상태 >>> ${userRepoImpl.getStatus()}")
+        SopoLog.d(msg = "로그인 상태 >>> ${userLocalRepository.getStatus()}")
 
-        if (userRepoImpl.getStatus() == 1)
+        if (userLocalRepository.getStatus() == 1)
         {
             CoroutineScope(Dispatchers.IO).launch { getUserInfoWithToken() }
         }
@@ -51,9 +49,9 @@ class SplashViewModel(private val userRepoImpl: UserRepoImpl, private val oauthR
 
                 val userDetail = result.data.data
 
-                userRepoImpl.setEmail(userDetail?.userName ?: "")
-                userRepoImpl.setNickname(userDetail?.nickname ?: "")
-                userRepoImpl.setJoinType(userDetail?.joinType ?: "")
+                userLocalRepository.setUserId(userDetail?.userId ?: "")
+                userLocalRepository.setNickname(userDetail?.nickname ?: "")
+                userLocalRepository.setJoinType(userDetail?.joinType ?: "")
 
                 navigator.postValue(NavigatorConst.TO_MAIN)
             }
@@ -64,7 +62,7 @@ class SplashViewModel(private val userRepoImpl: UserRepoImpl, private val oauthR
 
                 if(responseCode == ResponseCode.TOKEN_ERROR_INVALID_GRANT || responseCode == ResponseCode.TOKEN_ERROR_INVALID_TOKEN)
                 {
-                    val oAuth =  oauthRepoImpl.get(userRepoImpl.getEmail())
+                    val oAuth =  OAuthLocalRepository.get(userLocalRepository.getUserId())
 
                     val isOver = DateUtil.isOverExpiredDate(oAuth?.refreshTokenExpiredAt?:"")
 

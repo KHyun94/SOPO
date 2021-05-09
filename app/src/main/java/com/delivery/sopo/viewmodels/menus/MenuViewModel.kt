@@ -4,30 +4,21 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.extensions.MutableLiveDataExtension.popItem
 import com.delivery.sopo.extensions.MutableLiveDataExtension.pushItem
-import com.delivery.sopo.models.SopoJsonPatch
-import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.api.UserAPI
 import com.delivery.sopo.networks.call.UserCall
-import com.delivery.sopo.networks.dto.JsonPatchDto
-import com.delivery.sopo.repository.impl.ParcelRepoImpl
-import com.delivery.sopo.repository.impl.TimeCountRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.TimeCountRepoImpl
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.*
 
-class MenuViewModel(private val userRepoImpl: UserRepoImpl,
+class MenuViewModel(private val userLocalRepository: UserLocalRepository,
                     private val parcelRepoImpl: ParcelRepoImpl,
                     private val timeCountRepoImpl: TimeCountRepoImpl
 ) : ViewModel(), LifecycleObserver
@@ -50,7 +41,7 @@ class MenuViewModel(private val userRepoImpl: UserRepoImpl,
     val isUpdate = MutableLiveData<Boolean>()
 
     init {
-        _userNickname.value = userRepoImpl.getNickname()
+        _userNickname.value = userLocalRepository.getNickname()
         SopoLog.d(msg = "Menu 닉네임 => ${userNickname.value}")
         _viewStack.value = Stack()
         isUpdate.value = false

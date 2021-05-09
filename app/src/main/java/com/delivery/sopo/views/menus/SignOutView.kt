@@ -12,14 +12,11 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.databinding.ConfirmDeleteDialogBinding
 import com.delivery.sopo.databinding.SignOutViewBinding
 import com.delivery.sopo.enums.DisplayEnum
-import com.delivery.sopo.repository.impl.OauthRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.AlertUtil
-import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import com.delivery.sopo.viewmodels.menus.SignOutViewModel
 import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
 import com.delivery.sopo.views.login.LoginSelectView
@@ -34,8 +31,8 @@ class SignOutView: Fragment()
     lateinit var binding: SignOutViewBinding
     private val vm: SignOutViewModel by viewModel()
 
-    private val userRepo: UserRepoImpl by inject()
-    private val oAuthRepo: OauthRepoImpl by inject()
+    private val userLocalRepo: UserLocalRepository by inject()
+    private val oAuthRepo: OAuthLocalRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -71,7 +68,7 @@ class SignOutView: Fragment()
             {
                 DisplayEnum.TOAST_MESSAGE ->
                 {
-                    userRepo.removeUserRepo()
+                    userLocalRepo.removeUserRepo()
 
                     CoroutineScope(Dispatchers.Default).launch { AlertUtil.appDataBase.clearAllTables() }
                     SOPOApp.oAuthEntity = null

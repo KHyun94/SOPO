@@ -10,9 +10,9 @@ import com.delivery.sopo.extensions.md5
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.networks.dto.joins.JoinInfoDTO
 import com.delivery.sopo.networks.repository.JoinRepository
-import com.delivery.sopo.networks.repository.OAuthNetworkRepo
-import com.delivery.sopo.repository.impl.OauthRepoImpl
-import com.delivery.sopo.repository.impl.UserRepoImpl
+import com.delivery.sopo.data.repository.remote.o_auth.OAuthRemoteRepository
+import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.SopoLog
 import com.kakao.usermgmt.UserManagement
 import com.kakao.usermgmt.callback.MeV2ResponseCallback
@@ -21,7 +21,7 @@ import kotlinx.coroutines.*
 import java.util.*
 import com.kakao.network.ErrorResult as KakaoErrorResult
 
-class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuthRepo: OauthRepoImpl) : ViewModel()
+class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, private val oAuthRepo: OAuthLocalRepository) : ViewModel()
 {
     val navigator = MutableLiveData<String>()
     val backgroundImage = MutableLiveData<Int>().apply { postValue(R.drawable.ic_login_ani_box) }
@@ -123,7 +123,7 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
     fun login(email: String, password: String, nickname: String?)
     {
         CoroutineScope(Dispatchers.Main).launch {
-            val oAuthRes = OAuthNetworkRepo.loginWithOAuth(email, password)
+            val oAuthRes = OAuthRemoteRepository.requestLoginWithOAuth(email, password)
 
             if(!oAuthRes.result)
             {
@@ -131,9 +131,9 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
                 return@launch
             }
 
-            userRepo.run {
-                setEmail(email)
-                setApiPwd(password)
+            userLocalRepo.run {
+                setUserId(email)
+                setUserPassword(password)
                 setStatus(1)
                 setNickname(nickname?:"")
             }
@@ -150,10 +150,10 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
                 SopoLog.d("oauth insert!!!")
             }
 
-            if(userRepo.getNickname() == "")
+            if(userLocalRepo.getNickname() == "")
             {
                 SopoLog.d("nickname check!!!")
-                val infoRes = OAuthNetworkRepo.getUserInfo()
+                val infoRes = OAuthRemoteRepository.getUserInfo()
 
                 if(!infoRes.result)
                 {
@@ -178,7 +178,7 @@ class LoginSelectViewModel(private val userRepo: UserRepoImpl, private val oAuth
                     infoRes nickname is OK >>> ${infoRes.data.nickname}
                 """.trimIndent())
 
-                userRepo.setNickname(infoRes.data.nickname)
+                userLocalRepo.setNickname(infoRes.data.nickname)
 
                 navigator.postValue(NavigatorConst.TO_MAIN)
             }
