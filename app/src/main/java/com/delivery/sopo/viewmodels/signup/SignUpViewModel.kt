@@ -25,11 +25,11 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository) : ViewMode
     val password = MutableLiveData<String>()
     val rePassword = MutableLiveData<String>()
 
-    val validates = mutableMapOf<InfoEnum, Boolean>()
+    val validities = mutableMapOf<InfoEnum, Boolean>()
 
-    private var _validateError = MutableLiveData<Pair<InfoEnum, Boolean>>()
-    val validateError: LiveData<Pair<InfoEnum, Boolean>>
-        get() = _validateError
+    private var _invalid = MutableLiveData<Pair<InfoEnum, Boolean>>()
+    val invalid: LiveData<Pair<InfoEnum, Boolean>>
+        get() = _invalid
 
     /**
      * 유효성 및 통신 등의 결과 객체
@@ -55,10 +55,10 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository) : ViewMode
 
     init
     {
-        validates[InfoEnum.EMAIL] = false
-        validates[InfoEnum.PASSWORD] = false
-        validates[InfoEnum.RE_PASSWORD] = false
-        validates[InfoEnum.AGREEMENT] = false
+        validities[InfoEnum.EMAIL] = false
+        validities[InfoEnum.PASSWORD] = false
+        validities[InfoEnum.RE_PASSWORD] = false
+        validities[InfoEnum.AGREEMENT] = false
     }
 
 
@@ -66,25 +66,25 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository) : ViewMode
     fun onAgreeClicked(v: View)
     {
         val cb = v as AppCompatCheckBox
-        SopoLog.d("약관동의 >>> ${cb.isChecked}")
-        validates[InfoEnum.AGREEMENT] = true
+        validities[InfoEnum.AGREEMENT] = cb.isChecked
     }
 
     fun onSignUpClicked(v: View)
     {
+        SopoLog.d("onSignUpClicked() call")
         _isProgress.postValue(true)
 
-        validates.forEach { (k, v) ->
+        validities.forEach { (k, v) ->
             if(!v)
             {
                 SopoLog.d("${k.NAME} validate is fail")
                 _isProgress.postValue(false)
-                _validateError.postValue(Pair(k, v))
+                _invalid.postValue(Pair(k, v))
                 return@onSignUpClicked
             }
         }
 
-        val joinInfoDTO = JoinInfoDTO(email.value.toString(), password.value.toString().md5(), SOPOApp.deviceInfo)
+        val joinInfoDTO = JoinInfoDTO(email.value.toString().trim(), password.value.toString().trim().md5(), SOPOApp.deviceInfo)
 
         CoroutineScope(Dispatchers.Main).launch {
             val res = JoinRepository.requestJoinBySelf(joinInfoDTO)
@@ -92,7 +92,7 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository) : ViewMode
             _isProgress.postValue(false)
 
             SopoLog.d("""
-                회원가입 결과 >>> 
+                SignUp(Self) Result >>> 
                 ${res.result}
                 ${res.data}
                 ${res.message}
@@ -101,17 +101,21 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository) : ViewMode
                 ${password.value.toString()}
             """.trimIndent())
 
-            if(res.result)
+            if(!res.result)
             {
-                userLocalRepo.setUserId(userId = email.value.toString())
-                userLocalRepo.setUserPassword(password = password.value.toString())
 
-                SopoLog.d("""
+                return@launch
+            }
+
+
+            userLocalRepo.setUserId(userId = email.value.toString())
+            userLocalRepo.setUserPassword(password = password.value.toString())
+
+            SopoLog.d("""
                     User Data
                     email >>> ${email.value.toString()}, save(${userLocalRepo.getUserId()})
                     password >>> ${password.value.toString()}, save(${userLocalRepo.getUserPassword()})
                 """.trimIndent())
-            }
 
             _result.postValue(res)
         }

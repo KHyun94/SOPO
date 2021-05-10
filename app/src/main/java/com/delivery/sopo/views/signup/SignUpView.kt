@@ -36,10 +36,10 @@ class SignUpView: BasicView<SignUpViewBinding>(R.layout.sign_up_view)
     {
         binding.vm!!.focus.observe(this, Observer { focus ->
             val res = TextInputUtil.changeFocus(this@SignUpView, focus)
-            binding.vm!!.validates[res.first] = res.second
+            binding.vm!!.validities[res.first] = res.second
         })
 
-        binding.vm!!.validateError.observe(this, Observer { target ->
+        binding.vm!!.invalid.observe(this, Observer { target ->
             val message = when(target.first)
             {
                 InfoEnum.EMAIL ->

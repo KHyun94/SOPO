@@ -54,6 +54,7 @@ object JoinRepository
 
     suspend fun requestJoinBySelf(joinInfoDTO: JoinInfoDTO): ResponseResult<Unit>
     {
+        SopoLog.d("requestJoinBySelf() call >>> $joinInfoDTO")
         val result = JoinCall.requestJoinBySelf(joinInfoDTO = joinInfoDTO)
         return requestJoin<Unit, Unit>(result)
     }
