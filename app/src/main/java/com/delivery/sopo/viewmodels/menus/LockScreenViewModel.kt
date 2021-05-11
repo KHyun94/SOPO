@@ -7,14 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.asSHA256
 import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
-import com.delivery.sopo.data.repository.local.repository.AppPasswordRepoImpl
+import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class LockScreenViewModel(
     private val userLocalRepository: UserLocalRepository,
-    private val appPasswordRepo: AppPasswordRepoImpl) : ViewModel()
+    private val appPasswordRepo: AppPasswordRepository) : ViewModel()
 {
 
     var lockPassword = MutableLiveData<String>()
@@ -48,7 +48,7 @@ class LockScreenViewModel(
     }
 
     private fun verifyPassword(inputPassword: String): Boolean{
-        return appPasswordRepo.getAppPassword()?.let{
+        return appPasswordRepo.get()?.let{
             it.appPassword == inputPassword.asSHA256
         } ?: false
     }
@@ -124,7 +124,7 @@ class LockScreenViewModel(
                 else{
                    verifyCnt.value = 3
                    viewModelScope.launch(Dispatchers.IO){
-                       appPasswordRepo.insertEntity(
+                       appPasswordRepo.insert(
                            AppPasswordEntity(
                            userId = userLocalRepository.getUserId(),
                            appPassword = lockPassword.value.toString().asSHA256

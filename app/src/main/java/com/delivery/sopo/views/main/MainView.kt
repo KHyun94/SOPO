@@ -2,6 +2,9 @@ package com.delivery.sopo.views.main
 
 import android.os.Bundle
 import android.view.View
+import androidx.annotation.DrawableRes
+import androidx.annotation.LayoutRes
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
@@ -21,7 +24,6 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
-import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.menus.LockScreenView
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.main_view.*
@@ -29,16 +31,13 @@ import kotlinx.android.synthetic.main.tap_item.view.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainView : BasicView<MainViewBinding>(R.layout.main_view)
+class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 {
-    private val mainVm: MainViewModel by viewModel()
+    private val vm: MainViewModel by viewModel()
     private val inquiryVm: InquiryViewModel by viewModel()
 
     private val userLocalRepository: UserLocalRepository by inject()
     val appDatabase: AppDatabase by inject()
-
-    lateinit var viewPagerAdapter: ViewPagerAdapter
-    lateinit var pageChangeListener: ViewPager.OnPageChangeListener
 
     var currentPage = MutableLiveData<Int?>()
 
@@ -53,13 +52,13 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     override fun bindView()
     {
-        binding.vm = mainVm
+        binding.vm = vm
     }
 
     override fun setObserver()
     {
         /** 화면 패스워드 설정 **/
-        binding.vm!!.isSetOfSecurity.observe(this, Observer {
+        binding.vm!!.isSetAppPassword.observe(this, Observer {
             it?.also {
                 this.launchActivitiy<LockScreenView> {
                     putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
@@ -69,7 +68,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
         binding.vm!!.tabLayoutVisibility.observe(this, Observer {
 
-            binding.tlMain.run {
+            binding.layoutMainTab.run {
                 when (it)
                 {
                     View.VISIBLE -> visibility = View.VISIBLE
@@ -79,28 +78,9 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             }
         })
 
-        binding.vm!!.errorMsg.observe(this, Observer {
-            if (it != null && it.isNotEmpty())
-            {
-                GeneralDialog(
-                    act = this@MainView,
-                    title = "에러",
-                    msg = it,
-                    detailMsg = null,
-                    rHandler = Pair(
-                        first = "네",
-                        second = { it ->
-                            userLocalRepository.removeUserRepo()
-                            it.dismiss()
-                            finish()
-                        })
-                ).show(supportFragmentManager, "tag")
-            }
-        })
-
         // todo 업데이트 시
         SOPOApp.cntOfBeUpdate.observeForever {
-            if(it == null) return@observeForever
+            if (it == null) return@observeForever
 
             SopoLog.d(msg = "업데이트 가능 여부 택배 갯수 ${it}")
 
@@ -117,7 +97,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                             NavigatorConst.REGISTER_TAB ->
                             {
                                 SopoLog.d("Click For Update at RegisterTab")
-                                binding.vpMain.currentItem = 1
+                                binding.layoutViewPager.currentItem = 1
 
                             }
                             NavigatorConst.INQUIRY_TAB ->
@@ -128,7 +108,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                             NavigatorConst.MY_MENU_TAB ->
                             {
                                 SopoLog.d("Click For Update at MenuTab")
-                                binding.vpMain.currentItem = 1
+                                binding.layoutViewPager.currentItem = 1
 
                             }
                         }
@@ -148,15 +128,13 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             {
                 when (it)
                 {
-                    NavigatorConst.REGISTER_TAB -> binding.vpMain.setCurrentItem(
-                        NavigatorConst.REGISTER_TAB,
-                        true
+                    NavigatorConst.REGISTER_TAB -> binding.layoutViewPager.setCurrentItem(
+                        NavigatorConst.REGISTER_TAB, true
                     )
-                    NavigatorConst.INQUIRY_TAB -> binding.vpMain.setCurrentItem(
-                        NavigatorConst.INQUIRY_TAB,
-                        true
+                    NavigatorConst.INQUIRY_TAB -> binding.layoutViewPager.setCurrentItem(
+                        NavigatorConst.INQUIRY_TAB, true
                     )
-                    else -> binding.vpMain.setCurrentItem(0, true)
+                    else -> binding.layoutViewPager.setCurrentItem(0, true)
                 }
 
             }
@@ -168,7 +146,7 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
     fun onCompleteRegister()
     {
         isRegister = true
-        binding.vpMain.currentItem = 1
+        binding.layoutViewPager.currentItem = 1
         inquiryVm.refreshOngoing()
     }
 
@@ -180,53 +158,43 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
     private fun initUI()
     {
-        viewpagerSetting()
-        tabLayoutSetting()
+        setViewPager()
+        setTabLayout()
     }
 
-    private fun tabSetting(v: TabLayout)
+    private fun setTabIcon(v: TabLayout, index: Int,
+                           @LayoutRes itemLayout: Int,
+                           @DrawableRes iconRes: Int, tabName: String, textColor: Int)
     {
-        // layout을 dynamic 처리해서 넣도록 수정
-        v.getTabAt(NavigatorConst.REGISTER_TAB)!!.run {
-            setCustomView(R.layout.tap_item)
+        v.getTabAt(index)!!.run {
+            setCustomView(itemLayout)
             customView!!.run {
-                iv_tab.setBackgroundResource(R.drawable.ic_activate_register)
-                tv_tab_name.setText("등록")
-                tv_tab_name.setTextColor(resources.getColor(R.color.COLOR_MAIN_700))
-            }
-        }
-
-        v.getTabAt(NavigatorConst.INQUIRY_TAB)!!.run {
-            setCustomView(R.layout.tap_item)
-            customView!!.run {
-                iv_tab.setBackgroundResource(R.drawable.ic_inactivate_inquiry)
-                tv_tab_name.setText("조회")
-                tv_tab_name.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
-            }
-        }
-
-        v.getTabAt(NavigatorConst.MY_MENU_TAB)!!.run {
-            setCustomView(R.layout.tap_item)
-            customView!!.run {
-                iv_tab.setBackgroundResource(R.drawable.ic_inactivate_menu)
-                tv_tab_name.setText("메뉴")
-                tv_tab_name.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
+                iv_tab.setBackgroundResource(iconRes)
+                tv_tab_name.text = tabName
+                tv_tab_name.setTextColor(ContextCompat.getColor(this@MainView, textColor))
             }
         }
     }
 
-    private fun tabLayoutSetting()
+    private fun setTabIcons(v: TabLayout)
     {
-        val tb = binding.tlMain
+        setTabIcon(v, NavigatorConst.REGISTER_TAB, R.layout.tap_item, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
+        setTabIcon(v, NavigatorConst.INQUIRY_TAB, R.layout.tap_item, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
+        setTabIcon(v, NavigatorConst.MY_MENU_TAB, R.layout.tap_item, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
+    }
 
-        tb.run {
-            setupWithViewPager(vp_main)
-            tabSetting(this)
-            addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener
+    private fun setTabLayout()
+    {
+        binding.layoutMainTab.run {
+            setupWithViewPager(binding.layoutViewPager)
+            setTabIcons(this)
+            addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener
             {
                 override fun onTabSelected(tab: TabLayout.Tab?)
                 {
-                    currentPage.postValue(tab!!.position)
+                    tab?:return
+
+                    currentPage.postValue(tab.position)
 
                     val res = when (tab.position)
                     {
@@ -242,7 +210,9 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
 
                 override fun onTabUnselected(tab: TabLayout.Tab?)
                 {
-                    val res = when (tab!!.position)
+                    tab?:return
+
+                    val res = when (tab.position)
                     {
                         NavigatorConst.REGISTER_TAB -> R.drawable.ic_inactivate_register
                         NavigatorConst.INQUIRY_TAB -> R.drawable.ic_inactivate_inquiry
@@ -250,8 +220,8 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
                         else -> NavigatorConst.REGISTER_TAB
                     }
 
-                    tab.customView!!.iv_tab.setBackgroundResource(res)
-                    tab.customView!!.tv_tab_name.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
+                    tab.customView?.iv_tab?.setBackgroundResource(res)
+                    tab.customView?.tv_tab_name?.setTextColor(ContextCompat.getColor(this@MainView, R.color.COLOR_GRAY_400))
                 }
 
                 override fun onTabReselected(tab: TabLayout.Tab?)
@@ -261,10 +231,10 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
         }
     }
 
-    private fun viewpagerSetting()
+    private fun setViewPager()
     {
-        viewPagerAdapter = ViewPagerAdapter(supportFragmentManager, 3)
-        pageChangeListener = object : ViewPager.OnPageChangeListener
+        binding.layoutViewPager.adapter = ViewPagerAdapter(supportFragmentManager, 3)
+        binding.layoutViewPager.addOnPageChangeListener(object: ViewPager.OnPageChangeListener
         {
             override fun onPageScrollStateChanged(p0: Int)
             {
@@ -274,21 +244,17 @@ class MainView : BasicView<MainViewBinding>(R.layout.main_view)
             {
             }
 
-            override fun onPageSelected(p0: Int)
+            override fun onPageSelected(pageNum: Int)
             {
                 // 0923 kh 등록 성공
-                if (p0 == 1 && isRegister)
+                if (pageNum == 1 && isRegister)
                 {
-                    SopoLog.d( msg = "등록 성공 메인 뷰")
+                    SopoLog.d(msg = "등록 성공 메인 뷰")
                     onCompleteRegister()
                     isRegister = false
                 }
             }
-        }
-
-        vp_main.adapter = viewPagerAdapter
-        vp_main.addOnPageChangeListener(pageChangeListener)
-
+        })
     }
 
 

@@ -13,7 +13,6 @@ import retrofit2.http.*
 
 interface LoginAPI
 {
-
     @FormUrlEncoded
     @POST("api/v1/sopo-auth/oauth/token")
     @Headers("Accept: application/json")
@@ -30,15 +29,9 @@ interface LoginAPI
 }
 class LoginAPICall : BaseService()
 {
-    init
-    {
-        NetworkManager.setLogin(null, null)
-    }
-
     suspend fun requestOauth(email: String,  password: String, deviceInfo: String): NetworkResult<Any>
     {
-        NetworkManager.setLogin(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_PASSWORD)
-        val requestOauth = NetworkManager.retro.create(LoginAPI::class.java).requestOauth(grantType = "password", email = email, password = password, deviceInfo = deviceInfo)
+        val requestOauth = NetworkManager.retro(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_PASSWORD).create(LoginAPI::class.java).requestOauth(grantType = "password", email = email, password = password, deviceInfo = deviceInfo)
 
         return apiCall(call = {requestOauth})
     }

@@ -9,7 +9,7 @@ import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
 interface AppPasswordDao
 {
     @Query("SELECT * FROM APP_PASSWORD")
-    fun getAppPassword(): AppPasswordEntity?
+    fun get(): AppPasswordEntity?
 
     @Query("SELECT COUNT(*) FROM APP_PASSWORD")
     fun getCntOfAppPasswordLiveData(): LiveData<Int>

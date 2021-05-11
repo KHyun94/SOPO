@@ -2,6 +2,7 @@ package com.delivery.sopo.di
 
 import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.data.repository.database.shared.SharedPref
+import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserSharedPrefHelper
 import com.delivery.sopo.data.repository.local.repository.*
@@ -40,7 +41,7 @@ val appModule = module {
     single { ParcelRepoImpl(get(), get()) }
     single { ParcelManagementRepoImpl(get()) }
     single { TimeCountRepoImpl(get(), get()) }
-    single { AppPasswordRepoImpl(get()) }
+    single { AppPasswordRepository(get()) }
     single { OAuthLocalRepository(get()) }
 
     viewModel { SplashViewModel(get(), get()) }
@@ -50,9 +51,9 @@ val appModule = module {
     viewModel { UpdateNicknameViewModel(get()) }
     viewModel { LoginSelectViewModel(get(),get()) }
     viewModel { ResetPasswordViewModel() }
-    viewModel { MainViewModel(get(), get(), get(), get()) }
+    viewModel { MainViewModel(get(), get(), get()) }
     viewModel { LockScreenViewModel(get(), get()) }
-    viewModel { SettingViewModel(get(), get()) }
+    viewModel { SettingViewModel(get()) }
     viewModel { NoticeViewModel() }
     viewModel { FaqViewModel() }
     viewModel { AppInfoViewModel() }

@@ -8,7 +8,7 @@ import com.delivery.sopo.consts.DeliveryStatusConst
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.consts.ResultTypeConst
-import com.delivery.sopo.consts.UpdateConst
+import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.mapper.ParcelMapper
@@ -212,11 +212,11 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
                         303 ->
                         {
                             SopoLog.d("상세 내역 업데이트할 요소가있습니다.")
-                            _isUpdate.postValue(UpdateConst.SUCCESS)
+                            _isUpdate.postValue(StatusConst.SUCCESS)
                         }
                         else ->
                         {
-                            _isUpdate.postValue(UpdateConst.FAILURE)
+                            _isUpdate.postValue(StatusConst.FAILURE)
                             SopoLog.e("${error.errorMessage}", error)
                         }
                     }
@@ -256,7 +256,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
                     _parcelEntity.postValue(ParcelMapper.parcelToParcelEntity(parcel))
 
                     withContext(Dispatchers.Default) {
-                        updateIsBeUpdate(parcelId, UpdateConst.DEACTIVATE)
+                        updateIsBeUpdate(parcelId, StatusConst.DEACTIVATE)
                     }
                 }
                 is NetworkResult.Error ->
@@ -293,10 +293,10 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
 
             SopoLog.d("update 정상적으로 값이 들어오는지 체크 $value")
 
-            if (value == UpdateConst.ACTIVATE)
+            if (value == StatusConst.ACTIVATE)
             {
                 parcelManagementRepoImpl.updateIsUnidentified(
-                    parcelId = parcelId, value = UpdateConst.DEACTIVATE
+                    parcelId = parcelId, value = StatusConst.DEACTIVATE
                 )
             }
         }

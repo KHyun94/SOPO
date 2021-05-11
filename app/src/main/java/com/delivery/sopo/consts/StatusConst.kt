@@ -1,6 +1,6 @@
 package com.delivery.sopo.consts
 
-object UpdateConst
+object StatusConst
 {
     const val ACTIVATE = 1
     const val DEACTIVATE = 0

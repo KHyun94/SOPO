@@ -1,19 +1,15 @@
-package com.delivery.sopo.data.repository.local.repository
+package com.delivery.sopo.data.repository.local.app_password
 
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
-import com.delivery.sopo.data.repository.local.datasource.AppPasswordRepository
 import com.delivery.sopo.util.TimeUtil
 
-class AppPasswordRepoImpl(private val appDatabase: AppDatabase):
-    AppPasswordRepository
+class AppPasswordRepository(private val appDatabase: AppDatabase): AppPasswordDataSource
 {
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
-
-    override fun getAppPassword(): AppPasswordEntity?
+    override fun get(): AppPasswordEntity?
     {
-        return appDatabase.securityDao().getAppPassword()
+        return appDatabase.securityDao().get()
     }
 
     override fun getCntOfAppPasswordLiveData(): LiveData<Int>
@@ -21,7 +17,7 @@ class AppPasswordRepoImpl(private val appDatabase: AppDatabase):
         return appDatabase.securityDao().getCntOfAppPasswordLiveData()
     }
 
-    override fun insertEntity(entity: AppPasswordEntity)
+    override fun insert(entity: AppPasswordEntity)
     {
         entity.apply {
             auditDte = TimeUtil.getDateTime()
@@ -29,7 +25,7 @@ class AppPasswordRepoImpl(private val appDatabase: AppDatabase):
         return appDatabase.securityDao().insert(entity)
     }
 
-    override fun updateEntity(entity: AppPasswordEntity)
+    override fun update(entity: AppPasswordEntity)
     {
         entity.apply {
             auditDte = TimeUtil.getDateTime()
@@ -37,7 +33,7 @@ class AppPasswordRepoImpl(private val appDatabase: AppDatabase):
         return appDatabase.securityDao().update(entity)
     }
 
-    override fun deleteEntity(entity: AppPasswordEntity)
+    override fun delete(entity: AppPasswordEntity)
     {
         return appDatabase.securityDao().delete(entity)
     }

@@ -1,13 +1,13 @@
 package com.delivery.sopo.networks
 
 import com.delivery.sopo.BuildConfig
-import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.networks.interceptors.BasicAuthInterceptor
 import com.delivery.sopo.networks.interceptors.OAuthInterceptor
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.models.dto.OAuthDTO
+import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -21,23 +21,19 @@ import org.koin.core.inject
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.lang.NullPointerException
 import java.util.concurrent.TimeUnit
 
 object NetworkManager : KoinComponent
 {
-    val USER_LOCAL_REPOSITORY : UserLocalRepository by inject()
-    val O_AUTH_LOCAL_REPOSITORY : OAuthLocalRepository by inject()
+    private val userLocalRepo : UserLocalRepository by inject()
+    private val oAuthLocalRepo : OAuthLocalRepository by inject()
 
     private const val CONNECT_TIMEOUT: Long = 15
     private const val WRITE_TIMEOUT: Long = 15
     private const val READ_TIMEOUT: Long = 15
 
     lateinit var mOKHttpClient: OkHttpClient
-
-    lateinit var apiId: String
-    lateinit var apiPassword: String
-
-    var hasHeader: Boolean = false
 
     var INTERCEPTOR_TYPE = 0
     var isAuthenticator = true
@@ -48,11 +44,13 @@ object NetworkManager : KoinComponent
         {
             NetworkEnum.O_AUTH_TOKEN_LOGIN ->
             {
-                val OAuth : OAuthEntity? = runBlocking(Dispatchers.Default) {
-                    O_AUTH_LOCAL_REPOSITORY.get(USER_LOCAL_REPOSITORY.getUserId()).also { SOPOApp.oAuth = it }
-                }?:SOPOApp.oAuth
-                SopoLog.d(msg = "토큰 정보 => ${OAuth}")
-                retro(OAuth?.accessToken).create(clz)
+                val oAuth : OAuthDTO? = runBlocking(Dispatchers.Default) {
+                    val oAuthEntity = oAuthLocalRepo.get(userLocalRepo.getUserId()) ?: throw NullPointerException("OAuth Token is null")
+                    OAuthMapper.entityToObject(oAuthEntity)
+                }
+
+                SopoLog.d(msg = "토큰 정보 => ${oAuth}")
+                retro(oAuth?.accessToken).create(clz)
             }
             NetworkEnum.PUBLIC_LOGIN ->
             {
@@ -63,17 +61,6 @@ object NetworkManager : KoinComponent
                 retro().create(clz)
             }
         }
-    }
-
-    fun setLogin(id: String?, password: String?) = if (id != null && password != null)
-    {
-        this.apiId = id
-        this.apiPassword = password
-        hasHeader = true
-    }
-    else
-    {
-        hasHeader = false
     }
 
     fun retro(vararg params : String? = emptyArray()) : Retrofit
@@ -114,43 +101,10 @@ object NetworkManager : KoinComponent
 
         return Retrofit.Builder()
             .baseUrl(BuildConfig.API_URL)
-//            .baseUrl("http://192.168.219.110:6443/")
             .client(mOKHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson.create()))
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
     }
-
-    val retro: Retrofit
-        get()
-        {
-            // 공용 API 계정
-            val basicAuthInterceptor : Interceptor? = if(hasHeader) BasicAuthInterceptor(apiId, apiPassword) else null
-
-            val httpLoggingInterceptor = HttpLoggingInterceptor()
-            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
-
-            mOKHttpClient = OkHttpClient().newBuilder().apply {
-                addInterceptor(httpLoggingInterceptor)
-                if(basicAuthInterceptor != null) addInterceptor(basicAuthInterceptor)
-                connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
-                writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
-                readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-            }.build()
-
-            val gson = GsonBuilder().apply {
-                setLenient()
-            }
-
-            return Retrofit.Builder()
-                .baseUrl(BuildConfig.API_URL)
-//                .baseUrl("http://192.168.219.110:6443/")
-                .client(mOKHttpClient)
-                .addConverterFactory(GsonConverterFactory.create(gson.create()))
-                .addCallAdapterFactory(CoroutineCallAdapterFactory())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .build()
-        }
-
 }
