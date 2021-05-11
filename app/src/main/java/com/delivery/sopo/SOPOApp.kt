@@ -13,6 +13,8 @@ import com.delivery.sopo.di.appModule
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.models.dto.OAuthDTO
+import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.OtherUtil
@@ -84,7 +86,8 @@ class SOPOApp : Application()
         }
 
         CoroutineScope(Dispatchers.Default).launch {
-            oAuthEntity = OAuthLocalRepository.get(userLocalRepository.getUserId())
+            val oAuthEntity = OAuthLocalRepository.get(userLocalRepository.getUserId())?:throw NullPointerException("미로그인 상태")
+            oAuth = OAuthMapper.entityToObject(oAuthEntity)
         }
 
         SopoLog.d(msg = """
@@ -130,11 +133,9 @@ class SOPOApp : Application()
 
         var currentPage = SingleLiveEvent<Int?>()
 
-//        val cntOfBeUpdate: LiveData<Int>
-//            get() = SOPOApp().parcelManagementRepoImpl.getIsUpdateCntLiveData()
 
         val cntOfBeUpdate = MutableLiveData<Int?>()
 
-        var oAuthEntity : OAuthEntity? = null
+        var oAuth : OAuthDTO? = null
     }
 }

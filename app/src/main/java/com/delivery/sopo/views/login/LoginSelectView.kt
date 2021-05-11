@@ -8,8 +8,6 @@ import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.LoginSelectViewBinding
 import com.delivery.sopo.extensions.launchActivityWithAllClear
-import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
@@ -20,14 +18,11 @@ import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
 import com.kakao.util.exception.KakaoException
 import kotlinx.android.synthetic.main.login_select_view.*
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_view)
 {
-    private val userLocalRepository : UserLocalRepository by inject()
-    private val OAuthLocalRepository : OAuthLocalRepository by inject()
-    private val loginSelectVm : LoginSelectViewModel by viewModel()
+    private val vm : LoginSelectViewModel by viewModel()
 
     private var sessionCallback : ISessionCallback? = null
     var progressBar : CustomProgressBar? = null
@@ -44,25 +39,23 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
 
     override fun bindView()
     {
-        binding.vm = loginSelectVm
+        binding.vm = vm
         binding.lifecycleOwner = this
     }
 
     override fun setObserver()
     {
-        loginSelectVm.navigator.observe(this, Observer {
+        vm.navigator.observe(this, Observer { navigator ->
 
             SopoLog.d("""
-                Navigator >>> ${it}
+                Navigator >>> ${navigator}
             """.trimIndent())
 
-            when (it)
+            when (navigator)
             {
                 NavigatorConst.TO_LOGIN ->
                 {
-                    startActivity(
-                        Intent(parentActivity, LoginView::class.java)
-                    )
+                    startActivity(Intent(parentActivity, LoginView::class.java))
                 }
                 NavigatorConst.TO_SIGN_UP ->
                 {
@@ -72,8 +65,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                 {
                     btn_kakao_login.performClick()
 
-                    if (Session.getCurrentSession() != null) Session.getCurrentSession()
-                        .removeCallback(sessionCallback)
+                    if (Session.getCurrentSession() != null) Session.getCurrentSession().removeCallback(sessionCallback)
 
                     sessionCallback = object : ISessionCallback
                     {

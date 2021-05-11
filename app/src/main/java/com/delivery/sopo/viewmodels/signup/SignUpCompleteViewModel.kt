@@ -9,6 +9,8 @@ import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.data.repository.remote.o_auth.OAuthRemoteRepository
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.enums.DisplayEnum
+import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -63,46 +65,46 @@ class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, pr
                 return@launch
             }
 
+            if(oAuthRes.data == null)
+            {
+                return@launch _result.postValue(ResponseResult(false, null, null, "로그인 실패, 다시 시도해주세요.", DisplayEnum.DIALOG))
+
+            }
+            val oAuthEntity = OAuthMapper.objectToEntity(oAuthRes.data)
+
             userLocalRepo.run {
                 setUserId(email)
                 setUserPassword(password)
                 setStatus(1)
             }
 
-            SOPOApp.oAuthEntity = oAuthRes.data
+            SOPOApp.oAuth = oAuthRes.data
 
             withContext(Dispatchers.Default){
-                oAuthRepo.insert(oAuthRes.data!!)
+                oAuthRepo.insert(oAuthEntity)
             }
 
-            SopoLog.d("Nickname is ${userLocalRepo.getNickname()}")
+            val infoRes = OAuthRemoteRepository.getUserInfo()
 
-            if(userLocalRepo.getNickname() == "")
+            if(!infoRes.result)
             {
-                SopoLog.d("Nickname is empty")
-
-                val infoRes = OAuthRemoteRepository.getUserInfo()
-
-                if(!infoRes.result)
-                {
-                    SopoLog.e("Nickname is error")
-                    _result.postValue(infoRes)
-                    return@launch
-                }
-
-                if(infoRes.data == null || infoRes.data.nickname == "")
-                {
-                    SopoLog.e("Nickname is empty, so go to update nickname")
-                    navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
-                    return@launch
-                }
-
-                SopoLog.e("Nickname is ${infoRes.data.nickname}, so go to main")
-
-                userLocalRepo.setNickname(infoRes.data.nickname)
-
-                navigator.postValue(NavigatorConst.TO_MAIN)
+                SopoLog.e("Nickname is error")
+                _result.postValue(infoRes)
+                return@launch
             }
+
+            if(infoRes.data == null || infoRes.data.nickname == "")
+            {
+                SopoLog.e("Nickname is empty, so go to update nickname")
+                navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
+                return@launch
+            }
+
+            SopoLog.e("Nickname is ${infoRes.data.nickname}, so go to main")
+
+            userLocalRepo.setNickname(infoRes.data.nickname)
+
+            navigator.postValue(NavigatorConst.TO_MAIN)
         }
     }
 }

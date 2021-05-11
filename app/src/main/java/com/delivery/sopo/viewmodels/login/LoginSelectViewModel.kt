@@ -13,6 +13,8 @@ import com.delivery.sopo.networks.repository.JoinRepository
 import com.delivery.sopo.data.repository.remote.o_auth.OAuthRemoteRepository
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.enums.DisplayEnum
+import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.util.SopoLog
 import com.kakao.usermgmt.UserManagement
 import com.kakao.usermgmt.callback.MeV2ResponseCallback
@@ -21,7 +23,7 @@ import kotlinx.coroutines.*
 import java.util.*
 import com.kakao.network.ErrorResult as KakaoErrorResult
 
-class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, private val oAuthRepo: OAuthLocalRepository) : ViewModel()
+class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, private val oAuthRepo: OAuthLocalRepository): ViewModel()
 {
     val navigator = MutableLiveData<String>()
     val backgroundImage = MutableLiveData<Int>().apply { postValue(R.drawable.ic_login_ani_box) }
@@ -46,29 +48,39 @@ class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, priva
      * 2. onSignUpClicked() -> SignUpView
      * 3. onKakaoLoginClicked() -> kakao login action
      */
-    fun onLoginClicked() { navigator.value = NavigatorConst.TO_LOGIN }
-    fun onSignUpClicked() { navigator.value = NavigatorConst.TO_SIGN_UP }
-    fun onKakaoLoginClicked() { navigator.value = NavigatorConst.TO_KAKAO_LOGIN }
+    fun onLoginClicked()
+    {
+        navigator.value = NavigatorConst.TO_LOGIN
+    }
+
+    fun onSignUpClicked()
+    {
+        navigator.value = NavigatorConst.TO_SIGN_UP
+    }
+
+    fun onKakaoLoginClicked()
+    {
+        navigator.value = NavigatorConst.TO_KAKAO_LOGIN
+    }
 
     // 카카오톡 로그인을 통해 사용자에 대한 정보를 가져온다
     fun requestKakaoLogin()
     {
-        SopoLog.d( msg = "requestKakaoLogin Call()")
-        
-        postProgressValue(true)
-        
+        SopoLog.d(msg = "requestKakaoLogin Call()")
+
         val keys: MutableList<String> = ArrayList()
         keys.add("kakao_account.email")
+        keys.add("properties.nickname")
 
-        UserManagement.getInstance().me(keys, object : MeV2ResponseCallback()
+        UserManagement.getInstance().me(keys, object: MeV2ResponseCallback()
         {
             override fun onFailure(errorResult: KakaoErrorResult)
             {
                 super.onFailure(errorResult)
                 postProgressValue(false)
-                SopoLog.e( msg = "onFailure message : " + errorResult.errorMessage, e = errorResult.exception)
+                SopoLog.e(msg = "onFailure message : " + errorResult.errorMessage, e = errorResult.exception)
 
-                // TODO KAKAO Error Response Code 필
+                // TODO KAKAO Error Response Code 필요
                 _result.postValue(ResponseResult(false, null, Unit, errorResult.errorMessage))
             }
 
@@ -82,7 +94,7 @@ class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, priva
 
             override fun onSessionClosed(errorResult: KakaoErrorResult)
             {
-                SopoLog.e( msg = "onSessionClosed message : " + errorResult.errorMessage, e = errorResult.exception)
+                SopoLog.e(msg = "onSessionClosed message : " + errorResult.errorMessage, e = errorResult.exception)
 
                 postProgressValue(false)
                 _result.postValue(ResponseResult(false, null, Unit, errorResult.errorMessage))
@@ -100,12 +112,12 @@ class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, priva
 
                 val password = kakaoUserId.toMD5()
 
-                val joinInfoByKakaoDTO = JoinInfoDTO(email = email, password = password, deviceInfo = SOPOApp.deviceInfo, kakaoUid = kakaoUserId)
+                val joinInfoDTO = JoinInfoDTO(email = email, password = password, deviceInfo = SOPOApp.deviceInfo, kakaoUid = kakaoUserId, nickname = kakaoNickname)
 
                 CoroutineScope(Dispatchers.Main).launch {
-                    val res = JoinRepository.requestJoinByKakao(joinInfoByKakaoDTO)
+                    val res = JoinRepository.requestJoinByKakao(joinInfoDTO)
 
-                    if(!res.result)
+                    if (!res.result)
                     {
                         SopoLog.e("카카오 회원가입 실패")
                         _result.postValue(res)
@@ -113,80 +125,54 @@ class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, priva
                     }
 
                     login(email, password, kakaoNickname)
-
-                    postProgressValue(false)
                 }
             }
         })
     }
 
-    fun login(email: String, password: String, nickname: String?)
+    suspend fun login(email: String, password: String, nickname: String?)
     {
-        CoroutineScope(Dispatchers.Main).launch {
-            val oAuthRes = OAuthRemoteRepository.requestLoginWithOAuth(email, password)
+        val oAuthRes = OAuthRemoteRepository.requestLoginWithOAuth(email, password)
 
-            if(!oAuthRes.result)
-            {
-                _result.postValue(oAuthRes)
-                return@launch
-            }
-
-            userLocalRepo.run {
-                setUserId(email)
-                setUserPassword(password)
-                setStatus(1)
-                setNickname(nickname?:"")
-            }
-
-            SOPOApp.oAuthEntity = oAuthRes.data
-
-            SopoLog.d("""
-                카카오 로그인 oauth >>>
-                ${SOPOApp.oAuthEntity}
-            """.trimIndent())
-
-            withContext(Dispatchers.Default){
-                oAuthRepo.insert(oAuthRes.data!!)
-                SopoLog.d("oauth insert!!!")
-            }
-
-            if(userLocalRepo.getNickname() == "")
-            {
-                SopoLog.d("nickname check!!!")
-                val infoRes = OAuthRemoteRepository.getUserInfo()
-
-                if(!infoRes.result)
-                {
-                    _result.postValue(infoRes)
-                    return@launch
-                }
-
-                SopoLog.d("infoRes is true ${infoRes.result}")
-
-                if(infoRes.data == null || infoRes.data.nickname == "")
-                {
-                    SopoLog.d("""
-                        infoRes nickname is null or empty
-                        ${infoRes.data}
-                    """.trimIndent())
-
-                    navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
-                    return@launch
-                }
-
-                SopoLog.d("""
-                    infoRes nickname is OK >>> ${infoRes.data.nickname}
-                """.trimIndent())
-
-                userLocalRepo.setNickname(infoRes.data.nickname)
-
-                navigator.postValue(NavigatorConst.TO_MAIN)
-            }
-            else
-            {
-                navigator.postValue(NavigatorConst.TO_MAIN)
-            }
+        if (!oAuthRes.result)
+        {
+            return _result.postValue(oAuthRes)
         }
 
+        if (oAuthRes.data == null)
+        {
+            return _result.postValue(ResponseResult(false, null, null, "로그인 실패, 다시 시도해주세요.", DisplayEnum.DIALOG))
+        }
+
+        val oAuthEntity = OAuthMapper.objectToEntity(oAuthRes.data)
+
+        withContext(Dispatchers.Default) { oAuthRepo.insert(oAuthEntity) }
+
+        SOPOApp.oAuth = oAuthRes.data
+
+        userLocalRepo.run {
+            setUserId(email)
+            setUserPassword(password)
+            setStatus(1)
+        }
+
+        val infoRes = OAuthRemoteRepository.getUserInfo()
+
+        if (!infoRes.result)
+        {
+            return _result.postValue(infoRes)
+        }
+
+        SopoLog.d("infoRes is true ${infoRes.result}")
+
+        if (infoRes.data == null || infoRes.data.nickname == "")
+        {
+            return navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
+        }
+
+        userLocalRepo.setNickname(infoRes.data.nickname)
+
+        navigator.postValue(NavigatorConst.TO_MAIN)
     }
+
 }

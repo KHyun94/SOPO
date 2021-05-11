@@ -109,7 +109,7 @@ class LoginViewModel(val userLocalRepository: UserLocalRepository, val oAuthRepo
 //                    OauthMapper.objectToEntity(data)
 //                }
 //
-//                SOPOApp.oAuthEntity = oAuth
+//                SOPOApp.oAuth = oAuth
 //
 //                withContext(Dispatchers.Default) {
 //                    oAuthRepo.insert(oAuth)

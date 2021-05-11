@@ -123,7 +123,7 @@ object AlertUtil: KoinComponent
                 USER_LOCAL_REPOSITORY.removeUserRepo()
 
                 CoroutineScope(Dispatchers.Default).launch { appDataBase.clearAllTables() }
-                SOPOApp.oAuthEntity = null
+                SOPOApp.oAuth = null
 
                 Intent(activity, LoginSelectView::class.java).let {
                     it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

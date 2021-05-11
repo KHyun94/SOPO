@@ -13,8 +13,9 @@ object JoinCall : BaseService()
 
     init
     {
-        NetworkManager.setLogin(null, null)
-        joinAPI = NetworkManager.retro.create(JoinAPI::class.java)
+//        NetworkManager.setLogin(null, null)
+//        joinAPI = NetworkManager.retro.create(JoinAPI::class.java)
+        joinAPI = NetworkManager.retro().create(JoinAPI::class.java)
     }
 
     // TODO 자체 회원 가입 API에 닉네임이 필요없음

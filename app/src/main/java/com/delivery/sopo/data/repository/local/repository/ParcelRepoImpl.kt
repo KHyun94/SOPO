@@ -22,13 +22,13 @@ class ParcelRepoImpl(private val userLocalRepository: UserLocalRepository,
     ParcelRepository
 {
 
-    override suspend fun getRemoteOngoingParcels(): MutableList<Parcel>? = NetworkManager.retro(SOPOApp.oAuthEntity?.accessToken).create(
+    override suspend fun getRemoteOngoingParcels(): MutableList<Parcel>? = NetworkManager.retro(SOPOApp.oAuth?.accessToken).create(
         ParcelAPI::class.java).getParcelsOngoing().data
 
-    override suspend fun getRemoteMonths(): MutableList<TimeCountDTO>? = NetworkManager.retro(SOPOApp.oAuthEntity?.accessToken).create(ParcelAPI::class.java).getMonths().data
+    override suspend fun getRemoteMonths(): MutableList<TimeCountDTO>? = NetworkManager.retro(SOPOApp.oAuth?.accessToken).create(ParcelAPI::class.java).getMonths().data
 
     override suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<Parcel>? = NetworkManager
-                                                                                                        .retro(SOPOApp.oAuthEntity?.accessToken).create(ParcelAPI::class.java)
+                                                                                                        .retro(SOPOApp.oAuth?.accessToken).create(ParcelAPI::class.java)
                                                                                                         .getParcelsComplete(page = page, inquiryDate = inquiryDate).data
 
     override suspend fun getLocalParcelById(parcelId: ParcelId): ParcelEntity? {
@@ -106,7 +106,7 @@ class ParcelRepoImpl(private val userLocalRepository: UserLocalRepository,
     override suspend fun deleteRemoteParcels(): APIResult<String?>? {
         val beDeletedData = appDatabase.parcelDao().getBeDeletedData()
         return if(beDeletedData.isNotEmpty()){
-            NetworkManager.retro(SOPOApp.oAuthEntity?.accessToken).create(ParcelAPI::class.java).deleteParcels(
+            NetworkManager.retro(SOPOApp.oAuth?.accessToken).create(ParcelAPI::class.java).deleteParcels(
                 parcelIds = DeleteParcelsDTO(beDeletedData.map(ParcelMapper::parcelEntityToParcelId) as MutableList<ParcelId>)
             )
         }

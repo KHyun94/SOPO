@@ -9,7 +9,10 @@ import org.koin.core.inject
 object OAuthMapper : KoinComponent
 {
     private val userLocalRepo: UserLocalRepository by inject()
-    
+
+    fun entityToObject(oAuth: OAuthEntity): OAuthDTO =
+        OAuthDTO(accessToken = oAuth.accessToken, tokenType = oAuth.tokenType, refreshToken = oAuth.refreshToken, expiresIn = oAuth.expiresIn, scope = oAuth.scope, refreshTokenExpiredAt = oAuth.refreshTokenExpiredAt)
+
     fun objectToEntity(oAuth: OAuthDTO): OAuthEntity =
-        OAuthEntity(userLocalRepo.getUserId(), oAuth.accessToken, oAuth.tokenType, oAuth.refreshToken, oAuth.expiresIn, oAuth.scope, oAuth.refreshTokenExpiredAt)
+        OAuthEntity(email = userLocalRepo.getUserId(), accessToken = oAuth.accessToken, tokenType = oAuth.tokenType, refreshToken = oAuth.refreshToken, expiresIn = oAuth.expiresIn, scope = oAuth.scope, refreshTokenExpiredAt = oAuth.refreshTokenExpiredAt)
 }

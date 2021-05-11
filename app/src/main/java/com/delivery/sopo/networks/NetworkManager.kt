@@ -49,8 +49,8 @@ object NetworkManager : KoinComponent
             NetworkEnum.O_AUTH_TOKEN_LOGIN ->
             {
                 val OAuth : OAuthEntity? = runBlocking(Dispatchers.Default) {
-                    O_AUTH_LOCAL_REPOSITORY.get(USER_LOCAL_REPOSITORY.getUserId()).also { SOPOApp.oAuthEntity = it }
-                }?:SOPOApp.oAuthEntity
+                    O_AUTH_LOCAL_REPOSITORY.get(USER_LOCAL_REPOSITORY.getUserId()).also { SOPOApp.oAuth = it }
+                }?:SOPOApp.oAuth
                 SopoLog.d(msg = "토큰 정보 => ${OAuth}")
                 retro(OAuth?.accessToken).create(clz)
             }

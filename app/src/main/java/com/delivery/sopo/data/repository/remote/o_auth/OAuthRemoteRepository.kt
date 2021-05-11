@@ -24,23 +24,19 @@ object OAuthRemoteRepository: KoinComponent
 {
     private val userLocalRepo: UserLocalRepository by inject()
 
-    suspend fun requestLoginWithOAuth(email: String, password: String): ResponseResult<OAuthEntity?>
+    suspend fun requestLoginWithOAuth(email: String, password: String): ResponseResult<OAuthDTO?>
     {
         when(val result = LoginAPICall().requestOauth(email, password, SOPOApp.deviceInfo))
         {
             is NetworkResult.Success ->
             {
-                userLocalRepo.setUserId(email)
-                userLocalRepo.setUserPassword(password)
-
-                val oAuth = Gson().let { gson ->
+                val oAuthDTO = Gson().let { gson ->
                     val type = object : TypeToken<OAuthDTO>() {}.type
                     val reader = gson.toJson(result.data)
-                    val data = gson.fromJson<OAuthDTO>(reader, type)
-                    OAuthMapper.objectToEntity(data)
+                    gson.fromJson<OAuthDTO>(reader, type)
                 }
 
-                return ResponseResult(true, ResponseCode.SUCCESS, oAuth, ResponseCode.SUCCESS.MSG)
+                return ResponseResult(true, ResponseCode.SUCCESS, oAuthDTO, ResponseCode.SUCCESS.MSG)
             }
             is NetworkResult.Error ->
             {
@@ -69,7 +65,7 @@ object OAuthRemoteRepository: KoinComponent
             {
                 val exception = result.exception as APIException
                 val responseCode = exception.responseCode
-                val date = SOPOApp.oAuthEntity.let { it?.expiresIn }
+                val date = SOPOApp.oAuth.let { it?.expiresIn }
 
                 return if(responseCode.HTTP_STATUS == 401 && DateUtil.isOverExpiredDate(date!!)) ResponseResult(false, responseCode, null, "로그인 기한이 만료되었습니다.\n다시 로그인해주세요.", DisplayEnum.DIALOG)
                 else ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
@@ -119,7 +115,7 @@ object OAuthRemoteRepository: KoinComponent
 
                 val exception = result.exception as APIException
                 val responseCode = exception.responseCode
-                val date = SOPOApp.oAuthEntity.let { it?.expiresIn }
+                val date = SOPOApp.oAuth.let { it?.expiresIn }
 
                 return if(responseCode.HTTP_STATUS == 401 && DateUtil.isOverExpiredDate(date!!)) ResponseResult(false, responseCode, null, "로그인 기한이 만료되었습니다.\n다시 로그인해주세요.", DisplayEnum.DIALOG)
                 else ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
