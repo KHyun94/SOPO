@@ -269,7 +269,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
 
     private suspend fun updateIsBeUpdate(parcelId: ParcelId, status: Int?)
     {
-        parcelManagementRepoImpl.updateIsBeUpdate(parcelId.regDt, parcelId.parcelUid, status)
+        parcelManagementRepoImpl.updateUpdatableStatus(parcelId.regDt, parcelId.parcelUid, status)
     }
 
     private suspend fun isBeUpdateParcel(): LiveData<Int?>
@@ -289,7 +289,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
     {
         CoroutineScope(Dispatchers.Default).launch {
 
-            val value = parcelManagementRepoImpl.getIsUnidentifiedByParcelId(parcelId = parcelId)
+            val value = parcelManagementRepoImpl.getUnidentifiedStatusByParcelId(parcelId = parcelId)
 
             SopoLog.d("update 정상적으로 값이 들어오는지 체크 $value")
 

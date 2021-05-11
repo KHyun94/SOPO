@@ -2,7 +2,7 @@ package com.delivery.sopo.data.repository.local.repository
 
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.data.repository.database.room.AppDatabase
-import com.delivery.sopo.data.repository.database.room.entity.ParcelManagementEntity
+import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.data.repository.local.datasource.ParcelManagementRepository
 import com.delivery.sopo.util.TimeUtil
@@ -23,8 +23,8 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
         return appDatabase.parcelManagementDao().getIsDeliveredCntLiveData()
     }
 
-    override suspend fun getIsUpdateCnt(): Int {
-        return appDatabase.parcelManagementDao().getIsUpdateCnt()
+    override suspend fun getCountForUpdatableParcel(): Int {
+        return appDatabase.parcelManagementDao().getCountForUpdatableParcel()
     }
 
     override suspend fun getIsDeleteCnt(): Int {
@@ -35,35 +35,35 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
         return appDatabase.parcelManagementDao().getIsDeliveredCnt()
     }
 
-    override suspend fun getCancelIsBeDelete(): List<ParcelManagementEntity>? {
+    override suspend fun getCancelIsBeDelete(): List<ParcelStatusEntity>? {
         return appDatabase.parcelManagementDao().getCancelIsBeDelete()
     }
 
     // 업데이트 미확인 체크용도
-    override suspend fun getIsUnidentifiedByParcelId(parcelId: ParcelId) = appDatabase.parcelManagementDao().getIsUnidentifiedByParcelId(parcelId.regDt, parcelId.parcelUid)
+    override suspend fun getUnidentifiedStatusByParcelId(parcelId: ParcelId) = appDatabase.parcelManagementDao().getUnidentifiedStatusByParcelId(parcelId.regDt, parcelId.parcelUid)
 
-    override fun insertEntity(parcelManagementEntity: ParcelManagementEntity){
-        appDatabase.parcelManagementDao().insert(parcelManagementEntity)
+    override fun insertEntity(parcelStatusEntity: ParcelStatusEntity){
+        appDatabase.parcelManagementDao().insert(parcelStatusEntity)
     }
 
-    override fun insertEntities(parcelManagementEntityList: List<ParcelManagementEntity>){
-        parcelManagementEntityList.forEach { it.auditDte = TimeUtil.getDateTime() }
-        appDatabase.parcelManagementDao().insert(parcelManagementEntityList)
+    override fun insertEntities(parcelStatusEntityList: List<ParcelStatusEntity>){
+        parcelStatusEntityList.forEach { it.auditDte = TimeUtil.getDateTime() }
+        appDatabase.parcelManagementDao().insert(parcelStatusEntityList)
     }
 
-    override suspend fun updateEntity(parcelManagementEntity: ParcelManagementEntity){
-        parcelManagementEntity.auditDte = TimeUtil.getDateTime()
-        appDatabase.parcelManagementDao().update(parcelManagementEntity)
+    override suspend fun updateEntity(parcelStatusEntity: ParcelStatusEntity){
+        parcelStatusEntity.auditDte = TimeUtil.getDateTime()
+        appDatabase.parcelManagementDao().update(parcelStatusEntity)
     }
 
-    override suspend fun updateEntities(parcelManagementEntityList: List<ParcelManagementEntity>){
-        parcelManagementEntityList.forEach { it.auditDte = TimeUtil.getDateTime() }
-        appDatabase.parcelManagementDao().update(parcelManagementEntityList)
+    override suspend fun updateEntities(parcelStatusEntityList: List<ParcelStatusEntity>){
+        parcelStatusEntityList.forEach { it.auditDte = TimeUtil.getDateTime() }
+        appDatabase.parcelManagementDao().update(parcelStatusEntityList)
     }
 
-    override suspend fun updateIsBeUpdate(regDt: String, parcelUid: String, status : Int?) = appDatabase.parcelManagementDao().updateIsBeUpdate(regDt, parcelUid, status)
+    override suspend fun updateUpdatableStatus(regDt: String, parcelUid: String, status : Int?) = appDatabase.parcelManagementDao().updateIsBeUpdate(regDt, parcelUid, status)
 
-    override fun getEntity(parcelId: ParcelId): ParcelManagementEntity? {
+    override fun getEntity(parcelId: ParcelId): ParcelStatusEntity? {
         return appDatabase.parcelManagementDao().getById(parcelId.regDt, parcelId.parcelUid)
     }
 
@@ -81,13 +81,13 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
 
     override suspend fun initializeIsBeUpdate(regDt: String, parcelUid: String){
         getEntity(ParcelId(regDt, parcelUid))?.apply {
-            this.isBeUpdate = 0
+            this.updatableStatus = 0
             this.auditDte = TimeUtil.getDateTime()
             insertEntity(this)
         }
     }
 
-    override suspend fun getAll(): List<ParcelManagementEntity>?{
+    override suspend fun getAll(): List<ParcelStatusEntity>?{
         return appDatabase.parcelManagementDao().getAll()
     }
 

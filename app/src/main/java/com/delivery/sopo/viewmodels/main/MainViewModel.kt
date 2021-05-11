@@ -23,9 +23,10 @@ import kotlinx.coroutines.withContext
 
 class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val appPasswordRepo: AppPasswordRepository): ViewModel()
 {
-    val tabLayoutVisibility = MutableLiveData<Int>()
+    val mainTabVisibility = MutableLiveData<Int>()
     val errorMsg = MutableLiveData<String?>()
 
+    // 앱 패스워드 등록 여부 TODO SplashView로 이동 예
     private val _isSetAppPassword = MutableLiveData<AppPasswordEntity?>()
     val isSetAppPassword: LiveData<AppPasswordEntity?>
         get() = _isSetAppPassword
@@ -38,7 +39,10 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
     init
     {
         initIsSetOfSecurity()
-        isBeUpdateParcels()
+        CoroutineScope(Dispatchers.Main).launch {
+            requestOngoingParcelsAsRemote()
+        }
+
         updateFCMToken()
     }
 
@@ -49,33 +53,16 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
         }
     }
 
-    fun setTabLayoutVisibility(visibility: Int)
+    fun setMainTabVisibility(visibility: Int)
     {
-        tabLayoutVisibility.value = visibility
+        mainTabVisibility.value = visibility
     }
 
-    // 로컬 DB - Parcel Management의 'isBeUpdate'가 1인 row들이 있는지 체크
-    private fun isBeUpdateParcels()
+    // 업데이트 가능한 택배가 있는지 체크 [ParcelStatusEntity - updatableStatus
+    private suspend fun isUpdatableParcelStatus(): Boolean
     {
-        SopoLog.d("fun isBeUpdateParcels() call")
-
-        var cnt = 0
-
-        CoroutineScope(Dispatchers.Main).launch {
-            withContext(Dispatchers.Default) {
-                cnt = parcelManagementRepoImpl.getIsUpdateCnt()
-            }
-
-            if (cnt > 0) // 서버 DB에 업데이트된 값을 요청
-            {
-                SopoLog.d(msg = "Count('isBeUpdate') == ${cnt}, 서버로 요청!!!")
-                requestOngoingParcelsAsRemote()
-                return@launch
-            }
-
-            SopoLog.d(msg = "Count('isBeUpdate') == ${cnt}, 업데이트 사항이 없습니다!!!")
-            isInitUpdate = true
-        }
+        SopoLog.d("isUpdatableParcelStatus() call")
+        return parcelManagementRepoImpl.getCountForUpdatableParcel() > 0
     }
 
     /**
@@ -84,6 +71,14 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
     private suspend fun requestOngoingParcelsAsRemote()
     {
         SopoLog.d(msg = "requestOngoingParcelsAsRemote() call")
+
+        val isUpdatableParcelStatus = withContext(Dispatchers.Default){ isUpdatableParcelStatus() }
+
+        if(!isUpdatableParcelStatus)
+        {
+            isInitUpdate = true
+            return
+        }
 
         when (val result = ParcelCall.getOngoingParcels())
         {
@@ -198,7 +193,7 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
 
                             parcelManagementRepoImpl.updateEntities(updateManagementList.map { parcel ->
                                 val pm = ParcelMapper.parcelToParcelManagementEntity(parcel)
-                                pm.isUnidentified = 1
+                                pm.unidentifiedStatus = 1
                                 pm
                             })
 

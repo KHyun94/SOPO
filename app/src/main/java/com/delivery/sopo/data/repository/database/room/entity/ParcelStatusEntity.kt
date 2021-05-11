@@ -5,10 +5,10 @@ import androidx.room.Entity
 import com.delivery.sopo.util.TimeUtil
 
 @Entity(
-    tableName = "PARCEL_MANAGEMENT",
+    tableName = "PARCEL_STATUS",
     primaryKeys = ["REG_DT", "PARCEL_UID"]
 )
-data class ParcelManagementEntity(
+data class ParcelStatusEntity(
     @ColumnInfo(
         name = "REG_DT",
         typeAffinity = ColumnInfo.TEXT
@@ -24,21 +24,23 @@ data class ParcelManagementEntity(
         typeAffinity = ColumnInfo.INTEGER
     )
     var isBeDelete: Int = 0,
+    // 신규 택배 정보가 도착해서 업데이트 하기 전 업데이트 가능한 상태
     @ColumnInfo(
-        name = "isBeUpdate",
+        name = "updatableStatus",
         typeAffinity = ColumnInfo.INTEGER
     )
-    var isBeUpdate: Int = 0,
+    var updatableStatus: Int = 0,
+    // 신규 택배 데이터가 내부 디비 상 업데이트 된 후 조회 리스트에서 클릭 또는 새로고침을 통해 확인되지 않은 상태
     @ColumnInfo(
-        name = "isUnidentified",
+        name = "unidentifiedStatus",
         typeAffinity = ColumnInfo.INTEGER
     )
-    var isUnidentified: Int = 0,
+    var unidentifiedStatus: Int = 0,
     @ColumnInfo(
-        name = "isBeDelivered",
+        name = "deliveredStatus",
         typeAffinity = ColumnInfo.INTEGER
     )
-    var isBeDelivered: Int = 0,
+    var deliveredStatus: Int = 0,
     @ColumnInfo(
         name = "isNowVisible",
         typeAffinity = ColumnInfo.INTEGER

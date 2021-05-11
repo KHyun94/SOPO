@@ -3,7 +3,6 @@ package com.delivery.sopo.views.main
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.DrawableRes
-import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -26,7 +25,6 @@ import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.menus.LockScreenView
 import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.main_view.*
 import kotlinx.android.synthetic.main.tap_item.view.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -50,6 +48,12 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
         PowerManager.checkWhiteList(this)
     }
 
+    override fun onDestroy()
+    {
+        super.onDestroy()
+        OtherUtil.clearCache(SOPOApp.INSTANCE)
+    }
+
     override fun bindView()
     {
         binding.vm = vm
@@ -58,7 +62,7 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
     override fun setObserver()
     {
         /** 화면 패스워드 설정 **/
-        binding.vm!!.isSetAppPassword.observe(this, Observer {
+        binding.vm?.isSetAppPassword?.observe(this, Observer {
             it?.also {
                 this.launchActivitiy<LockScreenView> {
                     putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
@@ -66,7 +70,7 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
             }
         })
 
-        binding.vm!!.tabLayoutVisibility.observe(this, Observer {
+        binding.vm!!.mainTabVisibility.observe(this, Observer {
 
             binding.layoutMainTab.run {
                 when (it)
@@ -143,44 +147,10 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 
     fun getAlertMessageBar() = binding.alertMessageBar
 
-    fun onCompleteRegister()
-    {
-        isRegister = true
-        binding.layoutViewPager.currentItem = 1
-        inquiryVm.refreshOngoing()
-    }
-
-    override fun onDestroy()
-    {
-        super.onDestroy()
-        OtherUtil.clearCache(SOPOApp.INSTANCE)
-    }
-
     private fun initUI()
     {
         setViewPager()
         setTabLayout()
-    }
-
-    private fun setTabIcon(v: TabLayout, index: Int,
-                           @LayoutRes itemLayout: Int,
-                           @DrawableRes iconRes: Int, tabName: String, textColor: Int)
-    {
-        v.getTabAt(index)!!.run {
-            setCustomView(itemLayout)
-            customView!!.run {
-                iv_tab.setBackgroundResource(iconRes)
-                tv_tab_name.text = tabName
-                tv_tab_name.setTextColor(ContextCompat.getColor(this@MainView, textColor))
-            }
-        }
-    }
-
-    private fun setTabIcons(v: TabLayout)
-    {
-        setTabIcon(v, NavigatorConst.REGISTER_TAB, R.layout.tap_item, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
-        setTabIcon(v, NavigatorConst.INQUIRY_TAB, R.layout.tap_item, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
-        setTabIcon(v, NavigatorConst.MY_MENU_TAB, R.layout.tap_item, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
     }
 
     private fun setTabLayout()
@@ -204,8 +174,8 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
                         else -> NavigatorConst.REGISTER_TAB
                     }
 
-                    tab.customView!!.iv_tab.setBackgroundResource(res)
-                    tab.customView!!.tv_tab_name.setTextColor(resources.getColor(R.color.COLOR_MAIN_700))
+                    tab.customView?.iv_tab?.setBackgroundResource(res)
+                    tab.customView?.tv_tab_name?.setTextColor(ContextCompat.getColor(this@MainView, R.color.COLOR_MAIN_700))
                 }
 
                 override fun onTabUnselected(tab: TabLayout.Tab?)
@@ -246,20 +216,33 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 
             override fun onPageSelected(pageNum: Int)
             {
-                // 0923 kh 등록 성공
-                if (pageNum == 1 && isRegister)
-                {
-                    SopoLog.d(msg = "등록 성공 메인 뷰")
-                    onCompleteRegister()
-                    isRegister = false
-                }
+                // TODO 등록 성공 시 조회 페이지로 이동 처리
             }
         })
     }
 
-
-    companion object
+    private fun setTabIcon(v: TabLayout, index: Int, @DrawableRes iconRes: Int, tabName: String, textColor: Int)
     {
-        var isRegister = false
+        v.getTabAt(index)?.run {
+            setCustomView(R.layout.tap_item)
+            customView?.run {
+                iv_tab.setBackgroundResource(iconRes)
+                tv_tab_name.text = tabName
+                tv_tab_name.setTextColor(ContextCompat.getColor(this@MainView, textColor))
+            }
+        }
+    }
+
+    private fun setTabIcons(v: TabLayout)
+    {
+        setTabIcon(v, NavigatorConst.REGISTER_TAB, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
+        setTabIcon(v, NavigatorConst.INQUIRY_TAB, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
+        setTabIcon(v, NavigatorConst.MY_MENU_TAB, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
+    }
+
+    fun onCompleteRegister()
+    {
+        binding.layoutViewPager.currentItem = 1
+        inquiryVm.refreshOngoing()
     }
 }

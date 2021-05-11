@@ -1,7 +1,7 @@
 package com.delivery.sopo.models.mapper
 
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
-import com.delivery.sopo.data.repository.database.room.entity.ParcelManagementEntity
+import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelId
@@ -9,17 +9,17 @@ import com.delivery.sopo.util.SopoLog
 
 object ParcelMapper
 {
-    fun parcelToParcelManagementEntity(parcel: Parcel): ParcelManagementEntity
+    fun parcelToParcelManagementEntity(parcel: Parcel): ParcelStatusEntity
     {
-        return ParcelManagementEntity(
+        return ParcelStatusEntity(
             regDt = parcel.parcelId.regDt,
             parcelUid = parcel.parcelId.parcelUid
         )
     }
 
-    fun parcelEntityToParcelManagementEntity(parcelEntity: ParcelEntity): ParcelManagementEntity
+    fun parcelEntityToParcelManagementEntity(parcelEntity: ParcelEntity): ParcelStatusEntity
     {
-        return ParcelManagementEntity(
+        return ParcelStatusEntity(
             regDt = parcelEntity.regDt,
             parcelUid = parcelEntity.parcelUid
         )

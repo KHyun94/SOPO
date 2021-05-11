@@ -50,18 +50,18 @@ class FirebaseService: FirebaseMessagingService()
 
                 SopoLog.d("parcelManagementEntity Update>>> ")
 
-                isBeUpdate = 1
+                updatableStatus = 1
                 auditDte = TimeUtil.getDateTime()
 
                 // 배송 중 -> 배송완료]가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
-                if (updateParcelDao.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE) isBeDelivered = 1
+                if (updateParcelDao.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE) deliveredStatus = 1
 
                 SopoLog.d(
                     """
                         parcelManagement >>> 
-                        isBeUpdate = ${isBeUpdate}
+                        isBeUpdate = ${updatableStatus}
                         auditDte = ${auditDte}
-                        isBeDelivered = ${isBeDelivered}
+                        deliveredStatus = ${deliveredStatus}
                     """.trimIndent()
                 )
             }

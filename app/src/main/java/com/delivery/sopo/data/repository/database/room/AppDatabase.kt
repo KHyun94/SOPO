@@ -11,14 +11,14 @@ import com.delivery.sopo.data.repository.local.o_auth.OAuthDAO
 import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 
 @Database(
-    entities = [CarrierEntity::class, ParcelEntity::class, ParcelManagementEntity::class, ParcelCntInfoEntity::class, AppPasswordEntity::class, WorkEntity::class, LogEntity::class, OAuthEntity::class],
+    entities = [CarrierEntity::class, ParcelEntity::class, ParcelStatusEntity::class, ParcelCntInfoEntity::class, AppPasswordEntity::class, WorkEntity::class, LogEntity::class, OAuthEntity::class],
     version = 2
 )
 abstract class AppDatabase : RoomDatabase()
 {
     abstract fun carrierDAO(): CarrierDAO
     abstract fun parcelDao(): ParcelDao
-    abstract fun parcelManagementDao(): ParcelManagementDao
+    abstract fun parcelManagementDao(): ParcelStatusDAO
     abstract fun timeCountDao(): TimeCountDao
     abstract fun securityDao(): AppPasswordDao
     abstract fun workDao(): WorkDao

@@ -399,8 +399,8 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                             )
 
                             parcelManagement.run {
-                                isBeUpdate = 0
-                                isUnidentified = 0
+                                updatableStatus = 0
+                                unidentifiedStatus = 0
                             }
 
                             SopoLog.d(
@@ -419,7 +419,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                         {
                             if (localParcelById.status == 1)
                             {
-                                SopoLog.d(msg = "InquiryVm => Parcel_Management의 'isBeUpdate'를 1 -> 0으로 초기화 작업")
+                                SopoLog.d(msg = "InquiryVm => PARCEL_STATUS의 'isBeUpdate'를 1 -> 0으로 초기화 작업")
 
                                 parcelRepoImpl.updateEntity(ParcelMapper.parcelToParcelEntity(remote))
 
@@ -428,8 +428,8 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                                 )
                                 // 업데이트 성공했으니 isBeUpdate를 0으로 다시 초기화시켜준다.
                                 parcelManagement.run {
-                                    isBeUpdate = 0
-                                    isUnidentified = 0
+                                    updatableStatus = 0
+                                    unidentifiedStatus = 0
                                 }
 
                                 SopoLog.d(
@@ -587,7 +587,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
             SopoLog.d(msg = "삭제 취소할 데이터 : $cancelDataList")
 
             cancelDataList?.let { parcelMngList ->
-                // PARCEL_MANAGEMENT의 isBeDelete를 0으로 다시 초기화
+                // PARCEL_STATUS의 isBeDelete를 0으로 다시 초기화
                 parcelMngList.forEach { it.isBeDelete = 0 }
                 parcelManagementRepoImpl.updateEntities(parcelMngList)
 

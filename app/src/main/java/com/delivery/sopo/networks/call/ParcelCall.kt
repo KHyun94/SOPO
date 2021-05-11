@@ -19,21 +19,19 @@ import org.koin.core.inject
 
 object ParcelCall : BaseService(), KoinComponent
 {
-    val TAG = this.javaClass.simpleName
-    val USER_LOCAL_REPOSITORY : UserLocalRepository by inject()
-    val O_AUTH_REPO_IMPL : OAuthLocalRepository by inject()
+    private val userLocalRepo : UserLocalRepository by inject()
+    private val oAuthLocalRepo : OAuthLocalRepository by inject()
     val email : String
-        get() = USER_LOCAL_REPOSITORY.getUserId()
+        get() = userLocalRepo.getUserId()
 
     var parcelAPI : ParcelAPI
 
     init
     {
-        val OAuth : OAuthEntity?
-        runBlocking { OAuth = O_AUTH_REPO_IMPL.get(userId = email) }
-        SopoLog.d( msg = "토큰 정보 => ${OAuth}")
+        val oAuth : OAuthEntity? = runBlocking {  oAuthLocalRepo.get(userId = email) }
+        SopoLog.d( msg = "토큰 정보 => ${oAuth}")
 
-        parcelAPI = NetworkManager.retro(OAuth?.accessToken).create(ParcelAPI::class.java)
+        parcelAPI = NetworkManager.retro(oAuth?.accessToken).create(ParcelAPI::class.java)
     }
 
     suspend fun registerParcel(dto: RegisterParcelDTO):NetworkResult<APIResult<ParcelId?>>
