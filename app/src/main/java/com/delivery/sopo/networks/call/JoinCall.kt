@@ -18,13 +18,6 @@ object JoinCall : BaseService()
     }
 
     // TODO 자체 회원 가입 API에 닉네임이 필요없음
-    suspend fun requestJoinBySelf(joinInfoDTO: JoinInfoDTO) : NetworkResult<APIResult<Unit>>
-    {
-        return apiCall(call = { joinAPI.requestJoinBySelf(joinInfoDTO) })
-    }
-
-    suspend fun requestJoinByKakao(joinInfoDTO: JoinInfoDTO) : NetworkResult<APIResult<Unit>>
-    {
-        return apiCall(call = { joinAPI.requestJoinByKakao(joinInfoDTO) })
-    }
+    suspend fun requestJoinBySelf(joinInfoDTO: JoinInfoDTO) = apiCall(call = { joinAPI.requestJoinBySelf(joinInfoDTO) })
+    suspend fun requestJoinByKakao(joinInfoDTO: JoinInfoDTO) = apiCall(call = { joinAPI.requestJoinByKakao(joinInfoDTO) })
 }

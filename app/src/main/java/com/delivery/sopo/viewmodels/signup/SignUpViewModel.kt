@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.extensions.md5
+import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.networks.dto.joins.JoinInfoDTO
 import com.delivery.sopo.networks.repository.JoinRepository
@@ -19,7 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SignUpViewModel(private val userLocalRepo: UserLocalRepository) : ViewModel()
+class SignUpViewModel(private val userLocalRepo: UserLocalRepository): ViewModel()
 {
     val email = MutableLiveData<String>()
     val password = MutableLiveData<String>()
@@ -31,9 +31,6 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository) : ViewMode
     val invalid: LiveData<Pair<InfoEnum, Boolean>>
         get() = _invalid
 
-    /**
-     * 유효성 및 통신 등의 결과 객체
-     */
     private var _result = MutableLiveData<ResponseResult<*>>()
     val result: LiveData<ResponseResult<*>>
         get() = _result
@@ -46,7 +43,7 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository) : ViewMode
     val focus: MutableLiveData<Triple<View, Boolean, InfoEnum>>
         get() = _focus
 
-    var focusChangeCallback: FocusChangeCallback = FocusChangeCallback@{ v, hasFocus, type->
+    var focusChangeCallback: FocusChangeCallback = FocusChangeCallback@{ v, hasFocus, type ->
         SopoLog.i("${type.NAME} >>> $hasFocus")
         Handler().postDelayed(Runnable {
             _focus.value = (Triple(v, hasFocus, type))
@@ -75,7 +72,7 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository) : ViewMode
         _isProgress.postValue(true)
 
         validities.forEach { (k, v) ->
-            if(!v)
+            if (!v)
             {
                 SopoLog.d("${k.NAME} validate is fail")
                 _isProgress.postValue(false)
@@ -84,38 +81,45 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository) : ViewMode
             }
         }
 
-        val joinInfoDTO = JoinInfoDTO(email.value.toString().trim(), password.value.toString().trim().md5(), SOPOApp.deviceInfo)
+        val email = email.value.toString().trim()
+        val password = password.value.toString().trim()
+
+        val joinInfoDTO =
+            JoinInfoDTO(email = email, password = password.toMD5(), deviceInfo = SOPOApp.deviceInfo)
 
         CoroutineScope(Dispatchers.Main).launch {
-            val res = JoinRepository.requestJoinBySelf(joinInfoDTO)
 
             _isProgress.postValue(false)
 
-            SopoLog.d("""
+            val res = JoinRepository.requestJoinBySelf(joinInfoDTO)
+
+            SopoLog.d(
+                """
                 SignUp(Self) Result >>> 
                 ${res.result}
                 ${res.data}
                 ${res.message}
                 ${res.displayType}
-                ${email.value.toString()}
-                ${password.value.toString()}
-            """.trimIndent())
+                $email
+                $password
+            """.trimIndent()
+            )
 
-            if(!res.result)
+            if (!res.result)
             {
-
+                _result.postValue(res)
                 return@launch
             }
 
+            userLocalRepo.setUserId(userId = email)
+            userLocalRepo.setUserPassword(password = password)
 
-            userLocalRepo.setUserId(userId = email.value.toString())
-            userLocalRepo.setUserPassword(password = password.value.toString())
-
-            SopoLog.d("""
-                    User Data
-                    email >>> ${email.value.toString()}, save(${userLocalRepo.getUserId()})
-                    password >>> ${password.value.toString()}, save(${userLocalRepo.getUserPassword()})
-                """.trimIndent())
+            SopoLog.d(
+                """ Save Result >>> 
+                    email >>> $email == save(${userLocalRepo.getUserId()})
+                    password >>> $password == save(${userLocalRepo.getUserPassword()})
+                """.trimIndent()
+            )
 
             _result.postValue(res)
         }

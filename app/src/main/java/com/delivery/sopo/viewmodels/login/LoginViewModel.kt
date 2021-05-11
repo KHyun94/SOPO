@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.extensions.md5
+import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.data.repository.remote.o_auth.OAuthRemoteRepository
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
@@ -77,7 +77,7 @@ class LoginViewModel(val userLocalRepository: UserLocalRepository, val oAuthRepo
 
             // 성공
             CoroutineScope(Dispatchers.IO).launch {
-                OAuthRemoteRepository.requestLoginWithOAuth(email.value.toString(), password.value.toString().md5())
+                OAuthRemoteRepository.requestLoginWithOAuth(email.value.toString(), password.value.toString().toMD5())
             }
         }
         catch (e: Exception)

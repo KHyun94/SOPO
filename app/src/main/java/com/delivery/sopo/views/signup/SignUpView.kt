@@ -61,7 +61,7 @@ class SignUpView: BasicView<SignUpViewBinding>(R.layout.sign_up_view)
                 {
                     "약관을 확인해주세요."
                 }
-                else -> ""
+                else -> throw Exception("비정상 형식 에러 발생")
             }
 
             Toast.makeText(this@SignUpView,message, Toast.LENGTH_LONG).apply {
@@ -81,33 +81,18 @@ class SignUpView: BasicView<SignUpViewBinding>(R.layout.sign_up_view)
         })
 
         binding.vm!!.result.observe(this, Observer { result ->
+
             if (!result.result)
             {
-                when (result.displayType)
-                {
-                    DisplayEnum.TOAST_MESSAGE -> CustomAlertMsg.floatingUpperSnackBAr(context = this@SignUpView, msg = result.message, isClick = true)
-                    DisplayEnum.DIALOG ->
-                    {
-                        GeneralDialog(
-                            act = parentActivity, title = "오류", msg = result.message, detailMsg = result.code?.CODE, rHandler = Pair(first = "네", second = null)
-                        ).show(supportFragmentManager, "tag")
-                    }
-                    else -> return@Observer
-                }
-
+                GeneralDialog(act = parentActivity, title = "오류", msg = result.message, detailMsg = result.code?.CODE, rHandler = Pair(first = "네", second = null)).show(supportFragmentManager, "tag")
                 return@Observer
             }
 
-            GeneralDialog(
-                parentActivity, "알림", "정상적으로 회원가입 성공했습니다.", null, Pair("네", { it ->
+            GeneralDialog(parentActivity, "알림", "정상적으로 회원가입 성공했습니다.", null, Pair("네", { it ->
                     it.dismiss()
                     Intent(this@SignUpView, SignUpCompleteView::class.java).launchActivity(this)
                     finish()
-                })
-            ).show(supportFragmentManager.beginTransaction(), "TAG")
-
-            return@Observer
-
+                })).show(supportFragmentManager.beginTransaction(), "TAG")
         })
     }
 }

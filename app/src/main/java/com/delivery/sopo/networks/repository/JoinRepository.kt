@@ -13,25 +13,22 @@ import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
 
-typealias DuplicateCallback = (SuccessResult<Boolean?>?, ErrorResult<Boolean?>?) -> Unit
-
 object JoinRepository
 {
     val deviceInfo = SOPOApp.deviceInfo
 
-    private fun<T, E> requestJoin(result: NetworkResult<APIResult<T>>): ResponseResult<E>
+    private fun<T> requestJoin(result: NetworkResult<APIResult<T>>): ResponseResult<T>
     {
         return when (result)
         {
             is NetworkResult.Success ->
             {
-
                 val apiResult = result.data
                 val code = CodeUtil.getCode(apiResult.code)
 
                 SopoLog.d("success to request >>> $apiResult $code")
 
-                ResponseResult(true, code, apiResult.data as E, code.MSG)
+                ResponseResult(true, code, apiResult.data as T, code.MSG)
             }
             is NetworkResult.Error ->
             {
@@ -46,8 +43,7 @@ object JoinRepository
 
                 SopoLog.d("fail to request >>> $apiResult $message")
 
-
-                ResponseResult(false, errorCode, apiResult?.data as E, message ?: "알 수 없는 오류")
+                ResponseResult(false, errorCode, apiResult?.data as T, message ?: "알 수 없는 오류")
             }
         }
     }
@@ -56,13 +52,14 @@ object JoinRepository
     {
         SopoLog.d("requestJoinBySelf() call >>> $joinInfoDTO")
         val result = JoinCall.requestJoinBySelf(joinInfoDTO = joinInfoDTO)
-        return requestJoin<Unit, Unit>(result)
+        return requestJoin(result)
     }
 
     suspend fun requestJoinByKakao(joinInfoDTO: JoinInfoDTO): ResponseResult<Unit>
     {
+        SopoLog.d("requestJoinByKakao() call >>> $joinInfoDTO")
         val result = JoinCall.requestJoinByKakao(joinInfoDTO = joinInfoDTO)
-        val res = requestJoin<Unit, Unit>(result)
+        val res = requestJoin(result)
 
         if(res.code == ResponseCode.ALREADY_REGISTERED_USER)
         {

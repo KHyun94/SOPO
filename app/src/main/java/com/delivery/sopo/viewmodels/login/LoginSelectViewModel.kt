@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.extensions.md5
+import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.networks.dto.joins.JoinInfoDTO
 import com.delivery.sopo.networks.repository.JoinRepository
@@ -98,7 +98,7 @@ class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, priva
                 SopoLog.d(msg = "onSuccess uid = $kakaoUserId")
                 SopoLog.d(msg = "onSuccess nickname = $kakaoNickname")
 
-                val password = kakaoUserId.md5()
+                val password = kakaoUserId.toMD5()
 
                 val joinInfoByKakaoDTO = JoinInfoDTO(email = email, password = password, deviceInfo = SOPOApp.deviceInfo, kakaoUid = kakaoUserId)
 

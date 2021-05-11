@@ -15,7 +15,7 @@ operator fun String.get(range: IntRange): String
     return this.substring(range)
 }
 
-fun String.md5(): String
+fun String.toMD5(): String
 {
     val md = MessageDigest.getInstance("MD5")
     val bytes = md.digest(this.toByteArray())
