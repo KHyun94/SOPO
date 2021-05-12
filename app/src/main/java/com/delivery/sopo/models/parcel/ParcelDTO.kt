@@ -3,7 +3,7 @@ package com.delivery.sopo.models.parcel
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.google.gson.annotations.SerializedName
 
-data class Parcel(
+data class ParcelDTO(
     @SerializedName("parcelId")
     var parcelId: ParcelId,
     @SerializedName("userId")

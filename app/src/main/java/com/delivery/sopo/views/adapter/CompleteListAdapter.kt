@@ -14,8 +14,6 @@ import com.delivery.sopo.databinding.InquiryListCompleteItemBinding
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.util.SopoLog
-import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
-import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
 import java.util.stream.Stream
 
 
@@ -122,7 +120,7 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
         return list.filter {
             it.isSelected
         }.map {
-            it.parcel.parcelId
+            it.parcelDTO.parcelId
         }
     }
 

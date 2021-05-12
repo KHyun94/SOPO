@@ -3,7 +3,7 @@ package com.delivery.sopo.networks.call
 import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
@@ -40,13 +40,13 @@ object ParcelCall : BaseService(), KoinComponent
         return apiCall(call = {result})
     }
 
-    suspend fun getSingleParcel(parcelId: ParcelId) : NetworkResult<APIResult<Parcel?>>
+    suspend fun getSingleParcel(parcelId: ParcelId) : NetworkResult<APIResult<ParcelDTO?>>
     {
         val result = parcelAPI.getSingleParcel(parcelId.regDt, parcelId.parcelUid)
         return apiCall(call = {result})
     }
 
-    suspend fun getOngoingParcels(): NetworkResult<APIResult<MutableList<Parcel>?>>
+    suspend fun getOngoingParcels(): NetworkResult<APIResult<List<ParcelDTO>?>>
     {
         val result = parcelAPI.getOngoingParcels(email = email)
         return apiCall(call = {result})
@@ -66,7 +66,7 @@ object ParcelCall : BaseService(), KoinComponent
     }
 
 
-    suspend fun getSingleParcelTest(parcelId: ParcelId): APIResult<Parcel?>
+    suspend fun getSingleParcelTest(parcelId: ParcelId): APIResult<ParcelDTO?>
     {
         val result = parcelAPI.getSingleParcel(parcelId.regDt, parcelId.parcelUid)
 

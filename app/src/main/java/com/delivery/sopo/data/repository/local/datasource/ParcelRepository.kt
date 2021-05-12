@@ -4,29 +4,29 @@ import androidx.lifecycle.LiveData
 import com.delivery.sopo.networks.dto.TimeCountDTO
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
-import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.models.parcel.ParcelId
 
 interface ParcelRepository {
-   suspend fun getRemoteOngoingParcels(): MutableList<Parcel>?
+   suspend fun getRemoteOngoingParcels(): MutableList<ParcelDTO>?
    suspend fun getRemoteMonths(): MutableList<TimeCountDTO>?
 
-   suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<Parcel>?
+   suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<ParcelDTO>?
 
    suspend fun getLocalParcelById(parcelId: ParcelId): ParcelEntity?
 
-   fun getLocalCompleteParcelsLiveData(): LiveData<List<Parcel>>
-   fun getLocalCompleteParcels(): List<Parcel>
-   suspend fun getLocalOngoingParcels(): List<Parcel>?
+   fun getLocalCompleteParcelsLiveData(): LiveData<List<ParcelDTO>>
+   fun getLocalCompleteParcels(): List<ParcelDTO>
+   suspend fun getLocalOngoingParcels(): List<ParcelDTO>?
 
    fun getSoonDataCntLiveData(): LiveData<Int>
    fun getOngoingDataCntLiveData(): LiveData<Int>
 
    suspend fun insetEntity(parcel: ParcelEntity)
-   suspend fun insertEntities(parcelList: List<Parcel>)
+   suspend fun insertEntities(parcelDTOList: List<ParcelDTO>)
 
    suspend fun updateEntity(parcel: ParcelEntity): Int
-    suspend fun updateEntities(parcelList: List<Parcel>)
+    suspend fun updateEntities(parcelDTOList: List<ParcelDTO>)
 
    suspend fun deleteLocalParcels(parcelIdList: List<ParcelId>)
    suspend fun deleteRemoteParcels(): APIResult<String?>?
@@ -42,5 +42,5 @@ interface ParcelRepository {
    fun getLocalOnGoingParcelCnt() : LiveData<Int>
 
    // 배송 중인 택배 리스트를 LiveData로 받기
-   fun getLocalOngoingParcelsAsLiveData(): LiveData<List<Parcel>>
+   fun getLocalOngoingParcelsAsLiveData(): LiveData<List<ParcelDTO>>
 }

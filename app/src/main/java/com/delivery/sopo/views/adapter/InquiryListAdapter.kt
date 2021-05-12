@@ -18,7 +18,7 @@ import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
 import com.delivery.sopo.util.SopoLog
@@ -118,7 +118,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                 holder.bind(inquiryListItem)
                 holder.itemView.tag = inquiryListItem
 
-                val parcel: Parcel = inquiryListItem.parcel
+                val parcelDTO: ParcelDTO = inquiryListItem.parcelDTO
 
                 holder.ongoingBinding.tvDeliveryStatus.bringToFront()
                 
@@ -152,7 +152,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                         if (mClickListener != null)
                         {
                             mClickListener!!.onItemClicked(
-                                view = it, type = 0, parcelId = inquiryListItem.parcel.parcelId
+                                view = it, type = 0, parcelId = inquiryListItem.parcelDTO.parcelId
                             )
                         }
                     }
@@ -162,7 +162,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                     if (!isRemovable && mClickListener != null)
                     {
                         mClickListener!!.onItemLongClicked(
-                            view = it, type = 0, parcelId = inquiryListItem.parcel.parcelId
+                            view = it, type = 0, parcelId = inquiryListItem.parcelDTO.parcelId
                         )
                     }
                     return@setOnLongClickListener true
@@ -204,7 +204,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                         if (mClickListener != null)
                         {
                             mClickListener!!.onItemClicked(
-                                view = it, type = 1, parcelId = inquiryListItem.parcel.parcelId
+                                view = it, type = 1, parcelId = inquiryListItem.parcelDTO.parcelId
                             )
                         }
                     }
@@ -214,7 +214,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                     if (!isRemovable && mClickListener != null)
                     {
                         mClickListener!!.onItemLongClicked(
-                            view = it, type = 1, parcelId = inquiryListItem.parcel.parcelId
+                            view = it, type = 1, parcelId = inquiryListItem.parcelDTO.parcelId
                         )
                     }
                     return@setOnLongClickListener true
@@ -254,7 +254,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
         return list.filter {
             it.isSelected
         }.map {
-            it.parcel.parcelId
+            it.parcelDTO.parcelId
         }
     }
 
@@ -314,7 +314,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
     //현재는 '배송완료'에만 적용되어있음. 데이터를 무조건 notifyDataSetChanged()로 데이터를 리프레쉬하지 않고 진짜 변경된 데이터만 변경할 수 있도록함.
     fun notifyChanged(updatedList: MutableList<InquiryListItem>)
     {
-        updatedList.sortByDescending { it.parcel.arrivalDte }
+        updatedList.sortByDescending { it.parcelDTO.arrivalDte }
 
         if (list.size > updatedList.size)
         {
@@ -327,13 +327,13 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
         {
             if (list.getOrNull(index) == null)
             {
-                SopoLog.d("기존 리스트에 해당 index[$index]가 존재하지 않아 list[$index]에 ${updatedList[index].parcel.alias} 아이템을 추가합니다.")
+                SopoLog.d("기존 리스트에 해당 index[$index]가 존재하지 않아 list[$index]에 ${updatedList[index].parcelDTO.alias} 아이템을 추가합니다.")
                 list.add(updatedList[index])
                 notifyIndexList.add(index)
             }
-            else if (!((updatedList[index].parcel.parcelId.regDt == list[index].parcel.parcelId.regDt) && (updatedList[index].parcel.parcelId.parcelUid == list[index].parcel.parcelId.parcelUid)))
+            else if (!((updatedList[index].parcelDTO.parcelId.regDt == list[index].parcelDTO.parcelId.regDt) && (updatedList[index].parcelDTO.parcelId.parcelUid == list[index].parcelDTO.parcelId.parcelUid)))
             {
-                SopoLog.d("index[$index]에 해당하는 ${list[index].parcel.alias}와 업데이트될 아이템(${updatedList[index].parcel.alias}) 일치하지 않아 기존 아이템에 업데이트될 아이템을 덮어씁니다.")
+                SopoLog.d("index[$index]에 해당하는 ${list[index].parcelDTO.alias}와 업데이트될 아이템(${updatedList[index].parcelDTO.alias}) 일치하지 않아 기존 아이템에 업데이트될 아이템을 덮어씁니다.")
                 list[index] = updatedList[index]
                 notifyIndexList.add(index)
             }
@@ -355,19 +355,19 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
             InquiryItemTypeEnum.Soon ->
             {
                 list.filter {
-                    it.parcel.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
+                    it.parcelDTO.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
                 }.toMutableList()
             }
             InquiryItemTypeEnum.Registered ->
             {
                 list.filter {
-                    it.parcel.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE && it.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
+                    it.parcelDTO.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE && it.parcelDTO.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
                 }.toMutableList()
             }
             InquiryItemTypeEnum.Complete ->
             {
                 list.filter {
-                    it.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
+                    it.parcelDTO.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
                 }.toMutableList()
             }
         }

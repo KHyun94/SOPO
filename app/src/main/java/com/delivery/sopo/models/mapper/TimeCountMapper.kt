@@ -3,7 +3,7 @@ package com.delivery.sopo.models.mapper
 import com.delivery.sopo.networks.dto.TimeCountDTO
 import com.delivery.sopo.data.repository.database.room.entity.ParcelCntInfoEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.ParcelDTO
 
 object TimeCountMapper
 {
@@ -15,9 +15,9 @@ object TimeCountMapper
         )
     }
 
-    fun timeCountEntityListToInquiryItemList(parcelList: MutableList<Parcel>): MutableList<InquiryListItem>{
-        return parcelList.map {
-            InquiryListItem(parcel = it)
+    fun timeCountEntityListToInquiryItemList(parcelDTOList: MutableList<ParcelDTO>): MutableList<InquiryListItem>{
+        return parcelDTOList.map {
+            InquiryListItem(parcelDTO = it)
         } as MutableList<InquiryListItem>
     }
 

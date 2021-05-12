@@ -7,11 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.models.mapper.ParcelMapper
-import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.remote.parcel.ParcelRemoteRepository
+import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
@@ -34,12 +36,25 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
     // 업데이트 여부
     var isInitUpdate = false
 
+    // 유효성 및 통신 등의 결과 객체
+    private var _result = MutableLiveData<ResponseResult<*>>()
+    val result: LiveData<ResponseResult<*>>
+        get() = _result
+
     val adapter = MutableLiveData<ViewPagerAdapter>()
 
     init
     {
         initIsSetOfSecurity()
         CoroutineScope(Dispatchers.Main).launch {
+            val isUpdatableParcelStatus = withContext(Dispatchers.Default){ isUpdatableParcelStatus() }
+
+            // 업데이트할 택배가 없다면 서버를 통해 갱신 처리를 하지 않는다.
+            if(!isUpdatableParcelStatus)
+            {
+                isInitUpdate = true
+                return@launch
+            }
             requestOngoingParcelsAsRemote()
         }
 
@@ -72,14 +87,13 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
     {
         SopoLog.d(msg = "requestOngoingParcelsAsRemote() call")
 
-        val isUpdatableParcelStatus = withContext(Dispatchers.Default){ isUpdatableParcelStatus() }
+        val res = ParcelRemoteRepository.requestRemoteParcels()
 
-        if(!isUpdatableParcelStatus)
-        {
-            isInitUpdate = true
-            return
-        }
+        if(!res.result) return _result.postValue(res)
 
+        if(res.data == null || res.data.isEmpty()) return SopoLog.d("업데이트할 택배가 없거나, 리스트 사이즈 0")
+
+        ㅍ미
         when (val result = ParcelCall.getOngoingParcels())
         {
             is NetworkResult.Success ->
@@ -97,31 +111,31 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
                     )
 
                     // isBeUpdate가 1인 택배들의 pk 값과 inquiry_hash값을 넣을 곳
-                    var localParcelList: List<Parcel?>
+                    var localParcelDTOList: List<ParcelDTO?>
 
                     // 로컬과 서버 간 inquiry hash 값을 비교했을 때 다를 경우 넣는 곳
-                    val updateParcelList = mutableListOf<Parcel>()
+                    val updateParcelList = mutableListOf<ParcelDTO>()
 
                     // 로컬에 없는 parcel data를 넣는 곳
-                    var insertParcelList = mutableListOf<Parcel>()
+                    var insertParcelList = mutableListOf<ParcelDTO>()
 
                     CoroutineScope(Dispatchers.Default).launch {
-                        localParcelList = parcelRepoImpl.getLocalOngoingParcels()
+                        localParcelDTOList = parcelRepoImpl.getLocalOngoingParcels()
                     }
 
                     CoroutineScope(Dispatchers.Main).launch {
                         withContext(Dispatchers.Default) {
-                            localParcelList = parcelRepoImpl.getLocalOngoingParcels()
+                            localParcelDTOList = parcelRepoImpl.getLocalOngoingParcels()
                         }
 
-                        if (localParcelList.isEmpty())
+                        if (localParcelDTOList.isEmpty())
                         {
                             insertParcelList = remoteParcelList
                         }
                         else
                         {
                             val remoteIterator = remoteParcelList.iterator()
-                            val localIterator = localParcelList.iterator()
+                            val localIterator = localParcelDTOList.iterator()
 
                             while (remoteIterator.hasNext())
                             {

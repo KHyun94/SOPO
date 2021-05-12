@@ -10,12 +10,8 @@ import android.media.RingtoneManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.delivery.sopo.R
-import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.interfaces.notification.Notification
-import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.models.push.UpdateParcelDao
-import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.TimeUtil
 import com.google.firebase.messaging.FirebaseMessagingService

@@ -13,7 +13,7 @@ import com.delivery.sopo.models.mapper.TimeCountMapper
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
-import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
@@ -46,7 +46,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
     private val _completeList =
         Transformations.map(parcelRepoImpl.getLocalCompleteParcelsLiveData()) {
-            ParcelMapper.parcelListToInquiryItemList(it as MutableList<Parcel>)
+            ParcelMapper.parcelListToInquiryItemList(it as MutableList<ParcelDTO>)
         }
     val completeList: LiveData<MutableList<InquiryListItem>>
         get() = _completeList
@@ -298,7 +298,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                 else
                 {
                     remoteCompleteParcels.sortByDescending { it.arrivalDte } // 도착한 시간을 기준으로 내림차순으로 정렬
-                    val updateParcelList = mutableListOf<Parcel>() // list에 모았다가 한번에 업데이트
+                    val updateParcelList = mutableListOf<ParcelDTO>() // list에 모았다가 한번에 업데이트
                     for (parcel in remoteCompleteParcels)
                     {
                         val localParcelById = parcelRepoImpl.getLocalParcelById(parcel.parcelId)

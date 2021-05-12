@@ -4,7 +4,7 @@ import com.delivery.sopo.networks.dto.TimeCountDTO
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.data.repository.database.room.dto.DeleteParcelsDTO
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
-import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.dto.parcels.RegisterParcelDTO
 import com.google.gson.JsonArray
@@ -36,7 +36,7 @@ interface ParcelAPI
         @Query("parcelUid") parcelUid: String,
         // 등록일자
         @Query("regDt") regDt: String
-    ): APIResult<Parcel?>
+    ): APIResult<ParcelDTO?>
 
     @GET("api/v1/sopo-api/delivery/parcels/months")
     @Headers("Accept: application/json")
@@ -45,7 +45,7 @@ interface ParcelAPI
     // 배송중 & 곧 도착 리스트 가져오는 api
     @GET("api/v1/sopo-api/delivery/parcels/ongoing")
     @Headers("Accept: application/json")
-    suspend fun getParcelsOngoing(): APIResult<MutableList<Parcel>?>
+    suspend fun getParcelsOngoing(): APIResult<MutableList<ParcelDTO>?>
 
     // '배송완료' 리스트 가져오는 api
     @GET("api/v1/sopo-api/delivery/parcels/complete")
@@ -54,7 +54,7 @@ interface ParcelAPI
         
         @Query("page") page: Int,
         @Query("inquiryDate") inquiryDate: String
-    ): APIResult<MutableList<Parcel>?>
+    ): APIResult<MutableList<ParcelDTO>?>
 
     @HTTP(
         method = "DELETE",
@@ -81,7 +81,7 @@ interface ParcelAPI
     @Headers("Accept: application/json")
     suspend fun getOngoingParcels(
         @Path("email") email: String
-    ): Response<APIResult<MutableList<Parcel>?>>
+    ): Response<APIResult<List<ParcelDTO>?>>
 
     /**
      * 택배 리스트 전체 업데이트 요청
@@ -120,7 +120,7 @@ interface ParcelAPI
     suspend fun getSingleParcel(
         @Path("regDt") regDt: String,
         @Path("parcelUid") parcelUid: String
-    ): Response<APIResult<Parcel?>>
+    ): Response<APIResult<ParcelDTO?>>
 
     // TODO alias 변경 api 추가해야함
 }

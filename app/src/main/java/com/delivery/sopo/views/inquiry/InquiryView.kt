@@ -210,7 +210,7 @@ class InquiryView: Fragment()
         // 배송완료 리스트.
         binding.vm!!.completeList.observe(this, Observer { list ->
 
-            list.sortByDescending { it.parcel.arrivalDte }
+            list.sortByDescending { it.parcelDTO.arrivalDte }
             completedParcelAdapter.notifyChanged(list)
         })
 

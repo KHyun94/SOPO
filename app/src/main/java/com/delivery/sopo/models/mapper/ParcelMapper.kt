@@ -3,17 +3,17 @@ package com.delivery.sopo.models.mapper
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.util.SopoLog
 
 object ParcelMapper
 {
-    fun parcelToParcelManagementEntity(parcel: Parcel): ParcelStatusEntity
+    fun parcelToParcelManagementEntity(parcelDTO: ParcelDTO): ParcelStatusEntity
     {
         return ParcelStatusEntity(
-            regDt = parcel.parcelId.regDt,
-            parcelUid = parcel.parcelId.parcelUid
+            regDt = parcelDTO.parcelId.regDt,
+            parcelUid = parcelDTO.parcelId.parcelUid
         )
     }
 
@@ -25,8 +25,8 @@ object ParcelMapper
         )
     }
 
-    fun parcelEntityToParcel(parcelEntity: ParcelEntity): Parcel{
-        return Parcel(parcelId = ParcelId(regDt = parcelEntity.regDt, parcelUid = parcelEntity.parcelUid),
+    fun parcelEntityToParcel(parcelEntity: ParcelEntity): ParcelDTO{
+        return ParcelDTO(parcelId = ParcelId(regDt = parcelEntity.regDt, parcelUid = parcelEntity.parcelUid),
             userId = parcelEntity.userId,
             waybillNum = parcelEntity.waybillNum,
             carrier = parcelEntity.carrier,
@@ -39,27 +39,27 @@ object ParcelMapper
             status = parcelEntity.status)
     }
 
-    fun parcelToParcelEntity(parcel: Parcel): ParcelEntity
+    fun parcelToParcelEntity(parcelDTO: ParcelDTO): ParcelEntity
     {
         SopoLog.d(msg = """
             Parcel
-            $parcel
-            parcel Carrier >>> ${parcel.carrier}
+            $parcelDTO
+            parcel Carrier >>> ${parcelDTO.carrier}
         """.trimIndent())
 
         return ParcelEntity(
-            regDt = parcel.parcelId.regDt,
-            parcelUid = parcel.parcelId.parcelUid,
-            userId = parcel.userId,
-            waybillNum = parcel.waybillNum,
-            carrier = parcel.carrier,
-            alias = parcel.alias,
-            inquiryResult = parcel.inquiryResult,
-            inquiryHash = parcel.inquiryHash,
-            deliveryStatus = parcel.deliveryStatus,
-            arrivalDte = parcel.arrivalDte.toString(),
-            auditDte = parcel.auditDte,
-            status = parcel.status ?: 0
+            regDt = parcelDTO.parcelId.regDt,
+            parcelUid = parcelDTO.parcelId.parcelUid,
+            userId = parcelDTO.userId,
+            waybillNum = parcelDTO.waybillNum,
+            carrier = parcelDTO.carrier,
+            alias = parcelDTO.alias,
+            inquiryResult = parcelDTO.inquiryResult,
+            inquiryHash = parcelDTO.inquiryHash,
+            deliveryStatus = parcelDTO.deliveryStatus,
+            arrivalDte = parcelDTO.arrivalDte.toString(),
+            auditDte = parcelDTO.auditDte,
+            status = parcelDTO.status ?: 0
         )
     }
 
@@ -67,9 +67,9 @@ object ParcelMapper
         return ParcelId(regDt = parcelEntity.regDt, parcelUid = parcelEntity.parcelUid)
     }
 
-    fun parcelListToInquiryItemList(parcelList: MutableList<Parcel>): MutableList<InquiryListItem>{
-        return parcelList.map {
-            InquiryListItem(parcel = it)
+    fun parcelListToInquiryItemList(parcelDTOList: MutableList<ParcelDTO>): MutableList<InquiryListItem>{
+        return parcelDTOList.map {
+            InquiryListItem(parcelDTO = it)
         } as MutableList<InquiryListItem>
 
     }
