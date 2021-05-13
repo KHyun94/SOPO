@@ -22,7 +22,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
 class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val appPasswordRepo: AppPasswordRepository): ViewModel()
 {
     val mainTabVisibility = MutableLiveData<Int>()
@@ -93,7 +92,13 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
 
         if(res.data == null || res.data.isEmpty()) return SopoLog.d("업데이트할 택배가 없거나, 리스트 사이즈 0")
 
-        ㅍ미
+        val localParcels = withContext(Dispatchers.Default) {
+            parcelRepoImpl.getLocalOngoingParcels()
+        }
+
+        if(localParcels.isEmpty()) return SopoLog.d("업데이트할 택배가 없거나, 리스트 사이즈 0")
+
+
         when (val result = ParcelCall.getOngoingParcels())
         {
             is NetworkResult.Success ->
@@ -101,7 +106,7 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
                 val apiResult = result.data
                 val remoteParcelList = apiResult.data ?: return
 
-                if (remoteParcelList.size > 0)
+                if (remoteParcelList.isNotEmpty())
                 {
                     SopoLog.d(
                         """

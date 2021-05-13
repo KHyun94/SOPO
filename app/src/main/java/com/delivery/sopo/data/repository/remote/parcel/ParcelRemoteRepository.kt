@@ -1,7 +1,6 @@
 package com.delivery.sopo.data.repository.remote.parcel
 
 import com.delivery.sopo.enums.DisplayEnum
-import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.parcel.ParcelDTO
