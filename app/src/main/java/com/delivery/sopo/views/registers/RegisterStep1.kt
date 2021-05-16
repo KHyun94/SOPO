@@ -29,6 +29,7 @@ import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.system.exitProcess
 
 
 typealias FocusChangeCallback = (String, Boolean) -> Unit
@@ -74,7 +75,7 @@ class RegisterStep1: Fragment()
                 {
                     SopoLog.d("RegisterStep1::1 BackPressListener = 종료")
                     ActivityCompat.finishAffinity(activity!!)
-                    System.exit(0)
+                    exitProcess(0)
                 }
             }
         }
@@ -183,28 +184,31 @@ class RegisterStep1: Fragment()
 
             if (waybillNum.isNotEmpty()) binding.vm!!.clipBoardWords.value = ""
 
-            if (carrierDTO == null)
+            if (carrierDTO != null) return@Observer
+
+            if (!waybillNum.isGreaterThanOrEqual(9))
             {
-                if (!waybillNum.isGreaterThanOrEqual(9))
-                {
-                    binding.vm!!.carrierDTO.value = null
-                    return@Observer
-                }
+                SopoLog.d("input waybill num's length < 9. ")
+                binding.vm!!.carrierDTO.value = null
+                return@Observer
+            }
 
-                val carrierList =
-                    RoomActivate.recommendAutoCarrier(SOPOApp.INSTANCE, waybillNum, 1, carrierRepository)
+            val carrierList =
+                RoomActivate.recommendAutoCarrier(SOPOApp.INSTANCE, waybillNum, 1, carrierRepository)
 
-                if (carrierList != null && carrierList.size > 0)
-                {
-                    SopoLog.d(
-                        msg = """
+            SopoLog.d("input waybill num's length >= 9. Select Carrier:[${carrierList?.joinToString()}]")
+
+            if (carrierList != null && carrierList.size > 0)
+            {
+                SopoLog.d(
+                    msg = """
                         최우선 순위 >>> ${carrierList[0]}
                     """.trimIndent()
-                    )
+                )
 
-                    binding.vm!!.carrierDTO.value = (carrierList[0])
-                }
+                binding.vm!!.carrierDTO.value = (carrierList[0])
             }
+
         })
 
         binding.vm!!.focus.observe(this, Observer { focus ->
@@ -213,7 +217,7 @@ class RegisterStep1: Fragment()
         })
 
         binding.vm!!.validateError.observe(this, Observer { target ->
-            val message = when(target.first)
+            val message = when (target.first)
             {
                 InfoEnum.WAYBILL_NUMBER ->
                 {

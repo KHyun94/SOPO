@@ -13,6 +13,11 @@ object UserCall : BaseService(), KoinComponent
 {
     private lateinit var userAPI : UserAPI
 
+    init
+    {
+        userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
+    }
+
     suspend fun getUserInfoWithToken() : NetworkResult<APIResult<UserDetail?>>
     {
         userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)

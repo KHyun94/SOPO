@@ -95,7 +95,7 @@ object RoomActivate
                         CarrierEntity(
                             carrierNo = 0,
                             carrierName = "천일택배",
-                            carrierCode = "CHUNILPS",
+                            carrierCode = "일",
                             minLen = 11,
                             maxLen = 11,
                             priority = 0.88,
@@ -338,12 +338,7 @@ object RoomActivate
         }
     }
 
-    fun recommendAutoCarrier(
-        context: Context,
-        waybillNum: String,
-        cnt: Int,
-        carrierRepository: CarrierRepository
-    ): MutableList<CarrierDTO?>?
+    fun recommendAutoCarrier(context: Context, waybillNum: String, cnt: Int, carrierRepository: CarrierRepository): MutableList<CarrierDTO?>?
     {
         roomDBHelper = AppDatabase.getInstance(context = context)
 
@@ -354,8 +349,9 @@ object RoomActivate
             runBlocking {
                 launch {
 
+                    SopoLog.d("recommendAutoCarrier input data >>> $waybillNum")
                     val _waybillNum = waybillNum.removeSpace()
-                    // - ㅐor _ 삭제 버젼
+                    // - or _ 삭제 버젼
                     var mergeNum = ""
 
                     var front: String = ""
@@ -516,7 +512,7 @@ object RoomActivate
                                 carrierRepository.getWithoutLen(
                                     len = mergeNum.length,
                                     cnt = cnt
-                                ) as Collection<CarrierDTO>
+                                ) as MutableList<CarrierDTO?>
                             )
 
 
@@ -528,16 +524,15 @@ object RoomActivate
                                     len = mergeNum.length,
                                     param1 = returnList!![0]!!.carrier.NAME,
                                     cnt = cnt
-                                ) as Collection<CarrierDTO>
+                                ) as MutableList<CarrierDTO?>
                             )
-
 
                             returnList!!.addAll(
                                 carrierRepository.getWithoutLenAndCondition1(
                                     len = mergeNum.length,
                                     param1 = returnList!![0]!!.carrier.NAME,
                                     cnt = cnt
-                                ) as Collection<CarrierDTO>
+                                ) as MutableList<CarrierDTO?>
                             )
 
 
@@ -550,7 +545,7 @@ object RoomActivate
                                     param1 = returnList!!.get(0)!!.carrier.NAME,
                                     param2 = returnList!!.get(1)!!.carrier.NAME,
                                     cnt = cnt
-                                ) as Collection<CarrierDTO?>
+                                ) as MutableList<CarrierDTO?>
                             )
 
                             returnList!!.addAll(
@@ -559,7 +554,7 @@ object RoomActivate
                                     param1 = returnList!!.get(0)!!.carrier.NAME,
                                     param2 = returnList!!.get(1)!!.carrier.NAME,
                                     cnt = cnt
-                                ) as Collection<CarrierDTO?>
+                                ) as MutableList<CarrierDTO?>
                             )
                         }
                     }
@@ -570,6 +565,7 @@ object RoomActivate
         }
         catch (e: Exception)
         {
+            SopoLog.e("recommand error >>> ${e.message}", e)
 //            callback.invoke(null)
             return null
         }

@@ -68,6 +68,7 @@ class RegisterStep1ViewModel(private val carrierRepository: CarrierRepository) :
 
         val carrierCode = carrierDTO.value!!.carrier.CODE
         val waybillNum = waybillNum.value
+
         CoroutineScope(Dispatchers.Default).launch {
             val carrierEntity = carrierRepository.getCarrierEntityWithCode(carrierCode)
             val minLen = carrierEntity.minLen

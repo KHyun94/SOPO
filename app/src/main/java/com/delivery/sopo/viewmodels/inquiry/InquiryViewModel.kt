@@ -715,7 +715,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                         else
                         {
                             Log.d("LOG.SOPO", "등록 Code ${result.code}")
-                            CodeUtil.getMsg(result.code)
+                            "CodeUtil.getMsg(result.code)"
                         }
 
                     }

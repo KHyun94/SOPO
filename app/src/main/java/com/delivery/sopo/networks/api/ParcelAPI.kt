@@ -106,7 +106,7 @@ interface ParcelAPI
     @Headers("Accept: application/json")
     suspend fun requestParcelForRefresh(
         @Body parcelId: ParcelId
-    ) : Response<APIResult<Any?>>
+    ) : Response<APIResult<Unit>>
 
     /**
      * 단일 택배 정보 요청

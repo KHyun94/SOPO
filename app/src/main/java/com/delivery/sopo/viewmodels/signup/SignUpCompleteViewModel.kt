@@ -27,10 +27,6 @@ class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, pr
     val result: LiveData<ResponseResult<*>>
         get() = _result
 
-//    private var _navigator = MutableLiveData<String>()
-//    val navigator: LiveData<String>
-//        get() = _navigator
-
     val navigator = MutableLiveData<String>()
 
     val isProgress = MutableLiveData<Boolean?>()
@@ -93,7 +89,7 @@ class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, pr
                 return@launch
             }
 
-            if(infoRes.data == null || infoRes.data.nickname == "")
+            if(infoRes.data?.nickname == null || infoRes.data.nickname == "")
             {
                 SopoLog.e("Nickname is empty, so go to update nickname")
                 navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
@@ -102,7 +98,7 @@ class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, pr
 
             SopoLog.e("Nickname is ${infoRes.data.nickname}, so go to main")
 
-            userLocalRepo.setNickname(infoRes.data.nickname)
+            userLocalRepo.setNickname(infoRes.data.nickname!!)
 
             navigator.postValue(NavigatorConst.TO_MAIN)
         }

@@ -16,7 +16,7 @@ abstract class BaseService
         try
         {
             // api 호출
-            SopoLog.e("Success to call api")
+            SopoLog.d("Success to call api")
             response = call.invoke()
         }
         catch (e: Exception)

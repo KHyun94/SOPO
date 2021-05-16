@@ -59,7 +59,7 @@ object ParcelCall : BaseService(), KoinComponent
         return apiCall(call = { result })
     }
 
-    suspend fun requestParcelForRefresh(parcelId : ParcelId) : NetworkResult<APIResult<Any?>>
+    suspend fun requestParcelForRefresh(parcelId : ParcelId) : NetworkResult<APIResult<Unit>>
     {
         val result = parcelAPI.requestParcelForRefresh(parcelId)
         return apiCall(call = { result })

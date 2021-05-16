@@ -12,9 +12,9 @@ import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.setting.GridSpacingItemDecoration
 
-class RegisterStep2ViewModel(private val carrierRepo: CarrierRepository) : ViewModel()
+class RegisterStep2ViewModel(private val carrierRepo: CarrierRepository): ViewModel()
 {
-    var carrierList = arrayListOf<CarrierDTO?>()
+    var carrierList = mutableListOf<CarrierDTO?>()
     var itemList = listOf<SelectItem<CarrierDTO?>>()
     var selectedItem = MutableLiveData<SelectItem<CarrierDTO?>>()
     var waybillNum = MutableLiveData<String>()
@@ -23,9 +23,8 @@ class RegisterStep2ViewModel(private val carrierRepo: CarrierRepository) : ViewM
 
     val errorMsg = MutableLiveData<String>()
 
-    var adapter =  MutableLiveData<GridRvAdapter>()
+    var adapter = MutableLiveData<GridRvAdapter>()
     val decoration = GridSpacingItemDecoration(3, 32, true)
-//        GridSpacingItemDecoration(3, 48, true)
     val rowCnt = 3
 
     init
@@ -37,11 +36,13 @@ class RegisterStep2ViewModel(private val carrierRepo: CarrierRepository) : ViewM
 
     fun setAdapter(_waybillNum: String)
     {
-        if(itemList.isEmpty())
+        if (itemList.isEmpty())
         {
             waybillNum.value = _waybillNum
 
-            carrierList =  RoomActivate.recommendAutoCarrier(SOPOApp.INSTANCE, waybillNum.value!!, RoomActivate.rowCnt,carrierRepo) as ArrayList<CarrierDTO?>
+            carrierList =
+                RoomActivate.recommendAutoCarrier(SOPOApp.INSTANCE, waybillNum.value!!, RoomActivate.rowCnt, carrierRepo)
+                    ?: return
 
             itemList = carrierList.flatMap {
                 listOf(SelectItem(it, false))

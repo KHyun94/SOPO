@@ -7,6 +7,6 @@ data class UserDetail(
     val userId : String,
     @SerializedName("joinType")
     val joinType : String,
-    @SerializedName("nickName")
-    var nickname : String
+    @SerializedName("nickname")
+    var nickname : String?
 )

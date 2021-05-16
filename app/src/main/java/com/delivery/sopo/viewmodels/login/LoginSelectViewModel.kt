@@ -144,17 +144,17 @@ class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, priva
             return _result.postValue(ResponseResult(false, null, null, "로그인 실패, 다시 시도해주세요.", DisplayEnum.DIALOG))
         }
 
-        val oAuthEntity = OAuthMapper.objectToEntity(oAuthRes.data)
-
-        withContext(Dispatchers.Default) { oAuthRepo.insert(oAuthEntity) }
-
-        SOPOApp.oAuth = oAuthRes.data
-
         userLocalRepo.run {
             setUserId(email)
             setUserPassword(password)
             setStatus(1)
         }
+
+        val oAuthEntity = OAuthMapper.objectToEntity(oAuthRes.data)
+
+        withContext(Dispatchers.Default) { oAuthRepo.insert(oAuthEntity) }
+
+        SOPOApp.oAuth = oAuthRes.data
 
         val infoRes = OAuthRemoteRepository.getUserInfo()
 
@@ -165,12 +165,12 @@ class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, priva
 
         SopoLog.d("infoRes is true ${infoRes.result}")
 
-        if (infoRes.data == null || infoRes.data.nickname == "")
+        if (infoRes.data?.nickname == null || infoRes.data.nickname == "")
         {
             return navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
         }
 
-        userLocalRepo.setNickname(infoRes.data.nickname)
+        userLocalRepo.setNickname(infoRes.data.nickname!!)
 
         navigator.postValue(NavigatorConst.TO_MAIN)
     }

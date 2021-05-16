@@ -86,7 +86,7 @@ class SOPOApp : Application()
         }
 
         CoroutineScope(Dispatchers.Default).launch {
-            val oAuthEntity = OAuthLocalRepository.get(userLocalRepository.getUserId())?:throw NullPointerException("미로그인 상태")
+            val oAuthEntity = OAuthLocalRepository.get(userLocalRepository.getUserId())?:return@launch
             oAuth = OAuthMapper.entityToObject(oAuthEntity)
         }
 

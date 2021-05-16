@@ -93,13 +93,12 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
 
         if(res.data == null || res.data.isEmpty()) return SopoLog.d("업데이트할 택배가 없거나, 리스트 사이즈 0")
 
-        ㅍ미
         when (val result = ParcelCall.getOngoingParcels())
         {
             is NetworkResult.Success ->
             {
                 val apiResult = result.data
-                val remoteParcelList = apiResult.data ?: return
+                val remoteParcelList = apiResult.data?.toMutableList() ?: return
 
                 if (remoteParcelList.size > 0)
                 {
