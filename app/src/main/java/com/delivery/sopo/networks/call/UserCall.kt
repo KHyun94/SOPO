@@ -1,6 +1,7 @@
 package com.delivery.sopo.networks.call
 
 import com.delivery.sopo.enums.NetworkEnum
+import com.delivery.sopo.models.EmailAuthDTO
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.NetworkManager
@@ -12,11 +13,6 @@ import org.koin.core.KoinComponent
 object UserCall : BaseService(), KoinComponent
 {
     private lateinit var userAPI : UserAPI
-
-    init
-    {
-        userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
-    }
 
     suspend fun getUserInfoWithToken() : NetworkResult<APIResult<UserDetail?>>
     {
@@ -44,9 +40,9 @@ object UserCall : BaseService(), KoinComponent
         return apiCall(call = { userAPI.requestSignOut(reason) })
     }
 
-    suspend fun requestEmailForAuth(): NetworkResult<APIResult<String?>>
+    suspend fun requestEmailForAuth(email: String): NetworkResult<APIResult<EmailAuthDTO?>>
     {
-        userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
-        return apiCall(call = { userAPI.requestEmailForAuth() })
+        userAPI = NetworkManager.setLoginMethod(NetworkEnum.EMPTY_LOGIN, UserAPI::class.java)
+        return apiCall(call = { userAPI.requestEmailForAuth(email = email) })
     }
 }

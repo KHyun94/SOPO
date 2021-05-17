@@ -1,6 +1,7 @@
 package com.delivery.sopo.networks.api
 
 import com.delivery.sopo.BuildConfig
+import com.delivery.sopo.models.EmailAuthDTO
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.NetworkManager
@@ -46,9 +47,11 @@ interface UserAPI
      * 1. GET?
      * 2. parameter는 필요 없는지
      */
-    @GET("/api/v1/sopo-api/user/password/aut-info")
+    @GET("/api/v1/sopo-api/user/password/auth-info")
     @Headers("Accept: application/json")
-    suspend fun requestEmailForAuth() : Response<APIResult<String?>>
+    suspend fun requestEmailForAuth(
+        @Query("email") email: String
+    ) : Response<APIResult<EmailAuthDTO?>>
 
     /**
      * 탈퇴

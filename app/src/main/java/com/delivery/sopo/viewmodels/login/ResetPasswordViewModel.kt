@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.InfoConst
+import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.models.ResponseResult
@@ -47,9 +48,22 @@ class ResetPasswordViewModel: ViewModel()
 
     fun onSendEmailClicked(v: View)
     {
-        _result.postValue(ResponseResult(true, null, Unit, "정보 입력을 완료해주세요.", DisplayEnum.TOAST_MESSAGE))
+
+        validates.forEach { (k, v) ->
+            if (!v)
+            {
+                SopoLog.d("${k.NAME} validate is fail")
+                _validateError.postValue(Pair(k, v))
+                return@onSendEmailClicked
+            }
+        }
+//        _result.postValue(ResponseResult(true, null, Unit, "정보 입력을 완료해주세요.", DisplayEnum.TOAST_MESSAGE))
+
         CoroutineScope(Dispatchers.IO).launch {
-//            _result.postValue(updateNickname(nickname = nickname.value.toString()))
+
+            val res = UserRemoteRepository.requestEmailForAuth(email = email.value?:"")
+
+            SopoLog.d("res >>> ${res.toString()} ${res.code} ${res.data} ${res.result} ${res.message}")
         }
     }
 
