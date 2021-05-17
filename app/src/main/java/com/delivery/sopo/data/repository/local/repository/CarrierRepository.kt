@@ -8,6 +8,13 @@ import com.delivery.sopo.models.mapper.CarrierMapper
 
 class CarrierRepository(private val appDB: AppDatabase)
 {
+    suspend fun getAll(): List<CarrierDTO?>
+    {
+        return appDB.carrierDAO().getAll().flatMap {
+            listOf(CarrierMapper.entityToObject(it))
+        }
+    }
+
     suspend fun getWithLen(len: Int, cnt: Int): List<CarrierDTO?>
     {
         val res = appDB.carrierDAO().getWithLen(

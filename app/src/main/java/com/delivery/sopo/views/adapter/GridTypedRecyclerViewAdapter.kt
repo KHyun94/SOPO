@@ -18,9 +18,9 @@ import com.delivery.sopo.databinding.ItemImgBinding
 import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.views.adapter.GridRvAdapter.GridRvViewHolder
+import com.delivery.sopo.views.adapter.GridTypedRecyclerViewAdapter.GridRvViewHolder
 
-class GridRvAdapter(private var items: List<SelectItem<CarrierDTO?>>?): RecyclerView.Adapter<GridRvViewHolder>()
+class GridTypedRecyclerViewAdapter(private var items: List<SelectItem<CarrierDTO?>>?): RecyclerView.Adapter<GridRvViewHolder>()
 {
     var isClicked = MutableLiveData<Boolean>()
     var paste: Pair<View, SelectItem<CarrierDTO?>>? = null
@@ -43,8 +43,6 @@ class GridRvAdapter(private var items: List<SelectItem<CarrierDTO?>>?): Recycler
     }
 
     lateinit var binding: ItemImgBinding
-
-    var TAG = "LOG.SOPO.GridRvAdapter"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GridRvViewHolder
     {

@@ -18,7 +18,7 @@ import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep2ViewModel
-import com.delivery.sopo.views.adapter.GridRvAdapter
+import com.delivery.sopo.views.adapter.GridTypedRecyclerViewAdapter
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -27,7 +27,7 @@ class RegisterStep2: Fragment()
     private lateinit var parentView: MainView
 
     private lateinit var binding: RegisterStep2Binding
-    private val registerStep2Vm: RegisterStep2ViewModel by viewModel()
+    private val vm: RegisterStep2ViewModel by viewModel()
 
     private var waybillNum: String? = null
 
@@ -42,20 +42,23 @@ class RegisterStep2: Fragment()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        binding = DataBindingUtil.inflate(inflater, R.layout.register_step2, container, false)
-        binding.vm = registerStep2Vm
-        binding.lifecycleOwner = this
-
-        binding.vm!!.setAdapter(_waybillNum = waybillNum ?: "")
-
+        bindView(inflater, container)
         setObserve()
 
         return binding.root
     }
 
+    fun bindView(inflater: LayoutInflater, container: ViewGroup?){
+        binding = DataBindingUtil.inflate(inflater, R.layout.register_step2, container, false)
+        binding.vm = vm
+        binding.lifecycleOwner = this
+    }
+
     //(activity as RegisterMainFrame).childFragmentManager
-    fun setObserve()
+    private fun setObserve()
     {
+        binding.vm!!.setAdapter(_waybillNum = waybillNum ?: "")
+
         parentView.currentPage.observe(this, Observer {
             if (it != null && it == 0)
             {
@@ -113,7 +116,7 @@ class RegisterStep2: Fragment()
         })
 
         binding.vm!!.adapter.observe(this, Observer {
-            it?.setOnItemClickListener(object: GridRvAdapter.OnItemClickListener<List<SelectItem<CarrierDTO?>>>
+            it?.setOnItemClickListener(object: GridTypedRecyclerViewAdapter.OnItemClickListener<List<SelectItem<CarrierDTO?>>>
             {
                 override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<CarrierDTO?>>)
                 {

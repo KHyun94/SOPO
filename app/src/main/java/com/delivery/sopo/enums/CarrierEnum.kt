@@ -1,5 +1,6 @@
 package com.delivery.sopo.enums
 
+import com.delivery.sopo.util.SopoLog
 import com.google.gson.annotations.SerializedName
 import java.lang.NullPointerException
 
@@ -12,7 +13,7 @@ enum class CarrierEnum(
     SAGAWA("SAGAWA", "Sagawa"),
     YAMATO("YAMATO", "Kuroneko Yamato"),
     YUUBIN("YUUBIN", "Japan Post"),
-    CHUNILPS("YUUBIN", "천일택배"),
+    CHUNILPS("CHUNILPS", "천일택배"),
     CJ_LOGISTICS("CJ_LOGISTICS", "CJ대한통운"),
     CU_POST("CU_POST","CU 편의점 택배"),
     CVSNET("CVSNET", "GS Postbox 택배"),
@@ -22,7 +23,7 @@ enum class CarrierEnum(
 //    HANIPS("kr.hanips", "한의사랑택배"),
     HANJINS("HANJINS", "한진택배"),
     HDEXP("HDEXP", "합동택배"),
-    HOMEPICK("HDEXP", "홈픽"),
+    HOMEPICK("HOMEPICK", "홈픽"),
     HONAMLOGIS("HONAMLOGIS", "한서호남택배"),
     ILYANGLOGIS("ILYANGLOGIS", "일양로지스"),
     KDEXP("KDEXP", "경동택배"),
@@ -40,6 +41,8 @@ enum class CarrierEnum(
     companion object{
         fun getCarrierByCode(code: String): CarrierEnum
         {
+            SopoLog.d("!!!!!! WTF CODE >>> $code")
+
             val carrier = CarrierEnum.values().findLast {
                 it.CODE == code
             }

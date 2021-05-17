@@ -7,23 +7,23 @@ import com.delivery.sopo.data.repository.database.room.RoomActivate
 import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
-import com.delivery.sopo.views.adapter.GridRvAdapter
+import com.delivery.sopo.views.adapter.GridTypedRecyclerViewAdapter
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.setting.GridSpacingItemDecoration
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 
 class RegisterStep2ViewModel(private val carrierRepo: CarrierRepository): ViewModel()
 {
-    var carrierList = mutableListOf<CarrierDTO?>()
     var itemList = listOf<SelectItem<CarrierDTO?>>()
     var selectedItem = MutableLiveData<SelectItem<CarrierDTO?>>()
     var waybillNum = MutableLiveData<String>()
+
     var moveFragment = MutableLiveData<String>()
-    var hideKeyboard = SingleLiveEvent<Boolean>()
 
-    val errorMsg = MutableLiveData<String>()
-
-    var adapter = MutableLiveData<GridRvAdapter>()
+    var adapter = MutableLiveData<GridTypedRecyclerViewAdapter>()
     val decoration = GridSpacingItemDecoration(3, 32, true)
     val rowCnt = 3
 
@@ -31,25 +31,29 @@ class RegisterStep2ViewModel(private val carrierRepo: CarrierRepository): ViewMo
     {
         moveFragment.value = ""
         waybillNum.value = ""
-        hideKeyboard.value = false
     }
 
     fun setAdapter(_waybillNum: String)
     {
-        if (itemList.isEmpty())
+        SopoLog.d("setAdapter >>> $_waybillNum")
+
+        if (itemList.isNotEmpty()) return
+
+        waybillNum.value = _waybillNum
+
+        itemList = if(_waybillNum != "")
         {
-            waybillNum.value = _waybillNum
-
-            carrierList =
-                RoomActivate.recommendAutoCarrier(SOPOApp.INSTANCE, waybillNum.value!!, RoomActivate.rowCnt, carrierRepo)
-                    ?: return
-
-            itemList = carrierList.flatMap {
-                listOf(SelectItem(it, false))
-            }
-
-            adapter.postValue(GridRvAdapter(items = itemList))
+            SopoLog.d("운송장 번호 >>> $_waybillNum")
+            RoomActivate.recommendAutoCarrier(SOPOApp.INSTANCE, waybillNum.value!!, RoomActivate.rowCnt, carrierRepo)
+                ?: emptyList<CarrierDTO?>().toMutableList()
         }
+        else
+        {
+            SopoLog.d("운송장 번호 >>> empty")
+            runBlocking(Dispatchers.Default) { carrierRepo.getAll().toMutableList() }
+        }.flatMap { listOf(SelectItem(it, false)) }
+
+        adapter.postValue(GridTypedRecyclerViewAdapter(items = itemList))
     }
 
     fun onClearClicked()
