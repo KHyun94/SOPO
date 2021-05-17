@@ -15,7 +15,7 @@ enum class ResponseCode(val CODE: String, val MSG: String, val HTTP_STATUS: Int?
     KAKAO_SIMPLE_CANNOT_FIND_FIREBASE_USER("KA06", "Can not find firebase user searched by email", 400),
     KAKAO_SIMPLE_FAIL_TO_UPDATE_AUTH_TOKEN("KA07", "Fail to update custom token", 400),
     FAIL_TO_FIND_API_ACCOUNT("AP01","Can`t find api account!", 400),
-    FAIL_TO_FIND_SOPO_USER("AP02", "Can`t find Sopo User", 400),
+    FAIL_TO_FIND_SOPO_USER("AP02", "해당 고객님을 찾을 수가 없습니다.", 400),
     FAIL_TO_SAVE_API_ACCOUNT("AP03", "Fail to save Api account", 400),
     FAIL_TO_SAVE_SOPO_USER("AP04", "Fail to save Sopo User", 400),
     FAIL_TO_JOIN_SOPO_USER("AP04", "Fail to join..", 400),
