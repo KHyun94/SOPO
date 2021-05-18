@@ -88,6 +88,8 @@ class LockScreenView : AppCompatActivity()
                 }
             }
         })
+
+        // 인증 여부
         lockScreenVM.verifyResult.observe(this, Observer{
             if(it){
                 finish()
@@ -105,11 +107,21 @@ class LockScreenView : AppCompatActivity()
             }
         })
 
+        // UI 및 기본 세팅 변
         lockScreenVM.lockScreenStatusEnum.observe(this, Observer { status ->
 
             when(status)
             {
                 LockScreenStatusEnum.RESET ->
+                {
+
+                }
+                LockScreenStatusEnum.SET ->
+                {
+
+
+                }
+                LockScreenStatusEnum.VERIFY ->
                 {
 
                 }

@@ -15,10 +15,14 @@ import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.databinding.ResetPasswordViewBinding
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.LockScreenStatusEnum
+import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.extensions.launchActivity
+import com.delivery.sopo.models.EmailAuthDTO
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.login.ResetPasswordViewModel
+import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.menus.LockScreenView
 import com.delivery.sopo.views.widget.CustomEditText
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -36,7 +40,7 @@ class ResetPasswordView: AppCompatActivity()
         setObserve()
 
         binding.layoutMainReset.setOnClickListener {
-            Toast.makeText(this, "백그라운드 클릭", Toast.LENGTH_LONG).show()
+            //            Toast.makeText(this, "백그라운드 클릭", Toast.LENGTH_LONG).show()
             it.requestFocus()
             OtherUtil.hideKeyboardSoft(this)
         }
@@ -44,7 +48,8 @@ class ResetPasswordView: AppCompatActivity()
 
     fun bindView()
     {
-        binding = DataBindingUtil.setContentView(this@ResetPasswordView, R.layout.reset_password_view)
+        binding =
+            DataBindingUtil.setContentView(this@ResetPasswordView, R.layout.reset_password_view)
         binding.vm = vm
         binding.lifecycleOwner = this
     }
@@ -60,9 +65,9 @@ class ResetPasswordView: AppCompatActivity()
 
             if (target.second)
             {
-//                binding.btnSndEmail.backgroundTintList =
-//                    resources.getColorStateList(R.color.COLOR_MAIN_700, null)
-//                binding.btnSndEmail.setTextColor(resources.getColor(R.color.MAIN_WHITE))
+                //                binding.btnSndEmail.backgroundTintList =
+                //                    resources.getColorStateList(R.color.COLOR_MAIN_700, null)
+                //                binding.btnSndEmail.setTextColor(resources.getColor(R.color.MAIN_WHITE))
                 return@Observer
             }
 
@@ -70,11 +75,11 @@ class ResetPasswordView: AppCompatActivity()
             {
                 InfoEnum.EMAIL ->
                 {
-//                    binding.btnSndEmail.backgroundTintList =
-//                        resources.getColorStateList(R.color.COLOR_GRAY_200, null)
-//                    binding.btnSndEmail.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
-//
-//                    binding.etNickname.requestFocus()
+                    //                    binding.btnSndEmail.backgroundTintList =
+                    //                        resources.getColorStateList(R.color.COLOR_GRAY_200, null)
+                    //                    binding.btnSndEmail.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
+                    //
+                    //                    binding.etNickname.requestFocus()
                     "이메일 양식을 확인해주세요."
                 }
                 else -> ""
@@ -85,15 +90,26 @@ class ResetPasswordView: AppCompatActivity()
             }.show()
         })
 
-        binding.vm!!.result.observe(this@ResetPasswordView, Observer {
-            if(it.result)
+        binding.vm!!.result.observe(this@ResetPasswordView, Observer { result ->
+
+            if (!result.result)
             {
-                startActivityForResult(
-                    Intent(this@ResetPasswordView, LockScreenView::class.java).apply {
-                        putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.RESET)
-                    }, 11
-                )
+                GeneralDialog(this, "오류", ResponseCode.UNKNOWN_ERROR.MSG, ResponseCode.UNKNOWN_ERROR.CODE, Pair("네", null)).show(supportFragmentManager, "DIALOG")
+                return@Observer
             }
+
+            if (result.data !is EmailAuthDTO)
+            {
+                GeneralDialog(this, "오류", "", result.code?.CODE, Pair("네", null)).show(supportFragmentManager, "DIALOG")
+                return@Observer
+            }
+
+            val data: EmailAuthDTO = result.data
+
+            Intent(this@ResetPasswordView, LockScreenView::class.java).apply {
+                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.RESET)
+                putExtra("EMAIL_AUTH_DATA", data)
+            }.launchActivity(this@ResetPasswordView)
         })
 
         binding.vm!!.email.observe(this@ResetPasswordView, Observer { email ->
