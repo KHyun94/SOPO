@@ -1,5 +1,6 @@
 package com.delivery.sopo.views.menus
 
+import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Spannable
@@ -15,6 +16,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.databinding.LockScreenViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
+import com.delivery.sopo.models.EmailAuthDTO
 import com.delivery.sopo.viewmodels.menus.LockScreenViewModel
 import kotlinx.android.synthetic.main.lock_screen_view.*
 import kotlinx.coroutines.*
@@ -27,12 +29,18 @@ class LockScreenView : AppCompatActivity()
     private var firstCheck = false
     private var firstPassword = ""
 
+    var pinNumByEmail:String? = null
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.lock_screen_view)
         bindView()
         loadData()
+
+        pinNumByEmail = intent.getStringExtra("PIN_NUM")
+        lockScreenVM.pinCode.value = pinNumByEmail
+
         setObserver()
     }
 
@@ -92,6 +100,7 @@ class LockScreenView : AppCompatActivity()
         // 인증 여부
         lockScreenVM.verifyResult.observe(this, Observer{
             if(it){
+                setResult(Activity.RESULT_OK)
                 finish()
             }
             else{

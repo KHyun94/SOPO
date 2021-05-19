@@ -2,12 +2,14 @@ package com.delivery.sopo.networks.api
 
 import com.delivery.sopo.BuildConfig
 import com.delivery.sopo.models.EmailAuthDTO
+import com.delivery.sopo.models.PasswordResetDTO
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.dto.JsonPatchDto
 import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResult
+import com.google.gson.annotations.SerializedName
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
@@ -36,7 +38,8 @@ interface UserAPI
      * @return Response<APIResult<String?>>
      */
     @PATCH("/api/v1/sopo-api/user/nickname")
-    suspend fun updateUserNickname(@Query("nickname") nickname : String) : Response<APIResult<String?>>
+    suspend fun updateUserNickname(@Body nickname : Map<String, String>) : Response<APIResult<String?>>
+//    suspend fun updateUserNickname(@Body nickname : String) : Response<APIResult<String?>>
 
     /**
      * Send Email For request PIN CODE
@@ -52,6 +55,15 @@ interface UserAPI
     suspend fun requestEmailForAuth(
         @Query("email") email: String
     ) : Response<APIResult<EmailAuthDTO?>>
+
+    /**
+     * 비밀번호 리셋
+     * @param PasswordResetDTO
+     * @return Response<APIResult<String?>>
+     */
+    @POST("/api/v1/sopo-api/user/password/reset")
+    @Headers("Accept: application/json")
+    suspend fun requestResetPassword(@Body passwordResetDTO: PasswordResetDTO) : Response<APIResult<String?>>
 
     /**
      * 탈퇴

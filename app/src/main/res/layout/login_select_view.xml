@@ -165,7 +165,7 @@
 
 
             <TextView
-                android:id="@+id/btn_sign_up"
+                android:id="@+id/btn_next"
                 style="@style/buttonBasicStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

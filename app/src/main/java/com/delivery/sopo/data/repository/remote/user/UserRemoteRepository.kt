@@ -4,6 +4,7 @@ import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.EmailAuthDTO
+import com.delivery.sopo.models.PasswordResetDTO
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.services.network_handler.NetworkResult
@@ -31,6 +32,29 @@ object UserRemoteRepository
                 val responseCode = exception.responseCode
 
                 return ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
+            }
+        }
+    }
+
+    suspend fun requestPasswordForReset(passwordResetDTO: PasswordResetDTO): ResponseResult<Unit>{
+        when(val result = UserCall.requestResetPassword(passwordResetDTO = passwordResetDTO))
+        {
+            is NetworkResult.Success ->
+            {
+                val apiResult = result.data
+
+                SopoLog.d("Success to request reset password")
+
+                return ResponseResult(true, ResponseCode.SUCCESS, Unit, ResponseCode.SUCCESS.MSG)
+            }
+            is NetworkResult.Error ->
+            {
+                SopoLog.d("Fail to request reset password")
+
+                val exception = result.exception as APIException
+                val responseCode = exception.responseCode
+
+                return ResponseResult(false, responseCode, Unit, responseCode.MSG, DisplayEnum.DIALOG)
             }
         }
     }

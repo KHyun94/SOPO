@@ -10,6 +10,7 @@ import com.delivery.sopo.data.repository.remote.o_auth.OAuthRemoteRepository
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.DisplayEnum
+import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
@@ -33,7 +34,7 @@ class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, pr
 
     fun onCompleteClicked()
     {
-        login(userLocalRepo.getUserId(), userLocalRepo.getUserPassword())
+        login(userLocalRepo.getUserId(), userLocalRepo.getUserPassword().toMD5())
     }
 
     fun login(email: String, password: String)

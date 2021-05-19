@@ -9,6 +9,7 @@ import com.delivery.sopo.extensions.asSHA256
 import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -32,6 +33,8 @@ class LockScreenViewModel(
     val verifyResult: LiveData<Boolean>
         get() = _verifyResult
 
+    val pinCode = MutableLiveData<String?>()
+
     private var firstCheckPassword = ""
 
     init{
@@ -53,6 +56,12 @@ class LockScreenViewModel(
         } ?: false
     }
 
+    // email pin num compare
+    private fun verifyPasswordByEmail(inputPassword: String): Boolean {
+        if(pinCode.value == null) return false
+        return pinCode.value == inputPassword
+    }
+
     fun lockPasswordAction(num: Int){
         when(_lockScreenStatus.value){
             LockScreenStatusEnum.SET -> {
@@ -62,7 +71,7 @@ class LockScreenViewModel(
                 verifyLockPassword(num)
             }
             LockScreenStatusEnum.RESET -> {
-
+                verifyLockPassword(num)
             }
         }
     }
@@ -93,7 +102,20 @@ class LockScreenViewModel(
             if(it.length == 4){
                 lockPassword.value = ""
                 viewModelScope.launch(Dispatchers.IO) {
-                    _verifyResult.postValue(verifyPassword(it))
+
+                    val isVerify = when(lockScreenStatusEnum.value)
+                    {
+                        LockScreenStatusEnum.RESET -> {
+                            verifyPasswordByEmail(it)
+                        }
+                        else -> {
+                            verifyPassword(it)
+                        }
+                    }
+
+                    SopoLog.d("비밀번호 재설정 >>> $it, 성공 여부 >>> $isVerify")
+
+                    _verifyResult.postValue(isVerify)
                 }
             }
         }

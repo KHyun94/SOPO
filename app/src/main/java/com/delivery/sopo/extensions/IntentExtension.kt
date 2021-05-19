@@ -13,3 +13,7 @@ fun Intent.launchActivityWithAllClear(context: Context){
     this.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
     context.startActivity(this)
 }
+
+fun Intent.launchActivityForResult(activity: Activity, requestCode: Int){
+    activity.startActivityForResult(this, requestCode)
+}

@@ -77,7 +77,8 @@ class LoginViewModel(val userLocalRepository: UserLocalRepository, val oAuthRepo
 
             // 성공
             CoroutineScope(Dispatchers.IO).launch {
-                OAuthRemoteRepository.requestLoginWithOAuth(email.value.toString(), password.value.toString().toMD5())
+                val res = OAuthRemoteRepository.requestLoginWithOAuth(email.value.toString(), password.value.toString().toMD5())
+                _result.postValue(res)
             }
         }
         catch (e: Exception)
