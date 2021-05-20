@@ -25,8 +25,7 @@
         android:id="@+id/constraint_setting"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
-        android:background="@color/MAIN_WHITE">
+        android:background="@color/COLOR_GRAY_50">
 
         <TextView
             android:id="@+id/tv_title"
@@ -44,19 +43,93 @@
             tools:visibility="visible" />
 
         <TextView
+            style="@style/H3"
             android:id="@+id/tv_delete_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="25dp"
+            android:layout_marginStart="24dp"
             android:fontFamily="@font/spoqa_han_sans_bold"
             android:text="@string/INQUIRY_VIEW_PLEASE_SELECT_ITEM_TO_DELETE"
             android:textColor="@color/COLOR_GRAY_800"
-            android:textSize="17sp"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/image_inquiry_popup_menu"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/image_inquiry_popup_menu"
-            tools:visibility="gone" />
+            app:layout_constraintTop_toTopOf="@+id/image_inquiry_popup_menu"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_delete_select"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:onClick="@{()-> vm.toggleSelectAll()}"
+            app:layout_constraintTop_toBottomOf="@id/tv_delete_title"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/linear_select_all"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="11dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/image_is_all_checked"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="5dp"
+                    android:background="@drawable/ic_checked_gray" />
+
+                <TextView
+                    android:id="@+id/tv_is_all_checked"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="5dp"
+                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:letterSpacing="-0.04"
+                    android:text="@string/INQUIRY_VIEW_SELECT_ALL"
+                    android:textColor="@color/COLOR_GRAY_400"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_selected_items_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/spoqa_han_sans_bold"
+                android:letterSpacing="-0.04"
+                android:text="@{vm.cntOfSelectedItemForDelete + `` ?? ``}"
+                android:textColor="@color/MAIN_RED"
+                android:textSize="16sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/textView5"
+                app:layout_constraintEnd_toStartOf="@+id/textView5"
+                app:layout_constraintTop_toTopOf="@+id/textView5"
+                tools:text="2" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="15dp"
+                android:fontFamily="@font/spoqa_han_sans_regular"
+                android:letterSpacing="-0.04"
+                android:text="@string/INQUIRY_VIEW_COUNT_OF_SELECTED"
+                android:textColor="@color/MAIN_RED"
+                android:textSize="16sp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageView
             android:id="@+id/image_inquiry_popup_menu"
@@ -96,6 +169,7 @@
             tools:visibility="visible">
 
             <LinearLayout
+                android:id="@+id/linearLayout2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -160,79 +234,6 @@
 
             </LinearLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraint_delete_select"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:onClick="@{()-> vm.toggleSelectAll()}"
-                android:visibility="gone"
-                tools:visibility="visible">
-
-                <LinearLayout
-                    android:id="@+id/linear_select_all"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="11dp"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <ImageView
-                        android:id="@+id/image_is_all_checked"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginLeft="5dp"
-                        android:background="@drawable/ic_checked_gray" />
-
-                    <TextView
-                        android:id="@+id/tv_is_all_checked"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="5dp"
-                        android:fontFamily="@font/spoqa_han_sans_bold"
-                        android:letterSpacing="-0.04"
-                        android:text="@string/INQUIRY_VIEW_SELECT_ALL"
-                        android:textColor="@color/COLOR_GRAY_400"
-                        android:textSize="16sp" />
-
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/tv_selected_items_num"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/spoqa_han_sans_bold"
-                    android:letterSpacing="-0.04"
-                    android:text="@{vm.cntOfSelectedItemForDelete + `` ?? ``}"
-                    android:textColor="@color/MAIN_RED"
-                    android:textSize="16sp"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="@+id/textView5"
-                    app:layout_constraintEnd_toStartOf="@+id/textView5"
-                    app:layout_constraintTop_toTopOf="@+id/textView5"
-                    tools:text="2" />
-
-                <TextView
-                    android:id="@+id/textView5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_marginBottom="15dp"
-                    android:fontFamily="@font/spoqa_han_sans_regular"
-                    android:letterSpacing="-0.04"
-                    android:text="@string/INQUIRY_VIEW_COUNT_OF_SELECTED"
-                    android:textColor="@color/MAIN_RED"
-                    android:textSize="16sp"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -300,17 +301,22 @@
                         android:visibility="@{vm.screenStatusEnum == ScreenStatusEnum.ONGOING ? View.VISIBLE : View.GONE}"
                         tools:visibility="visible">
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                        <LinearLayout
                             android:id="@+id/layout_present_ongoing"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginVertical="20dp"
-                            android:orientation="horizontal">
+                            android:layout_marginTop="24dp"
+                            android:layout_marginBottom="24dp"
+                            android:orientation="horizontal"
+                            android:visibility="@{vm.presentOngoingParcelCnt > 0 &amp;&amp; !vm.isRemovable() ? View.VISIBLE : View.GONE}"
+                            android:weightSum="10">
 
                             <LinearLayout
                                 android:id="@+id/layout_present_ongoing_text"
-                                android:layout_width="wrap_content"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_weight="5"
                                 android:gravity="center"
                                 android:orientation="vertical"
                                 app:layout_constrainedWidth="true"
@@ -324,7 +330,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:includeFontPadding="false"
-                                    android:text="@{vm.presentOngoingParcelCntAsStr}" />
+                                    android:text='@{"택배 "+vm.presentOngoingParcelCnt + ""}'
+                                    android:textColor="@color/COLOR_GRAY_800"
+                                    tools:text="택배 2" />
 
                                 <TextView
                                     style="@style/H4"
@@ -335,17 +343,12 @@
 
                             </LinearLayout>
 
-                            <androidx.constraintlayout.widget.Guideline
-                                android:id="@+id/guide_1st"
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:orientation="vertical"
-                                app:layout_constraintGuide_percent="0.36" />
-
                             <ImageView
-                                android:id="@+id/iV_present_parcel"
-                                android:layout_width="wrap_content"
+                                android:id="@+id/iv_present_parcel"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="3"
+                                android:adjustViewBounds="true"
                                 app:layout_constrainedWidth="true"
                                 app:layout_constraintBottom_toTopOf="parent"
                                 app:layout_constraintLeft_toLeftOf="@+id/guide_1st"
@@ -354,10 +357,9 @@
                                 app:layout_constraintWidth_percent="0.33"
                                 app:setDefaultImage="@{0}"
                                 app:setImage="@{R.drawable.ic_inquiry_top_section_present_parcel}"
-                                tools:background="@drawable/ic_inquiry_top_section_present_parcel" />
+                                tools:src="@drawable/ic_inquiry_top_section_present_parcel" />
 
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
+                        </LinearLayout>
 
                         <LinearLayout
                             android:id="@+id/linear_ongoing_content_view"
@@ -511,17 +513,13 @@
                                 android:textColor="@color/COLOR_GRAY_400"
                                 android:textSize="14sp" />
 
-                            <Button
-                                style="@style/H4"
+                            <TextView
+                                style="@style/buttonBasicStyle"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginLeft="25dp"
-                                android:layout_marginTop="100dp"
-                                android:layout_marginRight="25dp"
-                                android:background="@drawable/border_all_rounded_main_blue"
-                                android:text="@string/INQUIRY_VIEW_GO_TO_REGISTER"
-                                android:textColor="@color/MAIN_WHITE"
-                                android:textSize="14sp" />
+                                android:text="운송장 등록하기"
+                                android:layout_marginTop="100dp"/>
+
                         </LinearLayout>
                     </LinearLayout>
                 </androidx.core.widget.NestedScrollView>
@@ -635,6 +633,7 @@
                 tools:text="2" />
 
             <TextView
+                android:id="@+id/textView2"
                 style="@style/H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -69,7 +69,7 @@ class TokenAuthenticator : Authenticator, KoinComponent
         }
 
         // OAuth가 null 일 때 Error 호출
-        if (OAuth == null) return TestResult.ErrorResult(LOCAL_ERROR_NULL_POINT, LOCAL_ERROR_NULL_POINT.MSG, ErrorResult.ERROR_TYPE_NON, null, null)
+        if (OAuth == null) return TestResult.ErrorResult(ERROR_RESPONSE_DATA_IS_NULL, ERROR_RESPONSE_DATA_IS_NULL.MSG, ErrorResult.ERROR_TYPE_NON, null, null)
 
 //        val retro = NetworkManager.retro("sopo-aos", "sopoAndroid!!@@").create(OAuthAPI::class.java)
         val retro = NetworkManager.retro(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_PASSWORD).create(OAuthAPI::class.java)

@@ -108,8 +108,15 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
     val refreshCompleteListByOnlyLocalData: LiveData<Int>
         get() = _refreshCompleteListByOnlyLocalData
 
+    val presentOngoingParcelCnt: LiveData<Int> =
+        Transformations.map(parcelRepoImpl.getLocalOnGoingParcelCnt()) { cnt ->
+            SopoLog.d("메인 조회 탭 >>> 택배 갯수: $cnt")
+            cnt }
+
     val presentOngoingParcelCntAsStr: LiveData<String> =
-        Transformations.map(parcelRepoImpl.getLocalOnGoingParcelCnt()) { cnt -> "택배 ${cnt}개" }
+        Transformations.map(parcelRepoImpl.getLocalOnGoingParcelCnt()) { cnt ->
+            SopoLog.d("메인 조회 탭 >>> 택배 갯수: $cnt")
+            "택배 ${cnt}개" }
 
     private val ioScope = CoroutineScope(Dispatchers.IO)
     private var pagingManagement = PagingManagement(0, "", true)

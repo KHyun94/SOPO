@@ -59,7 +59,7 @@ enum class ResponseCode(val CODE: String, val MSG: String, val HTTP_STATUS: Int?
     TOKEN_ERROR_UNKNOWN("TK99", "UNKNOWN_TOKEN_ERROR", 400),
 
     LOCAL_ERROR_TYPE_MISS("LC01", "Type Miss Match"),
-    LOCAL_ERROR_NULL_POINT("LC02", "Null"),
+    ERROR_RESPONSE_DATA_IS_NULL("ER01", "Response data가 없습니다."),
 
     ERROR_UNKNOWN("9999", "알수 없는 에러", 400);
 

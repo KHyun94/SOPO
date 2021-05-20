@@ -11,6 +11,7 @@ import com.delivery.sopo.databinding.LoginViewBinding
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.launchActivity
+import com.delivery.sopo.extensions.launchActivityWithAllClear
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
@@ -116,19 +117,6 @@ class LoginView: BasicView<LoginViewBinding>(R.layout.login_view)
 
                 return@Observer
             }
-
-            // 이슈
-            val userDetail = result.data as UserDetail
-
-            if (userDetail.nickname == "")
-            {
-                startActivity(Intent(this@LoginView, UpdateNicknameView::class.java))
-                return@Observer
-            }
-
-            Toast.makeText(this, "성공", Toast.LENGTH_LONG).show()
-            startActivity(Intent(this@LoginView, MainView::class.java))
-            finish()
         })
 
         binding.vm!!.navigator.observe(this@LoginView, Observer { navigator ->
@@ -137,6 +125,14 @@ class LoginView: BasicView<LoginViewBinding>(R.layout.login_view)
                 NavigatorConst.TO_RESET_PASSWORD ->
                 {
                     Intent(this@LoginView, ResetPasswordView::class.java).launchActivity(this@LoginView)
+                }
+                NavigatorConst.TO_UPDATE_NICKNAME ->
+                {
+                    Intent(this@LoginView, UpdateNicknameView::class.java).launchActivityWithAllClear(this@LoginView)
+                }
+                NavigatorConst.TO_MAIN ->
+                {
+                    Intent(this@LoginView, MainView::class.java).launchActivityWithAllClear(this@LoginView)
                 }
             }
         })

@@ -5,6 +5,7 @@ import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.InfoEnum
@@ -13,12 +14,18 @@ import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.data.repository.remote.o_auth.OAuthRemoteRepository
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.enums.DisplayEnum
+import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.models.UserDetail
+import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class LoginViewModel(val userLocalRepository: UserLocalRepository, val oAuthRepo: OAuthLocalRepository): ViewModel()
+class LoginViewModel(private val userLocalRepo: UserLocalRepository,
+                     private val oAuthRepo: OAuthLocalRepository): ViewModel()
 {
     val email = MutableLiveData<String>()
     var password = MutableLiveData<String>()
@@ -77,8 +84,18 @@ class LoginViewModel(val userLocalRepository: UserLocalRepository, val oAuthRepo
 
             // 성공
             CoroutineScope(Dispatchers.IO).launch {
-                val res = OAuthRemoteRepository.requestLoginWithOAuth(email.value.toString(), password.value.toString().toMD5())
-                _result.postValue(res)
+                val res = login(email.value.toString(), password.value.toString().toMD5())
+
+                if(!res.result) return@launch _result.postValue(res)
+
+                val userDetail = res.data as UserDetail
+
+                if(userDetail.nickname == null || userDetail.nickname == "")
+                {
+                    return@launch _navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
+                }
+
+                return@launch _navigator.postValue(NavigatorConst.TO_MAIN)
             }
         }
         catch (e: Exception)
@@ -92,43 +109,41 @@ class LoginViewModel(val userLocalRepository: UserLocalRepository, val oAuthRepo
         _navigator.postValue(NavigatorConst.TO_RESET_PASSWORD)
     }
 
-//    suspend fun loginWithOAuth(email: String, password: String)
-//    {
-//        when (val result = LoginAPICall().requestOauth(email, password, SOPOApp.deviceInfo))
-//        {
-//            is NetworkResult.Success ->
-//            {
-//                userLocalRepository.setUserId(email)
-//                userLocalRepository.setUserPassword(password)
-//                userLocalRepository.setStatus(1)
-//
-//                val oAuth = Gson().let { gson ->
-//                    val type = object: TypeToken<OauthResult>()
-//                    {}.type
-//                    val reader = gson.toJson(result.data)
-//                    val data = gson.fromJson<OauthResult>(reader, type)
-//                    OauthMapper.objectToEntity(data)
-//                }
-//
-//                SOPOApp.oAuth = oAuth
-//
-//                withContext(Dispatchers.Default) {
-//                    oAuthRepo.insert(oAuth)
-//                }
-//
-//                _isProgress.postValue(false)
-//
-//                val userInfoRes = OAuthNetworkRepo.getUserInfo()
-//
-//                _result.postValue(userInfoRes)
-//            }
-//            is NetworkResult.Error ->
-//            {
-//                val exception = result.exception as APIException
-//                val code = exception.responseCode
-//                _isProgress.postValue(false)
-//                _result.postValue(ResponseResult(false, code, Unit, exception.errorMessage, DisplayEnum.DIALOG))
-//            }
-//        }
-//    }
+
+    suspend fun login(email: String, password: String): ResponseResult<*>
+    {
+        val oAuthRes = OAuthRemoteRepository.requestLoginWithOAuth(email, password)
+
+        if (!oAuthRes.result)
+        {
+            return oAuthRes
+        }
+
+        val oAuthDTO = oAuthRes.data ?: return ResponseResult(false, ResponseCode.ERROR_RESPONSE_DATA_IS_NULL, null, "로그이 실패했습니다. 다시 시도해주세.", DisplayEnum.DIALOG)
+
+        userLocalRepo.run {
+            setUserId(email)
+            setUserPassword(password)
+            setStatus(1)
+        }
+
+        SOPOApp.oAuth = oAuthDTO
+
+        val oAuthEntity = OAuthMapper.objectToEntity(oAuth = oAuthDTO)
+
+        withContext(Dispatchers.Default) { oAuthRepo.insert(oAuthEntity) }
+
+        val infoRes = OAuthRemoteRepository.getUserInfo()
+
+        if (!infoRes.result)
+        {
+            return infoRes
+        }
+
+        val userDetail = infoRes.data ?: return ResponseResult(false, ResponseCode.ERROR_RESPONSE_DATA_IS_NULL, null, "로그인 실패했습니다. 다시 시도해주세요.", DisplayEnum.DIALOG)
+
+        userLocalRepo.setNickname(userDetail.nickname?:"")
+
+        return infoRes
+    }
 }
