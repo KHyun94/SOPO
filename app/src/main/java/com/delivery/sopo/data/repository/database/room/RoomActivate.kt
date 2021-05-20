@@ -95,7 +95,7 @@ object RoomActivate
                         CarrierEntity(
                             carrierNo = 0,
                             carrierName = "천일택배",
-                            carrierCode = "일",
+                            carrierCode = "CHUNILPS",
                             minLen = 11,
                             maxLen = 11,
                             priority = 0.88,

@@ -21,8 +21,8 @@
         android:layout_height="match_parent">
 
         <TextView
-            style="@style/H2"
             android:id="@+id/tv_title"
+            style="@style/H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="25sp"
@@ -47,14 +47,14 @@
             <ImageView
                 android:id="@+id/iv_carrier"
                 setImage="@{vm.carrier.iconRes}"
-                app:setDefaultImage="@{0}"
                 android:layout_width="55dp"
                 android:layout_height="55dp"
                 android:layout_alignParentStart="true"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="15sp"
                 android:background="@drawable/border_round_2sp"
-                android:padding="10sp" />
+                android:padding="10sp"
+                app:setDefaultImage="@{0}" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -64,16 +64,16 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/H5"
                     android:id="@+id/tv_carrier"
+                    style="@style/H5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{vm.carrier.carrier.NAME}"
                     android:textColor="@color/COLOR_GRAY_800" />
 
                 <TextView
-                    style="@style/H3"
                     android:id="@+id/tv_waybill_num"
+                    style="@style/H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{vm.waybillNum}"
@@ -84,17 +84,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:background="@drawable/border_round_blue_btn"
                 android:layout_centerVertical="true"
+                android:background="@drawable/border_round_blue_btn"
                 android:onClick="@{() -> vm.onReviseClicked()}">
 
                 <TextView
                     style="@style/H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingHorizontal="5sp"
                     android:text="수정하기"
-                    android:textColor="@color/COLOR_MAIN_700"
-                    android:paddingHorizontal="5sp"/>
+                    android:textColor="@color/COLOR_MAIN_700" />
 
             </LinearLayout>
 
@@ -102,86 +102,43 @@
 
         <LinearLayout
             android:id="@+id/layout_alias"
-            app:layout_constraintTop_toBottomOf="@+id/layout_carrier_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="80sp"
+            android:layout_marginHorizontal="24dp"
+            android:background="@drawable/border_all_round_10dp"
+            android:backgroundTint="@color/COLOR_GRAY_100"
             android:orientation="vertical"
-            android:paddingVertical="10sp"
-            android:layout_marginTop="10sp"
-            android:layout_marginHorizontal="25sp">
+            android:paddingVertical="12dp"
+            android:layout_marginTop="49dp"
+            app:layout_constraintTop_toBottomOf="@+id/layout_carrier_info">
 
-            <RelativeLayout
-                android:id="@+id/layout_header"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10sp"
-                android:paddingHorizontal="10sp">
-
-                <TextView
-                    style="@style/H3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="5sp"
-                    android:paddingBottom="5sp"
-                    android:text="물품명"
-                    android:textColor="@color/COLOR_GRAY_800"
-                    app:layout_constraintBottom_toTopOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="parent" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/layout_body"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="10sp">
-
-                <EditText
-                    style="@style/H4"
-                    android:id="@+id/et_input_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5sp"
-                    android:background="@null"
-                    android:lines="1"
-                    android:text="@={vm.alias}"
-                    android:hint="물품명"
-                    android:paddingBottom="5sp"
-                    android:singleLine="true"
-                    android:textColorHint="@color/COLOR_GRAY_300" />
-
-                <View
-                    android:id="@+id/v_underline"
-                    android:layout_width="match_parent"
-                    android:layout_height="2sp"
-                    android:layout_below="@+id/et_input_text"
-                    android:background="@color/COLOR_GRAY_800" />
-            </RelativeLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="43sp"
-            android:layout_marginHorizontal="36sp"
-            android:layout_marginTop="45sp"
-            android:background="@drawable/border_all_rounded"
-            android:backgroundTint="@color/COLOR_MAIN_700"
-            android:gravity="center"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/layout_alias"
-            android:onClick="@{()->vm.onRegisterClicked()}">
-
-            <TextView
+            <EditText
+                android:id="@+id/et_input_text"
                 style="@style/H4"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="등록하기"
-                android:textColor="@color/MAIN_WHITE" />
+                android:layout_marginStart="8dp"
+                android:background="@null"
+                android:hint="물품명"
+                android:lines="1"
+                android:singleLine="true"
+                android:text="@={vm.alias}"
+                android:textColorHint="@color/COLOR_GRAY_300" />
 
         </LinearLayout>
+
+
+        <TextView
+            style="@style/buttonBasicStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/layout_alias"
+            android:onClick="@{()->vm.onRegisterClicked()}"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            android:layout_marginTop="45sp"
+            android:text="등록하기"/>
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -37,12 +37,6 @@ class ResetPasswordView: AppCompatActivity()
 
         bindView()
         setObserve()
-
-        binding.layoutMainReset.setOnClickListener {
-            //            Toast.makeText(this, "백그라운드 클릭", Toast.LENGTH_LONG).show()
-            it.requestFocus()
-            OtherUtil.hideKeyboardSoft(this)
-        }
     }
 
     fun bindView()
@@ -171,12 +165,16 @@ class ResetPasswordView: AppCompatActivity()
                 binding.btnNext.backgroundTintList =
                     resources.getColorStateList(R.color.COLOR_MAIN_700, null)
                 binding.btnNext.setTextColor(resources.getColor(R.color.MAIN_WHITE))
+
+                binding.tvPasswordHint.visibility = View.GONE
             }
             else
             {
                 binding.btnNext.backgroundTintList =
                     resources.getColorStateList(R.color.COLOR_GRAY_200, null)
                 binding.btnNext.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
+
+                binding.tvPasswordHint.visibility = View.VISIBLE
 
             }
 
@@ -193,6 +191,8 @@ class ResetPasswordView: AppCompatActivity()
 
         binding.tvSubTitle.visibility = View.GONE
         binding.btnNext.text = "변경하기"
+
+        binding.tvPasswordHint.visibility = View.VISIBLE
     }
 
     fun updateUIForComplete()
@@ -200,6 +200,8 @@ class ResetPasswordView: AppCompatActivity()
         binding.btnNext.text = "확인"
         binding.layoutPassword.visibility = View.GONE
         binding.tvCompleteContent.visibility = View.VISIBLE
+
+        binding.tvPasswordHint.visibility = View.GONE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)

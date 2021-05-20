@@ -12,6 +12,7 @@ import com.delivery.sopo.util.ValidateUtil
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
+
 object TextInputUtil
 {
     var errorMessage = ""
@@ -49,6 +50,28 @@ object TextInputUtil
             error = null
             errorIconDrawable = null
 
+            helperText = when (infoEnum)
+            {
+                InfoEnum.EMAIL ->
+                {
+                    "이메일 양식을 확인해주세요."
+                }
+                InfoEnum.PASSWORD ->
+                {
+                    "영문, 숫자 조합 8자리 이상 설정해주세요."
+                }
+                InfoEnum.RE_PASSWORD ->
+                {
+                    "영문, 숫자 조합 8자리 이상 설정해주세요."
+                }
+                InfoEnum.NICKNAME ->
+                {
+                    "닉네임 형식을 확인해주세요."
+                }
+                else -> ""
+            }
+            setHelperTextColor(ContextCompat.getColorStateList(context, R.color.COLOR_MAIN_700))
+
             isEndIconVisible = true
             endIconMode = TextInputLayout.END_ICON_CUSTOM
             endIconDrawable = ContextCompat.getDrawable(context, R.drawable.ic_textinput_status_clear)
@@ -72,6 +95,7 @@ object TextInputUtil
         val infoEnum = focus.third
 
         textInputLayout.setEndIconOnClickListener(null)
+        textInputLayout.helperText = null
 
         var isValidate: Boolean
 
@@ -136,6 +160,8 @@ object TextInputUtil
             }
         }
 
+
+
         if(textInputEditText.text.toString().isEmpty())
         {
             textInputLayout.run {
@@ -188,7 +214,7 @@ object TextInputUtil
         SopoLog.d("${focus.third.NAME}'s validation is success >>>${textInputEditText.text.toString()}")
 
         textInputLayout.run {
-            isHintEnabled = false
+//            isHintEnabled = false
             hint = null
             boxBackgroundColor = resources.getColor(R.color.COLOR_MAIN_BLUE_50)
 

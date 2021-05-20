@@ -15,7 +15,7 @@
 
         <TextView
             android:id="@+id/tv_title_welcome"
-            style="@style/H3"
+            style="@style/H4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="138dp"
@@ -24,14 +24,14 @@
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:textColor="@color/MAIN_BLACK"
+            android:textColor="@color/COLOR_GRAY_500"
             android:includeFontPadding="false"/>
 
         <TextView
             style="@style/H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="101dp"
+            android:layout_marginTop="48dp"
             app:layout_constraintRight_toLeftOf="parent"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_title_welcome"
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginHorizontal="24dp"
-            android:layout_marginBottom="173dp"
+            android:layout_marginBottom="83dp"
             android:text="확인"
             android:onClick="@{()->vm.onCompleteClicked()}"
             app:layout_constraintBottom_toBottomOf="parent"

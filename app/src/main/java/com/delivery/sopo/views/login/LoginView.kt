@@ -117,6 +117,7 @@ class LoginView: BasicView<LoginViewBinding>(R.layout.login_view)
                 return@Observer
             }
 
+            // 이슈
             val userDetail = result.data as UserDetail
 
             if (userDetail.nickname == "")

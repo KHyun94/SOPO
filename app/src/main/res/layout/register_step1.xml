@@ -72,6 +72,7 @@
                 app:type="@{InfoEnum.WAYBILL_NUMBER}"
                 app:focusChangeListener="@{vm.focusChangeCallback}"/>
 
+
         </com.google.android.material.textfield.TextInputLayout>
 
         <RelativeLayout
@@ -82,7 +83,8 @@
             android:layout_marginHorizontal="24dp"
             android:background="@drawable/border_all_round_10dp"
             android:backgroundTint="@color/COLOR_GRAY_100"
-            android:onClick="@{()->vm.onMove2ndStepClicked()}">
+            android:onClick="@{()->vm.onMove2ndStepClicked()}"
+            android:paddingVertical="1dp">
 
             <TextView
                 android:id="@+id/tv_carrier_hint"
@@ -131,51 +133,46 @@
 
         </RelativeLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:onClick="@{()->vm.onMove2ndStepClicked()}"
-            android:text="@string/IS_RIGHT_CARRIER"
-            android:textColor="@color/COLOR_MAIN_RED_500"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:visibility="@{vm.carrierDTO.carrier.NAME.length() > 0 ? View.VISIBLE : View.GONE}"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co" />
-
-
         <LinearLayout
             android:id="@+id/layout_clip_board"
-            android:layout_width="match_parent"
-            android:layout_height="60sp"
-            android:layout_marginHorizontal="25sp"
-            android:layout_marginTop="53sp"
-            android:background="@drawable/border_all_rounded"
-            android:backgroundTint="@color/COLOR_GRAY_100"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="40dp"
+            app:layout_constraintLeft_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="parent"
+            android:background="@android:color/transparent"
             android:gravity="center"
             android:onClick="@{()->vm.onPasteClicked()}"
             android:orientation="horizontal"
             android:visibility="@{(vm.clipBoardWords.length() > 0) &amp;&amp; (vm.carrierDTO.carrier.NAME.length() == 0)?View.VISIBLE:View.GONE}"
-            app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co">
+            app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co"
+            tools:visibility="visible">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_register_clip_board"/>
 
             <TextView
+                style="@style/H4"
                 android:id="@+id/tv_clipboard_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqa_han_sans_regular"
+                android:fontFamily="sans-serif"
+                android:textStyle="bold"
                 android:text="@={vm.clipBoardWords}"
                 android:textColor="@color/COLOR_MAIN_700"
-                android:textSize="14sp" />
+                tools:text="11111111111"
+                android:layout_marginLeft="8dp"/>
 
             <TextView
+                style="@style/H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/spoqa_han_sans_regular"
                 android:text="로 등록하기"
-                android:textColor="@color/COLOR_MAIN_700"
-                android:textSize="14sp" />
+                android:textColor="@color/COLOR_MAIN_700" />
 
         </LinearLayout>
 
@@ -188,7 +185,8 @@
             android:visibility="@{(vm.waybillNum.length() > 0) &amp;&amp; (vm.carrierDTO.carrier.NAME.length() > 0)?View.VISIBLE:View.GONE}"
             app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co"
             android:text="다음으로"
-            android:layout_marginTop="69dp"/>
+            android:layout_marginTop="76dp"
+            tools:visibility="gone"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
