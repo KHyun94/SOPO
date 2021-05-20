@@ -1,9 +1,6 @@
 package com.delivery.sopo.viewmodels.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.models.mapper.ParcelMapper
@@ -25,12 +22,10 @@ import kotlinx.coroutines.withContext
 class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val appPasswordRepo: AppPasswordRepository): ViewModel()
 {
     val mainTabVisibility = MutableLiveData<Int>()
-    val errorMsg = MutableLiveData<String?>()
 
-    // 앱 패스워드 등록 여부 TODO SplashView로 이동 예
-    private val _isSetAppPassword = MutableLiveData<AppPasswordEntity?>()
+    // 앱 패스워드 등록 여부
     val isSetAppPassword: LiveData<AppPasswordEntity?>
-        get() = _isSetAppPassword
+    get() = appPasswordRepo.getByLiveData()
 
     // 업데이트 여부
     var isInitUpdate = false
@@ -44,10 +39,8 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
 
     init
     {
-        initIsSetOfSecurity()
         CoroutineScope(Dispatchers.Main).launch {
-            val isUpdatableParcelStatus =
-                withContext(Dispatchers.Default) { isUpdatableParcelStatus() }
+            val isUpdatableParcelStatus = withContext(Dispatchers.Default) { isUpdatableParcelStatus() }
 
             // 업데이트할 택배가 없다면 서버를 통해 갱신 처리를 하지 않는다.
             if (!isUpdatableParcelStatus)
@@ -61,16 +54,9 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
         updateFCMToken()
     }
 
-    private fun initIsSetOfSecurity()
-    {
-        viewModelScope.launch(Dispatchers.IO) {
-            _isSetAppPassword.postValue(appPasswordRepo.get())
-        }
-    }
-
     fun setMainTabVisibility(visibility: Int)
     {
-        mainTabVisibility.value = visibility
+        mainTabVisibility.postValue(visibility)
     }
 
     // 업데이트 가능한 택배가 있는지 체크 [ParcelStatusEntity - updatableStatus
@@ -80,9 +66,6 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
         return parcelManagementRepoImpl.getCountForUpdatableParcel() > 0
     }
 
-    /**
-     * 이슈 : 모든 택배가 미확인 상태로 변경됨 수정이 시급
-     */
     private suspend fun requestOngoingParcelsAsRemote()
     {
         SopoLog.d(msg = "requestOngoingParcelsAsRemote() call")
@@ -93,9 +76,7 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
 
         if (res.data == null || res.data.isEmpty()) return SopoLog.d("업데이트할 택배가 없거나, 리스트 사이즈 0")
 
-        val localParcels = withContext(Dispatchers.Default) {
-            parcelRepoImpl.getLocalOngoingParcels()
-        }
+        val localParcels = withContext(Dispatchers.Default) { parcelRepoImpl.getLocalOngoingParcels() }
 
         // 로컬에 저장되어있는 택배가 없기 때문에 서버에서 받아온 택배 리스트를 전체 업데이트 처리해야 함
         if (localParcels.isEmpty()) return SopoLog.d("업데이트할 택배가 없거나, 리스트 사이즈 0")
@@ -131,40 +112,28 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
 
         insertParcels.addAll(remoteParcels)
 
-        if (insertParcels.size > 0)
-        {
-            SopoLog.d(
-                msg = "Insert Into Room 서버에만 존재하는 데이터 ${insertParcels.size}"
-            )
-            // 택배 인서트
-
-            withContext(Dispatchers.Default) {
-                parcelRepoImpl.insertEntities(insertParcels)
-                parcelManagementRepoImpl.insertEntities(
-                    insertParcels.map(
-                        ParcelMapper::parcelToParcelManagementEntity
-                    )
-                )
-            }
-
+        if (insertParcels.size > 0) {
+            insertParcelsInLocalDB(insertParcels)
         }
 
         if (updateParcels.size > 0)
         {
-            SopoLog.d(
-                msg = "Update Into Room 갱신된 데이터 ${updateParcels.size}"
-            )
-
-            withContext(Dispatchers.Default) {
-                // 택배 업데이트
-                parcelRepoImpl.updateEntities(updateParcels)
-                parcelManagementRepoImpl.updateEntities(updateParcels.map { parcel ->
-                    val pm = ParcelMapper.parcelToParcelManagementEntity(parcel)
-                    pm.unidentifiedStatus = 1
-                    pm
-                })
-            }
+            updateParcelsInLocalDB(updateParcels)
         }
+    }
+
+    private suspend fun insertParcelsInLocalDB(parcels: List<ParcelDTO>) = withContext(Dispatchers.Default) {
+        parcelRepoImpl.insertEntities(parcels)
+        parcelManagementRepoImpl.insertEntities(parcels.map(ParcelMapper::parcelToParcelManagementEntity))
+    }
+
+    private suspend fun updateParcelsInLocalDB(parcels: List<ParcelDTO>) = withContext(Dispatchers.Default) {
+        parcelRepoImpl.updateEntities(parcels)
+        parcelManagementRepoImpl.updateEntities(parcels.map { parcel ->
+            val pm = ParcelMapper.parcelToParcelManagementEntity(parcel)
+            pm.unidentifiedStatus = 1
+            pm
+        })
     }
 
     /** Update FCM Token  **/

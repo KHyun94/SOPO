@@ -1,5 +1,6 @@
 package com.delivery.sopo.views.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.DrawableRes
@@ -12,11 +13,9 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
-import com.delivery.sopo.extensions.launchActivitiy
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.extensions.launchActivity
 import com.delivery.sopo.services.PowerManager
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
@@ -26,16 +25,12 @@ import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.menus.LockScreenView
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.tap_item.view.*
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 {
     private val vm: MainViewModel by viewModel()
     private val inquiryVm: InquiryViewModel by viewModel()
-
-    private val userLocalRepository: UserLocalRepository by inject()
-    val appDatabase: AppDatabase by inject()
 
     var currentPage = MutableLiveData<Int?>()
 
@@ -63,22 +58,10 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
     {
         /** 화면 패스워드 설정 **/
         binding.vm?.isSetAppPassword?.observe(this, Observer {
-            it?.also {
-                this.launchActivitiy<LockScreenView> {
+            it?.let {
+                Intent(this@MainView, LockScreenView::class.java).apply {
                     putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
-                }
-            }
-        })
-
-        binding.vm!!.mainTabVisibility.observe(this, Observer {
-
-            binding.layoutMainTab.run {
-                when (it)
-                {
-                    View.VISIBLE -> visibility = View.VISIBLE
-                    View.INVISIBLE -> visibility = View.INVISIBLE
-                    View.GONE -> visibility = View.GONE
-                }
+                }.launchActivity(this@MainView)
             }
         })
 

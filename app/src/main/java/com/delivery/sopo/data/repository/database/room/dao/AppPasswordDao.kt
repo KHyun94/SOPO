@@ -11,6 +11,9 @@ interface AppPasswordDao
     @Query("SELECT * FROM APP_PASSWORD")
     fun get(): AppPasswordEntity?
 
+    @Query("SELECT * FROM APP_PASSWORD")
+    fun getByLiveData(): LiveData<AppPasswordEntity?>
+
     @Query("SELECT COUNT(*) FROM APP_PASSWORD")
     fun getCntOfAppPasswordLiveData(): LiveData<Int>
 

@@ -37,6 +37,7 @@
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
             app:tabIndicatorColor="@android:color/transparent"
+            android:visibility="@{vm.mainTabVisibility}"
             />
 
         <com.delivery.sopo.views.widget.AlertMessageBar

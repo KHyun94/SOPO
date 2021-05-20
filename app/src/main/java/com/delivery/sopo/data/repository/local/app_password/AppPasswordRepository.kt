@@ -12,6 +12,8 @@ class AppPasswordRepository(private val appDatabase: AppDatabase): AppPasswordDa
         return appDatabase.securityDao().get()
     }
 
+    fun getByLiveData(): LiveData<AppPasswordEntity?> = appDatabase.securityDao().getByLiveData()
+
     override fun getCntOfAppPasswordLiveData(): LiveData<Int>
     {
         return appDatabase.securityDao().getCntOfAppPasswordLiveData()
