@@ -12,8 +12,7 @@ import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.setting.GridSpacingItemDecoration
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 class RegisterStep2ViewModel(private val carrierRepo: CarrierRepository): ViewModel()
 {
@@ -44,8 +43,9 @@ class RegisterStep2ViewModel(private val carrierRepo: CarrierRepository): ViewMo
         itemList = if(_waybillNum != "")
         {
             SopoLog.d("운송장 번호 >>> $_waybillNum")
-            RoomActivate.recommendAutoCarrier(SOPOApp.INSTANCE, waybillNum.value!!, RoomActivate.rowCnt, carrierRepo)
-                ?: emptyList<CarrierDTO?>().toMutableList()
+            runBlocking(Dispatchers.Default) {
+                RoomActivate.recommendAutoCarrier(waybillNum.value!!, RoomActivate.rowCnt, carrierRepo) ?: emptyList<CarrierDTO?>().toMutableList()
+            }
         }
         else
         {

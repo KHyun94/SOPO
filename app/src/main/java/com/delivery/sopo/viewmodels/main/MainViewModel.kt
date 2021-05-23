@@ -1,19 +1,18 @@
 package com.delivery.sopo.viewmodels.main
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
-import com.delivery.sopo.firebase.FirebaseNetwork
-import com.delivery.sopo.models.mapper.ParcelMapper
-import com.delivery.sopo.models.parcel.ParcelDTO
-import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
 import com.delivery.sopo.data.repository.remote.parcel.ParcelRemoteRepository
+import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.models.ResponseResult
-import com.delivery.sopo.services.network_handler.NetworkResult
+import com.delivery.sopo.models.mapper.ParcelMapper
+import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,8 +33,6 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
     private var _result = MutableLiveData<ResponseResult<*>>()
     val result: LiveData<ResponseResult<*>>
         get() = _result
-
-    val adapter = MutableLiveData<ViewPagerAdapter>()
 
     init
     {

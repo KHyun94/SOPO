@@ -185,8 +185,8 @@
             android:visibility="@{(vm.waybillNum.length() > 0) &amp;&amp; (vm.carrierDTO.carrier.NAME.length() > 0)?View.VISIBLE:View.GONE}"
             app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co"
             android:text="다음으로"
-            android:layout_marginTop="76dp"
-            tools:visibility="gone"/>
+            android:layout_marginTop="18dp"
+            tools:visibility="visible"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

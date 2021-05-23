@@ -3,7 +3,10 @@ package com.delivery.sopo.views.registers
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
@@ -11,13 +14,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.data.repository.database.room.RoomActivate
+import com.delivery.sopo.data.repository.local.repository.CarrierRepository
+import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
 import com.delivery.sopo.databinding.RegisterStep1Binding
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.TabCode
-import com.delivery.sopo.models.CarrierDTO
-import com.delivery.sopo.data.repository.local.repository.CarrierRepository
-import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
 import com.delivery.sopo.extensions.isGreaterThanOrEqual
+import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.OtherUtil
@@ -27,18 +30,18 @@ import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.system.exitProcess
 
-
-typealias FocusChangeCallback = (String, Boolean) -> Unit
-
 class RegisterStep1: Fragment()
 {
     private lateinit var parentView: MainView
-
     private lateinit var binding: RegisterStep1Binding
+
     private val vm: RegisterStep1ViewModel by viewModel()
 
     private val carrierRepository: CarrierRepository by inject()
@@ -49,7 +52,7 @@ class RegisterStep1: Fragment()
     private var returnType: Int? = null
 
     // todo 추 후 각 페이지에 중복되어있는 로직을 통합 처리 예정
-    var callback: OnBackPressedCallback? = null
+    lateinit var callback: OnBackPressedCallback
 
     override fun onAttach(context: Context)
     {
@@ -64,23 +67,21 @@ class RegisterStep1: Fragment()
                 if (System.currentTimeMillis() - pressedTime > 2000)
                 {
                     pressedTime = System.currentTimeMillis()
-                    val snackbar = Snackbar.make(
+                    Snackbar.make(
                         parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000
-                    )
-                    snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
-
-                    SopoLog.d("RegisterStep1::1 BackPressListener = 종료를 위해 한번 더 클릭")
+                    ).let { bar ->
+                        bar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
+                    }
                 }
                 else
                 {
-                    SopoLog.d("RegisterStep1::1 BackPressListener = 종료")
                     ActivityCompat.finishAffinity(activity!!)
                     exitProcess(0)
                 }
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -112,6 +113,12 @@ class RegisterStep1: Fragment()
         binding.vm = vm
         binding.lifecycleOwner = this
 
+        waybillNum?.let {
+            if(it.isNotEmpty())
+            {
+                binding.layoutWaybillNum.hint = ""
+            }
+        }
         binding.vm!!.waybillNum.postValue(waybillNum ?: "")
         binding.vm!!.carrierDTO.postValue(carrierDTO)
 
@@ -130,7 +137,7 @@ class RegisterStep1: Fragment()
     override fun onDetach()
     {
         super.onDetach()
-        callback?.remove()
+        callback.remove()
     }
 
     // 등록 완료 시 조회탭으로 이동
@@ -141,48 +148,18 @@ class RegisterStep1: Fragment()
 
     private fun setObserve()
     {
-        var pressedTime: Long = 0
-
         parentView.currentPage.observe(this, Observer {
             if (it != null && it == 0)
             {
-                callback = object: OnBackPressedCallback(true)
-                {
-                    override fun handleOnBackPressed()
-                    {
-                        SopoLog.d(msg = "RegisterStep1:: BackPressListener")
-
-                        if (System.currentTimeMillis() - pressedTime > 2000)
-                        {
-                            pressedTime = System.currentTimeMillis()
-                            val snackbar = Snackbar.make(
-                                parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000
-                            )
-                            snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
-
-                            SopoLog.d("MenuFragment::1 BackPressListener = 종료를 위해 한번 더 클릭")
-                        }
-                        else
-                        {
-                            SopoLog.d("RegisterStep1::1 BackPressListener = 종료")
-                            ActivityCompat.finishAffinity(activity!!)
-                            System.exit(0)
-                        }
-
-                    }
-
-                }
-
-                requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+                requireActivity().onBackPressedDispatcher.addCallback(this, callback)
             }
         })
 
-
-        binding.vm!!.waybillNum.observe(this, Observer { waybillNum ->
+        vm.waybillNum.observe(this, Observer { waybillNum ->
 
             if (waybillNum == null) return@Observer
 
-            if (waybillNum.isNotEmpty()) binding.vm!!.clipBoardWords.value = ""
+            if (waybillNum.isNotEmpty()) vm.clipBoardWords.value = ""
 
             if (carrierDTO != null) return@Observer
 
@@ -193,27 +170,24 @@ class RegisterStep1: Fragment()
                 return@Observer
             }
 
-            val carrierList =
-                RoomActivate.recommendAutoCarrier(SOPOApp.INSTANCE, waybillNum, 1, carrierRepository)
+            CoroutineScope(Dispatchers.Default).launch {
+                val carrierList = RoomActivate.recommendAutoCarrier(waybillNum, 1, carrierRepository)
 
-            SopoLog.d("input waybill num's length >= 9. Select Carrier:[${carrierList?.joinToString()}]")
+                SopoLog.d("input waybill num's length >= 9. Select Carrier:[${carrierList?.joinToString()}]")
 
-            if (carrierList != null && carrierList.size > 0)
-            {
-                SopoLog.d(
-                    msg = """
-                        최우선 순위 >>> ${carrierList[0]}
-                    """.trimIndent()
-                )
-
-                binding.vm!!.carrierDTO.value = (carrierList[0])
+                if (carrierList != null && carrierList.size > 0)
+                {
+                    SopoLog.d("운송사 리스트 >>> ${carrierList.joinToString()}")
+                    binding.vm!!.carrierDTO.postValue(carrierList[0])
+                }
             }
-
         })
 
         binding.vm!!.focus.observe(this, Observer { focus ->
             val res = TextInputUtil.changeFocus(requireContext(), focus)
-            binding.vm!!.validates[res.first] = res.second
+            CoroutineScope(Dispatchers.Main).launch {
+                binding.vm!!.validates[res.first] = res.second
+            }
         })
 
         binding.vm!!.validateError.observe(this, Observer { target ->

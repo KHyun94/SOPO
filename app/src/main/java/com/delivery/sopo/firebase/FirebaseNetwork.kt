@@ -1,10 +1,14 @@
 package com.delivery.sopo.firebase
 
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import java.util.*
@@ -93,6 +97,10 @@ object FirebaseNetwork: KoinComponent
 //                val code = CodeUtil.getCode(task.exception.getCommonMessage(SOPOApp.INSTANCE))
 //                callback.invoke(TestResult.ErrorResult<String?>(code, code.MSG, ErrorResult.ERROR_TYPE_NON, null, task.exception))
                 return@addOnCompleteListener
+            }
+
+            CoroutineScope(Dispatchers.Main).launch {
+                UserRemoteRepository.updateFCMToken(task.result.token)
             }
 
 //            callback.invoke(TestResult.SuccessResult<InstanceIdResult>(SUCCESS, SUCCESS.MSG, task.result))

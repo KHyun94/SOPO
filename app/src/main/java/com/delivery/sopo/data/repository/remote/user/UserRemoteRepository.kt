@@ -59,4 +59,30 @@ object UserRemoteRepository
         }
     }
 
+    suspend fun updateFCMToken(fcmToken: String): ResponseResult<Unit>{
+
+        val fcmTokenToMap = mapOf(Pair("fcmToken", fcmToken))
+
+        when(val result = UserCall.updateFCMToken(fcmToken = fcmTokenToMap))
+        {
+            is NetworkResult.Success ->
+            {
+                val apiResult = result.data
+
+                SopoLog.d("Success to request reset password")
+
+                return ResponseResult(true, ResponseCode.SUCCESS, Unit, ResponseCode.SUCCESS.MSG)
+            }
+            is NetworkResult.Error ->
+            {
+                SopoLog.d("Fail to request reset password")
+
+                val exception = result.exception as APIException
+                val responseCode = exception.responseCode
+
+                return ResponseResult(false, responseCode, Unit, responseCode.MSG, DisplayEnum.DIALOG)
+            }
+        }
+    }
+
 }

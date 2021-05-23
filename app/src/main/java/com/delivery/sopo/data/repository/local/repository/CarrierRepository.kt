@@ -15,6 +15,11 @@ class CarrierRepository(private val appDB: AppDatabase)
         }
     }
 
+    suspend fun getAllCnt(): Int
+    {
+        return appDB.carrierDAO().getAllCnt()
+    }
+
     suspend fun getWithLen(len: Int, cnt: Int): List<CarrierDTO?>
     {
         val res = appDB.carrierDAO().getWithLen(
@@ -124,5 +129,10 @@ class CarrierRepository(private val appDB: AppDatabase)
     fun getCarrierEntityWithPartName(name: String): List<CarrierEntity?>
     {
         return appDB.carrierDAO().getWithPartName(name)
+    }
+
+    fun insert(list: List<CarrierEntity>)
+    {
+        return appDB.carrierDAO().insert(list)
     }
 }

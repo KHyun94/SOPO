@@ -79,7 +79,9 @@ class SOPOApp : Application()
             accessToken = Session.getCurrentSession().tokenInfo
         }
 
-        RoomActivate.initializeCarrierInfoIntoDB(this)
+        CoroutineScope(Dispatchers.Default).launch {
+            RoomActivate.initializeCarrierInfoIntoDB()
+        }
 
         getInitViewPagerNumber() {
             currentPage.postValue(it)
@@ -132,7 +134,6 @@ class SOPOApp : Application()
         lateinit var alarmManager: AlarmManager
 
         var currentPage = SingleLiveEvent<Int?>()
-
 
         val cntOfBeUpdate = MutableLiveData<Int?>()
 

@@ -78,6 +78,8 @@ class RegisterStep2: Fragment()
 
         binding.vm?.moveFragment?.observe(this, Observer {
 
+            SopoLog.d("moveFragment >>> ${it}")
+
             when (it)
             {
                 TabCode.REGISTER_STEP3.NAME ->
@@ -111,6 +113,11 @@ class RegisterStep2: Fragment()
                 {
                     FragmentManager.remove(activity = activity!!, fragment = this@RegisterStep2)
                     binding.vm?.moveFragment?.value = ""
+
+                    TabCode.REGISTER_STEP1.FRAGMENT =
+                        RegisterStep1.newInstance(waybillNum, binding.vm?.selectedItem?.value?.item, 0)
+
+                    FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1, RegisterMainFrame.viewId)
                 }
             }
         })

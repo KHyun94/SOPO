@@ -38,7 +38,6 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
     {
         super.onCreate(savedInstanceState)
 
-        binding.vm!!.adapter.value = ViewPagerAdapter(supportFragmentManager, 3)
         initUI()
         PowerManager.checkWhiteList(this)
     }
@@ -57,8 +56,8 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
     override fun setObserver()
     {
         /** 화면 패스워드 설정 **/
-        binding.vm?.isSetAppPassword?.observe(this, Observer {
-            it?.let {
+        vm.isSetAppPassword.observe(this, Observer {appPassword ->
+            appPassword?.let {
                 Intent(this@MainView, LockScreenView::class.java).apply {
                     putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
                 }.launchActivity(this@MainView)
@@ -123,7 +122,6 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
                     )
                     else -> binding.layoutViewPager.setCurrentItem(0, true)
                 }
-
             }
         })
     }
@@ -186,8 +184,18 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 
     private fun setViewPager()
     {
-        binding.layoutViewPager.adapter = ViewPagerAdapter(supportFragmentManager, 3)
-        binding.layoutViewPager.addOnPageChangeListener(object: ViewPager.OnPageChangeListener
+        val addOnPageListen = object: ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(p0: Int) {}
+
+            override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {}
+
+            override fun onPageSelected(pageNum: Int) { // TODO 등록 성공 시 조회 페이지로 이동 처리
+            }
+        }
+
+        binding.layoutViewPager.also {vp ->
+            vp.adapter = ViewPagerAdapter(supportFragmentManager, 3)
+        }.addOnPageChangeListener(object: ViewPager.OnPageChangeListener
         {
             override fun onPageScrollStateChanged(p0: Int)
             {
