@@ -275,7 +275,7 @@ class ParcelDetailView : Fragment()
             {
                 if (it)
                 {
-                    FragmentManager.remove(activity!!, this@ParcelDetailView)
+                    FragmentManager.remove(activity!!)
                     binding.vm!!.isBack.call()
                 }
             }

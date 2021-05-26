@@ -21,11 +21,13 @@ import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+import java.util.logging.Handler
 
 class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData<Int>, private var list: MutableList<InquiryListItem> = mutableListOf(), private val itemTypeEnum: InquiryItemTypeEnum): RecyclerView.Adapter<RecyclerView.ViewHolder>(), KoinComponent
 {

@@ -111,7 +111,7 @@ class RegisterStep2: Fragment()
 
                 TabCode.REGISTER_STEP2.NAME ->
                 {
-                    FragmentManager.remove(activity = activity!!, fragment = this@RegisterStep2)
+                    FragmentManager.remove(activity = activity!!)
                     binding.vm?.moveFragment?.value = ""
 
                     TabCode.REGISTER_STEP1.FRAGMENT =

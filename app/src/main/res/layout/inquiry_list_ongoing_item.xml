@@ -130,24 +130,24 @@
 
                     <TextView
                         android:id="@+id/tv_registered_parcel_name"
-                        style="@style/H1"
+                        style="@style/H5"
+                        android:textSize="13dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/spoqa_han_sans_bold"
-                        android:letterSpacing="-0.05"
+                        android:letterSpacing="0"
+                        android:fontFamily="@font/roboto_medium"
                         android:text="@{ongoingInquiryData.parcelDTO.alias}"
-                        android:textColor="@color/COLOR_GRAY_800"
-                        android:textSize="12sp"
-                        tools:text="갤럭시 버즈 플러스 화이트" />
+                        tools:text="갤럭시 버즈 플러스 화이트777갤1234ABCabc"
+                        android:layout_marginBottom="6dp"/>
 
                     <TextView
                         android:id="@+id/tv_registered_parcel_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/spoqa_han_sans_light"
+                        android:fontFamily="@font/roboto_regular"
                         android:text="@{ongoingInquiryData.ongoingDateTime}"
-                        android:textColor="@color/COLOR_GRAY_800"
-                        android:textSize="10sp"
+                        android:textColor="@color/COLOR_GRAY_500"
+                        android:textSize="13dp"
                         tools:text="2020/08/31" />
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>

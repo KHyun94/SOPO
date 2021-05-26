@@ -28,15 +28,13 @@
         android:background="@color/COLOR_GRAY_50">
 
         <TextView
+            style="@style/H2"
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="25dp"
-            android:layout_marginTop="15dp"
-            android:fontFamily="@font/spoqa_han_sans_bold"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="11dp"
             android:text="@string/INQUIRY_VIEW_MAIN_TITLE"
-            android:textColor="@color/COLOR_GRAY_800"
-            android:textSize="21sp"
             android:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -179,6 +177,8 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
+                    style="@style/H4"
+                    android:fontFamily="@font/spoqa_han_sans_bold"
                     android:id="@+id/btn_ongoing"
                     android:layout_width="80dp"
                     android:layout_height="35dp"
@@ -189,7 +189,6 @@
                     android:includeFontPadding="false"
                     android:onClick="@{()-> vm.setScreenStatusOngoing()}"
                     android:text="@string/INQUIRY_VIEW_ONGOING_DELIVERY"
-                    android:textSize="14sp"
                     tools:textColor="@color/MAIN_WHITE" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -215,6 +214,8 @@
                         tools:text="1" />
 
                     <TextView
+                        style="@style/H4"
+                        android:fontFamily="@font/spoqa_han_sans_bold"
                         android:id="@+id/btn_complete"
                         android:layout_width="80dp"
                         android:layout_height="35dp"
@@ -224,7 +225,6 @@
                         android:onClick="@{()-> vm.setScreenStatusComplete()}"
                         android:text="@string/INQUIRY_VIEW_COMPLETE_DELIVERY"
                         android:textColor="@color/COLOR_GRAY_400"
-                        android:textSize="14sp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -330,9 +330,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:includeFontPadding="false"
-                                    android:text='@{"택배 "+vm.presentOngoingParcelCnt + ""}'
+                                    android:text='@{"택배 "+vm.presentOngoingParcelCnt + "개"}'
                                     android:textColor="@color/COLOR_GRAY_800"
-                                    tools:text="택배 2" />
+                                    tools:text="택배 2개" />
 
                                 <TextView
                                     style="@style/H4"
@@ -379,7 +379,7 @@
                                     android:id="@+id/tv_soon_arrival"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="15dp"
+                                    android:layout_marginStart="24dp"
                                     android:fontFamily="@font/spoqa_han_sans_regular"
                                     android:text="@string/INQUIRY_VIEW_SOON_ARRIVAL"
                                     android:textColor="@color/COLOR_GRAY_800"
@@ -454,7 +454,7 @@
                                     android:id="@+id/tv_registered_arrival"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="15dp"
+                                    android:layout_marginStart="24dp"
                                     android:fontFamily="@font/spoqa_han_sans_regular"
                                     android:text="@string/INQUIRY_VIEW_REGISTERED_PARCEL"
                                     android:textColor="@color/COLOR_GRAY_800"

@@ -15,19 +15,24 @@ import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.launchActivity
 import com.delivery.sopo.services.PowerManager
+import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
+import com.delivery.sopo.views.inquiry.InquiryMainFrame
 import com.delivery.sopo.views.menus.LockScreenView
+import com.delivery.sopo.views.menus.MenuMainFrame
+import com.delivery.sopo.views.registers.RegisterMainFrame
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.tap_item.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainView: BasicView<MainViewBinding>(R.layout.main_view)
+class  MainView: BasicView<MainViewBinding>(R.layout.main_view)
 {
     private val vm: MainViewModel by viewModel()
     private val inquiryVm: InquiryViewModel by viewModel()
@@ -177,6 +182,26 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 
                 override fun onTabReselected(tab: TabLayout.Tab?)
                 {
+                    if(tab == null) return
+
+                    FragmentManager.remove(activity = this@MainView)
+
+                    when(tab.position)
+                    {
+                        NavigatorConst.REGISTER_TAB ->
+                        {
+                            FragmentManager.move(this@MainView,TabCode.REGISTER_STEP1, RegisterMainFrame.viewId)
+                        }
+                        NavigatorConst.INQUIRY_TAB ->
+                        {
+                            FragmentManager.move(this@MainView, TabCode.INQUIRY, InquiryMainFrame.viewId)
+                        }
+                        NavigatorConst.MY_MENU_TAB ->
+                        {
+                            FragmentManager.move(this@MainView, TabCode.MY_MENU, MenuMainFrame.viewId)
+                        }
+                    }
+
                 }
             })
         }
@@ -184,7 +209,7 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 
     private fun setViewPager()
     {
-        val addOnPageListen = object: ViewPager.OnPageChangeListener {
+        val addOnPageListener = object: ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(p0: Int) {}
 
             override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {}
@@ -195,21 +220,7 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 
         binding.layoutViewPager.also {vp ->
             vp.adapter = ViewPagerAdapter(supportFragmentManager, 3)
-        }.addOnPageChangeListener(object: ViewPager.OnPageChangeListener
-        {
-            override fun onPageScrollStateChanged(p0: Int)
-            {
-            }
-
-            override fun onPageScrolled(p0: Int, p1: Float, p2: Int)
-            {
-            }
-
-            override fun onPageSelected(pageNum: Int)
-            {
-                // TODO 등록 성공 시 조회 페이지로 이동 처리
-            }
-        })
+        }.addOnPageChangeListener(addOnPageListener)
     }
 
     private fun setTabIcon(v: TabLayout, index: Int, @DrawableRes iconRes: Int, tabName: String, textColor: Int)

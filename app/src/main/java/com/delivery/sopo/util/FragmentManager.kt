@@ -39,7 +39,7 @@ object FragmentManager
         }
     }
 
-    fun remove(activity: FragmentActivity, fragment : Fragment)
+    fun remove(activity: FragmentActivity)
     {
         val fm = activity.supportFragmentManager
 //        fm.beginTransaction().remove(fragment).commitAllowingStateLoss()

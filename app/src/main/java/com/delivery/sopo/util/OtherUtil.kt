@@ -3,16 +3,33 @@ package com.delivery.sopo.util
 import android.app.Activity
 import android.content.Context
 import android.provider.Settings
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.StyleSpan
 import android.util.Log
 import android.util.TypedValue
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import androidx.annotation.DrawableRes
+import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import java.io.File
 
 
 object OtherUtil
 {
+    fun changeTest(v: TextView)
+    {
+        val text = v.text.toString()
+
+        SopoLog.d("Text >>> ${text}")
+        val builder = SpannableStringBuilder(v.text, 0, text.length-1)
+        builder.setSpan(StyleSpan(R.font.roboto_bold), 0, 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        builder.setSpan(StyleSpan(R.font.spoqa_han_sans_bold), 3, 6, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        builder.setSpan(StyleSpan(R.font.spoqa_han_sans_light), 6, text.length-1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        v.text = builder
+    }
+
 
     fun hideKeyboardSoft(act: Activity)
     {
