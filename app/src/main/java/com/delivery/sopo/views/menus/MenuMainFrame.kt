@@ -11,6 +11,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.MenuMainFrameBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.MenuMainViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -28,6 +29,7 @@ class MenuMainFrame : Fragment()
         binding.vm = vm
         binding.lifecycleOwner = this
         viewId = binding.menuMainFrame.id
+        SopoLog.d("MainMenu id >>> $viewId")
         FragmentManager.move(this.requireActivity(), TabCode.MY_MENU, viewId)
 
         return binding.root

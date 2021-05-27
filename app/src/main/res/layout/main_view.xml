@@ -28,18 +28,6 @@
             app:layout_constraintTop_toTopOf="parent"
             />
 
-<!--        <com.delivery.sopo.views.widget.NoneSwipeViewPager-->
-<!--            android:id="@+id/layout_view_pager"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:background="@color/MAIN_WHITE"-->
-<!--            app:layout_constrainedHeight="true"-->
-<!--            app:layout_constraintBottom_toTopOf="@+id/layout_main_tab"-->
-<!--            app:layout_constraintLeft_toRightOf="parent"-->
-<!--            app:layout_constraintRight_toLeftOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent"-->
-<!--            />-->
-
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/layout_main_tab"
             android:layout_width="match_parent"

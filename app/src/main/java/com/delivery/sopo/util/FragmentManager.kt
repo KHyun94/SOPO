@@ -12,7 +12,7 @@ object FragmentManager
 
     fun move(activity: FragmentActivity, typeEnum: TabCode, viewId: Int)
     {
-        SopoLog.d("move() call >>> ${typeEnum.NAME}")
+        SopoLog.d("move() call >>> ${typeEnum.NAME} / $viewId")
 
         val fm = activity.supportFragmentManager
         val transaction = fm.beginTransaction()

@@ -17,7 +17,6 @@ import java.lang.Exception
 
 class RegisterMainFrame : Fragment()
 {
-    val TAG = this.javaClass.simpleName
     private lateinit var binding : RegisterMainFrameBinding
 
     override fun onCreateView(

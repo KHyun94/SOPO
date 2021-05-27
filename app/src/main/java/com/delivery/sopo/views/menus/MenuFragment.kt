@@ -57,6 +57,7 @@ class MenuFragment : Fragment()
         menuView = this.requireActivity()
         parentView = activity as MainView
 
+        viewId = binding.frameMenu.id
         viewBinding()
         setObserver()
 
@@ -198,5 +199,9 @@ class MenuFragment : Fragment()
     {
         super.onDetach()
         if (callback != null) callback!!.remove()
+    }
+
+    companion object{
+        var viewId = 0
     }
 }
