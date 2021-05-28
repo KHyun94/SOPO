@@ -15,7 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.MenuViewBinding
 import com.delivery.sopo.enums.MenuEnum
-import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
 import com.delivery.sopo.data.repository.local.repository.TimeCountRepoImpl
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.AlertUtil
@@ -31,12 +31,12 @@ import java.util.function.Function
 class MenuFragment : Fragment()
 {
     private val userLocalRepository: UserLocalRepository by inject()
-    private val parcelRepoImpl: ParcelRepoImpl by inject()
+    private val parcelLocalRepository: ParcelLocalRepository by inject()
     private val timeCountRepoImpl: TimeCountRepoImpl by inject()
     private val menuVm: MenuViewModel by lazy {
         ViewModelProvider(
             requireActivity(),
-            MenuViewModelFactory(userLocalRepository, parcelRepoImpl, timeCountRepoImpl)
+            MenuViewModelFactory(userLocalRepository)
         ).get(MenuViewModel::class.java)
     }
 

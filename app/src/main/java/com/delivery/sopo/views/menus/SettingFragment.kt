@@ -13,7 +13,7 @@ import com.delivery.sopo.databinding.FragmentSettingBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.extensions.launchActivitiy
-import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
 import com.delivery.sopo.data.repository.local.repository.TimeCountRepoImpl
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.viewmodels.factory.MenuViewModelFactory
@@ -31,14 +31,14 @@ class SettingFragment : Fragment()
     private val settingVM: SettingViewModel by viewModel()
     private lateinit var binding: FragmentSettingBinding
     private val userLocalRepository: UserLocalRepository by inject()
-    private val parcelRepoImpl: ParcelRepoImpl by inject()
+    private val parcelLocalRepository: ParcelLocalRepository by inject()
     private val timeCountRepoImpl: TimeCountRepoImpl by inject()
     private lateinit var parentView: MainView
 
     private val menuVm: MenuViewModel by lazy {
         ViewModelProvider(
             requireActivity(),
-            MenuViewModelFactory(userLocalRepository, parcelRepoImpl, timeCountRepoImpl)
+            MenuViewModelFactory(userLocalRepository)
         ).get(MenuViewModel::class.java)
     }
 

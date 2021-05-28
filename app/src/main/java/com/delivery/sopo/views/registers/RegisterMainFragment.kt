@@ -12,10 +12,8 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterMainFrameBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.util.SopoLog
-import java.lang.Exception
 
-class RegisterMainFrame : Fragment()
+class RegisterMainFragment : Fragment()
 {
     private lateinit var binding : RegisterMainFrameBinding
 
@@ -24,31 +22,23 @@ class RegisterMainFrame : Fragment()
     ) : View
     {
         binding = bindView<RegisterMainFrameBinding>(inflater, R.layout.register_main_frame, container)
-        viewId = binding.frameRegister.id
+        layoutId = binding.layoutRegisterMain.id
 
-        try{
-            // Tab1로 이동
-            FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1, viewId)
-        }catch (e: Exception)
-        {
-            SopoLog.e(msg =  "아 시발 에러 ${e.message}", e = e)
-        }
-
+        FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1, layoutId)
 
         return binding.root
     }
 
-    fun <T : ViewDataBinding> bindView(inflater : LayoutInflater, @LayoutRes resId : Int, container : ViewGroup?) : T
+    fun <T : ViewDataBinding> bindView(inflater : LayoutInflater, @LayoutRes layoutId : Int, container : ViewGroup?) : T
     {
-        val binding : T = DataBindingUtil.inflate(inflater, resId, container, false)
-        binding.lifecycleOwner = this
-        return binding
+        return DataBindingUtil.inflate<T>(inflater, layoutId, container, false).apply{
+            lifecycleOwner = this@RegisterMainFragment
+            executePendingBindings()
+        }
     }
 
     companion object
     {
-
-        // Register Tab의 MainFrameLayout id
-        var viewId : Int = 0
+        var layoutId : Int = 0
     }
 }

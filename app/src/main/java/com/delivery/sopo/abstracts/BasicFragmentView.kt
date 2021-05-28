@@ -9,11 +9,17 @@ import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 
-abstract class BasicFragmentView<T : ViewDataBinding>(@LayoutRes val layoutRes: Int) : Fragment()
+abstract class BasicFragmentView<T : ViewDataBinding, V: ViewModel> : Fragment()
 {
     lateinit var parentActivity: Activity
     lateinit var binding: T
+
+    protected lateinit var vm: V
+
+    abstract var layoutId: Int
+    abstract var bindingVariable: Int
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -21,13 +27,12 @@ abstract class BasicFragmentView<T : ViewDataBinding>(@LayoutRes val layoutRes: 
         savedInstanceState: Bundle?
     ): View?
     {
-        binding = DataBindingUtil.inflate(inflater, layoutRes, container, false)
+        binding = DataBindingUtil.inflate(inflater, layoutId, container, false)
         binding.lifecycleOwner = this
-        bindView()
+        binding.setVariable(bindingVariable, vm)
         setObserver()
         return binding.root
     }
 
-    abstract fun bindView()
     abstract fun setObserver()
 }

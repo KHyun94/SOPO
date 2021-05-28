@@ -18,7 +18,7 @@ import com.delivery.sopo.models.parcel.*
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
-import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.DateUtil
@@ -28,7 +28,7 @@ import com.delivery.sopo.views.adapter.TimeLineRvAdapter
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 
-class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository, private val carrierRepository: CarrierRepository, private val parcelRepoImpl: ParcelRepoImpl, private val parcelManagementRepoImpl: ParcelManagementRepoImpl): ViewModel()
+class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository, private val carrierRepository: CarrierRepository, private val parcelLocalRepository: ParcelLocalRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl): ViewModel()
 {
     // 택배 인포의 pk
     val parcelId = MutableLiveData<ParcelId>()
@@ -176,7 +176,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
         CoroutineScope(Dispatchers.Default).launch {
 
             // 로컬 데이터 옵저빙
-            _parcelEntity.postValue(parcelRepoImpl.getLocalParcelById(parcelId = parcelId))
+            _parcelEntity.postValue(parcelLocalRepository.getLocalParcelById(parcelId = parcelId))
         }
     }
 
@@ -274,7 +274,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
 
     private suspend fun isBeUpdateParcel(): LiveData<Int?>
     {
-        return parcelRepoImpl.isBeingUpdateParcel(
+        return parcelLocalRepository.isBeingUpdateParcel(
             parcelUid = parcelId.value?.parcelUid ?: "", regDt = parcelId.value?.regDt ?: ""
         )
     }

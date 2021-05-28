@@ -5,7 +5,7 @@ import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.models.parcel.ParcelItem
-import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
@@ -22,9 +22,9 @@ data class UpdateParcelDao(
     val deliveryStatus: String
 ) : KoinComponent
 {
-    private val parcelRepoImpl : ParcelRepoImpl by inject()
+    private val parcelLocalRepository : ParcelLocalRepository by inject()
 
-    suspend fun getParcel() = parcelRepoImpl.getLocalParcelById(ParcelId(regDt, parcelUid))
+    suspend fun getParcel() = parcelLocalRepository.getLocalParcelById(ParcelId(regDt, parcelUid))
 
     fun getParcelId() = ParcelId(regDt, parcelUid)
 

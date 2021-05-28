@@ -3,16 +3,16 @@ package com.delivery.sopo.util
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.util.Log
-import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
-import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
-import kotlinx.coroutines.CoroutineScope
+import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
-object ClipboardUtil
+object ClipboardUtil: KoinComponent
 {
+    private val PARCEL_IMPL: ParcelLocalRepository by inject()
+
     fun copyTextToClipboard(con: Context, text: String)
     {
         val clipboard = con.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -22,83 +22,52 @@ object ClipboardUtil
 
 
     // 20200829 최근 복사한 클립보드 내용 가져오기
-    fun pasteClipboardText(con: Context, parcelImpl: ParcelRepoImpl, cb : (String) -> Unit)
+    suspend fun pasteClipboardText(context: Context): String?
     {
-        CoroutineScope(Dispatchers.Main).launch {
-            var clipboard = con.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
+        var clipboardText = ""
 
-            var waybillNum = ""
+        // 클립보드에 값이 있는지
+        if(!clipboard.hasPrimaryClip()) return null
 
-            // 클립보드에 값이 있는지
-            if (!(clipboard.hasPrimaryClip()))
-            {
-                Log.d("LOG.SOPO", "클립보드에 데이터가 없음")
-            }
-            else
-            {
-                val item: ClipData.Item = clipboard.primaryClip!!.getItemAt(0)
+        val item: ClipData.Item = clipboard.primaryClip?.getItemAt(0) ?: return null
 
-                waybillNum = item.text.toString()
+        clipboardText = getOnlyDigit(item.text.toString())
 
-                if (waybillNum.length < 9)
-                {
-                    waybillNum = ""
-                    cb.invoke(waybillNum)
-                    return@launch
-                }
-                else
-                {
-                    val len = waybillNum.length
-                    var digitCnt = 0
-
-                    for (c in waybillNum)
-                        if (c.isDigit()) digitCnt++
-
-                    // 클립보드에 저장된 텍스트에 일부 중 숫자 이외의 문자열 비율이 높을 경우 제외
-                    if (digitCnt > 0)
-                    {
-                        val digitRate: Double = (digitCnt.toDouble() / len.toDouble())
-                        val compareRate: Double = ((9.0 / 13.0))
-
-                        if (digitRate < compareRate)
-                        {
-                            waybillNum = ""
-                            cb.invoke(waybillNum)
-                            return@launch
-                        }
-                    }
-                    else
-                    {
-                        waybillNum = ""
-                        cb.invoke(waybillNum)
-                        return@launch
-                    }
-                }
-            }
-
-            var parcel: ParcelEntity? = null
-
-
-            withContext(Dispatchers.Default) {
-                parcel = parcelImpl.getSingleParcelWithWaybillNum(waybillNum = waybillNum)
-                Log.d("LOG.SOPO", "등록된 택배 Check $parcel")
-            }
-
-
-
-            if (parcel != null)
-            {
-                Log.d("LOG.SOPO", "등록된 택배가 있기에, 클립보드 안띄움")
-                waybillNum = ""
-                cb.invoke(waybillNum)
-                return@launch
-            }
-
-            cb.invoke(waybillNum)
-            return@launch
+        if(clipboardText.length < 9)
+        {
+            return null
         }
+
+        val isExistParcel = isExistParcel(clipboardText)
+
+        if(isExistParcel)
+        {
+            return null
+        }
+
+        return clipboardText
     }
 
+    suspend fun isExistParcel(waybillNum: String): Boolean
+    {
+        return withContext(Dispatchers.Default) {
+            PARCEL_IMPL.getSingleParcelWithWaybillNum(waybillNum = waybillNum)
+        } != null
+    }
+
+    fun getOnlyDigit(inputData: String): String
+    {
+        val builder = StringBuilder()
+
+        inputData.filter {
+            it.isDigit()
+        }.map {
+            builder.append(it)
+        }
+
+        return builder.toString()
+    }
 
 }

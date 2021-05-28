@@ -25,7 +25,7 @@ import com.delivery.sopo.views.main.MainView
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class RegisterStep3: Fragment()
+class ConfirmParcelFragment: Fragment()
 {
     private lateinit var parentView: MainView
 
@@ -101,10 +101,10 @@ class RegisterStep3: Fragment()
         binding.vm!!.isRevise.observe(this, Observer {
             if (it != null && it)
             {
-                TabCode.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(waybillNum, carrierDTO, 0)
+                TabCode.REGISTER_STEP1.FRAGMENT = InputParcelFragment.newInstance(waybillNum, carrierDTO, 0)
 
                 FragmentManager.initFragment(
-                    activity = activity!!, viewId = RegisterMainFrame.viewId, currentFragment = this@RegisterStep3, nextFragment = TabCode.REGISTER_STEP1.FRAGMENT, nextFragmentTag = TabCode.REGISTER_STEP1.NAME
+                    activity = activity!!, viewId = RegisterMainFragment.layoutId, currentFragment = this@ConfirmParcelFragment, nextFragment = TabCode.REGISTER_STEP1.FRAGMENT, nextFragmentTag = TabCode.REGISTER_STEP1.NAME
                 )
 
                 binding.vm!!.isRevise.call()
@@ -126,9 +126,9 @@ class RegisterStep3: Fragment()
                         FirebaseNetwork.subscribedToTopicInFCM()
                     }
 
-                    TabCode.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(null, null, 1)
+                    TabCode.REGISTER_STEP1.FRAGMENT = InputParcelFragment.newInstance(null, null, 1)
                     FragmentManager.initFragment(
-                        activity = requireActivity(), viewId = RegisterMainFrame.viewId, currentFragment = this@RegisterStep3, nextFragment = TabCode.REGISTER_STEP1.FRAGMENT, nextFragmentTag = TabCode.REGISTER_STEP1.NAME
+                        activity = requireActivity(), viewId = RegisterMainFragment.layoutId, currentFragment = this@ConfirmParcelFragment, nextFragment = TabCode.REGISTER_STEP1.FRAGMENT, nextFragmentTag = TabCode.REGISTER_STEP1.NAME
                     )
                 }
                 is TestResult.ErrorResult<*> ->
@@ -170,9 +170,9 @@ class RegisterStep3: Fragment()
 
     companion object
     {
-        fun newInstance(waybillNum: String?, carrierDTO: CarrierDTO?): RegisterStep3
+        fun newInstance(waybillNum: String?, carrierDTO: CarrierDTO?): ConfirmParcelFragment
         {
-            val registerStep3 = RegisterStep3()
+            val registerStep3 = ConfirmParcelFragment()
 
             val args = Bundle()
 

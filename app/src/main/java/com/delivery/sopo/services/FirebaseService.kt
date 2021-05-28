@@ -10,7 +10,7 @@ import com.delivery.sopo.models.push.UpdatedParcelInfo
 import com.delivery.sopo.networks.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
-import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
 import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
@@ -26,7 +26,7 @@ import java.lang.Exception
 
 class FirebaseService: FirebaseMessagingService()
 {
-    private val parcelRepoImpl: ParcelRepoImpl by inject()
+    private val parcelLocalRepository: ParcelLocalRepository by inject()
     private val parcelManagementRepo: ParcelManagementRepoImpl by inject()
 
     private suspend fun alertUpdateParcel(remoteMessage: RemoteMessage, intent: Intent, data: UpdatedParcelInfo)
@@ -37,7 +37,7 @@ class FirebaseService: FirebaseMessagingService()
 
         data.updatedParcelId.forEach { updateParcelDao ->
 
-            val parcelEntity = parcelRepoImpl.getLocalParcelById(ParcelId(updateParcelDao.regDt, updateParcelDao.parcelUid)) ?: return
+            val parcelEntity = parcelLocalRepository.getLocalParcelById(ParcelId(updateParcelDao.regDt, updateParcelDao.parcelUid)) ?: return
 
             // DeliveryStatus 변경됐을 시 True
 

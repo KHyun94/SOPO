@@ -8,10 +8,9 @@ import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.data.repository.database.room.RoomActivate
-import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 import com.delivery.sopo.di.appModule
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
-import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.models.dto.OAuthDTO
 import com.delivery.sopo.models.mapper.OAuthMapper
@@ -31,12 +30,12 @@ import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
-class SOPOApp : Application()
+class SOPOApp: Application()
 {
     val appDatabase: AppDatabase by inject()
-    val userLocalRepository : UserLocalRepository by inject()
-    val parcelRepoImpl: ParcelRepoImpl by inject()
-    val OAuthLocalRepository : OAuthLocalRepository by inject()
+    val userLocalRepository: UserLocalRepository by inject()
+    val parcelLocalRepository: ParcelLocalRepository by inject()
+    val OAuthLocalRepository: OAuthLocalRepository by inject()
 
     var kakaoSDKAdapter: KakaoSDKAdapter? = null
     var accessToken: AccessToken? = null
@@ -64,13 +63,12 @@ class SOPOApp : Application()
         auth.setLanguageCode("kr")
 
         //카카오톡 로그인 API 초기화
-        if (kakaoSDKAdapter == null)
-            kakaoSDKAdapter = KakaoSDKAdapter()
+        if(kakaoSDKAdapter == null) kakaoSDKAdapter = KakaoSDKAdapter()
 
         KakaoSDK.init(kakaoSDKAdapter)
 
         /** 카카오 토큰 만료시 갱신을 시켜준다**/
-        if (Session.getCurrentSession().isOpenable())
+        if(Session.getCurrentSession().isOpenable())
         {
             Session.getCurrentSession().checkAndImplicitOpen()
         }
@@ -83,12 +81,13 @@ class SOPOApp : Application()
             RoomActivate.initializeCarrierInfoIntoDB()
         }
 
-        getInitViewPagerNumber() {
-            currentPage.postValue(it)
+        CoroutineScope(Dispatchers.Main).launch {
+            currentPage.postValue(getInitViewPagerNumber())
         }
 
         CoroutineScope(Dispatchers.Default).launch {
-            val oAuthEntity = OAuthLocalRepository.get(userLocalRepository.getUserId())?:return@launch
+            val oAuthEntity =
+                OAuthLocalRepository.get(userLocalRepository.getUserId()) ?: return@launch
             oAuth = OAuthMapper.entityToObject(oAuthEntity)
         }
 
@@ -100,28 +99,21 @@ class SOPOApp : Application()
 
     }
 
-    private fun getInitViewPagerNumber(cb: ((Int) -> Unit))
+    private suspend fun getInitViewPagerNumber(): Int
     {
-        ClipboardUtil.pasteClipboardText(con = this, parcelImpl = parcelRepoImpl) {
-            if (it.isNotEmpty())
-            {
-                cb.invoke(NavigatorConst.REGISTER_TAB)
-            }
-            else
-            {
-                CoroutineScope(Dispatchers.Default).launch {
-                    val cnt = parcelRepoImpl.getOnGoingDataCnt()
+        val clipboardText = ClipboardUtil.pasteClipboardText(context = this@SOPOApp)
 
-                    if (cnt == 0)
-                    {
-                        cb.invoke(NavigatorConst.REGISTER_TAB)
-                    }
-                    else
-                    {
-                        cb.invoke(NavigatorConst.INQUIRY_TAB)
-                    }
-                }
-            }
+        if(clipboardText != null) return NavigatorConst.REGISTER_TAB
+
+        val cnt = withContext(Dispatchers.Default) { parcelLocalRepository.getOnGoingDataCnt() }
+
+        return if(cnt == 0)
+        {
+            NavigatorConst.REGISTER_TAB
+        }
+        else
+        {
+            NavigatorConst.INQUIRY_TAB
         }
     }
 
@@ -129,7 +121,7 @@ class SOPOApp : Application()
     {
         lateinit var INSTANCE: Context
         lateinit var auth: FirebaseAuth
-        lateinit var deviceInfo : String
+        lateinit var deviceInfo: String
         lateinit var activity: Activity
         lateinit var alarmManager: AlarmManager
 
@@ -137,6 +129,6 @@ class SOPOApp : Application()
 
         val cntOfBeUpdate = MutableLiveData<Int?>()
 
-        var oAuth : OAuthDTO? = null
+        var oAuth: OAuthDTO? = null
     }
 }

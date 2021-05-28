@@ -15,7 +15,7 @@ import com.delivery.sopo.viewmodels.login.LoginViewModel
 import com.delivery.sopo.viewmodels.login.ResetPasswordViewModel
 import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.viewmodels.menus.*
-import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
+import com.delivery.sopo.viewmodels.registesrs.InputParcelViewModel
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep2ViewModel
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep3ViewModel
 import com.delivery.sopo.viewmodels.signup.SignUpCompleteViewModel
@@ -38,7 +38,7 @@ val appModule = module {
     single { UserLocalRepository(get()) }
     single { AppDatabase.getInstance(get()) }
     single { CarrierRepository(get()) }
-    single { ParcelRepoImpl(get(), get()) }
+    single { ParcelLocalRepository(get(), get()) }
     single { ParcelManagementRepoImpl(get()) }
     single { TimeCountRepoImpl(get(), get()) }
     single { AppPasswordRepository(get()) }
@@ -59,7 +59,7 @@ val appModule = module {
     viewModel { AppInfoViewModel() }
     viewModel { NotDisturbTimeViewModel() }
     viewModel { InquiryViewModel(get(), get(), get(), get()) }
-    viewModel { MenuViewModel(get(), get(), get()) }
+    viewModel { MenuViewModel(get()) }
     viewModel { AccountManagerViewModel() }
     viewModel { SignOutViewModel() }
 
@@ -67,7 +67,7 @@ val appModule = module {
     viewModel { MenuMainViewModel() }
     viewModel { ParcelDetailViewModel(get(), get(), get(), get()) }
 
-    viewModel { RegisterStep1ViewModel(get()) }
+    viewModel { InputParcelViewModel(get()) }
     viewModel { RegisterStep2ViewModel(get()) }
     viewModel { RegisterStep3ViewModel(get()) }
 }

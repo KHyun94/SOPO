@@ -11,7 +11,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.databinding.RegisterStep2Binding
+import com.delivery.sopo.databinding.FragmentSelectCarrierBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.models.SelectItem
@@ -22,11 +22,11 @@ import com.delivery.sopo.views.adapter.GridTypedRecyclerViewAdapter
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class RegisterStep2: Fragment()
+class SelectCarrierFragment: Fragment()
 {
     private lateinit var parentView: MainView
 
-    private lateinit var binding: RegisterStep2Binding
+    private lateinit var binding: FragmentSelectCarrierBinding
     private val vm: RegisterStep2ViewModel by viewModel()
 
     private var waybillNum: String? = null
@@ -49,7 +49,7 @@ class RegisterStep2: Fragment()
     }
 
     fun bindView(inflater: LayoutInflater, container: ViewGroup?){
-        binding = DataBindingUtil.inflate(inflater, R.layout.register_step2, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_select_carrier, container, false)
         binding.vm = vm
         binding.lifecycleOwner = this
     }
@@ -90,16 +90,16 @@ class RegisterStep2: Fragment()
                         if(waybillNum == null || waybillNum == "")
                         {
                             TabCode.REGISTER_STEP1.FRAGMENT =
-                                RegisterStep1.newInstance(waybillNum, binding.vm!!.selectedItem.value!!.item, 0)
+                                InputParcelFragment.newInstance(waybillNum, binding.vm!!.selectedItem.value!!.item, 0)
 
-                            FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1, RegisterMainFrame.viewId)
+                            FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1, RegisterMainFragment.layoutId)
                         }
                         else
                         {
                             TabCode.REGISTER_STEP3.FRAGMENT =
-                                RegisterStep3.newInstance(waybillNum, binding.vm!!.selectedItem.value!!.item)
+                                ConfirmParcelFragment.newInstance(waybillNum, binding.vm!!.selectedItem.value!!.item)
 
-                            FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP3, RegisterMainFrame.viewId)
+                            FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP3, RegisterMainFragment.layoutId)
                         }
 
 
@@ -115,9 +115,9 @@ class RegisterStep2: Fragment()
                     binding.vm?.moveFragment?.value = ""
 
                     TabCode.REGISTER_STEP1.FRAGMENT =
-                        RegisterStep1.newInstance(waybillNum, binding.vm?.selectedItem?.value?.item, 0)
+                        InputParcelFragment.newInstance(waybillNum, binding.vm?.selectedItem?.value?.item, 0)
 
-                    FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1, RegisterMainFrame.viewId)
+                    FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1, RegisterMainFragment.layoutId)
                 }
             }
         })
@@ -142,9 +142,9 @@ class RegisterStep2: Fragment()
 
     companion object
     {
-        fun newInstance(waybillNum: String?, carrierDTO: CarrierDTO?): RegisterStep2
+        fun newInstance(waybillNum: String?, carrierDTO: CarrierDTO?): SelectCarrierFragment
         {
-            val registerStep2 = RegisterStep2()
+            val registerStep2 = SelectCarrierFragment()
 
             val args = Bundle()
 

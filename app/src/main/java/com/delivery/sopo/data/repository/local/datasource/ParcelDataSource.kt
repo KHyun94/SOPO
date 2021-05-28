@@ -7,7 +7,7 @@ import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.models.parcel.ParcelId
 
-interface ParcelRepository {
+interface ParcelDataSource {
    suspend fun getRemoteOngoingParcels(): MutableList<ParcelDTO>?
    suspend fun getRemoteMonths(): MutableList<TimeCountDTO>?
 

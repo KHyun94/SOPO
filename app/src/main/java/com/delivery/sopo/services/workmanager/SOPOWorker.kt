@@ -7,7 +7,7 @@ import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.data.repository.database.room.entity.LogEntity
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.call.ParcelCall
-import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
@@ -21,12 +21,12 @@ class SOPOWorker(val context: Context, private val params: WorkerParameters): Co
     private val TAG = this.javaClass.simpleName
 
     private val appDatabase: AppDatabase by inject()
-    private val parcelRepoImpl: ParcelRepoImpl by inject()
+    private val parcelLocalRepository: ParcelLocalRepository by inject()
 
     // Room 내 등록된 택배(진행 중)의 갯수 > 0 == true != false
     private suspend fun isEnrolledParcel(): Boolean
     {
-        val cnt = parcelRepoImpl.getOnGoingDataCnt()
+        val cnt = parcelLocalRepository.getOnGoingDataCnt()
         return cnt > 0
     }
 

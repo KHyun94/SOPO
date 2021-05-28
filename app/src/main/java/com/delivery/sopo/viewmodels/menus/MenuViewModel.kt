@@ -8,8 +8,6 @@ import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.extensions.MutableLiveDataExtension.popItem
 import com.delivery.sopo.extensions.MutableLiveDataExtension.pushItem
 import com.delivery.sopo.networks.call.UserCall
-import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
-import com.delivery.sopo.data.repository.local.repository.TimeCountRepoImpl
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
@@ -18,9 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
 
-class MenuViewModel(private val userLocalRepository: UserLocalRepository,
-                    private val parcelRepoImpl: ParcelRepoImpl,
-                    private val timeCountRepoImpl: TimeCountRepoImpl
+class MenuViewModel(private val userLocalRepository: UserLocalRepository
 ) : ViewModel(), LifecycleObserver
 {
 

@@ -17,14 +17,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
-class RegisterStep1ViewModel(private val carrierRepository: CarrierRepository) : ViewModel()
+class InputParcelViewModel(private val carrierRepository: CarrierRepository) : ViewModel()
 {
-    val TAG = this.javaClass.simpleName
-
     var waybillNum = MutableLiveData<String?>()
     var carrierDTO = MutableLiveData<CarrierDTO?>()
     // 가져온 클립보드 문자열
-    var clipBoardWords = MutableLiveData<String>()
+    var clipboardText = MutableLiveData<String>()
 
     var moveFragment = MutableLiveData<String>()
 
@@ -54,7 +52,7 @@ class RegisterStep1ViewModel(private val carrierRepository: CarrierRepository) :
         validates[InfoEnum.WAYBILL_NUMBER] = false
 
         moveFragment.value = ""
-        clipBoardWords.value = ""
+        clipboardText.value = ""
     }
 
     fun onMove2ndStepClicked()
@@ -93,7 +91,7 @@ class RegisterStep1ViewModel(private val carrierRepository: CarrierRepository) :
     // clipBoardWord(클립보드에 저장된 값)을 waybillNum(택배 운송장 번호) 입력 란으로 삽입
     fun onPasteClicked()
     {
-        waybillNum.value = clipBoardWords.value
+        waybillNum.value = clipboardText.value
     }
 
 }

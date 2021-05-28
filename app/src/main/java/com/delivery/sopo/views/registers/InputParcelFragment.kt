@@ -15,8 +15,7 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.data.repository.database.room.RoomActivate
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
-import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
-import com.delivery.sopo.databinding.RegisterStep1Binding
+import com.delivery.sopo.databinding.FragmentInputParcelBinding
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.isGreaterThanOrEqual
@@ -27,7 +26,7 @@ import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.TextInputUtil
-import com.delivery.sopo.viewmodels.registesrs.RegisterStep1ViewModel
+import com.delivery.sopo.viewmodels.registesrs.InputParcelViewModel
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
@@ -37,21 +36,22 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.system.exitProcess
 
-class RegisterStep1: Fragment()
+/**
+ * 택배 등록 1단
+ */
+class InputParcelFragment: Fragment()
 {
     private lateinit var parentView: MainView
-    private lateinit var binding: RegisterStep1Binding
+    private lateinit var binding: FragmentInputParcelBinding
 
-    private val vm: RegisterStep1ViewModel by viewModel()
+    private val vm: InputParcelViewModel by viewModel()
 
-    private val carrierRepository: CarrierRepository by inject()
-    private val parcelRepoImpl: ParcelRepoImpl by inject()
+    private val carrierRepo: CarrierRepository by inject()
 
     private var waybillNum: String? = null
     private var carrierDTO: CarrierDTO? = null
     private var returnType: Int? = null
 
-    // todo 추 후 각 페이지에 중복되어있는 로직을 통합 처리 예정
     lateinit var callback: OnBackPressedCallback
 
     override fun onAttach(context: Context)
@@ -92,24 +92,15 @@ class RegisterStep1: Fragment()
 
         // 다른 화면에서 1단계로 다시 이동할 때 전달받은 값
         arguments?.run {
-            waybillNum = getString("waybillNum") ?: ""
+            waybillNum = getString("waybillNum")
             carrierDTO = getSerializable("carrier") as CarrierDTO?
             returnType = getInt("returnType") ?: 0
-
-            SopoLog.d(
-                """
-                RegisterStep1
-                운송장번호 >>> ${waybillNum}
-                택배사 >>> ${carrierDTO}
-                반환 타입 >>> ${returnType}
-            """.trimIndent()
-            )
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
-        binding = RegisterStep1Binding.inflate(inflater, container, false)
+        binding = FragmentInputParcelBinding.inflate(inflater, container, false)
         binding.vm = vm
         binding.lifecycleOwner = this
 
@@ -119,8 +110,9 @@ class RegisterStep1: Fragment()
                 binding.layoutWaybillNum.hint = ""
             }
         }
-        binding.vm!!.waybillNum.postValue(waybillNum ?: "")
-        binding.vm!!.carrierDTO.postValue(carrierDTO)
+
+        vm.waybillNum.postValue(waybillNum ?: "")
+        vm.carrierDTO.postValue(carrierDTO)
 
         setObserve()
         moveToInquiryTab()
@@ -159,7 +151,7 @@ class RegisterStep1: Fragment()
 
             if (waybillNum == null) return@Observer
 
-            if (waybillNum.isNotEmpty()) vm.clipBoardWords.value = ""
+            if (waybillNum.isNotEmpty()) vm.clipboardText.value = ""
 
             if (carrierDTO != null) return@Observer
 
@@ -171,7 +163,7 @@ class RegisterStep1: Fragment()
             }
 
             CoroutineScope(Dispatchers.Default).launch {
-                val carrierList = RoomActivate.recommendAutoCarrier(waybillNum, 1, carrierRepository)
+                val carrierList = RoomActivate.recommendAutoCarrier(waybillNum, 1, carrierRepo)
 
                 SopoLog.d("input waybill num's length >= 9. Select Carrier:[${carrierList?.joinToString()}]")
 
@@ -243,15 +235,15 @@ class RegisterStep1: Fragment()
                     """.trimIndent()
                     )
                     TabCode.REGISTER_STEP2.FRAGMENT =
-                        RegisterStep2.newInstance(binding.vm!!.waybillNum.value, binding.vm!!.carrierDTO.value)
-                    FragmentManager.move(parentView, TabCode.REGISTER_STEP2, RegisterMainFrame.viewId)
+                        SelectCarrierFragment.newInstance(binding.vm!!.waybillNum.value, binding.vm!!.carrierDTO.value)
+                    FragmentManager.move(parentView, TabCode.REGISTER_STEP2, RegisterMainFragment.layoutId)
                     binding.vm!!.moveFragment.value = ""
                 }
                 TabCode.REGISTER_STEP3.NAME ->
                 {
                     TabCode.REGISTER_STEP3.FRAGMENT =
-                        RegisterStep3.newInstance(binding.vm!!.waybillNum.value, binding.vm!!.carrierDTO.value)
-                    FragmentManager.move(parentView, TabCode.REGISTER_STEP3, RegisterMainFrame.viewId)
+                        ConfirmParcelFragment.newInstance(binding.vm!!.waybillNum.value, binding.vm!!.carrierDTO.value)
+                    FragmentManager.move(parentView, TabCode.REGISTER_STEP3, RegisterMainFragment.layoutId)
                     binding.vm!!.moveFragment.value = ""
                 }
             }
@@ -265,22 +257,24 @@ class RegisterStep1: Fragment()
         SopoLog.d(msg = "OnResume")
 
         // 0922 kh 추가사항 - 클립보드에 저장되어있는 운송장 번호가 로컬에 등록된 택배가 있을 때, 안띄어주는 로직 추가
-        ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE, parcelRepoImpl) {
+
+        CoroutineScope(Dispatchers.Main).launch {
+            val clipboardText = ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE)?:return@launch
+
             val isRegister = binding.vm!!.waybillNum.value.isNullOrEmpty()
 
-            if (!(it.isEmpty() || !isRegister))
+            if ((clipboardText.isEmpty() || !isRegister).not())
             {
-                SopoLog.d(msg = "복사된 클립보드 >>> $it")
-                binding.vm!!.clipBoardWords.postValue(it)
+                binding.vm!!.clipboardText.postValue(clipboardText)
             }
         }
     }
 
     companion object
     {
-        fun newInstance(waybillNum: String?, carrierDTO: CarrierDTO?, returnType: Int?): RegisterStep1
+        fun newInstance(waybillNum: String?, carrierDTO: CarrierDTO?, returnType: Int?): InputParcelFragment
         {
-            val registerStep1 = RegisterStep1()
+            val registerStep1 = InputParcelFragment()
 
             val args = Bundle()
 

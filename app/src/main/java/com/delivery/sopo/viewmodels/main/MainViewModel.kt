@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
-import com.delivery.sopo.data.repository.local.repository.ParcelRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
 import com.delivery.sopo.data.repository.remote.parcel.ParcelRemoteRepository
 import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.models.ResponseResult
@@ -18,7 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val appPasswordRepo: AppPasswordRepository): ViewModel()
+class MainViewModel(private val parcelLocalRepository: ParcelLocalRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val appPasswordRepo: AppPasswordRepository): ViewModel()
 {
     val mainTabVisibility = MutableLiveData<Int>()
 
@@ -73,7 +73,7 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
 
         if (res.data == null || res.data.isEmpty()) return SopoLog.d("업데이트할 택배가 없거나, 리스트 사이즈 0")
 
-        val localParcels = withContext(Dispatchers.Default) { parcelRepoImpl.getLocalOngoingParcels() }
+        val localParcels = withContext(Dispatchers.Default) { parcelLocalRepository.getLocalOngoingParcels() }
 
         // 로컬에 저장되어있는 택배가 없기 때문에 서버에서 받아온 택배 리스트를 전체 업데이트 처리해야 함
         if (localParcels.isEmpty()) return SopoLog.d("업데이트할 택배가 없거나, 리스트 사이즈 0")
@@ -120,12 +120,12 @@ class MainViewModel(private val parcelRepoImpl: ParcelRepoImpl, private val parc
     }
 
     private suspend fun insertParcelsInLocalDB(parcels: List<ParcelDTO>) = withContext(Dispatchers.Default) {
-        parcelRepoImpl.insertEntities(parcels)
+        parcelLocalRepository.insertEntities(parcels)
         parcelManagementRepoImpl.insertEntities(parcels.map(ParcelMapper::parcelToParcelManagementEntity))
     }
 
     private suspend fun updateParcelsInLocalDB(parcels: List<ParcelDTO>) = withContext(Dispatchers.Default) {
-        parcelRepoImpl.updateEntities(parcels)
+        parcelLocalRepository.updateEntities(parcels)
         parcelManagementRepoImpl.updateEntities(parcels.map { parcel ->
             val pm = ParcelMapper.parcelToParcelManagementEntity(parcel)
             pm.unidentifiedStatus = 1

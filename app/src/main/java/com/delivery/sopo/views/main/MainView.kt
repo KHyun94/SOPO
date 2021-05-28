@@ -23,13 +23,12 @@ import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.main.MainViewModel
+import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.inquiry.InquiryMainFrame
 import com.delivery.sopo.views.menus.LockScreenView
-import com.delivery.sopo.views.menus.MenuFragment
-import com.delivery.sopo.views.menus.MenuMainFrame
-import com.delivery.sopo.views.registers.RegisterMainFrame
-import com.delivery.sopo.views.registers.RegisterStep1
+import com.delivery.sopo.views.registers.RegisterMainFragment
+import com.delivery.sopo.views.registers.InputParcelFragment
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.tap_item.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -38,6 +37,7 @@ class  MainView: BasicView<MainViewBinding>(R.layout.main_view)
 {
     private val vm: MainViewModel by viewModel()
     private val inquiryVm: InquiryViewModel by viewModel()
+    private val menuViewModel: MenuViewModel by viewModel()
 
     var currentPage = MutableLiveData<Int?>()
 
@@ -189,19 +189,24 @@ class  MainView: BasicView<MainViewBinding>(R.layout.main_view)
                 {
                     if(tab == null) return
 
-
                     when(tab.position)
                     {
                         NavigatorConst.REGISTER_TAB ->
                         {
                             FragmentManager.remove(activity = this@MainView)
-                            TabCode.REGISTER_STEP1.FRAGMENT = RegisterStep1.newInstance(null, null, 0)
-                            FragmentManager.move(this@MainView,TabCode.REGISTER_STEP1, RegisterMainFrame.viewId)
+                            TabCode.REGISTER_STEP1.FRAGMENT = InputParcelFragment.newInstance(null, null, 0)
+                            FragmentManager.move(this@MainView, TabCode.REGISTER_STEP1, RegisterMainFragment.layoutId)
                         }
                         NavigatorConst.INQUIRY_TAB ->
                         {
                             FragmentManager.remove(activity = this@MainView)
                             FragmentManager.move(this@MainView, TabCode.INQUIRY, InquiryMainFrame.viewId)
+                        }
+                        NavigatorConst.MY_MENU_TAB ->
+                        {
+                            if(menuViewModel.viewStack.value == null || menuViewModel.viewStack.value?.size == 0) return
+
+                            menuViewModel.popView()
                         }
                     }
 
