@@ -11,18 +11,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:contentPadding="0dp"
-        app:cardCornerRadius="15dp"
+        app:cardCornerRadius="12dp"
         app:cardPreventCornerOverlap="false"
         app:cardUseCompatPadding="true"
         app:cardElevation="6dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerview_inquiry_popup_menu"
+            android:scrollbarTrackVertical="@drawable/scroll_track_gray"
+            android:scrollIndicators="right"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:itemCount="3"
             tools:listitem="@layout/inquiry_list_popup_window_item"
+            android:clipToPadding="false"
+            android:scrollbarStyle="insideOverlay"
+            android:scrollbars="vertical"
+            android:scrollbarThumbVertical="@drawable/scroll_main_blue"
+            android:scrollbarSize="6dp"
             />
     </androidx.cardview.widget.CardView>
 

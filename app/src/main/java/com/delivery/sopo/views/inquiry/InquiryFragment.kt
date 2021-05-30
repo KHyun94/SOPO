@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.database.room.entity.ParcelCntInfoEntity
-import com.delivery.sopo.databinding.SopoInquiryViewBinding
+import com.delivery.sopo.databinding.FragmentInquiryBinding
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.enums.ScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
@@ -44,8 +44,8 @@ import com.delivery.sopo.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.fragment_inquiry.*
 import kotlinx.android.synthetic.main.popup_menu_view.view.*
-import kotlinx.android.synthetic.main.sopo_inquiry_view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,12 +56,13 @@ import java.util.stream.Collectors
 import java.util.stream.Stream
 import kotlin.system.exitProcess
 
-class InquiryView: Fragment()
+class InquiryFragment: Fragment()
 {
     private lateinit var parentView: MainView
 
-    private lateinit var binding: SopoInquiryViewBinding
-    private val inquiryVm: InquiryViewModel by viewModel()
+    private lateinit var binding: FragmentInquiryBinding
+
+    private val vm : InquiryViewModel by viewModel()
 
     // 곧 도착 택배 리스트 adapter, 등록된 택배(진행 중) 리스트 adapter, 도착 완료된 택배 리스트 adapter
     private lateinit var soonArrivalParcelAdapter: InquiryListAdapter
@@ -143,9 +144,9 @@ class InquiryView: Fragment()
     {
         SopoLog.d("bindView() call")
 
-        binding = DataBindingUtil.inflate<SopoInquiryViewBinding>(inflater, R.layout.sopo_inquiry_view, container, false).apply {
-            vm = inquiryVm
-            lifecycleOwner = this@InquiryView
+        binding = DataBindingUtil.inflate<FragmentInquiryBinding>(inflater, R.layout.fragment_inquiry, container, false).apply {
+            vm = (this@InquiryFragment).vm
+            lifecycleOwner = this@InquiryFragment
         }
     }
 
@@ -158,15 +159,15 @@ class InquiryView: Fragment()
 
     private fun setAdapters()
     {
-        getAdapter(inquiryVm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Soon).let { adapter ->
+        getAdapter(vm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Soon).let { adapter ->
             soonArrivalParcelAdapter = adapter
             binding.recyclerviewSoonArrival.adapter = soonArrivalParcelAdapter
         }
-        getAdapter(inquiryVm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Registered).let { adapter ->
+        getAdapter(vm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Registered).let { adapter ->
             registeredParcelAdapter = adapter
             binding.recyclerviewRegisteredParcel.adapter = registeredParcelAdapter
         }
-        getAdapter(inquiryVm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Complete).let { adapter ->
+        getAdapter(vm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Complete).let { adapter ->
             completedParcelAdapter = adapter
             binding.recyclerviewCompleteParcel.adapter = completedParcelAdapter
         }
@@ -177,14 +178,14 @@ class InquiryView: Fragment()
         // 배송완료 리스트에서 해당 년월에 속해있는 택배들을 전부 삭제했을 때는 서버로 통신해서 새로고침하면 안돼고 무조건 로컬에 있는 데이터로 새로고침 해야한다.
         // (서버로 통신해서 새로고침하면 서버에 있는 데이터(우선순위가 높음)로 덮어써버리기 때문에 '삭제취소'를 통해 복구를 못함..)
         // (새로고침하면 내부에 저장된 '삭제할 데이터'들을 모두 서버로 통신하여 Remote database에서도 삭제처리(데이터 동기화)를 하고 나서 새로운 데이터를 받아옴)
-        binding.vm!!.refreshCompleteListByOnlyLocalData.observe(this, Observer {
+        vm.refreshCompleteListByOnlyLocalData.observe(this, Observer {
             if (it > 0)
             {
-                binding.vm!!.refreshCompleteListByOnlyLocalData()
+                vm.refreshCompleteListByOnlyLocalData()
             }
         })
 
-        binding.vm!!.isProgress.observe(this, Observer { isProgress ->
+        vm.isProgress.observe(this, Observer { isProgress ->
             if(isProgress == null) return@Observer
 
             if(progressBar == null)
@@ -199,7 +200,7 @@ class InquiryView: Fragment()
         })
 
         // 배송중 , 등록된 택배 리스트
-        binding.vm!!.ongoingList.observe(this, Observer {
+        vm.ongoingList.observe(this, Observer {
             soonArrivalParcelAdapter.separateDeliveryListByStatus(it)
             registeredParcelAdapter.separateDeliveryListByStatus(it)
 
@@ -208,21 +209,21 @@ class InquiryView: Fragment()
         })
 
         // 배송완료 리스트.
-        binding.vm!!.completeList.observe(this, Observer { list ->
+        vm.completeList.observe(this, Observer { list ->
 
             list.sortByDescending { it.parcelDTO.arrivalDte }
             completedParcelAdapter.notifyChanged(list)
         })
 
         // 현재 배송완료의 년월 데이터를 tv_spinner_month에 text 적용
-        binding.vm!!.currentParcelCntInfo.observe(this, Observer {
+        vm.currentParcelCntInfo.observe(this, Observer {
             it?.let { entity ->
                 tv_spinner_month.text = MenuMapper.timeToListTitle(entity.time)
             }
         })
 
         // 배송완료 화면에서 표출 가능한 년월 리스트
-        binding.vm!!.monthList.observe(this, Observer { monthList ->
+        vm.monthList.observe(this, Observer { monthList ->
             constraint_month_spinner.setOnClickListener { v ->
                 openPopUpMonthlyUsageHistory(v, monthList)
             }
@@ -230,7 +231,7 @@ class InquiryView: Fragment()
 
         // '배송 중' 또는 '배송 완료' 화면에 따른 화면 세팅
         // TODO 데이터 바인딩으로 처리할 수 있으면 처리하도록 수정해야함.
-        binding.vm!!.screenStatusEnum.observe(this, Observer {
+        vm.screenStatusEnum.observe(this, Observer {
             when (it)
             {
                 ScreenStatusEnum.ONGOING ->
@@ -244,7 +245,7 @@ class InquiryView: Fragment()
                         requireContext(), R.drawable.border_all_rounded_light_black
                     )
                     btn_ongoing.typeface =
-                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_bold)
+                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_regular)
                     btn_complete.typeface =
                         ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_regular)
                     btn_complete.setTextColor(
@@ -270,7 +271,7 @@ class InquiryView: Fragment()
                     btn_complete.typeface =
                         ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_regular)
                     btn_complete.typeface =
-                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_bold)
+                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_regular)
                     btn_complete.setTextColor(
                         ContextCompat.getColor(
                             requireContext(), R.color.MAIN_WHITE
@@ -285,7 +286,7 @@ class InquiryView: Fragment()
 
         // '더 보기'로 아이템들을 숨기는 것을 해제하여 모든 아이템들을 화면에 노출시킨다.
         // TODO 데이터 바인딩으로 처리할 수 있으면 처리하도록 수정해야함.
-        binding.vm!!.isMoreView.observe(this, Observer {
+        vm.isMoreView.observe(this, Observer {
             if (it)
             {
                 // '곧 도착' 리스트뷰는 2개 이상의 데이터는 '더 보기'로 숨겨져 있기 때문에 어덥터에 모든 데이터를 표출하라고 지시한다.
@@ -309,7 +310,7 @@ class InquiryView: Fragment()
         })
 
         // '삭제하기'에서 선택된 아이템의 개수
-        binding.vm!!.cntOfSelectedItemForDelete.observe(this, Observer {
+        vm.cntOfSelectedItemForDelete.observe(this, Observer {
 
             // 선택된 아이템이 1개 이상이라면 '~개 삭제 하기' 뷰가 나와야한다.
             if (it > 0)
@@ -323,7 +324,7 @@ class InquiryView: Fragment()
             }
 
             // 아이템이 전부 선택되었는지를 확인(아이템이 존재하지 않을때 역시 '전체선택'으로 판단될 수 있으므로 선택된 아이템의 개수가 0 이상이어야한다.)
-            if (binding.vm!!.isFullySelected(it) && it != 0)
+            if (vm.isFullySelected(it) && it != 0)
             {
                 //'전채선택'이 됐다면 상단의 '전체선택 뷰'들의 이미지와 택스트를 빨간색으로 세팅한다.
                 image_is_all_checked.setBackgroundResource(R.drawable.ic_checked_red)
@@ -352,7 +353,7 @@ class InquiryView: Fragment()
          *      2. 아이템들의 '상세 내역' 화면으로 '이동' 되어야한다.
          *   이 경우 viewModel의 liveData를 이용하여 아이템들을 '삭제'할 수 있는 상태라고 뷰들에게 알려준다.
          */
-        binding.vm!!.isRemovable.observe(this, Observer {
+        vm.isRemovable.observe(this, Observer {
             if (it)
             {
                 //'삭제하기'일때
@@ -380,8 +381,8 @@ class InquiryView: Fragment()
         /*
          * 뷰모델에서 데이터 바인딩으로 '전체선택'하기를 이용자가 선택했을때
          */
-        binding.vm!!.isSelectAll.observe(this, Observer {
-            when (binding.vm!!.screenStatusEnum.value)
+        vm.isSelectAll.observe(this, Observer {
+            when (vm.screenStatusEnum.value)
             {
                 ScreenStatusEnum.ONGOING ->
                 {
@@ -415,18 +416,18 @@ class InquiryView: Fragment()
                 val edit = MutableLiveData<String>()
 
                 AlertUtil.updateValueDialog(context!!, "택배의 별칭을 입력해주세요.", Pair("확인", View.OnClickListener {
-                    edit.observe(this@InquiryView, Observer {
+                    edit.observe(this@InquiryFragment, Observer {
                         SopoLog.d(msg = "입력 값 = > $it")
-                        binding.vm!!.patchParcelAlias(parcelId, it)
+                        vm.patchParcelAlias(parcelId, it)
                         AlertUtil.onDismiss()
 
                         if (type == 0)
                         {
-                            binding.vm!!.refreshOngoing()
+                            vm.refreshOngoing()
                         }
                         else
                         {
-                            binding.vm!!.refreshComplete()
+                            vm.refreshComplete()
                         }
                     })
                 }), Pair("취소", null), Function {
@@ -466,14 +467,14 @@ class InquiryView: Fragment()
                             override fun removeItem(v: View)
                             {
                                 //삭제하기
-                                binding.vm!!.openRemoveView()
+                                vm.openRemoveView()
                                 menuPopUpWindow?.dismiss()
                             }
 
                             override fun refreshItems(v: View)
                             {
                                 // 새로고침
-                                binding.vm!!.refreshOngoing()
+                                vm.refreshOngoing()
                                 menuPopUpWindow?.dismiss()
                             }
 
@@ -487,7 +488,7 @@ class InquiryView: Fragment()
                 }
 
             menuPopUpWindow = PopupWindow(
-                popUpView, SizeUtil.changeDpToPx(binding.root.context, 150F), ViewGroup.LayoutParams.WRAP_CONTENT, true
+                popUpView, SizeUtil.changeDpToPx(binding.root.context, 175F), ViewGroup.LayoutParams.WRAP_CONTENT, true
             ).apply {
                 showAsDropDown(anchorView)
             }
@@ -522,22 +523,24 @@ class InquiryView: Fragment()
                     {
                         override fun changeTimeCount(v: View, time: String)
                         {
-                            binding.vm!!.changeTimeCount(time)
+                            vm.changeTimeCount(time)
                             historyPopUpWindow?.dismiss()
                         }
                     })
+
+                    it.scrollBarFadeDuration = 800
                 }
             }
         historyPopUpWindow = if (timeCntDtoList.size > 6)
         {
             PopupWindow(
-                historyPopUpView, SizeUtil.changeDpToPx(binding.root.context, 120F), SizeUtil.changeDpToPx(binding.root.context, 35 * 6F), true
+                historyPopUpView, SizeUtil.changeDpToPx(binding.root.context, 160F), SizeUtil.changeDpToPx(binding.root.context, 35 * 6F), true
             ).apply { showAsDropDown(anchorView) }
         }
         else
         {
             PopupWindow(
-                historyPopUpView, SizeUtil.changeDpToPx(binding.root.context, 120F), ViewGroup.LayoutParams.WRAP_CONTENT, true
+                historyPopUpView, SizeUtil.changeDpToPx(binding.root.context, 160F), ViewGroup.LayoutParams.WRAP_CONTENT, true
             ).apply { showAsDropDown(anchorView) }
         }
     }
@@ -551,15 +554,15 @@ class InquiryView: Fragment()
             {
                 refreshDelay = true
 
-                when (binding.vm!!.getCurrentScreenStatus())
+                when (vm.getCurrentScreenStatus())
                 {
                     ScreenStatusEnum.COMPLETE ->
                     {
-                        binding.vm!!.refreshComplete()
+                        vm.refreshComplete()
                     }
                     ScreenStatusEnum.ONGOING ->
                     {
-                        binding.vm!!.refreshOngoing()
+                        vm.refreshOngoing()
                     }
                 }
 
@@ -596,7 +599,7 @@ class InquiryView: Fragment()
                 {
                     val spinnerMonthTv = tv_spinner_month.text.toString()
                     SopoLog.d(msg = "[배송완료 - 다른 날짜의 데이터 조회] 선택된 년월 : $spinnerMonthTv")
-                    binding.vm!!.getCompleteListWithPaging(
+                    vm.getCompleteListWithPaging(
                         MenuMapper.titleToInquiryDate(
                             tv_spinner_month.text.toString()
                         )
@@ -610,7 +613,7 @@ class InquiryView: Fragment()
             ConfirmDeleteDialog(requireActivity(), Pair("삭제하기", object : ((ConfirmDeleteDialog) -> Unit){
                 override fun invoke(dialog: ConfirmDeleteDialog)
                 {
-                    val selectedData = when (binding.vm!!.getCurrentScreenStatus())
+                    val selectedData = when (vm.getCurrentScreenStatus())
                     {
                         ScreenStatusEnum.ONGOING ->
                         {
@@ -630,12 +633,12 @@ class InquiryView: Fragment()
                     }
 
                     // 선택된 데이터들을 삭제한다.
-                    binding.vm!!.removeSelectedData(selectedData as MutableList<ParcelId>)
+                    vm.removeSelectedData(selectedData as MutableList<ParcelId>)
                     // 삭제할 데이터의 크기를 알려준다.
-                    binding.vm!!.setCntOfDelete(selectedData.size)
+                    vm.setCntOfDelete(selectedData.size)
 
                     // 삭제하기 화면을 종료한다.
-                    binding.vm!!.closeRemoveView()
+                    vm.closeRemoveView()
                     dialog.dismiss()
 
                     showDeleteSnackBar()

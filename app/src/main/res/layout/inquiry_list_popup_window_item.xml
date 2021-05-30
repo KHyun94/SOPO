@@ -14,16 +14,14 @@
         android:id="@+id/constraint_v"
         android:layout_width="match_parent"
         android:background="?android:attr/selectableItemBackground"
-        android:layout_height="35dp">
+        android:layout_height="35dp"
+        android:layout_marginVertical="5dp">
         <TextView
+            style="@style/H4"
             android:id="@+id/tv_menu_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="7dp"
-            android:textSize="14sp"
-            android:textColor="@color/MAIN_BLACK"
-            android:fontFamily="@font/spoqa_han_sans_regular"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

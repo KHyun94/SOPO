@@ -30,7 +30,6 @@
             android:layout_marginTop="11dp"
             android:layout_marginHorizontal="24dp"
             android:text="운송장 등록"
-            android:textColor="@color/MAIN_BLACK"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

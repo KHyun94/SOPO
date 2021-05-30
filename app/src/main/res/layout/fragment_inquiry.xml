@@ -4,11 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="android.view.View" />
-
         <import type="com.delivery.sopo.R" />
-
         <import type="com.delivery.sopo.enums.ScreenStatusEnum" />
 
         <variable
@@ -176,9 +173,10 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
+<!--                -->
                 <TextView
                     style="@style/H4"
-                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:fontFamily="@font/spoqa_han_sans_regular"
                     android:id="@+id/btn_ongoing"
                     android:layout_width="80dp"
                     android:layout_height="35dp"
@@ -215,7 +213,7 @@
 
                     <TextView
                         style="@style/H4"
-                        android:fontFamily="@font/spoqa_han_sans_bold"
+                        android:fontFamily="@font/spoqa_han_sans_regular"
                         android:id="@+id/btn_complete"
                         android:layout_width="80dp"
                         android:layout_height="35dp"
@@ -241,22 +239,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
+            android:paddingHorizontal="10dp"
             android:visibility="@{(vm.monthList.size() > 0 &amp;&amp; vm.screenStatusEnum == ScreenStatusEnum.COMPLETE) ? View.VISIBLE : View.GONE}"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraint_select"
-            tools:visibility="visible">
+            tools:visibility="visible"
+            android:layout_marginEnd="16dp">
 
             <TextView
                 android:id="@+id/tv_spinner_month"
+                style="@style/H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:fontFamily="@font/spoqa_han_sans_regular"
                 android:textColor="@color/COLOR_GRAY_800"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="2020년 7월" />
+                tools:text="2021년 5월" />
 
             <ImageView
                 android:id="@+id/image_arrow_bottom"
@@ -266,7 +266,8 @@
                 android:src="@drawable/ic_arrow_bottom_blue"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_spinner_month"
                 app:layout_constraintStart_toEndOf="@+id/tv_spinner_month"
-                app:layout_constraintTop_toTopOf="@+id/tv_spinner_month" />
+                app:layout_constraintTop_toTopOf="@+id/tv_spinner_month"
+                android:layout_marginEnd="30dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -305,11 +306,11 @@
                             android:id="@+id/layout_present_ongoing"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="24dp"
-                            android:layout_marginBottom="24dp"
                             android:orientation="horizontal"
                             android:visibility="@{vm.presentOngoingParcelCnt > 0 &amp;&amp; !vm.isRemovable() ? View.VISIBLE : View.GONE}"
-                            android:weightSum="10">
+                            android:weightSum="10"
+                            android:layout_marginTop="27.5dp"
+                            android:layout_marginBottom="40dp">
 
                             <LinearLayout
                                 android:id="@+id/layout_present_ongoing_text"
@@ -347,7 +348,7 @@
                                 android:id="@+id/iv_present_parcel"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="3"
+                                android:layout_weight="3.4"
                                 android:adjustViewBounds="true"
                                 app:layout_constrainedWidth="true"
                                 app:layout_constraintBottom_toTopOf="parent"
@@ -379,11 +380,13 @@
                                     android:id="@+id/tv_soon_arrival"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="24dp"
+                                    android:layout_marginStart="16dp"
                                     android:fontFamily="@font/spoqa_han_sans_regular"
                                     android:text="@string/INQUIRY_VIEW_SOON_ARRIVAL"
                                     android:textColor="@color/COLOR_GRAY_800"
                                     android:textSize="16sp"
+                                    android:includeFontPadding="false"
+                                    android:layout_marginBottom="16dp"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -454,7 +457,7 @@
                                     android:id="@+id/tv_registered_arrival"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="24dp"
+                                    android:layout_marginStart="16dp"
                                     android:fontFamily="@font/spoqa_han_sans_regular"
                                     android:text="@string/INQUIRY_VIEW_REGISTERED_PARCEL"
                                     android:textColor="@color/COLOR_GRAY_800"

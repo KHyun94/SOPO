@@ -17,8 +17,10 @@
         android:layout_width="match_parent"
         android:layout_height="101dp"
         app:cardBackgroundColor="@color/MAIN_WHITE"
-        app:cardCornerRadius="15dp"
+        app:cardCornerRadius="11dp"
         app:cardElevation="3dp"
+        android:outlineAmbientShadowColor="#B9B9C6"
+        android:outlineSpotShadowColor="#B9B9C6"
         app:cardUseCompatPadding="true">
 
         <LinearLayout
@@ -34,7 +36,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.2"
                 app:setBackgroundColor="@{ongoingInquiryData.backgroundColorResource}"
-                tools:visibility="visible">
+                tools:visibility="visible"
+                tools:src="@android:color/black">
                 
                 <ImageView
                     android:id="@+id/image_delivery_status"
@@ -48,7 +51,7 @@
                     app:layout_constraintWidth_percent="0.33"
                     app:setDefaultImage="@{0}"
                     app:setImage="@{ongoingInquiryData.iconResource}"
-                    tools:src="@drawable/ic_inquiry_cardview_at_pickup" />
+                    tools:src="@drawable/ic_inquiry_cardview_error" />
 
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guide_2nd"
@@ -62,7 +65,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:orientation="horizontal"
-                    app:layout_constraintGuide_percent="0.64" />
+                    app:layout_constraintGuide_percent="0.58" />
 
                 <TextView
                     android:id="@+id/tv_delivery_status"
@@ -78,7 +81,8 @@
                     app:layout_constraintTop_toBottomOf="@+id/guide_3rd"
                     app:setText="@{ongoingInquiryData.statusText}"
                     app:setTextColor="@{ongoingInquiryData.statusTextColorResource}"
-                    tools:text="상품인수" />
+                    tools:text="상품인수"
+                    tools:textColor="@color/COLOR_GRAY_800"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -131,14 +135,14 @@
                     <TextView
                         android:id="@+id/tv_registered_parcel_name"
                         style="@style/H5"
-                        android:textSize="13dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:letterSpacing="0"
+                        android:layout_marginBottom="6dp"
                         android:fontFamily="@font/roboto_medium"
+                        android:letterSpacing="0"
                         android:text="@{ongoingInquiryData.parcelDTO.alias}"
-                        tools:text="갤럭시 버즈 플러스 화이트777갤1234ABCabc"
-                        android:layout_marginBottom="6dp"/>
+                        android:textSize="14.5dp"
+                        tools:text="갤럭시 버즈 플러스 화이트777갤1234ABCabc" />
 
                     <TextView
                         android:id="@+id/tv_registered_parcel_date"

@@ -76,25 +76,25 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
         return when(completeTimeDate.get(Calendar.DAY_OF_WEEK))
         {
             1-> {
-                 "일"
+                 "일요일"
             }
             2-> {
-                 "월"
+                 "월요일"
             }
             3-> {
-                 "화"
+                 "화요일"
             }
             4-> {
-                 "수"
+                 "수요일"
             }
             5-> {
-                 "목"
+                 "목요일"
             }
             6-> {
-                 "금"
+                 "금요일"
             }
             7-> {
-                 "토"
+                 "토요일"
             }
             else -> {
                  ""
@@ -143,8 +143,8 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
             //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> R.color.COLOR_GRAY_300
             //상품 인수
-            DeliveryStatusEnum.AT_PICKUP.CODE -> R.color.COLOR_GRAY_300
-            //상품 이동 중
+            DeliveryStatusEnum.AT_PICKUP.CODE -> R.color.COLOR_MAIN_300
+            // 배송
             DeliveryStatusEnum.IN_TRANSIT.CODE -> R.color.MAIN_WHITE
             // 동네도착
             DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.color.MAIN_WHITE
@@ -179,10 +179,11 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
             //상품 인수
             DeliveryStatusEnum.AT_PICKUP.CODE -> R.drawable.ic_inquiry_cardview_at_pickup
             //상품 이동 중
-            DeliveryStatusEnum.IN_TRANSIT.CODE -> R.drawable.ic_inquiry_cardview_in_transit
+//            DeliveryStatusEnum.IN_TRANSIT.CODE -> R.drawable.ic_inquiry_cardview_in_transit
+            DeliveryStatusEnum.IN_TRANSIT.CODE -> R.drawable.ic_inquiry_cardview_in_transit_test
             // 동네도착
             DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.drawable.ic_inquiry_cardview_out_for_delivery
-            else -> 0
+            else -> R.drawable.ic_inquiry_cardview_error
         }
 
     }

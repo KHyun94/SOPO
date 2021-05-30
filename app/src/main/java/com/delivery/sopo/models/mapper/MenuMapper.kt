@@ -4,6 +4,7 @@ import android.view.Menu
 import androidx.core.view.iterator
 import com.delivery.sopo.data.repository.database.room.entity.ParcelCntInfoEntity
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
+import com.delivery.sopo.util.SopoLog
 
 object MenuMapper
 {
@@ -27,7 +28,30 @@ object MenuMapper
     }
 
     fun timeToListTitle(time: String): String{
-        return time.replace("-", "년 ") + "월"
+
+        SopoLog.d("time >>> $time")
+
+        try
+        {
+            val times = time.split("-").toMutableList()
+            times[0] += "년"
+
+            times[1] = if(times[1].startsWith("0"))
+            {
+                times[1].replace("0", "") + "월"
+            }
+            else
+            {
+                times[1] + "월"
+            }
+
+            return times[0] + " " + times[1]
+        }
+        catch(e: Exception)
+        {
+            SopoLog.e("에러 발생 >>> $e", e)
+            return "0000년 00월"
+        }
     }
 
     fun timeToInquiryDate(time: String): String{
