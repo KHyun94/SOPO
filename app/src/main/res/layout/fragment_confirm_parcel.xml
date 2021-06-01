@@ -14,7 +14,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.registesrs.RegisterStep3ViewModel" />
+            type="com.delivery.sopo.viewmodels.registesrs.ConfirmParcelViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

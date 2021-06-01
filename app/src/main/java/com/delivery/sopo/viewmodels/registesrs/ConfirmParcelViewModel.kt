@@ -18,9 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class RegisterStep3ViewModel(
-    private val userLocalRepository: UserLocalRepository
-) : ViewModel()
+class ConfirmParcelViewModel: ViewModel()
 {
     var waybillNum = MutableLiveData<String>()
     var carrier = MutableLiveData<CarrierDTO>()

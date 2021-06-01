@@ -72,34 +72,7 @@ object DateUtil
 
     fun getSubscribedTime(hour: Int, minutes: Int) : String
     {
-        SopoLog.d(
-            msg = """
-            시 : $hour
-            분 : $minutes
-        """.trimIndent()
-        )
-
-        return if (minutes > 0)
-        {
-            val topicHour = hour.toString().padStart(2, '0').padEnd(4, '0')
-            SopoLog.d(
-                msg = """
-            구독 시간 ${topicHour}
-        """.trimIndent()
-            )
-
-            topicHour
-        }
-        else
-        {
-            val topicHour = (hour + 1).toString().padStart(2, '0').padEnd(4 , '0')
-            SopoLog.d(
-                msg = """
-            구독 시간 ${topicHour}
-        """.trimIndent()
-            )
-
-            topicHour
-        }
+        val topicHour = if(minutes == 0) { hour + 1 } else hour
+        return topicHour.toString().padStart(2, '0').padEnd(4, '0')
     }
 }

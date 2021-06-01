@@ -59,7 +59,6 @@ import kotlin.system.exitProcess
 class InquiryFragment: Fragment()
 {
     private lateinit var parentView: MainView
-
     private lateinit var binding: FragmentInquiryBinding
 
     private val vm : InquiryViewModel by viewModel()
@@ -78,9 +77,9 @@ class InquiryFragment: Fragment()
 
     var callback: OnBackPressedCallback? = null
 
-    override fun onAttach(context: Context)
+    init
     {
-        super.onAttach(context)
+        parentView = activity as MainView
 
         var pressedTime: Long = 0
 
@@ -93,28 +92,29 @@ class InquiryFragment: Fragment()
                     pressedTime = System.currentTimeMillis()
 
                     Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply {
-                            animationMode = Snackbar.ANIMATION_MODE_SLIDE
-                        }.show()
-
-                    SopoLog.d("InquiryView::1 BackPressListener = 종료를 위해 한번 더 클릭")
+                        animationMode = Snackbar.ANIMATION_MODE_SLIDE
+                    }.show()
 
                     return
                 }
 
-                SopoLog.d("InquiryView::1 BackPressListener = 종료")
-
-                ActivityCompat.finishAffinity(activity!!)
+                ActivityCompat.finishAffinity(parentView)
                 exitProcess(0)
             }
         }
+    }
 
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+    override fun onAttach(context: Context)
+    {
+        super.onAttach(context)
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback?:return)
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
-        parentView = activity as MainView
+
         bindView(inflater, container)
         setAdapters()
         setObserver()

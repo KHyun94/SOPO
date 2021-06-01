@@ -32,7 +32,7 @@ typealias OnTextClickListener = Pair<String?, View.OnClickListener?>
 
 object AlertUtil: KoinComponent
 {
-    val USER_LOCAL_REPOSITORY: UserLocalRepository by inject()
+    val userSITORY: UserLocalRepository by inject()
     val O_AUTH_REPO_IMPL: OAuthLocalRepository by inject()
     val appDataBase: AppDatabase by inject()
 
@@ -120,7 +120,7 @@ object AlertUtil: KoinComponent
         {
             override fun invoke(agree: GeneralDialog)
             {
-                USER_LOCAL_REPOSITORY.removeUserRepo()
+                userSITORY.removeUserRepo()
 
                 CoroutineScope(Dispatchers.Default).launch { appDataBase.clearAllTables() }
                 SOPOApp.oAuth = null

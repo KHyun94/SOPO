@@ -17,7 +17,7 @@ import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.viewmodels.menus.*
 import com.delivery.sopo.viewmodels.registesrs.InputParcelViewModel
 import com.delivery.sopo.viewmodels.registesrs.RegisterStep2ViewModel
-import com.delivery.sopo.viewmodels.registesrs.RegisterStep3ViewModel
+import com.delivery.sopo.viewmodels.registesrs.ConfirmParcelViewModel
 import com.delivery.sopo.viewmodels.signup.SignUpCompleteViewModel
 import com.delivery.sopo.viewmodels.signup.UpdateNicknameViewModel
 import com.delivery.sopo.viewmodels.signup.SignUpViewModel
@@ -69,5 +69,5 @@ val appModule = module {
 
     viewModel { InputParcelViewModel(get()) }
     viewModel { RegisterStep2ViewModel(get()) }
-    viewModel { RegisterStep3ViewModel(get()) }
+    viewModel { ConfirmParcelViewModel() }
 }

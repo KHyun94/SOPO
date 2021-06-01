@@ -15,18 +15,20 @@ import java.util.*
 
 object FirebaseNetwork: KoinComponent
 {
-    private val USER_LOCAL_REPO: UserLocalRepository by inject()
+    private val userLocalRepo: UserLocalRepository by inject()
 
     /**
      * FCM 구독 요청
      * 등록 시 또는 앱 재설치 시 진행 중인 택배가 있을 시 구독 요청
-     * TODO topic 주제 00 ~ 24H ex) 01:01 ~ 02:00 >>> 2시 구독
      */
     fun subscribedToTopicInFCM(hour: Int? = null, minutes: Int? = null)
     {
-        var topicHour : Int
-        var topicMinutes : Int
+        SopoLog.d("subscribedToTopicInFCM() call")
 
+        val topicHour : Int
+        val topicMinutes : Int
+
+        // 인자가 null일 때, 현재 시간을 기준으로 한다.
         if(hour == null || minutes == null)
         {
             val calendar = Calendar.getInstance()
@@ -39,6 +41,7 @@ object FirebaseNetwork: KoinComponent
             topicHour = hour
             topicMinutes = minutes
         }
+        SopoLog.d(msg = "택배 등록 시간 $topicHour:$topicMinutes")
 
         val topic = DateUtil.getSubscribedTime(topicHour, topicMinutes)
         // 01 02 03  ~ 24(00)
@@ -50,27 +53,25 @@ object FirebaseNetwork: KoinComponent
             .addOnCompleteListener { task ->
                 if(!task.isSuccessful)
                 {
-//                    callback.invoke(null, ErrorResult(null, "구독 실패", ErrorResult.ERROR_TYPE_DIALOG, null, task.exception))
+                    SopoLog.e("fail to subscribe topic", task.exception)
                     return@addOnCompleteListener
                 }
-
-                USER_LOCAL_REPO.setTopic(topic)
-//                callback.invoke(SuccessResult(SUCCESS, "구독 성공 >>> ${topic}", null), null)
+                SopoLog.d("success to subscribe topic at $topic")
+                userLocalRepo.setTopic(topic)
             }
     }
 
     /**
      * FCM 구독 요청
      * 등록 시 또는 앱 재설치 시 진행 중인 택배가 있을 시 구독 요청
-     * TODO topic 주제 00 ~ 24H ex) 01:01 ~ 02:00 >>> 2시 구독
      */
     fun unsubscribedToTopicInFCM()
     {
-        val topic = USER_LOCAL_REPO.getTopic()
+        val topic = userLocalRepo.getTopic()
 
         if(topic == "")
         {
-//            callback.invoke(null, ErrorResult(null, "구독 해제 실패", ErrorResult.ERROR_TYPE_NON, null, null))
+            SopoLog.e("fail to unsubscribe topic", Exception("Topic is null or empty"))
             return
         }
 
@@ -78,32 +79,27 @@ object FirebaseNetwork: KoinComponent
             .addOnCompleteListener { task ->
                 if(!task.isSuccessful)
                 {
-//                    callback.invoke(null, ErrorResult(null, "구독 해제 실패", ErrorResult.ERROR_TYPE_NON, null, task.exception))
+                    SopoLog.e("fail to unsubscribe topic", task.exception)
                     return@addOnCompleteListener
                 }
 
-                USER_LOCAL_REPO.setTopic("")
-//                callback.invoke(SuccessResult(SUCCESS, "구독 해제 성공 >>> $topic", null), null)
+                SopoLog.d("success to unsubscribe topic")
+                userLocalRepo.setTopic("")
             }
     }
 
-    // TODO Firebase Update Token 활성화
     fun updateFCMToken()
     {
         SopoLog.d( msg = "updateFCMToken call()")
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
             if(!task.isSuccessful)
             {
-//                val code = CodeUtil.getCode(task.exception.getCommonMessage(SOPOApp.INSTANCE))
-//                callback.invoke(TestResult.ErrorResult<String?>(code, code.MSG, ErrorResult.ERROR_TYPE_NON, null, task.exception))
                 return@addOnCompleteListener
             }
 
             CoroutineScope(Dispatchers.Main).launch {
                 UserRemoteRepository.updateFCMToken(task.result.token)
             }
-
-//            callback.invoke(TestResult.SuccessResult<InstanceIdResult>(SUCCESS, SUCCESS.MSG, task.result))
         }
     }
 }
