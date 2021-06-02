@@ -69,7 +69,7 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository) : V
 
         CoroutineScope(Dispatchers.Default).launch {
             val carrierEntity = carrierRepository.getCarrierEntityWithCode(carrierCode)
-            val minLen = carrierEntity.minLen
+            val minLen = carrierEntity.range
             val maxLen = carrierEntity.maxLen
 
             withContext(Dispatchers.Main){

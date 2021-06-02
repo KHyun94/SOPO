@@ -4,15 +4,18 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.delivery.sopo.data.repository.database.room.dao.*
 import com.delivery.sopo.data.repository.database.room.entity.*
+import com.delivery.sopo.data.repository.database.room.util.Converters
 import com.delivery.sopo.data.repository.local.o_auth.OAuthDAO
 import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 
+@TypeConverters(Converters::class)
 @Database(
     entities = [CarrierEntity::class, ParcelEntity::class, ParcelStatusEntity::class, ParcelCntInfoEntity::class, AppPasswordEntity::class, WorkEntity::class, LogEntity::class, OAuthEntity::class],
-    version = 2
+    version = 1
 )
 abstract class AppDatabase : RoomDatabase()
 {
