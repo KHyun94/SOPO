@@ -7,7 +7,8 @@ import com.delivery.sopo.enums.CarrierEnum.*
 object CarrierUtil
 {
     fun getCarrierImages(enum: CarrierEnum): Map<CarrierEnum, List<Int>>{
-        when(enum){
+
+        val list = when(enum){
             SAGAWA ->
             {
                 listOf(R.drawable.ic_logo_sagawa, R.drawable.ic_color_sagawa, R.drawable.ic_gray_sagawa)
@@ -18,6 +19,7 @@ object CarrierUtil
             }
             YUUBIN ->
             {
+                listOf(R.drawable.ic_logo_japan, R.drawable.ic_color_japan, R.drawable.ic_gray_japan)
             }
             CHUNILPS ->
             {
@@ -33,6 +35,7 @@ object CarrierUtil
             }
             CVSNET ->
             {
+                listOf(R.drawable.ic_logo_gs, R.drawable.ic_color_gs, R.drawable.ic_gray_gs)
             }
             CWAY ->
             {
@@ -68,48 +71,51 @@ object CarrierUtil
             }
             KDEXP ->
             {
-
+                listOf(R.drawable.ic_logo_kyungdong, R.drawable.ic_color_kyungdong, R.drawable.ic_gray_kyungdong)
             }
             KUNYOUNG ->
             {
-
+                listOf(R.drawable.ic_logo_gunyoung, R.drawable.ic_color_gunyoung, R.drawable.ic_gray_gunyoung)
             }
             LOGEN ->
             {
-
+                listOf(R.drawable.ic_logo_logen, R.drawable.ic_color_slx, R.drawable.ic_gray_slx)
             }
             LOTTE ->
             {
-
+                listOf(R.drawable.ic_logo_lotte, R.drawable.ic_color_lotte, R.drawable.ic_gray_lotte)
             }
             SLX ->
             {
-
+                listOf(R.drawable.ic_logo_slx, R.drawable.ic_color_slx, R.drawable.ic_gray_slx)
             }
             SWGEXP ->
             {
-
+                listOf(R.drawable.ic_logo_sungone, R.drawable.ic_color_sungone, R.drawable.ic_gray_sungone)
             }
             TNT ->
             {
-
+                listOf(R.drawable.ic_logo_tnt, R.drawable.ic_color_tnt, R.drawable.ic_gray_tnt)
             }
             EMS ->
             {
-
+                listOf(R.drawable.ic_logo_ems, R.drawable.ic_color_ems, R.drawable.ic_gray_ems)
             }
             FEDEX ->
             {
-
+                listOf(R.drawable.ic_logo_fedex, R.drawable.ic_color_fedex, R.drawable.ic_gray_fedex)
             }
             UPS ->
             {
-
+                listOf(R.drawable.ic_logo_ups, R.drawable.ic_color_ups, R.drawable.ic_gray_ups)
             }
             USPS ->
             {
                 listOf(R.drawable.ic_logo_ilyang, R.drawable.ic_color_ilyang, R.drawable.ic_gray_ilyang)
             }
+            else -> emptyList()
         }
+
+        return mapOf(Pair(enum, list))
     }
 }
