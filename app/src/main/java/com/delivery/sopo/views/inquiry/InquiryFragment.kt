@@ -79,7 +79,6 @@ class InquiryFragment: Fragment()
 
     init
     {
-        parentView = activity as MainView
 
         var pressedTime: Long = 0
 
@@ -107,7 +106,7 @@ class InquiryFragment: Fragment()
     override fun onAttach(context: Context)
     {
         super.onAttach(context)
-
+        parentView = activity as MainView
         requireActivity().onBackPressedDispatcher.addCallback(this, callback?:return)
     }
 

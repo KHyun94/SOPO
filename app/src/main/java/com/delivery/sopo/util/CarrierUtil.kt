@@ -113,6 +113,10 @@ object CarrierUtil
             {
                 listOf(R.drawable.ic_logo_ilyang, R.drawable.ic_color_ilyang, R.drawable.ic_gray_ilyang)
             }
+            DHL ->
+            {
+                listOf(R.drawable.ic_logo_dhl, R.drawable.ic_color_dhl, R.drawable.ic_gray_dhl)
+            }
             else -> emptyList()
         }
 

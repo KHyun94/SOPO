@@ -26,8 +26,13 @@ data class CarrierEntity(
     )
     val carrierCode: String,
     @ColumnInfo(
-        name = "range"
-    ) val range: List<Int>,
+        name = "min",
+        typeAffinity = ColumnInfo.INTEGER
+    ) val min: Int,
+    @ColumnInfo(
+        name = "max",
+        typeAffinity = ColumnInfo.INTEGER
+    ) val max: Int,
     @ColumnInfo(
         name = "priority",
         typeAffinity = ColumnInfo.REAL
