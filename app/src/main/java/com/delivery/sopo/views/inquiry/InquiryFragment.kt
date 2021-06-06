@@ -79,8 +79,6 @@ class InquiryFragment: Fragment()
 
     init
     {
-        parentView = activity as MainView
-
         var pressedTime: Long = 0
 
         callback = object: OnBackPressedCallback(true)
@@ -114,7 +112,7 @@ class InquiryFragment: Fragment()
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
-
+        parentView = activity as MainView
         bindView(inflater, container)
         setAdapters()
         setObserver()

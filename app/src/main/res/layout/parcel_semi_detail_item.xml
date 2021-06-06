@@ -53,37 +53,29 @@
             app:layout_constraintRight_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/layout_add_view" />
 
-        <TextView
+        <View
             android:id="@+id/tv_status"
-            style="@style/H4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
-            android:layout_marginTop="54dp"
-            android:background="@drawable/border_all_rounded_main_blue_stroke"
-            android:paddingHorizontal="7dp"
-            android:paddingBottom="1dp"
-            android:text="@{item.deliverStatus}"
-            android:fontFamily="@font/spoqa_han_sans_bold"
-            android:textColor="@color/COLOR_MAIN_700"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:includeFontPadding="false"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
             app:layout_constraintTop_toBottomOf="@id/layout_detail_content"
-            tools:text= "배송중"/>
+            android:layout_marginTop="24dp"
+            android:background="@color/COLOR_GRAY_100"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:includeFontPadding="false"/>
 
         <TextView
             android:id="@+id/tv_alias"
             style="@style/H3"
+            android:letterSpacing="-0.01"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
-            android:layout_marginTop="6dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="32dp"
             android:includeFontPadding="false"
             android:text="@{item.alias}"
-            android:textColor="@color/TMP_BLACK"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_status"
-            tools:text="내 물품 제대로 왔나?"/>
+            tools:text="123456789077가나다라마바사abac12345뮤AB"/>
 
         <TextView
             android:id="@+id/tv_carrier"
@@ -108,10 +100,12 @@
             android:includeFontPadding="false"
             android:text="@{item.waybillNum}"
             android:textColor="@color/COLOR_GRAY_800"
+            android:fontFamily="@font/roboto_regular"
             app:layout_constraintBaseline_toBaselineOf="@+id/tv_carrier"
             app:layout_constraintLeft_toRightOf="@+id/tv_carrier"
             app:layout_constraintRight_toLeftOf="@id/iv_copy"
             app:layout_constraintTop_toBottomOf="@id/tv_alias"
+            android:letterSpacing="0.04"
             tools:text="432018901"/>
 
         <ImageView

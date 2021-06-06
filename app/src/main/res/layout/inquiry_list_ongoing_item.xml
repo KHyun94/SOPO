@@ -76,12 +76,13 @@
                     android:fontFamily="@font/spoqa_han_sans_bold"
                     android:textColor="@color/MAIN_WHITE"
                     android:textSize="10sp"
+                    android:letterSpacing="-0.04"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/guide_3rd"
                     app:setText="@{ongoingInquiryData.statusText}"
                     app:setTextColor="@{ongoingInquiryData.statusTextColorResource}"
-                    tools:text="상품인수"
+                    tools:text="배송중"
                     tools:textColor="@color/COLOR_GRAY_800"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -175,23 +176,27 @@
 
                     <TextView
                         android:id="@+id/tv_registered_parcel_name_delete"
+                        style="@style/H5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/spoqa_han_sans_bold"
+                        android:layout_marginBottom="6dp"
+                        android:fontFamily="@font/roboto_bold"
+                        android:letterSpacing="0"
                         android:text="@{ongoingInquiryData.parcelDTO.alias}"
                         android:textColor="@color/COLOR_MAIN_RED_500"
-                        android:textSize="12sp"
-                        tools:text="갤럭시 버즈 플러스 화이트" />
+                        android:textSize="14.5dp"
+                        tools:text="갤럭시 버즈 플러스 화이트777갤1234ABCabc" />
 
                     <TextView
                         android:id="@+id/tv_registered_parcel_date_delete"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/spoqa_han_sans_light"
+                        android:fontFamily="@font/roboto_regular"
                         android:text="@{ongoingInquiryData.ongoingDateTime}"
                         android:textColor="@color/COLOR_MAIN_RED_500"
-                        android:textSize="10sp"
+                        android:textSize="13dp"
                         tools:text="2020/08/31" />
+
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>

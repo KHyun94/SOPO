@@ -6,6 +6,7 @@ import android.widget.ImageView
 import androidx.annotation.ColorRes
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 
@@ -43,6 +44,7 @@ object ImageBindingAdapter
                         .asGif()
                         .load(res)
                         .placeholder(defaultRes)
+                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                         .into(view)
                 }
                 else ->
@@ -50,6 +52,7 @@ object ImageBindingAdapter
                     Glide.with(view.context)
                         .load(res)
                         .placeholder(0)
+                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                         .into(view)
                 }
             }

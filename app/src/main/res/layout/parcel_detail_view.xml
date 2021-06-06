@@ -13,7 +13,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/COLOR_GRAY_50">
 
         <com.sothree.slidinguppanel.SlidingUpPanelLayout
             android:id="@+id/layout_main"
@@ -22,12 +23,13 @@
             android:gravity="bottom"
             app:umanoDragView="@+id/layout_drawer"
             app:umanoOverlay="true"
-            app:umanoShadowHeight="0dp">
+            app:umanoShadowHeight="0dp"
+            android:background="@color/COLOR_GRAY_50">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/MAIN_WHITE"
+                android:background="@color/COLOR_GRAY_50"
                 android:focusableInTouchMode="false">
 
                 <!--      기존 left:31에 -> 31 * 1.1762 = 36.4622 올림 37dp      -->
@@ -36,7 +38,7 @@
                     android:id="@+id/btn_previous"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="37dp"
+                    android:layout_marginStart="24dp"
                     android:layout_marginTop="18dp"
                     android:background="@drawable/ic_left_arrow"
                     android:onClick="@{()->vm.onBackClicked()}"
@@ -52,7 +54,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="11dp"
-                    android:includeFontPadding="false"
                     android:text="상세 조회"
                     android:textColor="@color/COLOR_GRAY_800"
                     app:layout_constraintLeft_toRightOf="parent"
@@ -78,18 +79,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
+
                     app:layout_constraintBottom_toTopOf="@+id/layout_tail"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_subtext">
+                    app:layout_constraintTop_toBottomOf="@+id/tv_subtext"
+                    android:weightSum="10"
+                    >
 
                     <ImageView
                         android:id="@+id/iv_status"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="5"
                         android:layout_gravity="center"
-                        app:setDefaultImage="@{R.drawable.ic_loading_for_load_parcel}"
-                        android:src="@drawable/ic_loading_for_load_parcel"
+                        android:adjustViewBounds="true"
+                        app:setDefaultImage="@{0}"
                         app:setImage="@{vm.deliveryStatusEnum.BACKGROUND}" />
 
                 </LinearLayout>
@@ -110,7 +115,7 @@
                 android:id="@+id/layout_drawer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/border_drawer"
+                android:background="@drawable/border_rounded_30dp"
                 android:elevation="18dp"
                 android:orientation="vertical">
 

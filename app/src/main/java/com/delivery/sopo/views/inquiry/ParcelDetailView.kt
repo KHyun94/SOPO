@@ -1,6 +1,7 @@
 package com.delivery.sopo.views.inquiry
 
 import android.content.Context
+import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
@@ -28,10 +30,12 @@ import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.views.main.MainView
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
+import kotlinx.android.synthetic.main.parcel_full_detail_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class ParcelDetailView : Fragment()
 {
@@ -116,17 +120,30 @@ class ParcelDetailView : Fragment()
                         _slideOffset < 0.1 ->
                         {
                             // 테두리
-                            binding.layoutDrawer.setBackgroundResource(R.drawable.border_drawer)
+                            binding.layoutDrawer.setBackgroundResource(R.drawable.border_rounded_30dp)
 
                             binding.includeSemi.root.visibility = View.VISIBLE
                             binding.includeFull.root.visibility = View.GONE
 
                             slideViewStatus = 0
                         }
+                        _slideOffset < 0.7 ->
+                        {
+                            binding.layoutDrawer.setBackgroundResource(R.drawable.border_rounded_15dp)
+
+                            binding.includeFull.root.layout_hedaer.visibility = View.INVISIBLE
+
+                            binding.includeSemi.root.visibility = View.GONE
+                            binding.includeFull.root.visibility = View.VISIBLE
+
+                            slideViewStatus = 1
+                        }
                         else ->
                         {
                             // 테두리
                             binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
+
+                            binding.includeFull.root.layout_hedaer.visibility = View.VISIBLE
 
                             binding.includeSemi.root.visibility = View.GONE
                             binding.includeFull.root.visibility = View.VISIBLE
@@ -310,8 +327,8 @@ class ParcelDetailView : Fragment()
             LinearLayout.LayoutParams.WRAP_CONTENT
         )
 
-        linearParams.leftMargin = SizeUtil.changeDpToPx(activity!!, 9.0f)
-        linearParams.rightMargin = SizeUtil.changeDpToPx(activity!!, 9.0f)
+        linearParams.leftMargin = SizeUtil.changeDpToPx(activity!!, 12.0f)
+        linearParams.rightMargin = SizeUtil.changeDpToPx(activity!!, 12.0f)
 
         // 기존에 있는 자식 뷰를 초기화
         if (baseLayout.childCount > 0) baseLayout.removeAllViews()
@@ -336,6 +353,10 @@ class ParcelDetailView : Fragment()
                 )
                 ivParam.bottomMargin = SizeUtil.changeDpToPx(activity!!, 3.0f)
                 itemBinding.ivIndicator.layoutParams = ivParam
+
+                val typeface = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_bold)
+
+                itemBinding.tvStatus.typeface = typeface
             }
 
             baseLayout.addView(itemBinding.root)
