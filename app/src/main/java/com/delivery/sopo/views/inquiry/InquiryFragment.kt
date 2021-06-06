@@ -105,7 +105,7 @@ class InquiryFragment: Fragment()
     override fun onAttach(context: Context)
     {
         super.onAttach(context)
-
+        parentView = activity as MainView
         requireActivity().onBackPressedDispatcher.addCallback(this, callback?:return)
     }
 

@@ -69,8 +69,8 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository) : V
 
         CoroutineScope(Dispatchers.Default).launch {
             val carrierEntity = carrierRepository.getCarrierEntityWithCode(carrierCode)
-            val minLen = carrierEntity.minLen
-            val maxLen = carrierEntity.maxLen
+            val minLen = carrierEntity.min
+            val maxLen = carrierEntity.max
 
             withContext(Dispatchers.Main){
                 if(waybillNum?.length in minLen..maxLen || minLen == 0)

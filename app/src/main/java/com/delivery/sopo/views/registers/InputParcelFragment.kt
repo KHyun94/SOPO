@@ -163,7 +163,7 @@ class InputParcelFragment: Fragment()
             }
 
             CoroutineScope(Dispatchers.Default).launch {
-                val carrierList = RoomActivate.recommendAutoCarrier(waybillNum, 1, carrierRepo)
+                val carrierList = RoomActivate.recommendAutoCarrier(waybillNum, 1)
 
                 SopoLog.d("input waybill num's length >= 9. Select Carrier:[${carrierList?.joinToString()}]")
 

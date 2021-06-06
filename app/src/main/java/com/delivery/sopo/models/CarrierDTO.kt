@@ -8,10 +8,10 @@ import java.io.Serializable
 data class CarrierDTO(
     @SerializedName("carrier")
     val carrier: CarrierEnum,
-    @SerializedName("clickRes")
-    val clickRes: Int,
-    @SerializedName("nonClickRes")
-    val nonClickRes: Int,
-    @SerializedName("iconRes")
-    val iconRes: Int
+    @SerializedName("min")
+    val min: Int,
+    @SerializedName("max")
+    val max: Int,
+    @SerializedName("carrierIcons")
+    val icons: List<Int>
 ) : Serializable

@@ -55,10 +55,11 @@ class GridTypedRecyclerViewAdapter(private var items: List<SelectItem<CarrierDTO
     {
         if (items == null || items?.get(position)?.item == null) return
 
-        SopoLog.d(msg = "$position")
         val selectItem = items!![position]
-        holder.onBind(selectItem)
 
+        SopoLog.d(msg = "[$position]:$selectItem")
+
+        holder.onBind(selectItem)
     }
 
     override fun getItemId(position: Int): Long
@@ -97,7 +98,7 @@ class GridTypedRecyclerViewAdapter(private var items: List<SelectItem<CarrierDTO
                     paste!!.second.isSelect = false
 
                     Glide.with(layout.getChildAt(0).context)
-                        .load(paste!!.second.item?.nonClickRes)
+                        .load(paste!!.second.item?.icons?.get(2))
                         .apply(requestOptions)
                         .into(layout.getChildAt(0) as ImageView)
                 }
@@ -113,7 +114,7 @@ class GridTypedRecyclerViewAdapter(private var items: List<SelectItem<CarrierDTO
                         if (item.isSelect)
                         {
                             Glide.with(binding.ivImg.context)
-                                .load(item.item?.nonClickRes)
+                                .load(item.item?.icons?.get(2))
                                 .apply(requestOptions)
                                 .into(binding.ivImg)
 
@@ -122,7 +123,7 @@ class GridTypedRecyclerViewAdapter(private var items: List<SelectItem<CarrierDTO
                         else
                         {
                             Glide.with(binding.ivImg.context)
-                                .load(item.item?.clickRes)
+                                .load(item.item?.icons?.get(1))
                                 .apply(requestOptions)
                                 .into(binding.ivImg)
 
@@ -147,12 +148,12 @@ class GridTypedRecyclerViewAdapter(private var items: List<SelectItem<CarrierDTO
         {
             if (selectItem.isSelect)
             {
-                binding.setVariable(BR.img, selectItem.item?.clickRes)
+                binding.setVariable(BR.img, selectItem.item?.icons?.get(1))
                 binding.setVariable(BR.isClick, selectItem.isSelect)
             }
             else
             {
-                binding.setVariable(BR.img, selectItem.item?.nonClickRes)
+                binding.setVariable(BR.img, selectItem.item?.icons?.get(2))
                 binding.setVariable(BR.isClick, selectItem.isSelect)
             }
         }

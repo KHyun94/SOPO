@@ -111,7 +111,7 @@
                 android:layout_marginBottom="11dp"
                 android:visibility="@{(vm.carrierDTO.carrier.NAME.length() > 0)?View.VISIBLE:View.GONE}"
                 app:setDefaultImage="@{0}"
-                app:setImage="@{vm.carrierDTO.clickRes}"
+                app:setImage="@{vm.carrierDTO.icons[1]}"
                 tools:visibility="visible"/>
 
             <TextView

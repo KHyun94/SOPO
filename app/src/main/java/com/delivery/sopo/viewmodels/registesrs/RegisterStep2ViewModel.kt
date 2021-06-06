@@ -44,7 +44,7 @@ class RegisterStep2ViewModel(private val carrierRepo: CarrierRepository): ViewMo
         {
             SopoLog.d("운송장 번호 >>> $_waybillNum")
             runBlocking(Dispatchers.Default) {
-                RoomActivate.recommendAutoCarrier(waybillNum.value!!, RoomActivate.rowCnt, carrierRepo) ?: emptyList<CarrierDTO?>().toMutableList()
+                RoomActivate.recommendAutoCarrier(waybillNum.value!!, RoomActivate.rowCnt) ?: emptyList<CarrierDTO?>().toMutableList()
             }
         }
         else

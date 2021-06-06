@@ -26,33 +26,16 @@ data class CarrierEntity(
     )
     val carrierCode: String,
     @ColumnInfo(
-        name = "minLen",
+        name = "min",
         typeAffinity = ColumnInfo.INTEGER
-    ) val minLen: Int,
+    ) val min: Int,
     @ColumnInfo(
-        name = "maxLen",
+        name = "max",
         typeAffinity = ColumnInfo.INTEGER
-    )
-    val maxLen: Int,
+    ) val max: Int,
     @ColumnInfo(
         name = "priority",
         typeAffinity = ColumnInfo.REAL
     )
-    val priority: Double? = 1.0,
-    @ColumnInfo(
-        name = "clickRes",
-        typeAffinity = ColumnInfo.INTEGER
-    )
-    val clickRes: Int? = 0,
-    @ColumnInfo(
-        name = "nonClickRes",
-        typeAffinity = ColumnInfo.INTEGER
-    )
-    val nonClickRes: Int? = 0,
-    @ColumnInfo(
-        name = "iconRes",
-        typeAffinity = ColumnInfo.INTEGER
-    )
-    val iconRes: Int? = 0
-
+    val priority: Double? = 1.0
 )
