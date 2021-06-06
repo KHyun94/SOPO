@@ -48,7 +48,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
     var item = MutableLiveData<ParcelDetailItem?>()
 
     // 상세 페이지 택배 상태(백그라운드 이미지, 텍스트)
-    var deliveryStatusEnum = MutableLiveData<DeliveryStatusEnum>()
+    var deliveryStatusEnum = MutableLiveData<DeliveryStatusEnum?>()
 
     // 상세 화면 종료
     var isBack = SingleLiveEvent<Boolean>()

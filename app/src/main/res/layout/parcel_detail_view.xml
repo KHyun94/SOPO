@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+    <import type="android.view.View"/>
         <import type="com.delivery.sopo.R" />
 
         <variable
@@ -45,7 +46,6 @@
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-
                 <!--        기존 top:11 -> 11 * 1.1762 = 12.9382 올림 13dp      -->
                 <!--        기존 bottom:10 -> 10 * 1.1762 = 11.762 올림 12dp       -->
                 <TextView
@@ -70,6 +70,7 @@
                     android:includeFontPadding="false"
                     android:text="@{vm.deliveryStatusEnum.MSG}"
                     android:textColor="@color/COLOR_GRAY_800"
+                    android:visibility="@{vm.deliveryStatusEnum != null ? View.VISIBLE:View.GONE}"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_title" />
@@ -79,23 +80,30 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-
                     app:layout_constraintBottom_toTopOf="@+id/layout_tail"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_subtext"
-                    android:weightSum="10"
-                    >
+                    app:layout_constraintTop_toBottomOf="@+id/tv_subtext">
 
-                    <ImageView
+                    <com.airbnb.lottie.LottieAnimationView
                         android:id="@+id/iv_status"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="5"
                         android:layout_gravity="center"
                         android:adjustViewBounds="true"
-                        app:setDefaultImage="@{0}"
-                        app:setImage="@{vm.deliveryStatusEnum.BACKGROUND}" />
+                        app:lottie_autoPlay="true"
+                        app:setDeliveryStatusInLottie="@{vm.deliveryStatusEnum}"
+                        app:lottie_loop="true" />
+
+<!--                    <ImageView-->
+<!--                        android:id="@+id/iv_status"-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_weight="5"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:adjustViewBounds="true"-->
+<!--                        app:setDefaultImage="@{0}"-->
+<!--                        app:setImage="@{vm.deliveryStatusEnum.BACKGROUND}" />-->
 
                 </LinearLayout>
 

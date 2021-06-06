@@ -4,14 +4,54 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorRes
+import androidx.annotation.RawRes
 import androidx.databinding.BindingAdapter
+import com.airbnb.lottie.Lottie
+import com.airbnb.lottie.LottieAnimationView
+import com.airbnb.lottie.LottieConfig
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.delivery.sopo.R
+import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 
 object ImageBindingAdapter
 {
+    @JvmStatic
+    @BindingAdapter("setDeliveryStatusInLottie")
+    fun bindLottieBackgroundSetter(view: LottieAnimationView, enum: DeliveryStatusEnum?)
+    {
+        when(enum)
+        {
+            DeliveryStatusEnum.NOT_REGISTER -> { }
+            DeliveryStatusEnum.INFORMATION_RECEIVED -> { }
+            DeliveryStatusEnum.AT_PICKUP ->
+            {
+                view.setAnimation(R.raw.inquiry_cardview_at_pickup)
+
+            }
+            DeliveryStatusEnum.IN_TRANSIT ->
+            {
+                view.setAnimation(R.raw.inquiry_cardview_in_transit)
+
+            }
+            DeliveryStatusEnum.OUT_FOR_DELIVERY ->
+            {
+                view.setAnimation( R.raw.inquiry_cardview_out_for_delivery)
+            }
+            DeliveryStatusEnum.DELIVERED ->
+            {
+                view.setAnimation(R.raw.inquiry_cardview_delivered)
+
+            }
+            DeliveryStatusEnum.ERROR -> { }
+            else->  { }
+        }
+        view.playAnimation()
+    }
+
+
     @JvmStatic
     @BindingAdapter("setBackgroundColor")
     fun bindBackgroundColor(view: View, @ColorRes colorRes: Int)
@@ -20,7 +60,7 @@ object ImageBindingAdapter
         {
             view.setBackgroundResource(colorRes)
         }
-        catch (e: java.lang.Exception)
+        catch(e: java.lang.Exception)
         {
             SopoLog.e(e.localizedMessage, e)
             view.setBackgroundResource(0)
@@ -30,13 +70,13 @@ object ImageBindingAdapter
 
     @JvmStatic
     @BindingAdapter("setImage", "setDefaultImage")
-    fun bindSetterImage(view: ImageView, res: Int, defaultRes :Int = 0)
+    fun bindSetterImage(view: ImageView, res: Int, defaultRes: Int = 0)
     {
         try
         {
             val mimeTypedValue = OtherUtil.getResourceExtension(res)
 
-            when (mimeTypedValue)
+            when(mimeTypedValue)
             {
                 "gif" ->
                 {
@@ -57,11 +97,9 @@ object ImageBindingAdapter
                 }
             }
         }
-        catch (e: Exception)
+        catch(e: Exception)
         {
-            Glide.with(view.context)
-                .load(res)
-                .into(view)
+            Glide.with(view.context).load(res).into(view)
         }
     }
 
@@ -69,11 +107,9 @@ object ImageBindingAdapter
     @BindingAdapter("isClick", "trueRes", "falseRes")
     fun bindSetterSelectedImage(view: ImageView, isClick: Boolean, trueRes: Int, falseRes: Int)
     {
-        val selectRes = if (isClick) trueRes else falseRes
+        val selectRes = if(isClick) trueRes else falseRes
 
-        Glide.with(view.context)
-            .load(selectRes)
-            .into(view)
+        Glide.with(view.context).load(selectRes).into(view)
     }
 
     @JvmStatic
@@ -81,10 +117,7 @@ object ImageBindingAdapter
     fun bindSetterGif(view: ImageView, res: Int)
     {
         Log.d("LOG.SOPO", "왓 $res")
-        Glide.with(view.context)
-            .asGif()
-            .load(res)
-            .into(view)
+        Glide.with(view.context).asGif().load(res).into(view)
     }
 
     // todo 0928 kh indicator 용 ... 나중에 전체적으로 호환가능하게 처리
@@ -92,18 +125,13 @@ object ImageBindingAdapter
     @BindingAdapter("isSelect", "selectRes", "unselectRes")
     fun bindSelectImage(view: ImageView, isSelect: Boolean, selectRes: Int, unselectRes: Int)
     {
-        if (isSelect)
+        if(isSelect)
         {
-            Glide.with(view.context)
-                .asGif()
-                .load(selectRes)
-                .into(view)
+            Glide.with(view.context).asGif().load(selectRes).into(view)
         }
         else
         {
-            Glide.with(view.context)
-                .load(unselectRes)
-                .into(view)
+            Glide.with(view.context).load(unselectRes).into(view)
         }
 
 
