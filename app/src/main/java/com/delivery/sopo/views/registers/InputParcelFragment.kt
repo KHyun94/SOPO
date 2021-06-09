@@ -20,10 +20,9 @@ import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.isGreaterThanOrEqual
 import com.delivery.sopo.models.CarrierDTO
-import com.delivery.sopo.util.ClipboardUtil
-import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.util.OtherUtil
-import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.models.ParcelRegisterDTO
+import com.delivery.sopo.models.mapper.CarrierMapper
+import com.delivery.sopo.util.*
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.registesrs.InputParcelViewModel
@@ -46,10 +45,7 @@ class InputParcelFragment: Fragment()
 
     private val vm: InputParcelViewModel by viewModel()
 
-    private val carrierRepo: CarrierRepository by inject()
-
-    private var waybillNum: String? = null
-    private var carrierDTO: CarrierDTO? = null
+    private var registerDTO: ParcelRegisterDTO? = null
     private var returnType: Int? = null
 
     lateinit var callback: OnBackPressedCallback
@@ -92,9 +88,8 @@ class InputParcelFragment: Fragment()
 
         // 다른 화면에서 1단계로 다시 이동할 때 전달받은 값
         arguments?.run {
-            waybillNum = getString("waybillNum")
-            carrierDTO = getSerializable("carrier") as CarrierDTO?
-            returnType = getInt("returnType") ?: 0
+            registerDTO = getSerializable(RegisterMainFragment.REGISTER_INFO) as ParcelRegisterDTO
+            returnType = getInt(RegisterMainFragment.RETURN_TYPE)
         }
     }
 
@@ -104,15 +99,17 @@ class InputParcelFragment: Fragment()
         binding.vm = vm
         binding.lifecycleOwner = this
 
-        waybillNum?.let {
-            if(it.isNotEmpty())
-            {
+        registerDTO?.let { registerDTO ->
+            registerDTO.waybillNum?.let { waybillNo ->
                 binding.layoutWaybillNum.hint = ""
+                vm.waybillNum.postValue(waybillNo)
+            }
+            registerDTO.carrier?.let { carrierEnum ->
+                vm.carrierDTO.postValue(CarrierMapper.enumToObject(carrierEnum))
             }
         }
 
-        vm.waybillNum.postValue(waybillNum ?: "")
-        vm.carrierDTO.postValue(carrierDTO)
+
 
         setObserve()
         moveToInquiryTab()
@@ -153,7 +150,7 @@ class InputParcelFragment: Fragment()
 
             if (waybillNum.isNotEmpty()) vm.clipboardText.value = ""
 
-            if (carrierDTO != null) return@Observer
+            if (registerDTO?.carrier != null) return@Observer
 
             if (!waybillNum.isGreaterThanOrEqual(9))
             {
@@ -167,7 +164,7 @@ class InputParcelFragment: Fragment()
 
                 SopoLog.d("input waybill num's length >= 9. Select Carrier:[${carrierList?.joinToString()}]")
 
-                if (carrierList != null && carrierList.size > 0)
+                if (carrierList.isNotEmpty())
                 {
                     SopoLog.d("운송사 리스트 >>> ${carrierList.joinToString()}")
                     binding.vm!!.carrierDTO.postValue(carrierList[0])
@@ -272,20 +269,18 @@ class InputParcelFragment: Fragment()
 
     companion object
     {
-        fun newInstance(waybillNum: String?, carrierDTO: CarrierDTO?, returnType: Int?): InputParcelFragment
+
+
+        fun newInstance(registerDTO: ParcelRegisterDTO, returnType: Int?): InputParcelFragment
         {
-            val registerStep1 = InputParcelFragment()
+            val args = Bundle().apply {
+                putSerializable(RegisterMainFragment.REGISTER_INFO, registerDTO)
+                putInt(RegisterMainFragment.RETURN_TYPE, returnType ?: 0)
+            }
 
-            val args = Bundle()
-
-            args.putString("waybillNum", waybillNum)
-            args.putSerializable("carrier", carrierDTO)
-            // 다른 프래그먼트에서 돌아왔을 때 분기 처리
-            // 0: Default 1: Success To Register
-            args.putInt("returnType", returnType ?: 0)
-
-            registerStep1.arguments = args
-            return registerStep1
+            return InputParcelFragment().apply {
+                arguments = args
+            }
         }
     }
 }

@@ -16,6 +16,8 @@ import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.models.TestResult
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.databinding.FragmentConfirmParcelBinding
+import com.delivery.sopo.models.ParcelRegisterDTO
+import com.delivery.sopo.util.CarrierUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
@@ -34,8 +36,7 @@ class ConfirmParcelFragment: Fragment()
 
     private val userLocalRepository: UserLocalRepository by inject()
 
-    private var waybillNum: String? = null
-    private var carrierDTO: CarrierDTO? = null
+    private lateinit var registerDTO: ParcelRegisterDTO
 
     private var progressBar: CustomProgressBar? = null
 
@@ -63,8 +64,9 @@ class ConfirmParcelFragment: Fragment()
     {
         super.onCreate(savedInstanceState)
 
-        waybillNum = arguments?.getString("waybillNum") ?: ""
-        carrierDTO = arguments?.getSerializable("carrier") as CarrierDTO ?: null
+        arguments?.getSerializable("registerInfo")?.let { data ->
+           registerDTO = data as ParcelRegisterDTO
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
@@ -78,8 +80,11 @@ class ConfirmParcelFragment: Fragment()
             setExecutePendingBindings()
         }
 
-        binding.vm!!.waybillNum.value = waybillNum
-        binding.vm!!.carrier.value = carrierDTO
+        binding.vm!!.waybillNum.value = registerDTO.waybillNum
+
+        val carrierEnum = registerDTO.carrier?:throw Exception()
+
+        binding.vm!!.carrier.value = CarrierDTO(carrierEnum, CarrierUtil.getCarrierImages(carrierEnum))
 
         setObserve()
 
@@ -111,7 +116,7 @@ class ConfirmParcelFragment: Fragment()
             if(it != null && it)
             {
                 TabCode.REGISTER_STEP1.FRAGMENT =
-                    InputParcelFragment.newInstance(waybillNum, carrierDTO, 0)
+                    InputParcelFragment.newInstance(registerDTO, 0)
 
                 FragmentManager.initFragment(activity = activity!!,
                                              viewId = RegisterMainFragment.layoutId,

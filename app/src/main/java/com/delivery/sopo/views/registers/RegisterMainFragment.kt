@@ -40,5 +40,10 @@ class RegisterMainFragment : Fragment()
     companion object
     {
         var layoutId : Int = 0
+
+        const val REGISTER_INFO = "REGISTER_INFO"
+        // 다른 프래그먼트에서 돌아왔을 때 분기 처리
+        // 0: Default 1: Success To Register
+        const val RETURN_TYPE = "RETURN_TYPE"
     }
 }

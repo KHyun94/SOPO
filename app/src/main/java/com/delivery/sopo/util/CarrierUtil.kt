@@ -6,7 +6,7 @@ import com.delivery.sopo.enums.CarrierEnum.*
 
 object CarrierUtil
 {
-    fun getCarrierImages(enum: CarrierEnum): Map<CarrierEnum, List<Int>>{
+    fun getCarrierImages(enum: CarrierEnum):  List<Int>{
 
         val list = when(enum){
             SAGAWA ->
@@ -120,6 +120,6 @@ object CarrierUtil
             else -> emptyList()
         }
 
-        return mapOf(Pair(enum, list))
+        return list
     }
 }
