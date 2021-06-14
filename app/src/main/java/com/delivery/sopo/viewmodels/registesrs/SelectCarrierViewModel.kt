@@ -14,7 +14,7 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.setting.GridSpacingItemDecoration
 import kotlinx.coroutines.*
 
-class RegisterStep2ViewModel(private val carrierRepo: CarrierRepository): ViewModel()
+class SelectCarrierViewModel(private val carrierRepo: CarrierRepository): ViewModel()
 {
     var itemList = listOf<SelectItem<CarrierDTO?>>()
     var selectedItem = MutableLiveData<SelectItem<CarrierDTO?>>()
@@ -32,26 +32,25 @@ class RegisterStep2ViewModel(private val carrierRepo: CarrierRepository): ViewMo
         waybillNum.value = ""
     }
 
-    fun setAdapter(_waybillNum: String)
+    fun setCarrierAdapter(_waybillNum: String)
     {
-        SopoLog.d("setAdapter >>> $_waybillNum")
+        SopoLog.d("setCarrierAdapter >>> $_waybillNum")
 
         if (itemList.isNotEmpty()) return
 
         waybillNum.value = _waybillNum
 
-        itemList = if(_waybillNum != "")
-        {
-            SopoLog.d("운송장 번호 >>> $_waybillNum")
-            runBlocking(Dispatchers.Default) {
+        itemList = runBlocking(Dispatchers.Default) {
+            return@runBlocking if(waybillNum.value != null && waybillNum.value != "")
+            {
                 RoomActivate.recommendAutoCarrier(waybillNum.value!!, RoomActivate.rowCnt) ?: emptyList<CarrierDTO?>().toMutableList()
             }
+            else
+            {
+                carrierRepo.getAll().toMutableList()
+            }
+            }.flatMap { listOf(SelectItem(it, false))
         }
-        else
-        {
-            SopoLog.d("운송장 번호 >>> empty")
-            runBlocking(Dispatchers.Default) { carrierRepo.getAll().toMutableList() }
-        }.flatMap { listOf(SelectItem(it, false)) }
 
         adapter.postValue(GridTypedRecyclerViewAdapter(items = itemList))
     }

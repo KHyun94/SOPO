@@ -115,7 +115,6 @@ class InputParcelFragment: Fragment()
         moveToInquiryTab()
 
         binding.layoutMainRegister.setOnClickListener {
-            Toast.makeText(requireContext(), "백그라운드 클릭", Toast.LENGTH_LONG).show()
             it.requestFocus()
             OtherUtil.hideKeyboardSoft(requireActivity())
         }
@@ -162,7 +161,7 @@ class InputParcelFragment: Fragment()
             CoroutineScope(Dispatchers.Default).launch {
                 val carrierList = RoomActivate.recommendAutoCarrier(waybillNum, 1)
 
-                SopoLog.d("input waybill num's length >= 9. Select Carrier:[${carrierList?.joinToString()}]")
+                SopoLog.d("input waybill num's length >= 9. Select Carrier:[${carrierList.joinToString()}]")
 
                 if (carrierList.isNotEmpty())
                 {
@@ -238,8 +237,9 @@ class InputParcelFragment: Fragment()
                 }
                 TabCode.REGISTER_STEP3.NAME ->
                 {
-                    TabCode.REGISTER_STEP3.FRAGMENT =
-                        ConfirmParcelFragment.newInstance(binding.vm!!.waybillNum.value, binding.vm!!.carrierDTO.value)
+                    val registerDTO = ParcelRegisterDTO(vm.waybillNum.value, vm.carrierDTO.value?.carrier, null)
+
+                    TabCode.REGISTER_STEP3.FRAGMENT = ConfirmParcelFragment.newInstance(registerDTO = registerDTO)
                     FragmentManager.move(parentView, TabCode.REGISTER_STEP3, RegisterMainFragment.layoutId)
                     binding.vm!!.moveFragment.value = ""
                 }
@@ -271,7 +271,7 @@ class InputParcelFragment: Fragment()
     {
 
 
-        fun newInstance(registerDTO: ParcelRegisterDTO, returnType: Int?): InputParcelFragment
+        fun newInstance(registerDTO: ParcelRegisterDTO?, returnType: Int?): InputParcelFragment
         {
             val args = Bundle().apply {
                 putSerializable(RegisterMainFragment.REGISTER_INFO, registerDTO)

@@ -73,14 +73,15 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository) : V
             val maxLen = carrierEntity.max
 
             withContext(Dispatchers.Main){
-                if(waybillNum?.length in minLen..maxLen || minLen == 0)
-                {
-                    moveFragment.postValue(TabCode.REGISTER_STEP3.NAME)
-                }
-                else
-                {
-                    errorMsg.postValue("운송장 번호를 다시 확인해주세요.\n(택배사마다 정해진 길이가 안맞아서 발생)")
-                }
+                moveFragment.postValue(TabCode.REGISTER_STEP3.NAME)
+//                if(waybillNum?.length in minLen..maxLen || minLen == 0)
+//                {
+//
+//                }
+//                else
+//                {
+//                    errorMsg.postValue("운송장 번호를 다시 확인해주세요.\n(택배사마다 정해진 길이가 안맞아서 발생)")
+//                }
             }
 
         }

@@ -14,10 +14,11 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentSelectCarrierBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.models.CarrierDTO
+import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.viewmodels.registesrs.RegisterStep2ViewModel
+import com.delivery.sopo.viewmodels.registesrs.SelectCarrierViewModel
 import com.delivery.sopo.views.adapter.GridTypedRecyclerViewAdapter
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -27,9 +28,7 @@ class SelectCarrierFragment: Fragment()
     private lateinit var parentView: MainView
 
     private lateinit var binding: FragmentSelectCarrierBinding
-    private val vm: RegisterStep2ViewModel by viewModel()
-
-    private var waybillNum: String? = null
+    private val vm: SelectCarrierViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -37,7 +36,15 @@ class SelectCarrierFragment: Fragment()
 
         parentView = activity as MainView
 
-        waybillNum = arguments?.getString("waybillNum") ?: ""
+        receiveBundleData()
+    }
+
+    private fun receiveBundleData()
+    {
+        arguments?.let { bundle ->
+            val waybillNum = bundle.getString(RegisterMainFragment.WAYBILL_NO)
+            vm.waybillNum.postValue(waybillNum)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
@@ -48,19 +55,18 @@ class SelectCarrierFragment: Fragment()
         return binding.root
     }
 
-    fun bindView(inflater: LayoutInflater, container: ViewGroup?){
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_select_carrier, container, false)
+    fun bindView(inflater: LayoutInflater, container: ViewGroup?)
+    {
+        binding =
+            DataBindingUtil.inflate(inflater, R.layout.fragment_select_carrier, container, false)
         binding.vm = vm
         binding.lifecycleOwner = this
     }
 
-    //(activity as RegisterMainFrame).childFragmentManager
     private fun setObserve()
     {
-        binding.vm!!.setAdapter(_waybillNum = waybillNum ?: "")
-
         parentView.currentPage.observe(this, Observer {
-            if (it != null && it == 0)
+            if(it != null && it == 0)
             {
                 callback = object: OnBackPressedCallback(true)
                 {
@@ -76,30 +82,37 @@ class SelectCarrierFragment: Fragment()
             }
         })
 
+        vm.setCarrierAdapter(_waybillNum = vm.waybillNum.value ?: return)
+
         binding.vm?.moveFragment?.observe(this, Observer {
 
             SopoLog.d("moveFragment >>> ${it}")
 
-            when (it)
+            val registerDTO = ParcelRegisterDTO(vm.waybillNum.value, vm.selectedItem.value?.item?.carrier, null)
+
+            when(it)
             {
                 TabCode.REGISTER_STEP3.NAME ->
                 {
                     val mHandler = Handler()
                     mHandler.postDelayed(Runnable {
 
-                        if(waybillNum == null || waybillNum == "")
+                        if(vm.waybillNum.value == null || vm.waybillNum.value == "")
                         {
                             TabCode.REGISTER_STEP1.FRAGMENT =
-                                InputParcelFragment.newInstance(waybillNum, binding.vm!!.selectedItem.value!!.item, 0)
+                                InputParcelFragment.newInstance(registerDTO = registerDTO,
+                                                                returnType = 0)
 
-                            FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1, RegisterMainFragment.layoutId)
+                            FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1,
+                                                 RegisterMainFragment.layoutId)
                         }
                         else
                         {
                             TabCode.REGISTER_STEP3.FRAGMENT =
-                                ConfirmParcelFragment.newInstance(waybillNum, binding.vm!!.selectedItem.value!!.item)
+                                ConfirmParcelFragment.newInstance(registerDTO = registerDTO)
 
-                            FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP3, RegisterMainFragment.layoutId)
+                            FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP3,
+                                                 RegisterMainFragment.layoutId)
                         }
 
 
@@ -115,28 +128,30 @@ class SelectCarrierFragment: Fragment()
                     binding.vm?.moveFragment?.value = ""
 
                     TabCode.REGISTER_STEP1.FRAGMENT =
-                        InputParcelFragment.newInstance(waybillNum, binding.vm?.selectedItem?.value?.item, 0)
+                        InputParcelFragment.newInstance(registerDTO = registerDTO, returnType = 0)
 
-                    FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1, RegisterMainFragment.layoutId)
+                    FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1,
+                                         RegisterMainFragment.layoutId)
                 }
             }
         })
 
         binding.vm!!.adapter.observe(this, Observer {
             it?.setOnItemClickListener(object: GridTypedRecyclerViewAdapter.OnItemClickListener<List<SelectItem<CarrierDTO?>>>
-            {
-                override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<CarrierDTO?>>)
-                {
-                    val item = items[pos]
+                                       {
+                                           override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<CarrierDTO?>>)
+                                           {
+                                               val item = items[pos]
 
-                    if (item.isSelect)
-                    {
-                        binding.vm!!.selectedItem.value = item
-                        binding.vm!!.moveFragment.value = TabCode.REGISTER_STEP3.NAME
-                    }
-                }
+                                               if(item.isSelect)
+                                               {
+                                                   binding.vm!!.selectedItem.value = item
+                                                   binding.vm!!.moveFragment.value =
+                                                       TabCode.REGISTER_STEP3.NAME
+                                               }
+                                           }
 
-            })
+                                       })
         })
     }
 

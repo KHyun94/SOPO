@@ -6,7 +6,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.registesrs.RegisterStep2ViewModel" />
+            type="com.delivery.sopo.viewmodels.registesrs.SelectCarrierViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

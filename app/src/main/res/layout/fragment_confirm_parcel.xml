@@ -32,7 +32,7 @@
             android:text="등록정보 확인"
             android:textColor="@color/MAIN_BLACK"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" />
 
         <RelativeLayout
             android:id="@+id/layout_carrier_info"
@@ -47,17 +47,17 @@
 
             <ImageView
                 android:id="@+id/iv_carrier"
-                setImage="@{vm.carrier.icons[0]}"
                 android:layout_width="55dp"
                 android:layout_height="55dp"
                 android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="15sp"
                 android:background="@drawable/border_round_2sp"
-                app:setDefaultImage="@{0}"
                 android:padding="5dp"
-                android:layout_centerVertical="true"
-                tools:src="@drawable/ic_color_japan"/>
+                app:setDefaultImage="@{0}"
+                app:setImage="@{vm.carrier.icons[0]}"
+                tools:src="@drawable/ic_color_japan" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -71,35 +71,35 @@
                     style="@style/H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
                     android:text="@{vm.carrier.carrier.NAME}"
                     android:textColor="@color/COLOR_GRAY_800"
-                    tools:text="대한 통운"
-                    android:includeFontPadding="false"/>
+                    tools:text="대한 통운" />
 
                 <TextView
                     android:id="@+id/tv_waybill_num"
                     style="@style/H3"
-                    android:includeFontPadding="false"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:letterSpacing="0.04"
                     android:text="@{vm.waybillNum}"
                     android:textColor="@color/COLOR_GRAY_800"
-                    tools:text="123456789"
-                    android:letterSpacing="0.04"/>
+                    tools:text="123456789" />
             </LinearLayout>
 
             <TextView
                 style="@style/buttonHalfStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="수정하기"
-                android:paddingHorizontal="22dp"
-                android:paddingVertical="11dp"
-                android:textColor="@color/COLOR_MAIN_700"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
+                android:backgroundTint="@color/COLOR_MAIN_100"
                 android:onClick="@{() -> vm.onReviseClicked()}"
-                android:backgroundTint="@color/COLOR_MAIN_100"/>
+                android:paddingHorizontal="22dp"
+                android:paddingVertical="11dp"
+                android:text="수정하기"
+                android:textColor="@color/COLOR_MAIN_700" />
 
         </RelativeLayout>
 
@@ -108,11 +108,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="49dp"
             android:background="@drawable/border_all_round_10dp"
             android:backgroundTint="@color/COLOR_GRAY_100"
             android:orientation="vertical"
             android:paddingVertical="12dp"
-            android:layout_marginTop="49dp"
             app:layout_constraintTop_toBottomOf="@+id/layout_carrier_info">
 
             <EditText
@@ -125,39 +125,37 @@
                 android:background="@null"
                 android:hint="물품명"
                 android:lines="1"
+                android:maxLength="25"
                 android:singleLine="true"
                 android:text="@={vm.alias}"
-                android:maxLength="25"
-                tools:text="난난난난난난난난난난난난난난난난난난난난난난난난난"
-                android:textColorHint="@color/COLOR_GRAY_300" />
+                android:textColorHint="@color/COLOR_GRAY_300"
+                tools:text="난난난난난난난난난난난난난난난난난난난난난난난난난" />
 
         </LinearLayout>
 
         <TextView
-            style="@style/buttonBasicStyle"
             android:id="@+id/tv_register"
+            style="@style/buttonBasicStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/layout_alias"
+            android:layout_marginTop="45sp"
             android:onClick="@{()->vm.onRegisterClicked()}"
+            android:text="등록하기"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
-            android:layout_marginTop="45sp"
-            android:text="등록하기"/>
+            app:layout_constraintTop_toBottomOf="@id/layout_alias" />
 
         <TextView
             style="@style/H4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/tv_register"
+            android:layout_marginTop="32dp"
             android:fontFamily="@font/spoqa_han_sans_regular"
             android:text="처음부터 다시 하기"
-            android:layout_marginTop="32dp"
+            android:textColor="@color/COLOR_MAIN_700"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
-            android:textColor="@color/COLOR_MAIN_700" />
-
-
+            app:layout_constraintTop_toBottomOf="@+id/tv_register" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

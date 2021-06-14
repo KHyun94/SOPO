@@ -194,7 +194,7 @@ class  MainView: BasicView<MainViewBinding>(R.layout.main_view)
                         NavigatorConst.REGISTER_TAB ->
                         {
                             FragmentManager.remove(activity = this@MainView)
-                            TabCode.REGISTER_STEP1.FRAGMENT = InputParcelFragment.newInstance(null, null, 0)
+                            TabCode.REGISTER_STEP1.FRAGMENT = InputParcelFragment.newInstance(null, 0)
                             FragmentManager.move(this@MainView, TabCode.REGISTER_STEP1, RegisterMainFragment.layoutId)
                         }
                         NavigatorConst.INQUIRY_TAB ->
