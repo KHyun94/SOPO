@@ -4,6 +4,7 @@ import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.data.repository.database.room.entity.CarrierEntity
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.enums.CarrierEnum.*
+import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject
@@ -84,6 +85,7 @@ object RoomActivate: KoinComponent
 
     suspend fun recommendAutoCarrier(waybillNum: String, cnt: Int) = withContext(Dispatchers.Default)
     {
+        SopoLog.d("recommend carrier >>> $waybillNum / $cnt 개")
         carrierRepo.getWithLen(waybillNum.length, cnt)
     }
 }

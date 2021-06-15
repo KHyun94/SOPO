@@ -42,13 +42,12 @@ class InputParcelFragment: Fragment()
 {
     private lateinit var parentView: MainView
     private lateinit var binding: FragmentInputParcelBinding
+    lateinit var callback: OnBackPressedCallback
 
     private val vm: InputParcelViewModel by viewModel()
 
     private var registerDTO: ParcelRegisterDTO? = null
     private var returnType: Int? = null
-
-    lateinit var callback: OnBackPressedCallback
 
     override fun onAttach(context: Context)
     {
@@ -63,9 +62,7 @@ class InputParcelFragment: Fragment()
                 if (System.currentTimeMillis() - pressedTime > 2000)
                 {
                     pressedTime = System.currentTimeMillis()
-                    Snackbar.make(
-                        parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000
-                    ).let { bar ->
+                    Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).let { bar ->
                         bar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
                     }
                 }
@@ -87,9 +84,9 @@ class InputParcelFragment: Fragment()
         parentView = activity as MainView
 
         // 다른 화면에서 1단계로 다시 이동할 때 전달받은 값
-        arguments?.run {
-            registerDTO = getSerializable(RegisterMainFragment.REGISTER_INFO) as ParcelRegisterDTO
-            returnType = getInt(RegisterMainFragment.RETURN_TYPE)
+        arguments?.let { bundle ->
+            registerDTO = bundle.getSerializable(RegisterMainFragment.REGISTER_INFO) as ParcelRegisterDTO?
+            returnType = bundle.getInt(RegisterMainFragment.RETURN_TYPE)
         }
     }
 
@@ -99,20 +96,18 @@ class InputParcelFragment: Fragment()
         binding.vm = vm
         binding.lifecycleOwner = this
 
-        registerDTO?.let { registerDTO ->
-            registerDTO.waybillNum?.let { waybillNo ->
+        setObserve()
+        moveToInquiryTab()
+
+        registerDTO?.let { data ->
+            data.waybillNum?.let { waybillNo ->
                 binding.layoutWaybillNum.hint = ""
                 vm.waybillNum.postValue(waybillNo)
             }
-            registerDTO.carrier?.let { carrierEnum ->
+            data.carrier?.let { carrierEnum ->
                 vm.carrierDTO.postValue(CarrierMapper.enumToObject(carrierEnum))
             }
         }
-
-
-
-        setObserve()
-        moveToInquiryTab()
 
         binding.layoutMainRegister.setOnClickListener {
             it.requestFocus()
@@ -220,6 +215,9 @@ class InputParcelFragment: Fragment()
          */
 
         binding.vm!!.moveFragment.observe(this, Observer {
+
+            val registerDTO = ParcelRegisterDTO(vm.waybillNum.value, vm.carrierDTO.value?.carrier, null)
+
             when (it)
             {
                 TabCode.REGISTER_STEP2.NAME ->
@@ -231,13 +229,12 @@ class InputParcelFragment: Fragment()
                     """.trimIndent()
                     )
                     TabCode.REGISTER_STEP2.FRAGMENT =
-                        SelectCarrierFragment.newInstance(binding.vm!!.waybillNum.value, binding.vm!!.carrierDTO.value)
+                        SelectCarrierFragment.newInstance(vm.waybillNum.value?:"")
                     FragmentManager.move(parentView, TabCode.REGISTER_STEP2, RegisterMainFragment.layoutId)
                     binding.vm!!.moveFragment.value = ""
                 }
                 TabCode.REGISTER_STEP3.NAME ->
                 {
-                    val registerDTO = ParcelRegisterDTO(vm.waybillNum.value, vm.carrierDTO.value?.carrier, null)
 
                     TabCode.REGISTER_STEP3.FRAGMENT = ConfirmParcelFragment.newInstance(registerDTO = registerDTO)
                     FragmentManager.move(parentView, TabCode.REGISTER_STEP3, RegisterMainFragment.layoutId)

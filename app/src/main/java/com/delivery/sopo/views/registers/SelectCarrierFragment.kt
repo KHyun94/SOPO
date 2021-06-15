@@ -43,7 +43,8 @@ class SelectCarrierFragment: Fragment()
     {
         arguments?.let { bundle ->
             val waybillNum = bundle.getString(RegisterMainFragment.WAYBILL_NO)
-            vm.waybillNum.postValue(waybillNum)
+            vm.waybillNum.value = waybillNum
+            SopoLog.d("receiveBundleData >>> $waybillNum ${vm.waybillNum.value}")
         }
     }
 
@@ -57,8 +58,7 @@ class SelectCarrierFragment: Fragment()
 
     fun bindView(inflater: LayoutInflater, container: ViewGroup?)
     {
-        binding =
-            DataBindingUtil.inflate(inflater, R.layout.fragment_select_carrier, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_select_carrier, container, false)
         binding.vm = vm
         binding.lifecycleOwner = this
     }
@@ -82,13 +82,16 @@ class SelectCarrierFragment: Fragment()
             }
         })
 
+        SopoLog.d("setObserve >>> ${vm.waybillNum.value}")
+
         vm.setCarrierAdapter(_waybillNum = vm.waybillNum.value ?: return)
 
-        binding.vm?.moveFragment?.observe(this, Observer {
+        vm.moveFragment.observe(this, Observer {
 
             SopoLog.d("moveFragment >>> ${it}")
 
-            val registerDTO = ParcelRegisterDTO(vm.waybillNum.value, vm.selectedItem.value?.item?.carrier, null)
+            val registerDTO =
+                ParcelRegisterDTO(vm.waybillNum.value, vm.selectedItem.value?.item?.carrier, null)
 
             when(it)
             {
@@ -145,9 +148,8 @@ class SelectCarrierFragment: Fragment()
 
                                                if(item.isSelect)
                                                {
-                                                   binding.vm!!.selectedItem.value = item
-                                                   binding.vm!!.moveFragment.value =
-                                                       TabCode.REGISTER_STEP3.NAME
+                                                   vm.selectedItem.value = item
+                                                   vm.moveFragment.value = TabCode.REGISTER_STEP3.NAME
                                                }
                                            }
 
@@ -157,17 +159,15 @@ class SelectCarrierFragment: Fragment()
 
     companion object
     {
-        fun newInstance(waybillNum: String?, carrierDTO: CarrierDTO?): SelectCarrierFragment
+        fun newInstance(waybillNum: String): SelectCarrierFragment
         {
-            val registerStep2 = SelectCarrierFragment()
+            val args = Bundle().apply {
+                putSerializable(RegisterMainFragment.WAYBILL_NO, waybillNum)
+            }
 
-            val args = Bundle()
-
-            args.putString("waybillNum", waybillNum)
-            args.putSerializable("carrier", carrierDTO)
-
-            registerStep2.arguments = args
-            return registerStep2
+            return SelectCarrierFragment().apply {
+                arguments = args
+            }
         }
     }
 
