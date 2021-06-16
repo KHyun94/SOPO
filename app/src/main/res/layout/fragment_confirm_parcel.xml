@@ -90,12 +90,13 @@
 
             <TextView
                 style="@style/buttonHalfStyle"
+                android:id="@+id/tv_revise"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:backgroundTint="@color/COLOR_MAIN_100"
-                android:onClick="@{() -> vm.onReviseClicked()}"
+                android:onClick="@{() -> vm.onMoveFirstStep(tvRevise)}"
                 android:paddingHorizontal="22dp"
                 android:paddingVertical="11dp"
                 android:text="수정하기"
@@ -139,7 +140,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="45sp"
-            android:onClick="@{()->vm.onRegisterClicked()}"
+            android:onClick="@{()->vm.onMoveFirstStep(tvRegister)}"
             android:text="등록하기"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
@@ -147,6 +148,7 @@
 
         <TextView
             style="@style/H4"
+            android:id="@+id/tv_init"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
@@ -155,6 +157,7 @@
             android:textColor="@color/COLOR_MAIN_700"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
+            android:onClick="@{()->vm.onMoveFirstStep(tvInit)}"
             app:layout_constraintTop_toBottomOf="@+id/tv_register" />
 
 

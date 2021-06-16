@@ -16,7 +16,6 @@ import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.databinding.FragmentConfirmParcelBinding
 import com.delivery.sopo.models.*
 import com.delivery.sopo.models.mapper.CarrierMapper
-import com.delivery.sopo.util.CarrierUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
@@ -33,7 +32,7 @@ class ConfirmParcelFragment: Fragment()
     private lateinit var binding: FragmentConfirmParcelBinding
     private val vm: ConfirmParcelViewModel by viewModel()
 
-    private val userLocalRepository: UserLocalRepository by inject()
+    private val userLocalRepo: UserLocalRepository by inject()
 
     private lateinit var registerDTO: ParcelRegisterDTO
 
@@ -55,53 +54,44 @@ class ConfirmParcelFragment: Fragment()
 
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback ?: throw Exception(
-            "BackPressedClick is null"))
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback ?: throw Exception("BackPressedClick is null"))
     }
 
-    private fun receiveBundleData(){
+    // TODO 값이 없다면 이전 화면으로 이동
+    private fun receiveBundleData()
+    {
         arguments?.let { bundle ->
-            registerDTO = bundle.getSerializable(RegisterMainFragment.REGISTER_INFO) as ParcelRegisterDTO
+            registerDTO =
+                bundle.getSerializable(RegisterMainFragment.REGISTER_INFO) as ParcelRegisterDTO
             SopoLog.d("receive bundle data >>> ${registerDTO.toString()}")
+        }
+
+        registerDTO.waybillNum?.let { waybillNo ->
+            vm.waybillNum.value = waybillNo
+        }
+
+        registerDTO.carrier?.let { carrierEnum ->
+            vm.carrier.value = CarrierMapper.enumToObject(carrierEnum)
+        }
+        registerDTO.alias?.let { alias ->
+            SopoLog.d("별칭 >>> $alias")
+            vm.alias.value = alias
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-
         receiveBundleData()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         parentView = activity as MainView
-
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_confirm_parcel, container,  false)
-
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_confirm_parcel, container, false)
         binding.vm = vm
 
-        registerDTO.waybillNum?.let { waybillNo ->
-            binding.vm!!.waybillNum.value = waybillNo
-            SopoLog.d("운송장번호 >>> ${binding.vm!!.waybillNum.value}")
-        }
-        registerDTO.carrier?.let { carrierEnum ->
-            val carrierDTO = CarrierMapper.enumToObject(carrierEnum)
-            vm.carrier.value = carrierDTO
-            SopoLog.d("택배사 >>> $carrierDTO")
-        }
-        registerDTO.alias?.let { alias ->
-            SopoLog.d("별칭 >>> $alias")
-            vm.alias.postValue(alias)
-        }
-
         setObserve()
-
-        SopoLog.d("""
-            confirm parcel data >>>
-            ${binding.vm?.waybillNum?.value}
-            ${binding.vm?.carrier?.value?.toString()}
-        """.trimIndent())
 
         return binding.root
     }
@@ -111,7 +101,8 @@ class ConfirmParcelFragment: Fragment()
         parentView.currentPage.observe(this, Observer { currentPage ->
             if(currentPage == null || currentPage != 0) return@Observer
 
-            requireActivity().onBackPressedDispatcher.addCallback(this, callback ?: throw Exception("BackPressedClick is null"))
+            requireActivity().onBackPressedDispatcher.addCallback(this, callback ?: throw Exception(
+                "BackPressedClick is null"))
         })
 
         vm.isProgress.observe(this, Observer { isProgress ->
@@ -127,20 +118,30 @@ class ConfirmParcelFragment: Fragment()
             }
         })
 
-        vm.isRevise.observe(this, Observer {
-            if(it != null && it)
+        vm.navigator.observe(this, Observer { navigator ->
+            TabCode.REGISTER_STEP1.FRAGMENT  = when(navigator)
             {
-                TabCode.REGISTER_STEP1.FRAGMENT =
+                RegisterMainFragment.REGISTER_INIT ->
+                {
+                    InputParcelFragment.newInstance(null, 0)
+                }
+                RegisterMainFragment.REGISTER_REVISE ->
+                {
                     InputParcelFragment.newInstance(registerDTO, 0)
-
-                FragmentManager.initFragment(activity = activity!!,
-                                             viewId = RegisterMainFragment.layoutId,
-                                             currentFragment = this@ConfirmParcelFragment,
-                                             nextFragment = TabCode.REGISTER_STEP1.FRAGMENT,
-                                             nextFragmentTag = TabCode.REGISTER_STEP1.NAME)
-
-                binding.vm!!.isRevise.call()
+                }
+                RegisterMainFragment.REGISTER_CONFIRM ->
+                {
+                    InputParcelFragment.newInstance(null, 1)
+                }
+                else -> throw Exception("NOT SUPPORT REGISTER TYPE")
             }
+
+            FragmentManager.initFragment(activity = requireActivity(),
+                                         viewId = RegisterMainFragment.layoutId,
+                                         currentFragment = this@ConfirmParcelFragment,
+                                         nextFragment = TabCode.REGISTER_STEP1.FRAGMENT,
+                                         nextFragmentTag = TabCode.REGISTER_STEP1.NAME)
+
         })
 
         vm.result.observe(this, Observer { result ->
@@ -148,14 +149,15 @@ class ConfirmParcelFragment: Fragment()
             {
                 is TestResult.SuccessResult<*> ->
                 {
-                    if(userLocalRepository.getTopic().isNotEmpty())
+                    if(userLocalRepo.getTopic().isNotEmpty())
                     {
                         FirebaseNetwork.unsubscribedToTopicInFCM()
                     }
 
                     FirebaseNetwork.subscribedToTopicInFCM()
 
-                    TabCode.REGISTER_STEP1.FRAGMENT = InputParcelFragment.newInstance(registerDTO = null, returnType = 1)
+                    TabCode.REGISTER_STEP1.FRAGMENT =
+                        InputParcelFragment.newInstance(registerDTO = null, returnType = 1)
                     FragmentManager.initFragment(activity = requireActivity(),
                                                  viewId = RegisterMainFragment.layoutId,
                                                  currentFragment = this@ConfirmParcelFragment,

@@ -7,7 +7,7 @@ import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
-import com.delivery.sopo.networks.dto.parcels.RegisterParcelDTO
+import com.delivery.sopo.networks.dto.parcels.ParcelRegisterDTO
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.services.network_handler.BaseService
@@ -34,9 +34,9 @@ object ParcelCall : BaseService(), KoinComponent
         parcelAPI = NetworkManager.retro(oAuth?.accessToken).create(ParcelAPI::class.java)
     }
 
-    suspend fun registerParcel(dto: RegisterParcelDTO):NetworkResult<APIResult<ParcelId?>>
+    suspend fun registerParcel(registerDto: ParcelRegisterDTO):NetworkResult<APIResult<ParcelId?>>
     {
-        val result = parcelAPI.registerParcel(dto = dto)
+        val result = parcelAPI.registerParcel(registerDto = registerDto)
         return apiCall(call = {result})
     }
 

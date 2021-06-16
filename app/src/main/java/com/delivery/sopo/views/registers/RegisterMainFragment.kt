@@ -46,5 +46,8 @@ class RegisterMainFragment : Fragment()
         // 다른 프래그먼트에서 돌아왔을 때 분기 처리
         // 0: Default 1: Success To Register
         const val RETURN_TYPE = "RETURN_TYPE"
+        const val REGISTER_REVISE = "REGISTER_REVISE"
+        const val REGISTER_INIT = "REGISTER_INIT"
+        const val REGISTER_CONFIRM = "REGISTER_CONFIRM"
     }
 }

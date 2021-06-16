@@ -86,21 +86,11 @@ object RoomActivate: KoinComponent
     suspend fun recommendAutoCarrier(waybillNum: String, cnt: Int) = withContext(Dispatchers.Default)
     {
         SopoLog.d("recommend carrier >>> $waybillNum / $cnt 개")
-        carrierRepo.getWithLen(waybillNum.length, cnt)
+
+        mutableListOf<CarrierDTO?>().apply {
+            addAll(carrierRepo.getWithLen(waybillNum.length, cnt))
+            addAll(carrierRepo.getWithoutLen(waybillNum.length, 27))
+        }
     }
 }
-
-    // 문자열 구성이 숫자로 구성되어있는지 체크
-    private fun isDigit(input: String): Boolean
-    {
-        for(c in input) if(!c.isDigit()) return false
-        return true
-    }
-
-    // 문자열 구성이 대문자로 구성되어있는지 체크
-    private fun isUpper(input: String): Boolean
-    {
-        for(c in input) if(!c.isUpperCase()) return false
-        return true
-    }
 

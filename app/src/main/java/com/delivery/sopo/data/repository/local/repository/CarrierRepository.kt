@@ -41,7 +41,7 @@ class CarrierRepository(private val appDB: AppDatabase)
         return CarrierMapper.entityToObject(appDB.carrierDAO().getWithCode(code = code))
     }
 
-    suspend fun getWithoutLen(len: Int, cnt: Int): List<CarrierDTO?>?
+    suspend fun getWithoutLen(len: Int, cnt: Int): List<CarrierDTO?>
     {
         val res = appDB.carrierDAO().getWithoutLen(
             len = len, cnt = cnt

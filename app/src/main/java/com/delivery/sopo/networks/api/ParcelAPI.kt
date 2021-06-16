@@ -6,7 +6,7 @@ import com.delivery.sopo.data.repository.database.room.dto.DeleteParcelsDTO
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.models.parcel.ParcelId
-import com.delivery.sopo.networks.dto.parcels.RegisterParcelDTO
+import com.delivery.sopo.networks.dto.parcels.ParcelRegisterDTO
 import com.google.gson.JsonArray
 import retrofit2.Call
 import retrofit2.Response
@@ -25,7 +25,7 @@ interface ParcelAPI
     @POST("api/v1/sopo-api/delivery/parcel")
     @Headers("Accept: application/json")
     suspend fun registerParcel(
-        @Body dto: RegisterParcelDTO
+        @Body registerDto: ParcelRegisterDTO
     ): Response<APIResult<ParcelId?>>
 
     @GET("api/v1/sopo-api/delivery/parcel")
