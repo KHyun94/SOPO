@@ -63,5 +63,6 @@ enum class ResponseCode(val CODE: String, val MSG: String, val HTTP_STATUS: Int?
 
     ERROR_UNKNOWN("9999", "알수 없는 에러", 400);
 
+//    SERVER_CONNECT
 
 }
