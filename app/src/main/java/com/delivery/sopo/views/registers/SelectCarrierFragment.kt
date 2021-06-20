@@ -30,12 +30,29 @@ class SelectCarrierFragment: Fragment()
     private lateinit var binding: FragmentSelectCarrierBinding
     private val vm: SelectCarrierViewModel by viewModel()
 
+    lateinit var callback: OnBackPressedCallback
+
+    override fun onAttach(context: Context)
+    {
+        super.onAttach(context)
+
+        callback = object: OnBackPressedCallback(true)
+        {
+            override fun handleOnBackPressed()
+            {
+                SopoLog.d(msg = "Register Step::2 BackPressListener")
+                requireActivity().supportFragmentManager.popBackStack()
+            }
+
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-
         parentView = activity as MainView
-
         receiveBundleData()
     }
 
@@ -169,25 +186,6 @@ class SelectCarrierFragment: Fragment()
                 arguments = args
             }
         }
-    }
-
-    var callback: OnBackPressedCallback? = null
-
-    override fun onAttach(context: Context)
-    {
-        super.onAttach(context)
-
-        callback = object: OnBackPressedCallback(true)
-        {
-            override fun handleOnBackPressed()
-            {
-                SopoLog.d(msg = "Register Step::2 BackPressListener")
-                requireActivity().supportFragmentManager.popBackStack()
-            }
-
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
     }
 
     override fun onDetach()

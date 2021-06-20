@@ -29,7 +29,7 @@ class InquiryMainFrame : Fragment()
         viewId = binding.layoutMainFrame.id
         parentView = activity as MainView
 
-        FragmentManager.move(this.requireActivity(), TabCode.INQUIRY, viewId)
+        FragmentManager.move(parentView, TabCode.INQUIRY, viewId)
 
         return binding.root
     }

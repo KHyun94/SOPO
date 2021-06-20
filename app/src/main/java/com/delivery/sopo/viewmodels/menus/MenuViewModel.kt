@@ -9,6 +9,7 @@ import com.delivery.sopo.extensions.MutableLiveDataExtension.popItem
 import com.delivery.sopo.extensions.MutableLiveDataExtension.pushItem
 import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
@@ -19,81 +20,11 @@ import java.util.*
 class MenuViewModel(private val userLocalRepository: UserLocalRepository
 ) : ViewModel(), LifecycleObserver
 {
-
-    //todo 닉네임 업데이트
-
-    private val _userNickname  = MutableLiveData<String>()
-    val userNickname : LiveData<String>
-        get() = _userNickname
-
-    private val _menu = MutableLiveData<MenuEnum>()
-    val menu: LiveData<MenuEnum>
+    private val _menu = MutableLiveData<TabCode>()
+    val menu: LiveData<TabCode>
         get() = _menu
 
-    private val _viewStack = MutableLiveData<Stack<MenuEnum>>()
-    val viewStack: LiveData<Stack<MenuEnum>>
-        get() = _viewStack
-
-    val isUpdate = MutableLiveData<Boolean>()
-
-    init {
-        _userNickname.value = userLocalRepository.getNickname()
-        SopoLog.d(msg = "Menu 닉네임 => ${userNickname.value}")
-        _viewStack.value = Stack()
-        isUpdate.value = false
-    }
-
-    fun pushView(menu: MenuEnum){
-        SopoLog.d("Menu is Move To ${menu.title}")
-
-        _viewStack.pushItem(menu)
-        _menu.value = menu
-    }
-
-    fun popView(): Boolean{
-        return try {
-            SopoLog.d("""
-                Menu leave ${_viewStack.value?.get(_viewStack.value!!.size - 1)?.title?:"없음"}
-            """.trimIndent())
-
-            _viewStack.popItem()
-            _viewStack.value?.also {
-                if(!it.empty()){
-                    _menu.value = it.peek()
-                }
-            }
-            true
-        }
-        catch (e: EmptyStackException){
-            SopoLog.d(
-                msg = "STACK IS ALREADY EMPTY!!, you try to pop item even if stack is already empty!!"
-            )
-            false
-        }
-    }
-
-    fun onUpdateClicked()
-    {
-        SopoLog.d(msg = "닉네임 변경 클릭")
-        isUpdate.value = true
-    }
-
-    fun updateUserNickname(nickname : String)
-    {
-        CoroutineScope(Dispatchers.IO).launch {
-
-            when (val result = UserCall.updateNickname(nickname = nickname))
-            {
-                is NetworkResult.Success ->
-                {
-                    SopoLog.d( msg = "Success To Update Nickname ${result.data.message}")
-                    _userNickname.postValue(nickname)
-                }
-                is NetworkResult.Error ->
-                {
-                    SopoLog.d( msg = "Fail To Update Nickname ${result.exception.message}")
-                }
-            }
-        }
+    fun onMoveToSubMenuClicked(code: TabCode){
+        _menu.postValue(code)
     }
 }

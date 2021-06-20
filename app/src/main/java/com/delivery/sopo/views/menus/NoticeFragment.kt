@@ -1,25 +1,17 @@
 package com.delivery.sopo.views.menus
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import com.delivery.sopo.databinding.FragmentNoticeBinding
-import com.delivery.sopo.interfaces.listener.OnMainBackPressListener
 import com.delivery.sopo.models.menu.NoticeItem
-import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.viewmodels.menus.NoticeViewModel
 import com.delivery.sopo.views.adapter.NoticeExpandableAdapter
 import com.delivery.sopo.views.main.MainView
 import kotlinx.android.synthetic.main.fragment_notice.*
-import kotlinx.android.synthetic.main.menu_view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class NoticeFragment : Fragment(){

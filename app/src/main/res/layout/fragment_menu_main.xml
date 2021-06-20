@@ -4,94 +4,24 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="android.view.View" />
-
         <import type="com.delivery.sopo.enums.MenuEnum" />
-
+        <import type="com.delivery.sopo.enums.TabCode" />
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.menus.MenuViewModel" />
-
     </data>
 
     <RelativeLayout
         android:id="@+id/layout_main_menu"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_fragment_base"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/white"
-            android:visibility="@{vm.viewStack.size > 0 ? View.VISIBLE : View.GONE}"
-            tools:visibility="gone">
-
-            <RelativeLayout
-                android:id="@+id/topMenuBar"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:background="@android:color/white"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ImageButton
-                    android:id="@+id/btn_back"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="28dp"
-                    android:layout_marginTop="15dp"
-                    android:background="@android:color/transparent"
-                    android:onClick="@{()->vm.popView()}"
-                    android:padding="10dp"
-                    android:src="@drawable/ic_btn_back_b"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_btn_back_b" />
-
-                <TextView
-                    android:id="@+id/title_tv"
-                    style="@style/H2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:background="@android:color/white"
-                    android:text="@{vm.menu.title ?? ``}"
-                    android:textColor="@color/COLOR_GRAY_800"
-                    app:layout_constraintBottom_toBottomOf="@+id/btn_back"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/btn_back"
-                    tools:text="TITLE" />
-            </RelativeLayout>
-
-            <View
-                android:id="@+id/view_divisionLine"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#40000000"
-                android:visibility="invisible"
-                app:layout_constraintTop_toBottomOf="@+id/topMenuBar" />
-
-            <FrameLayout
-                android:id="@+id/frame_menu"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:background="@android:color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view_divisionLine" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="match_parent"
+        android:background="@color/COLOR_GRAY_50">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_body"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="@{vm.viewStack.size == 0 ? View.VISIBLE : View.INVISIBLE}"
             tools:visibility="visible">
 
             <LinearLayout
@@ -100,10 +30,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
+                android:onClick="@{()-> vm.onMoveToSubMenuClicked(TabCode.MENU_ACCOUNT_MANAGEMENT)}"
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:onClick="@{()->vm.pushView(MenuEnum.ACCOUNT_MANAGER)}">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -135,16 +65,15 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="30dp"
                     android:layout_marginEnd="25dp"
-                    android:background="@color/MAIN_BLACK"/>
+                    android:background="@color/MAIN_BLACK" />
 
                 <TextView
-                    style="@style/H3"
                     android:id="@+id/tv_status"
+                    style="@style/H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="테스트 문구\n입니다."
                     android:layout_toRightOf="@id/iv_status"
-                    />
+                    android:text="테스트 문구\n입니다." />
 
             </RelativeLayout>
 
@@ -166,7 +95,7 @@
                     android:id="@+id/linear_notice"
                     android:layout_width="match_parent"
                     android:layout_height="71dp"
-                    android:onClick="@{()-> vm.pushView(MenuEnum.NOTICE)}"
+                    android:onClick="@{()-> vm.onMoveToSubMenuClicked(TabCode.MENU_NOTICE)}"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -216,7 +145,7 @@
                     android:id="@+id/linear_setting"
                     android:layout_width="match_parent"
                     android:layout_height="71dp"
-                    android:onClick="@{()-> vm.pushView(MenuEnum.SETTING)}"
+                    android:onClick="@{()-> vm.onMoveToSubMenuClicked(TabCode.MENU_SETTING)}"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -267,7 +196,7 @@
                     android:id="@+id/linear_faq"
                     android:layout_width="match_parent"
                     android:layout_height="71dp"
-                    android:onClick="@{()-> vm.pushView(MenuEnum.FAQ)}"
+                    android:onClick="@{()-> vm.onMoveToSubMenuClicked(TabCode.MENU_FAQ)}"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -318,7 +247,7 @@
                     android:id="@+id/linear_termOfUse"
                     android:layout_width="match_parent"
                     android:layout_height="71dp"
-                    android:onClick="@{()-> vm.pushView(MenuEnum.USE_TERMS)}"
+                    android:onClick="@{()-> vm.onMoveToSubMenuClicked(TabCode.MENU_SETTING)}"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -369,7 +298,7 @@
                     android:id="@+id/linear_appInfo"
                     android:layout_width="match_parent"
                     android:layout_height="71dp"
-                    android:onClick="@{()-> vm.pushView(MenuEnum.APP_INFO)}"
+                    android:onClick="@{()-> vm.onMoveToSubMenuClicked(TabCode.MENU_APP_INFO)}"
                     android:orientation="horizontal"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

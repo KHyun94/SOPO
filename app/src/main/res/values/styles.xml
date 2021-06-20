@@ -12,7 +12,6 @@
         <!-- status bar 색상 바꿔야함 -->
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:statusBarColor">@color/COLOR_GRAY_50</item>

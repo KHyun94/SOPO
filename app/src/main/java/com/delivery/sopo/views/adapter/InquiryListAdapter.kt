@@ -32,7 +32,6 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
     private val parcelLocalRepository: ParcelLocalRepository by inject()
     private var mClickListener: OnParcelClickListener? = null
 
-
     private val limitOfSoonListSize = 2
 
     private var isMoreView = false
@@ -109,7 +108,6 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)
     {
         val inquiryListItem: InquiryListItem = list[position]
-
 
         when (holder)
         {

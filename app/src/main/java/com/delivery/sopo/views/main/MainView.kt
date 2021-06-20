@@ -23,6 +23,7 @@ import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.main.MainViewModel
+import com.delivery.sopo.viewmodels.menus.MenuMainFrame
 import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.inquiry.InquiryMainFrame
@@ -33,11 +34,10 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.tap_item.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class  MainView: BasicView<MainViewBinding>(R.layout.main_view)
+class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 {
     private val vm: MainViewModel by viewModel()
     private val inquiryVm: InquiryViewModel by viewModel()
-    private val menuViewModel: MenuViewModel by viewModel()
 
     var currentPage = MutableLiveData<Int?>()
 
@@ -63,7 +63,7 @@ class  MainView: BasicView<MainViewBinding>(R.layout.main_view)
     override fun setObserver()
     {
         /** 화면 패스워드 설정 **/
-        vm.isSetAppPassword.observe(this, Observer {appPassword ->
+        vm.isSetAppPassword.observe(this, Observer { appPassword ->
             appPassword?.let {
                 Intent(this@MainView, LockScreenView::class.java).apply {
                     putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
@@ -73,11 +73,11 @@ class  MainView: BasicView<MainViewBinding>(R.layout.main_view)
 
         // todo 업데이트 시
         SOPOApp.cntOfBeUpdate.observeForever {
-            if (it == null) return@observeForever
+            if(it == null) return@observeForever
 
             SopoLog.d(msg = "업데이트 가능 여부 택배 갯수 ${it}")
 
-            if (binding.vm!!.isInitUpdate && it > 0)
+            if(binding.vm!!.isInitUpdate && it > 0)
             {
                 SopoLog.d(msg = "True 업데이트 가능 여부 택배 갯수: $it")
 
@@ -85,7 +85,7 @@ class  MainView: BasicView<MainViewBinding>(R.layout.main_view)
                     setText("${it}개의 새로운 배송정보가 있어요.")
                     setTextColor(R.color.MAIN_WHITE)
                     setOnCancelClicked("업데이트", R.color.MAIN_WHITE, View.OnClickListener {
-                        when (currentPage.value)
+                        when(currentPage.value)
                         {
                             NavigatorConst.REGISTER_TAB ->
                             {
@@ -117,22 +117,24 @@ class  MainView: BasicView<MainViewBinding>(R.layout.main_view)
         }
 
         SOPOApp.currentPage.observe(this, Observer {
-            if (it != null)
+            if(it == null)
             {
-                when (it)
-                {
-                    NavigatorConst.REGISTER_TAB -> binding.layoutViewPager.setCurrentItem(
-                        NavigatorConst.REGISTER_TAB, true
-                    )
-                    NavigatorConst.INQUIRY_TAB -> binding.layoutViewPager.setCurrentItem(
-                        NavigatorConst.INQUIRY_TAB, true
-                    )
-                    NavigatorConst.MY_MENU_TAB -> binding.layoutViewPager.setCurrentItem(
-                        NavigatorConst.MY_MENU_TAB, true
-                    )
-                    else -> binding.layoutViewPager.setCurrentItem(0, true)
-                }
+                return@Observer
             }
+
+            SopoLog.d("Navigator >>> ${it}번")
+
+            when(it)
+            {
+                NavigatorConst.REGISTER_TAB -> binding.layoutViewPager.setCurrentItem(
+                    NavigatorConst.REGISTER_TAB, true)
+                NavigatorConst.INQUIRY_TAB -> binding.layoutViewPager.setCurrentItem(
+                    NavigatorConst.INQUIRY_TAB, true)
+                NavigatorConst.MY_MENU_TAB -> binding.layoutViewPager.setCurrentItem(
+                    NavigatorConst.MY_MENU_TAB, true)
+                else -> throw Exception("NO TAB")
+            }
+
         })
     }
 
@@ -150,88 +152,108 @@ class  MainView: BasicView<MainViewBinding>(R.layout.main_view)
             setupWithViewPager(binding.layoutViewPager)
             setTabIcons(this)
             addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener
-            {
-                override fun onTabSelected(tab: TabLayout.Tab?)
-                {
-                    tab?:return
+                                     {
+                                         override fun onTabSelected(tab: TabLayout.Tab?)
+                                         {
+                                             tab ?: return
 
-                    currentPage.postValue(tab.position)
+                                             currentPage.postValue(tab.position)
 
-                    val res = when (tab.position)
-                    {
-                        NavigatorConst.REGISTER_TAB -> R.drawable.ic_activate_register
-                        NavigatorConst.INQUIRY_TAB -> R.drawable.ic_activate_inquiry
-                        NavigatorConst.MY_MENU_TAB -> R.drawable.ic_activate_menu
-                        else -> NavigatorConst.REGISTER_TAB
-                    }
+                                             val res = when(tab.position)
+                                             {
+                                                 NavigatorConst.REGISTER_TAB -> R.drawable.ic_activate_register
+                                                 NavigatorConst.INQUIRY_TAB -> R.drawable.ic_activate_inquiry
+                                                 NavigatorConst.MY_MENU_TAB -> R.drawable.ic_activate_menu
+                                                 else -> NavigatorConst.REGISTER_TAB
+                                             }
 
-                    tab.customView?.iv_tab?.setBackgroundResource(res)
-                    tab.customView?.tv_tab_name?.setTextColor(ContextCompat.getColor(this@MainView, R.color.COLOR_MAIN_700))
-                }
+                                             tab.customView?.iv_tab?.setBackgroundResource(res)
+                                             tab.customView?.tv_tab_name?.setTextColor(
+                                                 ContextCompat.getColor(this@MainView,
+                                                                        R.color.COLOR_MAIN_700))
+                                         }
 
-                override fun onTabUnselected(tab: TabLayout.Tab?)
-                {
-                    tab?:return
+                                         override fun onTabUnselected(tab: TabLayout.Tab?)
+                                         {
+                                             tab ?: return
 
-                    val res = when (tab.position)
-                    {
-                        NavigatorConst.REGISTER_TAB -> R.drawable.ic_inactivate_register
-                        NavigatorConst.INQUIRY_TAB -> R.drawable.ic_inactivate_inquiry
-                        NavigatorConst.MY_MENU_TAB -> R.drawable.ic_inactivate_menu
-                        else -> NavigatorConst.REGISTER_TAB
-                    }
+                                             val res = when(tab.position)
+                                             {
+                                                 NavigatorConst.REGISTER_TAB -> R.drawable.ic_inactivate_register
+                                                 NavigatorConst.INQUIRY_TAB -> R.drawable.ic_inactivate_inquiry
+                                                 NavigatorConst.MY_MENU_TAB -> R.drawable.ic_inactivate_menu
+                                                 else -> NavigatorConst.REGISTER_TAB
+                                             }
 
-                    tab.customView?.iv_tab?.setBackgroundResource(res)
-                    tab.customView?.tv_tab_name?.setTextColor(ContextCompat.getColor(this@MainView, R.color.COLOR_GRAY_400))
-                }
+                                             tab.customView?.iv_tab?.setBackgroundResource(res)
+                                             tab.customView?.tv_tab_name?.setTextColor(
+                                                 ContextCompat.getColor(this@MainView,
+                                                                        R.color.COLOR_GRAY_400))
+                                         }
 
-                override fun onTabReselected(tab: TabLayout.Tab?)
-                {
-                    if(tab == null) return
+                                         override fun onTabReselected(tab: TabLayout.Tab?)
+                                         {
+                                             if(tab == null) return
 
-                    when(tab.position)
-                    {
-                        NavigatorConst.REGISTER_TAB ->
-                        {
-                            FragmentManager.remove(activity = this@MainView)
-                            TabCode.REGISTER_STEP1.FRAGMENT = InputParcelFragment.newInstance(null, 0)
-                            FragmentManager.move(this@MainView, TabCode.REGISTER_STEP1, RegisterMainFragment.layoutId)
-                        }
-                        NavigatorConst.INQUIRY_TAB ->
-                        {
-                            FragmentManager.remove(activity = this@MainView)
-                            FragmentManager.move(this@MainView, TabCode.INQUIRY, InquiryMainFrame.viewId)
-                        }
-                        NavigatorConst.MY_MENU_TAB ->
-                        {
-                            if(menuViewModel.viewStack.value == null || menuViewModel.viewStack.value?.size == 0) return
+                                             when(tab.position)
+                                             {
+                                                 NavigatorConst.REGISTER_TAB ->
+                                                 {
+                                                     FragmentManager.remove(
+                                                         activity = this@MainView)
+                                                     TabCode.REGISTER_STEP1.FRAGMENT =
+                                                         InputParcelFragment.newInstance(null, 0)
+                                                     FragmentManager.move(this@MainView,
+                                                                          TabCode.REGISTER_STEP1,
+                                                                          RegisterMainFragment.layoutId)
+                                                 }
+                                                 NavigatorConst.INQUIRY_TAB ->
+                                                 {
+                                                     FragmentManager.remove(
+                                                         activity = this@MainView)
+                                                     FragmentManager.move(this@MainView,
+                                                                          TabCode.INQUIRY,
+                                                                          InquiryMainFrame.viewId)
+                                                 }
+                                                 NavigatorConst.MY_MENU_TAB ->
+                                                 {
+                                                     FragmentManager.remove(
+                                                         activity = this@MainView)
+                                                     FragmentManager.move(this@MainView,
+                                                                          TabCode.MY_MENU_MAIN,
+                                                                          MenuMainFrame.viewId)
+                                                 }
+                                             }
 
-                            menuViewModel.popView()
-                        }
-                    }
-
-                }
-            })
+                                         }
+                                     })
         }
     }
 
     private fun setViewPager()
     {
-        val addOnPageListener = object: ViewPager.OnPageChangeListener {
-            override fun onPageScrollStateChanged(p0: Int) {}
+        val addOnPageListener = object: ViewPager.OnPageChangeListener
+        {
+            override fun onPageScrollStateChanged(p0: Int)
+            {
+            }
 
-            override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {}
+            override fun onPageScrolled(p0: Int, p1: Float, p2: Int)
+            {
+            }
 
-            override fun onPageSelected(pageNum: Int) { // TODO 등록 성공 시 조회 페이지로 이동 처리
+            override fun onPageSelected(pageNum: Int)
+            { // TODO 등록 성공 시 조회 페이지로 이동 처리
             }
         }
 
-        binding.layoutViewPager.also {vp ->
+        binding.layoutViewPager.also { vp ->
             vp.adapter = ViewPagerAdapter(supportFragmentManager, 3)
         }.addOnPageChangeListener(addOnPageListener)
     }
 
-    private fun setTabIcon(v: TabLayout, index: Int, @DrawableRes iconRes: Int, tabName: String, textColor: Int)
+    private fun setTabIcon(v: TabLayout, index: Int,
+                           @DrawableRes iconRes: Int, tabName: String, textColor: Int)
     {
         v.getTabAt(index)?.run {
             setCustomView(R.layout.tap_item)
@@ -245,9 +267,12 @@ class  MainView: BasicView<MainViewBinding>(R.layout.main_view)
 
     private fun setTabIcons(v: TabLayout)
     {
-        setTabIcon(v, NavigatorConst.REGISTER_TAB, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
-        setTabIcon(v, NavigatorConst.INQUIRY_TAB, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
-        setTabIcon(v, NavigatorConst.MY_MENU_TAB, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
+        setTabIcon(v, NavigatorConst.REGISTER_TAB, R.drawable.ic_activate_register, "등록",
+                   R.color.COLOR_MAIN_700)
+        setTabIcon(v, NavigatorConst.INQUIRY_TAB, R.drawable.ic_inactivate_inquiry, "조회",
+                   R.color.COLOR_GRAY_400)
+        setTabIcon(v, NavigatorConst.MY_MENU_TAB, R.drawable.ic_inactivate_menu, "메뉴",
+                   R.color.COLOR_GRAY_400)
     }
 
     fun onCompleteRegister()

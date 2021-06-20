@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.database.room.entity.ParcelCntInfoEntity
 import com.delivery.sopo.databinding.FragmentInquiryBinding
+import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.enums.ScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
@@ -198,9 +199,15 @@ class InquiryFragment: Fragment()
         })
 
         // 배송중 , 등록된 택배 리스트
-        vm.ongoingList.observe(this, Observer {
-            soonArrivalParcelAdapter.separateDeliveryListByStatus(it)
-            registeredParcelAdapter.separateDeliveryListByStatus(it)
+        vm.ongoingList.observe(this, Observer {list ->
+
+
+            list.forEach {
+                SopoLog.d("ongoing list >>> ${it.parcelDTO.deliveryStatus}")
+            }
+
+            soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
+            registeredParcelAdapter.separateDeliveryListByStatus(list)
 
             viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
             viewSettingForRegisteredList(registeredParcelAdapter.getListSize())

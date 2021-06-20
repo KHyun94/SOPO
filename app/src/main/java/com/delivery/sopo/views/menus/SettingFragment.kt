@@ -9,13 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.delivery.sopo.consts.IntentConst
-import com.delivery.sopo.databinding.FragmentSettingBinding
-import com.delivery.sopo.enums.LockScreenStatusEnum
-import com.delivery.sopo.enums.MenuEnum
-import com.delivery.sopo.extensions.launchActivitiy
 import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
 import com.delivery.sopo.data.repository.local.repository.TimeCountRepoImpl
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.databinding.FragmentSettingBinding
+import com.delivery.sopo.enums.LockScreenStatusEnum
+import com.delivery.sopo.extensions.launchActivitiy
 import com.delivery.sopo.viewmodels.factory.MenuViewModelFactory
 import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import com.delivery.sopo.viewmodels.menus.SettingViewModel
@@ -31,8 +30,6 @@ class SettingFragment : Fragment()
     private val settingVM: SettingViewModel by viewModel()
     private lateinit var binding: FragmentSettingBinding
     private val userLocalRepository: UserLocalRepository by inject()
-    private val parcelLocalRepository: ParcelLocalRepository by inject()
-    private val timeCountRepoImpl: TimeCountRepoImpl by inject()
     private lateinit var parentView: MainView
 
     private val menuVm: MenuViewModel by lazy {
@@ -77,20 +74,21 @@ class SettingFragment : Fragment()
                 "SelectNotifyKindDialog"
             )
         }
+
         binding.root.linear_set_no_disturbance_time.setOnClickListener {
             gotoSetOfNotDisturbTimeView()
         }
+
         binding.root.tv_change_password.setOnClickListener {
             activity?.launchActivitiy<LockScreenView> {
                 putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET)
             }
         }
-
     }
 
     private fun gotoSetOfNotDisturbTimeView()
     {
-        menuVm.pushView(MenuEnum.NOT_DISTURB)
+//        menuVm.pushView(MenuEnum.NOT_DISTURB)
     }
 
     fun setObserver()

@@ -9,7 +9,7 @@ import java.lang.NullPointerException
 
 abstract class BaseService
 {
-    protected suspend fun <T: Any> apiCall(call: suspend () -> Response<T>): NetworkResult<T?>
+    protected suspend fun <T: Any> apiCall(call: suspend () -> Response<T>): NetworkResult<T>
     {
         val response: Response<T>
 
@@ -34,13 +34,14 @@ abstract class BaseService
         }
 
         // http status code 200 ~ 300
-        if(response.body() == null && response.code() >= 400 && response.code() <= 500)
+//        if(response.body() == null && response.code() >= 400 && response.code() <= 500)
+        if(response.body() == null)
         {
             SopoLog.e("Fail to Body is null}")
             return NetworkResult.Error(response.code(), APIException(NullPointerException("Response Body is null")))
         }
 
         SopoLog.d("Success to network")
-        return NetworkResult.Success(response.code(), response.body())
+        return NetworkResult.Success(response.code(), response.body()!!)
     }
 }

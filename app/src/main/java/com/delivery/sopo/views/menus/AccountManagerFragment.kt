@@ -66,12 +66,12 @@ class AccountManagerFragment: Fragment()
                 MenuEnum.UPDATE_NICKNAME ->
                 {
                     Toast.makeText(context, "닉네임 업데이트", Toast.LENGTH_LONG).show()
-                    menuVm.pushView(menu)
+//                    menuVm.pushView(menu)
                 }
                 MenuEnum.SIGN_OUT ->
                 {
                     Toast.makeText(context, "계정탈퇴", Toast.LENGTH_LONG).show()
-                    menuVm.pushView(menu)
+//                    menuVm.pushView(menu)
                 }
             }
         })

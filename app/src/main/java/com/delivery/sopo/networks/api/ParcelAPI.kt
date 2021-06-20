@@ -4,9 +4,9 @@ import com.delivery.sopo.networks.dto.TimeCountDTO
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.data.repository.database.room.dto.DeleteParcelsDTO
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
+import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.models.parcel.ParcelId
-import com.delivery.sopo.networks.dto.parcels.ParcelRegisterDTO
 import com.google.gson.JsonArray
 import retrofit2.Call
 import retrofit2.Response

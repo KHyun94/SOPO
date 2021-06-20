@@ -30,7 +30,7 @@ enum class ResponseCode(val CODE: String, val MSG: String, val HTTP_STATUS: Int?
     CAN_NOT_FIND_PARCEL("PC04","Can`t find a parcel", 400),
     FAIL_TO_FIND_PARCEL("PC05","Fail to find a parcel", 400),
     FAIL_TO_DELETE_PARCEL("PC06","Fail to delete parcels", 400),
-    ALREADY_REGISTERED_PARCEL("PC07", "Already registered parcel", 400),
+    ALREADY_REGISTERED_PARCEL("PC07", "이미 등록된 택배입니다.\n확인 후 다시 시도해주세요.", 400),
     FAIL_TO_UPDATE_USER_FIREBASE_TOKEN("US01","Fail to update user`s firebase token", 400),
     UNKNOWN_ERROR("9999", "알 수 없는 에러입니다. 문의해주세요.", 400),
     UNAUTHORIZED_ACCESS_ERROR("BC01", "UNAUTHORIZED ACCESS",401),

@@ -7,40 +7,34 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.viewmodels.menus.MenuMainFrame
 import com.delivery.sopo.views.inquiry.InquiryMainFrame
-import com.delivery.sopo.views.menus.MenuFragment
 import com.delivery.sopo.views.registers.RegisterMainFragment
 
 class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
     FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT)
 {
-    val TAG = "LOG.SOPO.Adapter"
     var currentFragment: Fragment
 
-    var tab1stFragment: Fragment
-    var tab2ndFragment: Fragment
-    var tab3rdFragment: Fragment
+    var tab1stFragment: Fragment = RegisterMainFragment()
+    var tab2ndFragment: Fragment = InquiryMainFrame()
+    var tab3rdFragment: Fragment = MenuMainFrame()
 
     var data: Bundle? = null
 
     init
     {
-        tab1stFragment = RegisterMainFragment()
-        tab2ndFragment = InquiryMainFrame()
-        tab3rdFragment = MenuFragment()
-
         currentFragment = tab1stFragment
     }
-
-
 
     override fun getPageTitle(position: Int): CharSequence?
     {
         return super.getPageTitle(position)
     }
+
     override fun getItem(position: Int): Fragment
     {
-        SopoLog.d( msg = "pos => ${position}")
+        SopoLog.d( msg = "메인 탭 번호 >>> ${position}")
 
         return when (position)
         {

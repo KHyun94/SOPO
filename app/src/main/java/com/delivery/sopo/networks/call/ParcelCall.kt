@@ -7,9 +7,9 @@ import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
-import com.delivery.sopo.networks.dto.parcels.ParcelRegisterDTO
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog

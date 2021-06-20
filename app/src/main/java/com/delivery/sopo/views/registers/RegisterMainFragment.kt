@@ -12,10 +12,18 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterMainFrameBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.views.main.MainView
 
 class RegisterMainFragment : Fragment()
 {
     private lateinit var binding : RegisterMainFrameBinding
+    private lateinit var parentView: MainView
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        parentView = activity as MainView
+    }
 
     override fun onCreateView(
         inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?
