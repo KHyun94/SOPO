@@ -2,16 +2,17 @@ package com.delivery.sopo.models.parcel
 
 import com.delivery.sopo.models.CarrierDTO
 
+// TODO First regDt >>> auditDt
 data class ParcelDetailItem(
     // 앱에서 택배 등록한 일자
-    val regDt: String,
+        val auditDte: String,
     // 택배 별칭 "Default:default" -> if default {from_name}이 보내신 택배
-    val alias: String,
+        val alias: String,
     // 택배사
-    val carrierDTO: CarrierDTO,
+        val carrierDTO: CarrierDTO,
     // 운송장 번호
-    val waybillNum: String,
+        val waybillNum: String,
     // 택배 상세 정보
-    val deliverStatus: String?,
-    val progress: MutableList<Progress>?
+        val deliverStatus: String?,
+        val progress: MutableList<Progress>?
 )

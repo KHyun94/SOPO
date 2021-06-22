@@ -9,7 +9,6 @@ import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.ParcelDTO
-import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.networks.dto.TimeCountDTO
@@ -30,8 +29,8 @@ class ParcelLocalRepository(private val userLocalRepository: UserLocalRepository
                                                                                                         .retro(SOPOApp.oAuth?.accessToken).create(ParcelAPI::class.java)
                                                                                                         .getParcelsComplete(page = page, inquiryDate = inquiryDate).data
 
-    override suspend fun getLocalParcelById(parcelId: ParcelId): ParcelEntity? {
-        return appDatabase.parcelDao().getById(parcelId.regDt, parcelId.parcelUid)
+    override suspend fun getLocalParcelById(parcelId: Int): ParcelEntity? {
+        return appDatabase.parcelDao().getById(parcelId)
     }
 
     // 배송 중인 택배 리스트를 LiveData로 받기
@@ -67,11 +66,11 @@ class ParcelLocalRepository(private val userLocalRepository: UserLocalRepository
         return  appDatabase.parcelDao().getOngoingDataCntLiveData()
     }
 
-    override suspend fun isBeingUpdateParcel(regDt: String, parcelUid: String): LiveData<Int?> = appDatabase.parcelDao().isBeingUpdateParcel(regDt, parcelUid)
+    override suspend fun isBeingUpdateParcel(parcelId:Int): LiveData<Int?> = appDatabase.parcelDao().isBeingUpdateParcel(parcelId = parcelId)
 
-    override fun getIsUnidentifiedAsLiveData(parcelId: ParcelId): LiveData<Int?>
+    override fun getIsUnidentifiedAsLiveData(parcelId: Int): LiveData<Int?>
     {
-        return appDatabase.parcelDao().getIsUnidentifiedLiveData(parcelId.regDt, parcelId.parcelUid)
+        return appDatabase.parcelDao().getIsUnidentifiedLiveData(parcelId)
     }
 
     override fun getLocalOnGoingParcelCnt(): LiveData<Int>
@@ -106,7 +105,7 @@ class ParcelLocalRepository(private val userLocalRepository: UserLocalRepository
         val beDeletedData = appDatabase.parcelDao().getBeDeletedData()
         return if(beDeletedData.isNotEmpty()){
             NetworkManager.retro(SOPOApp.oAuth?.accessToken).create(ParcelAPI::class.java).deleteParcels(
-                parcelIds = DeleteParcelsDTO(beDeletedData.map(ParcelMapper::parcelEntityToParcelId) as MutableList<ParcelId>)
+                parcelIds = DeleteParcelsDTO(beDeletedData.map(ParcelMapper::parcelEntityToParcelId) as MutableList<Int>)
             )
         }
         else{
@@ -114,9 +113,9 @@ class ParcelLocalRepository(private val userLocalRepository: UserLocalRepository
         }
     }
 
-    override suspend fun deleteLocalParcels(parcelIdList: List<ParcelId>){
+    override suspend fun deleteLocalParcels(parcelIdList: List<Int>){
         for(parcelId in parcelIdList){
-            appDatabase.parcelDao().getById(parcelId.regDt, parcelId.parcelUid)?.let {
+            appDatabase.parcelDao().getById(parcelId)?.let {
                 it.status = 0
                 it.auditDte = TimeUtil.getDateTime()
 

@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class ParcelDTO(
     @SerializedName("parcelId")
-    var parcelId: ParcelId,
+    var parcelId: Int,
     @SerializedName("userId")
     var userId: String,
     @SerializedName("waybillNum")
@@ -30,7 +30,7 @@ data class ParcelDTO(
 {
     fun update(parcelEntity: ParcelEntity)
     {
-        this.parcelId = ParcelId(parcelEntity.parcelUid, parcelEntity.regDt)
+        this.parcelId = parcelEntity.parcelId
         this.userId = parcelEntity.userId
         this.waybillNum = parcelEntity.waybillNum
         this.auditDte = parcelEntity.auditDte
@@ -46,8 +46,7 @@ data class ParcelDTO(
     override fun toString(): String
     {
         val stringBuffer: StringBuilder = StringBuilder()
-        stringBuffer.append("[regDt] : ${parcelId.regDt}    ")
-        stringBuffer.append("[parcelUid] : ${parcelId.parcelUid}    ")
+        stringBuffer.append("[parcelId] : $parcelId    ")
         stringBuffer.append("[userId] : $userId ")
         stringBuffer.append("[waybillNum] : $waybillNum ")
         stringBuffer.append("[carrier] : $carrier   ")

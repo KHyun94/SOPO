@@ -1,7 +1,6 @@
 package com.delivery.sopo.views.inquiry
 
 import android.content.Context
-import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -20,7 +19,6 @@ import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
 import com.delivery.sopo.models.SelectItem
-import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
@@ -44,7 +42,7 @@ class ParcelDetailView : Fragment()
 
     private val vm: ParcelDetailViewModel by viewModel()
 
-    private lateinit var parcelId : ParcelId
+    private var parcelId : Int = 0
 
     private var slideViewStatus = 0
 
@@ -56,9 +54,8 @@ class ParcelDetailView : Fragment()
 
         parentView = activity as MainView
 
-        arguments?.run {
-            parcelId = ParcelId(parcelUid = getString(PARCEL_UID)?:"", regDt= getString(REQ_DT)?:"")
-        }
+        parcelId = arguments?.getInt(PARCEL_ID)?:throw Exception("parcel id가 널")
+
     }
 
     override fun onCreateView(
@@ -460,14 +457,12 @@ class ParcelDetailView : Fragment()
 
     companion object
     {
-        private val PARCEL_UID = "PARCEL_UID"
-        private val REQ_DT = "REQ_DT"
+        private val PARCEL_ID = "PARCEL_ID"
         private val IS_BE_UPDATED = "IS_BE_UPDATED"
 
         // 해당 프래그먼트를 인스턴스화 할 때 무조건 newInstance로 호출해야한다.
         fun newInstance(
-            parcelUId: String,
-            regDt: String,
+            parcelId: Int,
             isBeUpdated: Boolean = false
         ): ParcelDetailView
         {
@@ -477,8 +472,7 @@ class ParcelDetailView : Fragment()
 
             // parcel의 uid, regDt를 parameter로 가진다.
             args.run {
-                putString(PARCEL_UID, parcelUId)
-                putString(REQ_DT, regDt)
+                putInt(PARCEL_ID, parcelId)
                 putBoolean(IS_BE_UPDATED, isBeUpdated)
             }
 

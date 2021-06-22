@@ -6,7 +6,6 @@ import com.delivery.sopo.data.repository.database.room.dto.DeleteParcelsDTO
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.models.parcel.ParcelDTO
-import com.delivery.sopo.models.parcel.ParcelId
 import com.google.gson.JsonArray
 import retrofit2.Call
 import retrofit2.Response
@@ -26,7 +25,7 @@ interface ParcelAPI
     @Headers("Accept: application/json")
     suspend fun registerParcel(
         @Body registerDto: ParcelRegisterDTO
-    ): Response<APIResult<ParcelId?>>
+    ): Response<APIResult<Int?>>
 
     @GET("api/v1/sopo-api/delivery/parcel")
     @Headers("Accept: application/json")
@@ -71,8 +70,7 @@ interface ParcelAPI
     @Headers("Content-Type: application/json-patch+json")
     fun patchParcel(
         @Path("email") email : String,
-        @Path("regDt") regDt : String,
-        @Path("parcelUid") parcelUid : String,
+        @Path("parcelId") parcelId: Int,
         @Body jsonPATCH: JsonArray
     ): Call<APIResult<ParcelEntity?>>
 
@@ -105,7 +103,7 @@ interface ParcelAPI
     @POST("/api/v1/sopo-api/delivery/parcel/refresh")
     @Headers("Accept: application/json")
     suspend fun requestParcelForRefresh(
-        @Body parcelId: ParcelId
+        @Body parcelId: Int
     ) : Response<APIResult<Unit>>
 
     /**
@@ -118,8 +116,7 @@ interface ParcelAPI
     @GET("/api/v1/sopo-api/delivery/parcel/{regDt}/{parcelUid}")
     @Headers("Accept: application/json")
     suspend fun getSingleParcel(
-        @Path("regDt") regDt: String,
-        @Path("parcelUid") parcelUid: String
+        @Path("parcelId") parcelId: Int
     ): Response<APIResult<ParcelDTO?>>
 
     // TODO alias 변경 api 추가해야함

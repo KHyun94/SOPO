@@ -2,7 +2,6 @@ package com.delivery.sopo.data.repository.local.datasource
 
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
-import com.delivery.sopo.models.parcel.ParcelId
 
 interface ParcelManagementRepository {
    suspend fun getAll(): List<ParcelStatusEntity>?
@@ -13,16 +12,16 @@ interface ParcelManagementRepository {
    suspend fun getIsDeleteCnt(): Int
    suspend fun getIsDeliveredCnt(): Int
    suspend fun getCancelIsBeDelete():  List<ParcelStatusEntity>?
-   suspend fun getUnidentifiedStatusByParcelId(parcelId: ParcelId) : Int
+   suspend fun getUnidentifiedStatusByParcelId(parcelId: Int) : Int
    fun insertEntity(parcelStatusEntity: ParcelStatusEntity)
    fun insertEntities(parcelStatusEntityList: List<ParcelStatusEntity>)
    suspend fun updateEntity(parcelStatusEntity: ParcelStatusEntity)
    suspend fun updateEntities(parcelStatusEntityList: List<ParcelStatusEntity>)
-   suspend fun updateUpdatableStatus(regDt: String, parcelUid: String, status : Int?)
-   fun getEntity(parcelId: ParcelId): ParcelStatusEntity?
-   suspend fun initializeIsBeUpdate(regDt: String, parcelUid: String)
+   suspend fun updateUpdatableStatus(parcelId:Int, status : Int?)
+   fun getEntity(parcelId: Int): ParcelStatusEntity?
+   suspend fun initializeIsBeUpdate(parcelId:Int)
    suspend fun updateTotalIsBeDeliveredToZero()
-   suspend fun updateIsBeDeleteToOneByParcelIdList(parcelIdList: List<ParcelId>)
-   fun updateIsUnidentified(parcelId: ParcelId, value : Int) : Int
+   suspend fun updateIsBeDeleteToOneByParcelIdList(parcelIdList: List<Int>)
+   fun updateIsUnidentified(parcelId: Int, value : Int) : Int
 
 }

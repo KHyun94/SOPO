@@ -19,7 +19,6 @@ import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.ParcelDTO
-import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
 import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
@@ -247,7 +246,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
         }
     }
 
-    fun getSelectedListData(): List<ParcelId>
+    fun getSelectedListData(): List<Int>
     {
         return list.filter {
             it.isSelected
@@ -329,7 +328,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                 list.add(updatedList[index])
                 notifyIndexList.add(index)
             }
-            else if (!((updatedList[index].parcelDTO.parcelId.regDt == list[index].parcelDTO.parcelId.regDt) && (updatedList[index].parcelDTO.parcelId.parcelUid == list[index].parcelDTO.parcelId.parcelUid)))
+            else if (updatedList[index].parcelDTO.parcelId != list[index].parcelDTO.parcelId)
             {
                 SopoLog.d("index[$index]에 해당하는 ${list[index].parcelDTO.alias}와 업데이트될 아이템(${updatedList[index].parcelDTO.alias}) 일치하지 않아 기존 아이템에 업데이트될 아이템을 덮어씁니다.")
                 list[index] = updatedList[index]

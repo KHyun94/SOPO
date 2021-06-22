@@ -26,14 +26,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.database.room.entity.ParcelCntInfoEntity
 import com.delivery.sopo.databinding.FragmentInquiryBinding
-import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.enums.ScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.models.mapper.MenuMapper
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
-import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
@@ -406,17 +404,17 @@ class InquiryFragment: Fragment()
     {
         return object: OnParcelClickListener
         {
-            override fun onItemClicked(view: View, type: Int, parcelId: ParcelId)
+            override fun onItemClicked(view: View, type: Int, parcelId:Int)
             {
                 TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(
-                    parcelUId = parcelId.parcelUid, regDt = parcelId.regDt
+                    parcelId
                 )
                 FragmentManager.move(
                     activity!!, TabCode.INQUIRY_DETAIL, InquiryMainFrame.viewId
                 )
             }
 
-            override fun onItemLongClicked(view: View, type: Int, parcelId: ParcelId)
+            override fun onItemLongClicked(view: View, type: Int, parcelId:Int)
             {
                 val edit = MutableLiveData<String>()
 
@@ -638,7 +636,7 @@ class InquiryFragment: Fragment()
                     }
 
                     // 선택된 데이터들을 삭제한다.
-                    vm.removeSelectedData(selectedData as MutableList<ParcelId>)
+                    vm.removeSelectedData(selectedData as MutableList<Int>)
                     // 삭제할 데이터의 크기를 알려준다.
                     vm.setCntOfDelete(selectedData.size)
 

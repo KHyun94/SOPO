@@ -27,17 +27,17 @@ interface ParcelStatusDAO
     @Query("SELECT COUNT(*) FROM PARCEL_STATUS WHERE updatableStatus = ${StatusConst.ACTIVATE}")
     fun getCountForUpdatableParcel(): Int
 
-    @Query("SELECT unidentifiedStatus FROM PARCEL_STATUS WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
-    fun getUnidentifiedStatusByParcelId(regDt: String, parcelUid: String) : Int
+    @Query("SELECT unidentifiedStatus FROM PARCEL_STATUS WHERE PARCEL_ID = :parcelId")
+    fun getUnidentifiedStatusByParcelId(parcelId: Int) : Int
 
-    @Query("UPDATE PARCEL_STATUS SET unidentifiedStatus = :value WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
-    fun updateIsUnidentified(regDt: String, parcelUid: String, value : Int) : Int
+    @Query("UPDATE PARCEL_STATUS SET unidentifiedStatus = :value WHERE PARCEL_ID = :parcelId")
+    fun updateIsUnidentified(parcelId:Int, value : Int) : Int
 
     @Query("SELECT COUNT(*) FROM PARCEL_STATUS WHERE deliveredStatus = 1")
     fun getIsDeliveredCnt(): Int
 
-    @Query("SELECT * FROM PARCEL_STATUS WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
-    fun getById(regDt: String, parcelUid: String): ParcelStatusEntity?
+    @Query("SELECT * FROM PARCEL_STATUS WHERE PARCEL_ID = :parcelId")
+    fun getById(parcelId: Int): ParcelStatusEntity?
 
     @Query("SELECT * FROM PARCEL_STATUS WHERE isBeDelete = 1 AND AUDIT_DTE >= DATETIME('now', 'localtime', '-10.0 seconds')")
     suspend fun getCancelIsBeDelete() : List<ParcelStatusEntity>?
@@ -45,11 +45,11 @@ interface ParcelStatusDAO
     @Query("UPDATE PARCEL_STATUS SET deliveredStatus = 0")
     fun updateTotalIsBeDeliveredToZero()
 
-    @Query("UPDATE PARCEL_STATUS SET updatableStatus = :status WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
-    fun updateIsBeUpdate(regDt: String, parcelUid: String, status : Int? = 0)
+    @Query("UPDATE PARCEL_STATUS SET updatableStatus = :status WHERE  PARCEL_ID = :parcelId")
+    fun updateIsBeUpdate(parcelId: Int, status : Int? = 0)
 
-    @Query("UPDATE PARCEL_STATUS SET isBeDelete = 1 , AUDIT_DTE = :auditDte WHERE REG_DT = :regDt AND PARCEL_UID = :parcelUid")
-    fun updateIsBeDeleteToOne(regDt: String, parcelUid: String, auditDte: String)
+    @Query("UPDATE PARCEL_STATUS SET isBeDelete = 1 , AUDIT_DTE = :auditDte WHERE  PARCEL_ID = :parcelId")
+    fun updateIsBeDeleteToOne(parcelId: Int, auditDte: String)
 
     @Insert(onConflict = REPLACE)
     fun insert(parcelStatusEntity: ParcelStatusEntity)

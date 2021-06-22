@@ -14,7 +14,6 @@ import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.parcel.ParcelDTO
-import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.networks.call.ParcelCall
@@ -532,14 +531,13 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                         for(remoteParcel in remoteList)
                         {
                             filteredLocalList.removeIf {
-                                (it.parcelId.regDt == remoteParcel.parcelId.regDt) && (it.parcelId.parcelUid == remoteParcel.parcelId.parcelUid)
+                                (it.parcelId == remoteParcel.parcelId)
                             }
                         }
 
                         for(parcel in filteredLocalList)
                         {
-                            //                            val result = ParcelCall.getSingleParcelTest(parcel.parcelId)
-                            val result = ParcelCall.getSingleParcelTest(ParcelId("", ""))
+                            val result = ParcelCall.getSingleParcelTest(parcel.parcelId)
 
                             val remoteOngoingParcel = result.data
 
@@ -552,8 +550,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                                     parcelLocalRepository.insetEntity(localParcelById.apply {
                                         this.update(remoteOngoingParcel)
                                     })
-                                    parcelManagementRepoImpl.initializeIsBeUpdate(
-                                        localParcelById.regDt, localParcelById.parcelUid)
+                                    parcelManagementRepoImpl.initializeIsBeUpdate(localParcelById.parcelId)
                                 }
                             }
                         }
@@ -603,7 +600,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
     }
 
     // 데이터 삭제 로직 1단계 : Room의 status를 0=>1으로 바꾼다.
-    fun removeSelectedData(selectedData: MutableList<ParcelId>)
+    fun removeSelectedData(selectedData: MutableList<Int>)
     {
         viewModelScope.launch(Dispatchers.IO) {
             parcelLocalRepository.deleteLocalParcels(selectedData)
@@ -670,7 +667,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                 for(parcelMng in parcelMngList)
                 {
                     parcelLocalRepository.getLocalParcelById(
-                        ParcelId(parcelMng.regDt, parcelMng.parcelUid))?.let {
+                        parcelMng.parcelId)?.let {
                         it.status = 1
                         parcelLocalRepository.updateEntity(it)
                     }
@@ -679,7 +676,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                 {
                     // 복구해야할 리스트 중 아이템 하나의 도착일자 (2020-09-19 ~~)에서 PARCEL_CNT_INFO의 primaryKey를 추출해서 복구해야할 PARCEL_CNT_INFO를 구한다.
                     parcelLocalRepository.getLocalParcelById(
-                        ParcelId(cancelDataList.first().regDt, cancelDataList.first().parcelUid))
+                        cancelDataList.first().parcelId)
                         ?.let {
                             val timeCountPrimaryKey =
                                 TimeCountMapper.arrivalDateToTime(it.arrivalDte)
@@ -731,7 +728,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
         setMoreView(false)
     }
 
-    fun patchParcelAlias(parcelId: ParcelId, patchAlias: String)
+    fun patchParcelAlias(parcelId:Int, patchAlias: String)
     {
         // Json Patch를 위한 Body
         val jsonArray = JsonArray()
@@ -749,8 +746,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
         NetworkManager.retro(SOPOApp.oAuth?.accessToken)
             .create(ParcelAPI::class.java)
-            .patchParcel(email = userLocalRepository.getUserId(), parcelUid = parcelId.parcelUid,
-                         regDt = parcelId.regDt, jsonPATCH = jsonArray)
+            .patchParcel(email = userLocalRepository.getUserId(), parcelId = parcelId, jsonPATCH = jsonArray)
             .enqueue(object: Callback<APIResult<ParcelEntity?>>
                      {
                          override fun onFailure(call: Call<APIResult<ParcelEntity?>>, t: Throwable)

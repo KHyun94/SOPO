@@ -117,7 +117,7 @@
                     android:layout_marginLeft="4dp"
                     android:fontFamily="@font/spoqa_han_sans_light"
                     android:includeFontPadding="false"
-                    android:text="@{item.regDt}"
+                    android:text="@{item.auditDte}"
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="10dp"
                     app:layout_constraintLeft_toRightOf="@id/tv_base_date"

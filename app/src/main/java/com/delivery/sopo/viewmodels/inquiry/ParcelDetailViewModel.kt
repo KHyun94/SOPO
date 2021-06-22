@@ -31,7 +31,7 @@ import kotlinx.coroutines.*
 class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository, private val carrierRepository: CarrierRepository, private val parcelLocalRepository: ParcelLocalRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl): ViewModel()
 {
     // 택배 인포의 pk
-    val parcelId = MutableLiveData<ParcelId>()
+    val parcelId = MutableLiveData<Int>()
 
     // delivery status 리스트
     val statusList = MutableLiveData<MutableList<SelectItem<String>>?>()
@@ -123,7 +123,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
 
                 SopoLog.d("""
                     ParcelDetailItem >>>
-                    regDt = ${parcelEntity.regDt}, 
+                    parcelId = ${parcelEntity.parcelId}, 
                     alias = ${parcelEntity.alias}, 
                     carrier = ${carrierDTO!!}, 
                     waybillNum = ${parcelEntity.waybillNum}, 
@@ -133,7 +133,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
 
                 item.postValue(
                     ParcelDetailItem(
-                        regDt = parcelEntity.regDt, alias = parcelEntity.alias, carrierDTO = carrierDTO, waybillNum = parcelEntity.waybillNum, deliverStatus = deliveryStatusEnum.value?.TITLE, progress = progressList
+                        auditDte = parcelEntity.auditDte, alias = parcelEntity.alias, carrierDTO = carrierDTO, waybillNum = parcelEntity.waybillNum, deliverStatus = deliveryStatusEnum.value?.TITLE, progress = progressList
                     )
                 )
             }
@@ -169,7 +169,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
     }
 
     // 로컬에 저장된 택배 인포를 로드
-    private fun requestLocalParcel(parcelId: ParcelId)
+    private fun requestLocalParcel(parcelId:Int)
     {
         SopoLog.d("requestLocalParcel(${parcelId}) call")
 
@@ -181,7 +181,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
     }
 
     // remote data를 요청과 동시에
-    fun requestRemoteParcel(parcelId: ParcelId)
+    fun requestRemoteParcel(parcelId:Int)
     {
         SopoLog.d("requestRemoteParcel(${parcelId}) call")
 
@@ -228,7 +228,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
 
     }
 
-    fun getRemoteParcel(parcelId: ParcelId)
+    fun getRemoteParcel(parcelId:Int)
     {
         SopoLog.d("getRemoteParcel() call >>> ${parcelId.toString()}")
 
@@ -267,15 +267,16 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
         }
     }
 
-    private suspend fun updateIsBeUpdate(parcelId: ParcelId, status: Int?)
+    private suspend fun updateIsBeUpdate(parcelId:Int, status: Int?)
     {
-        parcelManagementRepoImpl.updateUpdatableStatus(parcelId.regDt, parcelId.parcelUid, status)
+        parcelManagementRepoImpl.updateUpdatableStatus(parcelId, status)
     }
 
+    // TODO 널러블 확인
     private suspend fun isBeUpdateParcel(): LiveData<Int?>
     {
         return parcelLocalRepository.isBeingUpdateParcel(
-            parcelUid = parcelId.value?.parcelUid ?: "", regDt = parcelId.value?.regDt ?: ""
+            parcelId = parcelId.value?:1000
         )
     }
 
@@ -285,7 +286,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
     }
 
     //
-    fun updateIsUnidentifiedToZero(parcelId: ParcelId)
+    fun updateIsUnidentifiedToZero(parcelId:Int)
     {
         CoroutineScope(Dispatchers.Default).launch {
 

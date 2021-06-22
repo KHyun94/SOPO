@@ -93,7 +93,7 @@ class MainViewModel(private val parcelLocalRepository: ParcelLocalRepository, pr
             {
                 val local = localIterator.next()
 
-                if (remote.parcelId.regDt == local.parcelId.regDt && remote.parcelId.parcelUid == local.parcelId.parcelUid)
+                if (remote.parcelId == local.parcelId)
                 {
                     if (remote.inquiryHash != local.inquiryHash)
                     {

@@ -7,19 +7,14 @@ import com.delivery.sopo.util.SopoLog
 
 @Entity(
     tableName = "PARCEL",
-    primaryKeys = ["REG_DT", "PARCEL_UID"]
+    primaryKeys = ["PARCEL_ID"]
 )
 data class ParcelEntity(
     @ColumnInfo(
-        name = "REG_DT",
-        typeAffinity = ColumnInfo.TEXT
+        name = "PARCEL_ID",
+        typeAffinity = ColumnInfo.INTEGER
     )
-    var regDt: String = "",
-    @ColumnInfo(
-        name = "PARCEL_UID",
-        typeAffinity = ColumnInfo.TEXT
-    )
-    var parcelUid: String,
+    var parcelId: Int,
     @ColumnInfo(
         name = "USER_ID",
         typeAffinity = ColumnInfo.TEXT

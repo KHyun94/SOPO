@@ -3,7 +3,6 @@ package com.delivery.sopo.models.push
 import com.delivery.sopo.consts.DeliveryStatusConst
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.mapper.ParcelMapper
-import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.models.parcel.ParcelItem
 import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
 import com.delivery.sopo.util.SopoLog
@@ -14,19 +13,15 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 data class UpdateParcelDao(
-    @SerializedName("regDt")
-    val regDt : String,
-    @SerializedName("parcelUid")
-    val parcelUid: String,
+    @SerializedName("parcelId")
+    val parcelId: Int,
     @SerializedName("deliveryStatus")
     val deliveryStatus: String
 ) : KoinComponent
 {
     private val parcelLocalRepository : ParcelLocalRepository by inject()
 
-    suspend fun getParcel() = parcelLocalRepository.getLocalParcelById(ParcelId(regDt, parcelUid))
-
-    fun getParcelId() = ParcelId(regDt, parcelUid)
+    suspend fun getParcel() = parcelLocalRepository.getLocalParcelById(parcelId = parcelId)
 
     fun compareDeliveryStatus(parcelEntity: ParcelEntity): Boolean {
         SopoLog.d("""

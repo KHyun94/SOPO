@@ -4,7 +4,6 @@ import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.ParcelDTO
-import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
@@ -34,15 +33,15 @@ object ParcelCall : BaseService(), KoinComponent
         parcelAPI = NetworkManager.retro(oAuth?.accessToken).create(ParcelAPI::class.java)
     }
 
-    suspend fun registerParcel(registerDto: ParcelRegisterDTO):NetworkResult<APIResult<ParcelId?>>
+    suspend fun registerParcel(registerDto: ParcelRegisterDTO):NetworkResult<APIResult<Int?>>
     {
         val result = parcelAPI.registerParcel(registerDto = registerDto)
         return apiCall(call = {result})
     }
 
-    suspend fun getSingleParcel(parcelId: ParcelId) : NetworkResult<APIResult<ParcelDTO?>>
+    suspend fun getSingleParcel(parcelId:Int) : NetworkResult<APIResult<ParcelDTO?>>
     {
-        val result = parcelAPI.getSingleParcel(parcelId.regDt, parcelId.parcelUid)
+        val result = parcelAPI.getSingleParcel(parcelId)
         return apiCall(call = {result})
     }
 
@@ -59,16 +58,16 @@ object ParcelCall : BaseService(), KoinComponent
         return apiCall(call = { result })
     }
 
-    suspend fun requestParcelForRefresh(parcelId : ParcelId) : NetworkResult<APIResult<Unit>>
+    suspend fun requestParcelForRefresh(parcelId : Int) : NetworkResult<APIResult<Unit>>
     {
         val result = parcelAPI.requestParcelForRefresh(parcelId)
         return apiCall(call = { result })
     }
 
 
-    suspend fun getSingleParcelTest(parcelId: ParcelId): APIResult<ParcelDTO?>
+    suspend fun getSingleParcelTest(parcelId:Int): APIResult<ParcelDTO?>
     {
-        val result = parcelAPI.getSingleParcel(parcelId.regDt, parcelId.parcelUid)
+        val result = parcelAPI.getSingleParcel(parcelId)
 
         when(val apiResult = apiCall(call = { result }))
         {

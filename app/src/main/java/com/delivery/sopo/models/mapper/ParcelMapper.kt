@@ -4,7 +4,6 @@ import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.ParcelDTO
-import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.util.SopoLog
 
 object ParcelMapper
@@ -12,21 +11,19 @@ object ParcelMapper
     fun parcelToParcelManagementEntity(parcelDTO: ParcelDTO): ParcelStatusEntity
     {
         return ParcelStatusEntity(
-            regDt = parcelDTO.parcelId.regDt,
-            parcelUid = parcelDTO.parcelId.parcelUid
+            parcelId = parcelDTO.parcelId
         )
     }
 
     fun parcelEntityToParcelManagementEntity(parcelEntity: ParcelEntity): ParcelStatusEntity
     {
         return ParcelStatusEntity(
-            regDt = parcelEntity.regDt,
-            parcelUid = parcelEntity.parcelUid
+            parcelId = parcelEntity.parcelId
         )
     }
 
     fun parcelEntityToParcel(parcelEntity: ParcelEntity): ParcelDTO{
-        return ParcelDTO(parcelId = ParcelId(regDt = parcelEntity.regDt, parcelUid = parcelEntity.parcelUid),
+        return ParcelDTO(parcelId = parcelEntity.parcelId,
             userId = parcelEntity.userId,
             waybillNum = parcelEntity.waybillNum,
             carrier = parcelEntity.carrier,
@@ -48,8 +45,7 @@ object ParcelMapper
         """.trimIndent())
 
         return ParcelEntity(
-            regDt = parcelDTO.parcelId.regDt,
-            parcelUid = parcelDTO.parcelId.parcelUid,
+            parcelId = parcelDTO.parcelId,
             userId = parcelDTO.userId,
             waybillNum = parcelDTO.waybillNum,
             carrier = parcelDTO.carrier,
@@ -63,8 +59,8 @@ object ParcelMapper
         )
     }
 
-    fun parcelEntityToParcelId(parcelEntity: ParcelEntity): ParcelId{
-        return ParcelId(regDt = parcelEntity.regDt, parcelUid = parcelEntity.parcelUid)
+    fun parcelEntityToParcelId(parcelEntity: ParcelEntity): Int{
+        return parcelEntity.parcelId
     }
 
     fun parcelListToInquiryItemList(parcelDTOList: MutableList<ParcelDTO>): MutableList<InquiryListItem>{

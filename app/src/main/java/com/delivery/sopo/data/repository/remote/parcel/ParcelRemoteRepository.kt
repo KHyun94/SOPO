@@ -5,20 +5,19 @@ import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.parcel.ParcelDTO
-import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.CodeUtil
 
 object ParcelRemoteRepository
 {
-    suspend fun requestParcelRegister(registerDTO: ParcelRegisterDTO): ResponseResult<ParcelId?>
+    suspend fun requestParcelRegister(registerDTO: ParcelRegisterDTO): ResponseResult<Int?>
     {
         when(val res = ParcelCall.registerParcel(registerDTO)){
             is NetworkResult.Success ->
             {
                 val apiResult = res.data
-                val data: ParcelId = apiResult.data?:throw NullPointerException("Parcel's id가 없습니다.")
+                val data: Int = apiResult.data?:throw NullPointerException("Parcel's id가 없습니다.")
 
                 return ResponseResult(true, CodeUtil.getCode(apiResult.code), data, "", DisplayEnum.NON_DISPLAY)
             }

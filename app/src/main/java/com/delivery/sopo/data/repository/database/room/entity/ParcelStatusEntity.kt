@@ -6,19 +6,14 @@ import com.delivery.sopo.util.TimeUtil
 
 @Entity(
     tableName = "PARCEL_STATUS",
-    primaryKeys = ["REG_DT", "PARCEL_UID"]
+    primaryKeys = ["PARCEL_ID"]
 )
 data class ParcelStatusEntity(
     @ColumnInfo(
-        name = "REG_DT",
-        typeAffinity = ColumnInfo.TEXT
+        name = "PARCEL_ID",
+        typeAffinity = ColumnInfo.INTEGER
     )
-    var regDt: String,
-    @ColumnInfo(
-        name = "PARCEL_UID",
-        typeAffinity = ColumnInfo.TEXT
-    )
-    var parcelUid: String,
+    var parcelId: Int,
     @ColumnInfo(
         name = "isBeDelete",
         typeAffinity = ColumnInfo.INTEGER

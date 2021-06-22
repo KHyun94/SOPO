@@ -5,7 +5,6 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.models.mapper.ParcelMapper
-import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.models.push.UpdatedParcelInfo
 import com.delivery.sopo.networks.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
@@ -37,14 +36,14 @@ class FirebaseService: FirebaseMessagingService()
 
         data.updatedParcelId.forEach { updateParcelDao ->
 
-            val parcelEntity = parcelLocalRepository.getLocalParcelById(ParcelId(updateParcelDao.regDt, updateParcelDao.parcelUid)) ?: return
+            val parcelEntity = parcelLocalRepository.getLocalParcelById(updateParcelDao.parcelId) ?: return
 
             // DeliveryStatus 변경됐을 시 True
 
             if (!updateParcelDao.compareDeliveryStatus(parcelEntity)) return
 
             // 현재 해당 택배가 가지고 있는 배송 상태와 fcm으로 넘어온 배송상태가 다른 경우만 노티피케이션을 띄운다!
-            val parcelManagementEntity = parcelManagementRepo.getEntity(updateParcelDao.getParcelId()) ?: ParcelMapper.parcelEntityToParcelManagementEntity(updateParcelDao.getParcel() ?: return)
+            val parcelManagementEntity = parcelManagementRepo.getEntity(updateParcelDao.parcelId) ?: ParcelMapper.parcelEntityToParcelManagementEntity(updateParcelDao.getParcel() ?: return)
 
             parcelManagementEntity.run {
 

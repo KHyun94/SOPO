@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.InquiryListCompleteItemBinding
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
@@ -117,7 +116,7 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
         }
     }
 
-    fun getSelectedListData(): List<ParcelId>
+    fun getSelectedListData(): List<Int>
     {
         return list.filter {
             it.isSelected

@@ -11,7 +11,6 @@ import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.models.ErrorResult
 import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.models.TestResult
-import com.delivery.sopo.models.parcel.ParcelId
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.CodeUtil
@@ -79,7 +78,7 @@ class ConfirmParcelViewModel: ViewModel()
                     val code = CodeUtil.getCode(data.code)
 
                     _result.postValue(
-                        TestResult.SuccessResult<ParcelId?>(code, code.MSG, data.data))
+                        TestResult.SuccessResult<Int?>(code, code.MSG, data.data))
                     //                    _isProgress.postValue(false)
                 }
                 is NetworkResult.Error ->
