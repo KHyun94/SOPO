@@ -21,10 +21,7 @@ class MenuMainFrame: Fragment()
         parentView = activity as MainView
     }
 
-    override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View?
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         binding = FragmentMenuMainFrameBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this

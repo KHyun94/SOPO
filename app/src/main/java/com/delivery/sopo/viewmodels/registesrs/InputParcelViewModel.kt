@@ -57,7 +57,7 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository) : V
 
     fun onMove2ndStepClicked()
     {
-        moveFragment.value = TabCode.REGISTER_STEP2.NAME
+        moveFragment.value = TabCode.REGISTER_SELECT.NAME
     }
 
     fun onMove3rdStepClicked(v: View)
@@ -73,7 +73,7 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository) : V
             val maxLen = carrierEntity.max
 
             withContext(Dispatchers.Main){
-                moveFragment.postValue(TabCode.REGISTER_STEP3.NAME)
+                moveFragment.postValue(TabCode.REGISTER_CONFIRM.NAME)
 //                if(waybillNum?.length in minLen..maxLen || minLen == 0)
 //                {
 //

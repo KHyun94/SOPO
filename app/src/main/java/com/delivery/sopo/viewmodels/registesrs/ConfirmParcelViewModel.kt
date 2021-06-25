@@ -5,16 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.remote.parcel.ParcelRemoteRepository
-import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.models.CarrierDTO
-import com.delivery.sopo.models.ErrorResult
-import com.delivery.sopo.models.ParcelRegisterDTO
-import com.delivery.sopo.models.TestResult
-import com.delivery.sopo.networks.call.ParcelCall
-import com.delivery.sopo.services.network_handler.NetworkResult
-import com.delivery.sopo.util.CodeUtil
-import com.delivery.sopo.views.registers.RegisterMainFragment
+import com.delivery.sopo.enums.DisplayEnum
+import com.delivery.sopo.models.*
+import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,14 +24,16 @@ class ConfirmParcelViewModel: ViewModel()
     val navigator: LiveData<String>
         get() = _navigator
 
-    private var _isProgress = MutableLiveData<Boolean>()
-    val isProgress: LiveData<Boolean>
-        get() = _isProgress
+    val isProgress = MutableLiveData<Boolean>()
 
-    private var _result = MutableLiveData<TestResult>()
-    val result: LiveData<TestResult>
+    private var _result = MutableLiveData<ResponseResult<Int?>>()
+    val result: LiveData<ResponseResult<Int?>>
         get() = _result
 
+    init
+    {
+        isProgress.value = false
+    }
 
     fun onMoveFirstStep(v: View)
     {
@@ -44,53 +41,47 @@ class ConfirmParcelViewModel: ViewModel()
         {
             R.id.tv_revise ->
             {
-                _navigator.value = RegisterMainFragment.REGISTER_REVISE
+                _navigator.value = NavigatorConst.TO_REGISTER_REVISE
             }
             R.id.tv_init ->
             {
-                _navigator.value = RegisterMainFragment.REGISTER_INIT
+                _navigator.value = NavigatorConst.TO_REGISTER_INIT
             }
             R.id.tv_register ->
             {
-                requestParcelRegister()
+                isProgress.postValue(true)
+
+                val registerDTO = ParcelRegisterDTO(carrier = carrier.value?.carrier?:throw Exception("Carrier must be not null"),
+                                                    waybillNum = waybillNum.value.toString(),
+                                                    alias = alias.value.toString())
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    requestParcelRegister(registerDTO = registerDTO)
+                }
             }
         }
     }
 
     // '등록하기' Button Click event
-    private fun requestParcelRegister()
+    private suspend fun requestParcelRegister(registerDTO: ParcelRegisterDTO)
     {
-        val registerDTO = ParcelRegisterDTO(carrier = carrier.value?.carrier?:throw Exception("Carrier must be not null"),
-                                            waybillNum = waybillNum.value.toString(),
-                                            alias = alias.value.toString())
+        SopoLog.d("requestParcelRegister(...) 호출[${registerDTO.toString()}]")
 
-        CoroutineScope(Dispatchers.IO).launch {
+        val res = ParcelRemoteRepository.requestParcelRegister(registerDTO = registerDTO)
 
-            val res = ParcelRemoteRepository.requestParcelRegister(registerDTO)
+        isProgress.postValue(false)
 
-
-
-            when(val result = ParcelCall.registerParcel(registerDTO))
-            {
-                is NetworkResult.Success ->
-                {
-                    val data = result.data
-                    val code = CodeUtil.getCode(data.code)
-
-                    _result.postValue(
-                        TestResult.SuccessResult<Int?>(code, code.MSG, data.data))
-                    //                    _isProgress.postValue(false)
-                }
-                is NetworkResult.Error ->
-                {
-                    val exception = result.exception as APIException
-                    val code = exception.responseCode
-
-                    _result.postValue(TestResult.ErrorResult<String>(code, code.MSG,
-                                                                     ErrorResult.ERROR_TYPE_DIALOG,
-                                                                     null, exception))
-                }
-            }
+        if(!res.result){
+            SopoLog.e("requestParcelRegister(...) 실패[code:${res.code}][message:${res.message}]")
+            return _result.postValue(res)
         }
+
+        if(res.data == null)
+        {
+            SopoLog.e("requestParcelRegister(...) 실패[code:${res.code}][message:${res.message}]")
+            return _result.postValue(ResponseResult(false, null, null, "서버 오류.", DisplayEnum.DIALOG))
+        }
+
+        _navigator.postValue(NavigatorConst.TO_REGISTER_SUCCESS)
     }
 }

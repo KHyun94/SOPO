@@ -69,7 +69,7 @@ object UserRemoteRepository
             {
                 val apiResult = result.data
 
-                SopoLog.d("Success to request reset password")
+                SopoLog.d("Success to update fcm token")
 
                 return ResponseResult(true, ResponseCode.SUCCESS, Unit, ResponseCode.SUCCESS.MSG)
             }

@@ -10,6 +10,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
@@ -20,7 +21,6 @@ import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.registesrs.ConfirmParcelViewModel
-import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.main.MainView
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -62,7 +62,7 @@ class ConfirmParcelFragment: Fragment()
     {
         arguments?.let { bundle ->
             registerDTO =
-                bundle.getSerializable(RegisterMainFragment.REGISTER_INFO) as ParcelRegisterDTO
+                bundle.getSerializable(RegisterMainFrame.REGISTER_INFO) as ParcelRegisterDTO
             SopoLog.d("receive bundle data >>> ${registerDTO.toString()}")
         }
 
@@ -119,35 +119,17 @@ class ConfirmParcelFragment: Fragment()
         })
 
         vm.navigator.observe(this, Observer { navigator ->
-            TabCode.REGISTER_STEP1.FRAGMENT  = when(navigator)
+            TabCode.REGISTER_INPUT.FRAGMENT  = when(navigator)
             {
-                RegisterMainFragment.REGISTER_INIT ->
+                NavigatorConst.TO_REGISTER_INIT ->
                 {
-                    InputParcelFragment.newInstance(null, 0)
+                    InputParcelFragment.newInstance(null, RegisterMainFrame.REGISTER_PROCESS_RESET)
                 }
-                RegisterMainFragment.REGISTER_REVISE ->
+                NavigatorConst.TO_REGISTER_REVISE ->
                 {
-                    InputParcelFragment.newInstance(registerDTO, 0)
+                    InputParcelFragment.newInstance(registerDTO, RegisterMainFrame.REGISTER_PROCESS_RESET)
                 }
-                RegisterMainFragment.REGISTER_CONFIRM ->
-                {
-                    InputParcelFragment.newInstance(null, 1)
-                }
-                else -> throw Exception("NOT SUPPORT REGISTER TYPE")
-            }
-
-            FragmentManager.initFragment(activity = requireActivity(),
-                                         viewId = RegisterMainFragment.layoutId,
-                                         currentFragment = this@ConfirmParcelFragment,
-                                         nextFragment = TabCode.REGISTER_STEP1.FRAGMENT,
-                                         nextFragmentTag = TabCode.REGISTER_STEP1.NAME)
-
-        })
-
-        vm.result.observe(this, Observer { result ->
-            when(result)
-            {
-                is TestResult.SuccessResult<*> ->
+                NavigatorConst.TO_REGISTER_SUCCESS ->
                 {
                     if(userLocalRepo.getTopic().isNotEmpty())
                     {
@@ -156,22 +138,23 @@ class ConfirmParcelFragment: Fragment()
 
                     FirebaseNetwork.subscribedToTopicInFCM()
 
-                    TabCode.REGISTER_STEP1.FRAGMENT =
-                        InputParcelFragment.newInstance(registerDTO = null, returnType = 1)
-                    FragmentManager.initFragment(activity = requireActivity(),
-                                                 viewId = RegisterMainFragment.layoutId,
-                                                 currentFragment = this@ConfirmParcelFragment,
-                                                 nextFragment = TabCode.REGISTER_STEP1.FRAGMENT,
-                                                 nextFragmentTag = TabCode.REGISTER_STEP1.NAME)
+                    InputParcelFragment.newInstance(null, RegisterMainFrame.REGISTER_PROCESS_SUCCESS)
                 }
-                is TestResult.ErrorResult<*> ->
-                {
-                    GeneralDialog(act = activity!!, title = "오류", msg = result.errorMsg,
-                                  detailMsg = null, rHandler = Pair(first = "네", second = { it ->
-                            it.dismiss()
-                        })).show(activity!!.supportFragmentManager, "tag")
-                }
+                else -> throw Exception("NOT SUPPORT REGISTER TYPE")
             }
+
+            FragmentManager.initFragment(activity = requireActivity(),
+                                         viewId = RegisterMainFrame.layoutId,
+                                         currentFragment = this@ConfirmParcelFragment,
+                                         nextFragment = TabCode.REGISTER_INPUT.FRAGMENT,
+                                         nextFragmentTag = TabCode.REGISTER_INPUT.NAME)
+
+        })
+
+        vm.result.observe(this, Observer { res ->
+
+//            when(res.displayType)
+
         })
     }
 
@@ -186,7 +169,7 @@ class ConfirmParcelFragment: Fragment()
         fun newInstance(registerDTO: ParcelRegisterDTO?): ConfirmParcelFragment
         {
             val args = Bundle().apply {
-                putSerializable(RegisterMainFragment.REGISTER_INFO, registerDTO)
+                putSerializable(RegisterMainFrame.REGISTER_INFO, registerDTO)
             }
 
             return ConfirmParcelFragment().apply {

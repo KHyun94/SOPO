@@ -17,4 +17,8 @@ object NavigatorConst {
     const val REGISTER_TAB = 0
     const val INQUIRY_TAB = 1
     const val MY_MENU_TAB = 2
+
+    const val TO_REGISTER_REVISE = "TO_REGISTER_REVISE"
+    const val TO_REGISTER_INIT = "TO_REGISTER_INIT"
+    const val TO_REGISTER_SUCCESS = "TO_REGISTER_SUCCESS"
 }

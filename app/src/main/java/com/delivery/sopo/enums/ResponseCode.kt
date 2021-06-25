@@ -1,7 +1,7 @@
 package com.delivery.sopo.enums
 
 // todo 한글 패치
-enum class ResponseCode(val CODE: String, val MSG: String, val HTTP_STATUS: Int? = 0) {
+enum class ResponseCode(val CODE: String, var MSG: String, val HTTP_STATUS: Int? = 0) {
     SUCCESS("0000", "SUCCESS", 200),
     ALREADY_LOGGED_IN("0010", "다른 디바이스에서 로그인 중 입니다. \n지금 디바이스에서 로그인하겠습니까?", 409),
     ALREADY_REGISTERED_USER("0011", "ALREADY_REGISTERED", 400),
@@ -55,7 +55,7 @@ enum class ResponseCode(val CODE: String, val MSG: String, val HTTP_STATUS: Int?
     TOKEN_ERROR_INVALID_REQUEST("TK10", "INVALID_REQUEST", 400),
     TOKEN_ERROR_ALREADY_LOGGED_IN("TK11","ALREADY_LOGGED_IN" , 400),
     TOKEN_ERROR_DEVICE_INFO_IS_EMPTY("TK12", "DEVICE_INFO_IS_EMPTY", 400),
-    TOKEN_ERROR_VALIDATION("TK13", "EMAIL_PASSWORD_INVALIDATE", 400),
+    TOKEN_ERROR_VALIDATION("TK13", "이메일 또는 비밀번호를 다시 확인해주세요.", 400),
     TOKEN_ERROR_UNKNOWN("TK99", "UNKNOWN_TOKEN_ERROR", 400),
 
     LOCAL_ERROR_TYPE_MISS("LC01", "Type Miss Match"),
@@ -63,6 +63,5 @@ enum class ResponseCode(val CODE: String, val MSG: String, val HTTP_STATUS: Int?
 
     ERROR_UNKNOWN("9999", "알수 없는 에러", 400);
 
-//    SERVER_CONNECT
 
 }

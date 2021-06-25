@@ -1,5 +1,6 @@
 package com.delivery.sopo.bindings
 
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorRes
@@ -16,6 +17,13 @@ object TextViewBindingAdapter
             text = content
             setTextColor(tv.context.getColor(colorRes))
         }
+    }
+
+    @JvmStatic
+    @BindingAdapter("focusChangeListener")
+    fun bindOnFocusChangeListener(tv: TextView, onFocusChangeListener: View.OnFocusChangeListener)
+    {
+        tv.onFocusChangeListener = onFocusChangeListener
     }
 
 }

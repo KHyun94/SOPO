@@ -17,8 +17,6 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.MenuMainFrame
 import com.delivery.sopo.viewmodels.menus.MenuSubViewModel
 import com.delivery.sopo.views.main.MainView
-import com.delivery.sopo.views.registers.RegisterMainFragment
-import com.delivery.sopo.views.registers.SelectCarrierFragment
 import org.koin.android.ext.android.inject
 
 class MenuSubFragment: Fragment()
@@ -38,7 +36,7 @@ class MenuSubFragment: Fragment()
             override fun handleOnBackPressed()
             {
                 requireActivity().supportFragmentManager.popBackStack()
-                FragmentManager.initFragment(parentView, MenuMainFrame.viewId, this@MenuSubFragment, MenuMainFragment(), "")
+                FragmentManager.initFragment(parentView, MenuMainFrame.viewId, this@MenuSubFragment, MenuFragment(), "")
             }
 
         }

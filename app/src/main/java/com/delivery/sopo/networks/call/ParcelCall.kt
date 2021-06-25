@@ -47,7 +47,7 @@ object ParcelCall : BaseService(), KoinComponent
 
     suspend fun getOngoingParcels(): NetworkResult<APIResult<List<ParcelDTO>?>>
     {
-        val result = parcelAPI.getOngoingParcels(email = email)
+        val result = parcelAPI.getOngoingParcels()
         return apiCall(call = {result})
     }
 

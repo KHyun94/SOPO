@@ -24,8 +24,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class LoginViewModel(private val userLocalRepo: UserLocalRepository,
-                     private val oAuthRepo: OAuthLocalRepository): ViewModel()
+class LoginViewModel(private val userLocalRepo: UserLocalRepository, private val oAuthRepo: OAuthLocalRepository):
+        ViewModel()
 {
     val email = MutableLiveData<String>()
     var password = MutableLiveData<String>()
@@ -66,19 +66,25 @@ class LoginViewModel(private val userLocalRepo: UserLocalRepository,
 
     fun onLoginClicked(v: View)
     {
+        SopoLog.d("지금이니이이")
+        v.requestFocusFromTouch()
+        Handler().postDelayed(Runnable {  loginEvent(v)}, 50)
+    }
+
+    fun loginEvent(v: View)
+    {
         SopoLog.d(msg = "onLoginClicked() call!!!")
 
         try
         {
             // 입력값의 유효 처리 여부 확인
             validities.forEach { (k, v) ->
-
                 // 유효성 체크 실패 시
-                if (!v)
+                if(!v)
                 {
-                    SopoLog.d("${k.NAME}'s validity is fail")
+                    SopoLog.d("${k.NAME}'s validity is fail ${password.value}")
                     _invalidity.postValue(Pair(k, v))
-                    return@onLoginClicked
+                    return@loginEvent
                 }
             }
 
@@ -98,7 +104,7 @@ class LoginViewModel(private val userLocalRepo: UserLocalRepository,
                 return@launch _navigator.postValue(NavigatorConst.TO_MAIN)
             }
         }
-        catch (e: Exception)
+        catch(e: Exception)
         {
             throw e
         }
@@ -114,12 +120,15 @@ class LoginViewModel(private val userLocalRepo: UserLocalRepository,
     {
         val oAuthRes = OAuthRemoteRepository.requestLoginWithOAuth(email, password)
 
-        if (!oAuthRes.result)
+        if(!oAuthRes.result)
         {
             return oAuthRes
         }
 
-        val oAuthDTO = oAuthRes.data ?: return ResponseResult(false, ResponseCode.ERROR_RESPONSE_DATA_IS_NULL, null, "로그이 실패했습니다. 다시 시도해주세.", DisplayEnum.DIALOG)
+        val oAuthDTO =
+            oAuthRes.data ?: return ResponseResult(false, ResponseCode.ERROR_RESPONSE_DATA_IS_NULL,
+                                                   null, "로그이 실패했습니다. 다시 시도해주세.",
+                                                   DisplayEnum.DIALOG)
 
         userLocalRepo.run {
             setUserId(email)
@@ -135,14 +144,17 @@ class LoginViewModel(private val userLocalRepo: UserLocalRepository,
 
         val infoRes = OAuthRemoteRepository.getUserInfo()
 
-        if (!infoRes.result)
+        if(!infoRes.result)
         {
             return infoRes
         }
 
-        val userDetail = infoRes.data ?: return ResponseResult(false, ResponseCode.ERROR_RESPONSE_DATA_IS_NULL, null, "로그인 실패했습니다. 다시 시도해주세요.", DisplayEnum.DIALOG)
+        val userDetail =
+            infoRes.data ?: return ResponseResult(false, ResponseCode.ERROR_RESPONSE_DATA_IS_NULL,
+                                                  null, "로그인 실패했습니다. 다시 시도해주세요.",
+                                                  DisplayEnum.DIALOG)
 
-        userLocalRepo.setNickname(userDetail.nickname?:"")
+        userLocalRepo.setNickname(userDetail.nickname ?: "")
 
         return infoRes
     }

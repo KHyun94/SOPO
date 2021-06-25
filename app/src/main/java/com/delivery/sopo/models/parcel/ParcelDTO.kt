@@ -20,6 +20,8 @@ data class ParcelDTO(
     var inquiryHash: String?,
     @SerializedName("deliveryStatus")
     var deliveryStatus: String,
+    @SerializedName("regDt")
+    var regDt: String,
     @SerializedName("arrivalDte")
     var arrivalDte: String?,
     @SerializedName("auditDte")
@@ -33,6 +35,7 @@ data class ParcelDTO(
         this.parcelId = parcelEntity.parcelId
         this.userId = parcelEntity.userId
         this.waybillNum = parcelEntity.waybillNum
+        this.regDt = parcelEntity.auditDte
         this.auditDte = parcelEntity.auditDte
         this.arrivalDte = parcelEntity.arrivalDte
         this.carrier = parcelEntity.carrier
@@ -54,6 +57,7 @@ data class ParcelDTO(
         stringBuffer.append("[inquiryResult] : $inquiryResult   ")
         stringBuffer.append("[inquiryHash] : $inquiryHash   ")
         stringBuffer.append("[deliveryStatus] : $deliveryStatus ")
+//        stringBuffer.append("[regDt] : $regDt ")
         stringBuffer.append("[arrivalDte] : $arrivalDte ")
         stringBuffer.append("[status] : $status ")
         return stringBuffer.toString()

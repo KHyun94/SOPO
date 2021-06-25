@@ -14,12 +14,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.data.repository.database.room.RoomActivate
-import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.databinding.FragmentInputParcelBinding
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.isGreaterThanOrEqual
-import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.util.*
@@ -31,7 +29,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.system.exitProcess
 
@@ -85,8 +82,8 @@ class InputParcelFragment: Fragment()
 
         // 다른 화면에서 1단계로 다시 이동할 때 전달받은 값
         arguments?.let { bundle ->
-            registerDTO = bundle.getSerializable(RegisterMainFragment.REGISTER_INFO) as ParcelRegisterDTO?
-            returnType = bundle.getInt(RegisterMainFragment.RETURN_TYPE)
+            registerDTO = bundle.getSerializable(RegisterMainFrame.REGISTER_INFO) as ParcelRegisterDTO?
+            returnType = bundle.getInt(RegisterMainFrame.RETURN_TYPE)
         }
     }
 
@@ -220,7 +217,7 @@ class InputParcelFragment: Fragment()
 
             when (it)
             {
-                TabCode.REGISTER_STEP2.NAME ->
+                TabCode.REGISTER_SELECT.NAME ->
                 {
                     SopoLog.d(
                         """
@@ -228,16 +225,16 @@ class InputParcelFragment: Fragment()
                         택배사 >>> ${binding.vm!!.carrierDTO.value ?: "미선택"}
                     """.trimIndent()
                     )
-                    TabCode.REGISTER_STEP2.FRAGMENT =
+                    TabCode.REGISTER_SELECT.FRAGMENT =
                         SelectCarrierFragment.newInstance(vm.waybillNum.value?:"")
-                    FragmentManager.move(parentView, TabCode.REGISTER_STEP2, RegisterMainFragment.layoutId)
+                    FragmentManager.move(parentView, TabCode.REGISTER_SELECT, RegisterMainFrame.layoutId)
                     binding.vm!!.moveFragment.value = ""
                 }
-                TabCode.REGISTER_STEP3.NAME ->
+                TabCode.REGISTER_CONFIRM.NAME ->
                 {
 
-                    TabCode.REGISTER_STEP3.FRAGMENT = ConfirmParcelFragment.newInstance(registerDTO = registerDTO)
-                    FragmentManager.move(parentView, TabCode.REGISTER_STEP3, RegisterMainFragment.layoutId)
+                    TabCode.REGISTER_CONFIRM.FRAGMENT = ConfirmParcelFragment.newInstance(registerDTO = registerDTO)
+                    FragmentManager.move(parentView, TabCode.REGISTER_CONFIRM, RegisterMainFrame.layoutId)
                     binding.vm!!.moveFragment.value = ""
                 }
             }
@@ -271,8 +268,8 @@ class InputParcelFragment: Fragment()
         fun newInstance(registerDTO: ParcelRegisterDTO?, returnType: Int?): InputParcelFragment
         {
             val args = Bundle().apply {
-                putSerializable(RegisterMainFragment.REGISTER_INFO, registerDTO)
-                putInt(RegisterMainFragment.RETURN_TYPE, returnType ?: 0)
+                putSerializable(RegisterMainFrame.REGISTER_INFO, registerDTO)
+                putInt(RegisterMainFrame.RETURN_TYPE, returnType ?: RegisterMainFrame.REGISTER_PROCESS_RESET)
             }
 
             return InputParcelFragment().apply {

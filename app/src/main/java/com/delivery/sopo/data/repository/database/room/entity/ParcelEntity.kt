@@ -54,6 +54,11 @@ data class ParcelEntity(
         typeAffinity = ColumnInfo.TEXT
     )
     var arrivalDte: String,
+//    @ColumnInfo(
+//        name = "REG_DT",
+//        typeAffinity = ColumnInfo.TEXT
+//    )
+//    var regDt: String,
     @ColumnInfo(
         name = "AUDIT_DTE",
         typeAffinity = ColumnInfo.TEXT

@@ -59,7 +59,7 @@ class SelectCarrierFragment: Fragment()
     private fun receiveBundleData()
     {
         arguments?.let { bundle ->
-            val waybillNum = bundle.getString(RegisterMainFragment.WAYBILL_NO)
+            val waybillNum = bundle.getString(RegisterMainFrame.WAYBILL_NO)
             vm.waybillNum.value = waybillNum
             SopoLog.d("receiveBundleData >>> $waybillNum ${vm.waybillNum.value}")
         }
@@ -112,27 +112,27 @@ class SelectCarrierFragment: Fragment()
 
             when(it)
             {
-                TabCode.REGISTER_STEP3.NAME ->
+                TabCode.REGISTER_CONFIRM.NAME ->
                 {
                     val mHandler = Handler()
                     mHandler.postDelayed(Runnable {
 
                         if(vm.waybillNum.value == null || vm.waybillNum.value == "")
                         {
-                            TabCode.REGISTER_STEP1.FRAGMENT =
+                            TabCode.REGISTER_INPUT.FRAGMENT =
                                 InputParcelFragment.newInstance(registerDTO = registerDTO,
                                                                 returnType = 0)
 
-                            FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1,
-                                                 RegisterMainFragment.layoutId)
+                            FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT,
+                                                 RegisterMainFrame.layoutId)
                         }
                         else
                         {
-                            TabCode.REGISTER_STEP3.FRAGMENT =
+                            TabCode.REGISTER_CONFIRM.FRAGMENT =
                                 ConfirmParcelFragment.newInstance(registerDTO = registerDTO)
 
-                            FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP3,
-                                                 RegisterMainFragment.layoutId)
+                            FragmentManager.move(requireActivity(), TabCode.REGISTER_CONFIRM,
+                                                 RegisterMainFrame.layoutId)
                         }
 
 
@@ -142,16 +142,16 @@ class SelectCarrierFragment: Fragment()
                     }, 300) // 0.5초후
                 }
 
-                TabCode.REGISTER_STEP2.NAME ->
+                TabCode.REGISTER_SELECT.NAME ->
                 {
                     FragmentManager.remove(activity = activity!!)
                     binding.vm?.moveFragment?.value = ""
 
-                    TabCode.REGISTER_STEP1.FRAGMENT =
+                    TabCode.REGISTER_INPUT.FRAGMENT =
                         InputParcelFragment.newInstance(registerDTO = registerDTO, returnType = 0)
 
-                    FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1,
-                                         RegisterMainFragment.layoutId)
+                    FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT,
+                                         RegisterMainFrame.layoutId)
                 }
             }
         })
@@ -166,7 +166,7 @@ class SelectCarrierFragment: Fragment()
                                                if(item.isSelect)
                                                {
                                                    vm.selectedItem.value = item
-                                                   vm.moveFragment.value = TabCode.REGISTER_STEP3.NAME
+                                                   vm.moveFragment.value = TabCode.REGISTER_CONFIRM.NAME
                                                }
                                            }
 
@@ -179,7 +179,7 @@ class SelectCarrierFragment: Fragment()
         fun newInstance(waybillNum: String): SelectCarrierFragment
         {
             val args = Bundle().apply {
-                putSerializable(RegisterMainFragment.WAYBILL_NO, waybillNum)
+                putSerializable(RegisterMainFrame.WAYBILL_NO, waybillNum)
             }
 
             return SelectCarrierFragment().apply {

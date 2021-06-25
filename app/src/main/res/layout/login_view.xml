@@ -138,7 +138,6 @@
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_input" />
 
-        <!-- TODO 기본 버튼 스타일  -->
         <TextView
             android:id="@+id/btn_login"
             style="@style/buttonBasicStyle"
@@ -150,44 +149,6 @@
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_find_pwd" />
-
-        <!--        <TextView-->
-        <!--            style="@style/buttonBasicStyle"-->
-        <!--            android:id="@+id/btn_login"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginHorizontal="24dp"-->
-        <!--            android:layout_marginTop="36dp"-->
-        <!--            android:background="@drawable/border_round_white_btn"-->
-        <!--            android:backgroundTint="@color/COLOR_MAIN_700"-->
-        <!--            android:focusableInTouchMode="true"-->
-        <!--            android:onClick="@{()->vm.onLoginClicked(btnLogin)}"-->
-        <!--            android:text="@string/DO_LOGIN"-->
-        <!--            android:textColor="@color/MAIN_WHITE"-->
-        <!--            android:includeFontPadding="false"-->
-        <!--            android:gravity="center"-->
-        <!--            android:paddingTop="15dp"-->
-        <!--            android:paddingBottom="16dp"-->
-        <!--            app:layout_constraintLeft_toRightOf="parent"-->
-        <!--            app:layout_constraintRight_toLeftOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/tv_find_pwd" />-->
-        <!--        <Button-->
-        <!--            style="@style/H4"-->
-        <!--            android:id="@+id/btn_login"-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginHorizontal="25sp"-->
-        <!--            android:layout_marginTop="36dp"-->
-        <!--            android:background="@drawable/border_round_white_btn"-->
-        <!--            android:backgroundTint="@color/COLOR_MAIN_700"-->
-        <!--            android:focusableInTouchMode="true"-->
-        <!--            android:onClick="@{()->vm.onLoginClicked(btnLogin)}"-->
-        <!--            android:text="@string/DO_LOGIN"-->
-        <!--            android:textColor="@color/MAIN_WHITE"-->
-        <!--            android:includeFontPadding="false"-->
-        <!--            app:layout_constraintLeft_toRightOf="parent"-->
-        <!--            app:layout_constraintRight_toLeftOf="parent"-->
-        <!--            app:layout_constraintTop_toBottomOf="@+id/tv_find_pwd" />-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

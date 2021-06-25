@@ -14,7 +14,7 @@ import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.views.main.MainView
 
-class RegisterMainFragment : Fragment()
+class RegisterMainFrame : Fragment()
 {
     private lateinit var binding : RegisterMainFrameBinding
     private lateinit var parentView: MainView
@@ -32,7 +32,7 @@ class RegisterMainFragment : Fragment()
         binding = bindView<RegisterMainFrameBinding>(inflater, R.layout.register_main_frame, container)
         layoutId = binding.layoutRegisterMain.id
 
-        FragmentManager.move(requireActivity(), TabCode.REGISTER_STEP1, layoutId)
+        FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, layoutId)
 
         return binding.root
     }
@@ -40,7 +40,7 @@ class RegisterMainFragment : Fragment()
     fun <T : ViewDataBinding> bindView(inflater : LayoutInflater, @LayoutRes layoutId : Int, container : ViewGroup?) : T
     {
         return DataBindingUtil.inflate<T>(inflater, layoutId, container, false).apply{
-            lifecycleOwner = this@RegisterMainFragment
+            lifecycleOwner = this@RegisterMainFrame
             executePendingBindings()
         }
     }
@@ -54,8 +54,7 @@ class RegisterMainFragment : Fragment()
         // 다른 프래그먼트에서 돌아왔을 때 분기 처리
         // 0: Default 1: Success To Register
         const val RETURN_TYPE = "RETURN_TYPE"
-        const val REGISTER_REVISE = "REGISTER_REVISE"
-        const val REGISTER_INIT = "REGISTER_INIT"
-        const val REGISTER_CONFIRM = "REGISTER_CONFIRM"
+        const val REGISTER_PROCESS_SUCCESS = 1
+        const val REGISTER_PROCESS_RESET = 0
     }
 }

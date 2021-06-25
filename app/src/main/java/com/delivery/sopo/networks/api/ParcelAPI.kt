@@ -27,16 +27,6 @@ interface ParcelAPI
         @Body registerDto: ParcelRegisterDTO
     ): Response<APIResult<Int?>>
 
-    @GET("api/v1/sopo-api/delivery/parcel")
-    @Headers("Accept: application/json")
-    suspend fun getParcel(
-        
-        // 택배 고유 uid
-        @Query("parcelUid") parcelUid: String,
-        // 등록일자
-        @Query("regDt") regDt: String
-    ): APIResult<ParcelDTO?>
-
     @GET("api/v1/sopo-api/delivery/parcels/months")
     @Headers("Accept: application/json")
     suspend fun getMonths(): APIResult<MutableList<TimeCountDTO>>
@@ -77,9 +67,7 @@ interface ParcelAPI
     // 배송중 & 곧 도착 리스트 가져오는 api
     @GET("api/v1/sopo-api/delivery/parcels/ongoing")
     @Headers("Accept: application/json")
-    suspend fun getOngoingParcels(
-        @Path("email") email: String
-    ): Response<APIResult<List<ParcelDTO>?>>
+    suspend fun getOngoingParcels(): Response<APIResult<List<ParcelDTO>?>>
 
     /**
      * 택배 리스트 전체 업데이트 요청

@@ -133,7 +133,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
 
                 item.postValue(
                     ParcelDetailItem(
-                        auditDte = parcelEntity.auditDte, alias = parcelEntity.alias, carrierDTO = carrierDTO, waybillNum = parcelEntity.waybillNum, deliverStatus = deliveryStatusEnum.value?.TITLE, progress = progressList
+                        regDt = parcelEntity.auditDte, alias = parcelEntity.alias, carrierDTO = carrierDTO, waybillNum = parcelEntity.waybillNum, deliverStatus = deliveryStatusEnum.value?.TITLE, progress = progressList
                     )
                 )
             }

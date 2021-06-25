@@ -62,47 +62,7 @@
                 android:gravity="center"
                 android:textColor="@color/COLOR_MAIN_700"
                 android:layout_marginTop="8dp"
-                android:focusable="true"
-                android:focusableInTouchMode="true"
                 android:onClick="@{()->vm.onKakaoLoginClicked()}"/>
-<!--            -->
-<!--            <RelativeLayout-->
-<!--                style="@style/buttonBasicStyle"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="52dp"-->
-<!--                android:layout_marginStart="41dp"-->
-<!--                android:layout_marginTop="16dp"-->
-<!--                android:layout_marginEnd="41dp"-->
-<!--                android:background="@drawable/border_14dp_rounder"-->
-<!--                android:backgroundTint="@color/COLOR_GRAY_50"-->
-<!--                android:clickable="true"-->
-<!--                android:onClick="@{()->vm.onLoginClicked()}">-->
-
-<!--                <LinearLayout-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_centerInParent="true"-->
-<!--                    android:orientation="horizontal">-->
-
-<!--                    <TextView-->
-<!--                        style="@style/H4"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:fontFamily="@font/spoqa_han_sans_bold"-->
-<!--                        android:text="@string/LOGIN_SELECT_EMAIL"-->
-<!--                        android:textColor="@color/COLOR_MAIN_900"-->
-<!--                        android:textSize="14sp" />-->
-
-<!--                    <TextView-->
-<!--                        style="@style/H4"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_centerInParent="true"-->
-<!--                        android:text="@string/LOGIN_SELECT_LOGIN_COMMENT"-->
-<!--                        android:textColor="@color/COLOR_MAIN_900"-->
-<!--                        android:textSize="14sp" />-->
-<!--                </LinearLayout>-->
-<!--            </RelativeLayout>-->
 
 
             <com.kakao.usermgmt.LoginButton
@@ -110,45 +70,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="gone" />
-<!--            -->
-<!--            <RelativeLayout-->
-<!--                android:id="@+id/layout_kakao_login"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="52dp"-->
-<!--                android:layout_marginStart="41dp"-->
-<!--                android:layout_marginTop="16dp"-->
-<!--                android:layout_marginEnd="41dp"-->
-<!--                android:background="@drawable/border_14dp_rounder"-->
-<!--                android:clickable="true"-->
-<!--                android:backgroundTint="@color/COLOR_GRAY_50"-->
-<!--                android:onClick="@{()->vm.onKakaoLoginClicked()}">-->
 
-<!--                <LinearLayout-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_centerInParent="true"-->
-<!--                    android:orientation="horizontal">-->
-
-<!--                    <TextView-->
-<!--                        style="@style/H4"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:fontFamily="@font/spoqa_han_sans_bold"-->
-<!--                        android:text="@string/LOGIN_SELECT_KAKAO"-->
-<!--                        android:textColor="@color/COLOR_MAIN_900"-->
-<!--                        android:textSize="14sp" />-->
-
-<!--                    <TextView-->
-<!--                        style="@style/H4"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="@string/LOGIN_SELECT_LOGIN_COMMENT"-->
-<!--                        android:textColor="@color/COLOR_MAIN_900"-->
-<!--                        android:textSize="14sp" />-->
-
-<!--                </LinearLayout>-->
-
-<!--            </RelativeLayout>-->
 
             <RelativeLayout
                 android:layout_width="match_parent"

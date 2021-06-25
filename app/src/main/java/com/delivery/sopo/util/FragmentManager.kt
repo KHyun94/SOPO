@@ -1,14 +1,13 @@
 package com.delivery.sopo.util
 
 import androidx.annotation.IdRes
-import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.enums.TabCode
 
 object FragmentManager
 {
-    var currentFragment1st = TabCode.REGISTER_STEP1
+    var currentFragment1st = TabCode.REGISTER_INPUT
     var currentFragment2nd = TabCode.INQUIRY
     var currentFragment3rd = TabCode.MY_MENU_MAIN
 

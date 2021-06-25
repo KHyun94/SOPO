@@ -9,14 +9,14 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.MenuMainFrame
 import com.delivery.sopo.views.inquiry.InquiryMainFrame
-import com.delivery.sopo.views.registers.RegisterMainFragment
+import com.delivery.sopo.views.registers.RegisterMainFrame
 
 class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
     FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT)
 {
     var currentFragment: Fragment
 
-    var tab1stFragment: Fragment = RegisterMainFragment()
+    var tab1stFragment: Fragment = RegisterMainFrame()
     var tab2ndFragment: Fragment = InquiryMainFrame()
     var tab3rdFragment: Fragment = MenuMainFrame()
 
