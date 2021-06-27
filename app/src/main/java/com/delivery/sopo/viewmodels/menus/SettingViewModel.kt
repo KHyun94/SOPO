@@ -1,14 +1,17 @@
 package com.delivery.sopo.viewmodels.menus
 
+import android.view.View
 import androidx.lifecycle.*
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SettingViewModel(private val appPasswordRepo: AppPasswordRepository) : ViewModel() , LifecycleObserver
+class SettingViewModel(private val appPasswordRepo: AppPasswordRepository) : ViewModel()
 {
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
+    private val _navigator = MutableLiveData<String>()
+    val navigator: LiveData<String>
+    get() = _navigator
 
     private val _isSetOfSecurity = appPasswordRepo.getCntOfAppPasswordLiveData()
     val isSetOfSecurity: LiveData<Int>
@@ -31,13 +34,12 @@ class SettingViewModel(private val appPasswordRepo: AppPasswordRepository) : Vie
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun onLifeCycleResume(){
-        /*
-         *  내부 저장소로부터 값을 읽어와 설정여부를 판단한다.
-         *  userRepo.getAppPassword() 값이 빈 값 O ==> 설정 안 함
-         *  userRepo.getAppPassword() 값이 빈 값 X ==> 설정함
-         */
-//        isSecuritySetting.value = userRepo.getAppPassword() != ""
+    fun onMoveToSetTimeClicked(v: View){
+        _navigator.postValue(NavigatorConst.TO_NOT_DISTURB)
     }
+
+    fun onSetNotifyOptionClicked(){
+        _navigator.postValue(NavigatorConst.TO_SET_NOTIFY_OPTION)
+    }
+
 }

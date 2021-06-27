@@ -8,9 +8,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.consts.IntentConst
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentSettingBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.launchActivitiy
+import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.viewmodels.menus.SettingViewModel
 import com.delivery.sopo.views.dialog.SelectNotifyKindDialog
 import com.delivery.sopo.views.main.MainView
@@ -20,7 +23,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SettingFragment : Fragment()
 {
-    private val settingVM: SettingViewModel by viewModel()
+    private val vm: SettingViewModel by viewModel()
     private lateinit var binding: FragmentSettingBinding
     private lateinit var parentView: MainView
 
@@ -37,48 +40,42 @@ class SettingFragment : Fragment()
 
         viewBinding()
         setObserver()
-        setListener()
-
-        lifecycle.addObserver(settingVM)
 
         return binding.root
     }
 
     private fun viewBinding()
     {
-        binding.vm = settingVM
+        binding.vm = vm
         binding.lifecycleOwner = this
         binding.executePendingBindings() // 즉 바인딩
     }
 
-    private fun setListener()
-    {
-        binding.root.constraint_how_to_set_notify.setOnClickListener {
-            SelectNotifyKindDialog(this.requireActivity()).show(
-                requireActivity().supportFragmentManager,
-                "SelectNotifyKindDialog"
-            )
-        }
-
-        binding.root.linear_set_no_disturbance_time.setOnClickListener {
-            gotoSetOfNotDisturbTimeView()
-        }
-
-        binding.root.tv_change_password.setOnClickListener {
-            activity?.launchActivitiy<LockScreenView> {
-                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET)
-            }
-        }
-    }
-
-    private fun gotoSetOfNotDisturbTimeView()
-    {
-//        menuVm.pushView(MenuEnum.NOT_DISTURB)
-    }
-
     fun setObserver()
     {
-        settingVM.showSetPassword.observe(this, Observer {
+        vm.navigator.observe(this, Observer { navigator ->
+            when(navigator){
+                NavigatorConst.TO_NOT_DISTURB ->
+                {
+                    FragmentManager.add(parentView, TabCode.MENU_NOT_DISTURB, MenuSubFragment.viewId)
+                }
+                NavigatorConst.TO_SET_NOTIFY_OPTION ->
+                {
+                    SelectNotifyKindDialog(this.requireActivity()).show(
+                        requireActivity().supportFragmentManager,
+                        "SelectNotifyKindDialog"
+                    )
+                }
+                NavigatorConst.TO_UPDATE_APP_PASSWORD ->
+                {
+                    activity?.launchActivitiy<LockScreenView> {
+                        putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET)
+                    }
+                }
+            }
+        })
+
+        vm.showSetPassword.observe(this, Observer {
             if (it)
             {
                 activity?.launchActivitiy<LockScreenView> {

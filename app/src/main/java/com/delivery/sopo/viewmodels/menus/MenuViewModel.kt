@@ -4,14 +4,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.livedates.SingleLiveEvent
 
 class MenuViewModel() : ViewModel()
 {
-    private val _menu = MutableLiveData<TabCode>()
-    val menu: LiveData<TabCode>
-        get() = _menu
+    val menu = SingleLiveEvent<TabCode?>()
 
     fun onMoveToSubMenuClicked(code: TabCode){
-        _menu.postValue(code)
+        SopoLog.d("onMoveToSubMenuClicked() 호출 [TabCode:$code]")
+        menu.postValue(code)
+    }
+
+    override fun onCleared()
+    {
+        super.onCleared()
+       menu.postValue(null)
     }
 }

@@ -366,8 +366,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
             // 다음에 조회할 데이터가 있다면
             if(pagingManagement.hasNext)
             {
-                val remoteCompleteParcels = parcelLocalRepository.getRemoteCompleteParcels(
-                    page = pagingManagement.pagingNum, inquiryDate = inquiryDate)
+                val remoteCompleteParcels = parcelLocalRepository.getRemoteCompleteParcels(page = pagingManagement.pagingNum, inquiryDate = inquiryDate)
 
                 // null이거나 0이면 다음 데이터가 없는 것이므로 페이징 숫자를 1빼고 hasNext를 false로 바꾼다.
                 if(remoteCompleteParcels == null || remoteCompleteParcels.size == 0)

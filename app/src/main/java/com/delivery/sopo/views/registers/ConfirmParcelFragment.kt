@@ -144,7 +144,7 @@ class ConfirmParcelFragment: Fragment()
             }
 
             FragmentManager.initFragment(activity = requireActivity(),
-                                         viewId = RegisterMainFrame.layoutId,
+                                         viewId = RegisterMainFrame.viewId,
                                          currentFragment = this@ConfirmParcelFragment,
                                          nextFragment = TabCode.REGISTER_INPUT.FRAGMENT,
                                          nextFragmentTag = TabCode.REGISTER_INPUT.NAME)

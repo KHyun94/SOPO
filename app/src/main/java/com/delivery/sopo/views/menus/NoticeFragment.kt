@@ -16,15 +16,18 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class NoticeFragment : Fragment(){
 
-    private val noticeVM: NoticeViewModel by viewModel()
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
+    private val vm: NoticeViewModel by viewModel()
     private lateinit var binding: FragmentNoticeBinding
     private lateinit var parentView: MainView
 
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        parentView = activity as MainView
+    }
+
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-
-        parentView = activity as MainView
 
         binding = FragmentNoticeBinding.inflate(inflater, container, false)
         viewBinding()
@@ -34,7 +37,7 @@ class NoticeFragment : Fragment(){
     }
 
     private fun viewBinding() {
-        binding.vm = noticeVM
+        binding.vm = vm
         binding.lifecycleOwner = this
         binding.executePendingBindings() // 즉 바인딩
     }

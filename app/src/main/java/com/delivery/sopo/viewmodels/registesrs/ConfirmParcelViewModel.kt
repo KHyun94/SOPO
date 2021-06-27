@@ -18,7 +18,7 @@ class ConfirmParcelViewModel: ViewModel()
 {
     var waybillNum = MutableLiveData<String>()
     var carrier = MutableLiveData<CarrierDTO>()
-    var alias = MutableLiveData<String>()
+    var alias = MutableLiveData<String?>()
 
     private var _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
@@ -50,6 +50,8 @@ class ConfirmParcelViewModel: ViewModel()
             R.id.tv_register ->
             {
                 isProgress.postValue(true)
+
+                if(alias.value.toString() == "null") alias.value = ""
 
                 val registerDTO = ParcelRegisterDTO(carrier = carrier.value?.carrier?:throw Exception("Carrier must be not null"),
                                                     waybillNum = waybillNum.value.toString(),

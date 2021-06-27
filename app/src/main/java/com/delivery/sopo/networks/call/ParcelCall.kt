@@ -60,10 +60,10 @@ object ParcelCall : BaseService(), KoinComponent
 
     suspend fun requestParcelForRefresh(parcelId : Int) : NetworkResult<APIResult<Unit>>
     {
-        val result = parcelAPI.requestParcelForRefresh(parcelId)
+        val mapper = mapOf<String, Int>(Pair("parcelId", parcelId))
+        val result = parcelAPI.requestParcelForRefresh(mapper)
         return apiCall(call = { result })
     }
-
 
     suspend fun getSingleParcelTest(parcelId:Int): APIResult<ParcelDTO?>
     {

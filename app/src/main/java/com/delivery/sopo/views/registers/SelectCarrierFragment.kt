@@ -124,7 +124,7 @@ class SelectCarrierFragment: Fragment()
                                                                 returnType = 0)
 
                             FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT,
-                                                 RegisterMainFrame.layoutId)
+                                                 RegisterMainFrame.viewId)
                         }
                         else
                         {
@@ -132,7 +132,7 @@ class SelectCarrierFragment: Fragment()
                                 ConfirmParcelFragment.newInstance(registerDTO = registerDTO)
 
                             FragmentManager.move(requireActivity(), TabCode.REGISTER_CONFIRM,
-                                                 RegisterMainFrame.layoutId)
+                                                 RegisterMainFrame.viewId)
                         }
 
 
@@ -151,7 +151,7 @@ class SelectCarrierFragment: Fragment()
                         InputParcelFragment.newInstance(registerDTO = registerDTO, returnType = 0)
 
                     FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT,
-                                         RegisterMainFrame.layoutId)
+                                         RegisterMainFrame.viewId)
                 }
             }
         })

@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.IdRes
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
@@ -31,14 +32,11 @@ class MenuSubFragment: Fragment()
     {
         super.onAttach(context)
 
-        callback = object: OnBackPressedCallback(true)
-        {
-            override fun handleOnBackPressed()
-            {
+        callback = object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
                 requireActivity().supportFragmentManager.popBackStack()
-                FragmentManager.initFragment(parentView, MenuMainFrame.viewId, this@MenuSubFragment, MenuFragment(), "")
+                FragmentManager.move(parentView, TabCode.MY_MENU_MAIN, MenuMainFrame.viewId)
             }
-
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
@@ -48,6 +46,7 @@ class MenuSubFragment: Fragment()
     {
         super.onCreate(savedInstanceState)
         parentView = activity as MainView
+
         receiveBundleData()
     }
 
@@ -56,13 +55,15 @@ class MenuSubFragment: Fragment()
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_menu_sub, container, false)
         binding.vm = vm
         binding.lifecycleOwner = this
+        viewId = binding.layoutSubMenuFrame.id
         setObserve()
         return binding.root
     }
 
     private fun setObserve(){
         vm.tabCode.observe(this, Observer {code ->
-            FragmentManager.move(parentView,code,binding.layoutSubMenuFrame.id )
+            SopoLog.d("tabCode:$code")
+            FragmentManager.move(parentView, code, viewId)
         })
     }
 
@@ -75,7 +76,17 @@ class MenuSubFragment: Fragment()
         }
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+        SopoLog.d("onResume()")
+    }
+
     companion object{
+
+        @IdRes
+        var viewId: Int = 0
+
         fun newInstance(code: TabCode): MenuSubFragment{
 
             val args = Bundle().apply {

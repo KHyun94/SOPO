@@ -34,8 +34,7 @@ object ParcelMapper
             arrivalDte = parcelEntity.arrivalDte,
             auditDte = parcelEntity.auditDte,
             status = parcelEntity.status,
-            regDt = parcelEntity.auditDte
-//        regDt = parcelEntity.regDt
+            regDt = parcelEntity.regDt
         )
     }
 
@@ -58,7 +57,7 @@ object ParcelMapper
             deliveryStatus = parcelDTO.deliveryStatus,
             arrivalDte = parcelDTO.arrivalDte.toString(),
             auditDte = parcelDTO.auditDte,
-//            regDt = parcelDTO.regDt,
+            regDt = parcelDTO.regDt,
             status = parcelDTO.status ?: 0
         )
     }

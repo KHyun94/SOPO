@@ -11,6 +11,35 @@ object FragmentManager
     var currentFragment2nd = TabCode.INQUIRY
     var currentFragment3rd = TabCode.MY_MENU_MAIN
 
+    fun add(activity: FragmentActivity, code: TabCode, @IdRes viewId: Int)
+    {
+        SopoLog.d("add() call >>> ${code.NAME} / $viewId")
+
+        val fm = activity.supportFragmentManager
+        val transaction = fm.beginTransaction()
+        transaction.run {
+            add(viewId, code.FRAGMENT, code.NAME)
+            addToBackStack(null)
+            commitAllowingStateLoss()
+        }
+
+        when (code.tabNo)
+        {
+            0 ->
+            {
+                currentFragment1st = code
+            }
+            1 ->
+            {
+                currentFragment2nd = code
+            }
+            2 ->
+            {
+                currentFragment3rd = code
+            }
+        }
+    }
+
     fun move(activity: FragmentActivity, code: TabCode, @IdRes viewId: Int)
     {
         SopoLog.d("move() call >>> ${code.NAME} / $viewId")
@@ -56,7 +85,7 @@ object FragmentManager
     )
     {
         val fm = activity.supportFragmentManager
-        var transaction = fm.beginTransaction()
+        val transaction = fm.beginTransaction()
 
         transaction.run {
             addToBackStack(null)

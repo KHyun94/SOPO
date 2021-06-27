@@ -227,14 +227,14 @@ class InputParcelFragment: Fragment()
                     )
                     TabCode.REGISTER_SELECT.FRAGMENT =
                         SelectCarrierFragment.newInstance(vm.waybillNum.value?:"")
-                    FragmentManager.move(parentView, TabCode.REGISTER_SELECT, RegisterMainFrame.layoutId)
+                    FragmentManager.move(parentView, TabCode.REGISTER_SELECT, RegisterMainFrame.viewId)
                     binding.vm!!.moveFragment.value = ""
                 }
                 TabCode.REGISTER_CONFIRM.NAME ->
                 {
 
                     TabCode.REGISTER_CONFIRM.FRAGMENT = ConfirmParcelFragment.newInstance(registerDTO = registerDTO)
-                    FragmentManager.move(parentView, TabCode.REGISTER_CONFIRM, RegisterMainFrame.layoutId)
+                    FragmentManager.move(parentView, TabCode.REGISTER_CONFIRM, RegisterMainFrame.viewId)
                     binding.vm!!.moveFragment.value = ""
                 }
             }

@@ -30,9 +30,9 @@ class RegisterMainFrame : Fragment()
     ) : View
     {
         binding = bindView<RegisterMainFrameBinding>(inflater, R.layout.register_main_frame, container)
-        layoutId = binding.layoutRegisterMain.id
+        viewId = binding.layoutRegisterMain.id
 
-        FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, layoutId)
+        FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, viewId)
 
         return binding.root
     }
@@ -47,7 +47,7 @@ class RegisterMainFrame : Fragment()
 
     companion object
     {
-        var layoutId : Int = 0
+        var viewId : Int = 0
 
         const val WAYBILL_NO = "WAYBILL_NO"
         const val REGISTER_INFO = "REGISTER_INFO"

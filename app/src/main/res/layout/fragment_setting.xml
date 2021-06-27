@@ -6,9 +6,6 @@
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.menus.SettingViewModel" />
-        <variable
-            name="activity"
-            type="com.delivery.sopo.views.menus.SettingFragment" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/constraint_setting"
@@ -43,12 +40,13 @@
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint_how_to_set_notify"
+        android:id="@+id/layout_set_notify_option"
         android:layout_width="match_parent"
         android:layout_height="71dp"
         android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@+id/v_dividerLine1"
-        >
+        android:onClick="@{()->vm.onSetNotifyOptionClicked()}">
+
         <TextView
             style="@style/H4"
             android:id="@+id/textView4"
@@ -77,16 +75,16 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/COLOR_GRAY_100"
-        app:layout_constraintTop_toBottomOf="@+id/constraint_how_to_set_notify"
+        app:layout_constraintTop_toBottomOf="@+id/layout_set_notify_option"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linear_set_no_disturbance_time"
+        android:id="@+id/layout_set_time"
         android:layout_width="match_parent"
         android:layout_height="71dp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/v_dividerLine2"
-        >
+        android:onClick="@{()->vm.onMoveToSetTimeClicked(layoutSetTime)}"
+        app:layout_constraintTop_toBottomOf="@+id/v_dividerLine2">
 
         <TextView
             style="@style/H4"
@@ -98,8 +96,7 @@
             android:textColor="@color/COLOR_GRAY_800"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
             android:layout_width="wrap_content"
@@ -116,7 +113,7 @@
         android:layout_width="match_parent"
         android:layout_height="9dp"
         android:background="@color/COLOR_GRAY_100"
-        app:layout_constraintTop_toBottomOf="@+id/linear_set_no_disturbance_time"
+        app:layout_constraintTop_toBottomOf="@+id/layout_set_time"
         />
 
     <LinearLayout

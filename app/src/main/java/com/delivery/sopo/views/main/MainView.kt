@@ -27,6 +27,7 @@ import com.delivery.sopo.viewmodels.menus.MenuMainFrame
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.inquiry.InquiryMainFrame
 import com.delivery.sopo.views.menus.LockScreenView
+import com.delivery.sopo.views.menus.MenuFragment
 import com.delivery.sopo.views.registers.RegisterMainFrame
 import com.delivery.sopo.views.registers.InputParcelFragment
 import com.google.android.material.tabs.TabLayout
@@ -193,30 +194,30 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
                                          override fun onTabReselected(tab: TabLayout.Tab?)
                                          {
                                              if(tab == null) return
-                                             FragmentManager.remove(
-                                                 activity = this@MainView)
+
+                                             FragmentManager.remove(activity = this@MainView)
+
                                              when(tab.position)
                                              {
                                                  NavigatorConst.REGISTER_TAB ->
                                                  {
+                                                     TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(null, 0)
 
-                                                     TabCode.REGISTER_INPUT.FRAGMENT =
-                                                         InputParcelFragment.newInstance(null, 0)
-                                                     FragmentManager.move(this@MainView,
-                                                                          TabCode.REGISTER_INPUT,
-                                                                          RegisterMainFrame.layoutId)
+                                                     FragmentManager.move(activity = this@MainView,
+                                                                          code = TabCode.REGISTER_INPUT,
+                                                                          viewId = RegisterMainFrame.viewId)
                                                  }
                                                  NavigatorConst.INQUIRY_TAB ->
                                                  {
-                                                     FragmentManager.move(this@MainView,
-                                                                          TabCode.INQUIRY,
-                                                                          InquiryMainFrame.viewId)
+                                                     FragmentManager.move(activity = this@MainView,
+                                                                          code = TabCode.INQUIRY,
+                                                                          viewId = InquiryMainFrame.viewId)
                                                  }
                                                  NavigatorConst.MY_MENU_TAB ->
                                                  {
-                                                     FragmentManager.move(this@MainView,
-                                                                          TabCode.MY_MENU_MAIN,
-                                                                          MenuMainFrame.viewId)
+                                                     FragmentManager.move(activity = this@MainView,
+                                                                          code = TabCode.MY_MENU_MAIN.apply { FRAGMENT = MenuFragment.newInstance() },
+                                                                          viewId = MenuMainFrame.viewId)
                                                  }
                                              }
 

@@ -600,11 +600,15 @@ class InquiryFragment: Fragment()
 
                 if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) // 리스트뷰의 마지막
                 {
-                    val spinnerMonthTv = tv_spinner_month.text.toString()
-                    SopoLog.d(msg = "[배송완료 - 다른 날짜의 데이터 조회] 선택된 년월 : $spinnerMonthTv")
+                    val date = tv_spinner_month.text.toString()
+                    SopoLog.d(msg = "[배송완료 - 다른 날짜의 데이터 조회] 선택된 년월 : $date")
+
+                    val year = date.substring(0, 4)
+                    val month = date.substring(4).padStart(2, '0')
+
                     vm.getCompleteListWithPaging(
                         MenuMapper.titleToInquiryDate(
-                            tv_spinner_month.text.toString()
+                            "${year}${month}"
                         )
                     )
                 }

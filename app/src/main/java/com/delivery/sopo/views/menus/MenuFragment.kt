@@ -1,6 +1,7 @@
 package com.delivery.sopo.views.menus
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +32,35 @@ class MenuFragment: Fragment()
 
     private val vm: MenuViewModel by viewModel()
 
-    var callback: OnBackPressedCallback? = null
+    lateinit var callback: OnBackPressedCallback
+
+    override fun onAttach(context: Context)
+    {
+        super.onAttach(context)
+
+        var pressedTime: Long = 0
+
+        callback = object: OnBackPressedCallback(true)
+        {
+            override fun handleOnBackPressed()
+            {
+                if (System.currentTimeMillis() - pressedTime > 2000)
+                {
+                    pressedTime = System.currentTimeMillis()
+                    Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).let { bar ->
+                        bar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
+                    }
+                }
+                else
+                {
+                    ActivityCompat.finishAffinity(activity!!)
+                    exitProcess(0)
+                }
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
@@ -81,11 +110,13 @@ class MenuFragment: Fragment()
                     }
                 }
 
-                requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+                requireActivity().onBackPressedDispatcher.addCallback(this, callback)
             }
         })
 
         vm.menu.observe(this, Observer { code ->
+            if(code == null) return@Observer
+            SopoLog.d("move to code[${code}]")
             when(code)
             {
                 TabCode.MENU_NOTICE ->
@@ -98,7 +129,7 @@ class MenuFragment: Fragment()
                 }
                 TabCode.MENU_FAQ ->
                 {
-                    TabCode.MENU_FAQ.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_FAQ)
+                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_FAQ)
                 }
                 TabCode.MENU_USE_TERMS ->
                 {
@@ -106,22 +137,22 @@ class MenuFragment: Fragment()
                 }
                 TabCode.MENU_NOT_DISTURB ->
                 {
-                    TabCode.MENU_NOT_DISTURB.FRAGMENT =
+                    TabCode.MY_MENU_SUB.FRAGMENT =
                         MenuSubFragment.newInstance(TabCode.MENU_NOT_DISTURB)
                 }
                 TabCode.MENU_APP_INFO ->
                 {
-                    TabCode.MENU_APP_INFO.FRAGMENT =
+                    TabCode.MY_MENU_SUB.FRAGMENT =
                         MenuSubFragment.newInstance(TabCode.MENU_APP_INFO)
                 }
                 TabCode.MENU_ACCOUNT_MANAGEMENT ->
                 {
-                    TabCode.MENU_ACCOUNT_MANAGEMENT.FRAGMENT =
+                    TabCode.MY_MENU_SUB.FRAGMENT =
                         MenuSubFragment.newInstance(TabCode.MENU_ACCOUNT_MANAGEMENT)
                 }
                 else -> throw Exception("Menu is null")
             }
-
+            vm.menu.call()
             FragmentManager.move(parentView, TabCode.MY_MENU_SUB, MenuMainFrame.viewId)
         })
     }
@@ -129,13 +160,14 @@ class MenuFragment: Fragment()
     override fun onResume()
     {
         super.onResume()
+
         SopoLog.d("onResume()")
     }
 
     override fun onDetach()
     {
         super.onDetach()
-        if(callback != null) callback!!.remove()
+        callback.remove()
     }
 
     companion object{
