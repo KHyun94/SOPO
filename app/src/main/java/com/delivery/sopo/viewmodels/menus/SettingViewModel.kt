@@ -46,4 +46,10 @@ class SettingViewModel(private val appPasswordRepo: AppPasswordRepository) : Vie
         _navigator.postValue(NavigatorConst.TO_UPDATE_APP_PASSWORD)
     }
 
+    override fun onCleared()
+    {
+        super.onCleared()
+        _navigator.postValue("")
+    }
+
 }

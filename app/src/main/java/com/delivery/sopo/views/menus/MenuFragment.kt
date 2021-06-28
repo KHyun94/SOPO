@@ -44,6 +44,7 @@ class MenuFragment: Fragment()
         {
             override fun handleOnBackPressed()
             {
+                FragmentManager.remove(parentView)
                 if (System.currentTimeMillis() - pressedTime > 2000)
                 {
                     pressedTime = System.currentTimeMillis()

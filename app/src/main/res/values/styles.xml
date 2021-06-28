@@ -17,10 +17,12 @@
         <item name="android:statusBarColor">@color/COLOR_GRAY_50</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
         <item name="android:dropDownListViewStyle">@style/PopupMenuListView</item>
-        <!-- 화면 로딩 오버레이 최소화 -->
-        <!--        <item name="android:windowContentOverlay">@null</item>-->
-        <!--        <item name="android:windowIsTranslucent">true</item>-->
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/bg_gradient_linear</item>
     </style>
 
     <style name="SopoRadioButton" parent="Widget.AppCompat.CompoundButton.RadioButton">

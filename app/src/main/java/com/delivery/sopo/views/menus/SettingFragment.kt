@@ -63,7 +63,7 @@ class SettingFragment : Fragment()
                 NavigatorConst.TO_NOT_DISTURB ->
                 {
                     SopoLog.d("Menu Sub Fragment view Id >>> ${MenuSubFragment.viewId}")
-                    FragmentManager.add(requireActivity(), TabCode.MENU_NOT_DISTURB, MenuMainFrame.viewId)
+                    FragmentManager.add(requireActivity(), TabCode.MENU_NOT_DISTURB, MenuSubFragment.viewId)
                 }
                 NavigatorConst.TO_SET_NOTIFY_OPTION ->
                 {

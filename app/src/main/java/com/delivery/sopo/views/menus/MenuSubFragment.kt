@@ -34,17 +34,14 @@ class MenuSubFragment: Fragment()
 
         callback = object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-
+                val fm = parentView.supportFragmentManager
                 val childFm = childFragmentManager
-                val childFragmentCnt = childFragmentManager.fragments.size
-                SopoLog.d("자식 뷰 : ${childFragmentManager.fragments.size}")
-
-                if(childFragmentCnt > 1)
-                {
-                    childFm.popBackStack()
-                    return
-                }
-
+                SopoLog.d("""
+                    Fragment 데이터
+                    ${fm.backStackEntryCount} && ${fm.fragments.size}
+                    ${childFm.backStackEntryCount} && ${childFm.fragments.size}
+                """.trimIndent())
+                FragmentManager.remove(parentView)
                 FragmentManager.move(parentView, TabCode.MY_MENU_MAIN, MenuMainFrame.viewId)
             }
         }

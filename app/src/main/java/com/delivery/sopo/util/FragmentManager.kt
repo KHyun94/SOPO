@@ -22,8 +22,9 @@ object FragmentManager
             if(code.FRAGMENT.isAdded)
             {
                 transaction.remove(code.FRAGMENT)
-                SopoLog.d("중첩 프래그먼트 존재 삭제 중? : ${code.FRAGMENT.isRemoving}")
+                SopoLog.d("중첩 프래그먼트[${code}] 존재 삭제 중? : ${code.FRAGMENT.isRemoving}")
             }
+
             add(viewId, code.FRAGMENT, code.NAME)
             addToBackStack(null)
             commitAllowingStateLoss()
@@ -61,6 +62,7 @@ object FragmentManager
         }
 
     }
+
     fun move(activity: FragmentActivity, code: TabCode, @IdRes viewId: Int)
     {
         SopoLog.d("move() call >>> ${code.NAME} / $viewId")
@@ -73,7 +75,7 @@ object FragmentManager
             commitAllowingStateLoss()
         }
 
-        when (code.tabNo)
+        when(code.tabNo)
         {
             0 ->
             {
@@ -97,13 +99,7 @@ object FragmentManager
     }
 
     // 작업이 옳은 프로세스로 진행되었을 때 프래그먼트 스택을 초기화시키고 다른 화면으로 이동하는 함수
-    fun initFragment(
-        activity: FragmentActivity,
-        viewId: Int,
-        currentFragment: Fragment,
-        nextFragment: Fragment,
-        nextFragmentTag: String?
-    )
+    fun initFragment(activity: FragmentActivity, viewId: Int, currentFragment: Fragment, nextFragment: Fragment, nextFragmentTag: String?)
     {
         val fm = activity.supportFragmentManager
         val transaction = fm.beginTransaction()
