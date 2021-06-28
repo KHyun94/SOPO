@@ -83,7 +83,7 @@
         android:layout_width="match_parent"
         android:layout_height="71dp"
         android:orientation="horizontal"
-        android:onClick="@{()->vm.onMoveToSetTimeClicked(layoutSetTime)}"
+        android:onClick="@{()->vm.onMoveToSetTimeClicked()}"
         app:layout_constraintTop_toBottomOf="@+id/v_dividerLine2">
 
         <TextView
@@ -197,7 +197,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/toggleBtn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/toggleBtn"
-        />
+        android:onClick="@{()->vm.onUpdateAppPassword()}" />
 
     <LinearLayout
         android:id="@+id/linear_guideWord"

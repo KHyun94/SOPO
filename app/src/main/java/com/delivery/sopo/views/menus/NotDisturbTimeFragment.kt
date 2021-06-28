@@ -24,11 +24,18 @@ import java.util.*
 class NotDisturbTimeFragment : Fragment()
 {
     private val userLocalRepository : UserLocalRepository by inject()
-    private val notDisturbVm: NotDisturbTimeViewModel by viewModel()
+    private val vm: NotDisturbTimeViewModel by viewModel()
 
     lateinit var binding: FragmentNotDisturbTimeBinding
     private lateinit var parentView: MainView
     var clockPieHelperArrayList: ArrayList<ClockPieHelper> = ArrayList<ClockPieHelper>()
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        SopoLog.d("child cnt:${childFragmentManager.fragments.size}")
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,13 +43,13 @@ class NotDisturbTimeFragment : Fragment()
     ): View?
     {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_not_disturb_time, container, false)
-        binding.vm = notDisturbVm
+        binding.vm = vm
         binding.lifecycleOwner = this
 
         parentView = activity as MainView
 
-        val startTime = binding.vm!!.startTime.value?: "0000"
-        val endTime = binding.vm!!.endTime.value?: "0000"
+        val startTime = vm.startTime.value?: "0000"
+        val endTime = vm.endTime.value?: "0000"
 
         setDate(startTime, endTime)
         setListener()

@@ -14,6 +14,8 @@ import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.launchActivitiy
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.viewmodels.menus.MenuMainFrame
 import com.delivery.sopo.viewmodels.menus.SettingViewModel
 import com.delivery.sopo.views.dialog.SelectNotifyKindDialog
 import com.delivery.sopo.views.main.MainView
@@ -26,7 +28,10 @@ class SettingFragment : Fragment()
     private val vm: SettingViewModel by viewModel()
     private lateinit var binding: FragmentSettingBinding
     private lateinit var parentView: MainView
-
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+    }
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,7 +42,6 @@ class SettingFragment : Fragment()
         binding = FragmentSettingBinding.inflate(inflater, container, false)
 
         parentView = activity as MainView
-
         viewBinding()
         setObserver()
 
@@ -48,16 +52,18 @@ class SettingFragment : Fragment()
     {
         binding.vm = vm
         binding.lifecycleOwner = this
-        binding.executePendingBindings() // 즉 바인딩
+//        binding.executePendingBindings() // 즉 바인딩
     }
 
     fun setObserver()
     {
         vm.navigator.observe(this, Observer { navigator ->
+            SopoLog.d("navigator[$navigator]")
             when(navigator){
                 NavigatorConst.TO_NOT_DISTURB ->
                 {
-                    FragmentManager.add(parentView, TabCode.MENU_NOT_DISTURB, MenuSubFragment.viewId)
+                    SopoLog.d("Menu Sub Fragment view Id >>> ${MenuSubFragment.viewId}")
+                    FragmentManager.add(requireActivity(), TabCode.MENU_NOT_DISTURB, MenuMainFrame.viewId)
                 }
                 NavigatorConst.TO_SET_NOTIFY_OPTION ->
                 {

@@ -8,8 +8,6 @@ import org.koin.core.inject
 
 class NotDisturbTimeViewModel: ViewModel(), KoinComponent
 {
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
-
     private val userLocalRepository: UserLocalRepository by inject()
 
     val startTime = MutableLiveData<String>()

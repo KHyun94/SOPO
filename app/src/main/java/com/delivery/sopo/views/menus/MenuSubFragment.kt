@@ -34,7 +34,17 @@ class MenuSubFragment: Fragment()
 
         callback = object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                requireActivity().supportFragmentManager.popBackStack()
+
+                val childFm = childFragmentManager
+                val childFragmentCnt = childFragmentManager.fragments.size
+                SopoLog.d("자식 뷰 : ${childFragmentManager.fragments.size}")
+
+                if(childFragmentCnt > 1)
+                {
+                    childFm.popBackStack()
+                    return
+                }
+
                 FragmentManager.move(parentView, TabCode.MY_MENU_MAIN, MenuMainFrame.viewId)
             }
         }
@@ -62,8 +72,9 @@ class MenuSubFragment: Fragment()
 
     private fun setObserve(){
         vm.tabCode.observe(this, Observer {code ->
+            code ?: return@Observer
             SopoLog.d("tabCode:$code")
-            FragmentManager.move(parentView, code, viewId)
+            FragmentManager.add(parentView, code, binding.layoutSubMenuFrame.id)
         })
     }
 
