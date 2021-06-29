@@ -8,8 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.IdRes
+import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
+import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentMenuSubBinding
 import com.delivery.sopo.enums.TabCode
@@ -59,19 +62,27 @@ class MenuSubFragment: Fragment()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_menu_sub, container, false)
-        binding.vm = vm
-        binding.lifecycleOwner = this
+        binding = bindView<FragmentMenuSubBinding>(inflater, R.layout.fragment_menu_sub, container)
+//        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_menu_sub, container, false)
+//        binding.vm = vm
+//        binding.lifecycleOwner = this
         viewId = binding.layoutSubMenuFrame.id
         setObserve()
         return binding.root
     }
 
+    private fun<T:ViewDataBinding> bindView(inflater: LayoutInflater, @LayoutRes layoutRes:Int,container: ViewGroup?):T{
+        val binding = DataBindingUtil.inflate<T>(inflater, layoutRes, container,false)
+        binding.setVariable(BR.vm, vm)
+        binding.lifecycleOwner = this
+        return binding
+    }
+
     private fun setObserve(){
         vm.tabCode.observe(this, Observer {code ->
             code ?: return@Observer
-            SopoLog.d("tabCode:$code")
-            FragmentManager.add(parentView, code, binding.layoutSubMenuFrame.id)
+            FragmentManager.move(parentView, code, viewId)
+            vm.tabCode.postValue(null)
         })
     }
 

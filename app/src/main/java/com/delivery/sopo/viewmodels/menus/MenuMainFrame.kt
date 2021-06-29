@@ -27,7 +27,7 @@ class MenuMainFrame: Fragment()
         binding.lifecycleOwner = this
         viewId = binding.layoutMainMenuFrame.id
 
-        FragmentManager.move(parentView, TabCode.MY_MENU_MAIN, binding.layoutMainMenuFrame.id)
+        FragmentManager.move(parentView, TabCode.MY_MENU_MAIN, viewId)
 
         return binding.root
     }

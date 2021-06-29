@@ -10,21 +10,27 @@ import com.delivery.sopo.views.registers.ConfirmParcelFragment
 
 enum class TabCode(val tabNo: Int, val NAME: String, var FRAGMENT: Fragment)
 {
-    REGISTER_INPUT(0, "FRAGMENT_REGISTER_STEP1", InputParcelFragment()),
-    REGISTER_SELECT(0, "FRAGMENT_REGISTER_STEP2", SelectCarrierFragment()),
-    REGISTER_CONFIRM(0, "FRAGMENT_REGISTER_STEP3", ConfirmParcelFragment()),
+    REGISTER_INPUT(TabCode.firstTab, "FRAGMENT_REGISTER_STEP1", InputParcelFragment()),
+    REGISTER_SELECT(TabCode.firstTab, "FRAGMENT_REGISTER_STEP2", SelectCarrierFragment()),
+    REGISTER_CONFIRM(TabCode.firstTab, "FRAGMENT_REGISTER_STEP3", ConfirmParcelFragment()),
 
-    INQUIRY(1, "FRAGMENT_INQUIRY", InquiryFragment()),
-    INQUIRY_DETAIL(1, "FRAGMENT_INQUIRY_DETAIL", ParcelDetailView()),
+    INQUIRY(TabCode.secondTab, "FRAGMENT_INQUIRY", InquiryFragment()),
+    INQUIRY_DETAIL(TabCode.secondTab, "FRAGMENT_INQUIRY_DETAIL", ParcelDetailView()),
 
-    MY_MENU_MAIN(2, "FRAGMENT_MY_MENU_MAIN", MenuFragment()),
-    MY_MENU_SUB(2, "FRAGMENT_MY_MENU_SUB", MenuSubFragment()),
+    MY_MENU_MAIN(TabCode.thirdTab, "FRAGMENT_MY_MENU_MAIN", MenuFragment()),
+    MY_MENU_SUB(TabCode.thirdTab, "FRAGMENT_MY_MENU_SUB", MenuSubFragment()),
 
-    MENU_NOTICE(2, "공지사항", NoticeFragment()),
-    MENU_SETTING(2, "설정", SettingFragment()),
-    MENU_FAQ(2, "FAQ", FaqFragment()),
-    MENU_ACCOUNT_MANAGEMENT(2, "계정 관리", AccountManagerFragment()),
-    MENU_USE_TERMS(2, "이용약관", SettingFragment()),
-    MENU_NOT_DISTURB(2, "방해금지 시간대 설정", NotDisturbTimeFragment()),
-    MENU_APP_INFO(2, "앱 정보", AppInfoFragment())
+    MENU_NOTICE(TabCode.thirdTab, "공지사항", NoticeFragment()),
+    MENU_SETTING(TabCode.thirdTab, "설정", SettingFragment()),
+    MENU_FAQ(TabCode.thirdTab, "FAQ", FaqFragment()),
+    MENU_ACCOUNT_MANAGEMENT(TabCode.thirdTab, "계정 관리", AccountManagerFragment()),
+    MENU_USE_TERMS(TabCode.thirdTab, "이용약관", SettingFragment()),
+    MENU_NOT_DISTURB(TabCode.thirdTab, "방해금지 시간대 설정", NotDisturbTimeFragment()),
+    MENU_APP_INFO(TabCode.thirdTab, "앱 정보", AppInfoFragment());
+
+    companion object{
+        const val firstTab = 0
+        const val secondTab = 1
+        const val thirdTab = 2
+    }
 }

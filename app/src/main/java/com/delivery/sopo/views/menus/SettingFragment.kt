@@ -52,7 +52,6 @@ class SettingFragment : Fragment()
     {
         binding.vm = vm
         binding.lifecycleOwner = this
-//        binding.executePendingBindings() // 즉 바인딩
     }
 
     fun setObserver()
@@ -63,11 +62,11 @@ class SettingFragment : Fragment()
                 NavigatorConst.TO_NOT_DISTURB ->
                 {
                     SopoLog.d("Menu Sub Fragment view Id >>> ${MenuSubFragment.viewId}")
-                    FragmentManager.add(requireActivity(), TabCode.MENU_NOT_DISTURB, MenuSubFragment.viewId)
+                    FragmentManager.move(parentView, TabCode.MENU_NOT_DISTURB, MenuSubFragment.viewId)
                 }
                 NavigatorConst.TO_SET_NOTIFY_OPTION ->
                 {
-                    SelectNotifyKindDialog(this.requireActivity()).show(
+                    SelectNotifyKindDialog(parentView).show(
                         requireActivity().supportFragmentManager,
                         "SelectNotifyKindDialog"
                     )

@@ -45,12 +45,13 @@ class MenuFragment: Fragment()
             override fun handleOnBackPressed()
             {
                 FragmentManager.remove(parentView)
-                if (System.currentTimeMillis() - pressedTime > 2000)
+                if(System.currentTimeMillis() - pressedTime > 2000)
                 {
                     pressedTime = System.currentTimeMillis()
-                    Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).let { bar ->
-                        bar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
-                    }
+                    Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
+                        .let { bar ->
+                            bar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
+                        }
                 }
                 else
                 {
@@ -86,28 +87,26 @@ class MenuFragment: Fragment()
     {
         var pressedTime: Long = 0
 
-        parentView.currentPage.observe(this, Observer {
-            if(it != null && it == 2)
+        parentView.currentPage.observe(this, Observer { page ->
+            if(page != null && page == TabCode.thirdTab)
             {
                 callback = object: OnBackPressedCallback(true)
                 {
                     override fun handleOnBackPressed()
                     {
-                        SopoLog.d(msg = "MenuFragment:: BackPressListener")
-
                         if(System.currentTimeMillis() - pressedTime > 2000)
                         {
                             pressedTime = System.currentTimeMillis()
-                            val snackbar =
-                                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.",
-                                              2000)
-                            snackbar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
+
+                            Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply {
+                                animationMode = Snackbar.ANIMATION_MODE_SLIDE
+                            }.show()
+
+                            return
                         }
-                        else
-                        {
-                            ActivityCompat.finishAffinity(activity!!)
-                            exitProcess(0)
-                        }
+
+                        ActivityCompat.finishAffinity(activity!!)
+                        exitProcess(0)
                     }
                 }
 
@@ -171,8 +170,10 @@ class MenuFragment: Fragment()
         callback.remove()
     }
 
-    companion object{
-        fun newInstance():MenuFragment{
+    companion object
+    {
+        fun newInstance(): MenuFragment
+        {
             return MenuFragment()
         }
     }

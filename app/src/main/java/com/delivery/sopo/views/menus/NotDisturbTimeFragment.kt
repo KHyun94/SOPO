@@ -1,15 +1,19 @@
 package com.delivery.sopo.views.menus
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentNotDisturbTimeBinding
 import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.NotDisturbTimeViewModel
 import com.delivery.sopo.views.dialog.NotDisturbTimeDialog
@@ -29,6 +33,24 @@ class NotDisturbTimeFragment : Fragment()
     lateinit var binding: FragmentNotDisturbTimeBinding
     private lateinit var parentView: MainView
     var clockPieHelperArrayList: ArrayList<ClockPieHelper> = ArrayList<ClockPieHelper>()
+
+    lateinit var callback: OnBackPressedCallback
+
+    override fun onAttach(context: Context)
+    {
+        super.onAttach(context)
+
+        callback = object: OnBackPressedCallback(true)
+        {
+            override fun handleOnBackPressed()
+            {
+                FragmentManager.move(parentView, TabCode.MENU_SETTING, MenuSubFragment.viewId)
+            }
+
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -111,5 +133,12 @@ class NotDisturbTimeFragment : Fragment()
         else clockPieHelperArrayList.add(ClockPieHelper(startHour, startMin, endHour, endMin))
 
         binding.root.pie_view.setDate(clockPieHelperArrayList)
+    }
+
+    override fun onDetach()
+    {
+        super.onDetach()
+
+        callback.remove()
     }
 }

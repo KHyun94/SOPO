@@ -65,7 +65,7 @@ object FragmentManager
 
     fun move(activity: FragmentActivity, code: TabCode, @IdRes viewId: Int)
     {
-        SopoLog.d("move() call >>> ${code.NAME} / $viewId")
+        SopoLog.d("move() 호출:[Fragment:${code.NAME}][viewId:$viewId]")
 
         val fm = activity.supportFragmentManager
         val transaction = fm.beginTransaction()
@@ -77,15 +77,15 @@ object FragmentManager
 
         when(code.tabNo)
         {
-            0 ->
+            TabCode.firstTab ->
             {
                 currentFragment1st = code
             }
-            1 ->
+            TabCode.secondTab ->
             {
                 currentFragment2nd = code
             }
-            2 ->
+            TabCode.thirdTab ->
             {
                 currentFragment3rd = code
             }
