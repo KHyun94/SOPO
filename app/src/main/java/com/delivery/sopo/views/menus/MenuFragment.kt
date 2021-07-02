@@ -48,8 +48,7 @@ class MenuFragment: Fragment()
                 if(System.currentTimeMillis() - pressedTime > 2000)
                 {
                     pressedTime = System.currentTimeMillis()
-                    Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
-                        .let { bar ->
+                    Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).let { bar ->
                             bar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
                         }
                 }
@@ -115,7 +114,6 @@ class MenuFragment: Fragment()
         })
 
         vm.menu.observe(this, Observer { code ->
-            if(code == null) return@Observer
             SopoLog.d("move to code[${code}]")
             when(code)
             {
@@ -125,7 +123,7 @@ class MenuFragment: Fragment()
                 }
                 TabCode.MENU_SETTING ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_SETTING)
+                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_SETTING.apply { FRAGMENT = SettingFragment.newInstance() })
                 }
                 TabCode.MENU_FAQ ->
                 {
@@ -134,11 +132,6 @@ class MenuFragment: Fragment()
                 TabCode.MENU_USE_TERMS ->
                 {
 
-                }
-                TabCode.MENU_NOT_DISTURB ->
-                {
-                    TabCode.MY_MENU_SUB.FRAGMENT =
-                        MenuSubFragment.newInstance(TabCode.MENU_NOT_DISTURB)
                 }
                 TabCode.MENU_APP_INFO ->
                 {
@@ -152,7 +145,7 @@ class MenuFragment: Fragment()
                 }
                 else -> throw Exception("Menu is null")
             }
-            vm.menu.call()
+
             FragmentManager.move(parentView, TabCode.MY_MENU_SUB, MenuMainFrame.viewId)
         })
     }

@@ -36,7 +36,7 @@ class AccountManagerFragment: Fragment()
 
     fun setObserve()
     {
-        binding.vm!!.navigator.observe(this, Observer { menu ->
+        vm.navigator.observe(this, Observer { menu ->
             when(menu)
             {
                 MenuEnum.UPDATE_NICKNAME ->
@@ -49,5 +49,9 @@ class AccountManagerFragment: Fragment()
                 }
             }
         })
+    }
+
+    companion object{
+        fun newInstance() = AccountManagerFragment()
     }
 }

@@ -65,4 +65,8 @@ class NoticeFragment : Fragment(){
         val noticeExpandableAdapter = NoticeExpandableAdapter(requireContext() , data)
         expandablelist_notice.setAdapter(noticeExpandableAdapter)
     }
+
+    companion object{
+        fun newInstance() = NoticeFragment()
+    }
 }

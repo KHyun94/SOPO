@@ -34,23 +34,23 @@ class NotDisturbTimeFragment : Fragment()
     private lateinit var parentView: MainView
     var clockPieHelperArrayList: ArrayList<ClockPieHelper> = ArrayList<ClockPieHelper>()
 
-    lateinit var callback: OnBackPressedCallback
-
-    override fun onAttach(context: Context)
-    {
-        super.onAttach(context)
-
-        callback = object: OnBackPressedCallback(true)
-        {
-            override fun handleOnBackPressed()
-            {
-                FragmentManager.move(parentView, TabCode.MENU_SETTING, MenuSubFragment.viewId)
-            }
-
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-    }
+//    lateinit var callback: OnBackPressedCallback
+//
+//    override fun onAttach(context: Context)
+//    {
+//        super.onAttach(context)
+//
+//        callback = object: OnBackPressedCallback(true)
+//        {
+//            override fun handleOnBackPressed()
+//            {
+//                FragmentManager.move(parentView, TabCode.MENU_SETTING, MenuSubFragment.viewId)
+//            }
+//
+//        }
+//
+//        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -139,6 +139,6 @@ class NotDisturbTimeFragment : Fragment()
     {
         super.onDetach()
 
-        callback.remove()
+//        callback.remove()
     }
 }

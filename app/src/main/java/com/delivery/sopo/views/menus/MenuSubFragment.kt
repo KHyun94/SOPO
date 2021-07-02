@@ -38,14 +38,14 @@ class MenuSubFragment: Fragment()
         callback = object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 val fm = parentView.supportFragmentManager
-                val childFm = childFragmentManager
-                SopoLog.d("""
-                    Fragment 데이터
-                    ${fm.backStackEntryCount} && ${fm.fragments.size}
-                    ${childFm.backStackEntryCount} && ${childFm.fragments.size}
-                """.trimIndent())
+
+                if(fm.fragments[fm.fragments.size - 1] == TabCode.MENU_NOT_DISTURB.FRAGMENT){
+                    FragmentManager.remove(parentView)
+                    return FragmentManager.move(parentView, TabCode.MENU_SETTING.apply { FRAGMENT = SettingFragment.newInstance() }, viewId)
+                }
+
                 FragmentManager.remove(parentView)
-                FragmentManager.move(parentView, TabCode.MY_MENU_MAIN, MenuMainFrame.viewId)
+                FragmentManager.move(parentView, TabCode.MY_MENU_MAIN.apply { FRAGMENT = MenuFragment.newInstance() }, MenuMainFrame.viewId)
             }
         }
 
@@ -63,9 +63,6 @@ class MenuSubFragment: Fragment()
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
         binding = bindView<FragmentMenuSubBinding>(inflater, R.layout.fragment_menu_sub, container)
-//        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_menu_sub, container, false)
-//        binding.vm = vm
-//        binding.lifecycleOwner = this
         viewId = binding.layoutSubMenuFrame.id
         setObserve()
         return binding.root
@@ -80,9 +77,7 @@ class MenuSubFragment: Fragment()
 
     private fun setObserve(){
         vm.tabCode.observe(this, Observer {code ->
-            code ?: return@Observer
             FragmentManager.move(parentView, code, viewId)
-            vm.tabCode.postValue(null)
         })
     }
 
@@ -99,6 +94,12 @@ class MenuSubFragment: Fragment()
     {
         super.onResume()
         SopoLog.d("onResume()")
+    }
+
+    override fun onDetach()
+    {
+        super.onDetach()
+        callback.remove()
     }
 
     companion object{

@@ -15,11 +15,9 @@ import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.launchActivitiy
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.viewmodels.menus.MenuMainFrame
 import com.delivery.sopo.viewmodels.menus.SettingViewModel
 import com.delivery.sopo.views.dialog.SelectNotifyKindDialog
 import com.delivery.sopo.views.main.MainView
-import kotlinx.android.synthetic.main.fragment_setting.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -28,6 +26,7 @@ class SettingFragment : Fragment()
     private val vm: SettingViewModel by viewModel()
     private lateinit var binding: FragmentSettingBinding
     private lateinit var parentView: MainView
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -91,5 +90,12 @@ class SettingFragment : Fragment()
             {
             }
         })
+    }
+
+    companion object{
+        fun newInstance(): SettingFragment
+        {
+            return SettingFragment()
+        }
     }
 }

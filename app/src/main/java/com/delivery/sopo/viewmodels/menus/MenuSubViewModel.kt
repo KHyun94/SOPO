@@ -6,5 +6,5 @@ import com.delivery.sopo.enums.TabCode
 
 class MenuSubViewModel:ViewModel()
 {
-    val tabCode= MutableLiveData<TabCode?>()
+    val tabCode= MutableLiveData<TabCode>()
 }

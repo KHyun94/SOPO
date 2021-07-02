@@ -201,7 +201,8 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
                                              {
                                                  NavigatorConst.REGISTER_TAB ->
                                                  {
-                                                     TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(null, 0)
+                                                     TabCode.REGISTER_INPUT.FRAGMENT =
+                                                         InputParcelFragment.newInstance(null, 0)
 
                                                      FragmentManager.move(activity = this@MainView,
                                                                           code = TabCode.REGISTER_INPUT,
@@ -216,11 +217,13 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
                                                  NavigatorConst.MY_MENU_TAB ->
                                                  {
                                                      FragmentManager.move(activity = this@MainView,
-                                                                          code = TabCode.MY_MENU_MAIN.apply { FRAGMENT = MenuFragment.newInstance() },
+                                                                          code = TabCode.MY_MENU_MAIN.apply {
+                                                                              FRAGMENT =
+                                                                                  MenuFragment.newInstance()
+                                                                          },
                                                                           viewId = MenuMainFrame.viewId)
                                                  }
                                              }
-
                                          }
                                      })
         }

@@ -9,16 +9,17 @@ import com.delivery.sopo.util.livedates.SingleLiveEvent
 
 class MenuViewModel() : ViewModel()
 {
-    val menu = SingleLiveEvent<TabCode?>()
+    private val _code = MutableLiveData<TabCode>()
+    val menu: LiveData<TabCode>
+    get() = _code
 
     fun onMoveToSubMenuClicked(code: TabCode){
         SopoLog.d("onMoveToSubMenuClicked() 호출 [TabCode:$code]")
-        menu.postValue(code)
+        _code.postValue(code)
     }
 
     override fun onCleared()
     {
         super.onCleared()
-       menu.postValue(null)
     }
 }
