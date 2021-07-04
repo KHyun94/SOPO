@@ -4,31 +4,18 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/MAIN_WHITE">
+    android:background="@color/COLOR_GRAY_50">
 
-    <TextView
-        android:id="@+id/tv_intro_2_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="37dp"
-        android:layout_marginTop="94sp"
-        android:fontFamily="@font/spoqa_han_sans_regular"
-        android:text="한 눈에 파악하는\n배송 상태"
-        android:textColor="@color/COLOR_MAIN_700"
-        android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+    <!-- todo 이미지 테두리가 보이지 않음 -->
     <ImageView
-        android:id="@+id/iv_intro2_img"
-        android:layout_width="322dp"
-        android:layout_height="342dp"
-        android:layout_marginTop="37dp"
-        android:fontFamily="@font/spoqa_han_sans_regular"
-        android:src="@drawable/ic_intro_2_img"
-        app:layout_constraintLeft_toRightOf="parent"
-        app:layout_constraintRight_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_intro_2_title" />
-
-
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:layout_marginHorizontal="80dp"
+        android:layout_marginVertical="235dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:background="@drawable/onboarding_2"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

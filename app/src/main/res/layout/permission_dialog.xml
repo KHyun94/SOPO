@@ -16,7 +16,7 @@
             style="@style/H2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/spoqa_han_sans_regular"
+            android:fontFamily="@font/spoqa_han_sans_neo_regular"
             android:gravity="start"
             android:includeFontPadding="false"
             android:text="쾌적한 앱 사용을 위해\n설정해주세요."

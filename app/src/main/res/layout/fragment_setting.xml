@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <data>
         <import type="android.view.View" />
         <variable
@@ -13,38 +14,38 @@
     android:layout_height="match_parent"
     android:background="@color/COLOR_GRAY_50">
 
-    <LinearLayout
-        android:id="@+id/linear_set_notification"
-        android:layout_width="match_parent"
-        android:layout_height="71dp"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent">
+<!--    <LinearLayout-->
+<!--        android:id="@+id/linear_set_notification"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="71dp"-->
+<!--        android:orientation="horizontal"-->
+<!--        app:layout_constraintTop_toTopOf="parent">-->
 
-        <TextView
-            style="@style/H3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="38dp"
-            android:text="@string/SETTING_VIEW_SETTING_OF_NOTIFY"
-            android:textColor="@color/COLOR_GRAY_800"
-            />
-    </LinearLayout>
+<!--        <TextView-->
+<!--            style="@style/H3"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center_vertical"-->
+<!--            android:layout_marginStart="38dp"-->
+<!--            android:text="@string/SETTING_VIEW_SETTING_OF_NOTIFY"-->
+<!--            android:textColor="@color/COLOR_GRAY_800"-->
+<!--            />-->
+<!--    </LinearLayout>-->
 
-    <View
-        android:id="@+id/v_dividerLine1"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/COLOR_GRAY_100"
-        app:layout_constraintTop_toBottomOf="@+id/linear_set_notification"
-        />
+<!--    <View-->
+<!--        android:id="@+id/v_dividerLine1"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="1dp"-->
+<!--        android:background="@color/COLOR_GRAY_100"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/linear_set_notification"-->
+<!--        />-->
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_set_notify_option"
         android:layout_width="match_parent"
         android:layout_height="71dp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/v_dividerLine1"
+        app:layout_constraintTop_toTopOf="parent"
         android:onClick="@{()->vm.onSetNotifyOptionClicked()}">
 
         <TextView
@@ -135,53 +136,47 @@
             />
     </LinearLayout>
 
-    <View
-        android:id="@+id/v_dividerLine4"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/COLOR_GRAY_100"
-        app:layout_constraintTop_toBottomOf="@+id/linear_setSecurity"
-        />
 
     <TextView
-        style="@style/H5"
+        style="@style/H4"
         android:id="@+id/tv_securityComment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginTop="25dp"
         android:layout_marginStart="38dp"
         android:layout_marginEnd="38dp"
         android:text="@string/SETTING_VIEW_ALWAYS_CHECK_YOUR_SECURITY"
         android:textColor="@color/COLOR_GRAY_600"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/v_dividerLine4" />
+        app:layout_constraintTop_toBottomOf="@+id/linear_setSecurity" />
 
     <ToggleButton
         android:id="@+id/toggleBtn"
         android:layout_width="55dp"
         android:layout_height="30dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="28dp"
         android:background="@{vm.isSetOfSecurity > 0 ? @drawable/ic_toggle_on:@drawable/ic_toggle_off}"
         android:textOn=""
         android:textOff=""
         android:onClick="@{()->vm.setAppPassword()}"
         app:layout_constraintStart_toStartOf="@+id/tv_securityComment"
-        app:layout_constraintTop_toBottomOf="@+id/tv_securityComment" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_securityComment"
+        tools:background="@drawable/ic_toggle_off"/>
 
     <TextView
-        style="@style/H5"
+        style="@style/H4"
         android:id="@+id/tv_lockStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_gravity="center_vertical"
         android:text="@{vm.isSetOfSecurity > 0 ? @string/SETTING_VIEW_SET_THE_SECURITY : @string/SETTING_VIEW_NOT_SET_THE_SECURITY}"
-        android:textColor="@color/COLOR_GRAY_800"
+        android:textColor="@{vm.isSetOfSecurity > 0 ? @color/COLOR_MAIN_700 : @color/COLOR_GRAY_600}"
         app:layout_constraintBottom_toBottomOf="@+id/toggleBtn"
         app:layout_constraintStart_toEndOf="@+id/toggleBtn"
-        app:layout_constraintTop_toTopOf="@+id/toggleBtn" />
+        app:layout_constraintTop_toTopOf="@+id/toggleBtn"
+        tools:text="설정 켜기"/>
 
     <TextView
         style="@style/H4"
@@ -190,7 +185,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="26dp"
-        android:fontFamily="@font/spoqa_han_sans_regular"
+        android:fontFamily="@font/spoqa_han_sans_neo_regular"
+        android:textStyle="bold"
+        android:letterSpacing="-0.08"
         android:text="@string/SETTING_VIEW_CHANGE_OF_PASSWORD"
         android:textColor="@color/COLOR_MAIN_700"
         android:visibility="@{vm.isSetOfSecurity > 0 ? View.VISIBLE : View.GONE}"
@@ -223,7 +220,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="@string/SETTING_VIEW_PASSWORD_COMMENT"
-            android:textColor="@color/COLOR_MAIN_900"
+            android:textColor="@color/COLOR_GRAY_600"
             />
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

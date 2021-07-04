@@ -117,7 +117,7 @@
             <TextView
                 android:id="@+id/tv_input_text"
                 style="@style/H7"
-                android:fontFamily="@font/spoqa_han_sans_bold"
+                android:fontFamily="@font/spoqa_han_sans_neo_bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/iv_carrier"
@@ -169,7 +169,7 @@
                 style="@style/H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqa_han_sans_regular"
+                android:fontFamily="@font/spoqa_han_sans_neo_regular"
                 android:text="로 등록하기"
                 android:textColor="@color/COLOR_MAIN_700" />
 

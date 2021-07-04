@@ -37,6 +37,13 @@ object FragmentManager
 
         val fm = activity.supportFragmentManager
         val transaction = fm.beginTransaction()
+
+        if(code.FRAGMENT.isAdded)
+        {
+            transaction.remove(code.FRAGMENT)
+            SopoLog.d("중첩 프래그먼트[${code}] 존재 삭제 중? : ${code.FRAGMENT.isRemoving}")
+        }
+
         transaction.run {
             replace(viewId, code.FRAGMENT, code.NAME)
             addToBackStack(null)

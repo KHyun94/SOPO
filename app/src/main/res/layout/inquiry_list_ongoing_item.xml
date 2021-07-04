@@ -73,7 +73,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="2dp"
-                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:fontFamily="@font/spoqa_han_sans_neo_bold"
                     android:textColor="@color/MAIN_WHITE"
                     android:textSize="10sp"
                     android:letterSpacing="-0.04"

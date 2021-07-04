@@ -1,6 +1,7 @@
 package com.delivery.sopo.views.inquiry
 
 import android.content.Context
+import android.graphics.Paint
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -351,7 +352,7 @@ class ParcelDetailView : Fragment()
                 ivParam.bottomMargin = SizeUtil.changeDpToPx(activity!!, 3.0f)
                 itemBinding.ivIndicator.layoutParams = ivParam
 
-                val typeface = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_bold)
+                val typeface = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_bold)
 
                 itemBinding.tvStatus.typeface = typeface
             }

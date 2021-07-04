@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:text="저장 권한"
             android:includeFontPadding="false"
-            android:fontFamily="@font/spoqa_han_sans_bold"
+            android:fontFamily="@font/spoqa_han_sans_neo_bold"
             android:textColor="@color/COLOR_GRAY_800" />
 
 

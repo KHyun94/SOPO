@@ -9,6 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
@@ -26,30 +28,24 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SignOutView: Fragment()
+class SignOutView: AppCompatActivity()
 {
     lateinit var binding: SignOutViewBinding
     private val vm: SignOutViewModel by viewModel()
 
     private val userLocalRepo: UserLocalRepository by inject()
-    private val oAuthRepo: OAuthLocalRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-    }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
-    {
-        val view = inflater.inflate(R.layout.sign_out_view, container, false)
-        bindView(view)
+        bindView()
         setObserve()
-        return binding.root
     }
 
-    fun bindView(v: View)
+    fun bindView()
     {
-        binding = SignOutViewBinding.bind(v)
+        binding = DataBindingUtil.setContentView(this, R.layout.sign_out_view)
         binding.vm = vm
         binding.lifecycleOwner = this
     }
@@ -73,20 +69,20 @@ class SignOutView: Fragment()
                     CoroutineScope(Dispatchers.Default).launch { AlertUtil.appDataBase.clearAllTables() }
                     SOPOApp.oAuth = null
 
-                    Intent(activity, LoginSelectView::class.java).let {
+                    Intent(this@SignOutView, LoginSelectView::class.java).let {
                         it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
                         startActivity(it)
-                        requireActivity().finish()
+                        finish()
                     }
 
-                    Toast.makeText(requireContext(),"지금까지 사용해주셔서 감사합니다.", Toast.LENGTH_LONG).apply {
+                    Toast.makeText(this,"지금까지 사용해주셔서 감사합니다.", Toast.LENGTH_LONG).apply {
                         setGravity(Gravity.TOP, 0, 180)
                     }.show()
                 }
                 DisplayEnum.DIALOG ->
                 {
                     val dialog = ConfirmDeleteDialog(
-                        requireActivity(), 0, "탈퇴 시 유의사항", "고객의 정보가 삭제되며 복구가 불가능합니다.", """
+                        this, 0, "탈퇴 시 유의사항", "고객의 정보가 삭제되며 복구가 불가능합니다.", """
 * 계정 개인정보(이메일, 비밀번호)
 * 등록하신 모든 택배 추적 정보
             """.trimIndent(), Pair("탈퇴하기", object: ((ConfirmDeleteDialog) -> Unit)
@@ -101,7 +97,7 @@ class SignOutView: Fragment()
                         })
                     )
 
-                    dialog.show(activity?.supportFragmentManager!!, "")
+                    dialog.show(supportFragmentManager, "")
                 }
             }
 

@@ -27,7 +27,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="left"
-            android:fontFamily="@font/spoqa_han_sans_bold"
+            android:fontFamily="@font/spoqa_han_sans_neo_bold"
             android:text="정말로 삭제하시겠습니까?"
             android:textColor="@color/MAIN_BLACK"
             android:letterSpacing="-0.02"
@@ -49,7 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="고객님 정보가 삭제되며 복구가 불가능합니다."
-            android:fontFamily="@font/spoqa_han_sans_bold"
+            android:fontFamily="@font/spoqa_han_sans_neo_bold"
             android:textColor="@color/COLOR_MAIN_700"/>
 
     </LinearLayout>
@@ -74,7 +74,7 @@
                 android:id="@+id/tv_content"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:fontFamily="@font/spoqa_han_sans_regular"
+                android:fontFamily="@font/spoqa_han_sans_neo_regular"
                 android:text="* 배송이 완료된 내역은 [배송완료]탭에 보관 처리됩니다.\n* 삭제하신 내역은 복구되지 않습니다."
                 android:textSize="13sp"
                 android:textColor="@color/COLOR_GRAY_600"
@@ -107,7 +107,7 @@
             android:textSize="16sp"
             android:textColor="@color/MAIN_WHITE"
             android:textStyle=""
-            android:fontFamily="@font/spoqa_han_sans_bold"
+            android:fontFamily="@font/spoqa_han_sans_neo_bold"
             />
 
         <TextView
@@ -124,7 +124,7 @@
             android:textSize="16sp"
             android:textColor="@color/COLOR_MAIN_500"
             android:textStyle=""
-            android:fontFamily="@font/spoqa_han_sans_bold" />
+            android:fontFamily="@font/spoqa_han_sans_neo_bold" />
 
 
     </LinearLayout>

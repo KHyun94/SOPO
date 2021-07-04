@@ -1,5 +1,6 @@
 package com.delivery.sopo.views.menus
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +11,11 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentAccountManagerBinding
 import com.delivery.sopo.enums.MenuEnum
+import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.extensions.launchActivity
+import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.viewmodels.menus.AccountManagerViewModel
+import com.delivery.sopo.viewmodels.menus.MenuMainFrame
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -45,7 +50,7 @@ class AccountManagerFragment: Fragment()
                 }
                 MenuEnum.SIGN_OUT ->
                 {
-                    Toast.makeText(context, "계정탈퇴", Toast.LENGTH_LONG).show()
+                    Intent(this.requireContext(), SignOutView::class.java).launchActivity(this.requireContext())
                 }
             }
         })

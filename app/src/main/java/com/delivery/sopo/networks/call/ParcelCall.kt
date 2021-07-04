@@ -52,9 +52,9 @@ object ParcelCall : BaseService(), KoinComponent
     }
 
 
-    suspend fun requestParcelForRefreshs() : NetworkResult<APIResult<String?>>
+    suspend fun requestParcelsForRefresh() : NetworkResult<APIResult<String?>>
     {
-        val result = parcelAPI.requestParcelForRefreshs(email = email)
+        val result = parcelAPI.requestParcelsForRefresh()
         return apiCall(call = { result })
     }
 

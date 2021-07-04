@@ -72,12 +72,11 @@ interface ParcelAPI
     /**
      * 택배 리스트 전체 업데이트 요청
      * 서버에서 해당 통신 이외로 업데이트 데이터를 FCM을 통해 던진다.
-     * @param email
      * @return
      */
     @POST("/api/v1/sopo-api/delivery/parcels/refresh")
     @Headers("Accept: application/json")
-    suspend fun requestParcelForRefreshs(@Path("email") email: String): Response<APIResult<String?>>
+    suspend fun requestParcelsForRefresh(): Response<APIResult<String?>>
 
     /**
      * 택배 리스트 단일 업데이트 요청

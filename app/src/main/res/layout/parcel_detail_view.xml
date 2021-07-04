@@ -46,8 +46,6 @@
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!--        기존 top:11 -> 11 * 1.1762 = 12.9382 올림 13dp      -->
-                <!--        기존 bottom:10 -> 10 * 1.1762 = 11.762 올림 12dp       -->
                 <TextView
                     android:id="@+id/tv_title"
                     style="@style/H2"
@@ -58,7 +56,8 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:letterSpacing="-0.07"/>
 
                 <TextView
                     android:id="@+id/tv_subtext"
@@ -66,7 +65,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="39dp"
-                    android:fontFamily="@font/spoqa_han_sans_regular"
+                    android:fontFamily="@font/spoqa_han_sans_neo_regular"
                     android:includeFontPadding="false"
                     android:text="@{vm.deliveryStatusEnum.MSG}"
                     android:textColor="@color/COLOR_GRAY_800"

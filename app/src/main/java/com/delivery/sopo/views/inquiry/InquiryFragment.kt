@@ -248,9 +248,9 @@ class InquiryFragment: Fragment()
                         requireContext(), R.drawable.border_all_rounded_light_black
                     )
                     btn_ongoing.typeface =
-                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_regular)
+                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular)
                     btn_complete.typeface =
-                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_regular)
+                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular)
                     btn_complete.setTextColor(
                         ContextCompat.getColor(
                             requireContext(), R.color.COLOR_GRAY_400
@@ -272,9 +272,9 @@ class InquiryFragment: Fragment()
                         requireContext(), R.drawable.border_all_rounded_color_gray_400
                     )
                     btn_complete.typeface =
-                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_regular)
+                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular)
                     btn_complete.typeface =
-                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_regular)
+                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular)
                     btn_complete.setTextColor(
                         ContextCompat.getColor(
                             requireContext(), R.color.MAIN_WHITE

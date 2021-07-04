@@ -35,7 +35,7 @@ class SOPOWorker(val context: Context, private val params: WorkerParameters): Co
     {
         return when (isEnrolledParcel())
         {
-            true -> ParcelCall.requestParcelForRefreshs()
+            true -> ParcelCall.requestParcelsForRefresh()
             false -> null
         }
     }

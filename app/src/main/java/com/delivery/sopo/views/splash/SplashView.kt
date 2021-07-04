@@ -11,6 +11,7 @@ import com.delivery.sopo.databinding.SplashViewBinding
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.PermissionUtil
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.splash.SplashViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.PermissionDialog
@@ -26,7 +27,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view)
 {
     private val userLocalRepo: UserLocalRepository by inject()
-    private val splashVm: SplashViewModel by viewModel()
+    private val vm: SplashViewModel by viewModel()
     lateinit var permissionDialog: PermissionDialog
 
     init
@@ -36,14 +37,14 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
 
     override fun bindView()
     {
-        binding.vm = splashVm
+        binding.vm = vm
         binding.lifecycleOwner = this
         binding.executePendingBindings()
     }
 
     override fun setObserver()
     {
-        Handler().postDelayed(Runnable { moveToActivity() }, 500)
+        Handler().postDelayed(Runnable { moveToActivity() }, 1500)
     }
 
     private fun moveToActivity()
@@ -61,6 +62,8 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
 
                                 if (!isGranted)
                                 {
+                                    SopoLog.e("권한 비허가 상태")
+
                                     // NOT PERMISSION GRANT
                                     GeneralDialog(
                                         act = parentActivity,
@@ -78,7 +81,12 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
                                     return@permissionCallback
                                 }
 
-                                binding.vm!!.requestAfterActivity()
+                                SopoLog.d("권한 허가 상태")
+                                // permission all clear
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    vm.getUserInfoWithToken()
+                                }
+
                             }
 
                             dialog.dismiss()
@@ -89,7 +97,11 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
                         return@Observer
                     }
 
-                    binding.vm!!.requestAfterActivity()
+                    SopoLog.d("권한 허가 상태")
+                    // permission all clear
+                    CoroutineScope(Dispatchers.IO).launch {
+                        vm.getUserInfoWithToken()
+                    }
                 }
                 NavigatorConst.TO_INTRO ->
                 {

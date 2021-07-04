@@ -22,16 +22,18 @@ class SplashViewModel(private val userLocalRepository: UserLocalRepository, priv
 
     init
     {
-        navigator.value = NavigatorConst.TO_PERMISSION
+//        navigator.value = NavigatorConst.TO_PERMISSION
+
+        requestAfterActivity()
     }
 
-    fun requestAfterActivity()
+    private fun requestAfterActivity()
     {
-        SopoLog.d(msg = "로그인 상태 >>> ${userLocalRepository.getStatus()}")
+        SopoLog.d(msg = "로그인 상태[${userLocalRepository.getStatus()}]")
 
         if (userLocalRepository.getStatus() == 1)
         {
-            CoroutineScope(Dispatchers.IO).launch { getUserInfoWithToken() }
+            navigator.postValue(NavigatorConst.TO_PERMISSION)
         }
         else
         {
@@ -39,7 +41,7 @@ class SplashViewModel(private val userLocalRepository: UserLocalRepository, priv
         }
     }
 
-    private suspend fun getUserInfoWithToken()
+    suspend fun getUserInfoWithToken()
     {
         when (val result = UserCall.getUserInfoWithToken())
         {

@@ -7,35 +7,41 @@
     android:orientation="vertical"
     tools:context=".views.intro.IntroView">
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/viewPager"
+    <com.delivery.sopo.views.adapter.VerticalViewPager
+        android:id="@+id/vp_intro"
         android:layout_width="match_parent"
-        android:layout_height="0sp"
-        android:layout_weight="90" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"/>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0sp"
-        android:layout_weight="10"
-        android:background="@color/MAIN_WHITE">
+<!--    <androidx.viewpager.widget.ViewPager-->
+<!--        android:id="@+id/viewPager"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0sp"-->
+<!--        android:layout_weight="90" />-->
 
-        <com.delivery.sopo.views.widget.IntroIndicator
-            android:id="@+id/indicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true" />
+<!--    <RelativeLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0sp"-->
+<!--        android:layout_weight="10"-->
+<!--        android:background="@color/MAIN_WHITE">-->
 
-        <ImageView
-            android:id="@+id/iv_next_page"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="30sp"
-            android:background="@drawable/ic_next_btn"
-            android:padding="10sp"
-            android:textColor="@color/COLOR_MAIN_700" />
+<!--        <com.delivery.sopo.views.widget.IntroIndicator-->
+<!--            android:id="@+id/indicator"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_centerInParent="true" />-->
 
-    </RelativeLayout>
+<!--        <ImageView-->
+<!--            android:id="@+id/iv_next_page"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentEnd="true"-->
+<!--            android:layout_centerVertical="true"-->
+<!--            android:layout_marginEnd="30sp"-->
+<!--            android:background="@drawable/ic_next_btn"-->
+<!--            android:padding="10sp"-->
+<!--            android:textColor="@color/COLOR_MAIN_700" />-->
+
+<!--    </RelativeLayout>-->
 
 </LinearLayout>

@@ -71,7 +71,7 @@
                     android:text="sopo2020@gmail.com"
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="16sp"
-                    android:fontFamily="@font/spoqa_han_sans_bold"
+                    android:fontFamily="@font/spoqa_han_sans_neo_bold"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

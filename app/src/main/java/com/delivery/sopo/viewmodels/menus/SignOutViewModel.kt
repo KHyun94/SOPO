@@ -32,6 +32,10 @@ class SignOutViewModel: ViewModel()
         isOtherReasonEt.value = false
     }
 
+    fun onBackClicked(){
+
+    }
+
     fun onCheckClicked(v: View, message: String?)
     {
         v.requestFocusFromTouch()
