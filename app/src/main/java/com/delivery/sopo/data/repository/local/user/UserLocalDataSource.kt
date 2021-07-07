@@ -26,6 +26,12 @@ interface UserLocalDataSource
     fun getSNSUId(): String?
     fun setSNSUId(uid: String)
 
+    fun getPersonalStatusType(): Int
+    fun setPersonalStatusType(type: Int)
+
+    fun getPersonalStatusMessage(): String
+    fun setPersonalStatusMessage(message: String)
+
     fun getAppPassword(): String
     fun setAppPassword(password: String)
 

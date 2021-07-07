@@ -85,6 +85,26 @@ class UserLocalRepository(private val userShared: UserSharedPrefHelper): UserLoc
         userShared.setSNSUId(uid)
     }
 
+    override fun getPersonalStatusType(): Int
+    {
+        return userShared.getPersonalStatusType()
+    }
+
+    override fun setPersonalStatusType(type: Int)
+    {
+        userShared.setPersonalStatusType(type)
+    }
+
+    override fun getPersonalStatusMessage(): String
+    {
+        return userShared.getPersonalStatusMessage()
+    }
+
+    override fun setPersonalStatusMessage(message: String)
+    {
+        userShared.setPersonalStatusMessage(message)
+    }
+
     override fun getAppPassword(): String
     {
         return userShared.getAppPassword() ?: ""

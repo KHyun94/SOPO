@@ -34,7 +34,7 @@ class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, pr
 
     fun onCompleteClicked()
     {
-        login(userLocalRepo.getUserId(), userLocalRepo.getUserPassword().toMD5())
+        login(userLocalRepo.getUserId(), userLocalRepo.getUserPassword())
     }
 
     fun login(email: String, password: String)

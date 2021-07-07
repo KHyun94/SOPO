@@ -60,7 +60,7 @@ val appModule = module {
     viewModel { AppInfoViewModel() }
     viewModel { NotDisturbTimeViewModel() }
     viewModel { InquiryViewModel(get(), get(), get(), get()) }
-    viewModel { MenuViewModel() }
+    viewModel { MenuViewModel(get()) }
     viewModel { AccountManagerViewModel() }
     viewModel { SignOutViewModel() }
 

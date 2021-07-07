@@ -86,6 +86,21 @@ class UserSharedPrefHelper(private val sharedPref: SharedPref, private val conte
         sharedPref.setString(InfoConst.SNS_UID, uid)
     }
 
+    fun getPersonalStatusType(): Int{
+        return sharedPref.getInt(InfoConst.PERSONAL_STATUS_TYPE, 0)
+    }
+
+    fun setPersonalStatusType(type: Int){
+        sharedPref.setInt(InfoConst.PERSONAL_STATUS_TYPE, type)
+    }
+
+    fun getPersonalStatusMessage(): String{
+        return sharedPref.getString(InfoConst.PERSONAL_STATUS_MESSAGE, "")?:""
+    }
+    fun setPersonalStatusMessage(message: String){
+        sharedPref.setString(InfoConst.PERSONAL_STATUS_MESSAGE, message)
+    }
+
     /**
      * FCM Topic
      */

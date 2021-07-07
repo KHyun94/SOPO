@@ -12,6 +12,7 @@ import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.networks.api.LoginAPICall
 import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
@@ -26,7 +27,7 @@ object OAuthRemoteRepository: KoinComponent
 
     suspend fun requestLoginWithOAuth(email: String, password: String): ResponseResult<OAuthDTO?>
     {
-        when(val result = LoginAPICall().requestOauth(email, password, SOPOApp.deviceInfo))
+        when(val result = LoginAPICall().requestOauth(email, password.toMD5(), SOPOApp.deviceInfo))
         {
             is NetworkResult.Success ->
             {
@@ -55,9 +56,15 @@ object OAuthRemoteRepository: KoinComponent
             {
                 val apiResult = (result as NetworkResult.Success).data
 
-                userLocalRepo.setNickname(apiResult.data?.nickname?:"")
+                apiResult.data?.let {userDetail ->
+                    userLocalRepo.setNickname(userDetail.nickname?:"")
+                    userLocalRepo.setPersonalStatusType(userDetail.personalMessage.type)
+                    userLocalRepo.setPersonalStatusMessage(userDetail.personalMessage.message)
+                }
 
-                SopoLog.d("UserDetail >>> ${apiResult.data}, ${apiResult.data?.nickname}")
+
+
+                SopoLog.d("UserDetail >>> ${apiResult.data}, ${apiResult.data?.nickname}, ${apiResult.data?.personalMessage}")
 
                 return ResponseResult(true, ResponseCode.SUCCESS, apiResult.data, ResponseCode.SUCCESS.MSG)
             }

@@ -11,11 +11,8 @@ import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-class SplashViewModel(private val userLocalRepository: UserLocalRepository, private val OAuthLocalRepository: OAuthLocalRepository): ViewModel()
+class SplashViewModel(private val userLocalRepo: UserLocalRepository, private val OAuthLocalRepository: OAuthLocalRepository): ViewModel()
 {
     var navigator = MutableLiveData<String>()
     var errorMessage: String = ""
@@ -29,9 +26,9 @@ class SplashViewModel(private val userLocalRepository: UserLocalRepository, priv
 
     private fun requestAfterActivity()
     {
-        SopoLog.d(msg = "로그인 상태[${userLocalRepository.getStatus()}]")
+        SopoLog.d(msg = "로그인 상태[${userLocalRepo.getStatus()}]")
 
-        if (userLocalRepository.getStatus() == 1)
+        if (userLocalRepo.getStatus() == 1)
         {
             navigator.postValue(NavigatorConst.TO_PERMISSION)
         }
@@ -51,9 +48,17 @@ class SplashViewModel(private val userLocalRepository: UserLocalRepository, priv
 
                 val userDetail = result.data.data
 
-                userLocalRepository.setUserId(userDetail?.userId ?: "")
-                userLocalRepository.setNickname(userDetail?.nickname ?: "")
-                userLocalRepository.setJoinType(userDetail?.joinType ?: "")
+                SopoLog.d("user: ${userDetail?.personalMessage?.emojiCode}")
+
+
+                userDetail?.let {
+                    SopoLog.d("user: ${it.toString()}")
+                    userLocalRepo.setUserId(userDetail.userId ?: "")
+                    userLocalRepo.setNickname(userDetail.nickname ?: "")
+                    userLocalRepo.setJoinType(userDetail.joinType ?: "")
+                    userLocalRepo.setPersonalStatusType(userDetail.personalMessage.type)
+                    userLocalRepo.setPersonalStatusMessage(userDetail.personalMessage.message)
+                }
 
                 navigator.postValue(NavigatorConst.TO_MAIN)
             }
@@ -64,7 +69,7 @@ class SplashViewModel(private val userLocalRepository: UserLocalRepository, priv
 
                 if(responseCode == ResponseCode.TOKEN_ERROR_INVALID_GRANT || responseCode == ResponseCode.TOKEN_ERROR_INVALID_TOKEN)
                 {
-                    val oAuth =  OAuthLocalRepository.get(userLocalRepository.getUserId())
+                    val oAuth =  OAuthLocalRepository.get(userLocalRepo.getUserId())
 
                     val isOver = DateUtil.isOverExpiredDate(oAuth?.refreshTokenExpiredAt?:"")
 

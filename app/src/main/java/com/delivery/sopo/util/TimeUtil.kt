@@ -7,6 +7,14 @@ import java.util.*
 object TimeUtil
 {
     @SuppressLint("SimpleDateFormat")
+    fun getTime(): String
+    {
+        val date: Date = Date()
+        val sdf: SimpleDateFormat = SimpleDateFormat("HHmm")
+        return sdf.format(date)
+    }
+
+    @SuppressLint("SimpleDateFormat")
     fun getDateTime(): String
     {
         val date: Date = Date()

@@ -110,9 +110,9 @@ class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, priva
                 SopoLog.d(msg = "onSuccess uid = $kakaoUserId")
                 SopoLog.d(msg = "onSuccess nickname = $kakaoNickname")
 
-                val password = kakaoUserId.toMD5()
+                val password = kakaoUserId
 
-                val joinInfoDTO = JoinInfoDTO(email = email, password = password, deviceInfo = SOPOApp.deviceInfo, kakaoUid = kakaoUserId, nickname = kakaoNickname)
+                val joinInfoDTO = JoinInfoDTO(email = email, password = password.toMD5(), deviceInfo = SOPOApp.deviceInfo, kakaoUid = kakaoUserId, nickname = kakaoNickname)
 
                 CoroutineScope(Dispatchers.Main).launch {
                     val res = JoinRepository.requestJoinByKakao(joinInfoDTO)

@@ -90,7 +90,7 @@ class LoginViewModel(private val userLocalRepo: UserLocalRepository, private val
 
             // 성공
             CoroutineScope(Dispatchers.IO).launch {
-                val res = login(email.value.toString(), password.value.toString().toMD5())
+                val res = login(email.value.toString(), password.value.toString())
 
                 if(!res.result) return@launch _result.postValue(res)
 
@@ -99,6 +99,12 @@ class LoginViewModel(private val userLocalRepo: UserLocalRepository, private val
                 if(userDetail.nickname == null || userDetail.nickname == "")
                 {
                     return@launch _navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
+                }
+
+                userDetail.let { userDetail ->
+                    userLocalRepo.setNickname(userDetail.nickname?:"")
+                    userLocalRepo.setPersonalStatusType(userDetail.personalMessage.type)
+                    userLocalRepo.setPersonalStatusMessage(userDetail.personalMessage.message)
                 }
 
                 return@launch _navigator.postValue(NavigatorConst.TO_MAIN)

@@ -83,7 +83,7 @@ class ResetPasswordViewModel: ViewModel()
                 }
                 1->
                 {
-                    val passwordResetDTO = PasswordResetDTO(jwtTokenForReset?:"", email.value.toString(), password.value.toString().toMD5())
+                    val passwordResetDTO = PasswordResetDTO(jwtTokenForReset?:"", email.value.toString(), password.value.toString())
 
                     val res = UserRemoteRepository.requestPasswordForReset(passwordResetDTO = passwordResetDTO)
 

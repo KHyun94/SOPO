@@ -54,14 +54,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/linear_settingPassword">
 
-            <ImageView
+            <TextView
                 android:id="@+id/iv_status"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="25dp"
-                android:background="@color/MAIN_BLACK" />
+                android:textSize="35dp"
+                android:gravity="center"
+                android:text="@{vm.personalMessage.emojiCode}" />
 
             <TextView
                 android:id="@+id/tv_status"
@@ -69,7 +71,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/iv_status"
-                android:text="테스트 문구\n입니다." />
+                android:text="@{vm.personalMessage.component1()}" />
 
         </RelativeLayout>
 

@@ -18,6 +18,9 @@ object InfoConst
     const val DISTURB_START_TIME = "DISTURB_START_TIME"
     const val DISTURB_END_TIME = "DISTURB_END_TIME"
 
+    const val PERSONAL_STATUS_TYPE = "PERSONAL_STATUS_TYPE"
+    const val PERSONAL_STATUS_MESSAGE = "PERSONAL_STATUS_MESSAGE"
+
     const val NON = "NON"
     const val EMAIL = "EMAIL"
     const val PASSWORD = "PASSWORD"

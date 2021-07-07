@@ -13,8 +13,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.databinding.FragmentMenuBinding
 import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.models.PersonalMessage
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.MenuMainFrame
@@ -22,9 +24,11 @@ import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import kotlin.system.exitProcess
 
-class MenuFragment: Fragment()
+class MenuFragment: Fragment(), KoinComponent
 {
     private lateinit var parentView: MainView
     private lateinit var menuView: FragmentActivity
@@ -69,6 +73,8 @@ class MenuFragment: Fragment()
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_menu, container, false)
         menuView = this.requireActivity()
         parentView = activity as MainView
+
+
 
         viewBinding()
         setObserver()
