@@ -61,6 +61,10 @@
             android:name=".views.signup.SignUpView"
             android:windowSoftInputMode="adjustPan" />
 
+        <activity
+            android:name=".views.menus.NotDisturbTimeView"
+            android:windowSoftInputMode="adjustPan" />
+
         <service
             android:name=".services.FirebaseService"
             android:enabled="true"

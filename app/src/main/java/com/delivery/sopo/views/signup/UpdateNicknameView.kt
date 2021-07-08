@@ -6,6 +6,7 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -78,7 +79,8 @@ class UpdateNicknameView: AppCompatActivity()
             {
                 binding.btnSndEmail.backgroundTintList =
                     resources.getColorStateList(R.color.COLOR_MAIN_700, null)
-                binding.btnSndEmail.setTextColor(resources.getColor(R.color.MAIN_WHITE))
+                val colorRes = ContextCompat.getColor(this,R.color.MAIN_WHITE)
+                binding.btnSndEmail.setTextColor(colorRes)
                 return@Observer
             }
 

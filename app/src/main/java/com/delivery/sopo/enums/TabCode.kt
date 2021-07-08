@@ -25,7 +25,6 @@ enum class TabCode(val tabNo: Int, val NAME: String, var FRAGMENT: Fragment)
     MENU_FAQ(TabCode.thirdTab, "FAQ", FaqFragment()),
     MENU_ACCOUNT_MANAGEMENT(TabCode.thirdTab, "계정 관리", AccountManagerFragment()),
     MENU_USE_TERMS(TabCode.thirdTab, "이용약관", SettingFragment()),
-    MENU_NOT_DISTURB(TabCode.thirdTab, "방해금지 시간대 설정", NotDisturbTimeFragment()),
     MENU_APP_INFO(TabCode.thirdTab, "앱 정보", AppInfoFragment());
 
     companion object{

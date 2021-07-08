@@ -1,6 +1,7 @@
 package com.delivery.sopo.views.menus
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -31,6 +32,7 @@ class SettingFragment : Fragment()
     {
         super.onCreate(savedInstanceState)
     }
+
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,7 +63,8 @@ class SettingFragment : Fragment()
                 NavigatorConst.TO_NOT_DISTURB ->
                 {
                     SopoLog.d("Menu Sub Fragment view Id >>> ${MenuSubFragment.viewId}")
-                    FragmentManager.move(parentView, TabCode.MENU_NOT_DISTURB, MenuSubFragment.viewId)
+                    val intent = Intent(parentView, NotDisturbTimeView::class.java)
+                    startActivity(intent)
                 }
                 NavigatorConst.TO_SET_NOTIFY_OPTION ->
                 {

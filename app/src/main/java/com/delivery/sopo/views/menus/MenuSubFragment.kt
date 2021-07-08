@@ -37,13 +37,6 @@ class MenuSubFragment: Fragment()
 
         callback = object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                val fm = parentView.supportFragmentManager
-
-                if(fm.fragments[fm.fragments.size - 1] == TabCode.MENU_NOT_DISTURB.FRAGMENT){
-                    FragmentManager.remove(parentView)
-                    return FragmentManager.move(parentView, TabCode.MENU_SETTING.apply { FRAGMENT = SettingFragment.newInstance() }, viewId)
-                }
-
                 FragmentManager.remove(parentView)
                 FragmentManager.move(parentView, TabCode.MY_MENU_MAIN.apply { FRAGMENT = MenuFragment.newInstance() }, MenuMainFrame.viewId)
             }
@@ -77,7 +70,7 @@ class MenuSubFragment: Fragment()
 
     private fun setObserve(){
         vm.tabCode.observe(this, Observer {code ->
-            FragmentManager.move(parentView, code, viewId)
+            FragmentManager.move(parentView, code, MenuMainFrame.viewId)
         })
     }
 
