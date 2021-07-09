@@ -36,7 +36,8 @@
                 android:src="@drawable/ic_btn_back_b"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_btn_back_b" />
+                app:srcCompat="@drawable/ic_btn_back_b"
+                android:onClick="@{()->vm.onClearClicked()}"/>
 
             <TextView
                 android:id="@+id/title_tv"
@@ -44,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="@{vm.tabCode.NAME}"
+                android:text="ㅇㅇㅇㅇ"
                 android:textColor="@color/COLOR_GRAY_800"
                 app:layout_constraintBottom_toBottomOf="@+id/btn_back"
                 app:layout_constraintEnd_toEndOf="parent"

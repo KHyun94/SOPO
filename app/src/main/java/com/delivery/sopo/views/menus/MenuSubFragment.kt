@@ -12,10 +12,12 @@ import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
+import androidx.lifecycle.map
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentMenuSubBinding
 import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.MenuMainFrame
@@ -69,17 +71,26 @@ class MenuSubFragment: Fragment()
     }
 
     private fun setObserve(){
-        vm.tabCode.observe(this, Observer {code ->
-            FragmentManager.move(parentView, code, MenuMainFrame.viewId)
+
+        vm.navigator.observe(this, Observer {navigator->
+            SopoLog.d("navigator[$navigator]")
+
+            val enumData = CodeUtil.getEnumValueOfName<TabCode>(navigator)
+
+            SopoLog.d(">>>> ${enumData}")
         })
+//
+//        vm.tabCode.observe(this, Observer {code ->
+//            FragmentManager.move(parentView, code, binding.layoutSubMenuFrame.id)
+//        })
     }
 
     private fun receiveBundleData()
     {
         arguments?.let { bundle ->
             val tabCode = bundle.getSerializable("MENU_SUB") as TabCode
-            vm.tabCode.value = tabCode
-            SopoLog.d("receiveBundleData >>> $tabCode ${vm.tabCode.value}")
+//            vm.tabCode.value = tabCode
+//            SopoLog.d("receiveBundleData >>> $tabCode ${vm.tabCode.value}")
         }
     }
 
@@ -100,7 +111,12 @@ class MenuSubFragment: Fragment()
         @IdRes
         var viewId: Int = 0
 
-        fun newInstance(code: TabCode): MenuSubFragment{
+        fun newInstance(code: TabCode?): MenuSubFragment{
+
+            if(code == null)
+            {
+                return MenuSubFragment()
+            }
 
             val args = Bundle().apply {
                 putSerializable("MENU_SUB", code)

@@ -10,7 +10,7 @@ import com.delivery.sopo.views.registers.ConfirmParcelFragment
 
 enum class TabCode(val tabNo: Int, val NAME: String, var FRAGMENT: Fragment)
 {
-    REGISTER_INPUT(TabCode.firstTab, "FRAGMENT_REGISTER_STEP1", InputParcelFragment()),
+    REGISTER_INPUT(TabCode.firstTab, "REGISTER_INPUT", InputParcelFragment()),
     REGISTER_SELECT(TabCode.firstTab, "FRAGMENT_REGISTER_STEP2", SelectCarrierFragment()),
     REGISTER_CONFIRM(TabCode.firstTab, "FRAGMENT_REGISTER_STEP3", ConfirmParcelFragment()),
 

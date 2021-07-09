@@ -7,6 +7,7 @@ import com.delivery.sopo.data.repository.database.room.RoomActivate
 import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.views.adapter.GridTypedRecyclerViewAdapter
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.util.FragmentManager
@@ -57,6 +58,6 @@ class SelectCarrierViewModel(private val carrierRepo: CarrierRepository): ViewMo
 
     fun onClearClicked()
     {
-        moveFragment.value = FragmentManager.currentFragment1st.NAME
+        moveFragment.value = TabCode.REGISTER_INPUT.NAME
     }
 }

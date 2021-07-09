@@ -7,30 +7,6 @@ import com.delivery.sopo.enums.TabCode
 
 object FragmentManager
 {
-    var currentFragment1st = TabCode.REGISTER_INPUT
-    var currentFragment2nd = TabCode.INQUIRY
-    var currentFragment3rd = TabCode.MY_MENU_MAIN
-
-    fun add(activity: FragmentActivity, code: TabCode, @IdRes viewId: Int)
-    {
-        SopoLog.d("add() call >>> ${code.NAME} / $viewId")
-
-        val fm = activity.supportFragmentManager
-        val transaction = fm.beginTransaction()
-        transaction.run {
-
-            if(code.FRAGMENT.isAdded)
-            {
-                transaction.remove(code.FRAGMENT)
-                SopoLog.d("중첩 프래그먼트[${code}] 존재 삭제 중? : ${code.FRAGMENT.isRemoving}")
-            }
-
-            add(viewId, code.FRAGMENT, code.NAME)
-            addToBackStack(null)
-            commitAllowingStateLoss()
-        }
-    }
-
     fun move(activity: FragmentActivity, code: TabCode, @IdRes viewId: Int)
     {
         SopoLog.d("move() 호출:[Fragment:${code.NAME}][viewId:$viewId]")
@@ -48,22 +24,6 @@ object FragmentManager
             replace(viewId, code.FRAGMENT, code.NAME)
             addToBackStack(null)
             commitAllowingStateLoss()
-        }
-
-        when(code.tabNo)
-        {
-            TabCode.firstTab ->
-            {
-                currentFragment1st = code
-            }
-            TabCode.secondTab ->
-            {
-                currentFragment2nd = code
-            }
-            TabCode.thirdTab ->
-            {
-                currentFragment3rd = code
-            }
         }
     }
 

@@ -62,7 +62,6 @@ class SettingFragment : Fragment()
             when(navigator){
                 NavigatorConst.TO_NOT_DISTURB ->
                 {
-                    SopoLog.d("Menu Sub Fragment view Id >>> ${MenuSubFragment.viewId}")
                     val intent = Intent(parentView, NotDisturbTimeView::class.java)
                     startActivity(intent)
                 }

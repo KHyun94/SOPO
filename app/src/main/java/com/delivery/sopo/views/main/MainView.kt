@@ -195,12 +195,13 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
                                          {
                                              if(tab == null) return
 
-                                             FragmentManager.remove(activity = this@MainView)
+
 
                                              when(tab.position)
                                              {
                                                  NavigatorConst.REGISTER_TAB ->
                                                  {
+                                                     FragmentManager.remove(activity = this@MainView)
                                                      TabCode.REGISTER_INPUT.FRAGMENT =
                                                          InputParcelFragment.newInstance(null, 0)
 
@@ -210,6 +211,7 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
                                                  }
                                                  NavigatorConst.INQUIRY_TAB ->
                                                  {
+                                                     FragmentManager.remove(activity = this@MainView)
                                                      FragmentManager.move(activity = this@MainView,
                                                                           code = TabCode.INQUIRY,
                                                                           viewId = InquiryMainFrame.viewId)
@@ -218,8 +220,7 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
                                                  {
                                                      FragmentManager.move(activity = this@MainView,
                                                                           code = TabCode.MY_MENU_MAIN.apply {
-                                                                              FRAGMENT =
-                                                                                  MenuFragment.newInstance()
+                                                                              FRAGMENT = MenuFragment.newInstance()
                                                                           },
                                                                           viewId = MenuMainFrame.viewId)
                                                  }

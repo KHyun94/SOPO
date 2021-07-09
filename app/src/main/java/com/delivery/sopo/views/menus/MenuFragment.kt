@@ -120,7 +120,7 @@ class MenuFragment: Fragment(), KoinComponent
         })
 
         vm.menu.observe(this, Observer { code ->
-            SopoLog.d("move to code[${code}]")
+            SopoLog.d("why call move to code[${code}]")
             when(code)
             {
                 TabCode.MENU_NOTICE ->
