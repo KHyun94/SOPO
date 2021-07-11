@@ -48,7 +48,7 @@ class SplashViewModel(private val userLocalRepo: UserLocalRepository, private va
 
                 val userDetail = result.data.data
 
-                SopoLog.d("user: ${userDetail?.personalMessage?.emojiCode}")
+                SopoLog.d("user: ${userDetail?.personalMessage?.emojiIconRes}")
 
 
                 userDetail?.let {

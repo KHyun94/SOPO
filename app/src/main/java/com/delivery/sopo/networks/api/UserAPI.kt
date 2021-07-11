@@ -39,7 +39,6 @@ interface UserAPI
      */
     @PATCH("/api/v1/sopo-api/user/nickname")
     suspend fun updateUserNickname(@Body nickname : Map<String, String>) : Response<APIResult<String?>>
-//    suspend fun updateUserNickname(@Body nickname : String) : Response<APIResult<String?>>
 
     /**
      * Send Email For request PIN CODE

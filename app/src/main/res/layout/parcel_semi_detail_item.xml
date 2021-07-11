@@ -79,21 +79,22 @@
 
         <TextView
             android:id="@+id/tv_carrier"
-            style="@style/H5"
+            style="@style/H3"
+            android:fontFamily="@font/spoqa_han_sans_neo_regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="28dp"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="18dp"
             android:includeFontPadding="false"
             android:text="@{item.carrierDTO.carrier.NAME}"
             android:textColor="@color/COLOR_GRAY_800"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_alias"
-            tools:text="어디 택배사"/>
+            tools:text="롯데택"/>
 
         <TextView
             android:id="@+id/tv_waybill_num"
-            style="@style/H4"
+            style="@style/H3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -105,8 +106,8 @@
             app:layout_constraintLeft_toRightOf="@+id/tv_carrier"
             app:layout_constraintRight_toLeftOf="@id/iv_copy"
             app:layout_constraintTop_toBottomOf="@id/tv_alias"
-            android:letterSpacing="0.04"
-            tools:text="432018901"/>
+            android:letterSpacing="0.01"
+            tools:text="102948584828"/>
 
         <ImageView
             android:id="@+id/iv_copy"

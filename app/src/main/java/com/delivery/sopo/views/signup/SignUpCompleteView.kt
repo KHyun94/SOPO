@@ -2,8 +2,6 @@ package com.delivery.sopo.views.signup
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -12,11 +10,9 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.SignUpCompleteBinding
 import com.delivery.sopo.extensions.launchActivityWithAllClear
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.viewmodels.signup.SignUpCompleteViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.OnAgreeClickListener
-import com.delivery.sopo.views.login.LoginSelectView
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -52,7 +48,7 @@ class SignUpCompleteView : AppCompatActivity()
                 }
                 NavigatorConst.TO_UPDATE_NICKNAME ->
                 {
-                    Intent(this, UpdateNicknameView::class.java).launchActivityWithAllClear(this@SignUpCompleteView)
+                    Intent(this, RegisterNicknameView::class.java).launchActivityWithAllClear(this@SignUpCompleteView)
                 }
                 NavigatorConst.TO_LOGIN_SELECT ->
                 {

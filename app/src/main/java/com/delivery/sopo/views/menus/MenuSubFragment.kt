@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.map
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentMenuSubBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.util.CodeUtil
@@ -23,6 +24,7 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.MenuMainFrame
 import com.delivery.sopo.viewmodels.menus.MenuSubViewModel
 import com.delivery.sopo.views.main.MainView
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import org.koin.android.ext.android.inject
 
 class MenuSubFragment: Fragment()
@@ -33,17 +35,20 @@ class MenuSubFragment: Fragment()
 
     lateinit var callback: OnBackPressedCallback
 
+    init
+    {
+        callback = object: OnBackPressedCallback(true)
+        {
+            override fun handleOnBackPressed()
+            {
+                moveToBack()
+            }
+        }
+    }
+
     override fun onAttach(context: Context)
     {
         super.onAttach(context)
-
-        callback = object: OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                FragmentManager.remove(parentView)
-                FragmentManager.move(parentView, TabCode.MY_MENU_MAIN.apply { FRAGMENT = MenuFragment.newInstance() }, MenuMainFrame.viewId)
-            }
-        }
-
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
@@ -63,41 +68,64 @@ class MenuSubFragment: Fragment()
         return binding.root
     }
 
-    private fun<T:ViewDataBinding> bindView(inflater: LayoutInflater, @LayoutRes layoutRes:Int,container: ViewGroup?):T{
-        val binding = DataBindingUtil.inflate<T>(inflater, layoutRes, container,false)
+    private fun <T: ViewDataBinding> bindView(inflater: LayoutInflater, @LayoutRes layoutRes: Int, container: ViewGroup?): T
+    {
+        val binding = DataBindingUtil.inflate<T>(inflater, layoutRes, container, false)
         binding.setVariable(BR.vm, vm)
         binding.lifecycleOwner = this
         return binding
     }
 
-    private fun setObserve(){
+    private fun setObserve()
+    {
+        parentView.currentPage.observe(this, Observer {
+            if (it != null && it == TabCode.thirdTab)
+            {
+                callback = object : OnBackPressedCallback(true)
+                {
+                    override fun handleOnBackPressed()
+                    {
+                        moveToBack()
+                    }
+                }
+                requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+            }
+        })
 
-        vm.navigator.observe(this, Observer {navigator->
+
+        vm.navigator.observe(this, Observer { navigator ->
             SopoLog.d("navigator[$navigator]")
+
+            if(navigator == NavigatorConst.TO_BACK_SCREEN)
+            {
+                moveToBack()
+                return@Observer
+            }
 
             val enumData = CodeUtil.getEnumValueOfName<TabCode>(navigator)
 
-            SopoLog.d(">>>> ${enumData}")
+            enumData.FRAGMENT = when(enumData)
+            {
+                TabCode.MENU_NOTICE -> NoticeFragment.newInstance()
+                TabCode.MENU_SETTING -> SettingFragment.newInstance()
+                TabCode.MENU_FAQ -> FaqFragment.newInstance()
+                TabCode.MENU_APP_INFO -> AppInfoFragment.newInstance()
+                TabCode.MENU_ACCOUNT_MANAGEMENT -> AccountManagerFragment.newInstance()
+                else -> throw Exception("Menu is null")
+            }
+
+            vm.title.postValue(enumData.TITLE)
+            FragmentManager.move(parentView, enumData, binding.layoutSubMenuFrame.id)
         })
-//
-//        vm.tabCode.observe(this, Observer {code ->
-//            FragmentManager.move(parentView, code, binding.layoutSubMenuFrame.id)
-//        })
+
     }
 
     private fun receiveBundleData()
     {
         arguments?.let { bundle ->
-            val tabCode = bundle.getSerializable("MENU_SUB") as TabCode
-//            vm.tabCode.value = tabCode
-//            SopoLog.d("receiveBundleData >>> $tabCode ${vm.tabCode.value}")
+            val name = bundle.getString("MENU_SUB")
+            vm.navigator.value = name
         }
-    }
-
-    override fun onResume()
-    {
-        super.onResume()
-        SopoLog.d("onResume()")
     }
 
     override fun onDetach()
@@ -106,24 +134,24 @@ class MenuSubFragment: Fragment()
         callback.remove()
     }
 
-    companion object{
+    fun moveToBack(){
+        SopoLog.d("!@#!@#!@#!@#!@#")
+        FragmentManager.run {
+            remove(parentView)
+            move(parentView, TabCode.MY_MENU_MAIN.apply { FRAGMENT = MenuFragment.newInstance() }, MenuMainFrame.viewId)
+        }
+    }
 
-        @IdRes
-        var viewId: Int = 0
+    companion object
+    {
+        @IdRes var viewId: Int = 0
 
-        fun newInstance(code: TabCode?): MenuSubFragment{
-
-            if(code == null)
-            {
-                return MenuSubFragment()
-            }
-
-            val args = Bundle().apply {
-                putSerializable("MENU_SUB", code)
-            }
-
+        fun newInstance(name: String): MenuSubFragment
+        {
             return MenuSubFragment().apply {
-                arguments = args
+                arguments = Bundle().apply {
+                    putSerializable("MENU_SUB", name)
+                }
             }
         }
     }

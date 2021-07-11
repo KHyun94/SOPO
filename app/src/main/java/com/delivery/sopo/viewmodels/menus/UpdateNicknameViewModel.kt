@@ -1,4 +1,4 @@
-package com.delivery.sopo.viewmodels.signup
+package com.delivery.sopo.viewmodels.menus
 
 import android.os.Handler
 import android.view.View

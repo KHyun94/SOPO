@@ -28,4 +28,8 @@ class NotDisturbTimeViewModel: ViewModel(), KoinComponent
     fun onFloatNotDisturbTimeDialogClicked(){
         _navigator.postValue(NavigatorConst.TO_FLOATING_DIALOG)
     }
+
+    fun onClearClicked(){
+        _navigator.postValue(NavigatorConst.TO_BACK_SCREEN)
+    }
 }

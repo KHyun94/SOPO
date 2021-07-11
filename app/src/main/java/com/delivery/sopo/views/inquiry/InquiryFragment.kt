@@ -74,16 +74,20 @@ class InquiryFragment: Fragment()
 
     private var refreshDelay: Boolean = false
 
-    var callback: OnBackPressedCallback? = null
+    lateinit var callback: OnBackPressedCallback
 
-    init
+    override fun onAttach(context: Context)
     {
+        super.onAttach(context)
+        parentView = activity as MainView
+
         var pressedTime: Long = 0
 
         callback = object: OnBackPressedCallback(true)
         {
             override fun handleOnBackPressed()
             {
+                SopoLog.d("!11223123123123123")
                 if (System.currentTimeMillis() - pressedTime > 2000)
                 {
                     pressedTime = System.currentTimeMillis()
@@ -99,12 +103,7 @@ class InquiryFragment: Fragment()
                 exitProcess(0)
             }
         }
-    }
 
-    override fun onAttach(context: Context)
-    {
-        super.onAttach(context)
-        parentView = activity as MainView
         requireActivity().onBackPressedDispatcher.addCallback(this, callback?:return)
     }
 
@@ -134,7 +133,7 @@ class InquiryFragment: Fragment()
     {
         super.onDetach()
 
-        callback?.remove()
+        callback.remove()
     }
 
     private fun bindView(inflater: LayoutInflater, container: ViewGroup?)
@@ -172,6 +171,13 @@ class InquiryFragment: Fragment()
 
     private fun setObserver()
     {
+        parentView.currentPage.observe(this, Observer {
+            if (it != null && it == TabCode.secondTab)
+            {
+                requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+            }
+        })
+
         // 배송완료 리스트에서 해당 년월에 속해있는 택배들을 전부 삭제했을 때는 서버로 통신해서 새로고침하면 안돼고 무조건 로컬에 있는 데이터로 새로고침 해야한다.
         // (서버로 통신해서 새로고침하면 서버에 있는 데이터(우선순위가 높음)로 덮어써버리기 때문에 '삭제취소'를 통해 복구를 못함..)
         // (새로고침하면 내부에 저장된 '삭제할 데이터'들을 모두 서버로 통신하여 Remote database에서도 삭제처리(데이터 동기화)를 하고 나서 새로운 데이터를 받아옴)

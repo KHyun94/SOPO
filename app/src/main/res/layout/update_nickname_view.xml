@@ -10,7 +10,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.signup.UpdateNicknameViewModel" />
+            type="com.delivery.sopo.viewmodels.menus.UpdateNicknameViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -111,4 +111,5 @@
             android:layout_marginBottom="83dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

@@ -70,5 +70,7 @@ class FaqFragment: Fragment(){
         val faqExpandableAdapter = FaqExpandableAdapter(requireContext() , data)
         binding.root.expand_faq.setAdapter(faqExpandableAdapter)
     }
-
+    companion object{
+        fun newInstance() = AppInfoFragment()
+    }
 }

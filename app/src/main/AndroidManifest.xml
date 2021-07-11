@@ -12,7 +12,6 @@
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
@@ -27,9 +26,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".views.login.ResetPasswordView"
+        <activity android:name=".views.menus.UpdateNicknameView"></activity>
+        <activity
+            android:name=".views.login.ResetPasswordView"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".views.signup.UpdateNicknameView" />
+        <activity android:name=".views.signup.RegisterNicknameView" />
         <activity
             android:name=".views.main.MainView"
             android:windowSoftInputMode="adjustNothing" />
@@ -60,9 +61,11 @@
         <activity
             android:name=".views.signup.SignUpView"
             android:windowSoftInputMode="adjustPan" />
-
         <activity
             android:name=".views.menus.NotDisturbTimeView"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".views.menus.SignOutView"
             android:windowSoftInputMode="adjustPan" />
 
         <service

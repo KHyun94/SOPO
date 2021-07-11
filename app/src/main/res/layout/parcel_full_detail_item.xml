@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <import type="androidx.lifecycle.MutableLiveData" />
-
         <import type="android.view.View" />
 
         <variable
@@ -46,9 +45,8 @@
                     android:layout_marginStart="24dp"
                     android:layout_marginTop="11dp"
                     android:includeFontPadding="false"
-                    android:text="택배조회"
+                    android:text="택배 조회"
                     android:textColor="@color/COLOR_GRAY_800" />
-
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -95,18 +93,19 @@
                     android:includeFontPadding="false"
                     android:text="@{item.alias}"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/v_empty" />
+                    app:layout_constraintTop_toBottomOf="@id/v_empty"
+                    tools:text = "알림용"/>
 
                 <TextView
                     android:id="@+id/tv_base_date"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="24dp"
-                    android:fontFamily="@font/spoqa_han_sans_neo_light"
+                    style="@style/H5"
+                    android:layout_marginTop="4dp"
                     android:includeFontPadding="false"
                     android:text="최초등록일 "
-                    android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="10dp"
+                    android:textColor="@color/COLOR_GRAY_400"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_alias" />
 
@@ -115,11 +114,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
-                    android:fontFamily="@font/spoqa_han_sans_neo_light"
                     android:includeFontPadding="false"
+                    android:layout_marginTop="4dp"
+                    style="@style/H5"
                     android:text="@{item.regDt}"
-                    android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="10dp"
+                    android:textColor="@color/COLOR_GRAY_400"
                     app:layout_constraintLeft_toRightOf="@id/tv_base_date"
                     app:layout_constraintTop_toBottomOf="@id/tv_alias" />
 
@@ -141,33 +140,31 @@
                         android:background="@drawable/border_round_2sp">
 
                         <ImageView
-                            android:layout_width="41dp"
-                            android:layout_height="41dp"
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
                             android:padding="10sp"
                             app:setImage="@{item.carrierDTO.icons[0]}"
                             app:setDefaultImage="@{0}"/>
                     </LinearLayout>
 
-
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:orientation="vertical">
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:gravity="center">
+                            android:layout_alignParentTop="true">
 
                             <TextView
-                                style="@style/H5"
+                                style="@style/H4"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
                                 android:includeFontPadding="false"
-                                android:lineHeight="17.76px"
                                 android:text="@{item.carrierDTO.carrier.NAME}"
-                                android:textColor="@color/COLOR_MAIN_900" />
+                                tools:text = "한진택배"/>
 
                             <ImageView
                                 android:layout_width="wrap_content"
@@ -179,16 +176,18 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:gravity="center">
+                            android:layout_alignParentBottom="true">
 
                             <TextView
                                 android:id="@+id/tv_waybill_num"
                                 style="@style/H3"
+                                android:letterSpacing="0.01"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginEnd="8dp"
                                 android:includeFontPadding="false"
                                 android:text="@{item.waybillNum}"
+                                tools:text="1234567890"
                                 android:textColor="@color/COLOR_GRAY_800" />
 
                             <ImageView
@@ -201,7 +200,7 @@
 
                         </LinearLayout>
 
-                    </LinearLayout>
+                    </RelativeLayout>
                 </LinearLayout>
 
                 <View
@@ -213,7 +212,8 @@
                     app:layout_constraintTop_toBottomOf="@id/layout_parcel_info" />
 
                 <TextView
-                    style="@style/H5"
+                    style="@style/H4"
+                    android:textColor="@color/COLOR_GRAY_400"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="38dp"

@@ -27,10 +27,11 @@ class SettingViewModel(private val appPasswordRepo: AppPasswordRepository) : Vie
                 viewModelScope.launch(Dispatchers.IO){
                     appPasswordRepo.deleteAll()
                 }
+
+                return
             }
-            else{
-                _showSetPassword.value = true
-            }
+
+            _showSetPassword.value = true
         }
     }
 

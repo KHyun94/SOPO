@@ -13,7 +13,7 @@ import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
 import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.signup.SignUpView
-import com.delivery.sopo.views.signup.UpdateNicknameView
+import com.delivery.sopo.views.signup.RegisterNicknameView
 import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
 import com.kakao.util.exception.KakaoException
@@ -87,7 +87,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                 }
                 NavigatorConst.TO_UPDATE_NICKNAME ->
                 {
-                    Intent(this, UpdateNicknameView::class.java).launchActivityWithAllClear(this@LoginSelectView)
+                    Intent(this, RegisterNicknameView::class.java).launchActivityWithAllClear(this@LoginSelectView)
                 }
             }
 

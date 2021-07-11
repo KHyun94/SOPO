@@ -49,11 +49,13 @@ class NotDisturbTimeView : AppCompatActivity()
                 NavigatorConst.TO_FLOATING_DIALOG -> {
                     showNotDisturbTimeDialog()
                 }
+                NavigatorConst.TO_BACK_SCREEN -> {
+                    finish()
+                }
             }
         })
 
     }
-
 
     fun showNotDisturbTimeDialog()
     {

@@ -7,16 +7,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentAccountManagerBinding
 import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.launchActivity
+import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.AccountManagerViewModel
 import com.delivery.sopo.viewmodels.menus.MenuMainFrame
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.function.Function
 
 
 class AccountManagerFragment: Fragment()
@@ -46,7 +50,16 @@ class AccountManagerFragment: Fragment()
             {
                 MenuEnum.UPDATE_NICKNAME ->
                 {
-                    Toast.makeText(context, "닉네임 업데이트", Toast.LENGTH_LONG).show()
+                    val edit = MutableLiveData<String>()
+
+                    AlertUtil.updateValueDialog(context!!, "변경할 닉네임.", Pair("확인", View.OnClickListener {
+                        edit.observe(this@AccountManagerFragment, Observer {
+                            SopoLog.d(msg = "입력 값 = > $it")
+                            AlertUtil.onDismiss()
+                        })
+                    }), Pair("취소", null), Function {
+                        edit.value = it
+                    })
                 }
                 MenuEnum.SIGN_OUT ->
                 {

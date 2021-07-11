@@ -17,7 +17,7 @@ import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.PermissionDialog
 import com.delivery.sopo.views.intro.IntroView
 import com.delivery.sopo.views.main.MainView
-import com.delivery.sopo.views.signup.UpdateNicknameView
+import com.delivery.sopo.views.signup.RegisterNicknameView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -125,7 +125,7 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
     // 정상적으로 로그인했을 때 닉네임의 여부에 따라 UpdateNicknameView or MainView로 이동
     private fun goToMainOrNickname(nickname: String)
     {
-        val clz = if(nickname == "") UpdateNicknameView::class.java else MainView::class.java
+        val clz = if(nickname == "") RegisterNicknameView::class.java else MainView::class.java
 
         Intent(this@SplashView, clz).let {
             startActivity(it)

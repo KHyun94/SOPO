@@ -46,5 +46,8 @@ class AppInfoFragment : Fragment()
         
     }
 
+    companion object{
+        fun newInstance() = AppInfoFragment()
+    }
 
 }

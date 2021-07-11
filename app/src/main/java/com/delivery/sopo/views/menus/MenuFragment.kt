@@ -7,16 +7,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.LayoutRes
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
+import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.databinding.FragmentMenuBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.models.PersonalMessage
+import com.delivery.sopo.util.BindUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.MenuMainFrame
@@ -31,7 +35,6 @@ import kotlin.system.exitProcess
 class MenuFragment: Fragment(), KoinComponent
 {
     private lateinit var parentView: MainView
-    private lateinit var menuView: FragmentActivity
     private lateinit var binding: FragmentMenuBinding
 
     private val vm: MenuViewModel by viewModel()
@@ -70,22 +73,19 @@ class MenuFragment: Fragment(), KoinComponent
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_menu, container, false)
-        menuView = this.requireActivity()
+        binding = bindView(inflater, R.layout.fragment_menu, container)
         parentView = activity as MainView
 
-
-
-        viewBinding()
         setObserver()
 
         return binding.root
     }
 
-    private fun viewBinding()
-    {
-        binding.vm = vm
+    private fun<T: ViewDataBinding> bindView(inflater: LayoutInflater, @LayoutRes layoutRes:Int, container: ViewGroup?):T{
+        val binding = DataBindingUtil.inflate<T>(inflater, layoutRes, container,false)
+        binding.setVariable(BR.vm, vm)
         binding.lifecycleOwner = this
+        return binding
     }
 
     fun setObserver()
@@ -120,20 +120,20 @@ class MenuFragment: Fragment(), KoinComponent
         })
 
         vm.menu.observe(this, Observer { code ->
-            SopoLog.d("why call move to code[${code}]")
+            SopoLog.d("move to code[${code}]")
             when(code)
             {
                 TabCode.MENU_NOTICE ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_NOTICE)
+                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_NOTICE.NAME)
                 }
                 TabCode.MENU_SETTING ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_SETTING.apply { FRAGMENT = SettingFragment.newInstance() })
+                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_SETTING.NAME)
                 }
                 TabCode.MENU_FAQ ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_FAQ)
+                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_FAQ.NAME)
                 }
                 TabCode.MENU_USE_TERMS ->
                 {
@@ -141,26 +141,17 @@ class MenuFragment: Fragment(), KoinComponent
                 }
                 TabCode.MENU_APP_INFO ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT =
-                        MenuSubFragment.newInstance(TabCode.MENU_APP_INFO)
+                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_APP_INFO.NAME)
                 }
                 TabCode.MENU_ACCOUNT_MANAGEMENT ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT =
-                        MenuSubFragment.newInstance(TabCode.MENU_ACCOUNT_MANAGEMENT)
+                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_ACCOUNT_MANAGEMENT.NAME)
                 }
                 else -> throw Exception("Menu is null")
             }
 
             FragmentManager.move(parentView, TabCode.MY_MENU_SUB, MenuMainFrame.viewId)
         })
-    }
-
-    override fun onResume()
-    {
-        super.onResume()
-
-        SopoLog.d("onResume()")
     }
 
     override fun onDetach()
@@ -176,5 +167,4 @@ class MenuFragment: Fragment(), KoinComponent
             return MenuFragment()
         }
     }
-
 }

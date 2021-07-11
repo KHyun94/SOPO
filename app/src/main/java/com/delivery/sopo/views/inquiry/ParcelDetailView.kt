@@ -19,6 +19,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.FragmentManager
@@ -188,7 +189,7 @@ class ParcelDetailView : Fragment()
     private fun setObserve()
     {
         parentView.currentPage.observe(this, Observer {
-            if (it != null && it == 1)
+            if (it != null && it == TabCode.secondTab)
             {
                 callback = object : OnBackPressedCallback(true)
                 {

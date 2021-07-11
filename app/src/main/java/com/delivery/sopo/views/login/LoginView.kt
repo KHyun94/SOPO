@@ -12,7 +12,6 @@ import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.launchActivity
 import com.delivery.sopo.extensions.launchActivityWithAllClear
-import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.CustomProgressBar
@@ -21,7 +20,7 @@ import com.delivery.sopo.viewmodels.login.LoginViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.OnAgreeClickListener
 import com.delivery.sopo.views.main.MainView
-import com.delivery.sopo.views.signup.UpdateNicknameView
+import com.delivery.sopo.views.signup.RegisterNicknameView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -128,7 +127,7 @@ class LoginView: BasicView<LoginViewBinding>(R.layout.login_view)
                 }
                 NavigatorConst.TO_UPDATE_NICKNAME ->
                 {
-                    Intent(this@LoginView, UpdateNicknameView::class.java).launchActivityWithAllClear(this@LoginView)
+                    Intent(this@LoginView, RegisterNicknameView::class.java).launchActivityWithAllClear(this@LoginView)
                 }
                 NavigatorConst.TO_MAIN ->
                 {

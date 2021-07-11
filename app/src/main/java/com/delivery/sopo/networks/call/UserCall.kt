@@ -28,12 +28,10 @@ object UserCall : BaseService(), KoinComponent
         return apiCall (call = {userAPI.updateFCMToken(fcmToken = fcmToken)} )
     }
 
-    // TODO error 닉네임 설정
     suspend fun updateNickname(nickname: String): NetworkResult<APIResult<String?>>
     {
         userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
         return apiCall (call = {userAPI.updateUserNickname(nickname = mapOf<String, String>(Pair("nickname", nickname)))} )
-//        return apiCall (call = {userAPI.updateUserNickname(nickname = nickname)} )
     }
 
     suspend fun requestSignOut(reason: String): NetworkResult<APIResult<String?>>

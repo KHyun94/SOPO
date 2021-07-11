@@ -43,7 +43,8 @@
                 android:layout_height="match_parent"
                 android:layout_marginStart="4dp"
                 android:text="@string/MENU_VIEW_PASSWORD"
-                android:textColor="@color/MAIN_BLACK" />
+                android:gravity="center"/>
+
         </LinearLayout>
 
         <RelativeLayout
@@ -54,16 +55,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/linear_settingPassword">
 
-            <TextView
+            <ImageView
                 android:id="@+id/iv_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="25dp"
-                android:textSize="35dp"
-                android:gravity="center"
-                android:text="@{vm.personalMessage.emojiCode}" />
+                app:setImage="@{vm.personalMessage.emojiIconRes}"
+                app:setDefaultImage="@{0}"
+                tools:background="@drawable/personal_status_1"/>
 
             <TextView
                 android:id="@+id/tv_status"
@@ -71,7 +72,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/iv_status"
-                android:text="@{vm.personalMessage.component1()}" />
+                android:layout_alignBaseline="@+id/iv_status"
+                android:text="@{vm.personalMessage.component1()}"
+                tools:text="판교돼지병아리12343님,\n손꼽아 기다리는 택배가 있나요?"/>
 
         </RelativeLayout>
 
