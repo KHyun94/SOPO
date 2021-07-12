@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentAccountManagerBinding
 import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.enums.TabCode
@@ -19,6 +20,7 @@ import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.AccountManagerViewModel
 import com.delivery.sopo.viewmodels.menus.MenuMainFrame
+import com.delivery.sopo.views.login.ResetPasswordView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.function.Function
 
@@ -45,31 +47,36 @@ class AccountManagerFragment: Fragment()
 
     fun setObserve()
     {
-        vm.navigator.observe(this, Observer { menu ->
-            when(menu)
+        vm.navigator.observe(this, Observer { navigator ->
+            when(navigator)
             {
-                MenuEnum.UPDATE_NICKNAME ->
+                NavigatorConst.TO_UPDATE_NICKNAME ->
                 {
-                    val edit = MutableLiveData<String>()
-
-                    AlertUtil.updateValueDialog(context!!, "변경할 닉네임.", Pair("확인", View.OnClickListener {
-                        edit.observe(this@AccountManagerFragment, Observer {
-                            SopoLog.d(msg = "입력 값 = > $it")
-                            AlertUtil.onDismiss()
-                        })
-                    }), Pair("취소", null), Function {
-                        edit.value = it
-                    })
+                    Intent(this.requireContext(), UpdateNicknameView::class.java).launchActivity(
+                        this.requireContext())
                 }
-                MenuEnum.SIGN_OUT ->
+                NavigatorConst.TO_RESET_PASSWORD ->
                 {
-                    Intent(this.requireContext(), SignOutView::class.java).launchActivity(this.requireContext())
+                    Intent(this.requireContext(), ResetPasswordView::class.java).launchActivity(
+                        this.requireContext())
+                }
+                NavigatorConst.TO_LOGOUT ->
+                {
+                    /**
+                     * TODO 전체 테이블 clear
+                     */
+                }
+                NavigatorConst.TO_SIGN_OUT ->
+                {
+                    Intent(this.requireContext(), SignOutView::class.java).launchActivity(
+                        this.requireContext())
                 }
             }
         })
     }
 
-    companion object{
+    companion object
+    {
         fun newInstance() = AccountManagerFragment()
     }
 }

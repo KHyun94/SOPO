@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.menus.AccountManagerViewModel" />
@@ -12,18 +13,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/COLOR_GRAY_50">
+        android:background="@color/COLOR_GRAY_50"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/linear_update"
+            android:id="@+id/layout_update_nickname"
             android:layout_width="match_parent"
             android:layout_height="71dp"
+            android:onClick="@{()->vm.onMoveClicked(layoutUpdateNickname)}"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:onClick="@{()->vm.onUpdateNicknameClicked()}">
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 style="@style/H3"
@@ -41,11 +42,37 @@
             android:layout_height="1dp"
             android:background="@color/COLOR_GRAY_100" />
 
-
         <LinearLayout
-            android:id="@+id/linear_notice"
+            android:id="@+id/layout_reset_password"
             android:layout_width="match_parent"
             android:layout_height="71dp"
+            android:onClick="@{()->vm.onMoveClicked(layoutResetPassword)}"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                style="@style/H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="32dp"
+                android:text="계정 비밀번호 재설정"
+                android:textColor="@color/COLOR_GRAY_800" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/COLOR_GRAY_100" />
+
+        <LinearLayout
+            android:id="@+id/layout_logout"
+            android:layout_width="match_parent"
+            android:layout_height="71dp"
+            android:onClick="@{()->vm.onMoveClicked(layoutLogout)}"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -68,34 +95,10 @@
             android:background="@color/COLOR_GRAY_100" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="71dp"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                style="@style/H3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="32dp"
-                android:text="계정 정보 백업"
-                android:textColor="@color/COLOR_GRAY_800" />
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/COLOR_GRAY_100"/>
-
-        <LinearLayout
             android:id="@+id/layout_sign_out"
             android:layout_width="match_parent"
             android:layout_height="71dp"
-            android:onClick="@{()->vm.onSignOutClicked()}"
+            android:onClick="@{()->vm.onMoveClicked(layoutSignOut)}"
             android:orientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

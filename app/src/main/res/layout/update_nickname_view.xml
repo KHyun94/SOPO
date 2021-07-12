@@ -12,48 +12,83 @@
             name="vm"
             type="com.delivery.sopo.viewmodels.menus.UpdateNicknameViewModel" />
     </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_main_update_nickname"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/COLOR_GRAY_50">
 
-        <TextView
-            android:id="@+id/tv_title"
-            style="@style/H2"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/layout_header"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="11dp"
-            android:text="@string/SIGN_UP_COMPLETE_VIEW_TITLE"
-            android:textColor="@color/COLOR_GRAY_800"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tv_title"
+                style="@style/H2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="11dp"
+                android:includeFontPadding="false"
+                android:text="닉네임 변경"
+                android:textColor="@color/COLOR_GRAY_800" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="14dp"
+                android:background="@drawable/ic_clear_btn"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </RelativeLayout>
 
         <TextView
+            android:id="@+id/tv_current_nickname_start"
             style="@style/H3"
-            android:id="@+id/tv_sub_title"
-            android:fontFamily="@font/spoqa_han_sans_neo_regular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="24dp"
+            android:text="현재 닉네임은"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="26dp"
-            android:includeFontPadding="false"
-            android:text="닉네임을 알려주시겠어요?"
-            android:layout_marginLeft="24dp"/>
+            app:layout_constraintTop_toBottomOf="@id/layout_header" />
+
+        <TextView
+            android:id="@+id/tv_current_nickname_middle"
+            style="@style/H3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:text="@{vm.currentNickname}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_current_nickname_start"
+            android:textColor="@color/COLOR_MAIN_600"/>
+
+        <TextView
+            android:id="@+id/tv_current_nickname_end"
+            style="@style/H3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="입니다."
+            app:layout_constraintLeft_toRightOf="@+id/tv_current_nickname_middle"
+            app:layout_constraintTop_toBottomOf="@+id/tv_current_nickname_start" />
 
         <LinearLayout
             android:id="@+id/layout_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="40dp"
             android:orientation="vertical"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_sub_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_current_nickname_middle"
             app:layout_constraintVertical_bias="0.6">
 
             <com.google.android.material.textfield.TextInputLayout
@@ -86,11 +121,12 @@
                     style="@style/H7"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:singleLine="true"
                     android:hint="영문 또는 한글 12자 이내"
+                    android:singleLine="true"
                     android:text="@={vm.nickname}"
                     app:focusChangeListener="@{vm.focusChangeCallback}"
-                    app:type="@{InfoEnum.NICKNAME}" />
+                    app:type="@{InfoEnum.NICKNAME}"
+                    tools:text="프로다이어터"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -101,15 +137,17 @@
             style="@style/buttonBasicStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="116dp"
+            android:layout_marginTop="8dp"
             android:onClick="@{()->vm.onCompleteSignUpClicked(btnSndEmail)}"
-            android:text="시작하기"
+            android:text="변경하기"
+            app:layout_constraintTop_toBottomOf="@id/layout_input"
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
             tools:backgroundTint="@color/COLOR_GRAY_200"
-            tools:textColor="@color/COLOR_GRAY_400"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="83dp"/>
+            tools:textColor="@color/COLOR_GRAY_400" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 
 </layout>

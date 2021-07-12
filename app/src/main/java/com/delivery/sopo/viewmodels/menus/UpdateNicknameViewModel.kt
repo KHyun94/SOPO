@@ -4,6 +4,7 @@ import android.os.Handler
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.enums.DisplayEnum
@@ -17,8 +18,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class UpdateNicknameViewModel(private val userLocalRepository: UserLocalRepository): ViewModel()
+class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository): ViewModel()
 {
+    val currentNickname = MutableLiveData<String>().apply {
+        postValue(userLocalRepo.getNickname())
+    }
+
     val nickname = MutableLiveData<String>()
     val validates = mutableMapOf<InfoEnum, Boolean>()
 
@@ -52,31 +57,36 @@ class UpdateNicknameViewModel(private val userLocalRepository: UserLocalReposito
     fun onCompleteSignUpClicked(v: View)
     {
         SopoLog.d("onCompleteSignUpClicked()")
-        validates.forEach { (k, v) ->
-            if (!v)
-            {
-                SopoLog.d("${k.NAME} validate is fail")
-                _validateError.postValue(Pair(k, v))
-                return@onCompleteSignUpClicked
+
+        v.requestFocusFromTouch()
+        Handler().postDelayed(Runnable {
+            validates.forEach { (k, v) ->
+                if(!v)
+                {
+                    SopoLog.d("${k.NAME} validate is fail")
+                    _validateError.postValue(Pair(k, v))
+                    return@Runnable
+                }
             }
-        }
 
-        // result가 전부 통과일 때
-        _isProgress.postValue(true)
+            // result가 전부 통과일 때
+            _isProgress.postValue(true)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            _result.postValue(updateNickname(nickname = nickname.value.toString()))
-        }
+            CoroutineScope(Dispatchers.IO).launch {
+                _result.postValue(updateNickname(nickname = nickname.value.toString()))
+            }
+        }, 100)
+
     }
 
     private suspend fun updateNickname(nickname: String): ResponseResult<String>
     {
-        return when (val result = UserCall.updateNickname(nickname))
+        return when(val result = UserCall.updateNickname(nickname))
         {
             is NetworkResult.Success ->
             {
                 _isProgress.postValue(false)
-                userLocalRepository.setNickname(nickname)
+                userLocalRepo.setNickname(nickname)
                 SopoLog.d("Success to update nickname")
                 ResponseResult(true, null, nickname, "Success to update nickname")
             }

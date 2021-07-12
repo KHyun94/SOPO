@@ -1,9 +1,11 @@
 package com.delivery.sopo.viewmodels.menus
 
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.MenuEnum
 import com.delivery.sopo.models.ResponseResult
@@ -14,44 +16,17 @@ import kotlinx.android.synthetic.main.fragment_account_manager.*
 
 class AccountManagerViewModel: ViewModel()
 {
-    private val _navigator = MutableLiveData<MenuEnum>()
-    val navigator : LiveData<MenuEnum>
+    private val _navigator = MutableLiveData<String>()
+    val navigator : LiveData<String>
     get() = _navigator
 
-    fun onUpdateNicknameClicked()
-    {
-        _navigator.value = MenuEnum.UPDATE_NICKNAME
+    fun onMoveClicked(v: View){
+        when(v.id)
+        {
+            R.id.layout_update_nickname -> _navigator.value = NavigatorConst.TO_UPDATE_NICKNAME
+            R.id.layout_reset_password -> _navigator.value = NavigatorConst.TO_RESET_PASSWORD
+            R.id.layout_logout -> _navigator.value = NavigatorConst.TO_LOGOUT
+            R.id.layout_sign_out -> _navigator.value = NavigatorConst.TO_SIGN_OUT
+        }
     }
-
-    fun onLogoutClicked(){
-
-    }
-
-    fun onBackUpClicked()
-    {
-
-    }
-
-    fun onSignOutClicked()
-    {
-        _navigator.postValue(MenuEnum.SIGN_OUT)
-    }
-
-//    private suspend fun updateNickname(nickname: String): ResponseResult<String>
-//    {
-//        return when (val result = UserCall.updateNickname(nickname))
-//        {
-//            is NetworkResult.Success ->
-//            {
-//                userLocalRepository.setNickname(nickname)
-//                SopoLog.d("Success to update nickname")
-//                ResponseResult(true, null, nickname, "Success to update nickname")
-//            }
-//            is NetworkResult.Error ->
-//            {
-//                SopoLog.e("Fail to update nickname")
-//                ResponseResult(false, null, "", "Fail to update nickname", DisplayEnum.DIALOG)
-//            }
-//        }
-//    }
 }
