@@ -7,20 +7,23 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.bindings.FocusChangeCallback
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository): ViewModel()
+class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo:UserRemoteRepository): ViewModel()
 {
     val currentNickname = MutableLiveData<String>().apply {
+        SopoLog.d("현재 닉넥임[${userLocalRepo.getNickname()}]")
         postValue(userLocalRepo.getNickname())
     }
 
@@ -30,6 +33,10 @@ class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository): V
     private var _validateError = MutableLiveData<Pair<InfoEnum, Boolean>>()
     val validateError: LiveData<Pair<InfoEnum, Boolean>>
         get() = _validateError
+
+    private val _navigator = MutableLiveData<String>()
+    val navigator: LiveData<String>
+        get() = _navigator
 
     private val _focus = MutableLiveData<Triple<View, Boolean, InfoEnum>>()
     val focus: MutableLiveData<Triple<View, Boolean, InfoEnum>>
@@ -59,44 +66,36 @@ class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository): V
         SopoLog.d("onCompleteSignUpClicked()")
 
         v.requestFocusFromTouch()
-        Handler().postDelayed(Runnable {
-            validates.forEach { (k, v) ->
-                if(!v)
-                {
-                    SopoLog.d("${k.NAME} validate is fail")
-                    _validateError.postValue(Pair(k, v))
-                    return@Runnable
-                }
-            }
-
-            // result가 전부 통과일 때
-            _isProgress.postValue(true)
-
-            CoroutineScope(Dispatchers.IO).launch {
-                _result.postValue(updateNickname(nickname = nickname.value.toString()))
-            }
-        }, 100)
-
+        Handler().postDelayed(Runnable { updateNickname(nickname = nickname.value?:"") }, 100)
     }
 
-    private suspend fun updateNickname(nickname: String): ResponseResult<String>
+    private fun updateNickname(nickname: String)
     {
-        return when(val result = UserCall.updateNickname(nickname))
-        {
-            is NetworkResult.Success ->
+        validates.forEach { (k, v) ->
+            if(!v)
             {
-                _isProgress.postValue(false)
-                userLocalRepo.setNickname(nickname)
-                SopoLog.d("Success to update nickname")
-                ResponseResult(true, null, nickname, "Success to update nickname")
-            }
-            is NetworkResult.Error ->
-            {
-                _isProgress.postValue(false)
-                SopoLog.e("Fail to update nickname")
-                ResponseResult(false, null, "", "Fail to update nickname", DisplayEnum.DIALOG)
+                SopoLog.d("${k.NAME} validate is fail")
+                return _validateError.postValue(Pair(k, v))
             }
         }
+
+        _isProgress.postValue(true)
+
+        // result가 전부 통과일 때
+        CoroutineScope(Dispatchers.IO).launch {
+            val res = userRemoteRepo.updateNickname(nickname = nickname)
+
+            if(!res.result)
+            {
+                _isProgress.postValue(false)
+                return@launch _result.postValue(res)
+            }
+
+            userLocalRepo.setNickname(nickname = nickname)
+
+            _navigator.postValue(NavigatorConst.TO_COMPLETE)
+        }
+
     }
 
 }

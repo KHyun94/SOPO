@@ -2,7 +2,6 @@ package com.delivery.sopo.consts
 
 object NavigatorConst {
 
-
     const val TO_SIGN_OUT = "TO_SIGN_OUT"
     const val TO_LOGIN = "TO_LOGIN"
     const val TO_LOGIN_SELECT = "TO_LOGIN_SELECT"
@@ -32,4 +31,6 @@ object NavigatorConst {
 
     const val TO_FLOATING_DIALOG = "TO_FLOATING_DIALOG"
     const val TO_BACK_SCREEN = "TO_BACK_SCREEN"
+
+    const val TO_COMPLETE = "TO_COMPLETE"
 }

@@ -7,6 +7,7 @@ import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserSharedPrefHelper
 import com.delivery.sopo.data.repository.local.repository.*
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.viewmodels.inquiry.InquiryMainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
@@ -36,6 +37,7 @@ val appModule = module {
         )
     }
     single { UserLocalRepository(get()) }
+    single { UserRemoteRepository }
     single { AppDatabase.getInstance(get()) }
     single { CarrierRepository(get()) }
     single { ParcelLocalRepository(get(), get()) }
@@ -63,7 +65,7 @@ val appModule = module {
     viewModel { MenuViewModel(get()) }
     viewModel { AccountManagerViewModel() }
     viewModel { SignOutViewModel() }
-    viewModel { UpdateNicknameViewModel(get()) }
+    viewModel { UpdateNicknameViewModel(get(), get()) }
 
     viewModel { InquiryMainViewModel() }
     viewModel { MenuMainViewModel() }

@@ -8,6 +8,7 @@ import com.delivery.sopo.models.PasswordResetDTO
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.services.network_handler.NetworkResult
+import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
 
 object UserRemoteRepository
@@ -81,6 +82,29 @@ object UserRemoteRepository
                 val responseCode = exception.responseCode
 
                 return ResponseResult(false, responseCode, Unit, responseCode.MSG, DisplayEnum.DIALOG)
+            }
+        }
+    }
+
+    suspend fun updateNickname(nickname: String): ResponseResult<String>
+    {
+        return when(val result = UserCall.updateNickname(nickname))
+        {
+            is NetworkResult.Success ->
+            {
+                SopoLog.d("Success to update nickname")
+                val apiResult = result.data
+                val resCode = CodeUtil.getCode(apiResult.code)
+                ResponseResult(true, resCode , nickname, "Success to update nickname")
+            }
+            is NetworkResult.Error ->
+            {
+                SopoLog.e("Fail to update nickname")
+
+                val exception = result.exception as APIException
+                val responseCode = exception.responseCode
+
+                ResponseResult(false, responseCode, "", "Fail to update nickname", DisplayEnum.DIALOG)
             }
         }
     }

@@ -10,6 +10,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.RegisterNicknameViewBinding
 import com.delivery.sopo.databinding.UpdateNicknameViewBinding
 import com.delivery.sopo.enums.DisplayEnum
@@ -98,6 +99,19 @@ class UpdateNicknameView: AppCompatActivity()
             }.show()
         })
 
+        vm.navigator.observe(this@UpdateNicknameView, Observer {navigator ->
+            when(navigator){
+                NavigatorConst.TO_COMPLETE -> {
+                    GeneralDialog(this@UpdateNicknameView, "성공", "정상적으로 닉네임을 등록했습니다.", null, Pair("네", object: OnAgreeClickListener
+                    {
+                        override fun invoke(agree: GeneralDialog)
+                        {
+                            finish()
+                        }
+                    })).show(supportFragmentManager, "DIALOG")
+                }
+            }
+        })
 
         vm.result.observe(this@UpdateNicknameView, Observer { result ->
 
@@ -120,19 +134,7 @@ class UpdateNicknameView: AppCompatActivity()
                         GeneralDialog(this@UpdateNicknameView, "오류", "닉네임 등록이 실패했습니다.\n다시 시도해주세요.", null, Pair("네", null)).show(supportFragmentManager, "DIALOG")
                     }
                 }
-
-                return@Observer
             }
-
-            SopoLog.d("성공 닉네임 업데이트 여부 확인 ${result.result}, ${result.code}, ${result.message}")
-
-            GeneralDialog(this@UpdateNicknameView, "성공", "정상적으로 닉네임을 등록했습니다.", null, Pair("네", object: OnAgreeClickListener
-            {
-                override fun invoke(agree: GeneralDialog)
-                {
-                    finish()
-                }
-            })).show(supportFragmentManager, "DIALOG")
         })
     }
 }
