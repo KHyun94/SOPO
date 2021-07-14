@@ -7,8 +7,12 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.Toast
+import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
+import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.databinding.ResetPasswordViewBinding
@@ -35,32 +39,33 @@ class ResetPasswordView: AppCompatActivity()
     {
         super.onCreate(savedInstanceState)
 
-        bindView()
+        binding = bindView(this@ResetPasswordView, R.layout.reset_password_view)
         setObserve()
     }
 
-    fun bindView()
+    fun <T : ViewDataBinding> bindView(activity: FragmentActivity, @LayoutRes layoutId : Int) : T
     {
-        binding =
-            DataBindingUtil.setContentView(this@ResetPasswordView, R.layout.reset_password_view)
-        binding.vm = vm
-        binding.lifecycleOwner = this
+        return DataBindingUtil.setContentView<T>(activity,layoutId).apply{
+            lifecycleOwner = activity
+            setVariable(BR.vm, vm)
+            executePendingBindings()
+        }
     }
 
     fun setObserve()
     {
-        binding.vm?.resetType?.observe(this, Observer {
+        vm.resetType.observe(this, Observer {
             binding.vm!!.validates.clear()
 
             when(it)
             {
                 0 ->
                 {
-                    binding.vm!!.validates[InfoEnum.EMAIL] = false
+                    vm.validates[InfoEnum.EMAIL] = false
                 }
                 1 ->
                 {
-                    binding.vm!!.validates[InfoEnum.PASSWORD] = false
+                    vm.validates[InfoEnum.PASSWORD] = false
                     updateUIForInputPassword()
                 }
                 2 ->
@@ -181,7 +186,7 @@ class ResetPasswordView: AppCompatActivity()
         })
     }
 
-    fun updateUIForInputPassword()
+    private fun updateUIForInputPassword()
     {
         binding.layoutEmail.visibility = View.GONE
         binding.layoutPassword.visibility = View.VISIBLE
@@ -195,7 +200,7 @@ class ResetPasswordView: AppCompatActivity()
         binding.tvPasswordHint.visibility = View.VISIBLE
     }
 
-    fun updateUIForComplete()
+    private fun updateUIForComplete()
     {
         binding.btnNext.text = "확인"
         binding.layoutPassword.visibility = View.GONE
@@ -216,7 +221,7 @@ class ResetPasswordView: AppCompatActivity()
 
         SopoLog.d("requestCode >>> $requestCode 성공")
 
-        binding.vm?.resetType?.postValue(1)
+        vm.resetType.postValue(1)
 
     }
 

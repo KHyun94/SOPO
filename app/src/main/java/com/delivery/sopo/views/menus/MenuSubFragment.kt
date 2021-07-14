@@ -33,7 +33,7 @@ class MenuSubFragment: Fragment()
     lateinit var binding: FragmentMenuSubBinding
     private val vm: MenuSubViewModel by inject()
 
-    lateinit var callback: OnBackPressedCallback
+    var callback: OnBackPressedCallback
 
     init
     {
