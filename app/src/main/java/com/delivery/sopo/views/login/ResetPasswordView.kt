@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.IntentConst
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.ResetPasswordViewBinding
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.LockScreenStatusEnum
@@ -55,7 +56,7 @@ class ResetPasswordView: AppCompatActivity()
     fun setObserve()
     {
         vm.resetType.observe(this, Observer {
-            binding.vm!!.validates.clear()
+            vm.validates.clear()
 
             when(it)
             {
@@ -74,16 +75,16 @@ class ResetPasswordView: AppCompatActivity()
                 }
             }
 
-            SopoLog.d("validates type >>> ${binding.vm!!.validates.toString()}")
+            SopoLog.d("validates type >>> ${vm.validates.toString()}")
 
         })
 
-        binding.vm!!.focus.observe(this, Observer { focus ->
+        vm.focus.observe(this, Observer { focus ->
             val res = TextInputUtil.changeFocus(this, focus)
-            binding.vm!!.validates[res.first] = res.second
+            vm.validates[res.first] = res.second
         })
 
-        binding.vm!!.validateError.observe(this, Observer { target ->
+        vm.validateError.observe(this, Observer { target ->
 
             if (target.second)
             {
@@ -104,7 +105,7 @@ class ResetPasswordView: AppCompatActivity()
             }.show()
         })
 
-        binding.vm!!.result.observe(this@ResetPasswordView, Observer { result ->
+        vm.result.observe(this@ResetPasswordView, Observer { result ->
 
             if (!result.result)
             {
@@ -112,7 +113,7 @@ class ResetPasswordView: AppCompatActivity()
                 return@Observer
             }
 
-            when(binding.vm!!.resetType.value)
+            when(vm.resetType.value)
             {
                 0->
                 {
@@ -131,7 +132,7 @@ class ResetPasswordView: AppCompatActivity()
                 }
                 1->
                 {
-                    binding.vm!!.resetType.postValue(2)
+                    vm.resetType.postValue(2)
                 }
                 2->
                 {
@@ -142,7 +143,7 @@ class ResetPasswordView: AppCompatActivity()
 
         })
 
-        binding.vm!!.email.observe(this@ResetPasswordView, Observer { email ->
+        vm.email.observe(this@ResetPasswordView, Observer { email ->
 
             val isValidate = ValidateUtil.isValidateEmail(email.toString())
 
@@ -161,7 +162,7 @@ class ResetPasswordView: AppCompatActivity()
             }
         })
 
-        binding.vm!!.password.observe(this@ResetPasswordView, Observer { password ->
+        vm.password.observe(this@ResetPasswordView, Observer { password ->
 
             val isValidate = ValidateUtil.isValidatePassword(password.toString())
 
@@ -183,6 +184,17 @@ class ResetPasswordView: AppCompatActivity()
 
             }
 
+        })
+
+        vm.navigator.observe(this, Observer {navigator ->
+            when(navigator){
+                NavigatorConst.TO_COMPLETE -> {
+                    finish()
+                }
+                NavigatorConst.TO_BACK_SCREEN -> {
+                    finish()
+                }
+            }
         })
     }
 

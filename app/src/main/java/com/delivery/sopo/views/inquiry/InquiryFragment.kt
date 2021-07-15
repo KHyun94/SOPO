@@ -205,11 +205,6 @@ class InquiryFragment: Fragment()
         // 배송중 , 등록된 택배 리스트
         vm.ongoingList.observe(this, Observer {list ->
 
-
-            list.forEach {
-                SopoLog.d("ongoing list >>> ${it.parcelDTO.deliveryStatus}")
-            }
-
             soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
             registeredParcelAdapter.separateDeliveryListByStatus(list)
 

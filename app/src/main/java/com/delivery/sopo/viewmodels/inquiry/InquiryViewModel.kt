@@ -89,28 +89,9 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                 item.parcelDTO.deliveryStatus != DeliveryStatusEnum.NOT_REGISTER.CODE
             }.toList()
 
-//            sortedList.also { addAll(elseList) }
-//            val deliveredList = list.filter { item -> item.parcelDTO.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE }.also {
-//                SopoLog.d("DELIVERED item >>> ${it.size} ")
-//            }
-//            val outForDeliveryList = list.filter { item -> item.parcelDTO.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE }.also {
-//                SopoLog.d("OUT_FOR_DELIVERY item >>> ${it.size} ")
-//            }
-//            val inTransitList = list.filter { item -> item.parcelDTO.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE }.also {
-//                SopoLog.d("IN_TRANSIT item >>> ${it.size} ")
-//            }
-//            val atPickupList = list.filter { item -> item.parcelDTO.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE }.also {
-//                SopoLog.d("AT_PICKUP item >>> ${it.size} ")
-//            }
-//            val informationList = list.filter { item -> item.parcelDTO.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE }.also {
-//                SopoLog.d("INFORMATION_RECEIVED item >>> ${it.size} ")
-//            }
-//            val notList = list.filter { item -> item.parcelDTO.deliveryStatus == DeliveryStatusEnum.NOT_REGISTER.CODE }.also {
-//                SopoLog.d("NOT_REGISTER item >>> ${it.size} ")
-//            }
-//            val errorList = list.filter { item -> item.parcelDTO.deliveryStatus == DeliveryStatusEnum.ERROR.CODE }.also {
-//                SopoLog.d("ERROR item >>> ${it.size} ")
-//            }
+            this.clear()
+            this.addAll(sortedList)
+            this.addAll(elseList)
         }
     }
     val ongoingList: LiveData<MutableList<InquiryListItem>>

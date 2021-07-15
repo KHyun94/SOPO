@@ -131,11 +131,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
                     progress = ${progressList.joinToString()}
                 """.trimIndent())
 
-                item.postValue(
-                    ParcelDetailItem(
-                        regDt = parcelEntity.auditDte, alias = parcelEntity.alias, carrierDTO = carrierDTO, waybillNum = parcelEntity.waybillNum, deliverStatus = deliveryStatusEnum.value?.TITLE, progress = progressList
-                    )
-                )
+                item.postValue(ParcelDetailItem(regDt = parcelEntity.regDt, alias = parcelEntity.alias, carrierDTO = carrierDTO, waybillNum = parcelEntity.waybillNum, deliverStatus = deliveryStatusEnum.value?.TITLE, progress = progressList))
             }
 
             SopoLog.d(msg = "Detail Item => ${item.value}")

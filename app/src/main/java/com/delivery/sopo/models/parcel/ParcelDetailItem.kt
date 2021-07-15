@@ -2,7 +2,6 @@ package com.delivery.sopo.models.parcel
 
 import com.delivery.sopo.models.CarrierDTO
 
-// TODO First regDt >>> auditDt
 data class ParcelDetailItem(
     // 앱에서 택배 등록한 일자
         val regDt: String,

@@ -23,7 +23,6 @@ import kotlinx.coroutines.launch
 class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo:UserRemoteRepository): ViewModel()
 {
     val currentNickname = MutableLiveData<String>().apply {
-        SopoLog.d("현재 닉넥임[${userLocalRepo.getNickname()}]")
         postValue(userLocalRepo.getNickname())
     }
 
@@ -59,6 +58,10 @@ class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository, pr
     init
     {
         validates[InfoEnum.NICKNAME] = false
+    }
+
+    fun onClearClicked(){
+        _navigator.postValue(NavigatorConst.TO_BACK_SCREEN)
     }
 
     fun onCompleteSignUpClicked(v: View)
