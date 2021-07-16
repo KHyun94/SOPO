@@ -3,7 +3,7 @@ package com.delivery.sopo.util
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
+import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent
@@ -11,7 +11,7 @@ import org.koin.core.inject
 
 object ClipboardUtil: KoinComponent
 {
-    private val PARCEL_IMPL: ParcelLocalRepository by inject()
+    private val PARCEL_IMPL: ParcelRepository by inject()
 
     fun copyTextToClipboard(con: Context, text: String)
     {

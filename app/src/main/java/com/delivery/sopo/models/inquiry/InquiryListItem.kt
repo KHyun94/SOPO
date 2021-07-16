@@ -7,17 +7,16 @@ import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.R
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.parcel.ParcelDTO
-import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
+import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import java.text.SimpleDateFormat
 import java.util.*
 
-// TODO 추후 변경...
 class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false): KoinComponent, BaseObservable()
 {
-    private val parcelLocalRepository: ParcelLocalRepository by inject()
+    private val parcelRepository: ParcelRepository by inject()
 
     val iconResource = MutableLiveData<Int>().apply {
         postValue(getStatusBackgroundResource())
@@ -108,7 +107,7 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
             var update : LiveData<Int?>? = null
 
             withContext(Dispatchers.Default){
-               update = parcelLocalRepository.getIsUnidentifiedAsLiveData(parcelDTO.parcelId)
+               update = parcelRepository.getIsUnidentifiedAsLiveData(parcelDTO.parcelId)
             }
 
             // TODO 이렇게 옵저빙안하고도 변경 가능한지 테스트 필시 해야함

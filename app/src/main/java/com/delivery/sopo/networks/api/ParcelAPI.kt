@@ -5,9 +5,8 @@ import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.data.repository.database.room.dto.DeleteParcelsDTO
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.ParcelRegisterDTO
+import com.delivery.sopo.models.UpdateAliasRequest
 import com.delivery.sopo.models.parcel.ParcelDTO
-import com.google.gson.JsonArray
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -56,13 +55,9 @@ interface ParcelAPI
     ): APIResult<String?>
 
     // alias 변경
-    @PATCH("api/v1/sopo-api/delivery/parcel/{regDt}/{parcelUid}")
-    @Headers("Content-Type: application/json-patch+json")
-    fun patchParcel(
-        @Path("email") email : String,
-        @Path("parcelId") parcelId: Int,
-        @Body jsonPATCH: JsonArray
-    ): Call<APIResult<ParcelEntity?>>
+    @PATCH("api/v1/sopo-api/delivery/parcel/alias")
+    @Headers("Content-Type: application/json")
+    suspend fun updateParcelAlias(@Body req: UpdateAliasRequest): Response<APIResult<Unit?>>
 
     // 배송중 & 곧 도착 리스트 가져오는 api
     @GET("api/v1/sopo-api/delivery/parcels/ongoing")

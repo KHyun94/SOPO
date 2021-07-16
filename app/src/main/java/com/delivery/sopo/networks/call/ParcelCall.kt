@@ -9,6 +9,7 @@ import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.models.ParcelRegisterDTO
+import com.delivery.sopo.models.UpdateAliasRequest
 import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
@@ -28,8 +29,6 @@ object ParcelCall : BaseService(), KoinComponent
     init
     {
         val oAuth : OAuthEntity? = runBlocking {  oAuthLocalRepo.get(userId = email) }
-        SopoLog.d( msg = "토큰 정보 => ${oAuth}")
-
         parcelAPI = NetworkManager.retro(oAuth?.accessToken).create(ParcelAPI::class.java)
     }
 
@@ -80,5 +79,11 @@ object ParcelCall : BaseService(), KoinComponent
                 throw apiResult.exception as APIException
             }
         }
+    }
+
+    suspend fun updateParcelAlias(req: UpdateAliasRequest): NetworkResult<APIResult<Unit?>>
+    {
+        val result = parcelAPI.updateParcelAlias(req = req)
+        return apiCall(call = { result })
     }
 }

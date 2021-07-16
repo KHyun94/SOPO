@@ -1,7 +1,7 @@
 package com.delivery.sopo.firebase
 
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
+import com.delivery.sopo.data.repository.remote.user.UserUseCase
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import com.google.firebase.iid.FirebaseInstanceId
@@ -98,7 +98,7 @@ object FirebaseNetwork: KoinComponent
             }
 
             CoroutineScope(Dispatchers.Main).launch {
-                UserRemoteRepository.updateFCMToken(task.result.token)
+                UserUseCase.updateFCMToken(task.result.token)
             }
         }
     }

@@ -6,17 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.bindings.FocusChangeCallback
-import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
-import com.delivery.sopo.enums.DisplayEnum
+import com.delivery.sopo.data.repository.remote.user.UserUseCase
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.models.PasswordResetDTO
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ValidateUtil
-import com.delivery.sopo.views.widget.CustomEditText
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -90,7 +85,7 @@ class ResetPasswordViewModel: ViewModel()
                 {
                     0->
                     {
-                        val res = UserRemoteRepository.requestEmailForAuth(email = email.value?:"")
+                        val res = UserUseCase.requestEmailForAuth(email = email.value?:"")
                         SopoLog.d("res >>> ${res.toString()} ${res.code} ${res.data} ${res.result} ${res.message}")
 
                         if(res.result) jwtTokenForReset = res.data?.token
@@ -100,7 +95,7 @@ class ResetPasswordViewModel: ViewModel()
                     {
                         val passwordResetDTO = PasswordResetDTO(jwtTokenForReset?:"", email.value.toString(), password.value.toString())
 
-                        val res = UserRemoteRepository.requestPasswordForReset(passwordResetDTO = passwordResetDTO)
+                        val res = UserUseCase.requestPasswordForReset(passwordResetDTO = passwordResetDTO)
 
                         _result.postValue(res)
                     }

@@ -16,8 +16,8 @@ import com.delivery.sopo.data.repository.local.datasource.ParcelDataSource
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.TimeUtil
 
-class ParcelLocalRepository(private val userLocalRepository: UserLocalRepository,
-                            private val appDatabase: AppDatabase): ParcelDataSource
+class ParcelRepository(private val userLocalRepository: UserLocalRepository,
+                       private val appDatabase: AppDatabase): ParcelDataSource
 {
 
     override suspend fun getRemoteOngoingParcels(): MutableList<ParcelDTO>? = NetworkManager.retro(SOPOApp.oAuth?.accessToken).create(

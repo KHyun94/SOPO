@@ -5,6 +5,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
+import android.view.ViewGroup
 import android.view.Window
 import android.widget.EditText
 import android.widget.TextView
@@ -52,10 +53,19 @@ object AlertUtil: KoinComponent
 
         alert = AlertDialog.Builder(context).setView(constraintLayout).setCancelable(false).create()
 
+        layoutMain.layoutParams = ConstraintLayout.LayoutParams((SizeUtil.changePxToDp(context, 288.0f).toInt()), SizeUtil.changePxToDp(context, 288.0f).toInt())
+
         // 테두리 라운딩 처리
-        alert!!.window?.run {
+        alert?.window?.run {
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             requestFeature(Window.FEATURE_NO_TITLE)
+        }
+
+        val param = alert?.window?.attributes
+        param?.let { param ->
+            param.width = SizeUtil.changePxToDp(context, 288.0f).toInt()
+            param.height = SizeUtil.changePxToDp(context, 138.0f).toInt()
+            alert?.window?.attributes = param
         }
 
         CoroutineScope(Dispatchers.Main).launch {
@@ -109,7 +119,7 @@ object AlertUtil: KoinComponent
     {
         if (alert != null)
         {
-            alert!!.dismiss()
+            alert?.dismiss()
             alert = null
         }
     }
