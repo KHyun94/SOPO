@@ -95,16 +95,13 @@ interface ParcelAPI
 
     /**
      * 단일 택배 정보 요청
-     * @param email
-     * @param regDt
      * @param parcelUid
      * @return parcel
      */
-    @GET("/api/v1/sopo-api/delivery/parcel/{regDt}/{parcelUid}")
+    @GET("/api/v1/sopo-api/delivery/parcel/{parcelUid}")
     @Headers("Accept: application/json")
     suspend fun getSingleParcel(
         @Path("parcelId") parcelId: Int
     ): Response<APIResult<ParcelDTO?>>
 
-    // TODO alias 변경 api 추가해야함
 }

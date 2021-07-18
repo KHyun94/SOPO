@@ -104,7 +104,7 @@ class ResetPasswordView: AppCompatActivity()
             }.show()
         })
 
-        binding.vm!!.result.observe(this@ResetPasswordView, Observer { result ->
+        vm.result.observe(this@ResetPasswordView, Observer { result ->
 
             if (!result.result)
             {
