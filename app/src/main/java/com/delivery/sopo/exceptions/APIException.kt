@@ -21,6 +21,14 @@ class APIException: Exception
         this.errorMessage = e.message?:"UNKNOWN ERROR"
     }
 
+    constructor(errorMessage: String, httpStatusCode: Int = 500)
+    {
+        this.errorMessage = errorMessage
+        this.httpStatusCode = httpStatusCode
+        this.e = Exception(errorMessage)
+    }
+
+
     constructor(errorMessage: String, responseCode: ResponseCode, httpStatusCode: Int = 500)
     {
         this.errorMessage = errorMessage

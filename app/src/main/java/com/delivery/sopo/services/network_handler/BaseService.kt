@@ -38,7 +38,7 @@ abstract class BaseService
         if(response.body() == null)
         {
             SopoLog.e("Fail to Body is null}")
-            return NetworkResult.Error(response.code(), APIException(NullPointerException("Response Body is null")))
+            return NetworkResult.Error(response.code(), APIException("Response Body is null", response.code()))
         }
 
         SopoLog.d("Success to network")

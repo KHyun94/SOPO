@@ -17,7 +17,7 @@
 
         <variable
             name="item"
-            type="com.delivery.sopo.models.parcel.ParcelDetailItem" />
+            type="com.delivery.sopo.models.parcel.ParcelDetailDTO" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -218,7 +218,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="38dp"
                     android:text="@string/IS_NOT_REGISTERED_PARCEL_PROGRESS_DATA"
-                    android:visibility="@{(item.progress != null &amp;&amp; item.progress.size() > 0) ? View.GONE : View.VISIBLE}"
+                    android:visibility="@{(item.timeLineProgresses != null &amp;&amp; item.timeLineProgresses.size() > 0) ? View.GONE : View.VISIBLE}"
                     app:layout_constraintLeft_toRightOf="parent"
                     app:layout_constraintRight_toLeftOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/v_empty2" />

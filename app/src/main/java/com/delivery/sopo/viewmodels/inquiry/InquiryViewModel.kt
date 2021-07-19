@@ -32,71 +32,8 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
         ViewModel()
 {
     private var _ongoingList = Transformations.map(parcelRepository.getLocalOngoingParcelsAsLiveData()) { parcelList ->
-
         val list: MutableList<InquiryListItem> = ParcelMapper.parcelListToInquiryItemList(parcelList)
-
         sortByDeliveryStatus(list).toMutableList()
-/*
-        list.apply {
-
-            val sortedList = mutableListOf<InquiryListItem>()
-
-            val elseList = list.asSequence().filter { item ->
-
-                if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
-                {
-                    sortedList.add(item)
-                }
-
-                item.parcelDTO.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
-            }.filter { item ->
-                if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE)
-                {
-                    sortedList.add(item)
-                }
-
-                item.parcelDTO.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
-            }.filter { item ->
-                if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE)
-                {
-                    sortedList.add(item)
-                }
-
-                item.parcelDTO.deliveryStatus != DeliveryStatusEnum.IN_TRANSIT.CODE
-            }.filter { item ->
-                if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE)
-                {
-                    sortedList.add(item)
-                }
-
-                item.parcelDTO.deliveryStatus != DeliveryStatusEnum.AT_PICKUP.CODE
-            }.filter { item ->
-                if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE)
-                {
-                    sortedList.add(item)
-                }
-
-                item.parcelDTO.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
-            }.filter { item ->
-                if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.NOT_REGISTER.CODE)
-                {
-                    sortedList.add(item)
-                }
-
-                item.parcelDTO.deliveryStatus != DeliveryStatusEnum.NOT_REGISTER.CODE
-            }.toList()
-
-            this.clear()
-            this.addAll(sortedList)
-            this.addAll(elseList)
-
-            this.forEach(){
-                SopoLog.d("${it.parcelDTO.alias}[${it.parcelDTO.deliveryStatus}]")
-
-            }
-        }
-
- */
     }
     val ongoingList: LiveData<MutableList<InquiryListItem>>
         get() = _ongoingList
@@ -521,7 +458,13 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
                         for(parcel in filteredLocalList)
                         {
-                            val result = ParcelCall.getSingleParcelTest(parcel.parcelId)
+                            val result = ParcelCall.getSingleParcel(parcel.parcelId)
+
+                            // TODO 메인 조회 탭에서 업데이트된 단일 택배의 정보를 정상적으로 읽어오지 못한 경우 에러 처
+                            if(!result.result){
+                                SopoLog.e("택배 데이터를 정상적으로 읽어오지 못했습니다.[${result.code}][${result.message}]")
+                                continue
+                            }
 
                             val remoteOngoingParcel = result.data
 
@@ -541,12 +484,10 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                     }
                 }
 
-                //                _isProgress.postValue(false)
             }
         }
         catch(e: Exception)
         {
-            //            _isProgress.postValue(false)
             SopoLog.e("refreshOngoing() Error >>>", e)
         }
 

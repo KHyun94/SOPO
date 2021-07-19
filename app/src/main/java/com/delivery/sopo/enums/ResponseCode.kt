@@ -61,6 +61,9 @@ enum class ResponseCode(val CODE: String, var MSG: String, val HTTP_STATUS: Int?
     LOCAL_ERROR_TYPE_MISS("LC01", "Type Miss Match"),
     ERROR_RESPONSE_DATA_IS_NULL("ER01", "Response data가 없습니다."),
 
+    PARCEL_NOTHING_TO_UPDATES("PR01", "업데이트 사항이 없습니다", 204),
+    PARCEL_SOMETHING_TO_UPDATES("PR02", "업데이트 사항이 있습니다.", 303),
+
     ERROR_UNKNOWN("9999", "알수 없는 에러", 400);
 
 

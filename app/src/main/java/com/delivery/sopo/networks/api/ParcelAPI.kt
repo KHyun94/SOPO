@@ -95,7 +95,7 @@ interface ParcelAPI
      * @param parcelUid
      * @return parcel
      */
-    @GET("/api/v1/sopo-api/delivery/parcel/{regDt}/{parcelUid}")
+    @GET("/api/v1/sopo-api/delivery/parcel/{parcelId}")
     @Headers("Accept: application/json")
     suspend fun getSingleParcel(
         @Path("parcelId") parcelId: Int

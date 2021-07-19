@@ -1,7 +1,6 @@
 package com.delivery.sopo.views.inquiry
 
 import android.content.Context
-import android.graphics.Paint
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -9,17 +8,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.LayoutRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
 import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.FragmentManager
@@ -28,6 +34,7 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.views.main.MainView
+import com.delivery.sopo.views.registers.RegisterMainFrame
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
 import kotlinx.android.synthetic.main.parcel_full_detail_item.view.*
@@ -41,10 +48,7 @@ class ParcelDetailView : Fragment()
 {
     private lateinit var parentView: MainView
     lateinit var binding: ParcelDetailViewBinding
-
     private val vm: ParcelDetailViewModel by viewModel()
-
-    private var parcelId : Int = 0
 
     private var slideViewStatus = 0
 
@@ -55,9 +59,7 @@ class ParcelDetailView : Fragment()
         super.onCreate(savedInstanceState)
 
         parentView = activity as MainView
-
-        parcelId = arguments?.getInt(PARCEL_ID)?:throw Exception("parcel id가 널")
-
+        receiveBundleData()
     }
 
     override fun onCreateView(
@@ -66,27 +68,19 @@ class ParcelDetailView : Fragment()
         savedInstanceState: Bundle?
     ): View?
     {
-        bindView(inflater = inflater, container = container)
+        binding = bindView(inflater = inflater, container = container, layoutRes = R.layout.parcel_detail_view)
         setObserve()
 
-        // TODO 상세 내역 상태 텍스트, 이미지를 맨 앞으로 순서 변경
         binding.ivStatus.bringToFront()
         binding.tvSubtext.bringToFront()
 
-        // 택배 info LiveData 데이터 입력
-        binding.vm!!.parcelId.value = parcelId
 
-        // TODO include view를 사용했을 때 parameter로 clickListener 셋 할 필요 있음
         binding.includeSemi.ivCopy.setOnClickListener {
-            val copyText = binding.includeSemi.tvWaybillNum.text.toString()
-            ClipboardUtil.copyTextToClipboard(activity!!, copyText)
-            Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
+            pasteWaybillNumIntoClipboard(binding.includeSemi.tvWaybillNum)
         }
 
         binding.includeFull.ivCopy.setOnClickListener {
-            val copyText = binding.includeFull.tvWaybillNum.text.toString()
-            ClipboardUtil.copyTextToClipboard(activity!!, copyText)
-            Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
+            pasteWaybillNumIntoClipboard(binding.includeFull.tvWaybillNum)
         }
 
         return binding.root
@@ -175,15 +169,32 @@ class ParcelDetailView : Fragment()
 
             }
         })
-
     }
 
-    // binding setting
-    private fun bindView(inflater: LayoutInflater, container: ViewGroup?)
+    override fun onDetach()
     {
-        binding = ParcelDetailViewBinding.inflate(inflater, container, false)
-        binding.vm = vm
+        super.onDetach()
+        callback!!.remove()
+    }
+
+    private fun pasteWaybillNumIntoClipboard(tv: TextView){
+        val copyText = tv.text.toString()
+        ClipboardUtil.copyTextToClipboard(activity!!, copyText)
+        Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun receiveBundleData()
+    {
+        arguments?.let { bundle ->
+            vm.parcelId.value = bundle.getInt(PARCEL_ID)
+        }
+    }
+
+    private fun<T: ViewDataBinding> bindView(inflater: LayoutInflater, @LayoutRes layoutRes:Int, container: ViewGroup?):T{
+        val binding = DataBindingUtil.inflate<T>(inflater, layoutRes, container,false)
+        binding.setVariable(BR.vm, vm)
         binding.lifecycleOwner = this
+        return binding
     }
 
     private fun setObserve()
@@ -211,13 +222,11 @@ class ParcelDetailView : Fragment()
             }
         })
 
-        binding.vm!!.parcelId.observe(this, Observer {
-            binding.vm!!.updateIsUnidentifiedToZero(it)
-            binding.vm!!.requestRemoteParcel(parcelId = it)
-        })
-
-        binding.vm!!.parcelEntity.observe(this, Observer {
-            binding.vm!!.updateParcelToUI(it)
+        vm.parcelId.observe(this, Observer {
+            CoroutineScope(Dispatchers.Main).launch {
+                vm.updateIsUnidentifiedToZero(it)
+                vm.requestRemoteParcel(parcelId = it)
+            }
         })
 
         binding.vm!!.statusList.observe(this, Observer {
@@ -257,7 +266,7 @@ class ParcelDetailView : Fragment()
 
         })
 
-        binding.vm!!.isUpdate.observe(this, Observer {
+        vm.isUpdate.observe(this, Observer {
 
             when (it)
             {
@@ -266,8 +275,11 @@ class ParcelDetailView : Fragment()
                     parentView.getAlertMessageBar().run {
                         setText("업데이트 사항이 있습니다.")
                         setOnCancelClicked("업데이트", null, View.OnClickListener {
-                            binding.vm!!.getRemoteParcel(parcelId)
-                            onDismiss()
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val parcelId = vm.parcelId.value ?: throw Exception("Parcel id가 존재하지 않습니다.")
+                                vm.getRemoteParcel(parcelId)
+                                onDismiss()
+                            }
                         })
                         onStart(null)
                     }
@@ -277,7 +289,10 @@ class ParcelDetailView : Fragment()
                     parentView.getAlertMessageBar().run {
                         setText("업데이트 도중 에러가 발생했습니다.")
                         setOnCancelClicked("재시도", null, View.OnClickListener {
-                            binding.vm!!.requestRemoteParcel(parcelId)
+                            CoroutineScope(Dispatchers.IO).launch {
+                                val parcelId = vm.parcelId.value ?: throw Exception("Parcel id가 존재하지 않습니다.")
+                                vm.getRemoteParcel(parcelId)
+                            }
                         })
                         onStart(null)
                     }
@@ -451,11 +466,6 @@ class ParcelDetailView : Fragment()
         requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
     }
 
-    override fun onDetach()
-    {
-        super.onDetach()
-        callback!!.remove()
-    }
 
     companion object
     {
