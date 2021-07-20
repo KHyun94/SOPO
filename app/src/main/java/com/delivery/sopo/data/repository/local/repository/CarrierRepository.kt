@@ -5,6 +5,8 @@ import com.delivery.sopo.data.repository.database.room.entity.CarrierEntity
 import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.data.repository.local.datasource.CarrierDataSource
 import com.delivery.sopo.models.mapper.CarrierMapper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class CarrierRepository(private val appDB: AppDatabase)
 {
@@ -36,9 +38,8 @@ class CarrierRepository(private val appDB: AppDatabase)
         }
     }
 
-    suspend fun getCarrierWithCode(code: String): CarrierDTO?
-    {
-        return CarrierMapper.entityToObject(appDB.carrierDAO().getWithCode(code = code))
+    suspend fun getCarrierWithCode(code: String): CarrierDTO = withContext(Dispatchers.Default) {
+        CarrierMapper.entityToObject(appDB.carrierDAO().getWithCode(code = code)) ?: throw Exception("해당하는 택배사가 존재하지 않습니다.")
     }
 
     suspend fun getWithoutLen(len: Int, cnt: Int): List<CarrierDTO?>

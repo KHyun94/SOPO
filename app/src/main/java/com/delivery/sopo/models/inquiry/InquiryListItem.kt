@@ -8,6 +8,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject
@@ -136,6 +137,7 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
 
     private fun getStatusTextColorResource(): Int
     {
+        SopoLog.d("!!!!!!!!!!!!!!!!!!!!!!!!fasfasfasdfasdfasfasfsf${parcelDTO.deliveryStatus}")
         return when(parcelDTO.deliveryStatus)
         {
             DeliveryStatusEnum.NOT_REGISTER.CODE -> R.color.COLOR_GRAY_300

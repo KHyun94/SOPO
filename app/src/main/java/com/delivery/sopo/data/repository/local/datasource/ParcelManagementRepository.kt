@@ -17,7 +17,7 @@ interface ParcelManagementRepository {
    fun insertEntities(parcelStatusEntityList: List<ParcelStatusEntity>)
    suspend fun updateEntity(parcelStatusEntity: ParcelStatusEntity)
    suspend fun updateEntities(parcelStatusEntityList: List<ParcelStatusEntity>)
-   suspend fun updateUpdatableStatus(parcelId:Int, status : Int?)
+   suspend fun updateUpdatableStatus(parcelId:Int, status : Int)
    fun getEntity(parcelId: Int): ParcelStatusEntity?
    suspend fun initializeIsBeUpdate(parcelId:Int)
    suspend fun updateTotalIsBeDeliveredToZero()

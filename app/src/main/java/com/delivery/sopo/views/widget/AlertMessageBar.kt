@@ -162,7 +162,7 @@ class AlertMessageBar : RelativeLayout
         }
     }
 
-    fun onStart(timer: Long?)
+    fun onStart(timer: Long = 5000)
     {
         layoutMain.visibility = View.VISIBLE
 

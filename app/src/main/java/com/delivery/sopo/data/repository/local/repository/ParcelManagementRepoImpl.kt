@@ -8,7 +8,6 @@ import com.delivery.sopo.util.TimeUtil
 
 class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelManagementRepository
 {
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     override fun getIsDeleteCntLiveData(): LiveData<Int> {
         return appDatabase.parcelManagementDao().getIsDeleteCntLiveData()
     }
@@ -60,7 +59,7 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
         appDatabase.parcelManagementDao().update(parcelStatusEntityList)
     }
 
-    override suspend fun updateUpdatableStatus(parcelId:Int, status : Int?) = appDatabase.parcelManagementDao().updateIsBeUpdate(parcelId, status)
+    override suspend fun updateUpdatableStatus(parcelId:Int, status : Int) = appDatabase.parcelManagementDao().updateIsBeUpdate(parcelId, status)
 
     override fun getEntity(parcelId:Int): ParcelStatusEntity? {
         return appDatabase.parcelManagementDao().getById(parcelId)

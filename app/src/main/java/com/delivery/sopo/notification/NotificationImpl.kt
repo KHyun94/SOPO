@@ -23,8 +23,8 @@ object NotificationImpl: Notification
     fun awakenDeviceNoti(remoteMessage: RemoteMessage, context: Context, intent: Intent) {
         val channelId = "${context.packageName}SOPO"
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        val intent = intent.addCategory(Intent.CATEGORY_LAUNCHER).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         val nBuilder = NotificationCompat.Builder(context, channelId)
@@ -52,7 +52,7 @@ object NotificationImpl: Notification
         val channelId = "${context.packageName}SOPO"
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         val nBuilder = NotificationCompat.Builder(context, channelId)

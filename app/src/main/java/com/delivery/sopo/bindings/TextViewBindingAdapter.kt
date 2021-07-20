@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.delivery.sopo.R
 
@@ -15,7 +16,7 @@ object TextViewBindingAdapter
     {
         tv.run {
             text = content
-            setTextColor(tv.context.getColor(colorRes))
+            setTextColor(ContextCompat.getColor(context, colorRes))
         }
     }
 

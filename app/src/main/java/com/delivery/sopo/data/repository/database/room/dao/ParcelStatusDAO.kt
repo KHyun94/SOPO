@@ -46,7 +46,7 @@ interface ParcelStatusDAO
     fun updateTotalIsBeDeliveredToZero()
 
     @Query("UPDATE PARCEL_STATUS SET updatableStatus = :status WHERE  PARCEL_ID = :parcelId")
-    fun updateIsBeUpdate(parcelId: Int, status : Int? = 0)
+    fun updateIsBeUpdate(parcelId: Int, status : Int)
 
     @Query("UPDATE PARCEL_STATUS SET isBeDelete = 1 , AUDIT_DTE = :auditDte WHERE  PARCEL_ID = :parcelId")
     fun updateIsBeDeleteToOne(parcelId: Int, auditDte: String)
