@@ -146,6 +146,20 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
         setTabLayout()
     }
 
+    override fun onNewIntent(intent: Intent?)
+    {
+        super.onNewIntent(intent)
+
+        SopoLog.d("newItent[Main]")
+
+        intent?.let { intent ->
+            val bundle = intent.extras
+            val a = bundle?.getString("test")
+            SopoLog.d("intent >>> ${a}")
+        }
+    }
+
+
     private fun setTabLayout()
     {
         binding.layoutMainTab.run {
