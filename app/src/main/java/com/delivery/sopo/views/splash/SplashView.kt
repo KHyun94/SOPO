@@ -47,6 +47,20 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
         Handler().postDelayed(Runnable { moveToActivity() }, 1500)
     }
 
+    override fun onNewIntent(intent: Intent?)
+    {
+        super.onNewIntent(intent)
+
+        SopoLog.d("newItent[Splash]")
+
+        intent?.let { intent ->
+
+            val bundle = intent.extras
+            val a = bundle?.getString("test")
+            SopoLog.d("intent >>> ${a}")
+        }
+    }
+
     private fun moveToActivity()
     {
         binding.vm!!.navigator.observe(this, Observer {

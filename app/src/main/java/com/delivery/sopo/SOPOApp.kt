@@ -4,14 +4,13 @@ import android.app.Activity
 import android.app.AlarmManager
 import android.app.Application
 import android.content.Context
-import android.graphics.Paint
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.data.repository.database.room.RoomActivate
 import com.delivery.sopo.di.appModule
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
-import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
+import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.models.dto.OAuthDTO
 import com.delivery.sopo.models.mapper.OAuthMapper
@@ -35,7 +34,7 @@ class SOPOApp: Application()
 {
     val appDatabase: AppDatabase by inject()
     val userLocalRepository: UserLocalRepository by inject()
-    val parcelLocalRepository: ParcelLocalRepository by inject()
+    val parcelRepository: ParcelRepository by inject()
     val OAuthLocalRepository: OAuthLocalRepository by inject()
 
     var kakaoSDKAdapter: KakaoSDKAdapter? = null
@@ -106,7 +105,7 @@ class SOPOApp: Application()
 
         if(clipboardText != null) return NavigatorConst.REGISTER_TAB
 
-        val cnt = withContext(Dispatchers.Default) { parcelLocalRepository.getOnGoingDataCnt() }
+        val cnt = withContext(Dispatchers.Default) { parcelRepository.getOnGoingDataCnt() }
 
         return if(cnt == 0)
         {

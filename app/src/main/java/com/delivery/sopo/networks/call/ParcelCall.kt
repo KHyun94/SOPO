@@ -8,13 +8,19 @@ import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.enums.DisplayEnum
+import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.models.ParcelRegisterDTO
+import com.delivery.sopo.models.ResponseResult
+import com.delivery.sopo.models.UpdateAliasRequest
 import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResult
+import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.runBlocking
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+import java.lang.Exception
 
 object ParcelCall : BaseService(), KoinComponent
 {
@@ -28,20 +34,12 @@ object ParcelCall : BaseService(), KoinComponent
     init
     {
         val oAuth : OAuthEntity? = runBlocking {  oAuthLocalRepo.get(userId = email) }
-        SopoLog.d( msg = "토큰 정보 => ${oAuth}")
-
         parcelAPI = NetworkManager.retro(oAuth?.accessToken).create(ParcelAPI::class.java)
     }
 
     suspend fun registerParcel(registerDto: ParcelRegisterDTO):NetworkResult<APIResult<Int?>>
     {
         val result = parcelAPI.registerParcel(registerDto = registerDto)
-        return apiCall(call = {result})
-    }
-
-    suspend fun getSingleParcel(parcelId:Int) : NetworkResult<APIResult<ParcelDTO?>>
-    {
-        val result = parcelAPI.getSingleParcel(parcelId)
         return apiCall(call = {result})
     }
 
@@ -58,27 +56,61 @@ object ParcelCall : BaseService(), KoinComponent
         return apiCall(call = { result })
     }
 
-    suspend fun requestParcelForRefresh(parcelId : Int) : NetworkResult<APIResult<Unit>>
+    suspend fun requestParcelForRefresh(parcelId : Int) : ResponseResult<Unit?>
     {
         val mapper = mapOf<String, Int>(Pair("parcelId", parcelId))
         val result = parcelAPI.requestParcelForRefresh(mapper)
-        return apiCall(call = { result })
-    }
 
-    suspend fun getSingleParcelTest(parcelId:Int): APIResult<ParcelDTO?>
-    {
-        val result = parcelAPI.getSingleParcel(parcelId)
-
-        when(val apiResult = apiCall(call = { result }))
+        when(val res = apiCall(call = { result }))
         {
             is NetworkResult.Success ->
             {
-                return apiResult.data
+                val apiResult = res.data
+                return ResponseResult.success(CodeUtil.getCode(apiResult.code), Unit, "성공")
             }
             is NetworkResult.Error ->
             {
-                throw apiResult.exception as APIException
+                val exception = res.exception as APIException
+
+                val code = when(exception.httpStatusCode)
+                {
+                    204 -> ResponseCode.PARCEL_NOTHING_TO_UPDATES
+                    303 -> ResponseCode.PARCEL_SOMETHING_TO_UPDATES
+                    else -> exception.responseCode
+                }
+
+                SopoLog.e("wtf ${code} ${exception.httpStatusCode}")
+
+                return ResponseResult.fail(code, Unit, code.MSG, DisplayEnum.DIALOG)
             }
         }
+    }
+
+    suspend fun getSingleParcel(parcelId:Int): ResponseResult<ParcelDTO?>
+    {
+        val result = parcelAPI.getSingleParcel(parcelId)
+
+        when(val res = apiCall(call = { result }))
+        {
+            is NetworkResult.Success ->
+            {
+                val apiResult = res.data
+                val data: ParcelDTO = apiResult.data?:throw Exception("Parcel data가 조회되지 않습니다.")
+
+                return ResponseResult.success(CodeUtil.getCode(apiResult.code), data, "성공")
+            }
+            is NetworkResult.Error ->
+            {
+                val exception = res.exception as APIException
+                val code = exception.responseCode
+                return ResponseResult.fail(code, null, "단일 택배 조회 실패", DisplayEnum.DIALOG)
+            }
+        }
+    }
+
+    suspend fun updateParcelAlias(req: UpdateAliasRequest): NetworkResult<APIResult<Unit?>>
+    {
+        val result = parcelAPI.updateParcelAlias(req = req)
+        return apiCall(call = { result })
     }
 }

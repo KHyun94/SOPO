@@ -110,6 +110,9 @@ class UpdateNicknameView: AppCompatActivity()
                         }
                     })).show(supportFragmentManager, "DIALOG")
                 }
+                NavigatorConst.TO_BACK_SCREEN -> {
+                    finish()
+                }
             }
         })
 

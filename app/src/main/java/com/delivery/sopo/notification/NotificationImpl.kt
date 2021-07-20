@@ -14,6 +14,7 @@ import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.interfaces.notification.Notification
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.TimeUtil
+import com.delivery.sopo.views.splash.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -23,8 +24,14 @@ object NotificationImpl: Notification
     fun awakenDeviceNoti(remoteMessage: RemoteMessage, context: Context, intent: Intent) {
         val channelId = "${context.packageName}SOPO"
 
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        val intent = Intent(context, SplashView::class.java)
+        intent.action = Intent.ACTION_MAIN
+        intent.addCategory(Intent.CATEGORY_LAUNCHER)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        intent.putExtra("test", "팡효!!!")
+
+//        val pIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         val nBuilder = NotificationCompat.Builder(context, channelId)
@@ -52,7 +59,7 @@ object NotificationImpl: Notification
         val channelId = "${context.packageName}SOPO"
 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         val nBuilder = NotificationCompat.Builder(context, channelId)

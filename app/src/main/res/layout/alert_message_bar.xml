@@ -33,6 +33,7 @@
         android:layout_marginEnd="27dp"
         android:layout_alignParentEnd="true"
         android:text="실행 취소"
+        android:padding="10dp"
         android:textStyle="bold"
         android:textColor="@color/MAIN_WHITE" />
 </RelativeLayout>

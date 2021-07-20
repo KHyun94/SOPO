@@ -1,9 +1,6 @@
 package com.delivery.sopo.viewmodels.inquiry
 
-import android.util.Log
 import androidx.lifecycle.*
-import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.repository.database.room.entity.ParcelCntInfoEntity
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.enums.ScreenStatusEnum
@@ -14,110 +11,35 @@ import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.parcel.ParcelDTO
-import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.networks.dto.TimeCountDTO
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
-import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
+import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.data.repository.local.repository.TimeCountRepoImpl
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.data.repository.remote.parcel.ParcelUseCase
 import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.models.UpdateAliasRequest
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import kotlinx.coroutines.*
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.HttpException
-import retrofit2.Response
+import java.util.*
+import kotlin.Comparator
 
-class InquiryViewModel(private val userLocalRepository: UserLocalRepository, private val parcelLocalRepository: ParcelLocalRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val timeCountRepoImpl: TimeCountRepoImpl):
+class InquiryViewModel(private val userLocalRepository: UserLocalRepository, private val parcelRepository: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val timeCountRepoImpl: TimeCountRepoImpl):
         ViewModel()
 {
-    private var _ongoingList = Transformations.map(
-        parcelLocalRepository.getLocalOngoingParcelsAsLiveData()) { parcelList ->
-        val list = ParcelMapper.parcelListToInquiryItemList(parcelList.toMutableList())
-        list.apply {
-
-            val sortedList = mutableListOf<InquiryListItem>()
-
-            val elseList = list.asSequence().filter { item ->
-
-                if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
-                {
-                    sortedList.add(item)
-                }
-
-                item.parcelDTO.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
-            }.filter { item ->
-                if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE)
-                {
-                    sortedList.add(item)
-                }
-
-                item.parcelDTO.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
-            }.filter { item ->
-                if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE)
-                {
-                    sortedList.add(item)
-                }
-
-                item.parcelDTO.deliveryStatus != DeliveryStatusEnum.IN_TRANSIT.CODE
-            }.filter { item ->
-                if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE)
-                {
-                    sortedList.add(item)
-                }
-
-                item.parcelDTO.deliveryStatus != DeliveryStatusEnum.AT_PICKUP.CODE
-            }.filter { item ->
-                if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE)
-                {
-                    sortedList.add(item)
-                }
-
-                item.parcelDTO.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
-            }.filter { item ->
-                if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.NOT_REGISTER.CODE)
-                {
-                    sortedList.add(item)
-                }
-
-                item.parcelDTO.deliveryStatus != DeliveryStatusEnum.NOT_REGISTER.CODE
-            }.toList()
-
-//            sortedList.also { addAll(elseList) }
-//            val deliveredList = list.filter { item -> item.parcelDTO.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE }.also {
-//                SopoLog.d("DELIVERED item >>> ${it.size} ")
-//            }
-//            val outForDeliveryList = list.filter { item -> item.parcelDTO.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE }.also {
-//                SopoLog.d("OUT_FOR_DELIVERY item >>> ${it.size} ")
-//            }
-//            val inTransitList = list.filter { item -> item.parcelDTO.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE }.also {
-//                SopoLog.d("IN_TRANSIT item >>> ${it.size} ")
-//            }
-//            val atPickupList = list.filter { item -> item.parcelDTO.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE }.also {
-//                SopoLog.d("AT_PICKUP item >>> ${it.size} ")
-//            }
-//            val informationList = list.filter { item -> item.parcelDTO.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE }.also {
-//                SopoLog.d("INFORMATION_RECEIVED item >>> ${it.size} ")
-//            }
-//            val notList = list.filter { item -> item.parcelDTO.deliveryStatus == DeliveryStatusEnum.NOT_REGISTER.CODE }.also {
-//                SopoLog.d("NOT_REGISTER item >>> ${it.size} ")
-//            }
-//            val errorList = list.filter { item -> item.parcelDTO.deliveryStatus == DeliveryStatusEnum.ERROR.CODE }.also {
-//                SopoLog.d("ERROR item >>> ${it.size} ")
-//            }
-        }
+    private var _ongoingList = Transformations.map(parcelRepository.getLocalOngoingParcelsAsLiveData()) { parcelList ->
+        val list: MutableList<InquiryListItem> = ParcelMapper.parcelListToInquiryItemList(parcelList)
+        sortByDeliveryStatus(list).toMutableList()
     }
     val ongoingList: LiveData<MutableList<InquiryListItem>>
         get() = _ongoingList
 
     private val _completeList =
-        Transformations.map(parcelLocalRepository.getLocalCompleteParcelsLiveData()) {
+        Transformations.map(parcelRepository.getLocalCompleteParcelsLiveData()) {
             ParcelMapper.parcelListToInquiryItemList(it as MutableList<ParcelDTO>)
         }
     val completeList: LiveData<MutableList<InquiryListItem>>
@@ -181,13 +103,13 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
         get() = _refreshCompleteListByOnlyLocalData
 
     val presentOngoingParcelCnt: LiveData<Int> =
-        Transformations.map(parcelLocalRepository.getLocalOnGoingParcelCnt()) { cnt ->
+        Transformations.map(parcelRepository.getLocalOnGoingParcelCnt()) { cnt ->
             SopoLog.d("메인 조회 탭 >>> 택배 갯수: $cnt")
             cnt
         }
 
     val presentOngoingParcelCntAsStr: LiveData<String> =
-        Transformations.map(parcelLocalRepository.getLocalOnGoingParcelCnt()) { cnt ->
+        Transformations.map(parcelRepository.getLocalOnGoingParcelCnt()) { cnt ->
             SopoLog.d("메인 조회 탭 >>> 택배 갯수: $cnt")
             "택배 ${cnt}개"
         }
@@ -296,7 +218,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
             timeCountRepoImpl.updateEntities(list)
         }
 
-        return parcelLocalRepository.getRemoteMonths()?.let { list ->
+        return parcelRepository.getRemoteMonths()?.let { list ->
             val entityList = list.map(TimeCountMapper::timeCountDtoToTimeCountEntity)
             if(entityList.isNotEmpty())
             {
@@ -366,7 +288,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
             // 다음에 조회할 데이터가 있다면
             if(pagingManagement.hasNext)
             {
-                val remoteCompleteParcels = parcelLocalRepository.getRemoteCompleteParcels(page = pagingManagement.pagingNum, inquiryDate = inquiryDate)
+                val remoteCompleteParcels = parcelRepository.getRemoteCompleteParcels(page = pagingManagement.pagingNum, inquiryDate = inquiryDate)
 
                 // null이거나 0이면 다음 데이터가 없는 것이므로 페이징 숫자를 1빼고 hasNext를 false로 바꾼다.
                 if(remoteCompleteParcels == null || remoteCompleteParcels.size == 0)
@@ -383,7 +305,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                     for(parcel in remoteCompleteParcels)
                     {
                         val localParcelById =
-                            parcelLocalRepository.getLocalParcelById(parcel.parcelId)
+                            parcelRepository.getLocalParcelById(parcel.parcelId)
                         updateParcelList.add(parcel)
                         if(localParcelById == null)
                         {
@@ -400,7 +322,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                             }
                         }
                     }
-                    parcelLocalRepository.insertEntities(updateParcelList)
+                    parcelRepository.insertEntities(updateParcelList)
 
                     //                    _isProgress.postValue(false)
 
@@ -433,7 +355,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
         viewModelScope.launch(Dispatchers.Default) {
 
             // 현재 가지고 있는 아이템의 수가 0개라면 새로고침 한다.
-            if(parcelLocalRepository.getOnGoingDataCnt() == 0)
+            if(parcelRepository.getOnGoingDataCnt() == 0)
             {
                 refreshOngoing()
                 return@launch
@@ -452,7 +374,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
                 //                _isProgress.postValue(true)
 
-                val remoteParcels = parcelLocalRepository.getRemoteOngoingParcels()
+                val remoteParcels = parcelRepository.getRemoteOngoingParcels()
 
                 // 서버로부터 데이터를 받아온 값이 널이 아니라면
                 remoteParcels?.let { parcels ->
@@ -461,7 +383,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                     for(remote in parcels)
                     {
                         val localParcelById =
-                            parcelLocalRepository.getLocalParcelById(remote.parcelId)
+                            parcelRepository.getLocalParcelById(remote.parcelId)
                         // 서버로부터 받아온 데이터가 검색되지 않았을 경우 => 새로운 데이터라는 의미 => 로컬에 저장한다.
                         // ParcelEntity를 관리해줄 ParcelManagementEntity도 같은 ParcelId로 저장한다.
                         if(localParcelById == null)
@@ -471,7 +393,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                             ${remote}
                         """.trimIndent())
 
-                            parcelLocalRepository.insetEntity(
+                            parcelRepository.insetEntity(
                                 ParcelMapper.parcelToParcelEntity(remote))
 
                             val parcelManagement =
@@ -499,7 +421,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                                 SopoLog.d(
                                     msg = "InquiryVm => PARCEL_STATUS의 'isBeUpdate'를 1 -> 0으로 초기화 작업")
 
-                                parcelLocalRepository.updateEntity(
+                                parcelRepository.updateEntity(
                                     ParcelMapper.parcelToParcelEntity(remote))
 
                                 val parcelManagement =
@@ -524,7 +446,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                 // => 새로고침을 하여 GET /parcels로 받아온 데이터는 서버의 데이터베이스 기준 onGoing에 해당하는 택배들만 가져옴
                 // => 따라서 로컬에서는 out_for_delivery로 배송 출발 상태(delivered 직전 상태)지만 서버에서는 delivered 상태면 새로고침 대상에서 제외됨.
                 // => 이런 데이터들은 각각 GET /parcel로 요청하여 새로고침한다.
-                parcelLocalRepository.getLocalOngoingParcels()?.let { localList ->
+                parcelRepository.getLocalOngoingParcels()?.let { localList ->
                     remoteParcels?.let { remoteList ->
                         val filteredLocalList = localList as MutableList
                         for(remoteParcel in remoteList)
@@ -536,17 +458,23 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
                         for(parcel in filteredLocalList)
                         {
-                            val result = ParcelCall.getSingleParcelTest(parcel.parcelId)
+                            val result = ParcelCall.getSingleParcel(parcel.parcelId)
+
+                            // TODO 메인 조회 탭에서 업데이트된 단일 택배의 정보를 정상적으로 읽어오지 못한 경우 에러 처
+                            if(!result.result){
+                                SopoLog.e("택배 데이터를 정상적으로 읽어오지 못했습니다.[${result.code}][${result.message}]")
+                                continue
+                            }
 
                             val remoteOngoingParcel = result.data
 
                             val localParcelById =
-                                parcelLocalRepository.getLocalParcelById(parcel.parcelId)
+                                parcelRepository.getLocalParcelById(parcel.parcelId)
                             if(remoteOngoingParcel != null && localParcelById != null)
                             {
                                 if(remoteOngoingParcel.inquiryHash != parcel.inquiryHash)
                                 {
-                                    parcelLocalRepository.insetEntity(localParcelById.apply {
+                                    parcelRepository.insetEntity(localParcelById.apply {
                                         this.update(remoteOngoingParcel)
                                     })
                                     parcelManagementRepoImpl.initializeIsBeUpdate(localParcelById.parcelId)
@@ -556,12 +484,10 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                     }
                 }
 
-                //                _isProgress.postValue(false)
             }
         }
         catch(e: Exception)
         {
-            //            _isProgress.postValue(false)
             SopoLog.e("refreshOngoing() Error >>>", e)
         }
 
@@ -602,7 +528,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
     fun removeSelectedData(selectedData: MutableList<Int>)
     {
         viewModelScope.launch(Dispatchers.IO) {
-            parcelLocalRepository.deleteLocalParcels(selectedData)
+            parcelRepository.deleteLocalParcels(selectedData)
             parcelManagementRepoImpl.updateIsBeDeleteToOneByParcelIdList(selectedData)
             // 배송완료일때 아이템이 하나도 없을 경우 전체 새로고침을 해야해서 삭제할때 -1을 해줘야함.
             if(getCurrentScreenStatus() == ScreenStatusEnum.COMPLETE)
@@ -622,7 +548,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
             try
             {
                 // 서버로 데이터를 삭제(상태 업데이트)하라고 요청
-                val deleteRemoteParcels = parcelLocalRepository.deleteRemoteParcels()
+                val deleteRemoteParcels = parcelRepository.deleteRemoteParcels()
                 // 위 요청이 성공했다면 (삭제할 데이터가 없으면 null임)
                 if(deleteRemoteParcels?.code == ResponseCode.SUCCESS.CODE)
                 {
@@ -665,16 +591,16 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
                 for(parcelMng in parcelMngList)
                 {
-                    parcelLocalRepository.getLocalParcelById(
+                    parcelRepository.getLocalParcelById(
                         parcelMng.parcelId)?.let {
                         it.status = 1
-                        parcelLocalRepository.updateEntity(it)
+                        parcelRepository.updateEntity(it)
                     }
                 }
                 if(getCurrentScreenStatus() == ScreenStatusEnum.COMPLETE)
                 {
                     // 복구해야할 리스트 중 아이템 하나의 도착일자 (2020-09-19 ~~)에서 PARCEL_CNT_INFO의 primaryKey를 추출해서 복구해야할 PARCEL_CNT_INFO를 구한다.
-                    parcelLocalRepository.getLocalParcelById(
+                    parcelRepository.getLocalParcelById(
                         cancelDataList.first().parcelId)
                         ?.let {
                             val timeCountPrimaryKey =
@@ -727,82 +653,95 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
         setMoreView(false)
     }
 
-    fun patchParcelAlias(parcelId:Int, patchAlias: String)
+    fun patchParcelAlias(updateAliasRequest: UpdateAliasRequest)
     {
-        // Json Patch를 위한 Body
-        val jsonArray = JsonArray()
-        val jsonObject = JsonObject()
+        CoroutineScope(Dispatchers.Main).launch {
+            ParcelUseCase.updateParcelAlias(req = updateAliasRequest)
+        }
+    }
 
-        jsonObject.run {
-            addProperty("op", "replace")    // 사용할 method
-            addProperty("path", "/parcelAlias") // 변경 target path
-            addProperty("value", patchAlias)    // 변경 value
+    private fun sortByDeliveryStatus(list: List<InquiryListItem>): List<InquiryListItem>{
+
+        val sortedList = mutableListOf<InquiryListItem>()
+        val multiList = listOf<MutableList<InquiryListItem>>(
+            mutableListOf(),
+            mutableListOf(),
+            mutableListOf(),
+            mutableListOf(),
+            mutableListOf(),
+            mutableListOf(),
+            mutableListOf()
+        )
+
+        val elseList = list.asSequence().filter { item ->
+
+            if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
+            {
+                SopoLog.d("배송완료(Delivered)[${item.parcelDTO.alias}]")
+                multiList[0].add(item)
+            }
+
+            item.parcelDTO.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
+        }.filter { item ->
+            if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE)
+            {
+                SopoLog.d("동네도착(out_for_delivery)[${item.parcelDTO.alias}]")
+                multiList[1].add(item)
+            }
+
+            item.parcelDTO.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
+        }.filter { item ->
+            if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE)
+            {
+                SopoLog.d("배송중(in_transit)[${item.parcelDTO.alias}]")
+                multiList[2].add(item)
+            }
+
+            item.parcelDTO.deliveryStatus != DeliveryStatusEnum.IN_TRANSIT.CODE
+        }.filter { item ->
+            if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE)
+            {
+                SopoLog.d("픽업(at_pickup)[${item.parcelDTO.alias}]")
+                multiList[3].add(item)
+            }
+
+            item.parcelDTO.deliveryStatus != DeliveryStatusEnum.AT_PICKUP.CODE
+        }.filter { item ->
+            if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE)
+            {
+                SopoLog.d("접수(information_received)[${item.parcelDTO.alias}]")
+                multiList[4].add(item)
+            }
+
+            item.parcelDTO.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
+        }.filter { item ->
+            if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.NOT_REGISTER.CODE)
+            {
+                SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
+                multiList[5].add(item)
+            }
+
+            item.parcelDTO.deliveryStatus != DeliveryStatusEnum.NOT_REGISTER.CODE
+        }.toList()
+
+        multiList[6].addAll(elseList)
+
+        multiList.forEach {
+            Collections.sort(it, SortByDate())
+            sortedList.addAll(it)
         }
 
-        jsonArray.add(jsonObject)
+        sortedList.forEach(){
+            SopoLog.d("${it.parcelDTO.alias}[${it.parcelDTO.deliveryStatus}][${it.parcelDTO.auditDte}]")
+        }
 
-        SopoLog.d("Parcel Alias 변경 JsonArray ===> ${jsonArray}")
+        return sortedList
+    }
 
-        NetworkManager.retro(SOPOApp.oAuth?.accessToken)
-            .create(ParcelAPI::class.java)
-            .patchParcel(email = userLocalRepository.getUserId(), parcelId = parcelId, jsonPATCH = jsonArray)
-            .enqueue(object: Callback<APIResult<ParcelEntity?>>
-                     {
-                         override fun onFailure(call: Call<APIResult<ParcelEntity?>>, t: Throwable)
-                         {
-                             TODO("Not yet implemented")
-                         }
-
-                         override fun onResponse(call: Call<APIResult<ParcelEntity?>>, response: Response<APIResult<ParcelEntity?>>)
-                         {
-                             val httpStatusCode = response.code()
-
-                             SopoLog.d("Alias 변경 HttpCode => $httpStatusCode")
-
-                             // http status code 200
-                             when(httpStatusCode)
-                             {
-                                 200 ->
-                                 {
-                                     // 0000 =>
-                                     val result = response.body() as APIResult<ParcelEntity?>
-
-                                     CoroutineScope(Dispatchers.Main).launch {
-                                         withContext(Dispatchers.Default) {
-                                             val a =
-                                                 parcelLocalRepository.updateEntity(result.data!!)
-                                             SopoLog.d("업데이트 완료 + $a")
-                                         }
-                                     }
-                                 }
-                                 400 ->
-                                 {
-                                     // ERROR
-                                     val errorReader = response.errorBody()!!.charStream()
-
-                                     val result =
-                                         Gson().fromJson(errorReader, APIResult::class.java)
-                                     Log.e("LOG.SOPO", "[ERROR] getParcels => $result ")
-
-
-                                     val msg = if(result == null)
-                                     {
-                                         SopoLog.e("등록 null", null)
-                                         "알 수 없는 에러"
-                                     }
-                                     else
-                                     {
-                                         Log.d("LOG.SOPO", "등록 Code ${result.code}")
-                                         "CodeUtil.getMsg(result.code)"
-                                     }
-
-                                 }
-                                 else ->
-                                 {
-                                     Log.d("LOG.SOPO", "알 수 없는 에러!!!!")
-                                 }
-                             }
-                         }
-                     })
+    class SortByDate: Comparator<InquiryListItem>{
+        override fun compare(p0: InquiryListItem, p1: InquiryListItem): Int
+        {
+            return p0.parcelDTO.auditDte.compareTo(p1.parcelDTO.auditDte)
+        }
     }
 }

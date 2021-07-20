@@ -77,7 +77,7 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 
             SopoLog.d(msg = "업데이트 가능 여부 택배 갯수 ${it}")
 
-            if(binding.vm!!.isInitUpdate && it > 0)
+            if(it > 0)
             {
                 SopoLog.d(msg = "True 업데이트 가능 여부 택배 갯수: $it")
 
@@ -110,7 +110,7 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 
                         this.onDismiss()
                     })
-                    onStart(null)
+                    onStart()
                     SOPOApp.cntOfBeUpdate.postValue(0)
                 }
             }
@@ -145,6 +145,20 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
         setViewPager()
         setTabLayout()
     }
+
+    override fun onNewIntent(intent: Intent?)
+    {
+        super.onNewIntent(intent)
+
+        SopoLog.d("newItent[Main]")
+
+        intent?.let { intent ->
+            val bundle = intent.extras
+            val a = bundle?.getString("test")
+            SopoLog.d("intent >>> ${a}")
+        }
+    }
+
 
     private fun setTabLayout()
     {

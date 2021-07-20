@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.data.repository.remote.parcel.ParcelRemoteRepository
+import com.delivery.sopo.data.repository.remote.parcel.ParcelUseCase
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.models.*
 import com.delivery.sopo.util.SopoLog
@@ -69,7 +69,7 @@ class ConfirmParcelViewModel: ViewModel()
     {
         SopoLog.d("requestParcelRegister(...) 호출[${registerDTO.toString()}]")
 
-        val res = ParcelRemoteRepository.requestParcelRegister(registerDTO = registerDTO)
+        val res = ParcelUseCase.requestParcelRegister(registerDTO = registerDTO)
 
         isProgress.postValue(false)
 

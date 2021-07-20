@@ -19,16 +19,13 @@ import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.ParcelDTO
-import com.delivery.sopo.data.repository.local.repository.ParcelLocalRepository
 import com.delivery.sopo.util.SopoLog
 import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
 import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
 import org.koin.core.KoinComponent
-import org.koin.core.inject
 
 class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData<Int>, private var list: MutableList<InquiryListItem> = mutableListOf(), private val itemTypeEnum: InquiryItemTypeEnum): RecyclerView.Adapter<RecyclerView.ViewHolder>(), KoinComponent
 {
-    private val parcelLocalRepository: ParcelLocalRepository by inject()
     private var mClickListener: OnParcelClickListener? = null
 
     private val limitOfSoonListSize = 2
@@ -36,19 +33,9 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
     private var isMoreView = false
     private var isRemovable = false
 
-    fun setOnParcelClickListener(_mClickListener: OnParcelClickListener)
+    fun setOnParcelClickListener(mClickListener: OnParcelClickListener)
     {
-        mClickListener = _mClickListener
-    }
-
-    inner class ProcessStatusViewHolder<T:ViewDataBinding>(private val _binding: T): RecyclerView.ViewHolder(_binding.root)
-    {
-        val binding: T = _binding
-
-        fun bind(inquiryListItem: InquiryListItem)
-        {
-            binding.setVariable(BR.item, inquiryListItem)
-        }
+        this.mClickListener = mClickListener
     }
 
     inner class OngoingViewHolder(private val binding: InquiryListOngoingItemBinding): RecyclerView.ViewHolder(binding.root)
@@ -61,7 +48,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
         }
     }
 
-    inner class CompleteViewHolder(private val binding: InquiryListCompleteItemBinding): RecyclerView.ViewHolder(binding.root)
+    inner class CompleteViewHolder(binding: InquiryListCompleteItemBinding): RecyclerView.ViewHolder(binding.root)
     {
         val completeBinding: InquiryListCompleteItemBinding = binding
 
@@ -71,8 +58,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
         }
     }
 
-    private fun <T: ViewDataBinding> getBinding(inflater: LayoutInflater,
-                                                @LayoutRes layoutRes: Int, parent: ViewGroup): T
+    private fun <T: ViewDataBinding> getBinding(inflater: LayoutInflater, @LayoutRes layoutRes: Int, parent: ViewGroup): T
     {
         return DataBindingUtil.inflate<T>(LayoutInflater.from(parent.context), layoutRes, parent, false)
     }
@@ -114,8 +100,6 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
             {
                 holder.bind(inquiryListItem)
                 holder.itemView.tag = inquiryListItem
-
-                val parcelDTO: ParcelDTO = inquiryListItem.parcelDTO
 
                 holder.ongoingBinding.tvDeliveryStatus.bringToFront()
                 

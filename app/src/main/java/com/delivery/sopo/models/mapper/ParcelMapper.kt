@@ -4,6 +4,7 @@ import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.ParcelDTO
+import com.delivery.sopo.models.parcel.ParcelDetailDTO
 import com.delivery.sopo.util.SopoLog
 
 object ParcelMapper
@@ -66,10 +67,7 @@ object ParcelMapper
         return parcelEntity.parcelId
     }
 
-    fun parcelListToInquiryItemList(parcelDTOList: MutableList<ParcelDTO>): MutableList<InquiryListItem>{
-        return parcelDTOList.map {
-            InquiryListItem(parcelDTO = it)
-        } as MutableList<InquiryListItem>
-
+    fun parcelListToInquiryItemList(list: List<ParcelDTO>): MutableList<InquiryListItem>{
+        return list.map { InquiryListItem(parcelDTO = it) }.toMutableList()
     }
 }

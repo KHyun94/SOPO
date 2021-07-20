@@ -19,7 +19,7 @@
         android:includeFontPadding="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="택배의 이름을 입력해주세요." />
+        android:text="물품명을 입력해주세요." />
 
     <LinearLayout
         android:id="@+id/layout_body"

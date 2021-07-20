@@ -7,15 +7,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.TimeLineItemBinding
-import com.delivery.sopo.models.parcel.Progress
+import com.delivery.sopo.models.parcel.TimeLineProgress
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.adapter.TimeLineRvAdapter.TimeLineViewHolder
 
 class TimeLineRvAdapter : RecyclerView.Adapter<TimeLineViewHolder>()
 {
-    val TAG = "LOG.SOPO"
-
-    var list: List<Progress?> = listOf()
+    var list: List<TimeLineProgress?> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TimeLineViewHolder
     {
@@ -58,7 +56,7 @@ class TimeLineRvAdapter : RecyclerView.Adapter<TimeLineViewHolder>()
         holder.setIsRecyclable(false)
     }
 
-    fun setItemList(_list: MutableList<Progress?>)
+    fun setItemList(_list: MutableList<TimeLineProgress?>)
     {
         list = _list.reversed()
     }
@@ -68,24 +66,13 @@ class TimeLineRvAdapter : RecyclerView.Adapter<TimeLineViewHolder>()
     {
         var itemBindingUtil: TimeLineItemBinding = DataBindingUtil.bind(binding.root)!!
 
-        fun onBind(item: Progress)
+        fun onBind(item: TimeLineProgress)
         {
             itemBindingUtil.tvDateHhmmss.text = item.date!!.HHmmss
             itemBindingUtil.tvDateYymmdd.text = item.date.yyMMdd
             itemBindingUtil.tvDeliveryLocation.text = item.location
             itemBindingUtil.tvDeliveryStatus.text = item.status!!.text
         }
-
-        fun onStatusBind()
-        {
-
-        }
-
-        init
-        {
-
-        }
-
     }
 
 }

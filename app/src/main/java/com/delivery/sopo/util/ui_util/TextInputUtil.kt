@@ -151,7 +151,7 @@ object TextInputUtil
 
                 if(!isValidate)
                 {
-                    errorMessage = "닉네임 형식을 확인해주세요."
+                    errorMessage = "운송장 번호를 확인해주세요."
                 }
             }
             else ->

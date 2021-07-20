@@ -30,6 +30,7 @@ import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.enums.ScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
+import com.delivery.sopo.models.UpdateAliasRequest
 import com.delivery.sopo.models.mapper.MenuMapper
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.util.AlertUtil
@@ -87,7 +88,6 @@ class InquiryFragment: Fragment()
         {
             override fun handleOnBackPressed()
             {
-                SopoLog.d("!11223123123123123")
                 if (System.currentTimeMillis() - pressedTime > 2000)
                 {
                     pressedTime = System.currentTimeMillis()
@@ -205,11 +205,6 @@ class InquiryFragment: Fragment()
         // 배송중 , 등록된 택배 리스트
         vm.ongoingList.observe(this, Observer {list ->
 
-
-            list.forEach {
-                SopoLog.d("ongoing list >>> ${it.parcelDTO.deliveryStatus}")
-            }
-
             soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
             registeredParcelAdapter.separateDeliveryListByStatus(list)
 
@@ -294,7 +289,6 @@ class InquiryFragment: Fragment()
         })
 
         // '더 보기'로 아이템들을 숨기는 것을 해제하여 모든 아이템들을 화면에 노출시킨다.
-        // TODO 데이터 바인딩으로 처리할 수 있으면 처리하도록 수정해야함.
         vm.isMoreView.observe(this, Observer {
             if (it)
             {
@@ -424,10 +418,13 @@ class InquiryFragment: Fragment()
             {
                 val edit = MutableLiveData<String>()
 
-                AlertUtil.updateValueDialog(context!!, "택배의 별칭을 입력해주세요.", Pair("확인", View.OnClickListener {
-                    edit.observe(this@InquiryFragment, Observer {
-                        SopoLog.d(msg = "입력 값 = > $it")
-                        vm.patchParcelAlias(parcelId, it)
+                AlertUtil.updateValueDialog(requireContext(), "물품명을 입력해주세요.", Pair("확인", View.OnClickListener {
+                    edit.observe(this@InquiryFragment, Observer {alias ->
+
+                        val updateAliasRequest = UpdateAliasRequest(parcelId = parcelId, alias = alias)
+
+                        vm.patchParcelAlias(updateAliasRequest)
+
                         AlertUtil.onDismiss()
 
                         if (type == 0)
@@ -662,7 +659,6 @@ class InquiryFragment: Fragment()
     }
 
     // '곧 도착' 리스트의 아이템의 개수에 따른 화면세팅
-    // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
     private fun viewSettingForSoonArrivalList(listSize: Int)
     {
         when (listSize)
