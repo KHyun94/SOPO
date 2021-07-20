@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view)
+class SplashView: BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view)
 {
     private val userLocalRepo: UserLocalRepository by inject()
     private val vm: SplashViewModel by viewModel()
@@ -47,50 +47,33 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
         Handler().postDelayed(Runnable { moveToActivity() }, 1500)
     }
 
-    override fun onNewIntent(intent: Intent?)
-    {
-        super.onNewIntent(intent)
-
-        SopoLog.d("newItent[Splash]")
-
-        intent?.let { intent ->
-
-            val bundle = intent.extras
-            val a = bundle?.getString("test")
-            SopoLog.d("intent >>> ${a}")
-        }
-    }
-
     private fun moveToActivity()
     {
-        binding.vm!!.navigator.observe(this, Observer {
-            when (it)
+        vm.navigator.observe(this, Observer {
+            when(it)
             {
                 NavigatorConst.TO_PERMISSION ->
                 {
-                    if (!PermissionUtil.isPermissionGranted(this, *PermissionConst.PERMISSION_ARRAY))
+                    if(!PermissionUtil.isPermissionGranted(this, *PermissionConst.PERMISSION_ARRAY))
                     {
                         permissionDialog = PermissionDialog(act = parentActivity) { dialog ->
 
                             PermissionUtil.permissionCallback(parentActivity, *PermissionConst.PERMISSION_ARRAY) { isGranted ->
 
-                                if (!isGranted)
+                                if(!isGranted)
                                 {
                                     SopoLog.e("권한 비허가 상태")
 
                                     // NOT PERMISSION GRANT
-                                    GeneralDialog(
-                                        act = parentActivity,
-                                        title = getString(R.string.DIALOG_ALARM),
-                                        msg = getString(R.string.DIALOG_PERMISSION_REQ_MSG),
-                                        detailMsg = null,
-                                        rHandler = Pair(
-                                            first = getString(R.string.DIALOG_OK),
-                                            second = { it ->
+                                    GeneralDialog(act = parentActivity,
+                                                  title = getString(R.string.DIALOG_ALARM),
+                                                  msg = getString(
+                                                      R.string.DIALOG_PERMISSION_REQ_MSG),
+                                                  detailMsg = null, rHandler = Pair(
+                                            first = getString(R.string.DIALOG_OK), second = { it ->
                                                 it.dismiss()
                                                 finish()
-                                            })
-                                    ).show(supportFragmentManager, "permission")
+                                            })).show(supportFragmentManager, "permission")
 
                                     return@permissionCallback
                                 }
@@ -129,7 +112,7 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
                 NavigatorConst.TO_INIT ->
                 {
                     CoroutineScope(Dispatchers.Main).launch {
-                        AlertUtil.alertExpiredToken(this@SplashView, binding.vm!!.errorMessage)
+                        AlertUtil.alertExpiredToken(this@SplashView, vm.errorMessage)
                     }
                 }
             }
@@ -141,8 +124,8 @@ class SplashView : BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view
     {
         val clz = if(nickname == "") RegisterNicknameView::class.java else MainView::class.java
 
-        Intent(this@SplashView, clz).let {
-            startActivity(it)
+        Intent(this@SplashView, clz).let {intent ->
+            startActivity(intent)
             finish()
         }
     }

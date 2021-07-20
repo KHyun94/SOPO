@@ -15,6 +15,7 @@ object PermissionUtil
         for (p in permissions)
         {
             value = ContextCompat.checkSelfPermission(context, p) != PackageManager.PERMISSION_DENIED
+            if(!value) return false
         }
 
         return value
@@ -24,15 +25,8 @@ object PermissionUtil
     {
         val permissionListener = object : PermissionListener
         {
-            override fun onPermissionGranted()
-            {
-                callback.invoke(true)
-            }
-
-            override fun onPermissionDenied(deniedPermissions: List<String>)
-            {
-                callback.invoke(false)
-            }
+            override fun onPermissionGranted() { callback.invoke(true) }
+            override fun onPermissionDenied(deniedPermissions: List<String>) { callback.invoke(false) }
         }
 
         TedPermission.with(context)

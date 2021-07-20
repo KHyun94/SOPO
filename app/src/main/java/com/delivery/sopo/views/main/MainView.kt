@@ -146,20 +146,6 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
         setTabLayout()
     }
 
-    override fun onNewIntent(intent: Intent?)
-    {
-        super.onNewIntent(intent)
-
-        SopoLog.d("newItent[Main]")
-
-        intent?.let { intent ->
-            val bundle = intent.extras
-            val a = bundle?.getString("test")
-            SopoLog.d("intent >>> ${a}")
-        }
-    }
-
-
     private fun setTabLayout()
     {
         binding.layoutMainTab.run {
@@ -215,7 +201,8 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
                                              {
                                                  NavigatorConst.REGISTER_TAB ->
                                                  {
-                                                     FragmentManager.remove(activity = this@MainView)
+                                                     FragmentManager.remove(
+                                                         activity = this@MainView)
                                                      TabCode.REGISTER_INPUT.FRAGMENT =
                                                          InputParcelFragment.newInstance(null, 0)
 
@@ -225,7 +212,8 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
                                                  }
                                                  NavigatorConst.INQUIRY_TAB ->
                                                  {
-                                                     FragmentManager.remove(activity = this@MainView)
+                                                     FragmentManager.remove(
+                                                         activity = this@MainView)
                                                      FragmentManager.move(activity = this@MainView,
                                                                           code = TabCode.INQUIRY,
                                                                           viewId = InquiryMainFrame.viewId)
@@ -234,7 +222,8 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
                                                  {
                                                      FragmentManager.move(activity = this@MainView,
                                                                           code = TabCode.MY_MENU_MAIN.apply {
-                                                                              FRAGMENT = MenuFragment.newInstance()
+                                                                              FRAGMENT =
+                                                                                  MenuFragment.newInstance()
                                                                           },
                                                                           viewId = MenuMainFrame.viewId)
                                                  }

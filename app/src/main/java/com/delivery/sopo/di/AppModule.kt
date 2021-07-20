@@ -53,7 +53,7 @@ val appModule = module {
     viewModel { RegisterNicknameViewModel(get()) }
     viewModel { LoginSelectViewModel(get(),get()) }
     viewModel { ResetPasswordViewModel() }
-    viewModel { MainViewModel(get(), get(), get()) }
+    viewModel { MainViewModel(get(), get(), get(), get()) }
     viewModel { MenuSubViewModel() }
     viewModel { LockScreenViewModel(get(), get()) }
     viewModel { SettingViewModel(get()) }

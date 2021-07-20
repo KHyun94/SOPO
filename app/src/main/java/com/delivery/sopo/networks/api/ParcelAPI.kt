@@ -39,7 +39,6 @@ interface ParcelAPI
     @GET("api/v1/sopo-api/delivery/parcels/complete")
     @Headers("Accept: application/json")
     suspend fun getParcelsComplete(
-        
         @Query("page") page: Int,
         @Query("inquiryDate") inquiryDate: String
     ): APIResult<MutableList<ParcelDTO>?>

@@ -72,14 +72,11 @@ class NotDisturbTimeView : AppCompatActivity()
             val topicHour = endTime.substring(0, 2).toInt()
             val topicMin = endTime.substring(3, 5).toInt()
 
-            if(userLocalRepo.getTopic().isEmpty())
-            {
-                FirebaseNetwork.subscribedToTopicInFCM(topicHour, topicMin)
-            }
-            else
+            if(userLocalRepo.getTopic().isNotEmpty())
             {
                 FirebaseNetwork.unsubscribedToTopicInFCM()
             }
+            FirebaseNetwork.subscribedToTopicInFCM(topicHour, topicMin)
         }.show(supportFragmentManager, "NotDisturbTimeDialog")
     }
 

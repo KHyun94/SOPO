@@ -7,6 +7,7 @@ import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.parcel.ParcelUseCase
 import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.models.ResponseResult
@@ -18,7 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainViewModel(private val parcelRepository: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val appPasswordRepo: AppPasswordRepository): ViewModel()
+class MainViewModel(private val userRepo: UserLocalRepository, private val parcelRepository: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val appPasswordRepo: AppPasswordRepository): ViewModel()
 {
     val mainTabVisibility = MutableLiveData<Int>()
 
@@ -46,6 +47,7 @@ class MainViewModel(private val parcelRepository: ParcelRepository, private val 
                 return@launch
             }
             requestOngoingParcelsAsRemote()
+            checkSubscribedTime()
         }
 
         updateFCMToken()
@@ -139,5 +141,17 @@ class MainViewModel(private val parcelRepository: ParcelRepository, private val 
         SopoLog.d(msg = "updateFCMToken call()")
 
         FirebaseNetwork.updateFCMToken()
+    }
+
+    suspend fun checkSubscribedTime() = withContext(Dispatchers.Default) {
+        val ongoingParcelCnt = parcelRepository.getOnGoingDataCnt()
+        val isSetSubscribedTime = userRepo.getDisturbStartTime() != null && userRepo.getDisturbEndTime() != null
+
+        if(isSetSubscribedTime || ongoingParcelCnt == 0)
+        {
+            FirebaseNetwork.subscribedToTopicInFCM()
+        }
+
+
     }
 }
