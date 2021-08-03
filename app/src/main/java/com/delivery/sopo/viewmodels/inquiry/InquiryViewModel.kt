@@ -409,6 +409,12 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
                 SopoLog.d("업데이트 예정 Parcel[local:${localParcel.toString()}]")
 
+                val isUnidentifiedStatus = withContext(Dispatchers.Default){ parcelManagementRepoImpl.getUnidentifiedStatusByParcelId(localParcel.parcelId) }
+
+                if(isUnidentifiedStatus == StatusConst.ACTIVATE){
+                    withContext(Dispatchers.Default){ parcelManagementRepoImpl.updateIsUnidentified(localParcel.parcelId, StatusConst.DEACTIVATE) }
+                }
+
                 // 3. Status가 1이 아닌 택배들은 업데이트 제외
                 if(localParcel.status != StatusConst.ACTIVATE)
                 {
@@ -419,7 +425,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                 // 4. inquiryHashing이 같은 것, 즉 이전 내용과 다름 없을 땐 update 하지 않는다.
                 if((localParcel.inquiryHash == remoteParcel.inquiryHash)){
                     SopoLog.d("해당 택배는 inquiryHashing이 같은 것, 즉 이전 내용과 다름 없기 때문에 업데이트 제외")
-                   continue
+                    continue
                 }
 
                 val remoteParcelEntity = ParcelMapper.parcelToParcelEntity(remoteParcel)
@@ -433,12 +439,8 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                     }
 
                     // unidentifiedStatus가 이미 활성화 상태이면 비활성화 조치
-                    val isUnidentifiedStatus = withContext(Dispatchers.Default){
+                    withContext(Dispatchers.Default){
                         parcelManagementRepoImpl.getUnidentifiedStatusByParcelId(localParcel.parcelId) == 1
-                    }
-
-                    if(isUnidentifiedStatus){
-                        unidentifiedStatus = 0
                     }
 
                     updatableStatus = 0

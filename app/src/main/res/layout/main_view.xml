@@ -48,7 +48,8 @@
             app:layout_constraintLeft_toRightOf="parent"
             app:layout_constraintRight_toLeftOf="parent"
             app:markImage="@drawable/ic_blue_marker"
-            app:msgtext="테스트" />
+            app:msgtext="테스트"
+            android:visibility="gone"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

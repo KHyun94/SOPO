@@ -127,7 +127,7 @@ class SOPOApp: Application()
 
         var currentPage = SingleLiveEvent<Int?>()
 
-        val cntOfBeUpdate = MutableLiveData<Int?>()
+        val cntOfBeUpdate = MutableLiveData<Int>()
 
         var oAuth: OAuthDTO? = null
     }

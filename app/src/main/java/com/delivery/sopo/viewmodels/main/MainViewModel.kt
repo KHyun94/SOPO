@@ -13,7 +13,6 @@ import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.mapper.ParcelMapper
-import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,9 +27,6 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
     val isSetAppPassword: LiveData<AppPasswordEntity?>
     get() = appPasswordRepo.getByLiveData()
 
-    // 업데이트 여부
-    var isInitUpdate = false
-
     // 유효성 및 통신 등의 결과 객체
     private var _result = MutableLiveData<ResponseResult<*>>()
     val result: LiveData<ResponseResult<*>>
@@ -39,16 +35,19 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
     init
     {
         CoroutineScope(Dispatchers.Main).launch {
-            val isUpdatableParcelStatus = withContext(Dispatchers.Default) { isUpdatableParcelStatus() }
 
-            // 업데이트할 택배가 없다면 서버를 통해 갱신 처리를 하지 않는다.
+            // 1. 업데이트 가능한 택배가 있는지 확인
+            val isUpdatableParcelStatus = isUpdatableParcelStatus()
+
+            // 2. 업데이트할 택배가 없다면 서버를 통해 갱신 처리를 하지 않는다.
             if (!isUpdatableParcelStatus)
             {
-                isInitUpdate = true
+                SopoLog.d("업데이트 가능 택배가 존재하지 않음")
                 return@launch
             }
-            requestOngoingParcelsAsRemote()
-//            checkSubscribedTime()
+
+            requestOngoingParcels()
+            checkSubscribedTime()
         }
 
         updateFCMToken()
@@ -60,10 +59,9 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
     }
 
     // 업데이트 가능한 택배가 있는지 체크 [ParcelStatusEntity - updatableStatus
-    private suspend fun isUpdatableParcelStatus(): Boolean
-    {
+    private suspend fun isUpdatableParcelStatus(): Boolean = withContext(Dispatchers.Default) {
         SopoLog.d("isUpdatableParcelStatus() call")
-        return parcelManagementRepoImpl.getCountForUpdatableParcel() > 0
+        parcelManagementRepoImpl.getCountForUpdatableParcel() > 0
     }
 
     private suspend fun insertRemoteParcel(entity: ParcelEntity){
@@ -78,20 +76,20 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
         }
     }
 
-    private suspend fun requestOngoingParcelsAsRemote()
+    /**
+     * DB 서버 내에 저장된 진행 중인 택배 데이터를 기반으로
+     * 로컬 DB에 저장된 택배 데이터를 갱신
+     */
+    suspend fun requestOngoingParcels()
     {
-        SopoLog.d(msg = "requestOngoingParcelsAsRemote() call")
-
         SopoLog.i("refreshOngoingParcel(...) 호출")
 
         // 1. 서버로부터 택배 데이터를 호출
         val remoteParcels = parcelRepo.getRemoteOngoingParcels()?: return SopoLog.d("업데이트할 택배 데이터가 없습니다.")
 
-        for(i in remoteParcels.indices)
+        for(remoteParcel in remoteParcels)
         {
-            val remoteParcel = remoteParcels[i]
-
-            SopoLog.d("업데이트 예정 Parcel[remote:${remoteParcel.toString()}]")
+            SopoLog.d("업데이트 예정 Parcel[remote:   ${remoteParcel.toString()}]")
 
             //2. 서버에서 불러온 택배 데이터 기준으로 로컬 내 저장된 택배 데이터를 호출
             val localParcel = parcelRepo.getLocalParcelById(remoteParcel.parcelId).let {entity ->
@@ -108,7 +106,7 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
                 ParcelMapper.parcelEntityToParcel(entity)
             }
 
-            SopoLog.d("업데이트 예정 Parcel[local:${localParcel.toString()}]")
+            SopoLog.d("업데이트 예정 Parcel[local:    ${localParcel.toString()}]")
 
             // 3. Status가 1이 아닌 택배들은 업데이트 제외
             if(localParcel.status != StatusConst.ACTIVATE)
@@ -157,7 +155,7 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
     /** Update FCM Token  **/
     private fun updateFCMToken()
     {
-        SopoLog.d(msg = "updateFCMToken call()")
+        SopoLog.d(msg = "updateFCMToken 호출 ")
 
         FirebaseNetwork.updateFCMToken()
     }
@@ -166,11 +164,9 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
         val ongoingParcelCnt = parcelRepo.getOnGoingDataCnt()
         val isSetSubscribedTime = userRepo.getDisturbStartTime() != null && userRepo.getDisturbEndTime() != null
 
-        if(isSetSubscribedTime || ongoingParcelCnt == 0)
+        if(!isSetSubscribedTime && ongoingParcelCnt > 0)
         {
             FirebaseNetwork.subscribedToTopicInFCM()
         }
-
-
     }
 }

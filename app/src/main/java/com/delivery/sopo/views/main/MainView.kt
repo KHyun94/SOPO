@@ -32,12 +32,14 @@ import com.delivery.sopo.views.registers.RegisterMainFrame
 import com.delivery.sopo.views.registers.InputParcelFragment
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.tap_item.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 {
     private val vm: MainViewModel by viewModel()
-    private val inquiryVm: InquiryViewModel by viewModel()
 
     var currentPage = MutableLiveData<Int?>()
 
@@ -45,14 +47,10 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
     {
         super.onCreate(savedInstanceState)
 
-        initUI()
+        // WhiteList 추가
         PowerManager.checkWhiteList(this)
-    }
 
-    override fun onDestroy()
-    {
-        super.onDestroy()
-        OtherUtil.clearCache(SOPOApp.INSTANCE)
+        initUI()
     }
 
     override fun bindView()
@@ -71,51 +69,32 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
             }
         })
 
-        // todo 업데이트 시
-        SOPOApp.cntOfBeUpdate.observeForever {
-            if(it == null) return@observeForever
+        SOPOApp.cntOfBeUpdate.observeForever { cnt ->
 
-            SopoLog.d(msg = "업데이트 가능 여부 택배 갯수 ${it}")
+            SopoLog.d(msg = "업데이트 가능 택배 갯수[Size:$cnt]")
 
-            if(it > 0)
+            if(cnt > 0)
             {
-                SopoLog.d(msg = "True 업데이트 가능 여부 택배 갯수: $it")
-
                 binding.alertMessageBar.run {
-                    setText("${it}개의 새로운 배송정보가 있어요.")
+
+                    setText("${cnt}개의 새로운 배송정보가 있어요.")
                     setTextColor(R.color.MAIN_WHITE)
                     setOnCancelClicked("업데이트", R.color.MAIN_WHITE, View.OnClickListener {
-                        when(currentPage.value)
-                        {
-                            NavigatorConst.REGISTER_TAB ->
-                            {
-                                SopoLog.d("Click For Update at RegisterTab")
-                                binding.layoutViewPager.currentItem = 1
 
-                            }
-                            NavigatorConst.INQUIRY_TAB ->
-                            {
-                                SopoLog.d("Click For Update at InquiryTab")
+                        moveToSpecificTab(TabCode.secondTab)
 
-                            }
-                            NavigatorConst.MY_MENU_TAB ->
-                            {
-                                SopoLog.d("Click For Update at MenuTab")
-                                binding.layoutViewPager.currentItem = 1
-
-                            }
+                        CoroutineScope(Dispatchers.IO).launch {
+                            vm.requestOngoingParcels()
                         }
 
-                        inquiryVm.refreshOngoingParcels()
-
-
-                        this.onDismiss()
+                        onDismiss()
                     })
                     onStart()
                     SOPOApp.cntOfBeUpdate.postValue(0)
                 }
             }
         }
+
 
         SOPOApp.currentPage.observe(this, Observer {
             if(it == null)
@@ -137,6 +116,29 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
             }
 
         })
+    }
+
+    fun moveToSpecificTab(pos:Int){
+        when(pos)
+        {
+            NavigatorConst.REGISTER_TAB ->
+            {
+                SopoLog.d("Click For Update at RegisterTab")
+                binding.layoutViewPager.currentItem = 1
+
+            }
+            NavigatorConst.INQUIRY_TAB ->
+            {
+                SopoLog.d("Click For Update at InquiryTab")
+
+            }
+            NavigatorConst.MY_MENU_TAB ->
+            {
+                SopoLog.d("Click For Update at MenuTab")
+                binding.layoutViewPager.currentItem = 1
+
+            }
+        }
     }
 
     fun getAlertMessageBar() = binding.alertMessageBar
@@ -282,6 +284,9 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
     fun onCompleteRegister()
     {
         binding.layoutViewPager.currentItem = 1
-        inquiryVm.refreshOngoingParcels()
+        CoroutineScope(Dispatchers.IO).launch {
+            vm.requestOngoingParcels()
+        }
+
     }
 }
