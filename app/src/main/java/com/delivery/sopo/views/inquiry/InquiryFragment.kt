@@ -429,7 +429,7 @@ class InquiryFragment: Fragment()
 
                         if (type == 0)
                         {
-                            vm.refreshOngoing()
+                            vm.refreshOngoingParcels()
                         }
                         else
                         {
@@ -480,7 +480,7 @@ class InquiryFragment: Fragment()
                             override fun refreshItems(v: View)
                             {
                                 // 새로고침
-                                vm.refreshOngoing()
+                                vm.refreshOngoingParcels()
                                 menuPopUpWindow?.dismiss()
                             }
 
@@ -568,7 +568,7 @@ class InquiryFragment: Fragment()
                     }
                     ScreenStatusEnum.ONGOING ->
                     {
-                        vm.refreshOngoing()
+                        vm.refreshOngoingParcels()
                     }
                 }
 

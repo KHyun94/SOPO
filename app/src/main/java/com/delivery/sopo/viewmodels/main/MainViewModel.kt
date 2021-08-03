@@ -3,12 +3,13 @@ package com.delivery.sopo.viewmodels.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
+import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.data.repository.remote.parcel.ParcelUseCase
 import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.mapper.ParcelMapper
@@ -19,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainViewModel(private val userRepo: UserLocalRepository, private val parcelRepository: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val appPasswordRepo: AppPasswordRepository): ViewModel()
+class MainViewModel(private val userRepo: UserLocalRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val appPasswordRepo: AppPasswordRepository): ViewModel()
 {
     val mainTabVisibility = MutableLiveData<Int>()
 
@@ -47,7 +48,7 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
                 return@launch
             }
             requestOngoingParcelsAsRemote()
-            checkSubscribedTime()
+//            checkSubscribedTime()
         }
 
         updateFCMToken()
@@ -65,74 +66,92 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
         return parcelManagementRepoImpl.getCountForUpdatableParcel() > 0
     }
 
+    private suspend fun insertRemoteParcel(entity: ParcelEntity){
+        withContext(Dispatchers.Default){
+            SopoLog.i("insertRemoteParcel(...) 호출")
+
+            parcelRepo.insetEntity(entity)
+            val parcelStatusEntity = ParcelMapper.parcelEntityToParcelManagementEntity(entity).apply {
+                unidentifiedStatus = 1
+            }
+            parcelManagementRepoImpl.insertEntity(parcelStatusEntity = parcelStatusEntity)
+        }
+    }
+
     private suspend fun requestOngoingParcelsAsRemote()
     {
         SopoLog.d(msg = "requestOngoingParcelsAsRemote() call")
 
-        val res = ParcelUseCase.requestRemoteParcels()
+        SopoLog.i("refreshOngoingParcel(...) 호출")
 
-        if (!res.result) return _result.postValue(res)
+        // 1. 서버로부터 택배 데이터를 호출
+        val remoteParcels = parcelRepo.getRemoteOngoingParcels()?: return SopoLog.d("업데이트할 택배 데이터가 없습니다.")
 
-        if (res.data == null || res.data.isEmpty()) return SopoLog.d("업데이트할 택배가 없거나, 리스트 사이즈 0")
-
-        val localParcels = withContext(Dispatchers.Default) { parcelRepository.getLocalOngoingParcels() }
-
-        // 로컬에 저장되어있는 택배가 없기 때문에 서버에서 받아온 택배 리스트를 전체 업데이트 처리해야 함
-        if (localParcels.isEmpty()) return SopoLog.d("업데이트할 택배가 없거나, 리스트 사이즈 0")
-
-        val remoteParcels = res.data.toMutableList()
-        val updateParcels = mutableListOf<ParcelDTO>()
-        val insertParcels = mutableListOf<ParcelDTO>()
-
-        val remoteIterator = remoteParcels.iterator()
-        val localIterator = localParcels.iterator()
-
-        while (remoteIterator.hasNext())
+        for(i in remoteParcels.indices)
         {
-            val remote = remoteIterator.next()
+            val remoteParcel = remoteParcels[i]
 
-            while (localIterator.hasNext())
-            {
-                val local = localIterator.next()
+            SopoLog.d("업데이트 예정 Parcel[remote:${remoteParcel.toString()}]")
 
-                if (remote.parcelId == local.parcelId)
+            //2. 서버에서 불러온 택배 데이터 기준으로 로컬 내 저장된 택배 데이터를 호출
+            val localParcel = parcelRepo.getLocalParcelById(remoteParcel.parcelId).let {entity ->
+                if(entity == null)
                 {
-                    if (remote.inquiryHash != local.inquiryHash)
-                    {
-                        SopoLog.d(msg = "${remote.alias}의 택배는 업데이트할 내용이 있습니다.")
-                        updateParcels.add(remote)
-                        // 비교 후 남는 parcel list는 insert 작업을 거친다.
+                    withContext(Dispatchers.Default){
+                        val remoteParcelEntity = ParcelMapper.parcelToParcelEntity(remoteParcel)
+                        insertRemoteParcel(remoteParcelEntity)
                     }
 
-                    remoteIterator.remove()
+                    return@let remoteParcel
                 }
+
+                ParcelMapper.parcelEntityToParcel(entity)
             }
+
+            SopoLog.d("업데이트 예정 Parcel[local:${localParcel.toString()}]")
+
+            // 3. Status가 1이 아닌 택배들은 업데이트 제외
+            if(localParcel.status != StatusConst.ACTIVATE)
+            {
+                SopoLog.d("해당 택배는 Status가 [Status:${localParcel.status}]임으로 업데이트 제외")
+                continue
+            }
+
+            // 4. inquiryHashing이 같은 것, 즉 이전 내용과 다름 없을 땐 update 하지 않는다.
+            if((localParcel.inquiryHash == remoteParcel.inquiryHash)){
+                SopoLog.d("해당 택배는 inquiryHashing이 같은 것, 즉 이전 내용과 다름 없기 때문에 업데이트 제외")
+                continue
+            }
+
+            val remoteParcelEntity = ParcelMapper.parcelToParcelEntity(remoteParcel)
+
+            val remoteParcelStatusEntity = ParcelMapper.parcelEntityToParcelManagementEntity(remoteParcelEntity).apply {
+
+                if(localParcel.deliveryStatus != remoteParcel.deliveryStatus)
+                {
+                    SopoLog.d("해당 택배는 상태가 [${localParcel.deliveryStatus} -> ${remoteParcel.deliveryStatus}]로 변경")
+                    unidentifiedStatus = 1
+                }
+
+                // unidentifiedStatus가 이미 활성화 상태이면 비활성화 조치
+                val isUnidentifiedStatus = withContext(Dispatchers.Default){
+                    parcelManagementRepoImpl.getUnidentifiedStatusByParcelId(localParcel.parcelId) == 1
+                }
+
+                if(isUnidentifiedStatus){
+                    unidentifiedStatus = 0
+                }
+
+                updatableStatus = 0
+            }
+
+            withContext(Dispatchers.Default){
+                parcelRepo.updateEntity(remoteParcelEntity)
+                parcelManagementRepoImpl.updateEntity(remoteParcelStatusEntity)
+            }
+
+            SopoLog.d("업데이트 완료 [parcel id:${remoteParcel.parcelId}]")
         }
-
-        insertParcels.addAll(remoteParcels)
-
-        if (insertParcels.size > 0) {
-            insertParcelsInLocalDB(insertParcels)
-        }
-
-        if (updateParcels.size > 0)
-        {
-            updateParcelsInLocalDB(updateParcels)
-        }
-    }
-
-    private suspend fun insertParcelsInLocalDB(parcels: List<ParcelDTO>) = withContext(Dispatchers.Default) {
-        parcelRepository.insertEntities(parcels)
-        parcelManagementRepoImpl.insertEntities(parcels.map(ParcelMapper::parcelToParcelManagementEntity))
-    }
-
-    private suspend fun updateParcelsInLocalDB(parcels: List<ParcelDTO>) = withContext(Dispatchers.Default) {
-        parcelRepository.updateEntities(parcels)
-        parcelManagementRepoImpl.updateEntities(parcels.map { parcel ->
-            val pm = ParcelMapper.parcelToParcelManagementEntity(parcel)
-            pm.unidentifiedStatus = 1
-            pm
-        })
     }
 
     /** Update FCM Token  **/
@@ -144,7 +163,7 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
     }
 
     suspend fun checkSubscribedTime() = withContext(Dispatchers.Default) {
-        val ongoingParcelCnt = parcelRepository.getOnGoingDataCnt()
+        val ongoingParcelCnt = parcelRepo.getOnGoingDataCnt()
         val isSetSubscribedTime = userRepo.getDisturbStartTime() != null && userRepo.getDisturbEndTime() != null
 
         if(isSetSubscribedTime || ongoingParcelCnt == 0)

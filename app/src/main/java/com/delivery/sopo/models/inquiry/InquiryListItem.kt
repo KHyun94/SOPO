@@ -137,7 +137,6 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
 
     private fun getStatusTextColorResource(): Int
     {
-        SopoLog.d("!!!!!!!!!!!!!!!!!!!!!!!!fasfasfasdfasdfasfasfsf${parcelDTO.deliveryStatus}")
         return when(parcelDTO.deliveryStatus)
         {
             DeliveryStatusEnum.NOT_REGISTER.CODE -> R.color.COLOR_GRAY_300

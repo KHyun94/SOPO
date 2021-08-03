@@ -106,7 +106,8 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
                             }
                         }
 
-                        inquiryVm.refreshOngoing()
+                        inquiryVm.refreshOngoingParcels()
+
 
                         this.onDismiss()
                     })
@@ -281,6 +282,6 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
     fun onCompleteRegister()
     {
         binding.layoutViewPager.currentItem = 1
-        inquiryVm.refreshOngoing()
+        inquiryVm.refreshOngoingParcels()
     }
 }
