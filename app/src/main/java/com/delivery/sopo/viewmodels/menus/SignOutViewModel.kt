@@ -38,8 +38,8 @@ class SignOutViewModel: ViewModel()
 
     fun onCheckClicked(v: View, message: String?)
     {
-        v.requestFocusFromTouch()
-
+//        v.requestFocusFromTouch()
+        v.requestFocus()
         SopoLog.d("Sign Out Message >>> $message")
 
         currentCheckBox = v as AppCompatCheckBox
@@ -64,11 +64,7 @@ class SignOutViewModel: ViewModel()
 
     fun onSignOutClicked()
     {
-        if (message.value.toString() == "")
-        {
-            SopoLog.e("Message is null or empty")
-            return
-        }
+        if (message.value.toString() == "") return SopoLog.e("Message is null or empty")
 
         _result.postValue(ResponseResult(true, ResponseCode.SUCCESS, message.value.toString(), "SUCCESS", DisplayEnum.DIALOG))
     }
