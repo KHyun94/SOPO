@@ -4,16 +4,21 @@ import android.app.Activity
 import android.app.AlarmManager
 import android.app.Application
 import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.data.repository.database.room.RoomActivate
 import com.delivery.sopo.di.appModule
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.models.dto.OAuthDTO
 import com.delivery.sopo.models.mapper.OAuthMapper
+import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.OtherUtil
@@ -29,11 +34,12 @@ import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import java.util.logging.Handler
 
 class SOPOApp: Application()
 {
-    val appDatabase: AppDatabase by inject()
     val userLocalRepository: UserLocalRepository by inject()
+    val parcelStatusRepo: ParcelManagementRepoImpl by inject()
     val parcelRepository: ParcelRepository by inject()
     val OAuthLocalRepository: OAuthLocalRepository by inject()
 
@@ -97,6 +103,9 @@ class SOPOApp: Application()
             구독 isAutoInitEnabled >>> ${FirebaseMessaging.getInstance().isAutoInitEnabled}
         """.trimIndent())
 
+//        android.os.Handler().postDelayed(Runnable { cntOfBeUpdate.postValue(3) }, 5000)
+//        android.os.Handler().postDelayed(Runnable { cntOfBeUpdate.postValue(5) }, 10000)
+//        android.os.Handler().postDelayed(Runnable { cntOfBeUpdate.postValue(7) }, 25000)
     }
 
     private suspend fun getInitViewPagerNumber(): Int
@@ -127,7 +136,7 @@ class SOPOApp: Application()
 
         var currentPage = SingleLiveEvent<Int?>()
 
-        val cntOfBeUpdate = MutableLiveData<Int>()
+        var cntOfBeUpdate: MutableLiveData<Int> = MutableLiveData<Int>()
 
         var oAuth: OAuthDTO? = null
     }

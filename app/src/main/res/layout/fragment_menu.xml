@@ -31,18 +31,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/ic_24_lock" />
 
             <TextView
+                android:background="@drawable/border_17dp_rounder"
                 android:id="@+id/tv_settingPassword"
                 style="@style/H5"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="4dp"
+                android:paddingVertical="7dp"
+                android:paddingHorizontal="11dp"
                 android:text="@string/MENU_VIEW_PASSWORD"
+                android:textColor="@color/COLOR_GRAY_700"
                 android:gravity="center"/>
 
         </LinearLayout>
@@ -69,6 +69,8 @@
             <TextView
                 android:id="@+id/tv_status"
                 style="@style/H3"
+                android:textSize="17dp"
+                android:lineSpacingExtra="6dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/iv_status"
@@ -82,7 +84,7 @@
             android:id="@+id/v_dividerLine1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginTop="44dp"
+            android:layout_marginTop="48dp"
             android:background="@color/COLOR_GRAY_100"
             app:layout_constraintTop_toBottomOf="@+id/relative_profile" />
 

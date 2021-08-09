@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
@@ -108,15 +109,15 @@ class SignOutView: AppCompatActivity()
             if(message != "")
             {
                 binding.tvBtn.run {
-                    setBackgroundResource(R.drawable.border_all_rounded)
-                    backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.COLOR_MAIN_RED_500))
-                    setTextColor(resources.getColor(R.color.MAIN_WHITE))
+                    setBackgroundResource(R.drawable.border_15dp_blue_rounder)
+                    backgroundTintList = ContextCompat.getColorStateList(this@SignOutView, R.color.MAIN_WHITE)
+                    setTextColor(resources.getColor(R.color.COLOR_MAIN_700))
                 }
                 return@Observer
             }
 
             binding.tvBtn.run {
-                setBackgroundResource(R.drawable.border_all_rounded)
+                setBackgroundResource(R.drawable.border_15dp_blue_rounder)
                 backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.COLOR_GRAY_200))
                 setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
             }

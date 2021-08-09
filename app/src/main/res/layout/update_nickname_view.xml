@@ -66,14 +66,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="32dp"
+            android:layout_marginTop="4dp"
             android:text="@{vm.currentNickname}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_current_nickname_start"
-            android:textColor="@color/COLOR_MAIN_600"/>
+            android:textColor="@color/COLOR_MAIN_600"
+            tools:text="Testdl"/>
 
         <TextView
             android:id="@+id/tv_current_nickname_end"
             style="@style/H3"
+            android:layout_marginTop="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="입니다."

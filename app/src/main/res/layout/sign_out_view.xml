@@ -29,14 +29,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginStart="28dp"
+                android:layout_marginEnd="28dp"
                 android:layout_marginTop="15dp"
                 android:background="@android:color/transparent"
                 android:padding="10dp"
-                android:src="@drawable/ic_btn_back_b"
-                app:layout_constraintStart_toStartOf="parent"
+                android:src="@drawable/ic_clear_btn"
+                android:layout_alignParentEnd="true"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_btn_back_b"
+                app:srcCompat="@drawable/ic_clear_btn"
                 android:onClick="@{()->vm.onBackClicked()}"/>
 
             <TextView
@@ -45,7 +45,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="회원 탈퇴"
+                android:text="계정 탈퇴"
                 android:textColor="@color/COLOR_GRAY_800"
                 app:layout_constraintBottom_toBottomOf="@+id/btn_back"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="14dp">
+                >
 
                 <androidx.appcompat.widget.AppCompatCheckBox
                     android:id="@+id/cb_reason1"
@@ -97,7 +97,7 @@
                     android:includeFontPadding="false"
                     android:text="@string/SIGN_OUT_REASON1"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:layout_marginStart="12dp"/>
+                    />
 
             </LinearLayout>
 
@@ -106,7 +106,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="14dp">
+                >
 
                 <androidx.appcompat.widget.AppCompatCheckBox
                     android:id="@+id/cb_reason2"
@@ -123,7 +123,7 @@
                     android:includeFontPadding="false"
                     android:text="@string/SIGN_OUT_REASON2"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:layout_marginStart="12dp"/>
+                    />
 
             </LinearLayout>
 
@@ -132,12 +132,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="14dp">
+                >
 
                 <androidx.appcompat.widget.AppCompatCheckBox
                     android:id="@+id/cb_reason3"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:button="@drawable/checkbox_blue_square"
                     android:onClick="@{(cbReason3)->vm.onCheckClicked(cbReason3, cbReason3.tag.toString())}"
                     android:tag="@string/SIGN_OUT_REASON3" />
@@ -149,7 +149,7 @@
                     android:includeFontPadding="false"
                     android:text="@string/SIGN_OUT_REASON3"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:layout_marginStart="12dp"/>
+                    />
 
             </LinearLayout>
 
@@ -158,7 +158,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="14dp">
+                >
 
                 <androidx.appcompat.widget.AppCompatCheckBox
                     android:id="@+id/cb_reason4"
@@ -175,7 +175,7 @@
                     android:includeFontPadding="false"
                     android:text="@string/SIGN_OUT_REASON4"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:layout_marginStart="12dp"/>
+                    />
 
             </LinearLayout>
 
@@ -184,7 +184,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="14dp">
+                >
 
                 <androidx.appcompat.widget.AppCompatCheckBox
                     android:id="@+id/cb_reason5"
@@ -201,7 +201,7 @@
                     android:includeFontPadding="false"
                     android:text="@string/SIGN_OUT_REASON5"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:layout_marginStart="12dp"/>
+                    />
 
             </LinearLayout>
 
@@ -211,7 +211,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="11dp">
+                android:layout_marginBottom="0dp">
 
                 <androidx.appcompat.widget.AppCompatCheckBox
                     android:id="@+id/cb_reason6"
@@ -228,7 +228,7 @@
                     android:includeFontPadding="false"
                     android:text="@string/SIGN_OUT_REASON6"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:layout_marginStart="12dp"/>
+                    />
 
             </LinearLayout>
 
@@ -259,19 +259,16 @@
 
         </LinearLayout>
 
-
         <TextView
-            style="@style/H3"
+            style="@style/buttonBasicStyle"
+            android:background="@drawable/border_15dp_blue_rounder"
             android:id="@+id/tv_btn"
-            android:layout_width="136dp"
-            android:layout_height="43dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginBottom="192dp"
-            android:background="@drawable/border_all_rounded"
             android:backgroundTint="@color/COLOR_GRAY_200"
-            android:gravity="center"
-            android:includeFontPadding="false"
-            android:paddingVertical="9dp"
             android:text="탈퇴하기"
+            android:layout_marginHorizontal="130dp"
             android:textColor="@color/COLOR_GRAY_400"
             app:layout_constraintTop_toBottomOf="@+id/layout_checkbox"
             android:onClick="@{()->vm.onSignOutClicked()}"

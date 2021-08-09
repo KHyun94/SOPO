@@ -11,8 +11,10 @@ import com.delivery.sopo.util.SopoLog
 class MenuViewModel(private val userLocalRepo: UserLocalRepository) : ViewModel()
 {
     val personalMessage = MutableLiveData<PersonalMessage>().apply {
-        val personalMessage = PersonalMessage(userLocalRepo.getPersonalStatusMessage(), userLocalRepo.getPersonalStatusType())
-        return@apply postValue(personalMessage)
+
+//        val personalMessage = PersonalMessage(userLocalRepo.getPersonalStatusMessage(), userLocalRepo.getPersonalStatusType())
+        val personalMessage = PersonalMessage("SOPO와 함께한 택배\n오늘로 21개 째", 5)
+       return@apply postValue(personalMessage)
     }
 
     private val _menu = MutableLiveData<TabCode>()
