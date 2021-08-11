@@ -50,7 +50,6 @@ class SplashViewModel(private val userLocalRepo: UserLocalRepository, private va
 
                 SopoLog.d("user: ${userDetail?.personalMessage?.emojiIconRes}")
 
-
                 userDetail?.let {
                     SopoLog.d("user: ${it.toString()}")
                     userLocalRepo.setUserId(userDetail.userId ?: "")
@@ -77,7 +76,6 @@ class SplashViewModel(private val userLocalRepo: UserLocalRepository, private va
                    if(isOver)
                     {
                         // 만료일이 지난 케이스, 로그인 기한이 지났으니 다시 로그인하세요/
-
                         SopoLog.e("만료일 over")
                         navigator.postValue(NavigatorConst.TO_INIT)
                         errorMessage = "로그인 기한이 지났습니다.\n다시 로그인해주세요."

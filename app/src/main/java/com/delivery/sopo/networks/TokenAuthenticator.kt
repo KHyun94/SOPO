@@ -90,8 +90,7 @@ class TokenAuthenticator : Authenticator, KoinComponent
         else
         {
             val gson = Gson()
-            val type = object : TypeToken<OAuthDTO>()
-            {}.type
+            val type = object : TypeToken<OAuthDTO>() {}.type
             val reader = gson.toJson(result.body())
             val oauthResult = gson.fromJson<OAuthDTO>(reader, type)
 

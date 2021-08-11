@@ -16,7 +16,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 
-class SOPOWorker(val context: Context, private val params: WorkerParameters): CoroutineWorker(context, params), KoinComponent
+class UpdateParcelWorker(val context: Context, private val params: WorkerParameters): CoroutineWorker(context, params), KoinComponent
 {
     private val TAG = this.javaClass.simpleName
 

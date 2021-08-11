@@ -51,7 +51,7 @@ object SOPOWorkManager: KoinComponent
             SopoLog.d( msg = "Register New Worker Start!!!")
 
             // work 인스턴스화
-            workRequest = OneTimeWorkRequestBuilder<SOPOWorker>().build()
+            workRequest = OneTimeWorkRequestBuilder<UpdateParcelWorker>().build()
 
             // work UUID
             workUUID = workRequest.id
@@ -91,7 +91,7 @@ object SOPOWorkManager: KoinComponent
     fun requestOneTimeWorker(context: Context)
     {
         val workManager = WorkManager.getInstance(context)
-        val workRequest = OneTimeWorkRequestBuilder<SOPOWorker>().build()
+        val workRequest = OneTimeWorkRequestBuilder<UpdateParcelWorker>().build()
 
         SopoLog.d( msg = "One Service Manager GO!!")
 

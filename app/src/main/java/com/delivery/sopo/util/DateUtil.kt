@@ -57,15 +57,15 @@ object DateUtil
      */
     fun isOverExpiredDate(expiredDate: String): Boolean
     {
+        SopoLog.i("isOverExpiredDate() 호출")
+
+        // 1. 현재 시간
         val currentMilliSeconds = System.currentTimeMillis()
+        // 2. O-Auth 만료 기간
         val expiredDateToMilliSeconds = changeDateToMilli(expiredDate)
 
-        SopoLog.d("""isOverExpiredDate() call
-            
-            현재 >>> $currentMilliSeconds
-            만료 >>> $expiredDateToMilliSeconds
-            
-        """.trimIndent())
+        SopoLog.d("현재시간:$currentMilliSeconds")
+        SopoLog.d("만료기한:$expiredDateToMilliSeconds [형태:$expiredDate]")
 
         return currentMilliSeconds >= expiredDateToMilliSeconds
     }
