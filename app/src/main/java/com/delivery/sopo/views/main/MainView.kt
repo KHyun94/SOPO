@@ -18,6 +18,9 @@ import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.launchActivity
 import com.delivery.sopo.services.PowerManager
+import com.delivery.sopo.services.workmanager.RefreshOAuthWorker
+import com.delivery.sopo.services.workmanager.SOPOWorkManager
+import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
@@ -51,6 +54,15 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
         PowerManager.checkWhiteList(this)
 
         initUI()
+
+        refreshTokenWithinWeek()
+    }
+
+    fun refreshTokenWithinWeek(){
+
+        val isDate = DateUtil.isExpiredDateWithinAWeek(SOPOApp.oAuth?.refreshTokenExpiredAt?:return)
+
+        if(isDate) SOPOWorkManager.refreshOAuthWorkManager(this)
     }
 
     override fun bindView()

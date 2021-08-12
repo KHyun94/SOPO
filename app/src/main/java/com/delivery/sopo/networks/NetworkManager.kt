@@ -6,6 +6,7 @@ import com.delivery.sopo.networks.interceptors.BasicAuthInterceptor
 import com.delivery.sopo.networks.interceptors.OAuthInterceptor
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.models.dto.OAuthDTO
 import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.util.SopoLog
@@ -55,6 +56,10 @@ object NetworkManager : KoinComponent
             NetworkEnum.PUBLIC_LOGIN ->
             {
                 retro(BuildConfig.PUBLIC_API_ACCOUNT_ID, BuildConfig.PUBLIC_API_ACCOUNT_PASSWORD).create(clz)
+            }
+            NetworkEnum.PRIVATE_LOGIN ->
+            {
+                retro(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_PASSWORD).create(clz)
             }
             NetworkEnum.EMPTY_LOGIN ->
             {

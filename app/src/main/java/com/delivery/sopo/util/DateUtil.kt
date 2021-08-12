@@ -70,6 +70,29 @@ object DateUtil
         return currentMilliSeconds >= expiredDateToMilliSeconds
     }
 
+    /**
+     *  true refreshToken의 만료일자가 현재 시간보다 작을 경우
+     *  false 클 경우
+     */
+    fun isExpiredDateWithinAWeek(expiredDate: String): Boolean
+    {
+        SopoLog.i("isLeftExpiredDateAboutWeek() 호출")
+
+        // 1. 현재 시간
+        val currentMilliSeconds = System.currentTimeMillis()
+        // 2. O-Auth 만료 기간
+        val expiredDateToMilliSeconds = changeDateToMilli(expiredDate)
+
+        SopoLog.d("현재시간:$currentMilliSeconds")
+        SopoLog.d("만료기한:$expiredDateToMilliSeconds [형태:$expiredDate]")
+
+        val weekMilliSeconds = 1000 * 60 * 60 * 24 * 7
+
+        val remainMilliSeconds = expiredDateToMilliSeconds - currentMilliSeconds
+
+        return remainMilliSeconds <= weekMilliSeconds
+    }
+
     fun getSubscribedTime(hour: Int, minutes: Int) : String
     {
         val topicHour = if(minutes == 0) { hour + 1 } else hour

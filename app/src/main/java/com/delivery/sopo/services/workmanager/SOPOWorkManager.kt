@@ -56,20 +56,29 @@ object SOPOWorkManager: KoinComponent
             // work UUID
             workUUID = workRequest.id
             //work manager 등록
-//            workManager.enqueueUniqueWork("Parcel", ExistingWorkPolicy.REPLACE, workRequest)
             workManager.enqueue(workRequest)
-
-//            // 등록한 workRequest의 UUID를 Room에 저장
-//            appDatabase.workDao().insert(
-//                WorkEntity(
-//                    workUUID = workUUID.toString(), workRegDt = TimeUtil.getDateTime()
-//                )
-//            )
-//
-//            // 워크 상태 조회
-//            _workInfo = workManager.getWorkInfoByIdLiveData(workUUID) as MutableLiveData<WorkInfo?>
         }
+    }
 
+    fun refreshOAuthWorkManager(context: Context)
+    {
+        SopoLog.d( msg = "refreshOAuthWorkManager() 호출")
+
+        val workManager = WorkManager.getInstance(context)
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            var workUUID: UUID? = null
+            var workRequest: Any? = null
+
+            // work 인스턴스화
+            workRequest = OneTimeWorkRequestBuilder<RefreshOAuthWorker>().build()
+
+            // work UUID
+            workUUID = workRequest.id
+            //work manager 등록
+            workManager.enqueue(workRequest)
+        }
     }
 
     fun cancelWork(context: Context)

@@ -22,7 +22,7 @@ interface OAuthAPI
     @FormUrlEncoded
     @POST("api/v1/sopo-auth/oauth/token")
     @Headers("Accept: application/json")
-    fun requestRefreshTokenInOAuth(
+    suspend fun requestRefreshTokenInOAuth(
         // 유저 이메일
             @Field("grant_type") grantType: String,
         // 비밀번호

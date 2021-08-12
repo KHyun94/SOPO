@@ -37,7 +37,7 @@ object UserCall: BaseService(), KoinComponent
         val oAuthDTO = OAuthMapper.entityToObject(oAuthEntity)
 
 
-        val oAuthAPI = NetworkManager.setLoginMethod(NetworkEnum.PUBLIC_LOGIN, OAuthAPI::class.java)
+        val oAuthAPI = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, OAuthAPI::class.java)
         val result = oAuthAPI.requestRefreshTokenInOAuth(grantType = "refresh_token",
                                             email = userRepo.getUserId(),
                                             refreshToken = oAuthDTO.refreshToken,

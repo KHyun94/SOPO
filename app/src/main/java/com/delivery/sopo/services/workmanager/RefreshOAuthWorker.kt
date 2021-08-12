@@ -36,15 +36,11 @@ import org.koin.core.inject
 
 class RefreshOAuthWorker(val context: Context, private val params: WorkerParameters): CoroutineWorker(context, params), KoinComponent
 {
-    private val appDatabase: AppDatabase by inject()
-    private val userRepo: UserLocalRepository by inject()
     private val oAuthRepo: OAuthLocalRepository by inject()
-    private val parcelRepository: ParcelRepository by inject()
 
-
-    private suspend fun requestRefreshOAuthToken()
+    init
     {
-
+        SopoLog.i("RefreshOAuthWorker 실행")
     }
 
     override suspend fun doWork(): Result = coroutineScope {
@@ -64,10 +60,8 @@ class RefreshOAuthWorker(val context: Context, private val params: WorkerParamet
                 withContext(Dispatchers.Default) {
                     val entity = OAuthMapper.objectToEntity(oauthResult)
                     oAuthRepo.update(entity)
-
                     Result.success()
                 }
-
             }
             is NetworkResult.Error ->
             {
