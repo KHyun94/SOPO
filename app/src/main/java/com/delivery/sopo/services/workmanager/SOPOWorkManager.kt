@@ -25,7 +25,6 @@ object SOPOWorkManager: KoinComponent
         get() = _workInfo
 
     private val appDatabase: AppDatabase by inject()
-
     private fun getWorkConstraint(): Constraints = Constraints.Builder()
         .setRequiredNetworkType(NetworkType.CONNECTED)
         .setRequiresDeviceIdle(true)
