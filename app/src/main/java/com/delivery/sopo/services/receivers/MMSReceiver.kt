@@ -9,6 +9,10 @@ import android.net.Uri
 import android.os.Handler
 import android.text.TextUtils
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
+import com.delivery.sopo.models.CarrierDTO
+import com.delivery.sopo.models.ParcelRegisterDTO
+import com.delivery.sopo.services.workmanager.RegisterParcelWorker
+import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
@@ -18,7 +22,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.lang.Runnable
-import java.text.MessageFormat
 
 
 class MMSReceiver: BroadcastReceiver(), KoinComponent
@@ -27,9 +30,10 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
 
     override fun onReceive(context: Context?, intent: Intent?)
     {
-        SopoLog.i("SMSReceiver - on Receiver")
+        SopoLog.i("SMSReceiver onReceiver() 호출")
 
-        context?:return
+        context ?: return
+        intent ?: return
 
         try
         {
@@ -37,51 +41,10 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
                 parseMMS(context)
             }, 5000)
         }
-        catch (e: Exception)
+        catch(e: Exception)
         {
             SopoLog.d("---> ERROR EXTRACTING MMS: " + e.localizedMessage)
         }
-    }
-
-    fun parse(msg: String) = with(msg) {
-        val index = indexOf(':')
-        substring(index+1).trim()
-    }
-
-    fun checkMessageAboutParcel(mms: String)
-    {
-        val list = mms.split("\n")
-
-        var parcelNickname: String? = null
-        var parcelWayBilNo: String? = null
-        var parcelCarrier: String? = null
-
-        var cnt = 1
-
-        list.forEach { value ->
-
-            SopoLog.d("${cnt++}번째 row >>> $value")
-
-            if(value.contains("상품명")) parcelNickname = parse(value)
-            if(value.contains("운송장번호"))parcelWayBilNo = parse(value)
-            if(value.contains("택배사")) parcelCarrier = parse(value).replace("택배", "")
-
-            if(parcelCarrier == null && value.contains("택배"))
-            {
-
-            }
-        }
-
-        SopoLog.d("상품명>>>$parcelNickname")
-        SopoLog.d("운송장번호>>>$parcelWayBilNo")
-
-        if(parcelCarrier != null)
-        {
-            val carrierList = runBlocking(Dispatchers.Default) { carrierRepo.getCarrierEntityWithPartName("%${parcelCarrier}%") }
-            SopoLog.d("택배사(${parcelCarrier}) >>> ${carrierList.joinToString()}")
-        }
-
-
     }
 
     private fun parseMMS(context: Context)
@@ -90,7 +53,7 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
         val projection = arrayOf("_id")
         val uri = Uri.parse("content://mms")
         val cursor = contentResolver.query(uri, projection, null, null, "_id desc limit 1")
-        if (cursor!!.count == 0)
+        if(cursor!!.count == 0)
         {
             cursor.close()
             return
@@ -98,32 +61,14 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
         cursor.moveToFirst()
         val id = cursor.getString(cursor.getColumnIndex("_id"))
         cursor.close()
-        val number = parseNumber(context, id)
-        val msg = parseMessage(context, id)
+        //        val number = parseNumber(context, id)
+        val mms = parseMessage(context, id)?:return SopoLog.e("MMS를 읽어오는데 실패했습니다.")
 
-        SopoLog.d("MMSReceiver.java | parseMMS >>> |$number|$msg")
+        CoroutineScope(Dispatchers.IO).launch {
+            val receivedData = getReceivedData(mms)
 
-        checkMessageAboutParcel(msg?:"")
-    }
-
-    private fun parseNumber(context: Context, id: String): String?
-    {
-        var result: String? = null
-        val uri = Uri.parse(MessageFormat.format("content://mms/{0}/addr", id))
-        val projection = arrayOf("address")
-        val selection = "msg_id = ? and type = 137" // type=137은 발신자
-        val selectionArgs = arrayOf(id)
-        val cursor: Cursor = context.contentResolver
-            .query(uri, projection, selection, selectionArgs, "_id asc limit 1")?:return null
-        if (cursor.count == 0)
-        {
-            cursor.close()
-            return result
+            SOPOWorkManager.registerParcelWorkManager(context = context, registerParcelRegisterDTO = receivedData )
         }
-        cursor.moveToFirst()
-        result = cursor.getString(cursor.getColumnIndex("address"))
-        cursor.close()
-        return result
     }
 
     private fun parseMessage(context: Context, id: String): String?
@@ -131,28 +76,28 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
         var result: String? = null
 
         // 조회에 조건을 넣게되면 가장 마지막 한두개의 mms를 가져오지 않는다.
-        val cursor: Cursor = context.getContentResolver()
-            .query(Uri.parse("content://mms/part"), arrayOf("mid", "_id", "ct", "_data", "text"), null, null, null)?:return null
+        val cursor: Cursor = context.contentResolver.query(Uri.parse("content://mms/part"), arrayOf("mid", "_id", "ct", "_data", "text"), null, null, null) ?: return null
 
         SopoLog.i("MMSReceiver.java | parseMessage | mms 메시지 갯수 : " + cursor.count + "|")
-        if (cursor.count == 0)
+
+        if(cursor.count == 0)
         {
             cursor.close()
             return result
         }
         cursor.moveToFirst()
-        while (!cursor.isAfterLast)
+        while(!cursor.isAfterLast)
         {
             val mid = cursor.getString(cursor.getColumnIndex("mid"))
-            if (id == mid)
+            if(id == mid)
             {
                 val partId = cursor.getString(cursor.getColumnIndex("_id"))
                 val type = cursor.getString(cursor.getColumnIndex("ct"))
-                if ("text/plain" == type)
+                if("text/plain" == type)
                 {
                     val data = cursor.getString(cursor.getColumnIndex("_data"))
                     result =
-                        if (TextUtils.isEmpty(data)) cursor.getString(cursor.getColumnIndex("text"))
+                        if(TextUtils.isEmpty(data)) cursor.getString(cursor.getColumnIndex("text"))
                         else parseMessageWithPartId(context, partId)
                 }
             }
@@ -170,36 +115,126 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
         val sb = StringBuilder()
         try
         {
-            inputStream = context.getContentResolver().openInputStream(partURI)
-            if (inputStream != null)
+            inputStream = context.contentResolver.openInputStream(partURI)
+            if(inputStream != null)
             {
                 val isr = InputStreamReader(inputStream, "UTF-8")
                 val reader = BufferedReader(isr)
                 var temp: String = reader.readLine()
-                while (!TextUtils.isEmpty(temp))
+                while(!TextUtils.isEmpty(temp))
                 {
                     sb.append(temp)
                     temp = reader.readLine()
                 }
             }
         }
-        catch (e: IOException)
+        catch(e: IOException)
         {
             e.printStackTrace()
         }
         finally
         {
-            if (inputStream != null)
+            if(inputStream != null)
             {
                 try
                 {
                     inputStream.close()
                 }
-                catch (e: IOException)
+                catch(e: IOException)
                 {
                 }
             }
         }
         return sb.toString()
+    }
+
+    private fun parse(msg: String) = with(msg) {
+        val index = indexOf(':')
+        substring(index + 1).trim()
+    }
+
+    /**
+     * 문자 내용 중 해당하는 택배사가 존재하는지 확인
+     * 없을 시 throw Exception
+     */
+    private suspend fun getReceivedCarrier(content: String): CarrierDTO
+    {
+        val carriers = withContext(Dispatchers.Default) { carrierRepo.getAll() }
+        var receivedCarrier: CarrierDTO? = null
+
+        for(carrier in carriers)
+        {
+            if(carrier == null) continue
+
+            if(content.contains(carrier.carrier.NAME))
+            {
+                receivedCarrier = carrier
+                break
+            }
+        }
+
+        return receivedCarrier ?: throw Exception("일치하는 택배사가 존재하지 않습니다.")
+    }
+
+    private fun getReceivedWaybillNum(content: String): String
+    {
+        val rows = content.split("\n")
+
+        var matchRow: String? = null
+
+        for(row in rows)
+        {
+            if(!row.contains("운송장번호")) continue
+            matchRow = row
+            break
+        }
+
+        matchRow ?: throw Exception("운송장번호가 존재하지 않습니다.")
+
+        val extractedWaybillNum = parse(matchRow)
+
+        return with(extractedWaybillNum) {
+            when
+            {
+                contains('_') -> replace("_", "")
+                contains('-') -> replace("-", "")
+                else -> this
+            }
+        }
+    }
+
+    private fun getReceivedAlias(content: String): String
+    {
+        val rows = content.split("\n")
+
+        var matchRow: String? = null
+
+        for(row in rows)
+        {
+            if(!row.contains("상품명")) continue
+            matchRow = row
+            break
+        }
+
+        matchRow ?: throw Exception("Alias가 존재하지 않습니다.")
+
+        return parse(matchRow)
+    }
+
+    private suspend fun getReceivedData(mms: String): ParcelRegisterDTO
+    {
+        try
+        {
+            val receivedAlias: String = getReceivedAlias(content = mms)
+            val receivedWaybillsNum: String = getReceivedWaybillNum(content = mms)
+            val receivedCarrier: CarrierDTO = getReceivedCarrier(content = mms)
+
+            return ParcelRegisterDTO(receivedWaybillsNum, receivedCarrier.carrier, receivedAlias)
+        }
+        catch(e:Exception)
+        {
+            SopoLog.e("MMS 데이터 중 택배에 해당하는 데이터가 존재하지 않습니다. [message:${e.message}]")
+            throw e
+        }
     }
 }

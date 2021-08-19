@@ -1,14 +1,20 @@
-package com.delivery.sopo.services.workmanager
+ package com.delivery.sopo.services.workmanager
 
+import android.app.Activity
 import android.content.Context
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.work.*
 import com.delivery.sopo.data.repository.database.room.AppDatabase
+import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.util.SopoLog
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import java.util.*
@@ -30,15 +36,13 @@ object SOPOWorkManager: KoinComponent
         .setRequiresDeviceIdle(true)
         .build()
 
-    private inline fun <reified T: ListenableWorker> getWorkRequest(
-        intervalMin: Long, contrains: Constraints
-    ): PeriodicWorkRequest =
+    private inline fun <reified T: ListenableWorker> getWorkRequest(intervalMin: Long, contrains: Constraints): PeriodicWorkRequest =
         PeriodicWorkRequestBuilder<T>(intervalMin, TimeUnit.MINUTES).setConstraints(contrains)
             .build()
 
     fun updateWorkManager(context: Context)
     {
-        SopoLog.d( msg = "updateWorkManager() call")
+        SopoLog.d(msg = "updateWorkManager() call")
 
         val workManager = WorkManager.getInstance(context)
 
@@ -47,7 +51,7 @@ object SOPOWorkManager: KoinComponent
             var workUUID: UUID? = null
             var workRequest: Any? = null
 
-            SopoLog.d( msg = "Register New Worker Start!!!")
+            SopoLog.d(msg = "Register New Worker Start!!!")
 
             // work 인스턴스화
             workRequest = OneTimeWorkRequestBuilder<UpdateParcelWorker>().build()
@@ -61,7 +65,7 @@ object SOPOWorkManager: KoinComponent
 
     fun refreshOAuthWorkManager(context: Context)
     {
-        SopoLog.d( msg = "refreshOAuthWorkManager() 호출")
+        SopoLog.d(msg = "refreshOAuthWorkManager() 호출")
 
         val workManager = WorkManager.getInstance(context)
 
@@ -80,6 +84,26 @@ object SOPOWorkManager: KoinComponent
         }
     }
 
+    suspend fun registerParcelWorkManager(context: Context, registerParcelRegisterDTO: ParcelRegisterDTO)
+    {
+        SopoLog.i(msg = "registerParcelWorkManager() 호출 [data:${registerParcelRegisterDTO.toString()}]")
+
+        val workManager = WorkManager.getInstance(context)
+
+        val jsonStr = Gson().toJson(registerParcelRegisterDTO)
+
+        val inputData = Data.Builder().putString("RECEIVED_STR", jsonStr).build()
+
+        // work 인스턴스화
+        val workRequest = OneTimeWorkRequestBuilder<RegisterParcelWorker>().setInputData(inputData).build()
+
+        // work UUID
+        val workUUID = workRequest.id
+
+        //work manager 등록
+        workManager.enqueue(workRequest)
+    }
+
     fun cancelWork(context: Context)
     {
         val workManager = WorkManager.getInstance(context)
@@ -91,7 +115,7 @@ object SOPOWorkManager: KoinComponent
         val workManager = WorkManager.getInstance(context)
         val workRequest = PeriodicWorkRequestBuilder<OneTimeWorker>(15, TimeUnit.MINUTES).build()
 
-        SopoLog.d( msg = "Period Service Manager GO!!")
+        SopoLog.d(msg = "Period Service Manager GO!!")
 
         workManager.enqueue(workRequest)
     }
@@ -101,7 +125,7 @@ object SOPOWorkManager: KoinComponent
         val workManager = WorkManager.getInstance(context)
         val workRequest = OneTimeWorkRequestBuilder<UpdateParcelWorker>().build()
 
-        SopoLog.d( msg = "One Service Manager GO!!")
+        SopoLog.d(msg = "One Service Manager GO!!")
 
         workManager.enqueue(workRequest)
     }

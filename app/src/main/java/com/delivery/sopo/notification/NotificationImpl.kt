@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import com.delivery.sopo.R
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.interfaces.notification.Notification
+import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.TimeUtil
 import com.delivery.sopo.views.splash.SplashView
@@ -20,7 +21,6 @@ import com.google.firebase.messaging.RemoteMessage
 
 object NotificationImpl: Notification
 {
-
     fun awakenDeviceNoti(remoteMessage: RemoteMessage, context: Context, intent: Intent) {
         val channelId = "${context.packageName}SOPO"
 
@@ -53,6 +53,39 @@ object NotificationImpl: Notification
             nManager.createNotificationChannel(channel)
         }
         nManager.notify(30001, nBuilder.build())
+    }
+
+    fun alertRegisterParcel(context: Context, registerDTO: ParcelRegisterDTO) {
+        val channelId = "${context.packageName}SOPO"
+
+        val intent = Intent(context, SplashView::class.java)
+        intent.action = Intent.ACTION_MAIN
+        intent.addCategory(Intent.CATEGORY_LAUNCHER)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+        val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+        val nBuilder = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(R.drawable.ic_icon_notification)
+            .setContentTitle("SOPO")
+            .setContentText("택배 [${registerDTO.alias}]가 등록되었습니다.")
+            .setAutoCancel(true)
+            .setSound(defaultSoundUri)
+            .setVibrate(longArrayOf(1000, 1000))
+            .setLights(Color.WHITE, 1500, 1500)
+            .setContentIntent(contentIntent)
+
+        val nManager = context.getSystemService(FirebaseMessagingService.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            val channel = NotificationChannel(
+                channelId,
+                NotificationEnum.PUSH_UPDATE_PARCEL.channelName,
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            nManager.createNotificationChannel(channel)
+        }
+        nManager.notify(40001, nBuilder.build())
     }
 
     override fun alertUpdateParcel(remoteMessage: RemoteMessage, context: Context, intent: Intent, vararg message: String) {

@@ -13,9 +13,11 @@ class SMSReceiver: BroadcastReceiver()
 {
     override fun onReceive(context: Context?, intent: Intent?)
     {
-        SopoLog.i("SMSReceiver onReceive() call")
+        SopoLog.i("SMSReceiver onReceive() 호출")
 
-        val bundle = intent!!.extras
+        intent?:return
+
+        val bundle = intent.extras
         val messages = parseSmsMessage(bundle!!)
 
         if (messages!!.size > 0)
@@ -27,7 +29,6 @@ class SMSReceiver: BroadcastReceiver()
             SopoLog.d("content: $content")
             SopoLog.d("date: $date")
         }
-
     }
 
     private fun parseSmsMessage(bundle: Bundle): Array<SmsMessage?>?
