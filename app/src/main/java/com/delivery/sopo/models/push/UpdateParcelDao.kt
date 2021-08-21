@@ -48,7 +48,7 @@ data class UpdateParcelDao(
 
         return when(deliveryStatus)
         {
-            DeliveryStatusConst.NOT_REGISTER ->
+            DeliveryStatusConst.NOT_REGISTERED ->
             {
                 ""
             }

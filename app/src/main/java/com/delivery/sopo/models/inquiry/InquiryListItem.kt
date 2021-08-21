@@ -8,7 +8,6 @@ import com.delivery.sopo.R
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject
@@ -122,7 +121,7 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
     {
         return when(parcelDTO.deliveryStatus)
         {
-            DeliveryStatusEnum.NOT_REGISTER.CODE -> "준비중"
+            DeliveryStatusEnum.NOT_REGISTERED.CODE -> "준비중"
             //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> "준비중"
             //상품 인수
@@ -139,7 +138,7 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
     {
         return when(parcelDTO.deliveryStatus)
         {
-            DeliveryStatusEnum.NOT_REGISTER.CODE -> R.color.COLOR_GRAY_300
+            DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.color.COLOR_GRAY_300
             //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> R.color.COLOR_GRAY_300
             //상품 인수
@@ -156,7 +155,7 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
     {
         return when(parcelDTO.deliveryStatus)
         {
-            DeliveryStatusEnum.NOT_REGISTER.CODE -> R.color.STATUS_PREPARING
+            DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.color.STATUS_PREPARING
             //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> R.color.STATUS_PREPARING
             //상품 인수
@@ -173,7 +172,7 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
     {
         return when(parcelDTO.deliveryStatus)
         {
-            DeliveryStatusEnum.NOT_REGISTER.CODE -> R.drawable.ic_inquiry_cardview_not_registered
+            DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.drawable.ic_inquiry_cardview_not_registered
             //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> R.drawable.ic_inquiry_cardview_not_registered
             //상품 인수

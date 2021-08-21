@@ -4,11 +4,8 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorRes
-import androidx.annotation.RawRes
 import androidx.databinding.BindingAdapter
-import com.airbnb.lottie.Lottie
 import com.airbnb.lottie.LottieAnimationView
-import com.airbnb.lottie.LottieConfig
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.delivery.sopo.R
@@ -24,7 +21,7 @@ object ImageBindingAdapter
     {
         when(enum)
         {
-            DeliveryStatusEnum.NOT_REGISTER -> { }
+            DeliveryStatusEnum.NOT_REGISTERED -> { }
             DeliveryStatusEnum.INFORMATION_RECEIVED -> { }
             DeliveryStatusEnum.AT_PICKUP ->
             {

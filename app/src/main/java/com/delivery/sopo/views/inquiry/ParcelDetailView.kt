@@ -252,7 +252,7 @@ class ParcelDetailView: Fragment()
                 StatusConst.SUCCESS ->
                 {
                     Triple("업데이트 사항이 있습니다.", "업데이트", View.OnClickListener {
-                        CoroutineScope(Dispatchers.IO).launch {
+                        CoroutineScope(Dispatchers.Main).launch {
                             val parcelId = vm.parcelId.value ?: throw Exception("Parcel id가 존재하지 않습니다.")
                             vm.getRemoteParcel(parcelId)
                             parentView.getAlertMessageBar().onDismiss()
@@ -262,7 +262,7 @@ class ParcelDetailView: Fragment()
                 StatusConst.FAILURE ->
                 {
                     Triple("업데이트 도중 에러가 발생했습니다.", "재시도", View.OnClickListener {
-                        CoroutineScope(Dispatchers.IO).launch {
+                        CoroutineScope(Dispatchers.Main).launch {
                             val parcelId =
                                 vm.parcelId.value ?: throw Exception("Parcel id가 존재하지 않습니다.")
                             vm.requestParcelForRefresh(parcelId)

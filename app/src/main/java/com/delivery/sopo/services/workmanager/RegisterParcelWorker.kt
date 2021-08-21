@@ -29,6 +29,7 @@ import com.delivery.sopo.models.push.UpdatedParcelInfo
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.OAuthAPI
 import com.delivery.sopo.networks.call.UserCall
+import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
@@ -47,9 +48,7 @@ class RegisterParcelWorker(val context: Context, private val params: WorkerParam
         SopoLog.i("RegisterParcelWorker 실행")
     }
 
-    private fun changeJsonToObj(json:String):ParcelRegisterDTO{
-        return Gson().fromJson(json, ParcelRegisterDTO::class.java)
-    }
+    private fun changeJsonToObj(json:String):ParcelRegisterDTO = Gson().fromJson(json, ParcelRegisterDTO::class.java)
 
     override suspend fun doWork(): Result = coroutineScope {
 
@@ -75,7 +74,9 @@ class RegisterParcelWorker(val context: Context, private val params: WorkerParam
             return@coroutineScope Result.failure()
         }
 
-        SopoLog.e("work - requestParcelRegister(...) 성공[code:${res.code}][message:${res.message}]")
+        SopoLog.d("work - requestParcelRegister(...) 성공[code:${res.code}][message:${res.message}]")
+
+        NotificationImpl.alertRegisterParcel(context = context, registerDTO = registerDTO)
 
         return@coroutineScope Result.success()
     }

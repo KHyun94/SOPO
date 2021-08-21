@@ -53,11 +53,13 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
         val projection = arrayOf("_id")
         val uri = Uri.parse("content://mms")
         val cursor = contentResolver.query(uri, projection, null, null, "_id desc limit 1")
+
         if(cursor!!.count == 0)
         {
             cursor.close()
             return
         }
+
         cursor.moveToFirst()
         val id = cursor.getString(cursor.getColumnIndex("_id"))
         cursor.close()

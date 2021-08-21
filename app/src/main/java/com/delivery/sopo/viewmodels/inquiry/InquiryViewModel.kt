@@ -13,7 +13,6 @@ import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.parcel.ParcelDTO
-import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.networks.dto.TimeCountDTO
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
@@ -808,13 +807,13 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
             item.parcelDTO.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
         }.filter { item ->
-            if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.NOT_REGISTER.CODE)
+            if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.NOT_REGISTERED.CODE)
             {
                 SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
                 multiList[5].add(item)
             }
 
-            item.parcelDTO.deliveryStatus != DeliveryStatusEnum.NOT_REGISTER.CODE
+            item.parcelDTO.deliveryStatus != DeliveryStatusEnum.NOT_REGISTERED.CODE
         }.toList()
 
         multiList[6].addAll(elseList)
