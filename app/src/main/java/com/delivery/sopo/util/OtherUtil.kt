@@ -45,10 +45,7 @@ object OtherUtil
 
     fun getResourceExtension(@DrawableRes res: Int): String?
     {
-
         val typedValue = TypedValue()
-
-        Log.d("LOG.SOPO", "이미지 리소스 :->")
 
         SOPOApp.INSTANCE.resources.getValue(res, typedValue, true)
 

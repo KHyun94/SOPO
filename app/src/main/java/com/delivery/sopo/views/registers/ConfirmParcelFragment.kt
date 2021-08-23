@@ -17,10 +17,13 @@ import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.databinding.FragmentConfirmParcelBinding
 import com.delivery.sopo.models.*
 import com.delivery.sopo.models.mapper.CarrierMapper
+import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.registesrs.ConfirmParcelViewModel
+import com.delivery.sopo.views.dialog.GeneralDialog
+import com.delivery.sopo.views.dialog.OnAgreeClickListener
 import com.delivery.sopo.views.main.MainView
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -60,23 +63,47 @@ class ConfirmParcelFragment: Fragment()
     // TODO 값이 없다면 이전 화면으로 이동
     private fun receiveBundleData()
     {
-        arguments?.let { bundle ->
-            registerDTO =
-                bundle.getSerializable(RegisterMainFrame.REGISTER_INFO) as ParcelRegisterDTO
-            SopoLog.d("receive bundle data >>> ${registerDTO.toString()}")
-        }
+        try
+        {
+            arguments.let { bundle ->
+                registerDTO = bundle?.getSerializable(RegisterMainFrame.REGISTER_INFO) as ParcelRegisterDTO
+                SopoLog.d("receive bundle data >>> ${registerDTO.toString()}")
+            }
 
-        registerDTO.waybillNum?.let { waybillNo ->
-            vm.waybillNum.value = waybillNo
-        }
+            registerDTO.waybillNum.let { waybillNo ->
+                requireNotNull(waybillNo)
+                vm.waybillNum.value = waybillNo
+            }
 
-        registerDTO.carrier?.let { carrierEnum ->
-            vm.carrier.value = CarrierMapper.enumToObject(carrierEnum)
+            registerDTO.carrier.let { carrierEnum ->
+                requireNotNull(carrierEnum)
+                vm.carrier.value = CarrierMapper.enumToObject(carrierEnum)
+            }
+
+            registerDTO.alias?.let { alias -> vm.alias.value = alias }
         }
-        registerDTO.alias?.let { alias ->
-            SopoLog.d("별칭 >>> $alias")
-            vm.alias.value = alias
+        catch(e: Exception)
+        {
+            SopoLog.e("등록 3단계 실패 - 데이터를 정상적으로 받지 못했습니다.", e)
+
+            alertErrorMessage()
         }
+    }
+
+    fun alertErrorMessage(){
+        GeneralDialog(requireActivity(), "등록 오류", "시스템 오류로 다시 입력을 부탁드립니다. ㅠㅡㅜ", null, Pair("이동", object: OnAgreeClickListener
+        {
+            override fun invoke(agree: GeneralDialog)
+            {
+                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(null, RegisterMainFrame.REGISTER_PROCESS_RESET)
+
+                FragmentManager.initFragment(activity = requireActivity(),
+                                             viewId = RegisterMainFrame.viewId,
+                                             currentFragment = this@ConfirmParcelFragment,
+                                             nextFragment = TabCode.REGISTER_INPUT.FRAGMENT,
+                                             nextFragmentTag = TabCode.REGISTER_INPUT.NAME)
+            }
+        })).show(requireFragmentManager(), "DIALOG")
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -119,6 +146,7 @@ class ConfirmParcelFragment: Fragment()
         })
 
         vm.navigator.observe(this, Observer { navigator ->
+
             TabCode.REGISTER_INPUT.FRAGMENT  = when(navigator)
             {
                 NavigatorConst.TO_REGISTER_INIT ->
@@ -131,12 +159,8 @@ class ConfirmParcelFragment: Fragment()
                 }
                 NavigatorConst.TO_REGISTER_SUCCESS ->
                 {
-                    if(userLocalRepo.getTopic().isNotEmpty())
-                    {
-                        FirebaseNetwork.unsubscribedToTopicInFCM()
-                    }
-
-                    FirebaseNetwork.subscribedToTopicInFCM()
+                    val defer = FirebaseNetwork.subscribedToTopic()
+                    defer.start()
 
                     InputParcelFragment.newInstance(null, RegisterMainFrame.REGISTER_PROCESS_SUCCESS)
                 }

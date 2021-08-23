@@ -105,13 +105,13 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
     val presentOngoingParcelCnt: LiveData<Int> =
         Transformations.map(parcelRepo.getLocalOnGoingParcelCnt()) { cnt ->
-            SopoLog.d("메인 조회 탭 >>> 택배 갯수: $cnt")
+//            SopoLog.d("메인 조회 탭 >>> 택배 갯수: $cnt")
             cnt
         }
 
     val presentOngoingParcelCntAsStr: LiveData<String> =
         Transformations.map(parcelRepo.getLocalOnGoingParcelCnt()) { cnt ->
-            SopoLog.d("메인 조회 탭 >>> 택배 갯수: $cnt")
+//            SopoLog.d("메인 조회 탭 >>> 택배 갯수: $cnt")
             "택배 ${cnt}개"
         }
 
@@ -769,7 +769,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
             if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
             {
-                SopoLog.d("배송완료(Delivered)[${item.parcelDTO.alias}]")
+//                SopoLog.d("배송완료(Delivered)[${item.parcelDTO.alias}]")
                 multiList[0].add(item)
             }
 
@@ -777,7 +777,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
         }.filter { item ->
             if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE)
             {
-                SopoLog.d("동네도착(out_for_delivery)[${item.parcelDTO.alias}]")
+//                SopoLog.d("동네도착(out_for_delivery)[${item.parcelDTO.alias}]")
                 multiList[1].add(item)
             }
 
@@ -785,7 +785,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
         }.filter { item ->
             if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE)
             {
-                SopoLog.d("배송중(in_transit)[${item.parcelDTO.alias}]")
+//                SopoLog.d("배송중(in_transit)[${item.parcelDTO.alias}]")
                 multiList[2].add(item)
             }
 
@@ -793,7 +793,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
         }.filter { item ->
             if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE)
             {
-                SopoLog.d("픽업(at_pickup)[${item.parcelDTO.alias}]")
+//                SopoLog.d("픽업(at_pickup)[${item.parcelDTO.alias}]")
                 multiList[3].add(item)
             }
 
@@ -801,7 +801,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
         }.filter { item ->
             if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE)
             {
-                SopoLog.d("접수(information_received)[${item.parcelDTO.alias}]")
+//                SopoLog.d("접수(information_received)[${item.parcelDTO.alias}]")
                 multiList[4].add(item)
             }
 
@@ -809,7 +809,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
         }.filter { item ->
             if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.NOT_REGISTERED.CODE)
             {
-                SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
+//                SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
                 multiList[5].add(item)
             }
 
@@ -822,10 +822,10 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
             Collections.sort(it, SortByDate())
             sortedList.addAll(it)
         }
-
-        sortedList.forEach(){
-            SopoLog.d("${it.parcelDTO.alias}[${it.parcelDTO.deliveryStatus}][${it.parcelDTO.auditDte}]")
-        }
+//
+//        sortedList.forEach(){
+//            SopoLog.d("${it.parcelDTO.alias}[${it.parcelDTO.deliveryStatus}][${it.parcelDTO.auditDte}]")
+//        }
 
         return sortedList
     }

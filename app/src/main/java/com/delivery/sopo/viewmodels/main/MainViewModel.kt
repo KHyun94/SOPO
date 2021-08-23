@@ -150,6 +150,18 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
 
             SopoLog.d("업데이트 완료 [parcel id:${remoteParcel.parcelId}]")
         }
+
+        if(remoteParcels.size > 0)
+        {
+            setSubScribedTopic()
+        }
+    }
+
+    fun setSubScribedTopic(){
+        if(userRepo.getTopic() == "") return
+
+        val defer = FirebaseNetwork.subscribedToTopic()
+        defer.start()
     }
 
     /** Update FCM Token  **/

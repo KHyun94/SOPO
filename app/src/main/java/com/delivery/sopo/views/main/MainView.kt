@@ -13,10 +13,12 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.launchActivity
+import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.services.PowerManager
 import com.delivery.sopo.services.workmanager.RefreshOAuthWorker
 import com.delivery.sopo.services.workmanager.SOPOWorkManager
@@ -37,11 +39,14 @@ import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.tap_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 {
+    private val userRepo: UserLocalRepository by inject()
     private val vm: MainViewModel by viewModel()
 
     var currentPage = MutableLiveData<Int?>()
@@ -58,10 +63,8 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
         refreshTokenWithinWeek()
     }
 
-    fun refreshTokenWithinWeek(){
-
+    private fun refreshTokenWithinWeek(){
         val isDate = DateUtil.isExpiredDateWithinAWeek(SOPOApp.oAuth?.refreshTokenExpiredAt?:return)
-
         if(isDate) SOPOWorkManager.refreshOAuthWorkManager(this)
     }
 
@@ -94,7 +97,7 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 
                         moveToSpecificTab(TabCode.secondTab)
 
-                        CoroutineScope(Dispatchers.IO).launch {
+                        GlobalScope.launch {
                             vm.requestOngoingParcels()
                         }
 
@@ -129,7 +132,7 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
         })
     }
 
-    fun moveToSpecificTab(pos: Int)
+    private fun moveToSpecificTab(pos: Int)
     {
         SopoLog.d("moveToSpecificTab([pos:$pos]) 호출")
 
@@ -249,8 +252,7 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 
     private fun setViewPager()
     {
-        val addOnPageListener = object: ViewPager.OnPageChangeListener
-        {
+        val addOnPageListener = object: ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(p0: Int)
             {
             }
@@ -295,7 +297,7 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
     fun onCompleteRegister()
     {
         binding.layoutViewPager.currentItem = 1
-        CoroutineScope(Dispatchers.IO).launch {
+        GlobalScope.launch {
             vm.requestOngoingParcels()
         }
 
