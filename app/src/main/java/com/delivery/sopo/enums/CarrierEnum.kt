@@ -41,8 +41,6 @@ enum class CarrierEnum(
     companion object{
         fun getCarrierByCode(code: String): CarrierEnum
         {
-            SopoLog.d("!!!!!! WTF CODE >>> $code")
-
             val carrier = CarrierEnum.values().findLast {
                 it.CODE == code
             }

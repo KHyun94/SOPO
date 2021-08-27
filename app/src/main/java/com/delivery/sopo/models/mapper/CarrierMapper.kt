@@ -11,9 +11,7 @@ object CarrierMapper
     fun entityToObject(carrierEntity: CarrierEntity?): CarrierDTO?{
         if(carrierEntity == null) return null
         val carrierEnum = CarrierEnum.getCarrierByCode(carrierEntity.carrierCode)
-        val icons = CarrierUtil.getCarrierImages(carrierEnum).apply {
-            SopoLog.d("이미지 >>> ${this.size}")
-        }
+        val icons = CarrierUtil.getCarrierImages(carrierEnum)
         return CarrierDTO(carrierEnum, icons?: emptyList())
     }
 

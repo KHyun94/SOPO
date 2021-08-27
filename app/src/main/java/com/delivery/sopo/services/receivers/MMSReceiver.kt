@@ -30,7 +30,7 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
 
     override fun onReceive(context: Context?, intent: Intent?)
     {
-        SopoLog.i("SMSReceiver onReceiver() 호출")
+        SopoLog.i("MMSReceiver onReceiver() 호출")
 
         context ?: return
         intent ?: return
@@ -186,7 +186,7 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
 
         for(row in rows)
         {
-            if(!row.contains("운송장번호")) continue
+            if(!row.contains("송장번호")) continue
             matchRow = row
             break
         }
