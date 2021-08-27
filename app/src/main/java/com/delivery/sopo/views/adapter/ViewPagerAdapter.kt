@@ -34,8 +34,6 @@ class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
 
     override fun getItem(position: Int): Fragment
     {
-        SopoLog.d( msg = "메인 탭 번호 >>> ${position}")
-
         return when (position)
         {
             NavigatorConst.REGISTER_TAB ->

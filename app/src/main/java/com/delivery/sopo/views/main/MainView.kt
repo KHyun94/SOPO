@@ -302,18 +302,4 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
         }
 
     }
-
-    override fun onResume()
-    {
-        super.onResume()
-
-        SopoLog.d("Test!!!! on Resume")
-    }
-
-    override fun onPause()
-    {
-        super.onPause()
-
-        SopoLog.d("TEST!!! onPause")
-    }
 }

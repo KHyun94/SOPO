@@ -180,7 +180,7 @@ object FirebaseNetwork: KoinComponent
 
     fun updateFCMToken()
     {
-        SopoLog.d(msg = "updateFCMToken call()")
+        SopoLog.d(msg = "updateFCMToken(...) 호출")
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
             if(!task.isSuccessful)
             {

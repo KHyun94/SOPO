@@ -41,12 +41,6 @@ object ParcelMapper
 
     fun parcelToParcelEntity(parcelDTO: ParcelDTO): ParcelEntity
     {
-        SopoLog.d(msg = """
-            Parcel
-            $parcelDTO
-            parcel Carrier >>> ${parcelDTO.carrier}
-        """.trimIndent())
-
         return ParcelEntity(
             parcelId = parcelDTO.parcelId,
             userId = parcelDTO.userId,

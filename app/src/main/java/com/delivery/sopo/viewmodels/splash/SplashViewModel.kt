@@ -19,8 +19,6 @@ class SplashViewModel(private val userLocalRepo: UserLocalRepository, private va
 
     init
     {
-//        navigator.value = NavigatorConst.TO_PERMISSION
-
         requestAfterActivity()
     }
 
@@ -44,14 +42,11 @@ class SplashViewModel(private val userLocalRepo: UserLocalRepository, private va
         {
             is NetworkResult.Success ->
             {
-                SopoLog.d(msg = "User Info Call Success - ${result.data.toString()}")
-
                 val userDetail = result.data.data
 
-                SopoLog.d("user: ${userDetail?.personalMessage?.emojiIconRes}")
+                SopoLog.d("자동 로그인 성공 [data:${userDetail.toString()}]")
 
                 userDetail?.let {
-                    SopoLog.d("user: ${it.toString()}")
                     userLocalRepo.setUserId(userDetail.userId ?: "")
                     userLocalRepo.setNickname(userDetail.nickname ?: "")
                     userLocalRepo.setJoinType(userDetail.joinType ?: "")
