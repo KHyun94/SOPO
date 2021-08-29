@@ -1,47 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/MAIN_WHITE"
-    android:orientation="vertical"
-    tools:context=".views.intro.IntroView">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <com.delivery.sopo.views.adapter.VerticalViewPager
-        android:id="@+id/vp_intro"
+    <data>
+        <variable
+            name="vm"
+            type="com.delivery.sopo.viewmodels.IntroViewModel" />
+    </data>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"/>
+        android:background="@color/COLOR_GRAY_50"
+        android:orientation="vertical">
 
-<!--    <androidx.viewpager.widget.ViewPager-->
-<!--        android:id="@+id/viewPager"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0sp"-->
-<!--        android:layout_weight="90" />-->
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/COLOR_GRAY_50"
+            android:layout_marginTop="11dp">
 
-<!--    <RelativeLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0sp"-->
-<!--        android:layout_weight="10"-->
-<!--        android:background="@color/MAIN_WHITE">-->
+            <ImageView
+                android:id="@+id/iv_previous_page"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="30dp"
+                android:visibility="gone"
+                android:padding="16dp"
+                android:src="@drawable/ic_left_arrow_default" />
 
-<!--        <com.delivery.sopo.views.widget.IntroIndicator-->
-<!--            android:id="@+id/indicator"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_centerInParent="true" />-->
+            <com.delivery.sopo.views.widget.IntroIndicator
+                android:id="@+id/indicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true" />
 
-<!--        <ImageView-->
-<!--            android:id="@+id/iv_next_page"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_alignParentEnd="true"-->
-<!--            android:layout_centerVertical="true"-->
-<!--            android:layout_marginEnd="30sp"-->
-<!--            android:background="@drawable/ic_next_btn"-->
-<!--            android:padding="10sp"-->
-<!--            android:textColor="@color/COLOR_MAIN_700" />-->
+            <ImageView
+                android:id="@+id/iv_next_page"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="30dp"
+                android:visibility="visible"
+                android:padding="16dp"
+                android:src="@drawable/ic_right_arrow_default" />
 
-<!--    </RelativeLayout>-->
+        </RelativeLayout>
 
-</LinearLayout>
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</layout>

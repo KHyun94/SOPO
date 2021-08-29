@@ -8,6 +8,7 @@ import com.delivery.sopo.data.repository.local.user.UserSharedPrefHelper
 import com.delivery.sopo.data.repository.local.repository.*
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserUseCase
+import com.delivery.sopo.viewmodels.IntroViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryMainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
@@ -47,6 +48,7 @@ val appModule = module {
     single { OAuthLocalRepository(get()) }
 
     viewModel { SplashViewModel(get(), get()) }
+    viewModel { IntroViewModel() }
     viewModel { LoginViewModel(get(), get()) }
     viewModel { SignUpViewModel(get()) }
     viewModel { SignUpCompleteViewModel(get(), get()) }

@@ -6,16 +6,44 @@
     android:layout_height="match_parent"
     android:background="@color/COLOR_GRAY_50">
 
-    <ImageView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tv_sub_title"
+        android:text="기다리는 택배가 있나요?"
+        android:textSize="23.66dp"
+        android:textColor="@color/COLOR_GRAY_900"
+        android:fontFamily="@font/spoqa_han_sans_neo_bold"
+        android:layout_marginBottom="16dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_sub_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/iv_icon_logo"
+        android:text="소포에서 한 눈에 확인 하세요"
+        android:textSize="16dp"
+        android:textColor="@color/COLOR_GRAY_500"
+        android:fontFamily="@font/spoqa_han_sans_neo_regular"
+        android:layout_marginBottom="14dp"/>
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/iv_icon_logo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:adjustViewBounds="true"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="110dp"
-        android:background="@drawable/onboarding_1"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/lottie_intro_step1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,19 +1,25 @@
 package com.delivery.sopo.views.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.delivery.sopo.R;
+import com.delivery.sopo.views.login.LoginSelectView;
 
 public class IntroPageAdapter extends PagerAdapter {
 
     // LayoutInflater 서비스 사용을 위한 Context 참조 저장.
     private Context mContext = null ;
+
 
     public IntroPageAdapter()
     {
@@ -28,7 +34,8 @@ public class IntroPageAdapter extends PagerAdapter {
     public Object instantiateItem(ViewGroup container, int position) {
         View view = null ;
 
-        if (mContext != null) {
+        if (mContext != null)
+        {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
             switch (position)
@@ -41,6 +48,17 @@ public class IntroPageAdapter extends PagerAdapter {
                     break;
                 case 2:
                     view = inflater.inflate(R.layout.intro_view_3, container, false);
+
+                    TextView btn = view.findViewById(R.id.tv_next);
+
+                    btn.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(mContext, LoginSelectView.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            mContext.startActivity(intent);
+                        }
+                    });
                     break;
             }
         }
@@ -51,6 +69,9 @@ public class IntroPageAdapter extends PagerAdapter {
         return view ;
     }
 
+    public void moveToActivity(){
+
+    }
 
 
     @Override

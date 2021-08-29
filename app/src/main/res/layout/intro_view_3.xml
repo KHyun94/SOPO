@@ -6,8 +6,36 @@
     android:layout_height="match_parent"
     android:background="@color/COLOR_GRAY_50">
 
-    <!-- todo 이미지 테두리가 보이지 않음 -->
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tv_sub_title"
+        android:text="복사한 운송장을\n쉽게 등록할 수 있어요."
+        android:gravity="center"
+        android:textSize="23.66dp"
+        android:textColor="@color/COLOR_GRAY_900"
+        android:fontFamily="@font/spoqa_han_sans_neo_bold"
+        android:layout_marginBottom="16dp"
+        />
+
+    <TextView
+        android:id="@+id/tv_sub_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="parent"
+        app:layout_constraintRight_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/iv_icon_logo"
+        android:text="터치 한 번으로요!"
+        android:textSize="16dp"
+        android:textColor="@color/COLOR_GRAY_500"
+        android:fontFamily="@font/spoqa_han_sans_neo_regular"
+        android:layout_marginBottom="38dp"/>
+
     <ImageView
+        android:id="@+id/iv_icon_logo"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:adjustViewBounds="true"
@@ -19,6 +47,7 @@
         android:background="@drawable/onboarding_3"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
     <TextView
         style="@style/buttonBasicStyle"
         android:id="@+id/tv_next"
