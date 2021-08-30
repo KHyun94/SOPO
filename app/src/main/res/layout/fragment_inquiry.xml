@@ -4,8 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
+
         <import type="com.delivery.sopo.R" />
+
         <import type="com.delivery.sopo.enums.ScreenStatusEnum" />
 
         <variable
@@ -25,8 +28,8 @@
         android:background="@color/COLOR_GRAY_50">
 
         <TextView
-            style="@style/H2"
             android:id="@+id/tv_title"
+            style="@style/H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -38,8 +41,8 @@
             tools:visibility="visible" />
 
         <TextView
-            style="@style/H3"
             android:id="@+id/tv_delete_title"
+            style="@style/H3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -49,7 +52,7 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@+id/image_inquiry_popup_menu"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/image_inquiry_popup_menu"/>
+            app:layout_constraintTop_toTopOf="@+id/image_inquiry_popup_menu" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_delete_select"
@@ -140,7 +143,7 @@
             app:layout_constraintTop_toTopOf="@+id/tv_title" />
 
         <ImageView
-            android:id="@+id/image_inquiry_popup_menu_close"
+            android:id="@+id/iv_delect_status_clear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
@@ -173,16 +176,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-<!--                -->
+                <!--                -->
                 <TextView
-                    style="@style/H4"
-                    android:fontFamily="@font/spoqa_han_sans_neo_regular"
                     android:id="@+id/btn_ongoing"
+                    style="@style/H4"
                     android:layout_width="80dp"
                     android:layout_height="35dp"
                     android:layout_gravity="center"
                     android:layout_marginEnd="15dp"
                     android:background="@drawable/border_all_rounded_light_black"
+                    android:fontFamily="@font/spoqa_han_sans_neo_regular"
                     android:gravity="center"
                     android:includeFontPadding="false"
                     android:onClick="@{()-> vm.setScreenStatusOngoing()}"
@@ -212,13 +215,13 @@
                         tools:text="1" />
 
                     <TextView
-                        style="@style/H4"
-                        android:fontFamily="@font/spoqa_han_sans_neo_regular"
                         android:id="@+id/btn_complete"
+                        style="@style/H4"
                         android:layout_width="80dp"
                         android:layout_height="35dp"
                         android:layout_gravity="center"
                         android:background="@drawable/border_all_rounded_color_gray_400"
+                        android:fontFamily="@font/spoqa_han_sans_neo_regular"
                         android:gravity="center"
                         android:onClick="@{()-> vm.setScreenStatusComplete()}"
                         android:text="@string/INQUIRY_VIEW_COMPLETE_DELIVERY"
@@ -239,12 +242,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:paddingHorizontal="10dp"
             android:visibility="@{(vm.monthList.size() > 0 &amp;&amp; vm.screenStatusEnum == ScreenStatusEnum.COMPLETE) ? View.VISIBLE : View.GONE}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraint_select"
-            tools:visibility="visible"
-            android:layout_marginEnd="16dp">
+            tools:visibility="visible">
 
             <TextView
                 android:id="@+id/tv_spinner_month"
@@ -263,11 +266,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="7dp"
+                android:layout_marginEnd="30dp"
                 android:src="@drawable/ic_arrow_bottom_blue"
                 app:layout_constraintBottom_toBottomOf="@+id/tv_spinner_month"
                 app:layout_constraintStart_toEndOf="@+id/tv_spinner_month"
-                app:layout_constraintTop_toTopOf="@+id/tv_spinner_month"
-                android:layout_marginEnd="30dp"/>
+                app:layout_constraintTop_toTopOf="@+id/tv_spinner_month" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -275,7 +278,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:enabled="@{vm.isRemovable == true ? false : true}"
-            app:layout_constraintBottom_toTopOf="@+id/constraint_delete_final"
+            app:layout_constraintBottom_toTopOf="@+id/snack_bar_confirm_delete"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraint_month_spinner">
@@ -284,7 +287,7 @@
                 android:id="@+id/frame_layout_content"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintBottom_toTopOf="@+id/constraint_delete_final"
+                app:layout_constraintBottom_toTopOf="@+id/snack_bar_confirm_delete"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/constraint_month_spinner">
@@ -306,11 +309,11 @@
                             android:id="@+id/layout_present_ongoing"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="27.5dp"
+                            android:layout_marginBottom="40dp"
                             android:orientation="horizontal"
                             android:visibility="@{vm.presentOngoingParcelCnt > 0 &amp;&amp; !vm.isRemovable() ? View.VISIBLE : View.GONE}"
-                            android:weightSum="10"
-                            android:layout_marginTop="27.5dp"
-                            android:layout_marginBottom="40dp">
+                            android:weightSum="10">
 
                             <LinearLayout
                                 android:id="@+id/layout_present_ongoing_text"
@@ -381,13 +384,13 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="16dp"
+                                    android:layout_marginBottom="16dp"
                                     android:fontFamily="@font/spoqa_han_sans_neo_regular"
+                                    android:includeFontPadding="false"
+                                    android:letterSpacing="-0.05"
                                     android:text="@string/INQUIRY_VIEW_SOON_ARRIVAL"
                                     android:textColor="@color/COLOR_GRAY_800"
                                     android:textSize="16sp"
-                                    android:includeFontPadding="false"
-                                    android:layout_marginBottom="16dp"
-                                    android:letterSpacing="-0.05"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -412,7 +415,7 @@
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical"
                                 android:visibility="gone"
-                                tools:visibility="invisible">
+                                tools:visibility="visible">
 
                                 <LinearLayout
                                     android:id="@+id/linear_more_view"
@@ -429,7 +432,7 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_gravity="center"
-                                        android:background="@drawable/ic_down_arrow" />
+                                        android:background="@drawable/ic_down_arrow_default" />
 
                                     <TextView
                                         android:id="@+id/tv_more_view"
@@ -460,10 +463,10 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="16dp"
                                     android:fontFamily="@font/spoqa_han_sans_neo_regular"
+                                    android:letterSpacing="-0.05"
                                     android:text="@string/INQUIRY_VIEW_REGISTERED_PARCEL"
                                     android:textColor="@color/COLOR_GRAY_800"
                                     android:textSize="16sp"
-                                    android:letterSpacing="-0.05"
                                     app:layout_constraintStart_toStartOf="parent"
                                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -522,8 +525,8 @@
                                 style="@style/buttonBasicStyle"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="운송장 등록하기"
-                                android:layout_marginTop="100dp"/>
+                                android:layout_marginTop="100dp"
+                                android:text="운송장 등록하기" />
 
                         </LinearLayout>
                     </LinearLayout>
@@ -599,9 +602,14 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+        <!--
+        Confirm Snack Bar
+        Display Snack Bar
+        -->
+
         <!-- 삭제 확인 snackbar -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_snack_bar"
+            android:id="@+id/snack_bar_display_delete"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@color/COLOR_MAIN_700"
@@ -610,14 +618,14 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="gone">
+            tools:visibility="visible">
 
             <ImageView
-                android:id="@+id/image_snack_bar_exclamation_mark"
+                android:id="@+id/iv_snack_bar_exclamation_mark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="17dp"
+                android:layout_marginStart="16dp"
                 android:background="@drawable/snack_bar_exclamation_mark"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -629,25 +637,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:text="@{vm.cntOfDelete + `` ?? ``}"
+                android:text='@{vm.cntOfDelete.toString() + "개 항목이 삭제되었습니다."}'
                 android:textColor="@color/COLOR_MAIN_100"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/image_snack_bar_exclamation_mark"
-                app:layout_constraintStart_toEndOf="@+id/image_snack_bar_exclamation_mark"
-                app:layout_constraintTop_toTopOf="@+id/image_snack_bar_exclamation_mark"
-                tools:text="2" />
-
-            <TextView
-                android:id="@+id/textView2"
-                style="@style/H4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/INQUIRY_VIEW_DELETE_SNACK_BAR_COMMENT"
-                android:textColor="@color/COLOR_MAIN_100"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="@+id/tv_count_of_deleted"
-                app:layout_constraintStart_toEndOf="@+id/tv_count_of_deleted"
-                app:layout_constraintTop_toTopOf="@+id/tv_count_of_deleted" />
+                android:textSize="14dp"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_snack_bar_exclamation_mark"
+                app:layout_constraintStart_toEndOf="@+id/iv_snack_bar_exclamation_mark"
+                app:layout_constraintTop_toTopOf="@+id/iv_snack_bar_exclamation_mark"
+                tools:text="2개 항목이 삭제되었습니다." />
 
             <TextView
                 android:id="@+id/tv_cancel_delete"
@@ -656,10 +652,10 @@
                 android:layout_marginEnd="23dp"
                 android:fontFamily="@font/spoqa_han_sans_neo_bold"
                 android:onClick="@{() -> vm.deleteCancel()}"
-                android:padding="5dp"
+                android:padding="12dp"
                 android:text="@string/INQUIRY_VIEW_DELETE_CANCEL"
                 android:textColor="@color/MAIN_WHITE"
-                android:textSize="12sp"
+                android:textSize="12dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -668,7 +664,7 @@
 
         <!-- 삭제하기 Snackbar -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_delete_final"
+            android:id="@+id/snack_bar_confirm_delete"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@color/MAIN_RED"
@@ -679,44 +675,32 @@
             app:layout_constraintStart_toStartOf="parent"
             tools:visibility="gone">
 
-            <LinearLayout
-                android:id="@+id/linear_delete_btn"
+            <ImageView
+                android:id="@+id/iv_snack_bar_clear_mark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
+                android:layout_gravity="center"
+                android:background="@drawable/ic_24_x_white"
+                app:layout_constraintBottom_toTopOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/tv_cnt_of_delete"
+                app:layout_constraintTop_toBottomOf="parent"
+                android:layout_marginRight="5dp"/>
 
-                >
+            <TextView
+                android:id="@+id/tv_cnt_of_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:fontFamily="@font/spoqa_han_sans_neo_bold"
+                android:text='@{vm.cntOfSelectedItemForDelete.toString() + "개 삭제하기"}'
+                android:textColor="@color/MAIN_WHITE"
+                android:textSize="16dp"
+                app:layout_constraintBottom_toTopOf="parent"
+                app:layout_constraintLeft_toRightOf="parent"
+                app:layout_constraintRight_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                tools:text="2개 삭제하기" />
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@drawable/ic_24_x_white" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="5dp"
-                    android:fontFamily="@font/spoqa_han_sans_neo_bold"
-                    android:text="@{vm.cntOfSelectedItemForDelete + `` ?? ``}"
-                    android:textColor="@color/MAIN_WHITE"
-                    android:textSize="16sp"
-                    tools:text="2" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:fontFamily="@font/spoqa_han_sans_neo_bold"
-                    android:text="@string/INQUIRY_VIEW_COUNT_OF_DELETE"
-                    android:textColor="@color/MAIN_WHITE"
-                    android:textSize="16sp" />
-            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
