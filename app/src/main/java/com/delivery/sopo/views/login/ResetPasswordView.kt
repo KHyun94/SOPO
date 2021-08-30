@@ -22,7 +22,6 @@ import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.extensions.launchActivityForResult
 import com.delivery.sopo.models.EmailAuthDTO
-import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.util.ui_util.TextInputUtil
@@ -126,7 +125,7 @@ class ResetPasswordView: AppCompatActivity()
                     val data: EmailAuthDTO = result.data
 
                     Intent(this@ResetPasswordView, LockScreenView::class.java).apply {
-                        putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.RESET)
+                        putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD)
                         putExtra("PIN_NUM", data.code)
                     }.launchActivityForResult(this@ResetPasswordView, 11)
                 }

@@ -21,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="13dp"
-            android:text="@{vm.lockScreenStatusEnum != LockScreenStatusEnum.RESET?@string/LOCK_SCREEN_VIEW_APP_PASSWORD_TITLE:@string/LOCK_SCREEN_VIEW_ACCOUNT_PASSWORD_RESET_TITLE}"
+            android:text="@{vm.lockScreenStatusEnum.TITLE.toString()}"
             android:textColor="@color/COLOR_GRAY_800"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -54,20 +54,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_title_lock" />
-
-        <EditText
-            android:visibility="visible"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:maxLength="4"
-            android:focusable="false"
-            android:text="@{vm.lockPassword}"
-            app:layout_constraintBottom_toTopOf="@+id/grid_numPad"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
         <LinearLayout
             android:id="@+id/linearLayout3"

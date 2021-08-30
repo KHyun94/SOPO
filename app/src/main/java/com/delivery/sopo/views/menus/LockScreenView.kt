@@ -1,22 +1,23 @@
 package com.delivery.sopo.views.menus
 
 import android.app.Activity
-import android.graphics.Color
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.style.ForegroundColorSpan
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
+import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.databinding.LockScreenViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
-import com.delivery.sopo.models.EmailAuthDTO
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.LockScreenViewModel
 import kotlinx.android.synthetic.main.lock_screen_view.*
 import kotlinx.coroutines.*
@@ -24,7 +25,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LockScreenView : AppCompatActivity()
 {
-    private val lockScreenVM: LockScreenViewModel by viewModel()
+    private val vm: LockScreenViewModel by viewModel()
     private lateinit var binding: LockScreenViewBinding
     private var firstCheck = false
     private var firstPassword = ""
@@ -34,25 +35,35 @@ class LockScreenView : AppCompatActivity()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.lock_screen_view)
-        bindView()
-        loadData()
+        binding = bindView(this, R.layout.lock_screen_view, vm)
+        receivedData()
 
         pinNumByEmail = intent.getStringExtra("PIN_NUM")
-        lockScreenVM.pinCode.value = pinNumByEmail
+        vm.pinCode.value = pinNumByEmail
 
         setObserver()
     }
 
-    private fun bindView() {
-        binding.vm = lockScreenVM
-        binding.lifecycleOwner = this
-        binding.executePendingBindings() // 즉 바인딩
+    fun <T : ViewDataBinding> bindView(activity: FragmentActivity, @LayoutRes layoutId : Int, vm: ViewModel) : T
+    {
+        return DataBindingUtil.setContentView<T>(activity,layoutId).apply{
+            this.lifecycleOwner = lifecycleOwner
+            this.setVariable(BR.vm, vm)
+            executePendingBindings()
+        }
+    }
+
+    private fun receivedData() {
+        val data = intent.getSerializableExtra(IntentConst.LOCK_SCREEN) as LockScreenStatusEnum? ?: throw IllegalArgumentException("접근이 잘못되었습니다.")
+        SopoLog.d("receivedData(...) 호출 [data:$data]")
+        vm.setLockScreenStatus(data)
     }
 
     fun setObserver() {
-        lockScreenVM.lockPassword.observe(this@LockScreenView, Observer {
+
+        vm.lockPassword.observe(this@LockScreenView, Observer {
             val scope = CoroutineScope(Dispatchers.Main)
+
             when (it.length)
             {
                 0->{
@@ -98,52 +109,22 @@ class LockScreenView : AppCompatActivity()
         })
 
         // 인증 여부
-        lockScreenVM.verifyResult.observe(this, Observer{
+        vm.verifyResult.observe(this, Observer{
             if(it){
                 setResult(Activity.RESULT_OK)
                 finish()
             }
             else{
-
-//                val str = "글자를 바꿔주세요"
-//                val ssb = SpannableStringBuilder(str)
-//                ssb.setSpan(ForegroundColorSpan(Color.parseColor("#01AFF1")), 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-//                binding.tvSub2.setText(ssb)
-
-
                 tv_errorComment.visibility = VISIBLE
                 tv_guide_comment.text = "다시 입력해 주세요."
             }
         })
 
-        // UI 및 기본 세팅 변
-        lockScreenVM.lockScreenStatusEnum.observe(this, Observer { status ->
-
-            when(status)
-            {
-                LockScreenStatusEnum.RESET ->
-                {
-
-                }
-                LockScreenStatusEnum.SET ->
-                {
 
 
-                }
-                LockScreenStatusEnum.VERIFY ->
-                {
+        vm.verifyCnt.observe(this@LockScreenView, Observer {
 
-                }
-                else ->
-                {
-
-                }
-            }
-        })
-
-        lockScreenVM.verifyCnt.observe(this@LockScreenView, Observer {
-
-            if(binding.vm!!.lockScreenStatusEnum.value == LockScreenStatusEnum.RESET)
+            if(vm.lockScreenStatusEnum.value == LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD)
             {
 
                 return@Observer
@@ -165,10 +146,6 @@ class LockScreenView : AppCompatActivity()
                 }
             }
         })
-    }
-
-    private fun loadData() {
-        lockScreenVM.setLockScreenStatus(intent.getSerializableExtra(IntentConst.LOCK_SCREEN) as LockScreenStatusEnum)
     }
 
     private fun noneOfNumberPadIsPressed(){
@@ -204,7 +181,6 @@ class LockScreenView : AppCompatActivity()
         et_thirdPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
         et_fourthPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
     }
-
 
     private fun isNumPadEnable(enable: Boolean){
         btn_0.isEnabled = enable

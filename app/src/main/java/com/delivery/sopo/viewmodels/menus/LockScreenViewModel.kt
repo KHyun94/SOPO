@@ -70,7 +70,7 @@ class LockScreenViewModel(
             LockScreenStatusEnum.VERIFY -> {
                 verifyLockPassword(num)
             }
-            LockScreenStatusEnum.RESET -> {
+            LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD -> {
                 verifyLockPassword(num)
             }
         }
@@ -93,42 +93,73 @@ class LockScreenViewModel(
     }
 
     private fun verifyLockPassword(num: Int){
-        lockPassword.value?.also {
-            if (it.length < 4){
-                lockPassword.value = "${it}$num"
-            }
+
+        val currentInputNum = lockPassword.value ?: ""
+
+        // 현재 입력받은 데이터가 총 4자리가 되지 않는다면 문자열을 적재한다.
+        if(currentInputNum.length < 4)
+        {
+            lockPassword.value = "$currentInputNum$num"
+            return
         }
-        lockPassword.value?.also {
-            if(it.length == 4){
-                lockPassword.value = ""
-                viewModelScope.launch(Dispatchers.IO) {
 
-                    val isVerify = when(lockScreenStatusEnum.value)
-                    {
-                        LockScreenStatusEnum.RESET -> {
-                            verifyPasswordByEmail(it)
-                        }
-                        else -> {
-                            verifyPassword(it)
-                        }
-                    }
+        lockPassword.value = ""
+        viewModelScope.launch(Dispatchers.IO) {
 
-                    SopoLog.d("비밀번호 재설정 >>> $it, 성공 여부 >>> $isVerify")
-
-                    _verifyResult.postValue(isVerify)
+            val isVerify = when(lockScreenStatusEnum.value)
+            {
+                LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD -> {
+                    verifyPasswordByEmail(currentInputNum)
+                }
+                else -> {
+                    verifyPassword(currentInputNum)
                 }
             }
+
+            SopoLog.d("비밀번호 재설정 >>> $currentInputNum, 성공 여부 >>> $isVerify")
+
+            _verifyResult.postValue(isVerify)
         }
     }
 
-    private fun setLockPassword(num: Int){
+    private fun setLockPassword(num: Int)
+    {
+        if(num < 4)
+        {
+            val oldNum = lockPassword.value
+            lockPassword.value = "$oldNum$num"
+            return
+        }
 
-        lockPassword.value?.also {
-            if (it.length < 4){
-                lockPassword.value = "${it}$num"
+        // 입력받은 패스워드가 빈 값일 때
+        if(firstCheckPassword == "")
+        {
+            firstCheckPassword = lockPassword.value ?: ""
+            verifyCnt.value = 1
+            return
+        }
+
+        //[다시 한번 입력해주세요.]에서 틀렸을 경우, 첨부터 다시 시도.
+        if(firstCheckPassword != it){
+            lockPassword.value = ""
+            firstCheckPassword = ""
+            verifyCnt.value = 2
+        }
+        //[다시 한번 입력해주세요.]에서 일치한 경우, 저장 후 종료.
+        else{
+            verifyCnt.value = 3
+            viewModelScope.launch(Dispatchers.IO){
+                appPasswordRepo.insert(
+                    AppPasswordEntity(
+                        userId = userLocalRepository.getUserId(),
+                        appPassword = lockPassword.value.toString().asSHA256
+                    )
+                )
             }
         }
-        lockPassword.value?.also {
+
+
+        /*lockPassword.value?.also {
             if (it.length == 4 && firstCheckPassword == ""){
                 firstCheckPassword = it
                 lockPassword.value = ""
@@ -155,7 +186,7 @@ class LockScreenViewModel(
                    }
                 }
             }
-        }
+        }*/
     }
 
     fun eraseLockPassword(){
