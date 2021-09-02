@@ -26,8 +26,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:includeFontPadding="false"
-            />
+            android:includeFontPadding="false" />
 
         <TextView
             style="@style/H5"
@@ -39,9 +38,7 @@
             android:textColor="@color/MAIN_RED"
             app:layout_constraintBottom_toTopOf="@+id/tv_guide_comment"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            />
-
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             style="@style/H5"
@@ -131,7 +128,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.lockPasswordAction(1)}" />
+                    android:onClick="@{() -> vm.onPressLockKeyPad(1)}" />
 
 
                 <Button
@@ -145,7 +142,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.lockPasswordAction(2)}"
+                    android:onClick="@{() -> vm.onPressLockKeyPad(2)}"
                     />
 
                 <Button
@@ -160,7 +157,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.lockPasswordAction(3)}"
+                    android:onClick="@{() -> vm.onPressLockKeyPad(3)}"
                     />
             </LinearLayout>
 
@@ -181,7 +178,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.lockPasswordAction(4)}"
+                    android:onClick="@{() -> vm.onPressLockKeyPad(4)}"
                     />
 
 
@@ -196,7 +193,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.lockPasswordAction(5)}"
+                    android:onClick="@{() -> vm.onPressLockKeyPad(5)}"
                     />
 
                 <Button
@@ -211,7 +208,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.lockPasswordAction(6)}"
+                    android:onClick="@{() -> vm.onPressLockKeyPad(6)}"
                     />
 
             </LinearLayout>
@@ -232,7 +229,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.lockPasswordAction(7)}"
+                    android:onClick="@{() -> vm.onPressLockKeyPad(7)}"
                     />
 
 
@@ -247,7 +244,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.lockPasswordAction(8)}"
+                    android:onClick="@{() -> vm.onPressLockKeyPad(8)}"
                     />
 
                 <Button
@@ -262,7 +259,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.lockPasswordAction(9)}"
+                    android:onClick="@{() -> vm.onPressLockKeyPad(9)}"
                     />
 
             </LinearLayout>
@@ -295,7 +292,7 @@
                     android:textColor="@color/COLOR_GRAY_800"
                     android:textSize="20sp"
                     android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.lockPasswordAction(0)}"
+                    android:onClick="@{() -> vm.onPressLockKeyPad(0)}"
                     />
 
                 <RelativeLayout

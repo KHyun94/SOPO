@@ -1,75 +1,59 @@
 package com.delivery.sopo.views.menus
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
-import androidx.annotation.LayoutRes
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.databinding.LockScreenViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
+import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.LockScreenViewModel
 import kotlinx.android.synthetic.main.lock_screen_view.*
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class LockScreenView : AppCompatActivity()
+class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
 {
-    private val vm: LockScreenViewModel by viewModel()
-    private lateinit var binding: LockScreenViewBinding
+    override val layoutRes: Int = R.layout.lock_screen_view
+    override val vm: LockScreenViewModel by viewModel()
+
     private var firstCheck = false
     private var firstPassword = ""
 
-    var pinNumByEmail:String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?)
+    override fun receivedData(intent: Intent)
     {
-        super.onCreate(savedInstanceState)
-        binding = bindView(this, R.layout.lock_screen_view, vm)
-        receivedData()
 
-        pinNumByEmail = intent.getStringExtra("PIN_NUM")
-        vm.pinCode.value = pinNumByEmail
+        val lockScreenStatus = intent.getSerializableExtra(IntentConst.LOCK_SCREEN) as LockScreenStatusEnum? ?: throw IllegalArgumentException("접근이 잘못되었습니다.")
+        val pinCode = intent.getStringExtra("PIN_NUM")
+        SopoLog.d("receivedData(...) 호출 [status:$lockScreenStatus][pinCode:$pinCode]")
 
-        setObserver()
+        vm.pinCode.value = pinCode
+        vm.setLockScreenStatus(lockScreenStatus)
     }
 
-    fun <T : ViewDataBinding> bindView(activity: FragmentActivity, @LayoutRes layoutId : Int, vm: ViewModel) : T
+    override fun initUI()
     {
-        return DataBindingUtil.setContentView<T>(activity,layoutId).apply{
-            this.lifecycleOwner = lifecycleOwner
-            this.setVariable(BR.vm, vm)
-            executePendingBindings()
-        }
     }
 
-    private fun receivedData() {
-        val data = intent.getSerializableExtra(IntentConst.LOCK_SCREEN) as LockScreenStatusEnum? ?: throw IllegalArgumentException("접근이 잘못되었습니다.")
-        SopoLog.d("receivedData(...) 호출 [data:$data]")
-        vm.setLockScreenStatus(data)
-    }
-
-    fun setObserver() {
-
+    override fun setObserve()
+    {
         vm.lockPassword.observe(this@LockScreenView, Observer {
             val scope = CoroutineScope(Dispatchers.Main)
 
-            when (it.length)
+            when(it.length)
             {
-                0->{
+                0 ->
+                {
                     scope.launch {
                         withContext(Dispatchers.Main) {
-                            if (firstCheck) {
+                            if(firstCheck)
+                            {
                                 isNumPadEnable(false)
                                 delay(500)
                                 isNumPadEnable(true)
@@ -81,24 +65,29 @@ class LockScreenView : AppCompatActivity()
                         }
                     }
                 }
-                1 ->{
+                1 ->
+                {
                     scope.launch {
                         firstPasswordIsPressed()
                     }
                 }
-                2 -> {
+                2 ->
+                {
                     scope.launch {
                         secondPasswordIsPressed()
                     }
                 }
-                3 -> {
+                3 ->
+                {
                     scope.launch {
                         thirdPasswordIsPressed()
                     }
                 }
-                4 ->{
+                4 ->
+                {
                     scope.launch {
-                        if(!firstCheck && firstPassword == ""){
+                        if(!firstCheck && firstPassword == "")
+                        {
                             firstCheck = true
                             firstPassword = it
                         }
@@ -109,18 +98,18 @@ class LockScreenView : AppCompatActivity()
         })
 
         // 인증 여부
-        vm.verifyResult.observe(this, Observer{
-            if(it){
+        vm.verifyResult.observe(this, Observer {
+            if(it)
+            {
                 setResult(Activity.RESULT_OK)
                 finish()
             }
-            else{
+            else
+            {
                 tv_errorComment.visibility = VISIBLE
                 tv_guide_comment.text = "다시 입력해 주세요."
             }
         })
-
-
 
         vm.verifyCnt.observe(this@LockScreenView, Observer {
 
@@ -130,59 +119,90 @@ class LockScreenView : AppCompatActivity()
                 return@Observer
             }
 
-            when(it){
-                1 ->{
+            when(it)
+            {
+                1 ->
+                {
                     tv_errorComment.visibility = INVISIBLE
                     tv_guide_comment.text = "확인을 위해 한 번 더 입력해 주세요."
                 }
-                2 -> {
+                2 ->
+                {
                     tv_errorComment.visibility = VISIBLE
                     tv_guide_comment.text = "처음부터 다시 시도해 주세요."
                     firstPassword = ""
                     firstCheck = false
                 }
-                3-> {
+                3 ->
+                {
                     finish()
                 }
             }
         })
     }
 
-    private fun noneOfNumberPadIsPressed(){
-        et_firstPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
-        et_secondPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
-        et_thirdPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
-        et_fourthPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+    private fun noneOfNumberPadIsPressed()
+    {
+        et_firstPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+        et_secondPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+        et_thirdPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+        et_fourthPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
     }
 
-    private fun firstPasswordIsPressed(){
-        et_firstPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
-        et_secondPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
-        et_thirdPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
-        et_fourthPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+    private fun firstPasswordIsPressed()
+    {
+        et_firstPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_secondPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+        et_thirdPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+        et_fourthPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
     }
 
-    private fun secondPasswordIsPressed(){
-        et_firstPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
-        et_secondPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
-        et_thirdPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
-        et_fourthPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+    private fun secondPasswordIsPressed()
+    {
+        et_firstPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_secondPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_thirdPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
+        et_fourthPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
     }
 
-    private fun thirdPasswordIsPressed(){
-        et_firstPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
-        et_secondPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
-        et_thirdPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
-        et_fourthPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
-    }
-    private fun fourthPasswordIsPressed(){
-        et_firstPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
-        et_secondPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
-        et_thirdPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
-        et_fourthPassword.background = ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+    private fun thirdPasswordIsPressed()
+    {
+        et_firstPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_secondPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_thirdPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_fourthPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_off)
     }
 
-    private fun isNumPadEnable(enable: Boolean){
+    private fun fourthPasswordIsPressed()
+    {
+        et_firstPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_secondPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_thirdPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+        et_fourthPassword.background =
+            ContextCompat.getDrawable(this, R.drawable.ic_lock_edittext_on)
+    }
+
+    private fun isNumPadEnable(enable: Boolean)
+    {
         btn_0.isEnabled = enable
         btn_1.isEnabled = enable
         btn_2.isEnabled = enable
