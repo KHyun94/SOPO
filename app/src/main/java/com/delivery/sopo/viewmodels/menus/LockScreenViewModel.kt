@@ -4,46 +4,54 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.delivery.sopo.consts.LockStatusConst
+import com.delivery.sopo.data.repository.database.room.dto.AppPasswordDTO
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.asSHA256
-import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class LockScreenViewModel(private val userLocalRepository: UserLocalRepository, private val appPasswordRepo: AppPasswordRepository):
-        ViewModel()
+class LockScreenViewModel(private val userLocalRepository: UserLocalRepository, private val appPasswordRepo: AppPasswordRepository): ViewModel()
 {
+    // SET,VERIFY,RESET: 현재 입력 받고 있는 비밀번호
+    var inputLockNum = MutableLiveData<String>()
 
-    var lockPassword = MutableLiveData<String>()
-    var firstCheck = MutableLiveData<Boolean>()
-    var finalCheck = MutableLiveData<Boolean>()
-    var passwordIsNotMatched = MutableLiveData<Boolean>()
+    // SET: 1차 입력 & 2차 입력 여부
+
     var isFinish = MutableLiveData<Boolean>()
-    var verifyCnt = MutableLiveData<Int>()
 
+    //
+    var verifyType = MutableLiveData<String>()
+
+    /** App 비밀번호 입력 타입
+     * SET:비밀번호 설정
+     *  1. 1차 검증(입력)
+     *  2. 2치 검증(1차에 입력한 비밀번호와 일치하는지)
+     *  3. 내부 DB에 저장
+     */
     private val _lockScreenStatus = MutableLiveData<LockScreenStatusEnum>()
     val lockScreenStatusEnum: LiveData<LockScreenStatusEnum>
         get() = _lockScreenStatus
 
-    private val _verifyResult = MutableLiveData<Boolean>()
+/*    private val _verifyResult = MutableLiveData<Boolean>()
     val verifyResult: LiveData<Boolean>
-        get() = _verifyResult
+        get() = _verifyResult*/
 
     val pinCode = MutableLiveData<String?>()
 
-    private var firstCheckPassword = ""
+    // SET: 1차 인증 번호 저장, 2차 입력 번
+    private var primaryAuthNumber = ""
 
     init
     {
-        lockPassword.value = ""
-        firstCheck.value = false
-        finalCheck.value = false
-        passwordIsNotMatched.value = false
+        inputLockNum.value = ""
         isFinish.value = false
-        verifyCnt.value = 0
+        verifyType.value = ""
     }
 
     fun setLockScreenStatus(statusEnum: LockScreenStatusEnum)
@@ -51,9 +59,21 @@ class LockScreenViewModel(private val userLocalRepository: UserLocalRepository, 
         _lockScreenStatus.value = statusEnum
     }
 
-    private fun verifyPassword(inputPassword: String): Boolean
-    {
-        return appPasswordRepo.get()?.let {
+    private fun updateInputLockNum(num:Int):String{
+        val beforeLockNum = inputLockNum.value ?: ""
+
+        // 입력 전 키패드 숫자가 4자리 미만일 때
+        if(beforeLockNum.length < 4)
+        {
+            inputLockNum.value = "$beforeLockNum$num"
+            SopoLog.d("입력 후 번호 [data:${inputLockNum.value}]")
+        }
+
+        return inputLockNum.value ?: ""
+    }
+
+    private suspend fun verifyPassword(inputPassword: String):Boolean = withContext(Dispatchers.Default) {
+        return@withContext appPasswordRepo.get()?.let {
             it.appPassword == inputPassword.asSHA256
         } ?: false
     }
@@ -65,98 +85,83 @@ class LockScreenViewModel(private val userLocalRepository: UserLocalRepository, 
         return pinCode.value == inputPassword
     }
 
+    // 버튼 누르기 이벤트
     fun onPressLockKeyPad(num: Int)
     {
+        val currentLockNum = updateInputLockNum(num).apply {
+            if(length != 4) return
+        }
+
         when(_lockScreenStatus.value)
         {
-            LockScreenStatusEnum.SET -> setLockPassword(num)
-            LockScreenStatusEnum.VERIFY -> verifyLockPassword(num)
-            LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD -> verifyLockPassword(num)
+            LockScreenStatusEnum.SET -> setLockPassword(currentLockNum)
+            LockScreenStatusEnum.VERIFY -> verifyLockPassword(currentLockNum)
+            LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD -> verifyAuthPinNumber(currentLockNum)
         }
     }
 
-    private fun setLockPassword(num: Int)
+    private fun setLockPassword(lockNum: String)
     {
-        lockPassword.value?.also {
-            if(it.length < 4)
-            {
-                lockPassword.value = "${it}$num"
-            }
-        }
-        lockPassword.value?.also {
-            if(it.length == 4 && firstCheckPassword == "")
-            {
-                firstCheckPassword = it
-                lockPassword.value = ""
-                verifyCnt.value = 1
-            }
-            else if(it.length == 4)
-            {
+        SopoLog.i("setLockPassword(...) 호출 [data:$lockNum]")
 
-                //[다시 한번 입력해주세요.]에서 틀렸을 경우, 첨부터 다시 시도.
-                if(firstCheckPassword != it)
-                {
-                    lockPassword.value = ""
-                    firstCheckPassword = ""
-                    verifyCnt.value = 2
-                }
-                //[다시 한번 입력해주세요.]에서 일치한 경우, 저장 후 종료.
-                else
-                {
-                    verifyCnt.value = 3
-                    viewModelScope.launch(Dispatchers.IO) {
-                        appPasswordRepo.insert(
-                            AppPasswordEntity(userId = userLocalRepository.getUserId(),
-                                              appPassword = lockPassword.value.toString().asSHA256))
-                    }
-                }
-            }
+        // 1차 입력
+        if(primaryAuthNumber == "")
+        {
+            primaryAuthNumber = lockNum
+            inputLockNum.value = ""
+            verifyType.value = LockStatusConst.SET.VERIFY_STATUS
+            return
+        }
+
+        // 2차 입력 실패
+        if(primaryAuthNumber != lockNum)
+        {
+            inputLockNum.value = ""
+            primaryAuthNumber = ""
+            verifyType.value = LockStatusConst.SET.FAILURE_STATUS
+            return
+        }
+
+        // 2차 입력 성공
+        verifyType.value = LockStatusConst.SET.CONFIRM_STATUS
+
+        viewModelScope.launch(Dispatchers.Default) {
+            val dto = AppPasswordDTO(userId = userLocalRepository.getUserId(), appPassword = inputLockNum.value.toString().asSHA256, auditDte = TimeUtil.getDateTime())
+            appPasswordRepo.insert(dto)
         }
     }
 
-    private fun verifyLockPassword(num: Int)
+    private fun verifyLockPassword(lockNum: String)
     {
-        lockPassword.value?.also {
-            if(it.length < 4)
-            {
-                lockPassword.value = "${it}$num"
-            }
-        }
-        lockPassword.value?.also {
-            if(it.length == 4)
-            {
-                lockPassword.value = ""
-                viewModelScope.launch(Dispatchers.IO) {
+        inputLockNum.postValue("")
 
-                    val isVerify = when(lockScreenStatusEnum.value)
-                    {
-                        LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD ->
-                        {
-                            verifyPasswordByEmail(it)
-                        }
-                        else ->
-                        {
-                            verifyPassword(it)
-                        }
-                    }
-
-                    SopoLog.d("비밀번호 재설정 >>> $it, 성공 여부 >>> $isVerify")
-
-                    _verifyResult.postValue(isVerify)
-                }
-            }
+        viewModelScope.launch(Dispatchers.IO) {
+            val isVerify = verifyPassword(lockNum)
+            if(!isVerify) return@launch verifyType.postValue(LockStatusConst.VERIFY.FAILURE_STATUS)
+            verifyType.postValue(LockStatusConst.VERIFY.CONFIRM_STATUS)
         }
     }
 
+    private fun verifyAuthPinNumber(lockNum: String)
+    {
+        inputLockNum.postValue("")
+
+        viewModelScope.launch(Dispatchers.IO) {
+            val isVerify = verifyPasswordByEmail(lockNum)
+            if(!isVerify) return@launch verifyType.postValue(LockStatusConst.VERIFY.FAILURE_STATUS)
+            verifyType.postValue(LockStatusConst.VERIFY.CONFIRM_STATUS)
+        }
+    }
+    
     fun eraseLockPassword()
     {
-        val currentPassword = lockPassword.value
+        val currentPassword = inputLockNum.value
 
         currentPassword?.let {
             if(it.isNotEmpty())
             {
                 val substring = it.substring(IntRange(0, (it.lastIndex - 1)))
-                lockPassword.value = substring
+                inputLockNum.value = substring
             }
         }
     }

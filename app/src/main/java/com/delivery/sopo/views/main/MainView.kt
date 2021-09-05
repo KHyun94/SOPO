@@ -1,5 +1,6 @@
 package com.delivery.sopo.views.main
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -13,12 +14,15 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.launchActivity
+import com.delivery.sopo.extensions.launchActivityForResult
 import com.delivery.sopo.firebase.FirebaseNetwork
+import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.services.PowerManager
 import com.delivery.sopo.services.workmanager.RefreshOAuthWorker
 import com.delivery.sopo.services.workmanager.SOPOWorkManager
@@ -37,55 +41,42 @@ import com.delivery.sopo.views.registers.RegisterMainFrame
 import com.delivery.sopo.views.registers.InputParcelFragment
 import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.tap_item.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainView: BasicView<MainViewBinding>(R.layout.main_view)
+class MainView: BaseView<MainViewBinding, MainViewModel>()
 {
-    private val userRepo: UserLocalRepository by inject()
-    private val vm: MainViewModel by viewModel()
+    override val layoutRes: Int = R.layout.main_view
+    override val vm: MainViewModel by viewModel()
+
+    private val appPasswordRepo: AppPasswordRepository by inject()
 
     var currentPage = MutableLiveData<Int?>()
 
-    override fun onCreate(savedInstanceState: Bundle?)
+    override fun receivedData(intent: Intent)
     {
-        super.onCreate(savedInstanceState)
+    }
 
-        // WhiteList 추가
+    override fun initUI()
+    {
+        setViewPager()
+        setTabLayout()
+    }
+
+    override fun setAfterSetUI()
+    {
         PowerManager.checkWhiteList(this)
-
-        initUI()
-
         refreshTokenWithinWeek()
+
+        CoroutineScope(Dispatchers.Default).launch {
+            checkAppPassword()
+        }
     }
 
-    private fun refreshTokenWithinWeek(){
-        val isDate = DateUtil.isExpiredDateWithinAWeek(SOPOApp.oAuth?.refreshTokenExpiredAt?:return)
-        if(isDate) SOPOWorkManager.refreshOAuthWorkManager(this)
-    }
-
-    override fun bindView()
+    override fun setObserve()
     {
-        binding.vm = vm
-    }
-
-    override fun setObserver()
-    {
-        /** 화면 패스워드 설정 **/
-        vm.isSetAppPassword.observe(this, Observer { appPassword ->
-            appPassword?.let {
-                Intent(this@MainView, LockScreenView::class.java).apply {
-                    putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
-                }.launchActivity(this@MainView)
-            }
-        })
-
         SOPOApp.cntOfBeUpdate.observe(this, Observer { cnt ->
-
             if(cnt > 0)
             {
                 SopoLog.d(msg = "업데이트 가능 택배 갯수[Size:$cnt]")
@@ -105,19 +96,11 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
                     })
                     onStart()
                 }
-
-                //                SOPOApp.cntOfBeUpdate.postValue(null)
             }
         })
 
         SOPOApp.currentPage.observe(this, Observer {
-            if(it == null)
-            {
-                return@Observer
-            }
-
-            SopoLog.d("Navigator >>> ${it}번")
-
+            if(it == null) return@Observer
             when(it)
             {
                 NavigatorConst.REGISTER_TAB -> binding.layoutViewPager.setCurrentItem(
@@ -130,6 +113,22 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
             }
 
         })
+
+    }
+
+    private suspend fun checkAppPassword() = withContext(Dispatchers.Default) {
+        appPasswordRepo.get()?.let {
+            Intent(this@MainView, LockScreenView::class.java).apply {
+                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
+            }.launchActivityForResult(this@MainView, 1001)
+        }
+    }
+
+    private fun refreshTokenWithinWeek()
+    {
+        val isDate =
+            DateUtil.isExpiredDateWithinAWeek(SOPOApp.oAuth?.refreshTokenExpiredAt ?: return)
+        if(isDate) SOPOWorkManager.refreshOAuthWorkManager(this)
     }
 
     private fun moveToSpecificTab(pos: Int)
@@ -156,12 +155,6 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
     }
 
     fun getAlertMessageBar() = binding.alertMessageBar
-
-    private fun initUI()
-    {
-        setViewPager()
-        setTabLayout()
-    }
 
     private fun setTabLayout()
     {
@@ -252,7 +245,8 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 
     private fun setViewPager()
     {
-        val addOnPageListener = object: ViewPager.OnPageChangeListener {
+        val addOnPageListener = object: ViewPager.OnPageChangeListener
+        {
             override fun onPageScrollStateChanged(p0: Int)
             {
             }
@@ -286,12 +280,9 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
 
     private fun setTabIcons(v: TabLayout)
     {
-        setTabIcon(v, NavigatorConst.REGISTER_TAB, R.drawable.ic_activate_register, "등록",
-                   R.color.COLOR_MAIN_700)
-        setTabIcon(v, NavigatorConst.INQUIRY_TAB, R.drawable.ic_inactivate_inquiry, "조회",
-                   R.color.COLOR_GRAY_400)
-        setTabIcon(v, NavigatorConst.MY_MENU_TAB, R.drawable.ic_inactivate_menu, "메뉴",
-                   R.color.COLOR_GRAY_400)
+        setTabIcon(v, NavigatorConst.REGISTER_TAB, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
+        setTabIcon(v, NavigatorConst.INQUIRY_TAB, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
+        setTabIcon(v, NavigatorConst.MY_MENU_TAB, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
     }
 
     fun onCompleteRegister()
@@ -302,4 +293,16 @@ class MainView: BasicView<MainViewBinding>(R.layout.main_view)
         }
 
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
+    {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(resultCode == Activity.RESULT_CANCELED)
+        {
+            finishAffinity()
+            return
+        }
+    }
+
 }

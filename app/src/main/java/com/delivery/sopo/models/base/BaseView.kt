@@ -20,8 +20,9 @@ abstract class BaseView<T: ViewDataBinding, R: ViewModel>: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = bindView(this)
 
-        initUI()
         receivedData(intent = intent)
+        initUI()
+        setAfterSetUI()
         setObserve()
     }
 
@@ -34,7 +35,23 @@ abstract class BaseView<T: ViewDataBinding, R: ViewModel>: AppCompatActivity() {
         }
     }
 
-    abstract fun initUI()
+    /**
+     * 데이터 전달
+     */
     abstract fun receivedData(intent: Intent)
+
+    /**
+     * 초기 화면 세팅
+     */
+    abstract fun initUI()
+
+    /**
+     * UI 세팅 이후
+     */
+    abstract fun setAfterSetUI()
+
+    /**
+     * Observe 로직
+     */
     abstract fun setObserve()
 }

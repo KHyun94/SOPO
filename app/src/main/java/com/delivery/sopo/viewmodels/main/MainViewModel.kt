@@ -22,9 +22,9 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
     val mainTabVisibility = MutableLiveData<Int>()
 
     // 앱 패스워드 등록 여부
-    val isSetAppPassword: LiveData<AppPasswordEntity?>
+    /*val isSetAppPassword: LiveData<AppPasswordEntity?>
         get() = appPasswordRepo.getByLiveData()
-
+*/
     // 유효성 및 통신 등의 결과 객체
     private var _result = MutableLiveData<ResponseResult<*>>()
     val result: LiveData<ResponseResult<*>>

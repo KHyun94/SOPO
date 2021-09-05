@@ -21,22 +21,14 @@ data class AppPasswordEntity(
         typeAffinity = ColumnInfo.TEXT
     )
     var userId: String,
-
     @ColumnInfo(
         name = "APP_PASSWORD",
         typeAffinity = ColumnInfo.TEXT
     )
     var appPassword: String,
-
-    @ColumnInfo(
-        name = "ALG",
-        typeAffinity = ColumnInfo.TEXT
-    )
-    var alg: String = "SHA256",
-
     @ColumnInfo(
         name = "AUDIT_DTE",
         typeAffinity = ColumnInfo.TEXT
     )
-        var auditDte: String = TimeUtil.getDateTime()
+    val auditDte: String
 )

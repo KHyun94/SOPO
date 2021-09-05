@@ -1,42 +1,40 @@
 package com.delivery.sopo.data.repository.local.app_password
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
 import com.delivery.sopo.data.repository.database.room.AppDatabase
+import com.delivery.sopo.data.repository.database.room.dto.AppPasswordDTO
 import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
+import com.delivery.sopo.models.mapper.AppPasswordMapper
 import com.delivery.sopo.util.TimeUtil
 
 class AppPasswordRepository(private val appDatabase: AppDatabase): AppPasswordDataSource
 {
-    override fun get(): AppPasswordEntity?
+    override fun get(): AppPasswordDTO?
     {
-        return appDatabase.securityDao().get()
+        return appDatabase.securityDao().get()?.let { AppPasswordMapper.entityToDto(it) }
     }
-
-    fun getByLiveData(): LiveData<AppPasswordEntity?> = appDatabase.securityDao().getByLiveData()
 
     override fun getCntOfAppPasswordLiveData(): LiveData<Int>
     {
         return appDatabase.securityDao().getCntOfAppPasswordLiveData()
     }
 
-    override fun insert(entity: AppPasswordEntity)
+    override fun insert(dto: AppPasswordDTO)
     {
-        entity.apply {
-            auditDte = TimeUtil.getDateTime()
-        }
+        val entity = AppPasswordMapper.dtoToEntity(dto.apply { auditDte = TimeUtil.getDateTime() })
         return appDatabase.securityDao().insert(entity)
     }
 
-    override fun update(entity: AppPasswordEntity)
+    override fun update(dto: AppPasswordDTO)
     {
-        entity.apply {
-            auditDte = TimeUtil.getDateTime()
-        }
+        val entity = AppPasswordMapper.dtoToEntity(dto.apply { auditDte = TimeUtil.getDateTime() })
         return appDatabase.securityDao().update(entity)
     }
 
-    override fun delete(entity: AppPasswordEntity)
+    override fun delete(dto: AppPasswordDTO)
     {
+        val entity = AppPasswordMapper.dtoToEntity(dto.apply { auditDte = TimeUtil.getDateTime() })
         return appDatabase.securityDao().delete(entity)
     }
 
