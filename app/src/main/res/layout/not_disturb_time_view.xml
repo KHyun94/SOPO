@@ -136,8 +136,7 @@
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <view
-            class="com.delivery.sopo.views.widget.clockpieview.ClockPieView"
+        <com.delivery.sopo.views.widget.clockpieview.ClockPieView
             android:id="@+id/pie_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

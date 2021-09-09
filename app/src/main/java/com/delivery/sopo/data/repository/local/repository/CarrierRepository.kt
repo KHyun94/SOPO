@@ -3,7 +3,6 @@ package com.delivery.sopo.data.repository.local.repository
 import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.data.repository.database.room.entity.CarrierEntity
 import com.delivery.sopo.models.CarrierDTO
-import com.delivery.sopo.data.repository.local.datasource.CarrierDataSource
 import com.delivery.sopo.models.mapper.CarrierMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

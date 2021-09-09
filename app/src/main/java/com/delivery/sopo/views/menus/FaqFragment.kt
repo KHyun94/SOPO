@@ -12,13 +12,11 @@ import com.delivery.sopo.viewmodels.menus.FaqViewModel
 import com.delivery.sopo.views.adapter.FaqExpandableAdapter
 import com.delivery.sopo.views.dialog.OtherFaqDialog
 import com.delivery.sopo.views.main.MainView
-import kotlinx.android.synthetic.main.fragment_faq.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FaqFragment: Fragment(){
 
     private val faqVM: FaqViewModel by viewModel()
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
     private lateinit var binding:FragmentFaqBinding
     private lateinit var parentView: MainView
 
@@ -46,8 +44,8 @@ class FaqFragment: Fragment(){
     }
 
     private fun setListener(){
-        binding.root.tv_comment.setOnClickListener {
-            OtherFaqDialog(act = requireActivity()).show(requireActivity().supportFragmentManager, "OtherFaqDialog")
+        binding.tvComment.setOnClickListener {
+            OtherFaqDialog().show(requireActivity().supportFragmentManager, "OtherFaqDialog")
         }
     }
 
@@ -68,7 +66,7 @@ class FaqFragment: Fragment(){
         data.add(faq2)
 
         val faqExpandableAdapter = FaqExpandableAdapter(requireContext() , data)
-        binding.root.expand_faq.setAdapter(faqExpandableAdapter)
+        binding.expandFaq.setAdapter(faqExpandableAdapter)
     }
     companion object{
         fun newInstance() = AppInfoFragment()

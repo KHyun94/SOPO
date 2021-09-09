@@ -17,7 +17,6 @@ import com.delivery.sopo.views.signup.RegisterNicknameView
 import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
 import com.kakao.util.exception.KakaoException
-import kotlinx.android.synthetic.main.login_select_view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_view)
@@ -63,7 +62,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                 }
                 NavigatorConst.TO_KAKAO_LOGIN ->
                 {
-                    btn_kakao_login.performClick()
+                    binding.btnKakaoLogin.performClick()
 
                     if (Session.getCurrentSession() != null) Session.getCurrentSession().removeCallback(sessionCallback)
 

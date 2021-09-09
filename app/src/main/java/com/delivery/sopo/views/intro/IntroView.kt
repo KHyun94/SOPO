@@ -1,13 +1,11 @@
 package com.delivery.sopo.views.intro
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 import android.os.Bundle
 import android.view.View
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
@@ -16,13 +14,8 @@ import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.IntroViewBinding
-import com.delivery.sopo.extensions.launchActivityWithAllClear
-import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.IntroViewModel
 import com.delivery.sopo.views.adapter.IntroPageAdapter
-import com.delivery.sopo.views.login.LoginSelectView
-import com.delivery.sopo.views.main.MainView
-import kotlinx.android.synthetic.main.intro_view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
@@ -59,7 +52,7 @@ class IntroView: AppCompatActivity()
         val introPageAdapter = IntroPageAdapter(this)
         binding.viewPager.adapter = introPageAdapter
 
-        binding.indicator.createDotPanel(cnt = viewPager.adapter?.count?:0,
+        binding.indicator.createDotPanel(cnt = binding.viewPager.adapter?.count?:0,
                                          defaultCircle = R.drawable.indicator_default_dot,
                                          selectCircle = R.drawable.indicator_select_dot,
                                          pos = 0)
@@ -91,7 +84,7 @@ class IntroView: AppCompatActivity()
 
     fun setViewEvent(){
 
-        viewPager.addOnPageChangeListener(object: ViewPager.OnPageChangeListener
+        binding.viewPager.addOnPageChangeListener(object: ViewPager.OnPageChangeListener
                                           {
                                               override fun onPageScrollStateChanged(state: Int) {
 
@@ -111,7 +104,7 @@ class IntroView: AppCompatActivity()
 
         binding.ivPreviousPage.setOnClickListener {
             if(numOfPage == 0) return@setOnClickListener
-            viewPager.currentItem = --numOfPage
+            binding.viewPager.currentItem = --numOfPage
         }
 
         binding.ivNextPage.setOnClickListener {
@@ -119,7 +112,7 @@ class IntroView: AppCompatActivity()
 
 
 
-            viewPager.currentItem = ++numOfPage
+            binding.viewPager.currentItem = ++numOfPage
         }
     }
 

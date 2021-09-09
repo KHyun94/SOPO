@@ -11,8 +11,8 @@ import android.view.ViewGroup
 import android.view.Window
 import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
+import com.delivery.sopo.databinding.GeneralDialogBinding
 import com.delivery.sopo.util.SizeUtil
-import kotlinx.android.synthetic.main.general_dialog.view.*
 
 typealias OnAgreeClickListener = (agree: GeneralDialog) -> Unit
 
@@ -27,7 +27,7 @@ class GeneralDialog : DialogFragment
     private var onRightClickListener: Pair<String, OnAgreeClickListener?>? = null
     private var onLeftClickListener: Pair<String, OnAgreeClickListener?>? = null
 
-    private lateinit var layoutView: View
+    private lateinit var binding: GeneralDialogBinding
 
     constructor(
         act: Activity,
@@ -66,13 +66,13 @@ class GeneralDialog : DialogFragment
         savedInstanceState: Bundle?
     ): View
     {
-        layoutView = inflater.inflate(R.layout.general_dialog, container, false)
+        binding = GeneralDialogBinding.inflate(inflater, container, false)
 
         setSetting()
         setUI()
         setClickEvent()
 
-        return layoutView
+        return binding.root
     }
 
     override fun onResume()
@@ -86,30 +86,30 @@ class GeneralDialog : DialogFragment
 
     private fun setUI()
     {
-        layoutView.tv_title.text = title
-        layoutView.tv_simple_msg.text = msg
+        binding.tvTitle.text = title
+        binding.tvSimpleMsg.text = msg
 
         if (detailMsg != null)
         {
-            layoutView.tv_detail_msg.text = detailMsg
+            binding.tvDetailMsg.text = detailMsg
         }
         else
         {
-            layoutView.tv_expand_layout.visibility = View.GONE
-            layoutView.iv_arrow.visibility = View.GONE
+            binding.tvExpandLayout.visibility = View.GONE
+            binding.ivArrow.visibility = View.GONE
         }
 
         if (onRightClickListener != null)
-            layoutView.btn_right.text = onRightClickListener?.first
+            binding.btnRight.text = onRightClickListener?.first
         else
-            layoutView.btn_right.text = "네"
+            binding.btnRight.text = "네"
 
         if (onLeftClickListener != null)
-            layoutView.btn_left.text = onLeftClickListener?.first
+            binding.btnLeft.text = onLeftClickListener?.first
         else
         {
-//            layoutView.btn_left.text = "아니오"
-            layoutView.btn_left.visibility = View.GONE
+//            binding.btnLeft.text = "아니오"
+            binding.btnLeft.visibility = View.GONE
         }
 
     }
@@ -118,21 +118,21 @@ class GeneralDialog : DialogFragment
     {
 
         // 자세히 보기
-        layoutView.tv_expand_layout.setOnClickListener {
+        binding.tvExpandLayout.setOnClickListener {
 
-            if (layoutView.layout_detail.visibility == View.VISIBLE)
+            if (binding.layoutDetail.visibility == View.VISIBLE)
             {
-                layoutView.layout_detail.visibility = View.GONE
-                layoutView.iv_arrow.setBackgroundResource(R.drawable.ic_down_arrow)
+                binding.layoutDetail.visibility = View.GONE
+                binding.ivArrow.setBackgroundResource(R.drawable.ic_down_arrow)
             }
             else
             {
-                layoutView.layout_detail.visibility = View.VISIBLE
-                layoutView.iv_arrow.setBackgroundResource(R.drawable.ic_up_arrow)
+                binding.layoutDetail.visibility = View.VISIBLE
+                binding.ivArrow.setBackgroundResource(R.drawable.ic_up_arrow)
             }
         }
 
-        layoutView.btn_right.setOnClickListener {
+        binding.btnRight.setOnClickListener {
             if (onRightClickListener?.second == null)
             {
                 dismiss()
@@ -143,7 +143,7 @@ class GeneralDialog : DialogFragment
             }
         }
 
-        layoutView.btn_left.setOnClickListener {
+        binding.btnLeft.setOnClickListener {
             if (onLeftClickListener?.second == null)
             {
                 dismiss()

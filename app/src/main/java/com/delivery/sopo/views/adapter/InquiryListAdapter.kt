@@ -18,10 +18,7 @@ import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.util.SopoLog
-import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
-import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
 import org.koin.core.KoinComponent
 
 class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData<Int>, private var list: MutableList<InquiryListItem> = mutableListOf(), private val itemTypeEnum: InquiryItemTypeEnum): RecyclerView.Adapter<RecyclerView.ViewHolder>(), KoinComponent
@@ -113,7 +110,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                 }
 
                 // v: View , isRemoveable : Boolean, item : InquiryListItem
-                holder.ongoingBinding.root.cv_ongoing_parent.setOnClickListener {
+                holder.ongoingBinding.cvOngoingParent.setOnClickListener {
                     if (isRemovable && !inquiryListItem.isSelected)
                     {
                         inquiryListItem.isSelected = true
@@ -139,7 +136,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                     }
                 }
 
-                holder.itemView.cv_ongoing_parent.setOnLongClickListener {
+                holder.ongoingBinding.cvOngoingParent.setOnLongClickListener {
                     if (!isRemovable && mClickListener != null)
                     {
                         mClickListener!!.onItemLongClicked(
@@ -162,7 +159,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                 {
                     completeViewInitialize(holder.completeBinding)
                 }
-                holder.completeBinding.root.cv_complete_parent.setOnClickListener {
+                holder.completeBinding.cvCompleteParent.setOnClickListener {
 
                     SopoLog.d("isSelect : ${inquiryListItem.isSelected} && isRemovable : $isRemovable")
 
@@ -191,7 +188,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
                     }
                 }
 
-                holder.itemView.cv_complete_parent.setOnLongClickListener {
+                holder.completeBinding.cvCompleteParent.setOnLongClickListener {
                     if (!isRemovable && mClickListener != null)
                     {
                         mClickListener!!.onItemLongClicked(
@@ -241,42 +238,42 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
 
     private fun ongoingViewSelected(binding: InquiryListOngoingItemBinding)
     {
-        binding.root.constraint_delivery_status_front.visibility = GONE
-        binding.root.constraint_delivery_status_back.visibility = GONE
-        binding.root.constraint_delivery_status_front_delete.visibility = VISIBLE
-        binding.root.constraint_delivery_status_back_delete.visibility = VISIBLE
-        binding.root.linear_parent_list_item_register.background =
+        binding.constraintDeliveryStatusFront.visibility = GONE
+        binding.constraintDeliveryStatusBack.visibility = GONE
+        binding.constraintDeliveryStatusFrontDelete.visibility = VISIBLE
+        binding.constraintDeliveryStatusBackDelete.visibility = VISIBLE
+        binding.linearParentListItemRegister.background =
             ContextCompat.getDrawable(binding.root.context, R.drawable.border_red)
     }
 
     private fun ongoingViewInitialize(binding: InquiryListOngoingItemBinding)
     {
-        binding.root.constraint_delivery_status_front.visibility = VISIBLE
-        binding.root.constraint_delivery_status_back.visibility = VISIBLE
-        binding.root.constraint_delivery_status_front_delete.visibility = GONE
-        binding.root.constraint_delivery_status_back_delete.visibility = GONE
-        binding.root.linear_parent_list_item_register.background = null
+        binding.constraintDeliveryStatusFront.visibility = VISIBLE
+        binding.constraintDeliveryStatusBack.visibility = VISIBLE
+        binding.constraintDeliveryStatusFrontDelete.visibility = GONE
+        binding.constraintDeliveryStatusBackDelete.visibility = GONE
+        binding.linearParentListItemRegister.background = null
     }
 
     private fun completeViewSelected(binding: InquiryListCompleteItemBinding)
     {
-        binding.root.constraint_date_complete.visibility = GONE
-        binding.root.constraint_item_part_complete.visibility = GONE
-        binding.root.v_dividerLine.visibility = GONE
-        binding.root.constraint_delivery_status_front_complete.visibility = VISIBLE
-        binding.root.constraint_item_part_delete_complete.visibility = VISIBLE
-        binding.root.linear_item_complete.background =
+        binding.constraintDateComplete.visibility = GONE
+        binding.constraintItemPartComplete.visibility = GONE
+        binding.vDividerLine.visibility = GONE
+        binding.constraintDeliveryStatusFrontComplete.visibility = VISIBLE
+        binding.constraintItemPartDeleteComplete.visibility = VISIBLE
+        binding.linearItemComplete.background =
             ContextCompat.getDrawable(binding.root.context, R.drawable.border_red)
     }
 
     private fun completeViewInitialize(binding: InquiryListCompleteItemBinding)
     {
-        binding.root.constraint_item_part_complete.visibility = VISIBLE
-        binding.root.constraint_date_complete.visibility = VISIBLE
-        binding.root.v_dividerLine.visibility = VISIBLE
-        binding.root.constraint_item_part_delete_complete.visibility = GONE
-        binding.root.constraint_delivery_status_front_complete.visibility = GONE
-        binding.root.linear_item_complete.background = null
+        binding.constraintItemPartComplete.visibility = VISIBLE
+        binding.constraintDateComplete.visibility = VISIBLE
+        binding.vDividerLine.visibility = VISIBLE
+        binding.constraintItemPartDeleteComplete.visibility = GONE
+        binding.constraintDeliveryStatusFrontComplete.visibility = GONE
+        binding.linearItemComplete.background = null
     }
 
     fun setRemovable(flag: Boolean)

@@ -31,11 +31,9 @@ import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
-import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.main.MainView
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
-import kotlinx.android.synthetic.main.parcel_full_detail_item.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -101,7 +99,7 @@ class ParcelDetailView: Fragment()
                         _slideOffset < 0.7 ->
                         {
                             binding.layoutDrawer.setBackgroundResource(R.drawable.border_rounded_15dp)
-                            binding.includeFull.root.layout_hedaer.visibility = View.INVISIBLE
+                            binding.includeFull.layoutHedaer.visibility = View.INVISIBLE
                             binding.includeSemi.root.visibility = View.GONE
                             binding.includeFull.root.visibility = View.VISIBLE
                             slideViewStatus = 1
@@ -110,7 +108,7 @@ class ParcelDetailView: Fragment()
                         {
                             // 테두리
                             binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
-                            binding.includeFull.root.layout_hedaer.visibility = View.VISIBLE
+                            binding.includeFull.layoutHedaer.visibility = View.VISIBLE
                             binding.includeSemi.root.visibility = View.GONE
                             binding.includeFull.root.visibility = View.VISIBLE
                             slideViewStatus = 1
@@ -150,8 +148,8 @@ class ParcelDetailView: Fragment()
     private fun pasteWaybillNumIntoClipboard(tv: TextView)
     {
         val copyText = tv.text.toString()
-        ClipboardUtil.copyTextToClipboard(activity!!, copyText)
-        Toast.makeText(activity!!, "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
+        ClipboardUtil.copyTextToClipboard(requireContext(), copyText)
+        Toast.makeText(requireContext(), "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
     }
 
     private fun setViewSetting(){
@@ -179,7 +177,7 @@ class ParcelDetailView: Fragment()
 
     private fun setObserve()
     {
-        parentView.currentPage.observe(this, Observer {
+        parentView.currentPage.observe(requireActivity(), Observer {
             if(it != null && it == TabCode.secondTab)
             {
                 callback = object: OnBackPressedCallback(true)
@@ -198,18 +196,18 @@ class ParcelDetailView: Fragment()
                         }
                     }
                 }
-                requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
+                requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), callback!!)
             }
         })
 
-        vm.parcelId.observe(this, Observer {parcelId ->
+        vm.parcelId.observe(requireActivity(), Observer {parcelId ->
             CoroutineScope(Dispatchers.Main).launch {
                 vm.updateUnidentifiedStatusToZero(parcelId = parcelId)
                 vm.requestParcelDetailData(parcelId = parcelId)
             }
         })
 
-        vm.result.observe(this, Observer { res ->
+        vm.result.observe(requireActivity(), Observer { res ->
             if(res.result) return@Observer
 
 //            when(res.code){
@@ -218,7 +216,7 @@ class ParcelDetailView: Fragment()
 
         })
 
-        vm.statusList.observe(this, Observer { list ->
+        vm.statusList.observe(requireActivity(), Observer { list ->
             if(list == null) return@Observer
 
             setIndicatorView(topView = binding.includeSemi.layoutAddView, bottomView = null,
@@ -231,7 +229,7 @@ class ParcelDetailView: Fragment()
                              baseLayout = binding.includeFull.layoutDetailContent, list = list)
         })
 
-        vm.isProgress.observe(this, Observer { isProgress ->
+        vm.isProgress.observe(requireActivity(), Observer { isProgress ->
             if(isProgress == null) return@Observer
 
             if(progressBar == null)
@@ -245,7 +243,7 @@ class ParcelDetailView: Fragment()
 
         })
 
-        vm.updateType.observe(this, Observer { type ->
+        vm.updateType.observe(requireActivity(), Observer { type ->
 
             val (message, clickMessage, clickListener) = when(type)
             {
@@ -281,7 +279,7 @@ class ParcelDetailView: Fragment()
 
         })
 
-        vm.isBack.observe(this, Observer {
+        vm.isBack.observe(requireActivity(), Observer {
 
             if(it == null) return@Observer
 
@@ -292,7 +290,7 @@ class ParcelDetailView: Fragment()
             }
         })
 
-        vm.isDragOut.observe(this, Observer {
+        vm.isDragOut.observe(requireActivity(), Observer {
             if(it != null)
             {
                 if(it)
@@ -308,13 +306,13 @@ class ParcelDetailView: Fragment()
     private fun setIndicatorView(topView: View?, bottomView: View?, baseLayout: LinearLayout, list: List<SelectItem<String>>)
     {
         val inflater =
-            activity!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
         val linearParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                                                      LinearLayout.LayoutParams.WRAP_CONTENT)
 
-        linearParams.leftMargin = SizeUtil.changeDpToPx(activity!!, 12.0f)
-        linearParams.rightMargin = SizeUtil.changeDpToPx(activity!!, 12.0f)
+        linearParams.leftMargin = SizeUtil.changeDpToPx(requireActivity(), 12.0f)
+        linearParams.rightMargin = SizeUtil.changeDpToPx(requireActivity(), 12.0f)
 
         // 기존에 있는 자식 뷰를 초기화
         if(baseLayout.childCount > 0) baseLayout.removeAllViews()
@@ -333,9 +331,9 @@ class ParcelDetailView: Fragment()
             // 배송 상태 현재 step의 image view의 세팅을 변경
             if(item.isSelect)
             {
-                val ivParam = LinearLayout.LayoutParams(SizeUtil.changeDpToPx(activity!!, 30.0f),
-                                                        SizeUtil.changeDpToPx(activity!!, 30.0f))
-                ivParam.bottomMargin = SizeUtil.changeDpToPx(activity!!, 3.0f)
+                val ivParam = LinearLayout.LayoutParams(SizeUtil.changeDpToPx(requireActivity(), 30.0f),
+                                                        SizeUtil.changeDpToPx(requireActivity(), 30.0f))
+                ivParam.bottomMargin = SizeUtil.changeDpToPx(requireActivity(), 3.0f)
                 itemBinding.ivIndicator.layoutParams = ivParam
 
                 val typeface =
@@ -359,7 +357,7 @@ class ParcelDetailView: Fragment()
                 constraintParams.topToBottom = topView.id
                 constraintParams.leftToRight = ConstraintLayout.LayoutParams.PARENT_ID
                 constraintParams.rightToLeft = ConstraintLayout.LayoutParams.PARENT_ID
-                constraintParams.topMargin = SizeUtil.changeDpToPx(activity!!, 34.0f)
+                constraintParams.topMargin = SizeUtil.changeDpToPx(requireActivity(), 34.0f)
 
                 baseLayout.layoutParams = constraintParams
             }
@@ -372,16 +370,16 @@ class ParcelDetailView: Fragment()
                 constraintParams.topToBottom = topView.id
                 constraintParams.leftToRight = ConstraintLayout.LayoutParams.PARENT_ID
                 constraintParams.rightToLeft = ConstraintLayout.LayoutParams.PARENT_ID
-                constraintParams.topMargin = SizeUtil.changeDpToPx(activity!!, 27.0f)
+                constraintParams.topMargin = SizeUtil.changeDpToPx(requireActivity(), 27.0f)
 
                 baseLayout.layoutParams = constraintParams
 
                 val constraintParams2 =
                     ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT,
-                                                  SizeUtil.changeDpToPx(activity!!, 8.0f))
+                                                  SizeUtil.changeDpToPx(requireActivity(), 8.0f))
 
                 constraintParams2.topToBottom = baseLayout.id
-                constraintParams2.topMargin = SizeUtil.changeDpToPx(activity!!, 40.0f)
+                constraintParams2.topMargin = SizeUtil.changeDpToPx(requireActivity(), 40.0f)
 
                 bottomView!!.layoutParams = constraintParams2
             }

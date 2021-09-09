@@ -7,11 +7,9 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.databinding.NotDisturbTimeViewBinding
-import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.viewmodels.menus.NotDisturbTimeViewModel
 import com.delivery.sopo.views.dialog.NotDisturbTimeDialog
 import com.delivery.sopo.views.widget.clockpieview.ClockPieHelper
-import kotlinx.android.synthetic.main.not_disturb_time_view.view.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
@@ -87,7 +85,7 @@ class NotDisturbTimeView : AppCompatActivity()
         if(clockPieHelperArrayList.size > 0) clockPieHelperArrayList[0] = ClockPieHelper(startHour, startMin, endHour, endMin)
         else clockPieHelperArrayList.add(ClockPieHelper(startHour, startMin, endHour, endMin))
 
-        binding.root.pie_view.setDate(clockPieHelperArrayList)
+        binding.pieView.setDate(clockPieHelperArrayList)
     }
 
 

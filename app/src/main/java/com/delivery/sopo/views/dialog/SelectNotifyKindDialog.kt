@@ -7,30 +7,26 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
-import kotlinx.android.synthetic.main.select_notify_kind_dialog.view.*
+import com.delivery.sopo.databinding.SelectNotifyKindDialogBinding
 
-
-class SelectNotifyKindDialog(act: Activity) : DialogFragment()
+class SelectNotifyKindDialog() : DialogFragment()
 {
-
-    private var parentActivity: Activity = act
-    private lateinit var layoutView: View
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
+    private lateinit var binding: SelectNotifyKindDialogBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        layoutView = inflater.inflate(R.layout.select_notify_kind_dialog, container, false)
+        binding = SelectNotifyKindDialogBinding.inflate(inflater)
         setSetting()
         setClickEvent()
 
-        return layoutView
+        return binding.root
     }
 
     private fun setClickEvent(){
-        layoutView.tv_close.setOnClickListener {
+        binding.tvClose.setOnClickListener {
             dismiss()
         }
     }

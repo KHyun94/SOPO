@@ -1,132 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/border_all_rounded"
-    android:orientation="vertical">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="4dp"
-        android:orientation="horizontal">
-
-        <!--    TODO 경고 아이콘 받아야함    -->
-        <ImageView
-            android:id="@+id/iv_title_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"/>
-
-        <TextView
-            style="@style/H2"
-            android:id="@+id/tv_dialog_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="left"
-            android:fontFamily="@font/spoqa_han_sans_neo_bold"
-            android:text="정말로 삭제하시겠습니까?"
-            android:textColor="@color/MAIN_BLACK"
-            android:letterSpacing="-0.02"
-            android:textSize="20sp"
-            android:includeFontPadding="false" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/layout_sub_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginBottom="4dp"
-        android:visibility="gone">
-
-        <TextView
-            style="@style/H4"
-            android:id="@+id/tv_sub_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="고객님 정보가 삭제되며 복구가 불가능합니다."
-            android:fontFamily="@font/spoqa_han_sans_neo_bold"
-            android:textColor="@color/COLOR_MAIN_700"/>
-
-    </LinearLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:background="@drawable/border_all_rounded"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginRight="22dp"
-            android:layout_marginLeft="22dp"
-            android:layout_marginBottom="15dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="4dp"
+            android:orientation="horizontal">
+
+            <!--    TODO 경고 아이콘 받아야함    -->
+            <ImageView
+                android:id="@+id/iv_title_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
 
             <TextView
-                android:id="@+id/tv_content"
+                style="@style/H2"
+                android:id="@+id/tv_dialog_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:fontFamily="@font/spoqa_han_sans_neo_bold"
+                android:text="정말로 삭제하시겠습니까?"
+                android:textColor="@color/MAIN_BLACK"
+                android:letterSpacing="-0.02"
+                android:textSize="20sp"
+                android:includeFontPadding="false" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_sub_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginBottom="4dp"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/H4"
+                android:id="@+id/tv_sub_title"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:fontFamily="@font/spoqa_han_sans_neo_regular"
-                android:text="* 배송이 완료된 내역은 [배송완료]탭에 보관 처리됩니다.\n* 삭제하신 내역은 복구되지 않습니다."
-                android:textSize="13sp"
-                android:textColor="@color/COLOR_GRAY_600"
-                android:letterSpacing="0.04" />
+                android:layout_height="wrap_content"
+                android:text="고객님 정보가 삭제되며 복구가 불가능합니다."
+                android:fontFamily="@font/spoqa_han_sans_neo_bold"
+                android:textColor="@color/COLOR_MAIN_700"/>
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="22dp"
+                android:layout_marginLeft="22dp"
+                android:layout_marginBottom="15dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/tv_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/spoqa_han_sans_neo_regular"
+                    android:text="* 배송이 완료된 내역은 [배송완료]탭에 보관 처리됩니다.\n* 삭제하신 내역은 복구되지 않습니다."
+                    android:textSize="13sp"
+                    android:textColor="@color/COLOR_GRAY_600"
+                    android:letterSpacing="0.04" />
+
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/tv_delete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:layout_marginRight="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:background="@drawable/border_all_rounded_main_blue"
+                android:padding="10dp"
+                android:text="삭제하기"
+                android:textSize="16sp"
+                android:textColor="@color/MAIN_WHITE"
+                android:textStyle=""
+                android:fontFamily="@font/spoqa_han_sans_neo_bold"
+                />
+
+            <TextView
+                android:id="@+id/tv_cancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="10dp"
+                android:gravity="center"
+                android:background="@drawable/border_15dp_blue_rounder"
+                android:padding="10dp"
+                android:text="취소"
+                android:textSize="16sp"
+                android:textColor="@color/COLOR_MAIN_500"
+                android:textStyle=""
+                android:fontFamily="@font/spoqa_han_sans_neo_bold" />
 
 
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
-        android:weightSum="1">
-
-        <TextView
-            android:id="@+id/tv_delete"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:layout_marginRight="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"
-            android:background="@drawable/border_all_rounded_main_blue"
-            android:padding="10dp"
-            android:text="삭제하기"
-            android:textSize="16sp"
-            android:textColor="@color/MAIN_WHITE"
-            android:textStyle=""
-            android:fontFamily="@font/spoqa_han_sans_neo_bold"
-            />
-
-        <TextView
-            android:id="@+id/tv_cancel"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="10dp"
-            android:gravity="center"
-            android:background="@drawable/border_15dp_blue_rounder"
-            android:padding="10dp"
-            android:text="취소"
-            android:textSize="16sp"
-            android:textColor="@color/COLOR_MAIN_500"
-            android:textStyle=""
-            android:fontFamily="@font/spoqa_han_sans_neo_bold" />
-
-
     </LinearLayout>
 
-</LinearLayout>
+
+</layout>

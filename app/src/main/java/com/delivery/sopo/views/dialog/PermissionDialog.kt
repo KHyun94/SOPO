@@ -12,21 +12,18 @@ import android.view.Window
 import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
+import com.delivery.sopo.databinding.PermissionDialogBinding
 import com.delivery.sopo.util.SizeUtil
-import kotlinx.android.synthetic.main.permission_dialog.view.*
-
-//typealias OnClickListener = (agree: PermissionDialog) -> Unit
 
 class PermissionDialog : DialogFragment
 {
+    private lateinit var binding: PermissionDialogBinding
 
     private var parentActivity: Activity
 
     private var title: String? = null
 
     private var onOkClickListener: ((agree: PermissionDialog) -> Unit)? = null
-
-    private lateinit var layoutView: View
 
     private lateinit var permissionLayout: LinearLayout
 
@@ -44,17 +41,17 @@ class PermissionDialog : DialogFragment
         savedInstanceState: Bundle?
     ): View?
     {
-        layoutView = inflater.inflate(R.layout.permission_dialog, container, false)
+        binding = PermissionDialogBinding.inflate(inflater)
 
         setSetting()
         setClickEvent()
 
-        return layoutView
+        return binding.root
     }
 
     private fun setClickEvent()
     {
-        layoutView.btn_ok.setOnClickListener {
+        binding.btnOk.setOnClickListener {
             if (onOkClickListener == null)
             {
                 dismiss()

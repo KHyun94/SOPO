@@ -3,6 +3,7 @@ package com.delivery.sopo.views.widget
 import android.content.Context
 import android.os.Handler
 import android.util.AttributeSet
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -10,8 +11,8 @@ import android.widget.TextView
 import androidx.annotation.DrawableRes
 import com.bumptech.glide.Glide
 import com.delivery.sopo.R
+import com.delivery.sopo.databinding.AlertMessageBarBinding
 import com.delivery.sopo.util.OtherUtil
-import kotlinx.android.synthetic.main.alert_message_bar.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -52,12 +53,13 @@ class AlertMessageBar : RelativeLayout
 
     private fun initSetting(context: Context?, attrs: AttributeSet?)
     {
-        view = View.inflate(context, R.layout.alert_message_bar, this)
+        val binding: AlertMessageBarBinding = AlertMessageBarBinding.inflate(LayoutInflater.from(context))
+//        view = View.inflate(context, R.layout.alert_message_bar, this)
 
-        layoutMain = layout_main
-        ivMarker = iv_marker
-        tvContent = tv_content
-        tvButton = tv_button
+        layoutMain = binding.layoutMain
+        ivMarker = binding.ivMarker
+        tvContent = binding.tvContent
+        tvButton = binding.tvButton
 
         if (attrs != null)
         {

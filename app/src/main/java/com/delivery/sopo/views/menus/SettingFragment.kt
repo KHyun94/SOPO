@@ -12,9 +12,7 @@ import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentSettingBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
-import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.launchActivitiy
-import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.SettingViewModel
 import com.delivery.sopo.views.dialog.SelectNotifyKindDialog
@@ -57,7 +55,7 @@ class SettingFragment : Fragment()
 
     fun setObserver()
     {
-        vm.navigator.observe(this, Observer { navigator ->
+        vm.navigator.observe(requireActivity(), Observer { navigator ->
             SopoLog.d("navigator[$navigator]")
             when(navigator){
                 NavigatorConst.TO_NOT_DISTURB ->
@@ -67,7 +65,7 @@ class SettingFragment : Fragment()
                 }
                 NavigatorConst.TO_SET_NOTIFY_OPTION ->
                 {
-                    SelectNotifyKindDialog(parentView).show(
+                    SelectNotifyKindDialog().show(
                         requireActivity().supportFragmentManager,
                         "SelectNotifyKindDialog"
                     )
@@ -81,7 +79,7 @@ class SettingFragment : Fragment()
             }
         })
 
-        vm.showSetPassword.observe(this, Observer {
+        vm.showSetPassword.observe(requireActivity(), Observer {
             if (it)
             {
                 activity?.launchActivitiy<LockScreenView> {

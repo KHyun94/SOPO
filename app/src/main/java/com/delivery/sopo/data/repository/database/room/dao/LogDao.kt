@@ -9,7 +9,7 @@ import com.delivery.sopo.data.repository.database.room.entity.LogEntity
 interface LogDao
 {
     @Query("SELECT * FROM LOG")
-    suspend fun getAll():List<LogEntity>?
+    fun getAll():List<LogEntity>?
 
     @Insert
     fun insert(logEntity: LogEntity)

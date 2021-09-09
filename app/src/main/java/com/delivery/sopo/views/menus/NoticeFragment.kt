@@ -11,7 +11,6 @@ import com.delivery.sopo.models.menu.NoticeItem
 import com.delivery.sopo.viewmodels.menus.NoticeViewModel
 import com.delivery.sopo.views.adapter.NoticeExpandableAdapter
 import com.delivery.sopo.views.main.MainView
-import kotlinx.android.synthetic.main.fragment_notice.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class NoticeFragment : Fragment(){
@@ -63,7 +62,7 @@ class NoticeFragment : Fragment(){
         data.add(notice2)
 
         val noticeExpandableAdapter = NoticeExpandableAdapter(requireContext() , data)
-        expandablelist_notice.setAdapter(noticeExpandableAdapter)
+        binding.expandablelistNotice.setAdapter(noticeExpandableAdapter)
     }
 
     companion object{

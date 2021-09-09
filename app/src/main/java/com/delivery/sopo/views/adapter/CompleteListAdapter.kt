@@ -1,3 +1,4 @@
+/* TODO 삭제 여부?
 package com.delivery.sopo.views.adapter
 
 import android.util.Log
@@ -13,8 +14,6 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.InquiryListCompleteItemBinding
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.util.SopoLog
-import kotlinx.android.synthetic.main.inquiry_list_complete_item.view.*
-import kotlinx.android.synthetic.main.inquiry_list_ongoing_item.view.*
 import java.util.stream.Stream
 
 
@@ -177,4 +176,4 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
     fun getListSize(): Int{
         return list.size
     }
-}
+}*/

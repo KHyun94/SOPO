@@ -3,7 +3,10 @@ package com.delivery.sopo.views.main
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
@@ -11,36 +14,31 @@ import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.data.repository.database.room.dto.AppPasswordDTO
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.databinding.ItemMainTabBinding
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
-import com.delivery.sopo.extensions.launchActivity
-import com.delivery.sopo.extensions.launchActivityForResult
-import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.models.base.BaseView
+import com.delivery.sopo.models.base.ProcessInterface
 import com.delivery.sopo.services.PowerManager
-import com.delivery.sopo.services.workmanager.RefreshOAuthWorker
 import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.viewmodels.menus.MenuMainFrame
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.inquiry.InquiryMainFrame
 import com.delivery.sopo.views.menus.LockScreenView
 import com.delivery.sopo.views.menus.MenuFragment
-import com.delivery.sopo.views.registers.RegisterMainFrame
 import com.delivery.sopo.views.registers.InputParcelFragment
+import com.delivery.sopo.views.registers.RegisterMainFrame
+import com.google.android.material.tabs.TabItem
 import com.google.android.material.tabs.TabLayout
-import kotlinx.android.synthetic.main.tap_item.view.*
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -50,12 +48,20 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
     override val layoutRes: Int = R.layout.main_view
     override val vm: MainViewModel by viewModel()
 
+    override fun receivedData(intent: Intent)
+    {
+
+    }
+
     private val appPasswordRepo: AppPasswordRepository by inject()
 
     var currentPage = MutableLiveData<Int?>()
 
-    override fun receivedData(intent: Intent)
+    override fun onStart()
     {
+        super.onStart()
+
+
     }
 
     override fun initUI()
@@ -69,10 +75,9 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
         PowerManager.checkWhiteList(this)
         refreshTokenWithinWeek()
 
-        CoroutineScope(Dispatchers.Default).launch {
-            checkAppPassword()
-        }
+        checkAppPassword()
     }
+
 
     override fun setObserve()
     {
@@ -116,12 +121,20 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
     }
 
-    private suspend fun checkAppPassword() = withContext(Dispatchers.Default) {
-        appPasswordRepo.get()?.let {
-            Intent(this@MainView, LockScreenView::class.java).apply {
-                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
-            }.launchActivityForResult(this@MainView, 1001)
+    private fun checkAppPassword()
+    {
+        runBlocking(Dispatchers.Default) {  appPasswordRepo.get() } ?: return
+        val intent = Intent(this@MainView, LockScreenView::class.java).apply {
+            putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
         }
+
+        launchActivityResult(intent, ActivityResultCallback<ActivityResult> { result ->
+            if(result.resultCode == Activity.RESULT_CANCELED)
+            {
+                finishAffinity()
+                return@ActivityResultCallback
+            }
+        })
     }
 
     private fun refreshTokenWithinWeek()
@@ -167,6 +180,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
                                          {
                                              tab ?: return
 
+
                                              currentPage.postValue(tab.position)
 
                                              val res = when(tab.position)
@@ -177,8 +191,11 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
                                                  else -> NavigatorConst.REGISTER_TAB
                                              }
 
-                                             tab.customView?.iv_tab?.setBackgroundResource(res)
-                                             tab.customView?.tv_tab_name?.setTextColor(
+                                             val tabBinding =
+                                                 ItemMainTabBinding.bind(tab.customView ?: return)
+
+                                             tabBinding.ivTab.setBackgroundResource(res)
+                                             tabBinding.tvTabName.setTextColor(
                                                  ContextCompat.getColor(this@MainView,
                                                                         R.color.COLOR_MAIN_700))
                                          }
@@ -195,8 +212,10 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
                                                  else -> NavigatorConst.REGISTER_TAB
                                              }
 
-                                             tab.customView?.iv_tab?.setBackgroundResource(res)
-                                             tab.customView?.tv_tab_name?.setTextColor(
+                                             val tabBinding = ItemMainTabBinding.inflate(LayoutInflater.from(context))
+
+                                             tabBinding.ivTab.setBackgroundResource(res)
+                                             tabBinding.tvTabName.setTextColor(
                                                  ContextCompat.getColor(this@MainView,
                                                                         R.color.COLOR_GRAY_400))
                                          }
@@ -269,20 +288,24 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
                            @DrawableRes iconRes: Int, tabName: String, textColor: Int)
     {
         v.getTabAt(index)?.run {
-            setCustomView(R.layout.tap_item)
-            customView?.run {
-                iv_tab.setBackgroundResource(iconRes)
-                tv_tab_name.text = tabName
-                tv_tab_name.setTextColor(ContextCompat.getColor(this@MainView, textColor))
-            }
+            setCustomView(R.layout.item_main_tab)
+
+            val tabBinding = ItemMainTabBinding.bind(customView ?: return)
+
+            tabBinding.ivTab.setBackgroundResource(iconRes)
+            tabBinding.tvTabName.text = tabName
+            tabBinding.tvTabName.setTextColor(ContextCompat.getColor(this@MainView, textColor))
         }
     }
 
     private fun setTabIcons(v: TabLayout)
     {
-        setTabIcon(v, NavigatorConst.REGISTER_TAB, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
-        setTabIcon(v, NavigatorConst.INQUIRY_TAB, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
-        setTabIcon(v, NavigatorConst.MY_MENU_TAB, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
+        setTabIcon(v, NavigatorConst.REGISTER_TAB, R.drawable.ic_activate_register, "등록",
+                   R.color.COLOR_MAIN_700)
+        setTabIcon(v, NavigatorConst.INQUIRY_TAB, R.drawable.ic_inactivate_inquiry, "조회",
+                   R.color.COLOR_GRAY_400)
+        setTabIcon(v, NavigatorConst.MY_MENU_TAB, R.drawable.ic_inactivate_menu, "메뉴",
+                   R.color.COLOR_GRAY_400)
     }
 
     fun onCompleteRegister()
@@ -293,16 +316,4 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
         }
 
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
-    {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if(resultCode == Activity.RESULT_CANCELED)
-        {
-            finishAffinity()
-            return
-        }
-    }
-
 }

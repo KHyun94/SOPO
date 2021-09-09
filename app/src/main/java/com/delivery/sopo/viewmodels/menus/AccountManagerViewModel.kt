@@ -6,13 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.enums.DisplayEnum
-import com.delivery.sopo.enums.MenuEnum
-import com.delivery.sopo.models.ResponseResult
-import com.delivery.sopo.networks.call.UserCall
-import com.delivery.sopo.services.network_handler.NetworkResult
-import com.delivery.sopo.util.SopoLog
-import kotlinx.android.synthetic.main.fragment_account_manager.*
 
 class AccountManagerViewModel: ViewModel()
 {

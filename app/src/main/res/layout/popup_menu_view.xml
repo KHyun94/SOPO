@@ -1,36 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-
-    <androidx.cardview.widget.CardView
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:contentPadding="0dp"
-        app:cardCornerRadius="12dp"
-        app:cardPreventCornerOverlap="false"
-        app:cardUseCompatPadding="true"
-        app:cardElevation="6dp">
+        >
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerview_inquiry_popup_menu"
-            android:scrollbarTrackVertical="@drawable/scroll_track_gray"
-            android:scrollIndicators="right"
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:itemCount="3"
-            tools:listitem="@layout/inquiry_list_popup_window_item"
-            android:clipToPadding="false"
-            android:scrollbarStyle="insideOverlay"
-            android:scrollbars="vertical"
-            android:scrollbarThumbVertical="@drawable/scroll_main_blue"
-            android:scrollbarSize="6dp"
-            />
-    </androidx.cardview.widget.CardView>
+            app:contentPadding="0dp"
+            app:cardCornerRadius="12dp"
+            app:cardPreventCornerOverlap="false"
+            app:cardUseCompatPadding="true"
+            app:cardElevation="6dp">
 
-</LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerview_inquiry_popup_menu"
+                android:scrollbarTrackVertical="@drawable/scroll_track_gray"
+                android:scrollIndicators="right"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="3"
+                tools:listitem="@layout/inquiry_list_popup_window_item"
+                android:clipToPadding="false"
+                android:scrollbarStyle="insideOverlay"
+                android:scrollbars="vertical"
+                android:scrollbarThumbVertical="@drawable/scroll_main_blue"
+                android:scrollbarSize="6dp"
+                />
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+</layout>

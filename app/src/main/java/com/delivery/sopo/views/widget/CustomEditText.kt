@@ -1,3 +1,4 @@
+/*
 package com.delivery.sopo.views.widget
 
 import android.content.Context
@@ -290,4 +291,4 @@ class CustomEditText : LinearLayout
     {
         et_input_text.clearFocus()
     }
-}
+}*/

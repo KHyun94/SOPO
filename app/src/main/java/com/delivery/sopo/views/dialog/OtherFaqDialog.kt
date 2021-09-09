@@ -7,34 +7,27 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
-import kotlinx.android.synthetic.main.other_faq_dialog.view.*
+import com.delivery.sopo.databinding.OtherFaqDialogBinding
 
 
-class OtherFaqDialog : DialogFragment {
-
-    private var parentActivity: Activity
-    private lateinit var layoutView: View
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
-
-    constructor(act: Activity) : super() {
-        this.parentActivity = act
-    }
+class OtherFaqDialog(): DialogFragment()
+{
+    private lateinit var binding: OtherFaqDialogBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        layoutView = inflater.inflate(R.layout.other_faq_dialog, container, false)
+    ): View {
+        binding = OtherFaqDialogBinding.inflate(inflater)
         setSetting()
         setClickEvent()
 
-        return layoutView
+        return binding.root
     }
 
     private fun setClickEvent(){
-
-        layoutView.tv_close.setOnClickListener {
+        binding.tvClose.setOnClickListener {
             dismiss()
         }
     }

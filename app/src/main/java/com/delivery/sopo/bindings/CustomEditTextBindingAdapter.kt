@@ -1,3 +1,4 @@
+/*
 package com.delivery.sopo.bindings
 
 import android.text.Editable
@@ -124,3 +125,4 @@ object CustomEditTextBindingAdapter
         ce.updateTextColor(color)
     }
 }
+*/

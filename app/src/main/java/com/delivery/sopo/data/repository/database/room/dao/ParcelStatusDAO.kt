@@ -10,7 +10,7 @@ import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
 interface ParcelStatusDAO
 {
     @Query("SELECT * FROM PARCEL_STATUS")
-    suspend fun getAll() : List<ParcelStatusEntity>?
+    fun getAll() : List<ParcelStatusEntity>?
 
     @Query("SELECT COUNT(*) FROM PARCEL_STATUS WHERE isBeDelete = 1")
     fun getIsDeleteCntLiveData(): LiveData<Int>
@@ -40,7 +40,7 @@ interface ParcelStatusDAO
     fun getById(parcelId: Int): ParcelStatusEntity?
 
     @Query("SELECT * FROM PARCEL_STATUS WHERE isBeDelete = 1 AND AUDIT_DTE >= DATETIME('now', 'localtime', '-10.0 seconds')")
-    suspend fun getCancelIsBeDelete() : List<ParcelStatusEntity>?
+    fun getCancelIsBeDelete() : List<ParcelStatusEntity>?
 
     @Query("UPDATE PARCEL_STATUS SET deliveredStatus = 0")
     fun updateTotalIsBeDeliveredToZero()

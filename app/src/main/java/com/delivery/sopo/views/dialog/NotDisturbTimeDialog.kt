@@ -9,10 +9,9 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.databinding.SetNotDisturbTimeDialogBinding
 import com.delivery.sopo.util.SopoLog
 import com.google.android.material.tabs.TabLayout.*
-import kotlinx.android.synthetic.main.set_not_disturb_time_dialog.*
-import kotlinx.android.synthetic.main.set_not_disturb_time_dialog.view.*
 import kotlin.math.abs
 
 typealias DatePeriodCallback = (String, String) -> Unit
@@ -20,9 +19,9 @@ typealias DatePeriodCallback = (String, String) -> Unit
 class NotDisturbTimeDialog : DialogFragment {
 
     private var parentActivity: Activity
-    private lateinit var layoutView: View
+    private lateinit var binding: SetNotDisturbTimeDialogBinding
     var callback : DatePeriodCallback
-    private val TAG = "LOG.SOPO${this.javaClass.simpleName}"
+
     var startTimeList : List<String>
     var endTimeList : List<String>
 
@@ -38,10 +37,10 @@ class NotDisturbTimeDialog : DialogFragment {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        layoutView = inflater.inflate(R.layout.set_not_disturb_time_dialog, container, false)
+        binding = SetNotDisturbTimeDialogBinding.inflate(inflater, container, false)
         setSetting()
 
-        val tabs = layoutView.tabs
+        val tabs = binding.tabs
         tabs.addTab(tabs.newTab().setText("시작"))
         tabs.addTab(tabs.newTab().setText("종료"))
 
@@ -53,13 +52,13 @@ class NotDisturbTimeDialog : DialogFragment {
                 {
                     0 ->
                     {
-                        constraint_start.visibility = VISIBLE
-                        constraint_end.visibility = INVISIBLE
+                        binding.constraintStart.visibility = VISIBLE
+                        binding.constraintEnd.visibility = INVISIBLE
                     }
                     1 ->
                     {
-                        constraint_start.visibility = INVISIBLE
-                        constraint_end.visibility = VISIBLE
+                        binding.constraintStart.visibility = INVISIBLE
+                        binding.constraintEnd.visibility = VISIBLE
                     }
                 }
             }
@@ -74,31 +73,31 @@ class NotDisturbTimeDialog : DialogFragment {
 
         })
 
-        layoutView.datePicker_start.hour = startTimeList[0].toInt()
-        layoutView.datePicker_start.minute = startTimeList[1].toInt()
+        binding.datePickerStart.hour = startTimeList[0].toInt()
+        binding.datePickerStart.minute = startTimeList[1].toInt()
 
-        layoutView.datePicker_end.hour = endTimeList[0].toInt()
-        layoutView.datePicker_end.minute = endTimeList[1].toInt()
+        binding.datePickerEnd.hour = endTimeList[0].toInt()
+        binding.datePickerEnd.minute = endTimeList[1].toInt()
 
         setClickEvent()
 
-        return layoutView
+        return binding.root
     }
 
     private fun setClickEvent(){
 
-        layoutView.tv_cancelBtn.setOnClickListener {
+        binding.tvCancelBtn.setOnClickListener {
             SopoLog.d( msg = "Cancel button")
             dismiss()
         }
 
-        layoutView.tv_okBtn.setOnClickListener {
+        binding.tvOkBtn.setOnClickListener {
             SopoLog.d( msg = "Ok button")
 
-            val startHour = layoutView.datePicker_start.hour
-            val startMin = layoutView.datePicker_start.minute
-            val endHour = layoutView.datePicker_end.hour
-            val endMin = layoutView.datePicker_end.minute
+            val startHour = binding.datePickerStart.hour
+            val startMin = binding.datePickerStart.minute
+            val endHour = binding.datePickerEnd.hour
+            val endMin = binding.datePickerEnd.minute
 
             val toStartTotalMin = startHour * 60 + startMin
             val toEndTotalMin = endHour * 60 + endMin

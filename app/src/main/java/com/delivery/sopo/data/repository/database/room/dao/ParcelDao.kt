@@ -10,7 +10,7 @@ interface ParcelDao
 {
     // 로컬에서 단일 택배 조회
     @Query("SELECT * FROM PARCEL WHERE WAYBILL_NUM = :waybillNum")
-    suspend fun getSingleParcelWithwaybillNum(waybillNum: String): ParcelEntity?
+    fun getSingleParcelWithwaybillNum(waybillNum: String): ParcelEntity?
 
     @Query("SELECT * FROM PARCEL as p LEFT JOIN PARCEL_STATUS as pm ON p.PARCEL_ID = pm.PARCEL_ID WHERE p.STATUS = 1 AND p.DELIVERY_STATUS = 'DELIVERED' AND pm.isNowVisible = 1")
     fun getCompleteLiveData(): LiveData<List<ParcelEntity>>
@@ -25,7 +25,7 @@ interface ParcelDao
     fun getOngoingData(): List<ParcelEntity>
 
     @Query("SELECT COUNT(*) FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS <> 'DELIVERED'")
-    suspend fun getOngoingDataCnt(): Int
+    fun getOngoingDataCnt(): Int
 
     @Query("SELECT COUNT(*) FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS = 'OUT_FOR_DELIVERY'")
     fun getSoonDataCntLiveData(): LiveData<Int>
@@ -34,10 +34,10 @@ interface ParcelDao
     fun getOngoingDataCntLiveData(): LiveData<Int>
 
     @Query("SELECT * FROM PARCEL as p LEFT JOIN PARCEL_STATUS as pm ON p.PARCEL_ID = pm.PARCEL_ID WHERE p.STATUS = 0 AND pm.isBeDelete = 1")
-    suspend fun getBeDeletedData(): List<ParcelEntity>
+    fun getBeDeletedData(): List<ParcelEntity>
 
     @Query("SELECT * FROM PARCEL WHERE PARCEL_ID = :parcelId")
-    suspend fun getById(parcelId: Int): ParcelEntity?
+    fun getById(parcelId: Int): ParcelEntity?
 
 //    // 업데이트 가능한 택배의 InquiryHash 값을 SELECT
 //    @Query("SELECT p.* FROM PARCEL as p INNER JOIN PARCEL_STATUS as pm where p.PARCEL_ID = pm.PARCEL_ID AND p.STATUS = 1  AND p.DELIVERY_STATUS <> 'delivered'")

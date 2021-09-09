@@ -9,12 +9,13 @@ import androidx.annotation.DrawableRes
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.delivery.sopo.R
-import kotlinx.android.synthetic.main.confirm_delete_dialog.*
-import kotlinx.android.synthetic.main.confirm_delete_dialog.view.*
+import com.delivery.sopo.databinding.ConfirmDeleteDialogBinding
 
 typealias OnDeleteClickListener = Pair<String,(agree: ConfirmDeleteDialog)-> Unit>
 
 class ConfirmDeleteDialog : DialogFragment {
+
+    lateinit var binding: ConfirmDeleteDialogBinding
 
     private var parentActivity: Activity
     private lateinit var layoutView: View
@@ -35,21 +36,21 @@ class ConfirmDeleteDialog : DialogFragment {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        layoutView = inflater.inflate(R.layout.confirm_delete_dialog, container, false)
+        binding = ConfirmDeleteDialogBinding.inflate(LayoutInflater.from(context))
         setSetting()
         setClickEvent()
         setUI()
-        return layoutView
+        return binding.root
     }
 
     private fun setClickEvent(){
 
-        layoutView.tv_delete.text = handler.first
-        layoutView.tv_delete.setOnClickListener {
+        binding.tvDelete.text = handler.first
+        binding.tvDelete.setOnClickListener {
             handler.second.invoke(this)
         }
 
-        layoutView.tv_cancel.setOnClickListener {
+        binding.tvCancel.setOnClickListener {
             dismiss()
         }
     }
@@ -81,12 +82,12 @@ class ConfirmDeleteDialog : DialogFragment {
 
         if(title != null)
         {
-            layoutView.tv_cancel.run {
+            binding.tvCancel.run {
                 setBackgroundResource(R.drawable.border_all_rounded_main_blue)
                 setTextColor(resources.getColor(R.color.MAIN_WHITE))
             }
 
-            layoutView.tv_delete.run {
+            binding.tvDelete.run {
                 setBackgroundResource(R.drawable.border_15dp_blue_rounder)
                 setTextColor(resources.getColor(R.color.COLOR_MAIN_500))
             }
@@ -97,27 +98,27 @@ class ConfirmDeleteDialog : DialogFragment {
     {
         Glide.with(parentActivity)
             .load(icon)
-            .into(layoutView.iv_title_icon)
+            .into(binding.ivTitleIcon)
 
-        layoutView.iv_title_icon.visibility = View.VISIBLE
+        binding.ivTitleIcon.visibility = View.VISIBLE
     }
 
     private fun setTitle(title: String?)
     {
         if(title == null) return
-        layoutView.tv_dialog_title.text = title
+        binding.tvDialogTitle.text = title
     }
 
     private fun setSubTitle(subTitle: String?)
     {
         if(subTitle == null) return
-        layoutView.tv_sub_title.text = subTitle
-        layoutView.layout_sub_title.visibility = View.VISIBLE
+        binding.tvSubTitle.text = subTitle
+        binding.layoutSubTitle.visibility = View.VISIBLE
     }
 
     private fun setContent(content: String?)
     {
         if(content == null) return
-        layoutView.tv_content.text = content
+        binding.tvContent.text = content
     }
 }
