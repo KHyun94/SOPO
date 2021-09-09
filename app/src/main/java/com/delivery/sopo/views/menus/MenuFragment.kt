@@ -61,7 +61,7 @@ class MenuFragment: Fragment(), KoinComponent
                 }
                 else
                 {
-                    ActivityCompat.finishAffinity(activity!!)
+                    ActivityCompat.finishAffinity(requireActivity())
                     exitProcess(0)
                 }
             }
@@ -110,7 +110,7 @@ class MenuFragment: Fragment(), KoinComponent
                             return
                         }
 
-                        ActivityCompat.finishAffinity(activity!!)
+                        ActivityCompat.finishAffinity(requireActivity())
                         exitProcess(0)
                     }
                 }

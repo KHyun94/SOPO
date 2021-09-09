@@ -389,7 +389,7 @@ class InquiryFragment: Fragment()
             override fun onItemClicked(view: View, type: Int, parcelId: Int)
             {
                 TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelId)
-                FragmentManager.move(activity!!, TabCode.INQUIRY_DETAIL, InquiryMainFrame.viewId)
+                FragmentManager.move(requireActivity(), TabCode.INQUIRY_DETAIL, InquiryMainFrame.viewId)
             }
 
             override fun onItemLongClicked(view: View, type: Int, parcelId: Int)

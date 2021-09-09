@@ -71,8 +71,8 @@ class ParcelDetailView: Fragment()
     override fun onDestroyView()
     {
         super.onDestroyView()
-        val vg = binding.root.parent as ViewGroup
-        vg.removeView(binding.root)
+        val vg = binding.root.parent as ViewGroup?
+        vg?.removeView(binding.root)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?)
@@ -209,11 +209,6 @@ class ParcelDetailView: Fragment()
 
         vm.result.observe(requireActivity(), Observer { res ->
             if(res.result) return@Observer
-
-//            when(res.code){
-//                GeneralDialog
-//            }
-
         })
 
         vm.statusList.observe(requireActivity(), Observer { list ->
@@ -285,7 +280,7 @@ class ParcelDetailView: Fragment()
 
             if(it)
             {
-                FragmentManager.remove(activity!!)
+                FragmentManager.remove(requireActivity())
                 vm.isBack.call()
             }
         })

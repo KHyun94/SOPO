@@ -8,7 +8,10 @@ import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.annotation.DrawableRes
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.viewpager.widget.ViewPager
@@ -48,6 +51,10 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
     override val layoutRes: Int = R.layout.main_view
     override val vm: MainViewModel by viewModel()
 
+    lateinit var tab1stBinding: ItemMainTabBinding
+    lateinit var tab2ndBinding: ItemMainTabBinding
+    lateinit var tab3rdBinding: ItemMainTabBinding
+
     override fun receivedData(intent: Intent)
     {
 
@@ -56,13 +63,6 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
     private val appPasswordRepo: AppPasswordRepository by inject()
 
     var currentPage = MutableLiveData<Int?>()
-
-    override fun onStart()
-    {
-        super.onStart()
-
-
-    }
 
     override fun initUI()
     {
@@ -77,7 +77,6 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
         checkAppPassword()
     }
-
 
     override fun setObserve()
     {
@@ -123,7 +122,8 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
     private fun checkAppPassword()
     {
-        runBlocking(Dispatchers.Default) {  appPasswordRepo.get() } ?: return
+        runBlocking(Dispatchers.Default) { appPasswordRepo.get() } ?: return
+
         val intent = Intent(this@MainView, LockScreenView::class.java).apply {
             putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
         }
@@ -171,6 +171,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
     private fun setTabLayout()
     {
+
         binding.layoutMainTab.run {
             setupWithViewPager(binding.layoutViewPager)
             setTabIcons(this)
@@ -180,50 +181,70 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
                                          {
                                              tab ?: return
 
-
                                              currentPage.postValue(tab.position)
 
-                                             val res = when(tab.position)
+                                             when(tab.position)
                                              {
-                                                 NavigatorConst.REGISTER_TAB -> R.drawable.ic_activate_register
-                                                 NavigatorConst.INQUIRY_TAB -> R.drawable.ic_activate_inquiry
-                                                 NavigatorConst.MY_MENU_TAB -> R.drawable.ic_activate_menu
-                                                 else -> NavigatorConst.REGISTER_TAB
+                                                 NavigatorConst.REGISTER_TAB ->
+                                                 {
+                                                     tab1stBinding.apply {
+                                                         ivTab.setBackgroundResource(R.drawable.ic_activate_register)
+                                                         tvTabName.setTextColor(ContextCompat.getColor(this@MainView, R.color.COLOR_MAIN_700))
+                                                     }
+                                                 }
+                                                 NavigatorConst.INQUIRY_TAB ->
+                                                 {
+                                                     tab2ndBinding.apply {
+                                                         ivTab.setBackgroundResource(R.drawable.ic_activate_inquiry)
+                                                         tvTabName.setTextColor(ContextCompat.getColor(this@MainView, R.color.COLOR_MAIN_700))
+                                                     }
+                                                 }
+                                                 NavigatorConst.MY_MENU_TAB ->
+                                                 {
+                                                     tab3rdBinding.apply {
+                                                         ivTab.setBackgroundResource(R.drawable.ic_activate_menu)
+                                                         tvTabName.setTextColor(ContextCompat.getColor(this@MainView, R.color.COLOR_MAIN_700))
+                                                     }
+
+                                                 }
                                              }
 
-                                             val tabBinding =
-                                                 ItemMainTabBinding.bind(tab.customView ?: return)
-
-                                             tabBinding.ivTab.setBackgroundResource(res)
-                                             tabBinding.tvTabName.setTextColor(
-                                                 ContextCompat.getColor(this@MainView,
-                                                                        R.color.COLOR_MAIN_700))
                                          }
 
                                          override fun onTabUnselected(tab: TabLayout.Tab?)
                                          {
                                              tab ?: return
 
-                                             val res = when(tab.position)
+                                             when(tab.position)
                                              {
-                                                 NavigatorConst.REGISTER_TAB -> R.drawable.ic_inactivate_register
-                                                 NavigatorConst.INQUIRY_TAB -> R.drawable.ic_inactivate_inquiry
-                                                 NavigatorConst.MY_MENU_TAB -> R.drawable.ic_inactivate_menu
-                                                 else -> NavigatorConst.REGISTER_TAB
+                                                 NavigatorConst.REGISTER_TAB ->
+                                                 {
+                                                     tab1stBinding.apply {
+                                                         ivTab.setBackgroundResource(R.drawable.ic_inactivate_register)
+                                                         tvTabName.setTextColor(ContextCompat.getColor(this@MainView, R.color.COLOR_GRAY_400))
+                                                     }
+                                                 }
+                                                 NavigatorConst.INQUIRY_TAB ->
+                                                 {
+                                                     tab2ndBinding.apply {
+                                                         ivTab.setBackgroundResource(R.drawable.ic_inactivate_inquiry)
+                                                         tvTabName.setTextColor(ContextCompat.getColor(this@MainView, R.color.COLOR_GRAY_400))
+                                                     }
+                                                 }
+                                                 NavigatorConst.MY_MENU_TAB ->
+                                                 {
+                                                     tab3rdBinding.apply {
+                                                         ivTab.setBackgroundResource(R.drawable.ic_inactivate_menu)
+                                                         tvTabName.setTextColor(ContextCompat.getColor(this@MainView, R.color.COLOR_GRAY_400))
+                                                     }
+
+                                                 }
                                              }
-
-                                             val tabBinding = ItemMainTabBinding.inflate(LayoutInflater.from(context))
-
-                                             tabBinding.ivTab.setBackgroundResource(res)
-                                             tabBinding.tvTabName.setTextColor(
-                                                 ContextCompat.getColor(this@MainView,
-                                                                        R.color.COLOR_GRAY_400))
                                          }
 
                                          override fun onTabReselected(tab: TabLayout.Tab?)
                                          {
                                              if(tab == null) return
-
 
 
                                              when(tab.position)
@@ -284,28 +305,26 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
         }.addOnPageChangeListener(addOnPageListener)
     }
 
-    private fun setTabIcon(v: TabLayout, index: Int,
-                           @DrawableRes iconRes: Int, tabName: String, textColor: Int)
+    private fun setTabIcon(v: TabLayout, index: Int, @DrawableRes iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
     {
-        v.getTabAt(index)?.run {
-            setCustomView(R.layout.item_main_tab)
+        val tab: TabLayout.Tab = v.getTabAt(index) ?: throw NullPointerException("TAB is null")
 
-            val tabBinding = ItemMainTabBinding.bind(customView ?: return)
+        tab.setCustomView(R.layout.item_main_tab)
 
-            tabBinding.ivTab.setBackgroundResource(iconRes)
-            tabBinding.tvTabName.text = tabName
-            tabBinding.tvTabName.setTextColor(ContextCompat.getColor(this@MainView, textColor))
-        }
+        val tabBinding = ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
+
+        tabBinding.ivTab.setBackgroundResource(iconRes)
+        tabBinding.tvTabName.text = tabName
+        tabBinding.tvTabName.setTextColor(ContextCompat.getColor(this@MainView, textColor))
+
+        return tabBinding
     }
 
     private fun setTabIcons(v: TabLayout)
     {
-        setTabIcon(v, NavigatorConst.REGISTER_TAB, R.drawable.ic_activate_register, "등록",
-                   R.color.COLOR_MAIN_700)
-        setTabIcon(v, NavigatorConst.INQUIRY_TAB, R.drawable.ic_inactivate_inquiry, "조회",
-                   R.color.COLOR_GRAY_400)
-        setTabIcon(v, NavigatorConst.MY_MENU_TAB, R.drawable.ic_inactivate_menu, "메뉴",
-                   R.color.COLOR_GRAY_400)
+        tab1stBinding = setTabIcon(v, NavigatorConst.REGISTER_TAB, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
+        tab2ndBinding = setTabIcon(v, NavigatorConst.INQUIRY_TAB, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
+        tab3rdBinding = setTabIcon(v, NavigatorConst.MY_MENU_TAB, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
     }
 
     fun onCompleteRegister()

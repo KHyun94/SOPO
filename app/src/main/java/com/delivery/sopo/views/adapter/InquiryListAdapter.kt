@@ -41,6 +41,7 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
 
         fun bind(inquiryListItem: InquiryListItem)
         {
+            SopoLog.d("bind data [data:${inquiryListItem.toString()}")
             ongoingBinding.setVariable(BR.ongoingInquiryData, inquiryListItem)
         }
     }
@@ -67,20 +68,17 @@ class InquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveData
         {
             InquiryItemTypeEnum.Soon ->
             {
-                val binding =
-                    getBinding<InquiryListOngoingItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent)
+                val binding = getBinding<InquiryListOngoingItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent)
                 return OngoingViewHolder(binding)
             }
             InquiryItemTypeEnum.Registered ->
             {
-                val binding =
-                    getBinding<InquiryListOngoingItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent)
+                val binding = getBinding<InquiryListOngoingItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent)
                 return OngoingViewHolder(binding)
             }
             InquiryItemTypeEnum.Complete ->
             {
-                val binding =
-                    getBinding<InquiryListCompleteItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_complete_item, parent)
+                val binding = getBinding<InquiryListCompleteItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_complete_item, parent)
                 return CompleteViewHolder(binding)
             }
         }

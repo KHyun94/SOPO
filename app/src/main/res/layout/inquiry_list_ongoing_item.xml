@@ -38,16 +38,16 @@
                 app:setBackgroundColor="@{ongoingInquiryData.backgroundColorResource}"
                 tools:visibility="visible"
                 tools:src="@android:color/black">
-                
+
                 <ImageView
                     android:id="@+id/image_delivery_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBaseline_toBaselineOf="@+id/guide_2nd"
-                    app:layout_constraintBottom_toTopOf="parent"
-                    app:layout_constraintLeft_toRightOf="parent"
-                    app:layout_constraintRight_toLeftOf="parent"
-                    app:layout_constraintTop_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintWidth_percent="0.33"
                     app:setDefaultImage="@{0}"
                     app:setImage="@{ongoingInquiryData.iconResource}"
@@ -77,8 +77,8 @@
                     android:textColor="@color/MAIN_WHITE"
                     android:textSize="10sp"
                     android:letterSpacing="-0.04"
-                    app:layout_constraintLeft_toRightOf="parent"
-                    app:layout_constraintRight_toLeftOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/guide_3rd"
                     app:setText="@{ongoingInquiryData.statusText}"
                     app:setTextColor="@{ongoingInquiryData.statusTextColorResource}"

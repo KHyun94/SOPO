@@ -144,7 +144,7 @@ class SelectCarrierFragment: Fragment()
 
                 TabCode.REGISTER_SELECT.NAME ->
                 {
-                    FragmentManager.remove(activity = activity!!)
+                    FragmentManager.remove(activity = requireActivity())
                     binding.vm?.moveFragment?.value = ""
 
                     TabCode.REGISTER_INPUT.FRAGMENT =

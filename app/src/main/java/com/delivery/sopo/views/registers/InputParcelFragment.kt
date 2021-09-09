@@ -65,7 +65,7 @@ class InputParcelFragment: Fragment()
                 }
                 else
                 {
-                    ActivityCompat.finishAffinity(activity!!)
+                    ActivityCompat.finishAffinity(requireActivity())
                     exitProcess(0)
                 }
             }
