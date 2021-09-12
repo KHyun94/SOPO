@@ -11,7 +11,7 @@ import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
 
-object UserUseCase
+class UserRemoteRepository
 {
     suspend fun requestEmailForAuth(email: String): ResponseResult<EmailAuthDTO?>
     {

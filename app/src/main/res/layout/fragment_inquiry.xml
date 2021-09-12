@@ -695,10 +695,10 @@
                 android:text='@{vm.cntOfSelectedItemForDelete.toString() + "개 삭제하기"}'
                 android:textColor="@color/MAIN_WHITE"
                 android:textSize="16dp"
-                app:layout_constraintBottom_toTopOf="parent"
-                app:layout_constraintLeft_toRightOf="parent"
-                app:layout_constraintRight_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 tools:text="2개 삭제하기" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

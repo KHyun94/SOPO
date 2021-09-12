@@ -39,8 +39,8 @@
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="32dp"
             android:orientation="vertical"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_title">
 
             <com.google.android.material.textfield.TextInputLayout
@@ -202,8 +202,8 @@
             android:focusableInTouchMode="true"
             android:onClick="@{()->vm.onSignUpClicked(btnSignUp)}"
             android:text="@string/DO_SIGN_UP"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/layout_agreement" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

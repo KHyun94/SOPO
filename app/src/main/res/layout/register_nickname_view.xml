@@ -54,8 +54,8 @@
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="18dp"
             android:orientation="vertical"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_sub_title"
             app:layout_constraintVertical_bias="0.6">
 
@@ -106,8 +106,8 @@
             android:layout_height="wrap_content"
             android:onClick="@{()->vm.onCompleteSignUpClicked(btnSndEmail)}"
             android:text="시작하기"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
             tools:backgroundTint="@color/COLOR_GRAY_200"
             tools:textColor="@color/COLOR_GRAY_400"
             app:layout_constraintBottom_toBottomOf="parent"

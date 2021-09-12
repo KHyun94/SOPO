@@ -1,22 +1,24 @@
 package com.delivery.sopo.viewmodels.login
 
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.data.repository.remote.user.UserUseCase
+import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.models.PasswordResetDTO
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class ResetPasswordViewModel: ViewModel()
+class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): ViewModel()
 {
     val email = MutableLiveData<String>()
     val password = MutableLiveData<String>()
@@ -40,7 +42,11 @@ class ResetPasswordViewModel: ViewModel()
 
     val focusChangeCallback: FocusChangeCallback = FocusChangeCallback@{ v, hasFocus, type ->
         SopoLog.i("${type.NAME} >>> $hasFocus")
-        Handler().postDelayed(Runnable { _focus.value = (Triple(v, hasFocus, type)) }, 50)
+        CoroutineScope(Dispatchers.Main).launch {
+            delay(50)
+            _focus.value = (Triple(v, hasFocus, type))
+        }
+//        Handler(Looper.getMainLooper()).postDelayed(Runnable { _focus.value = (Triple(v, hasFocus, type)) }, 50)
     }
 
     // 유효성 및 통신 등의 결과 객체
@@ -85,7 +91,7 @@ class ResetPasswordViewModel: ViewModel()
                 {
                     0->
                     {
-                        val res = UserUseCase.requestEmailForAuth(email = email.value?:"")
+                        val res = userRemoteRepo.requestEmailForAuth(email = email.value?:"")
                         SopoLog.d("res >>> ${res.toString()} ${res.code} ${res.data} ${res.result} ${res.message}")
 
                         if(res.result) jwtTokenForReset = res.data?.token
@@ -95,7 +101,7 @@ class ResetPasswordViewModel: ViewModel()
                     {
                         val passwordResetDTO = PasswordResetDTO(jwtTokenForReset?:"", email.value.toString(), password.value.toString())
 
-                        val res = UserUseCase.requestPasswordForReset(passwordResetDTO = passwordResetDTO)
+                        val res = userRemoteRepo.requestPasswordForReset(passwordResetDTO = passwordResetDTO)
 
                         _result.postValue(res)
                     }
@@ -105,7 +111,7 @@ class ResetPasswordViewModel: ViewModel()
                 }
             }
 
-        }, 50)
+        }, 100)
 
 
     }

@@ -1,7 +1,7 @@
 package com.delivery.sopo.firebase
 
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.data.repository.remote.user.UserUseCase
+import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import com.google.firebase.iid.FirebaseInstanceId
@@ -14,6 +14,7 @@ import java.util.*
 object FirebaseNetwork: KoinComponent
 {
     private val userLocalRepo: UserLocalRepository by inject()
+    private val userRemoteRepo: UserRemoteRepository by inject()
 
     fun subscribedToTopic(hour: Int? = null, minutes: Int? = null) = CoroutineScope(Dispatchers.Default).async {
             val loadTopic = userLocalRepo.getTopic().let { if(it == "") null else it }
@@ -188,7 +189,7 @@ object FirebaseNetwork: KoinComponent
             }
 
             CoroutineScope(Dispatchers.Main).launch {
-                UserUseCase.updateFCMToken(task.result.token)
+                userRemoteRepo.updateFCMToken(task.result.token)
             }
         }
     }

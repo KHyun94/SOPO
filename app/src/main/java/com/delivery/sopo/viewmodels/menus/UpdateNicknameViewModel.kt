@@ -10,13 +10,13 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.data.repository.remote.user.UserUseCase
+import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo:UserUseCase): ViewModel()
+class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo:UserRemoteRepository): ViewModel()
 {
     val currentNickname = MutableLiveData<String>().apply {
         postValue(userLocalRepo.getNickname())

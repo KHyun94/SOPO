@@ -196,7 +196,7 @@ class ParcelDetailView: Fragment()
                         }
                     }
                 }
-                requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), callback!!)
+                activity?.onBackPressedDispatcher?.addCallback(requireActivity(), callback!!)
             }
         })
 
@@ -300,11 +300,9 @@ class ParcelDetailView: Fragment()
     // 동적으로 indicator view 생성
     private fun setIndicatorView(topView: View?, bottomView: View?, baseLayout: LinearLayout, list: List<SelectItem<String>>)
     {
-        val inflater =
-            requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val inflater = requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-        val linearParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                                                     LinearLayout.LayoutParams.WRAP_CONTENT)
+        val linearParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
 
         linearParams.leftMargin = SizeUtil.changeDpToPx(requireActivity(), 12.0f)
         linearParams.rightMargin = SizeUtil.changeDpToPx(requireActivity(), 12.0f)
@@ -350,21 +348,19 @@ class ParcelDetailView: Fragment()
                                                   ConstraintLayout.LayoutParams.WRAP_CONTENT)
 
                 constraintParams.topToBottom = topView.id
-                constraintParams.leftToRight = ConstraintLayout.LayoutParams.PARENT_ID
-                constraintParams.rightToLeft = ConstraintLayout.LayoutParams.PARENT_ID
+                constraintParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID
+                constraintParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID
                 constraintParams.topMargin = SizeUtil.changeDpToPx(requireActivity(), 34.0f)
 
                 baseLayout.layoutParams = constraintParams
             }
             else
             {
-                val constraintParams =
-                    ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                                                  ConstraintLayout.LayoutParams.WRAP_CONTENT)
+                val constraintParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
 
                 constraintParams.topToBottom = topView.id
-                constraintParams.leftToRight = ConstraintLayout.LayoutParams.PARENT_ID
-                constraintParams.rightToLeft = ConstraintLayout.LayoutParams.PARENT_ID
+                constraintParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID
+                constraintParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID
                 constraintParams.topMargin = SizeUtil.changeDpToPx(requireActivity(), 27.0f)
 
                 baseLayout.layoutParams = constraintParams
@@ -386,7 +382,12 @@ class ParcelDetailView: Fragment()
     // 하단 드로우 레이아웃 사이즈 변경
     private fun updateDrawerLayoutSize(view: View)
     {
-        val globalListener = ViewTreeObserver.OnGlobalLayoutListener {
+        CoroutineScope(Dispatchers.Main).launch {
+            val height = view.height
+            binding.layoutMain.panelHeight = height
+        }
+
+        /*val globalListener = ViewTreeObserver.OnGlobalLayoutListener {
             val height = view.height
             binding.layoutMain.panelHeight = height
         }
@@ -398,7 +399,7 @@ class ParcelDetailView: Fragment()
                 removeOnGlobalLayoutListener(globalListener)
             }, 1000)
 
-        }
+        }*/
 
     }
 

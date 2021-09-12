@@ -19,8 +19,8 @@
         <ImageView
             android:layout_width="401dp"
             android:layout_height="397dp"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             app:setImage="@{R.drawable.login_select_view_image}"
             app:layout_constraintTop_toTopOf="parent"
             setDefaultImage="@{0}"

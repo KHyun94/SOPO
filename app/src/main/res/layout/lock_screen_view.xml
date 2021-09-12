@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.delivery.sopo.enums.LockScreenStatusEnum"/>
+
+        <import type="com.delivery.sopo.enums.LockScreenStatusEnum" />
+
+        <import type="android.view.View" />
+
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.menus.LockScreenViewModel" />
@@ -16,33 +21,32 @@
         android:background="@color/COLOR_GRAY_50">
 
         <TextView
-            style="@style/H2"
             android:id="@+id/tv_title_lock"
+            style="@style/H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="13dp"
-            android:text="@{vm.lockScreenStatusEnum.TITLE.toString()}"
+            android:includeFontPadding="false"
             android:textColor="@color/COLOR_GRAY_800"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:includeFontPadding="false" />
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            style="@style/H5"
             android:id="@+id/tv_errorComment"
-            android:visibility="invisible"
+            style="@style/H5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/LOCK_SCREEN_VIEW_INVALID_PASSWORD"
             android:textColor="@color/MAIN_RED"
+            android:visibility="invisible"
             app:layout_constraintBottom_toTopOf="@+id/tv_guide_comment"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            style="@style/H5"
             android:id="@+id/tv_guide_comment"
+            style="@style/H5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="113dp"
@@ -66,13 +70,12 @@
                 android:id="@+id/et_firstPassword"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
+                android:layout_gravity="center"
                 android:layout_marginEnd="15dp"
                 android:layout_weight="1"
-                android:layout_gravity="center"
-                android:gravity="center"
                 android:background="@drawable/ic_lock_edittext_off"
                 android:enabled="false"
-                />
+                android:gravity="center" />
 
             <EditText
                 android:id="@+id/et_secondPassword"
@@ -81,8 +84,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_weight="1"
                 android:background="@drawable/ic_lock_edittext_off"
-                android:enabled="false"
-                />
+                android:enabled="false" />
 
             <EditText
                 android:id="@+id/et_thirdPassword"
@@ -91,8 +93,7 @@
                 android:layout_marginEnd="15dp"
                 android:layout_weight="1"
                 android:background="@drawable/ic_lock_edittext_off"
-                android:enabled="false"
-                />
+                android:enabled="false" />
 
             <EditText
                 android:id="@+id/et_fourthPassword"
@@ -100,16 +101,28 @@
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 android:background="@drawable/ic_lock_edittext_off"
-                android:enabled="false"
-                />
+                android:enabled="false" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_resend_mail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->vm.onResendAuthMailClicked()}"
+            android:text="@string/RESENT_AUTH_MAIL"
+            android:textColor="@color/COLOR_GRAY_600"
+            android:visibility="@{vm.isActivateResendMail()?View.VISIBLE:View.GONE, default=gone}"
+            app:layout_constraintBottom_toTopOf="@+id/grid_numPad"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 
         <GridLayout
             android:id="@+id/grid_numPad"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="1"
             android:background="?attr/selectableItemBackground"
+            android:columnCount="1"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <LinearLayout
@@ -122,13 +135,13 @@
                     android:layout_width="0dp"
                     android:layout_height="70dp"
                     android:layout_weight="1"
+                    android:background="@drawable/ripple_drawable"
                     android:fontFamily="@font/spoqa_han_sans_neo_bold"
                     android:gravity="center"
+                    android:onClick="@{() -> vm.onPressLockKeyPadClicked(1)}"
                     android:text="1"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20sp"
-                    android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.onPressLockKeyPad(1)}" />
+                    android:textSize="20sp" />
 
 
                 <Button
@@ -136,14 +149,13 @@
                     android:layout_width="0dp"
                     android:layout_height="70dp"
                     android:layout_weight="1"
+                    android:background="@drawable/ripple_drawable"
                     android:fontFamily="@font/spoqa_han_sans_neo_bold"
                     android:gravity="center"
+                    android:onClick="@{() -> vm.onPressLockKeyPadClicked(2)}"
                     android:text="2"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20sp"
-                    android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.onPressLockKeyPad(2)}"
-                    />
+                    android:textSize="20sp" />
 
                 <Button
                     android:id="@+id/btn_3"
@@ -151,14 +163,13 @@
                     android:layout_height="70dp"
                     android:layout_gravity="start"
                     android:layout_weight="1"
+                    android:background="@drawable/ripple_drawable"
                     android:fontFamily="@font/spoqa_han_sans_neo_bold"
                     android:gravity="center"
+                    android:onClick="@{() -> vm.onPressLockKeyPadClicked(3)}"
                     android:text="3"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20sp"
-                    android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.onPressLockKeyPad(3)}"
-                    />
+                    android:textSize="20sp" />
             </LinearLayout>
 
 
@@ -172,14 +183,13 @@
                     android:layout_width="0dp"
                     android:layout_height="70dp"
                     android:layout_weight="1"
+                    android:background="@drawable/ripple_drawable"
                     android:fontFamily="@font/spoqa_han_sans_neo_bold"
                     android:gravity="center"
+                    android:onClick="@{() -> vm.onPressLockKeyPadClicked(4)}"
                     android:text="4"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20sp"
-                    android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.onPressLockKeyPad(4)}"
-                    />
+                    android:textSize="20sp" />
 
 
                 <Button
@@ -187,14 +197,13 @@
                     android:layout_width="0dp"
                     android:layout_height="70dp"
                     android:layout_weight="1"
+                    android:background="@drawable/ripple_drawable"
                     android:fontFamily="@font/spoqa_han_sans_neo_bold"
                     android:gravity="center"
+                    android:onClick="@{() -> vm.onPressLockKeyPadClicked(5)}"
                     android:text="5"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20sp"
-                    android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.onPressLockKeyPad(5)}"
-                    />
+                    android:textSize="20sp" />
 
                 <Button
                     android:id="@+id/btn_6"
@@ -202,14 +211,13 @@
                     android:layout_height="70dp"
                     android:layout_gravity="start"
                     android:layout_weight="1"
+                    android:background="@drawable/ripple_drawable"
                     android:fontFamily="@font/spoqa_han_sans_neo_bold"
                     android:gravity="center"
+                    android:onClick="@{() -> vm.onPressLockKeyPadClicked(6)}"
                     android:text="6"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20sp"
-                    android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.onPressLockKeyPad(6)}"
-                    />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
@@ -223,14 +231,13 @@
                     android:layout_width="0dp"
                     android:layout_height="70dp"
                     android:layout_weight="1"
+                    android:background="@drawable/ripple_drawable"
                     android:fontFamily="@font/spoqa_han_sans_neo_bold"
                     android:gravity="center"
+                    android:onClick="@{() -> vm.onPressLockKeyPadClicked(7)}"
                     android:text="7"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20sp"
-                    android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.onPressLockKeyPad(7)}"
-                    />
+                    android:textSize="20sp" />
 
 
                 <Button
@@ -238,14 +245,13 @@
                     android:layout_width="0dp"
                     android:layout_height="70dp"
                     android:layout_weight="1"
+                    android:background="@drawable/ripple_drawable"
                     android:fontFamily="@font/spoqa_han_sans_neo_bold"
                     android:gravity="center"
+                    android:onClick="@{() -> vm.onPressLockKeyPadClicked(8)}"
                     android:text="8"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20sp"
-                    android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.onPressLockKeyPad(8)}"
-                    />
+                    android:textSize="20sp" />
 
                 <Button
                     android:id="@+id/btn_9"
@@ -253,14 +259,13 @@
                     android:layout_height="70dp"
                     android:layout_gravity="start"
                     android:layout_weight="1"
+                    android:background="@drawable/ripple_drawable"
                     android:fontFamily="@font/spoqa_han_sans_neo_bold"
                     android:gravity="center"
+                    android:onClick="@{() -> vm.onPressLockKeyPadClicked(9)}"
                     android:text="9"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20sp"
-                    android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.onPressLockKeyPad(9)}"
-                    />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
@@ -286,24 +291,22 @@
                     android:layout_width="0dp"
                     android:layout_height="70dp"
                     android:layout_weight="1"
+                    android:background="@drawable/ripple_drawable"
                     android:fontFamily="@font/spoqa_han_sans_neo_bold"
                     android:gravity="center"
+                    android:onClick="@{() -> vm.onPressLockKeyPadClicked(0)}"
                     android:text="0"
                     android:textColor="@color/COLOR_GRAY_800"
-                    android:textSize="20sp"
-                    android:background="@drawable/ripple_drawable"
-                    android:onClick="@{() -> vm.onPressLockKeyPad(0)}"
-                    />
+                    android:textSize="20sp" />
 
                 <RelativeLayout
                     android:layout_width="0dp"
                     android:layout_height="70dp"
                     android:layout_weight="1"
+                    android:background="@drawable/ripple_drawable"
                     android:clickable="true"
                     android:focusable="true"
-                    android:background="@drawable/ripple_drawable"
-                    android:onClick="@{()->vm.eraseLockPassword()}"
-                    >
+                    android:onClick="@{()->vm.eraseLockPassword()}">
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -312,8 +315,7 @@
                         android:layout_centerVertical="true"
                         android:background="@drawable/ic_erase_btn"
                         android:fontFamily="@font/spoqa_han_sans_neo_bold"
-                        android:textSize="20sp"
-                        />
+                        android:textSize="20sp" />
                 </RelativeLayout>
             </LinearLayout>
         </GridLayout>

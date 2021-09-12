@@ -273,8 +273,8 @@
             app:layout_constraintTop_toBottomOf="@+id/layout_checkbox"
             android:onClick="@{()->vm.onSignOutClicked()}"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
             tools:background="@drawable/border_15dp_blue_rounder"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 

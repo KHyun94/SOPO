@@ -42,10 +42,8 @@
                 android:text="인터넷이 연결되어 있지 않습니다.\n문의하실 경우 아래의 에러코드를 포함해주세요."
                 android:textColor="#000000"
                 android:textSize="15sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintLeft_toRightOf="parent"
-                app:layout_constraintRight_toLeftOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
@@ -54,8 +52,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20sp"
                 android:text="자세히 보기"
-                app:layout_constraintLeft_toRightOf="parent"
-                app:layout_constraintRight_toLeftOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_simple_msg" />
 
             <ImageView
@@ -79,8 +77,8 @@
                 android:background="@color/MAIN_WHITE"
                 android:gravity="center"
                 android:visibility="gone"
-                app:layout_constraintLeft_toRightOf="parent"
-                app:layout_constraintRight_toLeftOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_expand_layout">
 
                 <TextView

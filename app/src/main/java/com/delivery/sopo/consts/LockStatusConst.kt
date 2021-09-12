@@ -15,7 +15,7 @@ sealed class LockStatusConst
 
     object AUTH{
         const val CONFIRM_STATUS = "AUTH_CONFIRM_STATUS"
-        const val FAILURE_STATUS = "AUTH_FAILURE_STATUS"
+        const val FAILURE_STATUS = "AUTH_FIRST_FAILURE_STATUS"
     }
 
 }

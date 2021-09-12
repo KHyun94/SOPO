@@ -90,8 +90,8 @@
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="40dp"
             android:orientation="vertical"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_current_nickname_middle"
             app:layout_constraintVertical_bias="0.6">
 
@@ -146,8 +146,8 @@
             android:onClick="@{()->vm.onCompleteSignUpClicked(btnSndEmail)}"
             android:text="변경하기"
             app:layout_constraintTop_toBottomOf="@id/layout_input"
-            app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintRight_toLeftOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             tools:backgroundTint="@color/COLOR_GRAY_200"
             tools:textColor="@color/COLOR_GRAY_400" />
 

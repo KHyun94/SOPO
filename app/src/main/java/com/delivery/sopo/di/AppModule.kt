@@ -7,7 +7,7 @@ import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserSharedPrefHelper
 import com.delivery.sopo.data.repository.local.repository.*
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.data.repository.remote.user.UserUseCase
+import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.viewmodels.IntroViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryMainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
@@ -37,8 +37,9 @@ val appModule = module {
             get(), androidApplication()
         )
     }
+
     single { UserLocalRepository(get()) }
-    single { UserUseCase }
+    factory { UserRemoteRepository() }
     single { AppDatabase.getInstance(get()) }
     single { CarrierRepository(get()) }
     single { ParcelRepository(get(), get()) }
@@ -54,10 +55,10 @@ val appModule = module {
     viewModel { SignUpCompleteViewModel(get(), get()) }
     viewModel { RegisterNicknameViewModel(get()) }
     viewModel { LoginSelectViewModel(get(),get()) }
-    viewModel { ResetPasswordViewModel() }
+    viewModel { ResetPasswordViewModel(get()) }
     viewModel { MainViewModel(get(), get(), get(), get()) }
     viewModel { MenuSubViewModel() }
-    viewModel { LockScreenViewModel(get(), get()) }
+    viewModel { LockScreenViewModel(get(), get(), get()) }
     viewModel { SettingViewModel(get()) }
     viewModel { NoticeViewModel() }
     viewModel { FaqViewModel() }
