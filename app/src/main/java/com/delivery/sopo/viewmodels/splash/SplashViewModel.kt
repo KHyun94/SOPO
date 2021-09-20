@@ -38,7 +38,7 @@ class SplashViewModel(private val userLocalRepo: UserLocalRepository, private va
 
     suspend fun getUserInfoWithToken()
     {
-        when (val result = UserCall.getUserInfoWithToken())
+        when (val result = UserCall.getUserDetailInfo())
         {
             is NetworkResult.Success ->
             {

@@ -138,6 +138,7 @@ class SOPOApp: Application()
 
         var cntOfBeUpdate: MutableLiveData<Int> = MutableLiveData<Int>()
 
+        // TODO 없어져야 한 폐단
         var oAuth: OAuthDTO? = null
     }
 }

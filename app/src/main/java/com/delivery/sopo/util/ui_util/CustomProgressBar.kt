@@ -47,8 +47,8 @@ class CustomProgressBar(val activity: AppCompatActivity?): DialogFragment()
         {
             SopoLog.d("Turn Off ProgressBar")
             isTurnOn = false
-            dismiss()
             callback.invoke(true)
+            dismiss()
         }
     }
 

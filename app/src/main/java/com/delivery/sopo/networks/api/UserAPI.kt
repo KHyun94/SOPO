@@ -22,7 +22,7 @@ interface UserAPI
      */
     @GET("/api/v1/sopo-api/user/detail")
     @Headers("Accept: application/json")
-    suspend fun getUserInfoWithToken() : Response<APIResult<UserDetail?>>
+    suspend fun getUserDetailInfo() : Response<APIResult<UserDetail>>
 
     /**
      * FCM Token UPDATE

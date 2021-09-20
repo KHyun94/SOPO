@@ -7,10 +7,8 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.databinding.SignUpViewBinding
-import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.launchActivity
-import com.delivery.sopo.util.ui_util.CustomAlertMsg
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.signup.SignUpViewModel

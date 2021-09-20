@@ -10,7 +10,7 @@ import com.delivery.sopo.consts.PermissionConst
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.databinding.SplashViewBinding
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.data.repository.remote.o_auth.OAuthRemoteRepository
+import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.DateUtil
@@ -31,7 +31,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SplashView: BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view)
 {
+
     private val userLocalRepo: UserLocalRepository by inject()
+    private val userRemoteRepo: UserRemoteRepository by inject()
     private val oAuthRepo: OAuthLocalRepository by inject()
     private val vm: SplashViewModel by viewModel()
     lateinit var permissionDialog: PermissionDialog
@@ -133,6 +135,7 @@ class SplashView: BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view)
         val clz = if(nickname == "") RegisterNicknameView::class.java else MainView::class.java
 
         Intent(this@SplashView, clz).let {intent ->
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(intent)
             finish()
         }
@@ -158,7 +161,7 @@ class SplashView: BasicView<SplashViewBinding>(layoutRes = R.layout.splash_view)
         val isOverDate = DateUtil.isExpiredDateWithinAWeek(currentExpiredDate)
         if(!isOverDate) return SopoLog.d("O-Auth Token Expired Date 만료 전 상태")
 
-        val res = OAuthRemoteRepository.requestLoginWithOAuth(userLocalRepo.getUserId(), userLocalRepo.getUserPassword())
+        val res = userRemoteRepo.requestLogin(userLocalRepo.getUserId(), userLocalRepo.getUserPassword())
 
         if(!res.result) { return SopoLog.e("O-Auth Token Expired Date 갱신 실패 [code:${res.code}] [message:${res.message}]") }
 

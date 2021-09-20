@@ -6,13 +6,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
+import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.models.ResponseResult
-import com.delivery.sopo.data.repository.remote.o_auth.OAuthRemoteRepository
 import com.delivery.sopo.util.SopoLog
 
-class SignOutViewModel: ViewModel()
+class SignOutViewModel(
+        private val userRemoteRepo: UserRemoteRepository,
+): ViewModel()
 {
     var preCheckBox: AppCompatCheckBox? = null
     var currentCheckBox: AppCompatCheckBox? = null
@@ -71,7 +73,7 @@ class SignOutViewModel: ViewModel()
 
     suspend fun requestSignOut(reason: String)
     {
-        val res = OAuthRemoteRepository.requestSignOut(reason)
+        val res = userRemoteRepo.requestSignOut(reason)
 
         if (!res.result)
         {

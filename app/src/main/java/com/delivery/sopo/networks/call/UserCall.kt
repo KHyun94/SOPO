@@ -1,6 +1,5 @@
 package com.delivery.sopo.networks.call
 
-import com.delivery.sopo.BuildConfig
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
@@ -24,10 +23,10 @@ object UserCall: BaseService(), KoinComponent
     private val oAuthRepo: OAuthLocalRepository by inject()
     private lateinit var userAPI: UserAPI
 
-    suspend fun getUserInfoWithToken(): NetworkResult<APIResult<UserDetail?>>
+    suspend fun getUserDetailInfo(): NetworkResult<APIResult<UserDetail>>
     {
         userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
-        val result = userAPI.getUserInfoWithToken()
+        val result = userAPI.getUserDetailInfo()
         return apiCall(call = { result })
     }
 

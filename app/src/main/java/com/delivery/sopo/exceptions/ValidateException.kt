@@ -1,58 +1,27 @@
 package com.delivery.sopo.exceptions
 
+import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.models.ValidateResult
 import java.io.PrintStream
 import java.io.PrintWriter
 
-class ValidateException(val e: ValidateResult<String>) : Exception()
+class ValidateException() : Exception()
 {
-    fun getErrorObject(): ValidateResult<String>
+    override var message: String = ""
+    private lateinit var data: Pair<InfoEnum, Boolean>
+
+    constructor(message: String): this()
     {
-        return e
+        this.message = message
     }
 
-    override fun setStackTrace(stackTrace: Array<StackTraceElement>)
+    constructor(message: String, data: Pair<InfoEnum, Boolean>): this()
     {
-        super.setStackTrace(stackTrace)
+        this.message = message
+        this.data = data
     }
 
-    override fun printStackTrace()
-    {
-        super.printStackTrace()
+    fun getData():Pair<InfoEnum, Boolean>{
+        return data
     }
-
-    override fun printStackTrace(s: PrintStream)
-    {
-        super.printStackTrace(s)
-    }
-
-    override fun printStackTrace(s: PrintWriter)
-    {
-        super.printStackTrace(s)
-    }
-
-    override fun getStackTrace(): Array<StackTraceElement>
-    {
-        return super.getStackTrace()
-    }
-
-    override fun initCause(cause: Throwable?): Throwable
-    {
-        return super.initCause(cause)
-    }
-
-    override fun fillInStackTrace(): Throwable
-    {
-        return super.fillInStackTrace()
-    }
-
-    override fun getLocalizedMessage(): String?
-    {
-        return super.getLocalizedMessage()
-    }
-
-    override val cause: Throwable?
-        get() = super.cause
-    override val message: String?
-        get() = super.message
 }

@@ -8,6 +8,7 @@ import com.delivery.sopo.data.repository.local.user.UserSharedPrefHelper
 import com.delivery.sopo.data.repository.local.repository.*
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
+import com.delivery.sopo.use_case.LoginBySelfUseCase
 import com.delivery.sopo.viewmodels.IntroViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryMainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
@@ -48,13 +49,15 @@ val appModule = module {
     single { AppPasswordRepository(get()) }
     single { OAuthLocalRepository(get()) }
 
+//    factory { LoginBySelfUseCase(get(), get()) }
+
     viewModel { SplashViewModel(get(), get()) }
     viewModel { IntroViewModel() }
-    viewModel { LoginViewModel(get(), get()) }
+    viewModel { LoginViewModel(get()) }
     viewModel { SignUpViewModel(get()) }
-    viewModel { SignUpCompleteViewModel(get(), get()) }
+    viewModel { SignUpCompleteViewModel(get(), get(), get()) }
     viewModel { RegisterNicknameViewModel(get()) }
-    viewModel { LoginSelectViewModel(get(),get()) }
+    viewModel { LoginSelectViewModel(get(),get(), get()) }
     viewModel { ResetPasswordViewModel(get()) }
     viewModel { MainViewModel(get(), get(), get(), get()) }
     viewModel { MenuSubViewModel() }
@@ -67,7 +70,7 @@ val appModule = module {
     viewModel { InquiryViewModel(get(), get(), get(), get()) }
     viewModel { MenuViewModel(get()) }
     viewModel { AccountManagerViewModel() }
-    viewModel { SignOutViewModel() }
+    viewModel { SignOutViewModel(get()) }
     viewModel { UpdateNicknameViewModel(get(), get()) }
 
     viewModel { InquiryMainViewModel() }

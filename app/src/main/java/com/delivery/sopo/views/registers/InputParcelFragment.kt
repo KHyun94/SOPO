@@ -21,7 +21,7 @@ import com.delivery.sopo.extensions.isGreaterThanOrEqual
 import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.util.*
-import com.delivery.sopo.util.ui_util.CustomAlertMsg
+import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.registesrs.InputParcelViewModel
 import com.delivery.sopo.views.main.MainView
@@ -190,7 +190,8 @@ class InputParcelFragment: Fragment()
         binding.vm!!.errorMsg.observe(this, Observer {
             if (!it.isNullOrEmpty())
             {
-                CustomAlertMsg.floatingUpperSnackBAr(requireContext(), it, true)
+//                TODO 커스텀 스낵바
+//                CustomSnackBar(context = requireContext()).floatingUpperSnackBAr(requireContext(), it, true)
                 binding.vm!!.errorMsg.value = ""
             }
         })

@@ -5,15 +5,16 @@ import android.view.Gravity
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.LoginViewBinding
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
+import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.extensions.launchActivity
 import com.delivery.sopo.extensions.launchActivityWithAllClear
-import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.CustomAlertMsg
+import com.delivery.sopo.models.base.BaseView
+import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.login.LoginViewModel
@@ -24,27 +25,34 @@ import com.delivery.sopo.views.signup.RegisterNicknameView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class LoginView: BasicView<LoginViewBinding>(R.layout.login_view)
+class LoginView: BaseView<LoginViewBinding, LoginViewModel>()
 {
-    private val loginVm: LoginViewModel by viewModel()
     private var progressBar: CustomProgressBar? = CustomProgressBar(this@LoginView)
 
-    override fun bindView()
+    override val layoutRes: Int = R.layout.login_view
+    override val vm: LoginViewModel by viewModel()
+
+    override fun receivedData(intent: Intent)
     {
-        binding.vm = loginVm
-        binding.executePendingBindings()
     }
 
+    override fun initUI()
+    {
+    }
 
-    override fun setObserver()
+    override fun setAfterSetUI()
     {
 
-        binding.vm!!.focus.observe(this, Observer { focus ->
+    }
+
+    override fun setObserve()
+    {
+        vm.focus.observe(this, Observer { focus ->
             val res = TextInputUtil.changeFocus(this@LoginView, focus)
-            binding.vm!!.validities[res.first] = res.second
+            vm.validity[res.first] = res.second
         })
 
-        binding.vm!!.invalidity.observe(this, Observer { target ->
+        vm.invalidity.observe(this) { target ->
             val message = when(target.first)
             {
                 InfoEnum.EMAIL ->
@@ -63,9 +71,32 @@ class LoginView: BasicView<LoginViewBinding>(R.layout.login_view)
             Toast.makeText(this@LoginView,message, Toast.LENGTH_LONG).apply {
                 setGravity(Gravity.TOP, 0, 180)
             }.show()
-        })
+        }
 
-        binding.vm!!.isProgress.observe(this, Observer { isProgress ->
+        vm.errorCode.observe(this){ code ->
+            when(code)
+            {
+                ResponseCode.TOKEN_ERROR_VALIDATION ->
+                {
+                    /*Toast.makeText(this@LoginView,message, Toast.LENGTH_LONG).apply {
+                        setGravity(Gravity.TOP, 0, 180)
+                    }.show()*/
+                    CustomSnackBar.make(view = binding.layoutInput,
+                                        content = "이메일 또는 비밀번호를 확인해주세요.",
+                                        duration = 3000,
+                                        type = SnackBarEnum.ERROR).show()
+                }
+                else ->
+                {
+                    CustomSnackBar.make(view = binding.layoutInput,
+                                        content = "알 수 없는 서버 에러입니다.",
+                                        duration = 3000,
+                                        type = SnackBarEnum.ERROR).show()
+                }
+            }
+        }
+
+        vm.isProgress.observe(this, Observer { isProgress ->
             if (isProgress == null) return@Observer
 
             if (progressBar == null)
@@ -78,47 +109,7 @@ class LoginView: BasicView<LoginViewBinding>(R.layout.login_view)
             }
         })
 
-        binding.vm!!.result.observe(this, Observer { result ->
-
-            SopoLog.d(
-                """
-                Self Login Result >>> ${result.message}                
-                ${result.result}
-                ${result.code}
-                ${result.data}
-                ${result.displayType}
-
-            """.trimIndent()
-            )
-
-            if (!result.result)
-            {
-                when (result.displayType)
-                {
-                    DisplayEnum.TOAST_MESSAGE ->
-                    {
-                        CustomAlertMsg.floatingUpperSnackBAr(context = this@LoginView, msg = result.message, isClick = true)
-                    }
-                    DisplayEnum.DIALOG ->
-                    {
-                        GeneralDialog(
-                            act = this@LoginView, title = "오류", msg = result.message, detailMsg = result.code?.CODE, rHandler = Pair(first = "네", second = object: OnAgreeClickListener{
-                                override fun invoke(agree: GeneralDialog)
-                                {
-                                    agree.dismiss()
-                                }
-
-                            })
-                        ).show(supportFragmentManager, "tag")
-                    }
-                    else -> return@Observer
-                }
-
-                return@Observer
-            }
-        })
-
-        binding.vm!!.navigator.observe(this@LoginView, Observer { navigator ->
+        vm.navigator.observe(this@LoginView, Observer { navigator ->
             when (navigator)
             {
                 NavigatorConst.TO_RESET_PASSWORD ->
@@ -136,4 +127,6 @@ class LoginView: BasicView<LoginViewBinding>(R.layout.login_view)
             }
         })
     }
+
+
 }

@@ -10,9 +10,9 @@ import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.networks.dto.joins.JoinInfoDTO
 import com.delivery.sopo.networks.repository.JoinRepository
-import com.delivery.sopo.data.repository.remote.o_auth.OAuthRemoteRepository
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.util.SopoLog
@@ -23,7 +23,7 @@ import kotlinx.coroutines.*
 import java.util.*
 import com.kakao.network.ErrorResult as KakaoErrorResult
 
-class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, private val oAuthRepo: OAuthLocalRepository): ViewModel()
+class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo:UserRemoteRepository, private val oAuthRepo: OAuthLocalRepository): ViewModel()
 {
     val navigator = MutableLiveData<String>()
     val backgroundImage = MutableLiveData<Int>().apply { postValue(R.drawable.ic_login_ani_box) }
@@ -132,7 +132,7 @@ class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, priva
 
     suspend fun login(email: String, password: String, nickname: String?)
     {
-        val oAuthRes = OAuthRemoteRepository.requestLoginWithOAuth(email, password)
+        val oAuthRes = userRemoteRepo.requestLogin(email, password)
 
         if (!oAuthRes.result)
         {
@@ -150,13 +150,13 @@ class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, priva
             setStatus(1)
         }
 
-        val oAuthEntity = OAuthMapper.objectToEntity(oAuthRes.data)
+        val oAuthDTO = oAuthRes.data
 
-        withContext(Dispatchers.Default) { oAuthRepo.insert(oAuthEntity) }
+        withContext(Dispatchers.Default) { oAuthRepo.insert(oAuthDTO) }
 
         SOPOApp.oAuth = oAuthRes.data
 
-        val infoRes = OAuthRemoteRepository.getUserInfo()
+        val infoRes = userRemoteRepo.getUserInfo()
 
         if (!infoRes.result)
         {
