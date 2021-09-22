@@ -13,6 +13,7 @@ import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.exceptions.ValidateException
+import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.dto.OAuthDTO
 import com.delivery.sopo.util.SopoLog

@@ -14,7 +14,7 @@ import com.delivery.sopo.models.PasswordResetDTO
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.dto.OAuthDTO
-import com.delivery.sopo.networks.api.LoginAPICall
+import com.delivery.sopo.networks.call.OAuthCall
 import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.CodeUtil
@@ -35,7 +35,7 @@ class UserRemoteRepository:KoinComponent
 
     suspend fun requestLogin(email: String, password: String): ResponseResult<OAuthDTO>
     {
-        when(val result = LoginAPICall().requestOauth(email, password.toMD5(), SOPOApp.deviceInfo))
+        when(val result = OAuthCall.requestOauth(email, password, SOPOApp.deviceInfo))
         {
             is NetworkResult.Success ->
             {

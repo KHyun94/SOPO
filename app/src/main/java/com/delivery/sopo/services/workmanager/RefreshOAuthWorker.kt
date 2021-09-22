@@ -7,6 +7,7 @@ import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.dto.OAuthDTO
 import com.delivery.sopo.models.mapper.OAuthMapper
+import com.delivery.sopo.networks.call.OAuthCall
 import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
@@ -32,7 +33,7 @@ import org.koin.core.inject
 
         SopoLog.d( msg = "doWork() call")
 
-        when(val result = UserCall.requestRefreshTokenInOAuth()){
+        when(val result = OAuthCall.requestRefreshTokenInOAuth()){
             is NetworkResult.Success ->
             {
                 val gson = Gson()

@@ -26,10 +26,10 @@ abstract class BaseService
             return NetworkResult.Error(null, APIException(e))
         }
 
+        // http status code (400 ~ 500)
         if(!response.isSuccessful)
         {
             SopoLog.e("Fail to request because of ${response.code()}")
-            // http status code (400 ~ 500)
             return NetworkResult.Error(response.code(), APIException.parse(response))
         }
 

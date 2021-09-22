@@ -1,64 +1,88 @@
 package com.delivery.sopo.views.login
 
 import android.content.Intent
-import android.os.Bundle
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.abstracts.BasicView
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.LoginSelectViewBinding
+import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.extensions.launchActivityWithAllClear
+import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
+import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
 import com.delivery.sopo.views.main.MainView
-import com.delivery.sopo.views.signup.SignUpView
 import com.delivery.sopo.views.signup.RegisterNicknameView
+import com.delivery.sopo.views.signup.SignUpView
 import com.kakao.auth.ISessionCallback
 import com.kakao.auth.Session
 import com.kakao.util.exception.KakaoException
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_view)
+class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
 {
-    private val vm : LoginSelectViewModel by viewModel()
+    override val layoutRes: Int=R.layout.login_select_view
+    override val vm : LoginSelectViewModel by viewModel()
 
     private var sessionCallback : ISessionCallback? = null
     var progressBar : CustomProgressBar? = null
 
-    init
+    override fun receivedData(intent: Intent)
     {
-        parentActivity = this@LoginSelectView
     }
 
-    override fun onCreate(savedInstanceState : Bundle?)
+    override fun initUI()
     {
-        super.onCreate(savedInstanceState)
     }
 
-    override fun bindView()
+    override fun setAfterSetUI()
     {
-        binding.vm = vm
-        binding.lifecycleOwner = this
     }
 
-    override fun setObserver()
+    override fun setObserve()
     {
+        vm.errorCode.observe(this) { code ->
+
+            when(code)
+            {
+                ResponseCode.FAIL_TO_LOGIN_KAKAO ->
+                {
+                    CustomSnackBar.make(view = binding.layoutLoginSelect,
+                                        content = "카카오 로그인에 실패했습니다.",
+                                        duration = 3000,
+                                        type = SnackBarEnum.ERROR).show()
+                }
+                else ->
+                {
+                    CustomSnackBar.make(view = binding.layoutLoginSelect,
+                                        content = "알 수 없는 에러입니다.",
+                                        duration = 3000,
+                                        type = SnackBarEnum.ERROR).show()
+                }
+            }
+        }
+
         vm.navigator.observe(this, Observer { navigator ->
-
-            SopoLog.d("""
-                Navigator >>> ${navigator}
-            """.trimIndent())
 
             when (navigator)
             {
                 NavigatorConst.TO_LOGIN ->
                 {
-                    startActivity(Intent(parentActivity, LoginView::class.java))
+                    startActivity(Intent(this, LoginView::class.java))
                 }
                 NavigatorConst.TO_SIGN_UP ->
                 {
-                    startActivity(Intent(parentActivity, SignUpView::class.java))
+                    startActivity(Intent(this, SignUpView::class.java))
+                }
+                NavigatorConst.TO_MAIN ->
+                {
+                    Intent(this, MainView::class.java).launchActivityWithAllClear(this@LoginSelectView)
+                }
+                NavigatorConst.TO_UPDATE_NICKNAME ->
+                {
+                    Intent(this, RegisterNicknameView::class.java).launchActivityWithAllClear(this@LoginSelectView)
                 }
                 NavigatorConst.TO_KAKAO_LOGIN ->
                 {
@@ -70,7 +94,7 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                     {
                         override fun onSessionOpened()
                         {
-                            binding.vm!!.requestKakaoLogin()
+                            vm.requestKakaoLogin()
                         }
 
                         override fun onSessionOpenFailed(exception : KakaoException)
@@ -80,19 +104,10 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
                     }
                     Session.getCurrentSession().addCallback(sessionCallback)
                 }
-                NavigatorConst.TO_MAIN ->
-                {
-                    Intent(this, MainView::class.java).launchActivityWithAllClear(this@LoginSelectView)
-                }
-                NavigatorConst.TO_UPDATE_NICKNAME ->
-                {
-                    Intent(this, RegisterNicknameView::class.java).launchActivityWithAllClear(this@LoginSelectView)
-                }
             }
-
         })
 
-        binding.vm!!.isProgress.observe(this, Observer { isProgress ->
+       vm.isProgress.observe(this, Observer { isProgress ->
             if(isProgress == null) return@Observer
 
             if(progressBar == null)
@@ -105,56 +120,6 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
             }
 
         })
-
-        binding.vm!!.result.observe(this, Observer { result ->
-
-//            if (it.successResult != null)
-//            {
-//                SopoLog.d(msg = "성공 발생 => ${it.successResult}")
-//
-//                val data = it.successResult!!.data
-//
-//                if (data != null)
-//                {
-//                    val intent = Intent(parentActivity, MainView::class.java)
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                    startActivity(intent)
-//                    finish()
-//                }
-//            }
-//
-//            if (it.errorResult != null)
-//            {
-//                SopoLog.e(msg = "에러 발생 => ${it.errorResult}")
-//
-//                when (val type = it.errorResult!!.errorType)
-//                {
-//                    ErrorResult.ERROR_TYPE_NON -> return@Observer
-//                    ErrorResult.ERROR_TYPE_TOAST ->
-//                    {
-//                        CustomAlertMsg.floatingUpperSnackBAr(
-//                            context = parentActivity, msg = it.errorResult!!.errorMsg, isClick = true
-//                        )
-//                        return@Observer
-//                    }
-//                    ErrorResult.ERROR_TYPE_DIALOG ->
-//                    {
-//                        val code = it.errorResult!!.code?.CODE
-//                        val data = it.errorResult!!.data
-//                        val msg = it.errorResult!!.errorMsg
-//
-//                        SopoLog.e(msg = "이시발 뭐지 ${data}")
-//
-//                        GeneralDialog(
-//                            act = parentActivity, title = "오류", msg = msg, detailMsg = code, rHandler = Pair(first = "네", second = null)
-//                        ).show(supportFragmentManager, "tag")
-//                    }
-//                    ErrorResult.ERROR_TYPE_SCREEN -> return@Observer
-//                    else -> return@Observer
-//                }
-//            }
-        })
     }
 
     override fun onActivityResult(requestCode : Int, resultCode : Int, data : Intent?)
@@ -163,9 +128,13 @@ class LoginSelectView : BasicView<LoginSelectViewBinding>(R.layout.login_select_
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+
+
     override fun onDestroy()
     {
         super.onDestroy()
         if (sessionCallback != null) Session.getCurrentSession().removeCallback(sessionCallback)
     }
+
+
 }

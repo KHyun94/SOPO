@@ -10,6 +10,20 @@ import retrofit2.http.POST
 interface OAuthAPI
 {
 
+    @FormUrlEncoded
+    @POST("api/v1/sopo-auth/oauth/token")
+    @Headers("Accept: application/json")
+    suspend fun requestOauth(
+        // 유저 이메일
+            @Field("grant_type") grantType: String,
+        // 비밀번호
+            @Field("username") email: String,
+        // Firebase uid
+            @Field("password") password: String,
+        // 디바이스 정보
+            @Field("device-info") deviceInfo: String
+    ):Response<Any>
+
     /**
      * 기간이 만료된 OAuth Access Token을 갱신
      * @param grantType

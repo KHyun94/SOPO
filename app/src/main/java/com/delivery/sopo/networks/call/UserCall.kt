@@ -30,19 +30,7 @@ object UserCall: BaseService(), KoinComponent
         return apiCall(call = { result })
     }
 
-    suspend fun requestRefreshTokenInOAuth(): NetworkResult<Any>
-    {
-        val oAuthEntity = oAuthRepo.get(userId = userRepo.getUserId()) ?:  throw Exception("o auth data is null")
-        val oAuthDTO = OAuthMapper.entityToObject(oAuthEntity)
 
-
-        val oAuthAPI = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, OAuthAPI::class.java)
-        val result = oAuthAPI.requestRefreshTokenInOAuth(grantType = "refresh_token",
-                                            email = userRepo.getUserId(),
-                                            refreshToken = oAuthDTO.refreshToken,
-                                            deviceInfo = SOPOApp.deviceInfo)
-        return apiCall(call = {result})
-    }
 
     suspend fun updateFCMToken(fcmToken: Map<String, String>): NetworkResult<APIResult<String?>>
     {

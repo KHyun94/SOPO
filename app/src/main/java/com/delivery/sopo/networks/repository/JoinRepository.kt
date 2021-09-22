@@ -13,7 +13,7 @@ import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
 
-object JoinRepository
+class JoinRepository
 {
     val deviceInfo = SOPOApp.deviceInfo
 
@@ -33,17 +33,7 @@ object JoinRepository
             is NetworkResult.Error ->
             {
                 val exception = result.exception as APIException
-                val errorCode = exception.responseCode
-                val apiResult = exception.apiResult
-                val message = if (exception.apiResult != null)
-                {
-                    exception.apiResult?.message
-                }
-                else errorCode.MSG
-
-                SopoLog.d("fail to request >>> $apiResult $message")
-
-                ResponseResult(false, errorCode, apiResult?.data as T, message ?: "알 수 없는 오류")
+                throw exception
             }
         }
     }
@@ -61,13 +51,6 @@ object JoinRepository
         val result = JoinCall.requestJoinByKakao(joinInfoDTO = joinInfoDTO)
         val res = requestJoin(result)
 
-        if(res.code == ResponseCode.ALREADY_REGISTERED_USER)
-        {
-            SopoLog.d("카카오 회원가입 >>> 이미 존재하는 아이디")
-            return ResponseResult(true, res.code, Unit, res.message)
-        }
-
         return res
     }
-
 }

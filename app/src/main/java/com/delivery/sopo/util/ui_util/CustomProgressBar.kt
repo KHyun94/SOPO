@@ -1,17 +1,14 @@
 package com.delivery.sopo.util.ui_util
 
-import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.R
 import com.delivery.sopo.util.SopoLog
 
@@ -28,6 +25,7 @@ class CustomProgressBar(val activity: AppCompatActivity?): DialogFragment()
     fun onStartProgress(isProgress: Boolean, callback: (Boolean)->Unit){
 
         SopoLog.d("onStartProgress() call")
+
 
         if(activity == null)
         {

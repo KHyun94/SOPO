@@ -19,7 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SignUpViewModel(private val userLocalRepo: UserLocalRepository): ViewModel()
+class SignUpViewModel(private val userLocalRepo: UserLocalRepository, private val joinRepo:JoinRepository): ViewModel()
 {
     val email = MutableLiveData<String>()
     val password = MutableLiveData<String>()
@@ -85,13 +85,13 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository): ViewModel
         val password = password.value.toString().trim()
 
         val joinInfoDTO =
-            JoinInfoDTO(email = email, password = password.toMD5(), deviceInfo = SOPOApp.deviceInfo)
+            JoinInfoDTO(email = email, password = password, deviceInfo = SOPOApp.deviceInfo)
 
         CoroutineScope(Dispatchers.Main).launch {
 
             _isProgress.postValue(false)
 
-            val res = JoinRepository.requestJoinBySelf(joinInfoDTO)
+            val res = joinRepo.requestJoinBySelf(joinInfoDTO)
 
             SopoLog.d(
                 """
@@ -112,7 +112,7 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository): ViewModel
             }
 
             userLocalRepo.setUserId(userId = email)
-            userLocalRepo.setUserPassword(password = password)
+            userLocalRepo.setUserPassword(password = password.toMD5())
 
             SopoLog.d(
                 """ Save Result >>> 
