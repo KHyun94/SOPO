@@ -22,7 +22,7 @@
 
         <TextView
             android:id="@+id/tv_title"
-            style="@style/H2"
+            style="@style/kor_H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -69,7 +69,7 @@
                 app:hintTextColor="@color/COLOR_MAIN_700">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    style="@style/H7"
+                    style="@style/kor_H4"
                     android:id="@+id/et_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -110,7 +110,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_password"
-                    style="@style/H7"
+                    style="@style/kor_H4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
@@ -149,7 +149,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_re_password"
-                    style="@style/H7"
+                    style="@style/kor_H4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
@@ -185,7 +185,7 @@
 
             <!-- todo font 미적용 -->
             <TextView
-                style="@style/H5"
+                style="@style/kor_H5"
                 android:textColor="@color/COLOR_GRAY_500"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

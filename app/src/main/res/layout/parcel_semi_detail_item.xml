@@ -33,7 +33,7 @@
 
             <TextView
                 android:id="@+id/tv_add"
-                style="@style/H4"
+                style="@style/kor_H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -65,7 +65,7 @@
 
         <TextView
             android:id="@+id/tv_alias"
-            style="@style/H3"
+            style="@style/kor_H3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -79,7 +79,7 @@
 
         <TextView
             android:id="@+id/tv_carrier"
-            style="@style/H3"
+            style="@style/kor_H3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
@@ -94,7 +94,7 @@
 
         <TextView
             android:id="@+id/tv_waybill_num"
-            style="@style/H3"
+            style="@style/kor_H3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"

@@ -42,7 +42,7 @@
 
             <TextView
                 android:id="@+id/title_tv"
-                style="@style/H2"
+                style="@style/kor_H2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"

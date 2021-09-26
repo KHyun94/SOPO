@@ -22,7 +22,7 @@
 
         <TextView
             android:id="@+id/tv_title_lock"
-            style="@style/H2"
+            style="@style/kor_H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="13dp"
@@ -34,7 +34,7 @@
 
         <TextView
             android:id="@+id/tv_errorComment"
-            style="@style/H5"
+            style="@style/kor_H5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/LOCK_SCREEN_VIEW_INVALID_PASSWORD"
@@ -46,7 +46,7 @@
 
         <TextView
             android:id="@+id/tv_guide_comment"
-            style="@style/H5"
+            style="@style/kor_H5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="113dp"

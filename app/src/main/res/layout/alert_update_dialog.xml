@@ -11,7 +11,7 @@
 
     <TextView
         android:id="@+id/tv_title"
-        style="@style/H4"
+        style="@style/kor_H4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -33,7 +33,7 @@
 
         <EditText
             android:id="@+id/et_input_text"
-            style="@style/H3"
+            style="@style/kor_H3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="3dp"
@@ -51,7 +51,7 @@
 
     <TextView
         android:id="@+id/tv_cancel_btn"
-        style="@style/H4"
+        style="@style/kor_H4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="19dp"
@@ -65,7 +65,7 @@
 
     <TextView
         android:id="@+id/tv_ok_btn"
-        style="@style/H4"
+        style="@style/kor_H4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="19dp"

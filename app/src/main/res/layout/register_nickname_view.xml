@@ -24,7 +24,7 @@
 
         <TextView
             android:id="@+id/tv_title"
-            style="@style/H2"
+            style="@style/kor_H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -35,7 +35,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            style="@style/H3"
+            style="@style/kor_H3"
             android:id="@+id/tv_sub_title"
             android:fontFamily="@font/spoqa_han_sans_neo_regular"
             android:layout_width="wrap_content"
@@ -86,7 +86,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_nickname"
-                    style="@style/H7"
+                    style="@style/kor_H4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true"

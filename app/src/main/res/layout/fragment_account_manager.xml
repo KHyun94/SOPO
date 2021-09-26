@@ -27,7 +27,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                style="@style/H3"
+                style="@style/kor_H3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -53,7 +53,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                style="@style/H3"
+                style="@style/kor_H3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -79,7 +79,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                style="@style/H3"
+                style="@style/kor_H3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -105,7 +105,7 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                style="@style/H3"
+                style="@style/kor_H3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

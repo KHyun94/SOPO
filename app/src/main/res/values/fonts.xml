@@ -17,53 +17,80 @@
 
 <resources>
 
-  <style name="H1">
-    <item name="android:fontFamily">@font/spoqa_han_sans_neo_bold</item>
+  <style name="kor_H1">
+    <item name="android:fontFamily">@font/pretendard_bold</item>
     <item name="android:textSize">35dp</item>
-    <item name="android:letterSpacing">-0.02</item>
     <item name="android:textColor">@color/COLOR_GRAY_800</item>
   </style>
 
-  <style name="H2">
-    <item name="android:fontFamily">@font/spoqa_han_sans_neo_bold</item>
+  <style name="kor_H2">
+    <item name="android:fontFamily">@font/pretendard_bold</item>
     <item name="android:textSize">21dp</item>
-    <item name="android:letterSpacing">-0.02</item>
     <item name="android:textColor">@color/COLOR_GRAY_800</item>
   </style>
 
-  <style name="H3">
-    <item name="android:fontFamily">@font/spoqa_han_sans_neo_bold</item>
-    <item name="android:textSize">16dp</item>
-    <item name="android:letterSpacing">-0.04</item>
+  <style name="kor_H3">
+    <item name="android:fontFamily">@font/pretendard_bold</item>
+    <item name="android:textSize">18dp</item>
+    <item name="android:textColor">@color/COLOR_GRAY_800</item>
+  </style>
+  <!--볼드-->
+
+  <!--레귤-->
+  <style name="kor_H4">
+    <item name="android:fontFamily">@font/pretendard_medium</item>
+    <item name="android:textSize">15dp</item>
+    <item name="android:textColor">@color/COLOR_GRAY_800</item>
+  </style>
+
+  <style name="kor_H5">
+    <item name="android:fontFamily">@font/pretendard_medium</item>
+    <item name="android:textSize">13dp</item>
+    <item name="android:textColor">@color/COLOR_GRAY_800</item>
+  </style>
+
+  <style name="kor_H6">
+    <item name="android:fontFamily">@font/pretendard_medium</item>
+    <item name="android:textSize">10dp</item>
+    <item name="android:textColor">@color/COLOR_GRAY_800</item>
+  </style>
+
+    <style name="eng_H1">
+    <item name="android:fontFamily">@font/pretendard_bold</item>
+    <item name="android:textSize">35dp</item>
+    <item name="android:textColor">@color/COLOR_GRAY_800</item>
+  </style>
+
+  <style name="eng_H2">
+    <item name="android:fontFamily">@font/pretendard_bold</item>
+    <item name="android:textSize">21dp</item>
+    <item name="android:textColor">@color/COLOR_GRAY_800</item>
+  </style>
+
+  <style name="eng_H3">
+    <item name="android:fontFamily">@font/pretendard_bold</item>
+    <item name="android:textSize">17dp</item>
     <item name="android:lineSpacingExtra">6dp</item>
     <item name="android:textColor">@color/COLOR_GRAY_800</item>
   </style>
+  <!--볼드-->
 
-  <style name="H4">
-    <item name="android:fontFamily">@font/spoqa_han_sans_neo_regular</item>
+  <!--레귤-->
+  <style name="eng_H4">
+    <item name="android:fontFamily">@font/pretendard_medium</item>
     <item name="android:textSize">14dp</item>
-    <item name="android:letterSpacing">-0.04</item>
     <item name="android:textColor">@color/COLOR_GRAY_800</item>
   </style>
 
-  <style name="H5">
-    <item name="android:fontFamily">@font/spoqa_han_sans_neo_regular</item>
-    <item name="android:textSize">12dp</item>
-    <item name="android:letterSpacing">-0.03</item>
+  <style name="eng_H5">
+    <item name="android:fontFamily">@font/pretendard_medium</item>
+    <item name="android:textSize">13dp</item>
     <item name="android:textColor">@color/COLOR_GRAY_800</item>
   </style>
 
-  <style name="H6">
-    <item name="android:fontFamily">@font/spoqa_han_sans_neo_regular</item>
-    <item name="android:textSize">11dp</item>
-    <item name="android:letterSpacing">-0.04</item>
-    <item name="android:textColor">@color/COLOR_GRAY_800</item>
-  </style>
+  <style name="eng_H6">
+    <item name="android:fontFamily">@font/pretendard_medium</item>
+    <item name="android:textSize">10dp</item>
+    <item name="android:textColor">@color/COLOR_GRAY_800</item></style>
 
-  <style name="H7">
-    <item name="fontFamily">sans-serif</item>
-    <item name="android:textSize">14dp</item>
-    <item name="android:letterSpacing">0.01</item>
-    <item name="android:textColor">@color/COLOR_GRAY_800</item>
-  </style>
 </resources>

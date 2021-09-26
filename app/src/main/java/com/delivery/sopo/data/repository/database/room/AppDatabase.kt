@@ -14,7 +14,7 @@ import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 
 @TypeConverters(Converters::class)
 @Database(
-    entities = [CarrierEntity::class, ParcelEntity::class, ParcelStatusEntity::class, ParcelCntInfoEntity::class, AppPasswordEntity::class, WorkEntity::class, LogEntity::class, OAuthEntity::class],
+    entities = [CarrierEntity::class, ParcelEntity::class, ParcelStatusEntity::class, CompleteParcelStatusEntity::class, AppPasswordEntity::class, WorkEntity::class, LogEntity::class, OAuthEntity::class],
     version = 1
 )
 abstract class AppDatabase : RoomDatabase()
@@ -22,7 +22,7 @@ abstract class AppDatabase : RoomDatabase()
     abstract fun carrierDAO(): CarrierDAO
     abstract fun parcelDao(): ParcelDao
     abstract fun parcelManagementDao(): ParcelStatusDAO
-    abstract fun timeCountDao(): TimeCountDao
+    abstract fun completeParcelStatusDao(): CompleteParcelStatusDao
     abstract fun securityDao(): AppPasswordDao
     abstract fun workDao(): WorkDao
     abstract fun logDao(): LogDao

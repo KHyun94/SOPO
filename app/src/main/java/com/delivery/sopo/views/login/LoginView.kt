@@ -68,7 +68,7 @@ class LoginView: BaseView<LoginViewBinding, LoginViewModel>()
                 else -> ""
             }
 
-            Toast.makeText(this@LoginView,message, Toast.LENGTH_LONG).apply {
+            Toast.makeText(this@LoginView,message, Toast.LENGTH_SHORT).apply {
                 setGravity(Gravity.TOP, 0, 180)
             }.show()
         }
@@ -78,13 +78,13 @@ class LoginView: BaseView<LoginViewBinding, LoginViewModel>()
             {
                 ResponseCode.TOKEN_ERROR_VALIDATION ->
                 {
-                    /*Toast.makeText(this@LoginView,message, Toast.LENGTH_LONG).apply {
-                        setGravity(Gravity.TOP, 0, 180)
-                    }.show()*/
-                    CustomSnackBar.make(view = binding.layoutInput,
-                                        content = "이메일 또는 비밀번호를 확인해주세요.",
-                                        duration = 3000,
-                                        type = SnackBarEnum.ERROR).show()
+                    Toast.makeText(this@LoginView,"이메일 또는 비밀번호를 확인해주세요.", Toast.LENGTH_SHORT).apply {
+                    }.show()
+
+//                    CustomSnackBar.make(view = binding.layoutInput,
+//                                        content = "이메일 또는 비밀번호를 확인해주세요.",
+//                                        duration = 3000,
+//                                        type = SnackBarEnum.ERROR).show()
                 }
                 else ->
                 {

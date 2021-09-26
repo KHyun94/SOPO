@@ -4,11 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -24,16 +23,16 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
-import com.delivery.sopo.data.repository.database.room.entity.ParcelCntInfoEntity
-import com.delivery.sopo.databinding.FragmentInquiryBinding
+import com.delivery.sopo.data.repository.database.room.dto.CompleteParcelStatusDTO
+import com.delivery.sopo.databinding.FragmentInquiryReBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.enums.ScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.models.UpdateAliasRequest
-import com.delivery.sopo.models.mapper.MenuMapper
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
+import com.delivery.sopo.models.mapper.MenuMapper
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
@@ -42,23 +41,22 @@ import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
-import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.bind
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import java.util.function.Function
-import java.util.stream.Collectors
-import java.util.stream.Stream
 import kotlin.system.exitProcess
+
 
 class InquiryFragment: Fragment()
 {
     private lateinit var parentView: MainView
-    private lateinit var binding: FragmentInquiryBinding
+    private lateinit var binding: FragmentInquiryReBinding
 
     private val vm: InquiryViewModel by viewModel()
 
@@ -116,6 +114,26 @@ class InquiryFragment: Fragment()
         setAdapters()
         setObserver()
 
+
+        //        binding.grid.setOnClickListener(null)
+
+        /*  binding.tvApr.setOnClickListener {
+              Toast.makeText(requireContext(), "4월", Toast.LENGTH_LONG).show()
+              SopoLog.d("4월!!!!")
+          }*/
+
+        /*       binding.nestScrollViewComplete.setOnTouchListener(null)
+               binding.nestScrollViewComplete.setOnClickListener(null)
+               binding.nestScrollViewComplete.isClickable = false*/
+
+
+        //        binding.vEmpty2.rootView.dispa
+        binding.vEmpty2.setOnTouchListener { v, event ->
+            return@setOnTouchListener binding.linearMonthSelector.dispatchTouchEvent(event)
+        }
+
+
+
         return binding.root
     }
 
@@ -125,7 +143,7 @@ class InquiryFragment: Fragment()
         super.onViewCreated(view, savedInstanceState)
 
         setListener()
-        binding.imageInquiryPopupMenu.setOnClickListener {
+        binding.ivPopMenu.setOnClickListener {
             openInquiryMenu(it)
         }
     }
@@ -141,12 +159,12 @@ class InquiryFragment: Fragment()
     {
         SopoLog.d("bindView() call")
 
-        binding =
-            DataBindingUtil.inflate<FragmentInquiryBinding>(inflater, R.layout.fragment_inquiry,
-                                                            container, false).apply {
-                vm = (this@InquiryFragment).vm
-                lifecycleOwner = this@InquiryFragment
-            }
+        binding = DataBindingUtil.inflate<FragmentInquiryReBinding>(inflater,
+                                                                    R.layout.fragment_inquiry_re,
+                                                                    container, false).apply {
+            vm = (this@InquiryFragment).vm
+            lifecycleOwner = this@InquiryFragment
+        }
     }
 
     private fun getAdapter(cntOfSelectedForDelete: MutableLiveData<Int>, inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter
@@ -182,16 +200,6 @@ class InquiryFragment: Fragment()
             }
         })
 
-        // 배송완료 리스트에서 해당 년월에 속해있는 택배들을 전부 삭제했을 때는 서버로 통신해서 새로고침하면 안돼고 무조건 로컬에 있는 데이터로 새로고침 해야한다.
-        // (서버로 통신해서 새로고침하면 서버에 있는 데이터(우선순위가 높음)로 덮어써버리기 때문에 '삭제취소'를 통해 복구를 못함..)
-        // (새로고침하면 내부에 저장된 '삭제할 데이터'들을 모두 서버로 통신하여 Remote database에서도 삭제처리(데이터 동기화)를 하고 나서 새로운 데이터를 받아옴)
-        vm.refreshCompleteListByOnlyLocalData.observe(requireActivity(), Observer {
-            if(it > 0)
-            {
-                vm.refreshCompleteListByOnlyLocalData()
-            }
-        })
-
         vm.isProgress.observe(requireActivity(), Observer { isProgress ->
             if(isProgress == null) return@Observer
 
@@ -216,26 +224,6 @@ class InquiryFragment: Fragment()
             viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
         })
 
-        // 배송완료 리스트.
-        vm.completeList.observe(requireActivity(), Observer { list ->
-
-            list.sortByDescending { it.parcelDTO.arrivalDte }
-            completedParcelAdapter.notifyChanged(list)
-        })
-
-        // 현재 배송완료의 년월 데이터를 tv_spinner_month에 text 적용
-        vm.currentParcelCntInfo.observe(requireActivity(), Observer {
-            it?.let { entity ->
-                binding.tvSpinnerMonth.text = MenuMapper.timeToListTitle(entity.time)
-            }
-        })
-
-        // 배송완료 화면에서 표출 가능한 년월 리스트
-        vm.monthList.observe(requireActivity(), Observer { monthList ->
-            binding.constraintMonthSpinner.setOnClickListener { v ->
-                openPopUpMonthlyUsageHistory(v, monthList)
-            }
-        })
 
         // '배송 중' 또는 '배송 완료' 화면에 따른 화면 세팅
         // TODO 데이터 바인딩으로 처리할 수 있으면 처리하도록 수정해야함.
@@ -247,7 +235,7 @@ class InquiryFragment: Fragment()
                     binding.btnOngoing.setTextColor(
                         ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE))
                     binding.btnOngoing.background = ContextCompat.getDrawable(requireContext(),
-                                                                       R.drawable.border_all_rounded_light_black)
+                                                                              R.drawable.border_all_rounded_light_black)
                     binding.btnOngoing.typeface =
                         ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular)
                     binding.btnComplete.typeface =
@@ -255,7 +243,7 @@ class InquiryFragment: Fragment()
                     binding.btnComplete.setTextColor(
                         ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
                     binding.btnComplete.background = ContextCompat.getDrawable(requireContext(),
-                                                                        R.drawable.border_all_rounded_color_gray_400)
+                                                                               R.drawable.border_all_rounded_color_gray_400)
                 }
 
                 ScreenStatusEnum.COMPLETE ->
@@ -263,7 +251,7 @@ class InquiryFragment: Fragment()
                     binding.btnOngoing.setTextColor(
                         ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
                     binding.btnOngoing.background = ContextCompat.getDrawable(requireContext(),
-                                                                       R.drawable.border_all_rounded_color_gray_400)
+                                                                              R.drawable.border_all_rounded_color_gray_400)
                     binding.btnComplete.typeface =
                         ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular)
                     binding.btnComplete.typeface =
@@ -271,7 +259,7 @@ class InquiryFragment: Fragment()
                     binding.btnComplete.setTextColor(
                         ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE))
                     binding.btnComplete.background = ContextCompat.getDrawable(requireContext(),
-                                                                        R.drawable.border_all_rounded_light_black)
+                                                                               R.drawable.border_all_rounded_light_black)
                 }
             }
         })
@@ -301,7 +289,7 @@ class InquiryFragment: Fragment()
         })
 
         // '삭제하기'에서 선택된 아이템의 개수
-        vm.cntOfSelectedItemForDelete.observe(requireActivity(), Observer {
+        /*vm.cntOfSelectedItemForDelete.observe(requireActivity(), Observer {
 
             // 선택된 아이템이 1개 이상이라면 '~개 삭제 하기' 뷰가 나와야한다.
             if(it > 0)
@@ -329,7 +317,7 @@ class InquiryFragment: Fragment()
                 binding.tvIsAllChecked.setTextColor(
                     ContextCompat.getColor(requireActivity(), R.color.COLOR_GRAY_400))
             }
-        })
+        })*/
 
         /*
          *   <화면에 리스트뷰들을 삭제할 수 있어야한다.>
@@ -380,6 +368,180 @@ class InquiryFragment: Fragment()
                 }
             }
         })
+
+        /** 배송 완료
+         */
+        // 배송완료 리스트에서 해당 년월에 속해있는 택배들을 전부 삭제했을 때는 서버로 통신해서 새로고침하면 안돼고 무조건 로컬에 있는 데이터로 새로고침 해야한다.
+        // (서버로 통신해서 새로고침하면 서버에 있는 데이터(우선순위가 높음)로 덮어써버리기 때문에 '삭제취소'를 통해 복구를 못함..)
+        // (새로고침하면 내부에 저장된 '삭제할 데이터'들을 모두 서버로 통신하여 Remote database에서도 삭제처리(데이터 동기화)를 하고 나서 새로운 데이터를 받아옴)
+        vm.refreshCompleteListByOnlyLocalData.observe(requireActivity(), Observer {
+            if(it > 0)
+            {
+                vm.refreshCompleteListByOnlyLocalData()
+            }
+        })
+
+        // 배송완료 리스트.
+        vm.completeList.observe(requireActivity(), Observer { list ->
+            SopoLog.d("!!! 완료 택배 갯수 ${list.size}")
+            list.sortByDescending { it.parcelDTO.arrivalDte }
+
+            val dumps = list.toMutableList()
+
+            dumps.addAll(list)
+            dumps.addAll(list)
+            dumps.addAll(list)
+            dumps.addAll(list)
+            dumps.addAll(list)
+            dumps.addAll(list)
+            dumps.addAll(list)
+
+            SopoLog.d("!!! 완료 택배 갯수 ${dumps.size}")
+
+            completedParcelAdapter.notifyChanged(list)
+        })
+
+        // 현재 배송완료의 년월 데이터를 tv_spinner_month에 text 적용
+        //        vm.currentParcelCntInfo.observe(requireActivity(), Observer {
+        //            it?.let { entity ->
+        //                binding.tvSpinnerMonth.text = MenuMapper.timeToListTitle(entity.time)
+        //            }
+        //        })
+
+        // 배송완료 화면에서 표출 가능한 년월 리스트
+        vm.completeDateList.observe(requireActivity()) { dates ->
+
+            binding.constraintYearSpinner.setOnClickListener { v ->
+                openPopUpMonthlyUsageHistory(v, dates)
+            }
+        }
+
+        vm.currentCompleteParcelYear.observe(requireActivity()) {
+            binding.tvSpinnerYear.text = "${it}년"
+        }
+
+        vm.currentCompleteParcelMonth.observe(requireActivity()) { list ->
+
+            val reversedList = list.reversed()
+
+            reversedList.forEach {
+
+                val (clickable, textColor, font) = if(it.count > 0 && it.visibility == 1)
+                {
+                    Triple(true, ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800),
+                           ResourcesCompat.getFont(requireContext(),
+                                                   R.font.spoqa_han_sans_neo_bold))
+                }
+                else
+                {
+                    Triple(false, ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300),
+                           ResourcesCompat.getFont(requireContext(),
+                                                   R.font.spoqa_han_sans_neo_regular))
+                }
+
+                when(it.month)
+                {
+                    "01" ->
+                    {
+                        binding.tvJan.apply {
+                            setTextColor(textColor)
+                            typeface = font
+                            //                            isClickable = clickable
+                        }
+                    }
+                    "02" ->
+                    {
+                        binding.tvFeb.apply {
+                            setTextColor(textColor)
+                            typeface = font
+                            //                            isClickable = clickable
+                        }
+                    }
+                    "03" ->
+                    {
+                        binding.tvMar.apply {
+                            setTextColor(textColor)
+                            typeface = font
+                            //                            isClickable = clickable
+                        }
+                    }
+                    "04" ->
+                    {
+                        binding.tvApr.apply {
+                            setTextColor(textColor)
+                            typeface = font
+                            //                            isClickable = clickable
+                        }
+                    }
+                    "05" ->
+                    {
+                        binding.tvMay.apply {
+                            setTextColor(textColor)
+                            typeface = font
+                            //                            isClickable = clickable
+                        }
+                    }
+                    "06" ->
+                    {
+                        binding.tvJun.apply {
+                            setTextColor(textColor)
+                            typeface = font
+                            //                            isClickable = clickable
+                        }
+                    }
+                    "07" ->
+                    {
+                        binding.tvJul.apply {
+                            setTextColor(textColor)
+                            typeface = font
+                            //                            isClickable = clickable
+                        }
+                    }
+                    "08" ->
+                    {
+                        binding.tvAug.apply {
+                            setTextColor(textColor)
+                            typeface = font
+                            //                            isClickable = clickable
+                        }
+                    }
+                    "09" ->
+                    {
+                        binding.tvSep.apply {
+                            setTextColor(textColor)
+                            typeface = font
+                            //                            isClickable = clickable
+                        }
+                    }
+                    "10" ->
+                    {
+                        binding.tvOct.apply {
+                            setTextColor(textColor)
+                            typeface = font
+                            //                            isClickable = clickable
+                        }
+                    }
+                    "11" ->
+                    {
+                        binding.tvNov.apply {
+                            setTextColor(textColor)
+                            typeface = font
+                            //                            isClickable = clickable
+                        }
+                    }
+                    "12" ->
+                    {
+                        binding.tvDec.apply {
+                            setTextColor(textColor)
+                            typeface = font
+                            //                            isClickable = clickable
+                        }
+                    }
+                }
+
+            }
+
+        }
     }
 
     private fun getParcelClicked(): OnParcelClickListener
@@ -389,7 +551,8 @@ class InquiryFragment: Fragment()
             override fun onItemClicked(view: View, type: Int, parcelId: Int)
             {
                 TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelId)
-                FragmentManager.move(requireActivity(), TabCode.INQUIRY_DETAIL, InquiryMainFrame.viewId)
+                FragmentManager.move(requireActivity(), TabCode.INQUIRY_DETAIL,
+                                     InquiryMainFrame.viewId)
             }
 
             override fun onItemLongClicked(view: View, type: Int, parcelId: Int)
@@ -398,28 +561,25 @@ class InquiryFragment: Fragment()
 
                 AlertUtil.updateValueDialog(requireContext(), "물품명을 입력해주세요.",
                                             Pair("확인", View.OnClickListener {
-                                                edit.observe(requireActivity(),
-                                                             Observer { alias ->
+                                                edit.observe(requireActivity(), Observer { alias ->
 
-                                                                 val updateAliasRequest =
-                                                                     UpdateAliasRequest(
-                                                                         parcelId = parcelId,
-                                                                         alias = alias)
+                                                    val updateAliasRequest =
+                                                        UpdateAliasRequest(parcelId = parcelId,
+                                                                           alias = alias)
 
-                                                                 vm.patchParcelAlias(
-                                                                     updateAliasRequest)
+                                                    vm.patchParcelAlias(updateAliasRequest)
 
-                                                                 AlertUtil.onDismiss()
+                                                    AlertUtil.onDismiss()
 
-                                                                 if(type == 0)
-                                                                 {
-                                                                     vm.refreshOngoingParcels()
-                                                                 }
-                                                                 else
-                                                                 {
-                                                                     vm.refreshComplete()
-                                                                 }
-                                                             })
+                                                    if(type == 0)
+                                                    {
+                                                        vm.refreshOngoingParcels()
+                                                    }
+                                                    else
+                                                    {
+                                                        vm.refreshComplete()
+                                                    }
+                                                })
                                             }), Pair("취소", null), Function {
                         edit.value = it
                     })
@@ -440,84 +600,92 @@ class InquiryFragment: Fragment()
 
         requireActivity().menuInflater.inflate(R.menu.inquiry_popup_menu, menu)
 
-        val popUpView: PopupMenuViewBinding = PopupMenuViewBinding.inflate(LayoutInflater.from(requireContext()))
-            .also { v ->
-                val popupMenuListAdapter = PopupMenuListAdapter(MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
+        val popUpView: PopupMenuViewBinding =
+            PopupMenuViewBinding.inflate(LayoutInflater.from(requireContext())).also { v ->
+                    val popupMenuListAdapter = PopupMenuListAdapter(
+                        MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
 
-                
-                v.recyclerviewInquiryPopupMenu.also {
-                    it.adapter = popupMenuListAdapter
-                    val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                    dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
-                    it.addItemDecoration(dividerItemDecoration)
 
-                    // 'Inquiry' 화면 우측 상단의 메뉴 아이템 이벤트
-                    popupMenuListAdapter.setPopUpMenuOnclick(object: PopupMenuListAdapter.InquiryPopUpMenuItemOnclick
-                                                             {
-                                                                 override fun removeItem(v: View)
+                    v.recyclerviewInquiryPopupMenu.also {
+                        it.adapter = popupMenuListAdapter
+                        val dividerItemDecoration =
+                            DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                        dividerItemDecoration.setDrawable(
+                            ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
+                        it.addItemDecoration(dividerItemDecoration)
+
+                        // 'Inquiry' 화면 우측 상단의 메뉴 아이템 이벤트
+                        popupMenuListAdapter.setPopUpMenuOnclick(object: PopupMenuListAdapter.InquiryPopUpMenuItemOnclick
                                                                  {
-                                                                     //삭제하기
-                                                                     vm.openRemoveView()
-                                                                     menuPopUpWindow?.dismiss()
-                                                                 }
+                                                                     override fun removeItem(v: View)
+                                                                     {
+                                                                         //삭제하기
+                                                                         vm.onOpenDeleteView()
+                                                                         menuPopUpWindow?.dismiss()
+                                                                     }
 
-                                                                 override fun refreshItems(v: View)
-                                                                 {
-                                                                     // 새로고침
-                                                                     vm.refreshOngoingParcels()
-                                                                     menuPopUpWindow?.dismiss()
-                                                                 }
+                                                                     override fun refreshItems(v: View)
+                                                                     {
+                                                                         // 새로고침
+                                                                         vm.refreshOngoingParcels()
+                                                                         menuPopUpWindow?.dismiss()
+                                                                     }
 
-                                                                 override fun help(v: View)
-                                                                 {
-                                                                     // 도움말
-                                                                     menuPopUpWindow?.dismiss()
-                                                                 }
-                                                             })
+                                                                     override fun help(v: View)
+                                                                     {
+                                                                         // 도움말
+                                                                         menuPopUpWindow?.dismiss()
+                                                                     }
+                                                                 })
+                    }
                 }
-            }
 
-        menuPopUpWindow = PopupWindow(popUpView.root, SizeUtil.changeDpToPx(binding.root.context, 175F),
-                                      ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
-            showAsDropDown(anchorView)
-        }
+        menuPopUpWindow =
+            PopupWindow(popUpView.root, SizeUtil.changeDpToPx(binding.root.context, 175F),
+                        ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
+                showAsDropDown(anchorView)
+            }
 
     }
 
     // 배송완료 화면에서 년/월을 눌렀을 시 팝업 메뉴가 나온다.
     @SuppressLint("UseCompatLoadingForDrawables")
-    private fun openPopUpMonthlyUsageHistory(anchorView: View, timeCntDtoList: MutableList<ParcelCntInfoEntity>)
+    private fun openPopUpMonthlyUsageHistory(anchorView: View, statusList: MutableList<CompleteParcelStatusDTO>)
     {
-        val historyPopUpView: PopupMenuViewBinding = PopupMenuViewBinding.inflate(LayoutInflater.from(requireContext()))
-            .also { v ->
-                val popupMenuListAdapter = PopupMenuListAdapter(
-                    MenuMapper.timeCountDtoToMenuItemList(
-                        timeCntDtoList) as MutableList<InquiryMenuItem>)
-                v.recyclerviewInquiryPopupMenu.also {
-                    it.adapter = popupMenuListAdapter
-                    val dividerItemDecoration =
-                        DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                    dividerItemDecoration.setDrawable(
-                        ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
-                    it.addItemDecoration(dividerItemDecoration)
+        val historyPopUpView: PopupMenuViewBinding =
+            PopupMenuViewBinding.inflate(LayoutInflater.from(context)).also { v ->
 
-                    popupMenuListAdapter.setHistoryPopUpItemOnclick(object: PopupMenuListAdapter.HistoryPopUpItemOnclick
-                                                                    {
-                                                                        override fun changeTimeCount(v: View, time: String)
+                    val inquiryMenuItems = MenuMapper.completeParcelStatusDTOToMenuItem(statusList) as MutableList<InquiryMenuItem>
+
+                    val popupMenuListAdapter = PopupMenuListAdapter(inquiryMenuItems)
+
+                    v.recyclerviewInquiryPopupMenu.also {
+                        it.adapter = popupMenuListAdapter
+                        val dividerItemDecoration =
+                            DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                        dividerItemDecoration.setDrawable(
+                            ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
+                        it.addItemDecoration(dividerItemDecoration)
+
+                        popupMenuListAdapter.setHistoryPopUpItemOnclick(object: PopupMenuListAdapter.HistoryPopUpItemOnclick
                                                                         {
-                                                                            vm.changeTimeCount(time)
-                                                                            historyPopUpWindow?.dismiss()
-                                                                        }
-                                                                    })
+                                                                            override fun changeTimeCount(v: View, year: String)
+                                                                            {
+                                                                                vm.changeYearForCompleteParcels(
+                                                                                    year)
+                                                                                historyPopUpWindow?.dismiss()
+                                                                            }
+                                                                        })
 
-                    it.scrollBarFadeDuration = 800
+                        it.scrollBarFadeDuration = 800
+                    }
                 }
-            }
-        historyPopUpWindow = if(timeCntDtoList.size > 6)
+        historyPopUpWindow = if(statusList.size > 6)
         {
             PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F),
-                        SizeUtil.changeDpToPx(binding.root.context, 35 * 6F),
-                        true).apply { showAsDropDown(anchorView) }
+                        SizeUtil.changeDpToPx(binding.root.context, 35 * 6F), true).apply {
+                showAsDropDown(anchorView)
+            }
         }
         else
         {
@@ -583,16 +751,13 @@ class InquiryFragment: Fragment()
                                                                                1) && newState == RecyclerView.SCROLL_STATE_IDLE
                                                                        ) // 리스트뷰의 마지막
                                                                        {
-                                                                           val date =
-                                                                               binding.tvSpinnerMonth.text.toString()
-                                                                           SopoLog.d(
-                                                                               msg = "[배송완료 - 다른 날짜의 데이터 조회] 선택된 년월 : $date")
-
                                                                            val year =
-                                                                               date.substring(0, 4)
-                                                                           val month =
-                                                                               date.substring(4)
-                                                                                   .padStart(2, '0')
+                                                                               binding.tvSpinnerYear.text.toString()
+                                                                                   .replace("년", "")
+                                                                           SopoLog.d(
+                                                                               msg = "[배송완료 - 다른 날짜의 데이터 조회] 선택된 년월 : $year")
+
+                                                                           val month = "08"
 
                                                                            vm.getCompleteListWithPaging(
                                                                                MenuMapper.titleToInquiryDate(
@@ -602,7 +767,7 @@ class InquiryFragment: Fragment()
                                                                })
 
         // '삭제하기' 화면에서 최하단에 '~개 삭제하기' 화면을 눌렀을때 실질적으로 '삭제' 행위를 개시한다.
-        binding.snackBarConfirmDelete.setOnClickListener {
+        /*binding.snackBarConfirmDelete.setOnClickListener {
             ConfirmDeleteDialog(requireActivity(),
                                 Pair("삭제하기", object: ((ConfirmDeleteDialog) -> Unit)
                                 {
@@ -642,7 +807,7 @@ class InquiryFragment: Fragment()
 
                                 })).show(requireActivity().supportFragmentManager,
                                          "ConfirmDeleteDialog")
-        }
+        }*/
     }
 
     // '곧 도착' 리스트의 아이템의 개수에 따른 화면세팅
@@ -702,17 +867,19 @@ class InquiryFragment: Fragment()
     private fun viewSettingForPopupMenuDelete()
     {
         binding.tvTitle.visibility = INVISIBLE
-        binding.constraintSelect.visibility = INVISIBLE
-        binding.imageInquiryPopupMenu.visibility = INVISIBLE
+        binding.linearStatusSelector.visibility = INVISIBLE
+        binding.ivPopMenu.visibility = INVISIBLE
         binding.linearMoreViewParent.visibility = GONE
 
 
         binding.vMoreView.visibility = INVISIBLE
-        binding.constraintDeleteSelect.visibility = VISIBLE
+        /*
+                binding.constraintDeleteSelect.visibility = VISIBLE
 
-        binding.ivDelectStatusClear.visibility = VISIBLE
+                binding.ivDelectStatusClear.visibility = VISIBLE
 
-        binding.tvDeleteTitle.visibility = VISIBLE
+                binding.tvDeleteTitle.visibility = VISIBLE
+        */
 
         // '하단 탭'이 사라져야한다.
         parentView.binding.vm!!.setMainTabVisibility(GONE)
@@ -724,12 +891,14 @@ class InquiryFragment: Fragment()
     private fun viewSettingForPopupMenuDeleteCancel()
     {
         binding.tvTitle.visibility = VISIBLE
-        binding.constraintSelect.visibility = VISIBLE
-        binding.imageInquiryPopupMenu.visibility = VISIBLE
+        binding.linearStatusSelector.visibility = VISIBLE
+        binding.ivPopMenu.visibility = VISIBLE
 
-        binding.ivDelectStatusClear.visibility = INVISIBLE
-        binding.tvDeleteTitle.visibility = GONE
-        binding.constraintDeleteSelect.visibility = GONE
+        /*
+                binding.ivDelectStatusClear.visibility = INVISIBLE
+                binding.tvDeleteTitle.visibility = GONE
+                binding.constraintDeleteSelect.visibility = GONE
+        */
 
         // '하단 탭'이 노출되어야한다.
         parentView.binding.vm!!.setMainTabVisibility(VISIBLE)
@@ -739,29 +908,29 @@ class InquiryFragment: Fragment()
         viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
     }
 
-    private fun showDeleteSnackBar()
-    {
-        val slideUp: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up)
-        val slideDown: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down)
+    /*    private fun showDeleteSnackBar()
+        {
+            val slideUp: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_up)
+            val slideDown: Animation = AnimationUtils.loadAnimation(requireContext(), R.anim.slide_down)
 
-        binding.snackBarDisplayDelete.visibility = VISIBLE
-        binding.snackBarDisplayDelete.startAnimation(slideUp)
-        //2초후에 실행
-        Timer().schedule(object: TimerTask()
-                         {
-                             override fun run()
+            binding.snackBarDisplayDelete.visibility = VISIBLE
+            binding.snackBarDisplayDelete.startAnimation(slideUp)
+            //2초후에 실행
+            Timer().schedule(object: TimerTask()
                              {
-                                 CoroutineScope(Dispatchers.Main).launch {
-                                     // 만약 '삭제취소'를 눌러서 삭제가 취소 되었을 경우, 이미 GONE이 된 상태이므로 애니메이션 효과를 줄 필요가 없다.
-                                     if(binding.snackBarDisplayDelete.visibility != GONE)
-                                     {
-                                         binding.snackBarDisplayDelete.visibility = GONE
-                                         binding.snackBarDisplayDelete.startAnimation(slideDown)
+                                 override fun run()
+                                 {
+                                     CoroutineScope(Dispatchers.Main).launch {
+                                         // 만약 '삭제취소'를 눌러서 삭제가 취소 되었을 경우, 이미 GONE이 된 상태이므로 애니메이션 효과를 줄 필요가 없다.
+                                         if(binding.snackBarDisplayDelete.visibility != GONE)
+                                         {
+                                             binding.snackBarDisplayDelete.visibility = GONE
+                                             binding.snackBarDisplayDelete.startAnimation(slideDown)
+                                         }
                                      }
                                  }
-                             }
-                         }, 2000)
-    }
+                             }, 2000)
+        }*/
 
     // 다른 화면으로 넘어갔을 때
     override fun onResume()

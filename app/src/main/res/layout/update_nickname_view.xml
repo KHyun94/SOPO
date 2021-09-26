@@ -26,7 +26,7 @@
 
             <TextView
                 android:id="@+id/tv_title"
-                style="@style/H2"
+                style="@style/kor_H2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -51,7 +51,7 @@
 
         <TextView
             android:id="@+id/tv_current_nickname_start"
-            style="@style/H3"
+            style="@style/kor_H3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="32dp"
@@ -62,7 +62,7 @@
 
         <TextView
             android:id="@+id/tv_current_nickname_middle"
-            style="@style/H3"
+            style="@style/kor_H3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="32dp"
@@ -75,7 +75,7 @@
 
         <TextView
             android:id="@+id/tv_current_nickname_end"
-            style="@style/H3"
+            style="@style/kor_H3"
             android:layout_marginTop="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -122,7 +122,7 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/et_nickname"
-                    style="@style/H7"
+                    style="@style/kor_H4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="영문 또는 한글 12자 이내"

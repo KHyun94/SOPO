@@ -9,7 +9,6 @@ import com.delivery.sopo.data.repository.local.repository.*
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.networks.repository.JoinRepository
-import com.delivery.sopo.use_case.LoginBySelfUseCase
 import com.delivery.sopo.viewmodels.IntroViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryMainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
@@ -47,7 +46,7 @@ val appModule = module {
     single { CarrierRepository(get()) }
     single { ParcelRepository(get(), get()) }
     single { ParcelManagementRepoImpl(get()) }
-    single { TimeCountRepoImpl(get(), get()) }
+    single { CompleteParcelStatusRepoImpl(get()) }
     single { AppPasswordRepository(get()) }
     single { OAuthLocalRepository(get()) }
 

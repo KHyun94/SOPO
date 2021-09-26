@@ -24,7 +24,7 @@
 
         <TextView
             android:id="@+id/tv_title"
-            style="@style/H2"
+            style="@style/kor_H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -68,7 +68,7 @@
 
                 <TextView
                     android:id="@+id/tv_carrier"
-                    style="@style/H4"
+                    style="@style/kor_H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
@@ -78,7 +78,7 @@
 
                 <TextView
                     android:id="@+id/tv_waybill_num"
-                    style="@style/H3"
+                    style="@style/kor_H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
@@ -118,7 +118,7 @@
 
             <EditText
                 android:id="@+id/et_input_text"
-                style="@style/H4"
+                style="@style/kor_H4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="14dp"
@@ -147,7 +147,7 @@
             app:layout_constraintTop_toBottomOf="@id/layout_alias" />
 
         <TextView
-            style="@style/H4"
+            style="@style/kor_H4"
             android:id="@+id/tv_init"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -35,7 +35,7 @@
             <TextView
                 android:background="@drawable/border_17dp_rounder"
                 android:id="@+id/tv_settingPassword"
-                style="@style/H5"
+                style="@style/kor_H5"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="4dp"
@@ -68,7 +68,7 @@
 
             <TextView
                 android:id="@+id/tv_status"
-                style="@style/H3"
+                style="@style/kor_H3"
                 android:textSize="17dp"
                 android:lineSpacingExtra="6dp"
                 android:layout_width="wrap_content"
@@ -112,7 +112,7 @@
                     android:background="@drawable/ic_24_notice" />
 
                 <TextView
-                    style="@style/H3"
+                    style="@style/kor_H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -161,7 +161,7 @@
                     android:background="@drawable/ic_24_setting" />
 
                 <TextView
-                    style="@style/H3"
+                    style="@style/kor_H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -212,7 +212,7 @@
                     android:background="@drawable/ic_24_faq" />
 
                 <TextView
-                    style="@style/H3"
+                    style="@style/kor_H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -263,7 +263,7 @@
                     android:background="@drawable/ic_24_terms" />
 
                 <TextView
-                    style="@style/H3"
+                    style="@style/kor_H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -314,7 +314,7 @@
                     android:background="@drawable/ic_24_info" />
 
                 <TextView
-                    style="@style/H3"
+                    style="@style/kor_H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"

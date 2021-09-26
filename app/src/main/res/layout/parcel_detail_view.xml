@@ -46,7 +46,7 @@
 
                 <TextView
                     android:id="@+id/tv_title"
-                    style="@style/H2"
+                    style="@style/kor_H2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="11dp"
@@ -59,7 +59,7 @@
 
                 <TextView
                     android:id="@+id/tv_subtext"
-                    style="@style/H3"
+                    style="@style/kor_H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="39dp"

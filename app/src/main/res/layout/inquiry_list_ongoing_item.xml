@@ -135,25 +135,24 @@
 
                     <TextView
                         android:id="@+id/tv_registered_parcel_name"
-                        style="@style/H5"
+                        style="@style/kor_H4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="6dp"
-                        android:fontFamily="@font/roboto_medium"
-                        android:letterSpacing="0"
+                        android:letterSpacing="-0.01"
+                        android:textSize="15.5dp"
                         android:text="@{ongoingInquiryData.parcelDTO.alias}"
-                        android:textSize="14.5dp"
                         tools:text="갤럭시 버즈 플러스 화이트777갤1234ABCabc" />
 
                     <TextView
+                        style="@style/kor_H6"
                         android:id="@+id/tv_registered_parcel_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_regular"
                         android:text="@{ongoingInquiryData.ongoingDateTime}"
                         android:textColor="@color/COLOR_GRAY_500"
-                        android:textSize="13dp"
-                        tools:text="2020/08/31" />
+                        tools:text="2020/08/31"
+                        android:textSize="11dp"/>
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -176,7 +175,7 @@
 
                     <TextView
                         android:id="@+id/tv_registered_parcel_name_delete"
-                        style="@style/H5"
+                        style="@style/kor_H5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="6dp"

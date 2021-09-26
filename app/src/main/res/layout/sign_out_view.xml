@@ -41,7 +41,7 @@
 
             <TextView
                 android:id="@+id/title_tv"
-                style="@style/H2"
+                style="@style/kor_H2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -55,7 +55,7 @@
 
         <TextView
             android:id="@+id/tv_title_reason"
-            style="@style/H3"
+            style="@style/kor_H3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="31.5dp"
@@ -91,7 +91,7 @@
                     android:onClick="@{(cbReason1)->vm.onCheckClicked(cbReason1, @string/SIGN_OUT_REASON1)}"/>
 
                 <TextView
-                    style="@style/H4"
+                    style="@style/kor_H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
@@ -117,7 +117,7 @@
                     android:tag="@string/SIGN_OUT_REASON2"/>
 
                 <TextView
-                    style="@style/H4"
+                    style="@style/kor_H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
@@ -143,7 +143,7 @@
                     android:tag="@string/SIGN_OUT_REASON3" />
 
                 <TextView
-                    style="@style/H4"
+                    style="@style/kor_H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
@@ -169,7 +169,7 @@
                     android:tag="@string/SIGN_OUT_REASON4"/>
 
                 <TextView
-                    style="@style/H4"
+                    style="@style/kor_H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
@@ -195,7 +195,7 @@
                     android:tag="@string/SIGN_OUT_REASON5"/>
 
                 <TextView
-                    style="@style/H4"
+                    style="@style/kor_H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
@@ -222,7 +222,7 @@
                     android:tag="@string/SIGN_OUT_REASON6"/>
 
                 <TextView
-                    style="@style/H4"
+                    style="@style/kor_H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
@@ -239,7 +239,7 @@
                 android:background="@drawable/border_white_gray">
 
                 <EditText
-                    style="@style/H4"
+                    style="@style/kor_H4"
                     android:id="@+id/et_reason"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

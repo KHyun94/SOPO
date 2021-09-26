@@ -5,9 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.delivery.sopo.util.TimeUtil
 @Entity(
-    tableName = "PARCEL_CNT_INFO"
+    tableName = "COMPLETE_PARCEL_STATUS"
 )
-data class ParcelCntInfoEntity(
+data class CompleteParcelStatusEntity(
     // 배송완료 리스트에서 조회 가능한 년월 YYYYMM
     @PrimaryKey
     @ColumnInfo(

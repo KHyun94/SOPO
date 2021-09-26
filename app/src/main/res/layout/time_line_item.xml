@@ -15,7 +15,7 @@
 
         <TextView
             android:id="@+id/tv_date_yymmdd"
-            style="@style/H5"
+            style="@style/kor_H5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
@@ -26,7 +26,7 @@
 
         <TextView
             android:id="@+id/tv_date_hhmmss"
-            style="@style/H5"
+            style="@style/kor_H5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
@@ -62,7 +62,7 @@
 
         <TextView
             android:id="@+id/tv_delivery_status"
-            style="@style/H5"
+            style="@style/kor_H5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="11dp"
@@ -74,7 +74,7 @@
 
         <TextView
             android:id="@+id/tv_delivery_location"
-            style="@style/H5"
+            style="@style/kor_H5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="11dp"

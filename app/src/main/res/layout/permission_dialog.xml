@@ -16,7 +16,7 @@
 
             <TextView
                 android:id="@+id/tv_title"
-                style="@style/H2"
+                style="@style/kor_H2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/spoqa_han_sans_neo_regular"

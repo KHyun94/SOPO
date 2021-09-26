@@ -23,7 +23,7 @@
         android:onClick="@{()->vm.onSetNotifyOptionClicked()}">
 
         <TextView
-            style="@style/H4"
+            style="@style/kor_H4"
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
         app:layout_constraintTop_toBottomOf="@+id/v_dividerLine2">
 
         <TextView
-            style="@style/H4"
+            style="@style/kor_H4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -100,7 +100,7 @@
         >
 
         <TextView
-            style="@style/H3"
+            style="@style/kor_H3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -112,7 +112,7 @@
 
 
     <TextView
-        style="@style/H4"
+        style="@style/kor_H4"
         android:id="@+id/tv_securityComment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -139,7 +139,7 @@
         tools:background="@drawable/ic_toggle_off"/>
 
     <TextView
-        style="@style/H4"
+        style="@style/kor_H4"
         android:id="@+id/tv_lockStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -153,7 +153,7 @@
         tools:text="설정 켜기"/>
 
     <TextView
-        style="@style/H4"
+        style="@style/kor_H4"
         android:id="@+id/tv_change_password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -188,7 +188,7 @@
             android:background="@drawable/ic_16_exclamation_mark"/>
 
         <TextView
-            style="@style/H6"
+            style="@style/kor_H6"
             android:id="@+id/tv_settingPasswordExtraInfoComment"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

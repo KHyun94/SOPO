@@ -24,7 +24,7 @@
         android:orientation="vertical">
 
         <TextView
-            style="@style/H5"
+            style="@style/kor_H5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="저장 권한"
@@ -34,7 +34,7 @@
 
 
         <TextView
-            style="@style/H5"
+            style="@style/kor_H5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
