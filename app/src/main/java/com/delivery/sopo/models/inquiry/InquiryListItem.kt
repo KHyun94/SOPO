@@ -42,77 +42,108 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
     }
 
     private val completeTimeDate: Calendar by lazy {
-        Calendar.getInstance().apply { this.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(parcelDTO.arrivalDte?.replace("T", " ")) }
+        Calendar.getInstance()
+            .apply {
+                this.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(
+                    parcelDTO.arrivalDte?.replace("T", " "))
+            }
     }
     private val ongoingTimeDate: Calendar by lazy {
-        Calendar.getInstance().apply { this.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(parcelDTO.auditDte.replace("T", " ")) }
+        Calendar.getInstance()
+            .apply {
+                this.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(
+                    parcelDTO.auditDte.replace("T", " "))
+            }
     }
 
-    private fun getParseString(): String{
+    private fun getParseString(): String
+    {
         return parcelDTO.arrivalDte?.let {
             it.substring(0, it.indexOf("T"))
         } ?: " "
     }
 
-    fun getCompleteYearMonth(): String{
-        return "${completeTimeDate.get(Calendar.YEAR)}/${completeTimeDate.get(Calendar.MONTH)+1}"
+    fun getCompleteYearMonth(): String
+    {
+        return "${completeTimeDate.get(Calendar.YEAR)}/${completeTimeDate.get(Calendar.MONTH) + 1}"
     }
 
-    fun getCompleteDateTime(): String{
-        return "${completeTimeDate.get(Calendar.YEAR)}/${completeTimeDate.get(Calendar.MONTH)+1}/${completeTimeDate.get(Calendar.DATE)} ${String.format("%02d", completeTimeDate.get(Calendar.HOUR_OF_DAY))}:${String.format("%02d", completeTimeDate.get(Calendar.MINUTE))}"
+    fun getCompleteDateTime(): String
+    {
+        return "${completeTimeDate.get(Calendar.YEAR)}/${
+            completeTimeDate.get(Calendar.MONTH) + 1
+        }/${completeTimeDate.get(Calendar.DATE)} ${
+            String.format("%02d", completeTimeDate.get(Calendar.HOUR_OF_DAY))
+        }:${String.format("%02d", completeTimeDate.get(Calendar.MINUTE))}"
     }
 
-    fun getOngoingDateTime(): String{
-        return "${ongoingTimeDate.get(Calendar.YEAR)}/${ongoingTimeDate.get(Calendar.MONTH)+1}/${ongoingTimeDate.get(Calendar.DATE)} ${String.format("%02d", ongoingTimeDate.get(Calendar.HOUR_OF_DAY))}:${String.format("%02d", ongoingTimeDate.get(Calendar.MINUTE))}"
+    fun getOngoingDateTime(): String
+    {
+        return "${ongoingTimeDate.get(Calendar.YEAR)}/${
+            ongoingTimeDate.get(Calendar.MONTH) + 1
+        }/${ongoingTimeDate.get(Calendar.DATE)} ${
+            String.format("%02d", ongoingTimeDate.get(Calendar.HOUR_OF_DAY))
+        }:${String.format("%02d", ongoingTimeDate.get(Calendar.MINUTE))}"
     }
 
-    fun getDateOfMonth(): String{
+    fun getDateOfMonth(): String
+    {
         return "${completeTimeDate.get(Calendar.DATE)}"
     }
 
-    fun getDayOfWeek(): String{
+    fun getDayOfWeek(): String
+    {
 
         return when(completeTimeDate.get(Calendar.DAY_OF_WEEK))
         {
-            1-> {
-                 "일요일"
+            1 ->
+            {
+                "일요일"
             }
-            2-> {
-                 "월요일"
+            2 ->
+            {
+                "월요일"
             }
-            3-> {
-                 "화요일"
+            3 ->
+            {
+                "화요일"
             }
-            4-> {
-                 "수요일"
+            4 ->
+            {
+                "수요일"
             }
-            5-> {
-                 "목요일"
+            5 ->
+            {
+                "목요일"
             }
-            6-> {
-                 "금요일"
+            6 ->
+            {
+                "금요일"
             }
-            7-> {
-                 "토요일"
+            7 ->
+            {
+                "토요일"
             }
-            else -> {
-                 ""
+            else ->
+            {
+                ""
             }
         }
     }
 
-    fun checkIsUnidentified(cb : (Boolean) -> Unit){
+    fun checkIsUnidentified(cb: (Boolean) -> Unit)
+    {
 
         CoroutineScope(Dispatchers.Main).launch {
-            var update : LiveData<Int?>? = null
+            var update: LiveData<Int?>? = null
 
-            withContext(Dispatchers.Default){
-               update = parcelRepository.getIsUnidentifiedAsLiveData(parcelDTO.parcelId)
+            withContext(Dispatchers.Default) {
+                update = parcelRepository.getIsUnidentifiedAsLiveData(parcelDTO.parcelId)
             }
 
             // TODO 이렇게 옵저빙안하고도 변경 가능한지 테스트 필시 해야함
-            update?.observeForever{
-                cb.invoke(it != null && it  == 1)
+            update?.observeForever {
+                cb.invoke(it != null && it == 1)
             }
         }
     }
@@ -131,7 +162,7 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
             // 동네도착
             DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> "동네도착"
             else -> "에러"
-       }
+        }
     }
 
     private fun getStatusTextColorResource(): Int
@@ -176,10 +207,10 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
             //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> R.drawable.ic_inquiry_cardview_not_registered
             //상품 인수
-//            DeliveryStatusEnum.AT_PICKUP.CODE -> R.drawable.ic_inquiry_cardview_at_pickup
+            //            DeliveryStatusEnum.AT_PICKUP.CODE -> R.drawable.ic_inquiry_cardview_at_pickup
             DeliveryStatusEnum.AT_PICKUP.CODE -> R.drawable.ic_inquiry_cardview_at_pickup_jpg
             //상품 이동 중
-//            DeliveryStatusEnum.IN_TRANSIT.CODE -> R.drawable.ic_inquiry_cardview_in_transit
+            //            DeliveryStatusEnum.IN_TRANSIT.CODE -> R.drawable.ic_inquiry_cardview_in_transit
             DeliveryStatusEnum.IN_TRANSIT.CODE -> R.drawable.ic_inquiry_cardview_in_transit_test
             // 동네도착
             DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.drawable.ic_inquiry_cardview_out_for_delivery

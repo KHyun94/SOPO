@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
@@ -24,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.database.room.dto.CompleteParcelStatusDTO
+import com.delivery.sopo.data.repository.local.repository.CompleteParcelStatusRepoImpl
 import com.delivery.sopo.databinding.FragmentInquiryReBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.InquiryItemTypeEnum
@@ -46,7 +46,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.bind
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import java.util.function.Function
@@ -55,6 +55,8 @@ import kotlin.system.exitProcess
 
 class InquiryFragment: Fragment()
 {
+    private val parcelStatusRepoImpl: CompleteParcelStatusRepoImpl by inject()
+
     private lateinit var parentView: MainView
     private lateinit var binding: FragmentInquiryReBinding
 
@@ -106,7 +108,7 @@ class InquiryFragment: Fragment()
         requireActivity().onBackPressedDispatcher.addCallback(this, callback ?: return)
     }
 
-    @SuppressLint("SourceLockedOrientationActivity")
+    @SuppressLint("SourceLockedOrientationActivity", "ClickableViewAccessibility")
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
     {
         parentView = activity as MainView
@@ -114,25 +116,16 @@ class InquiryFragment: Fragment()
         setAdapters()
         setObserver()
 
-
-        //        binding.grid.setOnClickListener(null)
-
-        /*  binding.tvApr.setOnClickListener {
-              Toast.makeText(requireContext(), "4월", Toast.LENGTH_LONG).show()
-              SopoLog.d("4월!!!!")
-          }*/
-
-        /*       binding.nestScrollViewComplete.setOnTouchListener(null)
-               binding.nestScrollViewComplete.setOnClickListener(null)
-               binding.nestScrollViewComplete.isClickable = false*/
-
-
-        //        binding.vEmpty2.rootView.dispa
         binding.vEmpty2.setOnTouchListener { v, event ->
             return@setOnTouchListener binding.linearMonthSelector.dispatchTouchEvent(event)
         }
 
 
+        binding.nestScrollViewComplete.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+
+            if(scrollY > 0 && oldScrollY == 0) vm.isClickableMonths = false
+            else if(scrollY == 0 && oldScrollY > 0) vm.isClickableMonths = true
+        }
 
         return binding.root
     }
@@ -167,25 +160,24 @@ class InquiryFragment: Fragment()
         }
     }
 
-    private fun getAdapter(cntOfSelectedForDelete: MutableLiveData<Int>, inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter
+    private fun getAdapter(inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter
     {
-        return InquiryListAdapter(cntOfSelectedItemForDelete = cntOfSelectedForDelete,
-                                  itemTypeEnum = inquiryItemTypeEnum).apply {
+        return InquiryListAdapter(parcelType = inquiryItemTypeEnum).apply {
             this.setOnParcelClickListener(getParcelClicked())
         }
     }
 
     private fun setAdapters()
     {
-        getAdapter(vm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Soon).let { adapter ->
+        getAdapter(InquiryItemTypeEnum.Soon).let { adapter ->
             soonArrivalParcelAdapter = adapter
             binding.recyclerviewSoonArrival.adapter = soonArrivalParcelAdapter
         }
-        getAdapter(vm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Registered).let { adapter ->
+        getAdapter(InquiryItemTypeEnum.Registered).let { adapter ->
             registeredParcelAdapter = adapter
             binding.recyclerviewRegisteredParcel.adapter = registeredParcelAdapter
         }
-        getAdapter(vm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Complete).let { adapter ->
+        getAdapter(InquiryItemTypeEnum.Complete).let { adapter ->
             completedParcelAdapter = adapter
             binding.recyclerviewCompleteParcel.adapter = completedParcelAdapter
         }
@@ -319,21 +311,21 @@ class InquiryFragment: Fragment()
             }
         })*/
 
-        /*
+/*        *//*
          *   <화면에 리스트뷰들을 삭제할 수 있어야한다.>
          *   하나의 리스트뷰 아이템을 선택했을때 2가지의 경우의 수가 존재할 수 있다.
          *      1. 아이템들을 '삭제'할 수 있게 '선택' 되어야한다.
          *      2. 아이템들의 '상세 내역' 화면으로 '이동' 되어야한다.
          *   이 경우 viewModel의 liveData를 이용하여 아이템들을 '삭제'할 수 있는 상태라고 뷰들에게 알려준다.
-         */
+         *//*
         vm.isRemovable.observe(requireActivity(), Observer {
             if(it)
             {
                 //'삭제하기'일때
                 // 리스트들에게 앞으로의 아이템들의 '클릭' 또는 '터치' 행위는 삭제하기 위한 '선택'됨을 뜻한다고 알려준다.
-                soonArrivalParcelAdapter.setRemovable(true)
-                registeredParcelAdapter.setRemovable(true)
-                completedParcelAdapter.setRemovable(true)
+                soonArrivalParcelAdapter.changeParcelDeleteMode(true)
+                registeredParcelAdapter.changeParcelDeleteMode(true)
+                completedParcelAdapter.changeParcelDeleteMode(true)
 
                 // 팝업 메뉴에서 '삭제하기'를 선택했을때의 화면 세팅
                 viewSettingForPopupMenuDelete()
@@ -342,18 +334,19 @@ class InquiryFragment: Fragment()
             {
                 // '삭제하기 취소'일때
                 // 선택되었지만 '취소'되어 '선택된 상태'를 다시 '미선택 상태'로 초기화한다.
-                soonArrivalParcelAdapter.setRemovable(false)
-                registeredParcelAdapter.setRemovable(false)
-                completedParcelAdapter.setRemovable(false)
+                soonArrivalParcelAdapter.changeParcelDeleteMode(false)
+                registeredParcelAdapter.changeParcelDeleteMode(false)
+                completedParcelAdapter.changeParcelDeleteMode(false)
 
                 // 삭제하기가 '취소' 되었을때 화면 세팅
                 viewSettingForPopupMenuDeleteCancel()
             }
-        })
+        })*/
 
         /*
          * 뷰모델에서 데이터 바인딩으로 '전체선택'하기를 이용자가 선택했을때
          */
+/*
         vm.isSelectAll.observe(requireActivity(), Observer {
             when(vm.screenStatusEnum.value)
             {
@@ -368,6 +361,7 @@ class InquiryFragment: Fragment()
                 }
             }
         })
+*/
 
         /** 배송 완료
          */
@@ -411,42 +405,75 @@ class InquiryFragment: Fragment()
         // 배송완료 화면에서 표출 가능한 년월 리스트
         vm.completeDateList.observe(requireActivity()) { dates ->
 
+            dates.forEach { date ->
+                if(date.count > 0)
+                {
+                    vm.currentCompleteParcelYear.postValue(date.year)
+                    return@forEach
+                }
+            }
+
             binding.constraintYearSpinner.setOnClickListener { v ->
                 openPopUpMonthlyUsageHistory(v, dates)
             }
         }
 
-        vm.currentCompleteParcelYear.observe(requireActivity()) {
-            binding.tvSpinnerYear.text = "${it}년"
+        vm.currentCompleteParcelYear.observe(requireActivity()) { year ->
+            vm.changeYearForCompleteParcels(year)
         }
 
-        vm.currentCompleteParcelMonth.observe(requireActivity()) { list ->
+        vm.currentCompleteParcelDate.observe(requireActivity()){ date ->
+            val searchDate = date.replace("년 ", "-").replace("월", "%")
+
+            Toast.makeText(requireContext(), "연도 $date 검색어 $searchDate", Toast.LENGTH_SHORT).show()
+
+            vm.refreshCompleteParcelsByDate("${searchDate}")
+
+        }
+
+        vm.currentCompleteParcelMonths.observe(requireActivity()) { list ->
+
+            setDefaultMonthSelector()
+            vm.currentCompleteParcelDate.postValue("")
 
             val reversedList = list.reversed()
 
             reversedList.forEach {
 
-                val (clickable, textColor, font) = if(it.count > 0 && it.visibility == 1)
+                if(it.item.count > 0 && it.isSelect)
                 {
-                    Triple(true, ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800),
-                           ResourcesCompat.getFont(requireContext(),
-                                                   R.font.spoqa_han_sans_neo_bold))
+                    vm.currentCompleteParcelDate.postValue("${it.item.year}년 ${it.item.month}월")
+                }
+
+                val (clickable, textColor, font) = if(it.item.count > 0)
+                {
+                    Triple(first = true,
+                           second = if(it.isSelect) ContextCompat.getColor(requireContext(),
+                                                                           R.color.MAIN_WHITE)
+                           else ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800),
+                           third = ResourcesCompat.getFont(requireContext(),
+                                                           R.font.spoqa_han_sans_neo_bold))
                 }
                 else
                 {
-                    Triple(false, ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300),
-                           ResourcesCompat.getFont(requireContext(),
-                                                   R.font.spoqa_han_sans_neo_regular))
+                    Triple(first = false, second = ContextCompat.getColor(requireContext(),
+                                                                          R.color.COLOR_GRAY_300),
+                           third = ResourcesCompat.getFont(requireContext(),
+                                                           R.font.spoqa_han_sans_neo_regular))
                 }
 
-                when(it.month)
+                when(it.item.month)
                 {
                     "01" ->
                     {
                         binding.tvJan.apply {
                             setTextColor(textColor)
                             typeface = font
-                            //                            isClickable = clickable
+                            isClickable = clickable
+                            isFocusable = clickable
+                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
+                                                                                   R.drawable.oval_24dp_gray_scale)
+                            else null
                         }
                     }
                     "02" ->
@@ -454,7 +481,11 @@ class InquiryFragment: Fragment()
                         binding.tvFeb.apply {
                             setTextColor(textColor)
                             typeface = font
-                            //                            isClickable = clickable
+                            isClickable = clickable
+                            isFocusable = clickable
+                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
+                                                                                   R.drawable.oval_24dp_gray_scale)
+                            else null
                         }
                     }
                     "03" ->
@@ -462,7 +493,12 @@ class InquiryFragment: Fragment()
                         binding.tvMar.apply {
                             setTextColor(textColor)
                             typeface = font
-                            //                            isClickable = clickable
+                            isClickable = clickable
+                            isFocusable = clickable
+                            isFocusable = clickable
+                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
+                                                                                   R.drawable.oval_24dp_gray_scale)
+                            else null
                         }
                     }
                     "04" ->
@@ -470,7 +506,11 @@ class InquiryFragment: Fragment()
                         binding.tvApr.apply {
                             setTextColor(textColor)
                             typeface = font
-                            //                            isClickable = clickable
+                            isClickable = clickable
+                            isFocusable = clickable
+                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
+                                                                                   R.drawable.oval_24dp_gray_scale)
+                            else null
                         }
                     }
                     "05" ->
@@ -478,7 +518,11 @@ class InquiryFragment: Fragment()
                         binding.tvMay.apply {
                             setTextColor(textColor)
                             typeface = font
-                            //                            isClickable = clickable
+                            isClickable = clickable
+                            isFocusable = clickable
+                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
+                                                                                   R.drawable.oval_24dp_gray_scale)
+                            else null
                         }
                     }
                     "06" ->
@@ -486,7 +530,11 @@ class InquiryFragment: Fragment()
                         binding.tvJun.apply {
                             setTextColor(textColor)
                             typeface = font
-                            //                            isClickable = clickable
+                            isClickable = clickable
+                            isFocusable = clickable
+                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
+                                                                                   R.drawable.oval_24dp_gray_scale)
+                            else null
                         }
                     }
                     "07" ->
@@ -494,7 +542,11 @@ class InquiryFragment: Fragment()
                         binding.tvJul.apply {
                             setTextColor(textColor)
                             typeface = font
-                            //                            isClickable = clickable
+                            isClickable = clickable
+                            isFocusable = clickable
+                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
+                                                                                   R.drawable.oval_24dp_gray_scale)
+                            else null
                         }
                     }
                     "08" ->
@@ -502,7 +554,11 @@ class InquiryFragment: Fragment()
                         binding.tvAug.apply {
                             setTextColor(textColor)
                             typeface = font
-                            //                            isClickable = clickable
+                            isClickable = clickable
+                            isFocusable = clickable
+                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
+                                                                                   R.drawable.oval_24dp_gray_scale)
+                            else null
                         }
                     }
                     "09" ->
@@ -510,7 +566,11 @@ class InquiryFragment: Fragment()
                         binding.tvSep.apply {
                             setTextColor(textColor)
                             typeface = font
-                            //                            isClickable = clickable
+                            isClickable = clickable
+                            isFocusable = clickable
+                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
+                                                                                   R.drawable.oval_24dp_gray_scale)
+                            else null
                         }
                     }
                     "10" ->
@@ -518,7 +578,11 @@ class InquiryFragment: Fragment()
                         binding.tvOct.apply {
                             setTextColor(textColor)
                             typeface = font
-                            //                            isClickable = clickable
+                            isClickable = clickable
+                            isFocusable = clickable
+                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
+                                                                                   R.drawable.oval_24dp_gray_scale)
+                            else null
                         }
                     }
                     "11" ->
@@ -526,7 +590,11 @@ class InquiryFragment: Fragment()
                         binding.tvNov.apply {
                             setTextColor(textColor)
                             typeface = font
-                            //                            isClickable = clickable
+                            isClickable = clickable
+                            isFocusable = clickable
+                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
+                                                                                   R.drawable.oval_24dp_gray_scale)
+                            else null
                         }
                     }
                     "12" ->
@@ -534,7 +602,11 @@ class InquiryFragment: Fragment()
                         binding.tvDec.apply {
                             setTextColor(textColor)
                             typeface = font
-                            //                            isClickable = clickable
+                            isClickable = clickable
+                            isFocusable = clickable
+                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
+                                                                                   R.drawable.oval_24dp_gray_scale)
+                            else null
                         }
                     }
                 }
@@ -548,14 +620,14 @@ class InquiryFragment: Fragment()
     {
         return object: OnParcelClickListener
         {
-            override fun onItemClicked(view: View, type: Int, parcelId: Int)
+            override fun onParcelClicked(view: View, type: Int, parcelId: Int)
             {
                 TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelId)
                 FragmentManager.move(requireActivity(), TabCode.INQUIRY_DETAIL,
                                      InquiryMainFrame.viewId)
             }
 
-            override fun onItemLongClicked(view: View, type: Int, parcelId: Int)
+            override fun onParcelLongClicked(view: View, type: Int, parcelId: Int)
             {
                 val edit = MutableLiveData<String>()
 
@@ -602,43 +674,43 @@ class InquiryFragment: Fragment()
 
         val popUpView: PopupMenuViewBinding =
             PopupMenuViewBinding.inflate(LayoutInflater.from(requireContext())).also { v ->
-                    val popupMenuListAdapter = PopupMenuListAdapter(
-                        MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
+                val popupMenuListAdapter = PopupMenuListAdapter(
+                    MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
 
 
-                    v.recyclerviewInquiryPopupMenu.also {
-                        it.adapter = popupMenuListAdapter
-                        val dividerItemDecoration =
-                            DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                        dividerItemDecoration.setDrawable(
-                            ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
-                        it.addItemDecoration(dividerItemDecoration)
+                v.recyclerviewInquiryPopupMenu.also {
+                    it.adapter = popupMenuListAdapter
+                    val dividerItemDecoration =
+                        DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                    dividerItemDecoration.setDrawable(
+                        ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
+                    it.addItemDecoration(dividerItemDecoration)
 
-                        // 'Inquiry' 화면 우측 상단의 메뉴 아이템 이벤트
-                        popupMenuListAdapter.setPopUpMenuOnclick(object: PopupMenuListAdapter.InquiryPopUpMenuItemOnclick
+                    // 'Inquiry' 화면 우측 상단의 메뉴 아이템 이벤트
+                    popupMenuListAdapter.setPopUpMenuOnclick(object: PopupMenuListAdapter.InquiryPopUpMenuItemOnclick
+                                                             {
+                                                                 override fun removeItem(v: View)
                                                                  {
-                                                                     override fun removeItem(v: View)
-                                                                     {
-                                                                         //삭제하기
-                                                                         vm.onOpenDeleteView()
-                                                                         menuPopUpWindow?.dismiss()
-                                                                     }
+                                                                     //삭제하기
+                                                                     //                                                                     vm.onOpenDeleteView()
+                                                                     menuPopUpWindow?.dismiss()
+                                                                 }
 
-                                                                     override fun refreshItems(v: View)
-                                                                     {
-                                                                         // 새로고침
-                                                                         vm.refreshOngoingParcels()
-                                                                         menuPopUpWindow?.dismiss()
-                                                                     }
+                                                                 override fun refreshItems(v: View)
+                                                                 {
+                                                                     // 새로고침
+                                                                     vm.refreshOngoingParcels()
+                                                                     menuPopUpWindow?.dismiss()
+                                                                 }
 
-                                                                     override fun help(v: View)
-                                                                     {
-                                                                         // 도움말
-                                                                         menuPopUpWindow?.dismiss()
-                                                                     }
-                                                                 })
-                    }
+                                                                 override fun help(v: View)
+                                                                 {
+                                                                     // 도움말
+                                                                     menuPopUpWindow?.dismiss()
+                                                                 }
+                                                             })
                 }
+            }
 
         menuPopUpWindow =
             PopupWindow(popUpView.root, SizeUtil.changeDpToPx(binding.root.context, 175F),
@@ -655,31 +727,31 @@ class InquiryFragment: Fragment()
         val historyPopUpView: PopupMenuViewBinding =
             PopupMenuViewBinding.inflate(LayoutInflater.from(context)).also { v ->
 
-                    val inquiryMenuItems = MenuMapper.completeParcelStatusDTOToMenuItem(statusList) as MutableList<InquiryMenuItem>
+                val inquiryMenuItems = MenuMapper.completeParcelStatusDTOToMenuItem(statusList) as MutableList<InquiryMenuItem>
 
-                    val popupMenuListAdapter = PopupMenuListAdapter(inquiryMenuItems)
+                val popupMenuListAdapter = PopupMenuListAdapter(inquiryMenuItems)
 
-                    v.recyclerviewInquiryPopupMenu.also {
-                        it.adapter = popupMenuListAdapter
-                        val dividerItemDecoration =
-                            DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                        dividerItemDecoration.setDrawable(
-                            ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
-                        it.addItemDecoration(dividerItemDecoration)
+                v.recyclerviewInquiryPopupMenu.also {
+                    it.adapter = popupMenuListAdapter
+                    val dividerItemDecoration =
+                        DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                    dividerItemDecoration.setDrawable(
+                        ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
+                    it.addItemDecoration(dividerItemDecoration)
 
-                        popupMenuListAdapter.setHistoryPopUpItemOnclick(object: PopupMenuListAdapter.HistoryPopUpItemOnclick
+                    popupMenuListAdapter.setHistoryPopUpItemOnclick(object: PopupMenuListAdapter.HistoryPopUpItemOnclick
+                                                                    {
+                                                                        override fun changeTimeCount(v: View, year: String)
                                                                         {
-                                                                            override fun changeTimeCount(v: View, year: String)
-                                                                            {
-                                                                                vm.changeYearForCompleteParcels(
-                                                                                    year)
-                                                                                historyPopUpWindow?.dismiss()
-                                                                            }
-                                                                        })
+                                                                            vm.currentCompleteParcelYear.postValue(
+                                                                                year)
+                                                                            historyPopUpWindow?.dismiss()
+                                                                        }
+                                                                    })
 
-                        it.scrollBarFadeDuration = 800
-                    }
+                    it.scrollBarFadeDuration = 800
                 }
+            }
         historyPopUpWindow = if(statusList.size > 6)
         {
             PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F),
@@ -932,11 +1004,125 @@ class InquiryFragment: Fragment()
                              }, 2000)
         }*/
 
-    // 다른 화면으로 넘어갔을 때
-    override fun onResume()
-    {
-        super.onResume()
 
-        SopoLog.d(msg = "onResume")
+    fun setDefaultMonthSelector()
+    {
+        val (clickable, textColor, font) =
+            Triple(first = false,
+                   second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300),
+                   third = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular))
+
+
+        binding.tvJan.apply {
+            setTextColor(textColor)
+            typeface = font
+            isClickable = clickable
+            isFocusable = clickable
+            background = null
+
+
+        binding.tvFeb.apply {
+            setTextColor(textColor)
+            typeface = font
+            isClickable = clickable
+            isFocusable = clickable
+            background = null
+        }
+
+
+        binding.tvMar.apply {
+            setTextColor(textColor)
+            typeface = font
+            isClickable = clickable
+            isFocusable = clickable
+            isFocusable = clickable
+            background = null
+        }
+
+        binding.tvApr.apply {
+            setTextColor(textColor)
+            typeface = font
+            isClickable = clickable
+            isFocusable = clickable
+            background = null
+        }
+
+        binding.tvMay.apply {
+            setTextColor(textColor)
+            typeface = font
+            isClickable = clickable
+            isFocusable = clickable
+            background = null
+        }
+
+        binding.tvJun.apply {
+            setTextColor(textColor)
+            typeface = font
+            isClickable = clickable
+            isFocusable = clickable
+            background = null
+        }
+
+        binding.tvJul.apply {
+            setTextColor(textColor)
+            typeface = font
+            isClickable = clickable
+            isFocusable = clickable
+            background = null
+        }
+
+        binding.tvAug.apply {
+            setTextColor(textColor)
+            typeface = font
+            isClickable = clickable
+            isFocusable = clickable
+            background = null
+        }
+
+        binding.tvSep.apply {
+            setTextColor(textColor)
+            typeface = font
+            isClickable = clickable
+            isFocusable = clickable
+            background = null
+        }
+
+
+        binding.tvOct.apply {
+            setTextColor(textColor)
+            typeface = font
+            isClickable = clickable
+            isFocusable = clickable
+            background = null
+        }
+
+
+        binding.tvNov.apply {
+            setTextColor(textColor)
+            typeface = font
+            isClickable = clickable
+            isFocusable = clickable
+            background = null
+        }
+
+
+        binding.tvDec.apply {
+            setTextColor(textColor)
+            typeface = font
+            isClickable = clickable
+            isFocusable = clickable
+            background = null
+        }
+
+
     }
+}
+
+// 다른 화면으로 넘어갔을 때
+override fun onResume()
+{
+    super.onResume()
+
+    SopoLog.d(msg = "onResume")
+}
 }

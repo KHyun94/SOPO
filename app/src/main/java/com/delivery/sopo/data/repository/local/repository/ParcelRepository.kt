@@ -47,6 +47,21 @@ class ParcelRepository(private val userLocalRepository: UserLocalRepository,
             }
     }
 
+/*
+    fun getCompleteParcelsByDateLiveData(date:String): LiveData<List<ParcelDTO>>{
+        return Transformations.map(appDatabase.parcelDao().getCompleteParcelByDateAsLiveData(date)){ entity ->
+            SopoLog.d("Test ---> ${entity.size} ${entity.joinToString()}")
+            entity.filterNotNull().map(ParcelMapper::parcelEntityToParcel)
+        }
+    }
+*/
+
+    fun getCompleteParcelsByDate(date:String): List<ParcelDTO>{
+        val entity = appDatabase.parcelDao().getCompleteParcelByDate(date)
+        return entity.filterNotNull().map(ParcelMapper::parcelEntityToParcel)
+    }
+
+
     override fun getLocalCompleteParcels(): List<ParcelDTO>
     {
         return appDatabase.parcelDao().getComplete().map(ParcelMapper::parcelEntityToParcel)

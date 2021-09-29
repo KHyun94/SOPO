@@ -4,6 +4,6 @@ import android.view.View
 
 interface OnParcelClickListener
 {
-    fun onItemClicked(view: View, type : Int, parcelId:Int)
-    fun onItemLongClicked(view: View, type : Int, parcelId:Int)
+    fun onParcelClicked(view: View, type : Int, parcelId:Int)
+    fun onParcelLongClicked(view: View, type : Int, parcelId:Int)
 }

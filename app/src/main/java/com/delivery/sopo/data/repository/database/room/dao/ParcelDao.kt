@@ -39,6 +39,9 @@ interface ParcelDao
     @Query("SELECT * FROM PARCEL WHERE PARCEL_ID = :parcelId")
     fun getById(parcelId: Int): ParcelEntity?
 
+    @Query("SELECT parcel.* FROM PARCEL as parcel LEFT JOIN PARCEL_STATUS as status ON parcel.PARCEL_ID = status.PARCEL_ID WHERE parcel.REG_DT LIKE :date AND STATUS = 1 AND DELIVERY_STATUS = 'DELIVERED'")
+    fun getCompleteParcelByDate(date: String): List<ParcelEntity>
+
 //    // 업데이트 가능한 택배의 InquiryHash 값을 SELECT
 //    @Query("SELECT p.* FROM PARCEL as p INNER JOIN PARCEL_STATUS as pm where p.PARCEL_ID = pm.PARCEL_ID AND p.STATUS = 1  AND p.DELIVERY_STATUS <> 'delivered'")
 //    fun getUpdatableInquiryHash(): List<ParcelEntity?>

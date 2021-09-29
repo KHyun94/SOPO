@@ -1,11 +1,9 @@
 package com.delivery.sopo.viewmodels.inquiry
 
-import android.view.View
 import android.widget.TextView
 import androidx.lifecycle.*
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repository.database.room.dto.CompleteParcelStatusDTO
-import com.delivery.sopo.data.repository.database.room.entity.CompleteParcelStatusEntity
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.enums.ScreenStatusEnum
@@ -23,6 +21,7 @@ import com.delivery.sopo.data.repository.local.repository.CompleteParcelStatusRe
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.parcel.ParcelUseCase
 import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.UpdateAliasRequest
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
@@ -35,8 +34,27 @@ import kotlin.Comparator
 class InquiryViewModel(private val userLocalRepository: UserLocalRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val parcelStatusRepoImpl: CompleteParcelStatusRepoImpl):
         ViewModel()
 {
+    /**
+     * 공용
+     */
 
-    val onMonthListener: View.OnClickListener = View.OnClickListener { SopoLog.d("1월한다.") }
+    private val _isProgress = MutableLiveData<Boolean>()
+    val isProgress: LiveData<Boolean>
+        get() = _isProgress
+
+    // '배송 중' 또는 '배송완료' 화면 선택의 기준
+    private val _screenStatus = MutableLiveData<ScreenStatusEnum>()
+    val screenStatusEnum: LiveData<ScreenStatusEnum>
+        get() = _screenStatus
+
+    // '배송중' => '배송완료' 개수
+    private val _cntOfBeDelivered = parcelManagementRepoImpl.getIsDeliveredCntLiveData()
+    val cntOfBeDelivered: LiveData<Int>
+        get() = _cntOfBeDelivered
+
+    /**
+     * 현재 진행 중인 택배 페이지
+     */
 
     private var _ongoingList =
         Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
@@ -47,7 +65,21 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
     val ongoingList: LiveData<MutableList<InquiryListItem>>
         get() = _ongoingList
 
-    private val _completeList = Transformations.map(parcelRepo.getLocalCompleteParcelsLiveData()) {
+    val cntOfPresentOngoingParcels: LiveData<Int> =
+        Transformations.map(parcelRepo.getLocalOnGoingParcelCnt()) { cnt ->
+            cnt
+        }
+
+    // 화면에 전체 아이템의 노출 여부
+    private val _isMoreView = MutableLiveData<Boolean>()
+    val isMoreView: LiveData<Boolean>
+        get() = _isMoreView
+
+    /**
+     * 완료된 택배 페이지
+     */
+
+    private var _completeList = Transformations.map(parcelRepo.getLocalCompleteParcelsLiveData()) {
 
         val dumps = it.toMutableList()
         dumps.addAll(it)
@@ -59,38 +91,46 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
         dumps.addAll(it)
 
         ParcelMapper.parcelListToInquiryItemList(dumps as MutableList<ParcelDTO>)
-
-    }
+    } as MutableLiveData<MutableList<InquiryListItem>>
     val completeList: LiveData<MutableList<InquiryListItem>>
         get() = _completeList
 
-    // 화면에 전체 아이템의 노출 여부
-    private val _isMoreView = MutableLiveData<Boolean>()
-    val isMoreView: LiveData<Boolean>
-        get() = _isMoreView
+    var isClickableMonths: Boolean = true
+
+    // 배송완료 조회 가능한 '년월' 리스트 데이터
+    val completeDateList: LiveData<MutableList<CompleteParcelStatusDTO>>
+        get() = parcelStatusRepoImpl.getAllAsLiveData()
+
+    val refreshCompleteListByOnlyLocalData: LiveData<Int>
+        get() = parcelStatusRepoImpl.getRefreshCriteriaLiveData()
+
+    val currentCompleteParcelYear = MutableLiveData<String>()
+    val currentCompleteParcelMonths = MutableLiveData<List<SelectItem<CompleteParcelStatusDTO>>>()
+    val currentCompleteParcelMonth = MutableLiveData<SelectItem<CompleteParcelStatusDTO>>()
+    val currentCompleteParcelDate = MutableLiveData<String>()
+
+    private val ioScope = CoroutineScope(Dispatchers.IO)
+    private var pagingManagement = PagingManagement(0, "", true)
+
+    /**
+     * 삭제 예정
+     */
 
     // 리스트 뷰들 아이템들을 '삭제'할 수 있는지 여부
-    private val _isRemovable = MutableLiveData<Boolean>()
+/*    private val _isRemovable = MutableLiveData<Boolean>()
     val isRemovable: LiveData<Boolean>
-        get() = _isRemovable
+        get() = _isRemovable*/
 
     // '전체선택' 되었는지 여부
+/*
     private val _isSelectAll = MutableLiveData<Boolean>()
     val isSelectAll: LiveData<Boolean>
         get() = _isSelectAll
 
-    private val _isProgress = MutableLiveData<Boolean>()
-    val isProgress: LiveData<Boolean>
-        get() = _isProgress
-
+*/
 
     //TODO 앱 실행 후 처음만 실행 - 나중
     var is1st = MutableLiveData<Boolean>().apply { value = true }
-
-    // '배송 중' 또는 '배송완료' 화면 선택의 기준
-    private val _screenStatus = MutableLiveData<ScreenStatusEnum>()
-    val screenStatusEnum: LiveData<ScreenStatusEnum>
-        get() = _screenStatus
 
     // '삭제하기'에서 선택된 아이템의 개수
     var cntOfSelectedItemForDelete = MutableLiveData<Int>()
@@ -99,47 +139,14 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
     val cntOfDelete: LiveData<Int>
         get() = _cntOfDelete
 
-    // '배송중' => '배송완료' 개수
-    private val _cntOfBeDelivered = parcelManagementRepoImpl.getIsDeliveredCntLiveData()
-    val cntOfBeDelivered: LiveData<Int>
-        get() = _cntOfBeDelivered
-
-    // 배송완료 조회 가능한 '년월' 리스트 데이터
-    val completeDateList: LiveData<MutableList<CompleteParcelStatusDTO>>
-        get() = parcelStatusRepoImpl.getAllAsLiveData()
-
-    private val _refreshCompleteListByOnlyLocalData =
-        parcelStatusRepoImpl.getRefreshCriteriaLiveData()
-    val refreshCompleteListByOnlyLocalData: LiveData<Int>
-        get() = _refreshCompleteListByOnlyLocalData
-
-    val presentOngoingParcelCnt: LiveData<Int> =
-        Transformations.map(parcelRepo.getLocalOnGoingParcelCnt()) { cnt ->
-            //            SopoLog.d("메인 조회 탭 >>> 택배 갯수: $cnt")
-            cnt
-        }
-
-
-    val currentCompleteParcelYear = MutableLiveData<String>()
-    val currentCompleteParcelMonth = MutableLiveData<List<CompleteParcelStatusDTO>>()
-
-    private val ioScope = CoroutineScope(Dispatchers.IO)
-    private var pagingManagement = PagingManagement(0, "", true)
 
     init
     {
         cntOfSelectedItemForDelete.value = 0
         _isMoreView.value = false
-        _isRemovable.value = false
-        _isSelectAll.value = false
+//        _isRemovable.value = false
+//        _isSelectAll.value = false
         _screenStatus.value = ScreenStatusEnum.ONGOING
-
-        viewModelScope.launch(Dispatchers.Default) {
-            val statuses = parcelStatusRepoImpl.findById("${2021}%")
-            currentCompleteParcelMonth.postValue(statuses)
-            currentCompleteParcelYear.postValue("2021")
-
-        }
 
         sendRemovedData()
         checkIsNeedForceUpdate()
@@ -163,6 +170,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
         }
     }
 
+/*
     fun setCntOfDelete(value: Int)
     {
         _cntOfDelete.value = value
@@ -172,16 +180,19 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
     {
         _isRemovable.value = flag
     }
+*/
 
     private fun setMoreView(flag: Boolean)
     {
         _isMoreView.value = flag
     }
 
+/*
     private fun setSelectAll(flag: Boolean)
     {
         _isSelectAll.value = flag
     }
+*/
 
     fun getCurrentScreenStatus(): ScreenStatusEnum?
     {
@@ -251,20 +262,59 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
     }
 
     // UI를 통해 사용자가 배송완료에서 조회하고 싶은 년월을 바꾼다.
-    fun changeYearForCompleteParcels(year: String)
-    {
-        viewModelScope.launch(Dispatchers.Default) {
-            val statuses = parcelStatusRepoImpl.findById("${year}%")
-            currentCompleteParcelMonth.postValue(statuses)
-            currentCompleteParcelYear.postValue(year)
-            SopoLog.d("${year}년 - [data:${statuses.joinToString()}")
+    fun changeYearForCompleteParcels(year: String) = viewModelScope.launch(Dispatchers.Default) {
+
+        var isLastMonth = false
+
+        val statuses = parcelStatusRepoImpl.findById("${year}%").map {
+
+            val isSelected = if(it.count > 0 && !isLastMonth)
+            {
+                isLastMonth = true
+                true
+            }
+            else
+            {
+                false
+            }
+
+            SelectItem<CompleteParcelStatusDTO>(item = it, isSelect = isSelected)
         }
-        //        viewModelScope.launch(Dispatchers.IO) {
-        //            updateCurrentTimeCount(time) // TimeCount의 visibility를 수정한다.
-        //            timeCountRepoImpl.getCurrentTimeCount()?.let {
-        //                getCompleteListWithPaging(TimeCountMapper.timeCountToInquiryDate(time)) // 수정된 Visibility에 해당하는 년월을 서버로 요청해서 받아온다.
-        //            }
-        //        }
+
+        currentCompleteParcelMonths.postValue(statuses)
+    }
+
+    fun onMonthClicked(tv: TextView, month: Int)
+    {
+        if(!isClickableMonths) return SopoLog.d("$month 비활성화")
+
+        SopoLog.d("$month 활성화")
+
+        val list = currentCompleteParcelMonths.value?.map {
+            val selectMonth = month.toString().padStart(2, '0')
+            it.isSelect = (selectMonth == it.item.month)
+            it
+        }?:return
+
+        currentCompleteParcelMonths.postValue(list)
+    }
+
+    fun refreshCompleteParcelsByDate(date:String){
+        CoroutineScope(Dispatchers.IO).launch {
+
+            getCompleteListWithPaging(MenuMapper.timeToInquiryDate(date.replace("-", "")))
+
+            val list = withContext(Dispatchers.Default) {
+                val parcels = parcelRepo.getCompleteParcelsByDate(date = date)
+                parcels.map {
+                    InquiryListItem(it, false)
+                }
+            }.toMutableList()
+
+//            SopoLog.d("변경 date \n ${list.value?.joinToString()}")
+
+            _completeList.postValue(list)
+        }
     }
 
     // TimeCount의 visibility를 수정한다.
@@ -283,17 +333,13 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
     // 배송완료 리스트를 가져온다.(페이징 포함)
     fun getCompleteListWithPaging(inquiryDate: String)
     {
-        SopoLog.d(msg = "getCompleteListWithPaging() call")
         viewModelScope.launch(Dispatchers.IO) {
-
-            //            _isProgress.postValue(true)
 
             if(pagingManagement.inquiryDate != inquiryDate)
             {
                 //pagingManagement에 저장된 inquiryDate랑 새로 조회하려는 데이터가 다르면 페이징 데이터 초기화 후 새로운 데이터로 조회
                 pagingManagement = PagingManagement(0, inquiryDate, true)
 
-                // TODO isNowVisible의 정체?
                 // 전체 리스트(getAll) 중 isNowVisible이 1인 Entity를(filter) 0으로 바꾼 후(forEach) 업데이트(updateEntities)
                 parcelManagementRepoImpl.getAll()?.let { list ->
                     list.filter { it.isNowVisible == 1 }.forEach { it.isNowVisible = 0 }
@@ -365,6 +411,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
         }
     }
 
+/*
     // 택배 삭제할때 전체선택 여부
     fun toggleSelectAll()
     {
@@ -372,6 +419,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
             setSelectAll(!it)
         }
     }
+*/
 
     // 앱이 켜졌을 때 택배의 변동사항이 있어 사용자에게 업데이트된 내용을 보여줘야할 때 강제 업데이트를 한다.
     private fun checkIsNeedForceUpdate()
@@ -499,8 +547,8 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
     {
         viewModelScope.launch(Dispatchers.IO) {
             clearIsBeDelivered().join()
-            sendRemovedData().join()
-            initCompleteList().join()
+//            sendRemovedData().join()
+//            initCompleteList().join()
         }
     }
 
@@ -513,7 +561,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
     }
 
     // 배송완료 리스트를 가져오기전 초기화 작업
-    private fun initCompleteList(): Job
+/*    private fun initCompleteList(): Job
     {
         return viewModelScope.launch(Dispatchers.IO) {
 
@@ -522,9 +570,9 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                 getCompleteListWithPaging(MenuMapper.timeToInquiryDate(it.time))
             }
         }
-    }
+    }*/
 
-    // 데이터 삭제 로직 1단계 : Room의 status를 0=>1으로 바꾼다.
+/*    // 데이터 삭제 로직 1단계 : Room의 status를 0=>1으로 바꾼다.
     fun removeSelectedData(selectedData: MutableList<Int>)
     {
         viewModelScope.launch(Dispatchers.IO) {
@@ -539,9 +587,9 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                 }
             }
         }
-    }
+    }*/
 
-    // 데어터 삭제 로직 2단계 : Room의 status 3을 가진 택배들을 전부 서버로 보내서 서버 데이터 역시 삭제(1==>0)하고 최종적으로 status를 0으로 바꿔서 삭제 로직을 마무리한다.
+/*    // 데어터 삭제 로직 2단계 : Room의 status 3을 가진 택배들을 전부 서버로 보내서 서버 데이터 역시 삭제(1==>0)하고 최종적으로 status를 0으로 바꿔서 삭제 로직을 마무리한다.
     private fun sendRemovedData(): Job
     {
         return ioScope.launch {
@@ -574,71 +622,13 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                 SopoLog.i("Fail to send delete data : ${apiResult.message}") // 실패 로그
             }
         }
-    }
-
-    // 삭제취소를 눌렀을 때
-    fun deleteCancel()
-    {
-        viewModelScope.launch(Dispatchers.IO) {
-            val cancelDataList = parcelManagementRepoImpl.getCancelIsBeDelete()
-            SopoLog.d(msg = "삭제 취소할 데이터 : $cancelDataList")
-
-            cancelDataList?.let { parcelMngList ->
-                // PARCEL_STATUS의 isBeDelete를 0으로 다시 초기화
-                parcelMngList.forEach { it.isBeDelete = 0 }
-                parcelManagementRepoImpl.updateEntities(parcelMngList)
-
-                for(parcelMng in parcelMngList)
-                {
-                    parcelRepo.getLocalParcelById(parcelMng.parcelId)?.let {
-                        it.status = 1
-                        parcelRepo.updateEntity(it)
-                    }
-                }
-                if(getCurrentScreenStatus() == ScreenStatusEnum.COMPLETE)
-                {
-                    // 복구해야할 리스트 중 아이템 하나의 도착일자 (2020-09-19 ~~)에서 COMPLETE_PARCEL_STATUS의 primaryKey를 추출해서 복구해야할 COMPLETE_PARCEL_STATUS를 구한다.
-                    parcelRepo.getLocalParcelById(cancelDataList.first().parcelId)?.let {
-                            val timeCountPrimaryKey =
-                                TimeCountMapper.arrivalDateToTime(it.arrivalDte)
-                            parcelStatusRepoImpl.getLatestUpdatedEntity(timeCountPrimaryKey)
-                                ?.let { entity ->
-                                    entity.count += cancelDataList.size
-                                    entity.visibility =
-                                        0 // 모든 아이템(monthList)가 삭제되었을때 삭제취소를 하려면 visibility를 0으로 수정해줘야한다.
-
-                                    SopoLog.d(
-                                        "복구해야할 COMPLETE_PARCEL_STATUS => time : ${entity.time} , count : ${entity.count}, status : ${entity.status} , auditDate : ${entity.auditDte}")
-                                    parcelStatusRepoImpl.updateEntity(entity)
-                                }
-                        }
-                }
-            }
-        }
-    }
-
-    // 삭제하기 화면 open
-    fun onOpenDeleteView()
-    {
-        setRemovable(true) // 리스트들의 아이템들을 삭제할 수 있게 지시한다.
-        setMoreView(true) // '삭제하기'를 선택했을때 '더 보기'로 숨겨져있던 아이템들도 모두 선택할 수 있어야하므로 해당 liveData를 true로 바꿔줘서 화면의 변화를 지시한다.
-    }
+    }*/
 
     fun patchParcelAlias(updateAliasRequest: UpdateAliasRequest)
     {
         CoroutineScope(Dispatchers.Main).launch {
             ParcelUseCase.updateParcelAlias(req = updateAliasRequest)
         }
-    }
-
-    fun onMonthClicked(tv:TextView, month: Int)
-    {
-        SopoLog.d("$month 월 맞냐 설마 시발")
-
-        viewModelScope.launch(Dispatchers.Main) {
-            tv.text ="test$month"
-        }
-
     }
 
     private fun sortByDeliveryStatus(list: List<InquiryListItem>): List<InquiryListItem>
@@ -712,6 +702,53 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
             return p0.parcelDTO.auditDte.compareTo(p1.parcelDTO.auditDte)
         }
     }
+
+/*    // 삭제취소를 눌렀을 때
+    fun deleteCancel()
+    {
+        viewModelScope.launch(Dispatchers.IO) {
+            val cancelDataList = parcelManagementRepoImpl.getCancelIsBeDelete()
+            SopoLog.d(msg = "삭제 취소할 데이터 : $cancelDataList")
+
+            cancelDataList?.let { parcelMngList ->
+                // PARCEL_STATUS의 isBeDelete를 0으로 다시 초기화
+                parcelMngList.forEach { it.isBeDelete = 0 }
+                parcelManagementRepoImpl.updateEntities(parcelMngList)
+
+                for(parcelMng in parcelMngList)
+                {
+                    parcelRepo.getLocalParcelById(parcelMng.parcelId)?.let {
+                        it.status = 1
+                        parcelRepo.updateEntity(it)
+                    }
+                }
+                if(getCurrentScreenStatus() == ScreenStatusEnum.COMPLETE)
+                {
+                    // 복구해야할 리스트 중 아이템 하나의 도착일자 (2020-09-19 ~~)에서 COMPLETE_PARCEL_STATUS의 primaryKey를 추출해서 복구해야할 COMPLETE_PARCEL_STATUS를 구한다.
+                    parcelRepo.getLocalParcelById(cancelDataList.first().parcelId)?.let {
+                        val timeCountPrimaryKey = TimeCountMapper.arrivalDateToTime(it.arrivalDte)
+                        parcelStatusRepoImpl.getLatestUpdatedEntity(timeCountPrimaryKey)
+                            ?.let { entity ->
+                                entity.count += cancelDataList.size
+                                entity.visibility =
+                                    0 // 모든 아이템(monthList)가 삭제되었을때 삭제취소를 하려면 visibility를 0으로 수정해줘야한다.
+
+                                SopoLog.d(
+                                    "복구해야할 COMPLETE_PARCEL_STATUS => time : ${entity.time} , count : ${entity.count}, status : ${entity.status} , auditDate : ${entity.auditDte}")
+                                parcelStatusRepoImpl.updateEntity(entity)
+                            }
+                    }
+                }
+            }
+        }
+    }
+
+    // 삭제하기 화면 open
+    fun onOpenDeleteView()
+    {
+        setRemovable(true) // 리스트들의 아이템들을 삭제할 수 있게 지시한다.
+        setMoreView(true) // '삭제하기'를 선택했을때 '더 보기'로 숨겨져있던 아이템들도 모두 선택할 수 있어야하므로 해당 liveData를 true로 바꿔줘서 화면의 변화를 지시한다.
+    }*/
 
 
 }
