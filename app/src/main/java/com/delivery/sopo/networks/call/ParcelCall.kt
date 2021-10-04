@@ -1,5 +1,6 @@
 package com.delivery.sopo.networks.call
 
+import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.api.APIResult
@@ -13,6 +14,7 @@ import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.UpdateAliasRequest
+
 import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.CodeUtil
@@ -49,6 +51,38 @@ object ParcelCall : BaseService(), KoinComponent
         return apiCall(call = {result})
     }
 
+    suspend fun getCompleteParcelsMonth(): ResponseResult<List<CompletedParcelHistory>?>
+    {
+        when(val result = apiCall { parcelAPI.getMonths() })
+        {
+            is NetworkResult.Success ->
+            {
+                return ResponseResult(result = true, code = ResponseCode.SUCCESS, data = result.data.data, message = ResponseCode.SUCCESS.MSG)
+            }
+            is NetworkResult.Error ->
+            {
+                val apiException = result.exception as APIException
+                throw apiException
+            }
+        }
+    }
+
+    suspend fun getCompleteParcelsByPage(page: Int, inquiryDate:String):ResponseResult<MutableList<ParcelDTO>?>
+    {
+
+        when( val result = apiCall { parcelAPI.getParcelsComplete(page = page, inquiryDate = inquiryDate) } )
+        {
+            is NetworkResult.Success ->
+            {
+                return ResponseResult(result = true, code = ResponseCode.SUCCESS, data = result.data.data, message = ResponseCode.SUCCESS.MSG)
+            }
+            is NetworkResult.Error ->
+            {
+                val apiException = result.exception as APIException
+                throw apiException
+            }
+        }
+    }
 
     suspend fun requestParcelsForRefresh() : NetworkResult<APIResult<String?>>
     {

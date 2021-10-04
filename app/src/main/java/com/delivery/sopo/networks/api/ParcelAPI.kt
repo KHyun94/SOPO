@@ -1,9 +1,9 @@
 package com.delivery.sopo.networks.api
 
-import com.delivery.sopo.networks.dto.TimeCountDTO
+import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
+
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.data.repository.database.room.dto.DeleteParcelsDTO
-import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.models.UpdateAliasRequest
 import com.delivery.sopo.models.parcel.ParcelDTO
@@ -28,7 +28,7 @@ interface ParcelAPI
 
     @GET("api/v1/sopo-api/delivery/parcels/months")
     @Headers("Accept: application/json")
-    suspend fun getMonths(): APIResult<MutableList<TimeCountDTO>>
+    suspend fun getMonths(): Response<APIResult<MutableList<CompletedParcelHistory>>>
 
     // 배송중 & 곧 도착 리스트 가져오는 api
     @GET("api/v1/sopo-api/delivery/parcels/ongoing")
@@ -41,7 +41,7 @@ interface ParcelAPI
     suspend fun getParcelsComplete(
         @Query("page") page: Int,
         @Query("inquiryDate") inquiryDate: String
-    ): APIResult<MutableList<ParcelDTO>?>
+    ): Response<APIResult<MutableList<ParcelDTO>?>>
 
     @HTTP(
         method = "DELETE",

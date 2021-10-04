@@ -1,20 +1,14 @@
 package com.delivery.sopo.models.mapper
 
-import com.delivery.sopo.networks.dto.TimeCountDTO
-import com.delivery.sopo.data.repository.database.room.entity.CompleteParcelStatusEntity
+import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
+
+import com.delivery.sopo.data.repository.database.room.entity.CompletedParcelHistoryEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.ParcelDTO
 
-object TimeCountMapper
+object CompletedParcelHistoryMapper
 {
-    fun timeCountDtoToTimeCountEntity(timeCountDTO: TimeCountDTO): CompleteParcelStatusEntity
-    {
-        return CompleteParcelStatusEntity(
-            timeCountDTO.time,
-            timeCountDTO.count
-        )
-    }
-
+    fun dtoToEntity(dto: CompletedParcelHistory) =  with(dto) { CompletedParcelHistoryEntity(date, count) }
     fun timeCountEntityListToInquiryItemList(parcelDTOList: MutableList<ParcelDTO>): MutableList<InquiryListItem>{
         return parcelDTOList.map {
             InquiryListItem(parcelDTO = it)

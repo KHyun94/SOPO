@@ -5,24 +5,24 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.delivery.sopo.util.TimeUtil
 @Entity(
-    tableName = "COMPLETE_PARCEL_STATUS"
+    tableName = "COMPLETED_PARCEL_HISTORY"
 )
-data class CompleteParcelStatusEntity(
+data class CompletedParcelHistoryEntity(
     // 배송완료 리스트에서 조회 가능한 년월 YYYYMM
-    @PrimaryKey
+        @PrimaryKey
     @ColumnInfo(
-        name = "TIME",
+        name = "DATE",
         typeAffinity = ColumnInfo.TEXT
     )
-    var time: String,
+    var date: String,
 
     // 배송완료 리스트에서 조회 가능한 아이템의 개수
-    @ColumnInfo(
+        @ColumnInfo(
         name = "COUNT",
         typeAffinity = ColumnInfo.INTEGER
     )
     var count: Int,
-    /**
+        /**
      *  1 => 현재 화면에 표출
      *  0 => 현재 화면에 표출되지는 않지만 조회 가능한 데이터
      *  ------ 0 보다 큰 데이터만 유효한 데이터임(LiveData로 관찰하고 있는 데이터) --------
@@ -34,7 +34,7 @@ data class CompleteParcelStatusEntity(
         typeAffinity = ColumnInfo.INTEGER
     )
     var visibility: Int = 0,
-    /**
+        /**
      * 0 => 다음 업데이트에서 삭제
      * 1 => 현재 사용가능한 데이터
      */
@@ -43,7 +43,7 @@ data class CompleteParcelStatusEntity(
         typeAffinity = ColumnInfo.INTEGER
     )
     var status: Int = 1,
-    @ColumnInfo(
+        @ColumnInfo(
         name = "AUDIT_DTE",
         typeAffinity = ColumnInfo.TEXT
     )

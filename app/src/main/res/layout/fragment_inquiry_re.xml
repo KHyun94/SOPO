@@ -72,7 +72,7 @@
                 android:fontFamily="@font/spoqa_han_sans_neo_regular"
                 android:gravity="center"
                 android:includeFontPadding="false"
-                android:onClick="@{()-> vm.onChangedOngoing()}"
+                android:onClick="@{()-> vm.onChangedOngoingClicked()}"
                 android:text="@string/INQUIRY_VIEW_ONGOING_DELIVERY"
                 tools:textColor="@color/MAIN_WHITE" />
 
@@ -107,7 +107,7 @@
                     android:background="@drawable/border_all_rounded_color_gray_400"
                     android:fontFamily="@font/spoqa_han_sans_neo_regular"
                     android:gravity="center"
-                    android:onClick="@{()-> vm.onChangedComplete()}"
+                    android:onClick="@{()-> vm.onChangedCompleteClicked()}"
                     android:text="@string/INQUIRY_VIEW_COMPLETE_DELIVERY"
                     android:textColor="@color/COLOR_GRAY_400"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -154,9 +154,10 @@
                             android:layout_marginTop="27.5dp"
                             android:layout_marginBottom="40dp"
                             android:orientation="horizontal"
-                            android:visibility="@{vm.cntOfPresentOngoingParcels > 0 &amp;&amp; !vm.isRemovable() ? View.VISIBLE : View.GONE}"
+                            android:visibility="@{vm.cntOfPresentOngoingParcels > 0 ? View.VISIBLE : View.GONE}"
                             android:weightSum="10">
 
+<!--                            android:visibility="@{vm.cntOfPresentOngoingParcels > 0 &amp;&amp; !vm.isRemovable() ? View.VISIBLE : View.GONE}"-->
                             <LinearLayout
                                 android:id="@+id/layout_present_ongoing_text"
                                 android:layout_width="0dp"
@@ -264,7 +265,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_gravity="center"
-                                    android:onClick="@{()->vm.toggleMoreView()}"
+                                    android:onClick="@{()->vm.onToggleChangedClicked()}"
                                     android:orientation="vertical"
                                     android:padding="10dp"
                                     tools:visibility="visible">
@@ -334,14 +335,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="27dp"
-                    android:visibility="@{vm.screenStatusEnum == ScreenStatusEnum.COMPLETE ? View.VISIBLE : View.GONE}">
+                    android:visibility="@{vm.screenStatusEnum == ScreenStatusEnum.COMPLETE ? View.VISIBLE : View.INVISIBLE}">
 
                     <!-- 월 spinner ! 촤하단 뷰 -->
                     <LinearLayout
                         android:id="@+id/linear_month_selector"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="60dp"
                         android:background="@android:color/transparent"
                         android:orientation="vertical"
                         android:paddingBottom="20dp">
@@ -431,7 +431,8 @@
                             android:background="@color/COLOR_GRAY_50"
                             android:gravity="center"
                             android:orientation="horizontal"
-                            android:paddingVertical="12dp">
+                            android:paddingVertical="12dp"
+                            app:layout_constraintBottom_toBottomOf="parent">
 
                             <TextView
                                 android:id="@+id/tv_jul"
@@ -507,8 +508,7 @@
                     <androidx.core.widget.NestedScrollView
                         android:id="@+id/nest_scroll_view_complete"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="60dp">
+                        android:layout_height="wrap_content">
 
                         <LinearLayout
                             android:id="@+id/linear_complete"
@@ -532,7 +532,8 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="22dp"
                                     android:text="@{vm.currentCompleteParcelDate}"
-                                    android:textColor="@color/COLOR_GRAY_400" />
+                                    android:textColor="@color/COLOR_GRAY_400"
+                                    tools:text="2021년 8월"/>
                             </LinearLayout>
 
 
@@ -559,7 +560,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:background="@drawable/bg_rounded_border_bottom_45dp"
-                        android:backgroundTint="@color/COLOR_MAIN_RED_500"
+                        android:backgroundTint="@color/COLOR_GRAY_50"
                         android:gravity="center_horizontal"
                         android:paddingHorizontal="10dp"
                         android:paddingBottom="29dp"

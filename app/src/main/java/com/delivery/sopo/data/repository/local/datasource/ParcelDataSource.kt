@@ -1,14 +1,15 @@
 package com.delivery.sopo.data.repository.local.datasource
 
 import androidx.lifecycle.LiveData
-import com.delivery.sopo.networks.dto.TimeCountDTO
+import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
+
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.parcel.ParcelDTO
 
 interface ParcelDataSource {
    suspend fun getRemoteOngoingParcels(): MutableList<ParcelDTO>?
-   suspend fun getRemoteMonths(): MutableList<TimeCountDTO>?
+   suspend fun getRemoteMonths(): List<CompletedParcelHistory>?
 
    suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<ParcelDTO>?
 

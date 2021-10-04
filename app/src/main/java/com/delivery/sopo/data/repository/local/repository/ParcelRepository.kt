@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.data.repository.database.room.AppDatabase
+import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.database.room.dto.DeleteParcelsDTO
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.mapper.ParcelMapper
@@ -11,9 +12,10 @@ import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
-import com.delivery.sopo.networks.dto.TimeCountDTO
+
 import com.delivery.sopo.data.repository.local.datasource.ParcelDataSource
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.util.TimeUtil
 
 class ParcelRepository(private val userLocalRepository: UserLocalRepository,
@@ -23,12 +25,18 @@ class ParcelRepository(private val userLocalRepository: UserLocalRepository,
     override suspend fun getRemoteOngoingParcels(): MutableList<ParcelDTO>? = NetworkManager.retro(SOPOApp.oAuth?.accessToken).create(
         ParcelAPI::class.java).getParcelsOngoing().data
 
-    override suspend fun getRemoteMonths(): MutableList<TimeCountDTO>? = NetworkManager.retro(SOPOApp.oAuth?.accessToken).create(ParcelAPI::class.java).getMonths().data
-
-    override suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<ParcelDTO>? = NetworkManager
-                                                                                                        .retro(SOPOApp.oAuth?.accessToken).create(ParcelAPI::class.java)
-                                                                                                        .getParcelsComplete(page = page, inquiryDate = inquiryDate).data
-
+    override suspend fun getRemoteMonths(): List<CompletedParcelHistory>
+    {
+       return try
+       {
+           ParcelCall.getCompleteParcelsMonth().data ?: emptyList<CompletedParcelHistory>()
+       }catch(e:Exception){
+           emptyList<CompletedParcelHistory>()
+       }
+    }
+    override suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<ParcelDTO> {
+        return ParcelCall.getCompleteParcelsByPage(page, inquiryDate).data?: emptyList<ParcelDTO>().toMutableList()
+    }
     override suspend fun getLocalParcelById(parcelId: Int): ParcelEntity? {
         return appDatabase.parcelDao().getById(parcelId)
     }

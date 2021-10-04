@@ -46,7 +46,7 @@ val appModule = module {
     single { CarrierRepository(get()) }
     single { ParcelRepository(get(), get()) }
     single { ParcelManagementRepoImpl(get()) }
-    single { CompleteParcelStatusRepoImpl(get()) }
+    single { CompletedParcelHistoryRepoImpl(get()) }
     single { AppPasswordRepository(get()) }
     single { OAuthLocalRepository(get()) }
 
