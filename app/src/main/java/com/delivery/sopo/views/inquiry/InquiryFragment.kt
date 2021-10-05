@@ -53,6 +53,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import java.util.function.Function
+import kotlin.NoSuchElementException
 import kotlin.system.exitProcess
 
 
@@ -305,14 +306,39 @@ class InquiryFragment: Fragment()
         vm.completeList.observe(requireActivity(), Observer { list ->
             SopoLog.d("!!! 완료 택배 갯수 ${list.size}")
 
+            val ml = list.toMutableList()
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+            ml.addAll(list)
+
             list.sortByDescending { it.parcelDTO.arrivalDte }
-            completedParcelAdapter.notifyChanged(list)
+            completedParcelAdapter.notifyChanged(ml)
         })
 
 
         // 배송완료 화면에서 표출 가능한 년월 리스트
         vm.histories.observe(requireActivity()) { dates ->
-            val latestDate = dates.first{ it.count > 0 }
+            val latestDate = try
+            {
+                dates.first { it.count > 0 }
+            }catch(e:NoSuchElementException){
+                CompletedParcelHistory("2021-09", 0)
+            }
 
             vm.changeMonthSelector(latestDate.year)
 
@@ -717,18 +743,16 @@ class InquiryFragment: Fragment()
             {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                /*if(!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE
-                ) // 리스트뷰의 마지막
+                if(!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) // 리스트뷰의 마지막
                 {
-                    val date =
-                        vm.currentCompleteParcelDate.value?.replace("년 ", "")?.replace("월", "")
+                    val date = vm.currentCompleteParcelDate.value?.replace("년 ", "")?.replace("월", "")
 
                     SopoLog.d("완료 택배 RecyclerView $date")
 
                     CoroutineScope(Dispatchers.IO).launch {
                         vm.getCompleteListWithPaging(MenuMapper.titleToInquiryDate(date ?: return@launch))
                     }
-                }*/
+                }
             }
         }
 

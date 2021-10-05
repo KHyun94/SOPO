@@ -193,6 +193,8 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
         SopoLog.d("Completed Parcel Date insert")
 
+        pagingManagement = PagingManagement(0, "", true)
+
         return histories
     }
 
