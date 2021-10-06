@@ -68,7 +68,7 @@ val appModule = module {
     viewModel { FaqViewModel() }
     viewModel { AppInfoViewModel() }
     viewModel { NotDisturbTimeViewModel() }
-    viewModel { InquiryViewModel(get(), get(), get(), get()) }
+    viewModel { InquiryViewModel(get(), get(), get()) }
     viewModel { MenuViewModel(get()) }
     viewModel { AccountManagerViewModel() }
     viewModel { SignOutViewModel(get()) }

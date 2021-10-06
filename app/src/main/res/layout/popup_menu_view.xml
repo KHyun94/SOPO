@@ -22,7 +22,7 @@
                 android:scrollbarTrackVertical="@drawable/scroll_track_gray"
                 android:scrollIndicators="right"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="3"
                 tools:listitem="@layout/inquiry_list_popup_window_item"

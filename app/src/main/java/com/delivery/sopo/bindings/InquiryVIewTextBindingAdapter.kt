@@ -3,21 +3,21 @@ package com.delivery.sopo.bindings
 import android.graphics.Color
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import com.delivery.sopo.enums.ScreenStatusEnum
+import com.delivery.sopo.enums.InquiryStatusEnum
 
 object InquiryVIewTextBindingAdapter
 {
     @JvmStatic
     @BindingAdapter("setOngoingView")
     fun bindingOngoingTextViewAdapter(
-        tv: TextView,
-        screenStatusEnum: ScreenStatusEnum
+            tv: TextView,
+            inquiryStatusEnum: InquiryStatusEnum
     ){
-        when(screenStatusEnum){
-            ScreenStatusEnum.ONGOING ->{
+        when(inquiryStatusEnum){
+            InquiryStatusEnum.ONGOING ->{
 
             }
-            ScreenStatusEnum.COMPLETE ->{
+            InquiryStatusEnum.COMPLETE ->{
                 tv.text = "배송완료"
                 tv.setTextColor(Color.WHITE)
             }

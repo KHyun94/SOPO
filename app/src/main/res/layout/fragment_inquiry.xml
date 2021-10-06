@@ -9,7 +9,7 @@
 
         <import type="com.delivery.sopo.R" />
 
-        <import type="com.delivery.sopo.enums.ScreenStatusEnum" />
+        <import type="com.delivery.sopo.enums.InquiryStatusEnum" />
 
         <variable
             name="vm"
@@ -17,7 +17,7 @@
 
         <variable
             name="screenStatus"
-            type="com.delivery.sopo.enums.ScreenStatusEnum" />
+            type="com.delivery.sopo.enums.InquiryStatusEnum" />
     </data>
 
 

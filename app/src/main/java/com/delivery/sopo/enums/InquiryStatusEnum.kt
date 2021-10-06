@@ -1,6 +1,6 @@
 package com.delivery.sopo.enums
 
-enum class ScreenStatusEnum
+enum class InquiryStatusEnum
 {
   ONGOING, COMPLETE
 }

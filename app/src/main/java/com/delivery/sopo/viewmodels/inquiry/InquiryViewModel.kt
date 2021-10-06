@@ -1,6 +1,5 @@
 package com.delivery.sopo.viewmodels.inquiry
 
-import android.os.Handler
 import android.widget.TextView
 import androidx.lifecycle.*
 import com.delivery.sopo.consts.StatusConst
@@ -9,10 +8,9 @@ import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.parcel.ParcelUseCase
 import com.delivery.sopo.enums.DeliveryStatusEnum
-import com.delivery.sopo.enums.ScreenStatusEnum
+import com.delivery.sopo.enums.InquiryStatusEnum
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.UpdateAliasRequest
 import com.delivery.sopo.models.inquiry.InquiryListItem
@@ -24,24 +22,23 @@ import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*
 
-class InquiryViewModel(private val userLocalRepository: UserLocalRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val historyRepo: CompletedParcelHistoryRepoImpl):
-        ViewModel()
+class InquiryViewModel(
+        private val parcelRepo: ParcelRepository,
+        private val parcelManagementRepo: ParcelManagementRepoImpl,
+        private val historyRepo: CompletedParcelHistoryRepoImpl
+        ): ViewModel()
 {
     /**
      * 공용
      */
 
-    private val _isProgress = MutableLiveData<Boolean>()
-    val isProgress: LiveData<Boolean>
-        get() = _isProgress
-
     // '배송 중' 또는 '배송완료' 화면 선택의 기준
-    private val _screenStatus = MutableLiveData<ScreenStatusEnum>()
-    val screenStatusEnum: LiveData<ScreenStatusEnum>
-        get() = _screenStatus
+    private val _inquiryStatus = MutableLiveData<InquiryStatusEnum>()
+    val inquiryStatus: LiveData<InquiryStatusEnum>
+        get() = _inquiryStatus
 
     // '배송중' => '배송완료' 개수
-    private val _cntOfBeDelivered = parcelManagementRepoImpl.getIsDeliveredCntLiveData()
+    private val _cntOfBeDelivered = parcelManagementRepo.getIsDeliveredCntLiveData()
     val cntOfBeDelivered: LiveData<Int>
         get() = _cntOfBeDelivered
 
@@ -74,43 +71,31 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
      * 완료된 택배 페이지
      */
 
-    /*private var _completeList = Transformations.map(parcelRepo.getLocalCompleteParcelsLiveData()) {
-        ParcelMapper.parcelListToInquiryItemList(it as MutableList<ParcelDTO>)
-    } as MutableLiveData<MutableList<InquiryListItem>>
-    val completeList: LiveData<MutableList<InquiryListItem>>
-        get() = _completeList*/
-
     private var _completeList = MutableLiveData<MutableList<InquiryListItem>>()
     val completeList: LiveData<MutableList<InquiryListItem>>
         get() = _completeList
 
     // 배송완료 조회 가능한 'Calendar'
     val histories: LiveData<List<CompletedParcelHistory>>
-        get() {
-            return historyRepo.getAllAsLiveData()
-        }
-
+        get() = historyRepo.getAllAsLiveData()
 
     var isClickableMonths: Boolean = true
 
-    val refreshCompleteListByOnlyLocalData: LiveData<Int>
-        get() = historyRepo.getRefreshCriteriaLiveData()
-
-    val currentCompleteParcelYear = MutableLiveData<String>()
-    val currentCompleteParcelMonths = MutableLiveData<List<SelectItem<CompletedParcelHistory>>>()
-    val currentCompleteParcelDate = MutableLiveData<String>()
+    val yearOfCalendar = MutableLiveData<String>()
+    val monthsOfCalendar = MutableLiveData<List<SelectItem<CompletedParcelHistory>>>()
+    val selectedDate = MutableLiveData<String>()
 
     private var pagingManagement = PagingManagement(0, "", true)
 
     init
     {
         _isMoreView.value = false
-        _screenStatus.value = ScreenStatusEnum.ONGOING
+        _inquiryStatus.value = InquiryStatusEnum.ONGOING
 
         viewModelScope.launch(Dispatchers.Main) {
             checkIsNeedForceUpdate()
-
-            val list = requestCompletedParcelHistory()
+            requestCompletedParcelHistory()
+            pagingManagement = PagingManagement(0, "", true)
         }
     }
 
@@ -121,23 +106,29 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
     // 조회 - 배송 상태를 '배송 중'으로 변경
     fun onChangedOngoingClicked()
     {
-        _screenStatus.value = ScreenStatusEnum.ONGOING
+        _inquiryStatus.value = InquiryStatusEnum.ONGOING
     }
 
     // 화면을 배송중 ==> 배송완료로 전환시킨다.
     fun onChangedCompleteClicked()
     {
-        _screenStatus.value = ScreenStatusEnum.COMPLETE
+        _inquiryStatus.value = InquiryStatusEnum.COMPLETE
 
         if(isFirstLoading) return
 
         isFirstLoading = !isFirstLoading
-      refreshCompleteParcels()
+        refreshCompleteParcels()
     }
 
-    fun getCurrentScreenStatus(): ScreenStatusEnum?
+    fun getCurrentScreenStatus(): InquiryStatusEnum?
     {
-        return screenStatusEnum.value
+        return inquiryStatus.value
+    }
+
+    fun changeCompletedParcelHistoryDate(year: String){
+        pagingManagement = PagingManagement(0, "", true)
+        yearOfCalendar.postValue(year)
+        updateMonthsSelector(year)
     }
 
     fun refreshCompleteListByOnlyLocalData()
@@ -171,9 +162,6 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                     historyRepo.updateEntities(list)
                 }
             }
-
-            //            liveData<> {  }
-            //            _isProgress.postValue(false)
         }
     }
 
@@ -193,35 +181,45 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
         SopoLog.d("Completed Parcel Date insert")
 
-        pagingManagement = PagingManagement(0, "", true)
-
         return histories
     }
 
-    // UI를 통해 사용자가 배송완료에서 조회하고 싶은 년월을 바꾼다.
-    fun changeMonthSelector(year: String) = viewModelScope.launch(Dispatchers.Default) {
+    fun updateCompletedParcelCalendar(year: String){
+        updateYearSpinner(year = year)
+        updateMonthsSelector(year = year)
+        _completeList.postValue(emptyList<InquiryListItem>().toMutableList())
+    }
 
-        SopoLog.i("changeMonthSelector(...) 호출 [data:$year]")
+    fun updateYearSpinner(year: String){
+        SopoLog.i("updateYearSpinner(...) 호출 [data:$year]")
+        yearOfCalendar.postValue(year)
+    }
+
+    // UI를 통해 사용자가 배송완료에서 조회하고 싶은 년월을 바꾼다.
+    fun updateMonthsSelector(year: String) = viewModelScope.launch(Dispatchers.Default) {
+
+        SopoLog.i("updateMonthsSelector(...) 호출 [data:$year]")
 
         var isLastMonth = false
 
-        val histories = historyRepo.findById("${year}%").map {
+        val histories = withContext(Dispatchers.Default) {
+            historyRepo.findById("${year}%").map {
 
-            val isSelected = if(it.count > 0 && !isLastMonth)
-            {
-                isLastMonth = true
-                true
-            }
-            else
-            {
-                false
-            }
+                val isSelected = if(it.count > 0 && !isLastMonth)
+                {
+                    isLastMonth = true
+                    true
+                }
+                else
+                {
+                    false
+                }
 
-            SelectItem<CompletedParcelHistory>(item = it, isSelect = isSelected)
+                SelectItem<CompletedParcelHistory>(item = it, isSelect = isSelected)
+            }
         }
 
-        currentCompleteParcelYear.postValue(year)
-        currentCompleteParcelMonths.postValue(histories)
+        monthsOfCalendar.postValue(histories)
     }
 
     fun onMonthClicked(tv: TextView, month: Int)
@@ -230,13 +228,15 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
         SopoLog.d("$month 활성화")
 
-        val list = currentCompleteParcelMonths.value?.map {
+        _completeList.postValue(emptyList<InquiryListItem>().toMutableList())
+
+        val list = monthsOfCalendar.value?.map {
             val selectMonth = month.toString().padStart(2, '0')
             it.isSelect = (selectMonth == it.item.month)
             it
         } ?: return
 
-        currentCompleteParcelMonths.postValue(list)
+        monthsOfCalendar.postValue(list)
     }
 
     //'더보기'를 눌렀다가 땠을때
@@ -292,14 +292,14 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                 SopoLog.d("업데이트 예정 Parcel[local:${localParcel.toString()}]")
 
                 val isUnidentifiedStatus = withContext(Dispatchers.Default) {
-                    parcelManagementRepoImpl.getUnidentifiedStatusByParcelId(localParcel.parcelId)
+                    parcelManagementRepo.getUnidentifiedStatusByParcelId(localParcel.parcelId)
                 }
 
                 if(isUnidentifiedStatus == StatusConst.ACTIVATE)
                 {
                     withContext(Dispatchers.Default) {
-                        parcelManagementRepoImpl.updateIsUnidentified(localParcel.parcelId,
-                                                                      StatusConst.DEACTIVATE)
+                        parcelManagementRepo.updateIsUnidentified(localParcel.parcelId,
+                                                                  StatusConst.DEACTIVATE)
                     }
                 }
 
@@ -331,7 +331,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
                         // unidentifiedStatus가 이미 활성화 상태이면 비활성화 조치
                         withContext(Dispatchers.Default) {
-                            parcelManagementRepoImpl.getUnidentifiedStatusByParcelId(
+                            parcelManagementRepo.getUnidentifiedStatusByParcelId(
                                 localParcel.parcelId) == 1
                         }
 
@@ -340,7 +340,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
 
                 withContext(Dispatchers.Default) {
                     parcelRepo.updateEntity(remoteParcelEntity)
-                    parcelManagementRepoImpl.updateEntity(remoteParcelStatusEntity)
+                    parcelManagementRepo.updateEntity(remoteParcelStatusEntity)
                 }
 
                 SopoLog.d("업데이트 완료 [parcel id:${remoteParcel.parcelId}]")
@@ -423,9 +423,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
         insertNewParcels(insertParcels)
         updateExistParcels(updateParcels)
 
-        return remoteCompleteParcels.apply {
-            SopoLog.d("아 시발 좀 ${this.joinToString()}")
-        }
+        return remoteCompleteParcels
     }
 
 
@@ -434,7 +432,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
             ParcelMapper.parcelToParcelManagementEntity(it).apply { isNowVisible = 1 }
         }
         parcelRepo.insertEntities(list)
-        parcelManagementRepoImpl.insertEntities(parcelStatuses)
+        parcelManagementRepo.insertEntities(parcelStatuses)
     }
 
     private suspend fun updateExistParcels(list: List<ParcelDTO>) =
@@ -443,7 +441,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                 ParcelMapper.parcelToParcelManagementEntity(it).apply { isNowVisible = 1 }
             }
             parcelRepo.updateEntities(list)
-            parcelManagementRepoImpl.updateEntities(parcelStatuses)
+            parcelManagementRepo.updateEntities(parcelStatuses)
         }
 
     private suspend fun insertRemoteParcel(entity: ParcelEntity)
@@ -456,7 +454,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
                 ParcelMapper.parcelEntityToParcelManagementEntity(entity).apply {
                     unidentifiedStatus = 1
                 }
-            parcelManagementRepoImpl.insertEntity(parcelStatusEntity = parcelStatusEntity)
+            parcelManagementRepo.insertEntity(parcelStatusEntity = parcelStatusEntity)
         }
     }
 
@@ -465,7 +463,7 @@ class InquiryViewModel(private val userLocalRepository: UserLocalRepository, pri
     private fun clearDeliveredStatus(): Job
     {
         return viewModelScope.launch(Dispatchers.IO) {
-            parcelManagementRepoImpl.updateTotalIsBeDeliveredToZero()
+            parcelManagementRepo.updateTotalIsBeDeliveredToZero()
         }
     }
 

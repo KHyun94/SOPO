@@ -8,10 +8,7 @@ import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import android.widget.FrameLayout
-import android.widget.LinearLayout
-import android.widget.PopupWindow
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
@@ -26,11 +23,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
-import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.databinding.FragmentInquiryReBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.InquiryItemTypeEnum
-import com.delivery.sopo.enums.ScreenStatusEnum
+import com.delivery.sopo.enums.InquiryStatusEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.models.UpdateAliasRequest
@@ -49,7 +45,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import java.util.function.Function
@@ -59,8 +54,6 @@ import kotlin.system.exitProcess
 
 class InquiryFragment: Fragment()
 {
-    private val parcelHistoryRepoImpl: CompletedParcelHistoryRepoImpl by inject()
-
     private lateinit var parentView: MainView
     private lateinit var binding: FragmentInquiryReBinding
 
@@ -127,7 +120,6 @@ class InquiryFragment: Fragment()
 
 
         binding.nestScrollViewComplete.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-
             if(scrollY > 0 && oldScrollY == 0) vm.isClickableMonths = false
             else if(scrollY == 0 && oldScrollY > 0) vm.isClickableMonths = true
         }
@@ -146,8 +138,6 @@ class InquiryFragment: Fragment()
         binding.ivPopMenu.setOnClickListener {
             openInquiryMenu(it)
         }
-
-
     }
 
     override fun onDetach()
@@ -161,9 +151,7 @@ class InquiryFragment: Fragment()
     {
         SopoLog.d("bindView() call")
 
-        binding = DataBindingUtil.inflate<FragmentInquiryReBinding>(inflater,
-                                                                    R.layout.fragment_inquiry_re,
-                                                                    container, false).apply {
+        binding = DataBindingUtil.inflate<FragmentInquiryReBinding>(inflater, R.layout.fragment_inquiry_re, container, false).apply {
             vm = (this@InquiryFragment).vm
             lifecycleOwner = this@InquiryFragment
         }
@@ -192,6 +180,18 @@ class InquiryFragment: Fragment()
         }
     }
 
+    fun activateInquiryStatus(tv: TextView){
+        tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE))
+        tv.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_light_black)
+        tv.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
+    }
+
+    fun inactivateInquiryStatus(tv: TextView){
+        tv.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium)
+        tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
+        tv.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_color_gray_400)
+    }
+
     private fun setObserver()
     {
         parentView.currentPage.observe(requireActivity(), Observer {
@@ -199,20 +199,6 @@ class InquiryFragment: Fragment()
             {
                 requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), callback)
             }
-        })
-
-        vm.isProgress.observe(requireActivity(), Observer { isProgress ->
-            if(isProgress == null) return@Observer
-
-            if(progressBar == null)
-            {
-                progressBar = CustomProgressBar(parentView)
-            }
-
-            progressBar?.onStartProgress(isProgress) { isDismiss ->
-                if(isDismiss) progressBar = null
-            }
-
         })
 
         // 배송중 , 등록된 택배 리스트
@@ -228,39 +214,19 @@ class InquiryFragment: Fragment()
 
         // '배송 중' 또는 '배송 완료' 화면에 따른 화면 세팅
         // TODO 데이터 바인딩으로 처리할 수 있으면 처리하도록 수정해야함.
-        vm.screenStatusEnum.observe(requireActivity(), Observer {
+        vm.inquiryStatus.observe(requireActivity(), Observer {
             when(it)
             {
-                ScreenStatusEnum.ONGOING ->
+                InquiryStatusEnum.ONGOING ->
                 { // '배송 중' 화면
-                    binding.btnOngoing.setTextColor(
-                        ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE))
-                    binding.btnOngoing.background = ContextCompat.getDrawable(requireContext(),
-                                                                              R.drawable.border_all_rounded_light_black)
-                    binding.btnOngoing.typeface =
-                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular)
-                    binding.btnComplete.typeface =
-                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular)
-                    binding.btnComplete.setTextColor(
-                        ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
-                    binding.btnComplete.background = ContextCompat.getDrawable(requireContext(),
-                                                                               R.drawable.border_all_rounded_color_gray_400)
+                    activateInquiryStatus(binding.tvOngoing)
+                    inactivateInquiryStatus(binding.tvComplete)
                 }
 
-                ScreenStatusEnum.COMPLETE ->
+                InquiryStatusEnum.COMPLETE ->
                 { // '배송 완료' 화면
-                    binding.btnOngoing.setTextColor(
-                        ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
-                    binding.btnOngoing.background = ContextCompat.getDrawable(requireContext(),
-                                                                              R.drawable.border_all_rounded_color_gray_400)
-                    binding.btnComplete.typeface =
-                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular)
-                    binding.btnComplete.typeface =
-                        ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular)
-                    binding.btnComplete.setTextColor(
-                        ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE))
-                    binding.btnComplete.background = ContextCompat.getDrawable(requireContext(),
-                                                                               R.drawable.border_all_rounded_light_black)
+                    activateInquiryStatus(binding.tvComplete)
+                    inactivateInquiryStatus(binding.tvOngoing)
                 }
             }
         })
@@ -333,33 +299,33 @@ class InquiryFragment: Fragment()
 
         // 배송완료 화면에서 표출 가능한 년월 리스트
         vm.histories.observe(requireActivity()) { dates ->
-            val latestDate = try
+
+            if(dates.isEmpty())
             {
-                dates.first { it.count > 0 }
-            }catch(e:NoSuchElementException){
-                CompletedParcelHistory("2021-09", 0)
+                SopoLog.d("완료 택배가 없습니다.")
+                return@observe
             }
 
-            vm.changeMonthSelector(latestDate.year)
+            val latestDate = try {
+                dates.first { date -> date.count > 0}
+            } catch(e:NoSuchElementException){
+                dates.first()
+            }
+
+            vm.updateCompletedParcelCalendar(latestDate.year)
 
             // TODO 다른 곳으로 빼야할듯
             binding.constraintYearSpinner.setOnClickListener { v ->
-                openPopUpMonthlyUsageHistory(v, dates)
+                drawCompletedParcelHistoryPopMenu(v, dates)
             }
         }
 
-        vm.currentCompleteParcelDate.observe(requireActivity()) { date ->
-            if(date == "") return@observe
-            val searchDate = date.replace("년 ", "").replace("월", "")
-            vm.refreshCompleteParcelsByDate(searchDate)
-        }
-
-        vm.currentCompleteParcelMonths.observe(requireActivity()) { list ->
+        vm.monthsOfCalendar.observe(requireActivity()) { list ->
 
             SopoLog.d("currentCompleteParcelMonths Observing...")
 
             setDefaultMonthSelector()
-            vm.currentCompleteParcelDate.postValue("")
+            vm.selectedDate.postValue("")
 
             val reversedList = list.reversed()
 
@@ -367,7 +333,7 @@ class InquiryFragment: Fragment()
 
                 if(it.item.count > 0 && it.isSelect)
                 {
-                    vm.currentCompleteParcelDate.postValue("${it.item.year}년 ${it.item.month}월")
+                    vm.selectedDate.postValue("${it.item.year}년 ${it.item.month}월")
                 }
 
                 val (clickable, textColor, font) = if(it.item.count > 0)
@@ -539,6 +505,12 @@ class InquiryFragment: Fragment()
             }
 
         }
+
+        vm.selectedDate.observe(requireActivity()) { date ->
+            if(date == "") return@observe
+            val searchDate = date.replace("년 ", "").replace("월", "")
+            vm.refreshCompleteParcelsByDate(searchDate)
+        }
     }
 
     private fun getParcelClicked(): OnParcelClickListener
@@ -647,10 +619,9 @@ class InquiryFragment: Fragment()
 
     // 배송완료 화면에서 년/월을 눌렀을 시 팝업 메뉴가 나온다.
     @SuppressLint("UseCompatLoadingForDrawables")
-    private fun openPopUpMonthlyUsageHistory(anchorView: View, histories: List<CompletedParcelHistory>)
+    private fun drawCompletedParcelHistoryPopMenu(anchorView: View, histories: List<CompletedParcelHistory>)
     {
-        val historyPopUpView: PopupMenuViewBinding =
-            PopupMenuViewBinding.inflate(LayoutInflater.from(context)).also { v ->
+        val historyPopUpView: PopupMenuViewBinding = PopupMenuViewBinding.inflate(LayoutInflater.from(context)).also { v ->
 
                 val inquiryMenuItems = MenuMapper.completeParcelStatusDTOToMenuItem(histories) as MutableList<InquiryMenuItem>
 
@@ -658,17 +629,16 @@ class InquiryFragment: Fragment()
 
                 v.recyclerviewInquiryPopupMenu.also {
                     it.adapter = popupMenuListAdapter
-                    val dividerItemDecoration =
-                        DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                    dividerItemDecoration.setDrawable(
-                        ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
+                    val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                    dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
                     it.addItemDecoration(dividerItemDecoration)
 
                     popupMenuListAdapter.setHistoryPopUpItemOnclick(object: PopupMenuListAdapter.HistoryPopUpItemOnclick
                                                                     {
                                                                         override fun changeTimeCount(v: View, year: String)
                                                                         {
-                                                                            vm.currentCompleteParcelYear.postValue(year)
+                                                                            vm.changeCompletedParcelHistoryDate(year = year)
+
                                                                             historyPopUpWindow?.dismiss()
                                                                         }
                                                                     })
@@ -676,7 +646,7 @@ class InquiryFragment: Fragment()
                     it.scrollBarFadeDuration = 800
                 }
             }
-        historyPopUpWindow = if(histories.size > 6)
+        historyPopUpWindow = if(histories.size > 2)
         {
             PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F),
                         SizeUtil.changeDpToPx(binding.root.context, 35 * 6F), true).apply {
@@ -703,11 +673,11 @@ class InquiryFragment: Fragment()
 
                 when(vm.getCurrentScreenStatus())
                 {
-                    ScreenStatusEnum.COMPLETE ->
+                    InquiryStatusEnum.COMPLETE ->
                     {
                         vm.refreshCompleteParcels()
                     }
-                    ScreenStatusEnum.ONGOING ->
+                    InquiryStatusEnum.ONGOING ->
                     {
                         vm.refreshOngoingParcels()
                     }
@@ -745,7 +715,7 @@ class InquiryFragment: Fragment()
 
                 if(!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) // 리스트뷰의 마지막
                 {
-                    val date = vm.currentCompleteParcelDate.value?.replace("년 ", "")?.replace("월", "")
+                    val date = vm.selectedDate.value?.replace("년 ", "")?.replace("월", "")
 
                     SopoLog.d("완료 택배 RecyclerView $date")
 
