@@ -13,15 +13,13 @@ interface OAuthAPI
     @FormUrlEncoded
     @POST("api/v1/sopo-auth/oauth/token")
     @Headers("Accept: application/json")
-    suspend fun requestOauth(
+    suspend fun requestQAuthToken(
         // 유저 이메일
             @Field("grant_type") grantType: String,
         // 비밀번호
             @Field("username") email: String,
         // Firebase uid
-            @Field("password") password: String,
-        // 디바이스 정보
-            @Field("device-info") deviceInfo: String
+            @Field("password") password: String
     ):Response<Any>
 
     /**

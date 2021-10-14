@@ -14,16 +14,25 @@ import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 
 import com.delivery.sopo.data.repository.local.datasource.ParcelDataSource
+import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.util.TimeUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class ParcelRepository(private val userLocalRepository: UserLocalRepository,
+class ParcelRepository(
+        private val userLocalRepo: UserLocalRepository
+        private val oAuthRepo: OAuthLocalRepository,
                        private val appDatabase: AppDatabase): ParcelDataSource
 {
 
-    override suspend fun getRemoteOngoingParcels(): MutableList<ParcelDTO>? = NetworkManager.retro(SOPOApp.oAuth?.accessToken).create(
-        ParcelAPI::class.java).getParcelsOngoing().data
+    override suspend fun getRemoteOngoingParcels(): MutableList<ParcelDTO>?
+    {
+        val userId = userLocalRepo.getUserId()
+        val oAuthToken = withContext(Dispatchers.Default) { oAuthRepo.get(userId = userId)}
+        return NetworkManager.retro(oAuthToken?.accessToken).create(ParcelAPI::class.java).getParcelsOngoing().data
+    }
 
     override suspend fun getRemoteMonths(): List<CompletedParcelHistory>
     {
@@ -127,7 +136,11 @@ class ParcelRepository(private val userLocalRepository: UserLocalRepository,
     override suspend fun deleteRemoteParcels(): APIResult<String?>? {
         val beDeletedData = appDatabase.parcelDao().getBeDeletedData()
         return if(beDeletedData.isNotEmpty()){
-            NetworkManager.retro(SOPOApp.oAuth?.accessToken).create(ParcelAPI::class.java).deleteParcels(
+
+            val userId = userLocalRepo.getUserId()
+            val oAuthToken = withContext(Dispatchers.Default) { oAuthRepo.get(userId = userId)}
+
+            NetworkManager.retro(oAuthToken?.accessToken).create(ParcelAPI::class.java).deleteParcels(
                 parcelIds = DeleteParcelsDTO(beDeletedData.map(ParcelMapper::parcelEntityToParcelId) as MutableList<Int>)
             )
         }

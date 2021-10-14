@@ -1,33 +1,31 @@
 package com.delivery.sopo.views.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager.widget.PagerAdapter;
 
 import com.delivery.sopo.R;
-import com.delivery.sopo.views.login.LoginSelectView;
+import com.delivery.sopo.interfaces.listener.OnIntroClickListener;
 
 public class IntroPageAdapter extends PagerAdapter {
 
     // LayoutInflater 서비스 사용을 위한 Context 참조 저장.
     private Context mContext = null ;
-
+    private OnIntroClickListener introClickListener;
 
     public IntroPageAdapter()
     {
     }
 
     // Context를 전달받아 mContext에 저장하는 생성자 추가.
-    public IntroPageAdapter(Context context) {
+    public IntroPageAdapter(Context context, OnIntroClickListener listener) {
         mContext = context;
+        introClickListener = listener;
     }
 
     @Override
@@ -54,9 +52,7 @@ public class IntroPageAdapter extends PagerAdapter {
                     btn.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent = new Intent(mContext, LoginSelectView.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            mContext.startActivity(intent);
+                            introClickListener.onIntroClicked();
                         }
                     });
                     break;
@@ -68,11 +64,6 @@ public class IntroPageAdapter extends PagerAdapter {
 
         return view ;
     }
-
-    public void moveToActivity(){
-
-    }
-
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {

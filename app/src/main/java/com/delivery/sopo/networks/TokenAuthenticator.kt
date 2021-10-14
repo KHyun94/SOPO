@@ -12,6 +12,7 @@ import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.api.OAuthAPI
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.models.api.ErrorResponse
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
@@ -31,8 +32,20 @@ class TokenAuthenticator : Authenticator, KoinComponent
 
     override fun authenticate(route : Route?, response : Response) : Request?
     {
+        SopoLog.i("Authenticator 아이이잉이시시시")
+
+        if(!response.isSuccessful)
+        {
+            val type = object : TypeToken<ErrorResponse>() {}.type
+            val reader = Gson().toJson(response.body)
+            val res = Gson().fromJson<ErrorResponse>(reader, type)
+
+            SopoLog.e("Test!!!!!!!! ! ${res.toString()}")
+        }
+
         if (response.code == 401)
         {
+
             SopoLog.d( msg = "authenticate call() - 401")
 
             when (val result = requestRefreshOAuthToken())

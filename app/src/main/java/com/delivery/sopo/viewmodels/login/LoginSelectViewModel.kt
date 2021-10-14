@@ -1,10 +1,9 @@
 package com.delivery.sopo.viewmodels.login
 
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
@@ -14,7 +13,7 @@ import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.dto.OAuthDTO
 import com.delivery.sopo.networks.dto.joins.JoinInfoDTO
-import com.delivery.sopo.networks.repository.JoinRepository
+import com.delivery.sopo.networks.repository.JoinRepositoryImpl
 import com.delivery.sopo.util.SopoLog
 import com.kakao.usermgmt.UserManagement
 import com.kakao.usermgmt.callback.MeV2ResponseCallback
@@ -23,12 +22,13 @@ import kotlinx.coroutines.*
 import java.util.*
 import com.kakao.network.ErrorResult as KakaoErrorResult
 
-class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo:UserRemoteRepository, private val joinRepo:JoinRepository): ViewModel()
+class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo: UserRemoteRepository, private val joinRepoImpl: JoinRepositoryImpl):
+        ViewModel()
 {
     private val viewModelScope: CoroutineScope
 
     private val _navigator = MutableLiveData<String>()
-    val navigator : LiveData<String>
+    val navigator: LiveData<String>
         get() = _navigator
 
     private val _isProgress = MutableLiveData<Boolean>()
@@ -110,14 +110,15 @@ class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, priva
         })
     }
 
-    private fun requestLoginByKakao(email: String, uId:String, nickname:String)
+    private fun requestLoginByKakao(email: String, uId: String, nickname: String)
     {
         viewModelScope.launch {
             try
             {
                 SopoLog.i(msg = "requestLoginBySelf(...) 호출")
 
-                val joinInfo = JoinInfoDTO(email = email, password = uId.toMD5(), deviceInfo = SOPOApp.deviceInfo, kakaoUid = uId, nickname = nickname)
+                val joinInfo =
+                    JoinInfoDTO(email = email, password = uId.toMD5(), kakaoUid = uId, nickname = nickname)
                 // 회원 가입
                 requestJoinByKakao(joinInfo = joinInfo)
 
@@ -176,18 +177,16 @@ class LoginSelectViewModel(private val userLocalRepo: UserLocalRepository, priva
     }
 
     suspend fun requestJoinByKakao(joinInfo: JoinInfoDTO) = withContext(Dispatchers.IO) {
-            val res =joinRepo.requestJoinByKakao(joinInfo)
-            return@withContext
-        }
+        val res = joinRepoImpl.requestJoinByKakao(joinInfo)
+        return@withContext
+    }
 
-    suspend fun requestLogin(email: String, password: String): OAuthDTO = withContext(Dispatchers.IO) {
-            val loginRes = userRemoteRepo.requestLogin(email = email, password = password)
-            return@withContext loginRes.data
-        }
+    suspend fun requestLogin(email: String, password: String) = withContext(Dispatchers.IO) {
+            userRemoteRepo.requestLogin(email = email, password = password)
+    }
 
-    suspend fun getUserInfo(): UserDetail = withContext(Dispatchers.IO) {
+    suspend fun getUserInfo() = withContext(Dispatchers.IO) {
         val infoRes = userRemoteRepo.getUserInfo()
-        return@withContext infoRes.data
     }
 
 }

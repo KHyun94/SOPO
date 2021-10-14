@@ -9,6 +9,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.SignUpCompleteBinding
 import com.delivery.sopo.extensions.launchActivityWithAllClear
+import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.signup.SignUpCompleteViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
@@ -16,29 +17,15 @@ import com.delivery.sopo.views.dialog.OnAgreeClickListener
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SignUpCompleteView : AppCompatActivity()
+class SignUpCompleteView : BaseView<SignUpCompleteBinding, SignUpCompleteViewModel>()
 {
-    lateinit var binding: SignUpCompleteBinding
-    private val vm: SignUpCompleteViewModel by viewModel()
+    override val layoutRes: Int
+        get() = R.layout.sign_up_complete
+    override val vm: SignUpCompleteViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?)
+    override fun setObserve()
     {
-        super.onCreate(savedInstanceState)
-
-        bindView()
-        setObserve()
-    }
-
-    private fun bindView()
-    {
-        binding = DataBindingUtil.setContentView(this@SignUpCompleteView, R.layout.sign_up_complete)
-        binding.vm = vm
-        binding.lifecycleOwner = this
-    }
-
-    private fun setObserve()
-    {
-        binding.vm!!.navigator.observe(this, Observer { navigator ->
+        vm.navigator.observe(this) { navigator ->
 
             when(navigator)
             {
@@ -57,20 +44,7 @@ class SignUpCompleteView : AppCompatActivity()
             }
 
             finish()
-        })
-
-        binding.vm!!.result.observe(this, Observer {res ->
-            if(!res.result)
-            {
-                SopoLog.e("${res.message} >>> ${res.code}")
-                GeneralDialog(this@SignUpCompleteView, "오류", res.message, res.code?.CODE, Pair("네", object: OnAgreeClickListener{
-                    override fun invoke(agree: GeneralDialog)
-                    {
-                        binding.vm!!.navigator.postValue(NavigatorConst.TO_LOGIN_SELECT)
-                    }
-                }))
-            }
-
-        })
+        }
     }
+
 }

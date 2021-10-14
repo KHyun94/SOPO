@@ -1,25 +1,34 @@
 package com.delivery.sopo.data.repository.remote.user
 
+import com.delivery.sopo.BuildConfig
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.DisplayEnum
+import com.delivery.sopo.enums.ErrorType
+import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.enums.ResponseCode
+import com.delivery.sopo.exceptions.APIBetaException
 import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.exceptions.NetworkException
 import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.models.EmailAuthDTO
 import com.delivery.sopo.models.PasswordResetDTO
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.UserDetail
+import com.delivery.sopo.models.api.ErrorResponse
 import com.delivery.sopo.models.dto.OAuthDTO
-import com.delivery.sopo.networks.call.OAuthCall
+import com.delivery.sopo.networks.NetworkManager
+import com.delivery.sopo.networks.api.OAuthAPI
+import com.delivery.sopo.networks.api.UserAPI
 import com.delivery.sopo.networks.call.UserCall
+import com.delivery.sopo.services.network_handler.BaseServiceBeta
+import com.delivery.sopo.services.network_handler.NetworkResponseBeta
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
+import com.google.firebase.auth.UserInfo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
@@ -27,17 +36,19 @@ import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
-class UserRemoteRepository:KoinComponent
+class UserRemoteRepository:KoinComponent, BaseServiceBeta()
 {
     private val userLocalRepo: UserLocalRepository by inject()
     private val oAuthLocalRepo: OAuthLocalRepository by inject()
     private val gson: Gson = Gson()
 
-    suspend fun requestLogin(email: String, password: String): ResponseResult<OAuthDTO>
+    suspend fun requestLogin(email: String, password: String)
     {
-        when(val result = OAuthCall.requestOauth(email, password, SOPOApp.deviceInfo))
+        val requestOAuthToken = NetworkManager.retro(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_PASSWORD).create(OAuthAPI::class.java).requestQAuthToken(grantType = "password", email = email, password = password.toMD5())
+
+        when(val result = apiCall(call = { requestOAuthToken }))
         {
-            is NetworkResult.Success ->
+            is NetworkResponseBeta.Success ->
             {
                 val type = object : TypeToken<OAuthDTO>() {}.type
                 val reader = gson.toJson(result.data)
@@ -45,53 +56,54 @@ class UserRemoteRepository:KoinComponent
 
                 userLocalRepo.run {
                     setUserId(email)
-                    setUserPassword(password)
+                    setUserPassword(password.toMD5())
                     setStatus(StatusConst.ACTIVATE)
                 }
 
                 withContext(Dispatchers.Default) {
                     oAuthLocalRepo.insert(dto = oAuthInfo)
                 }
-
-                SOPOApp.oAuth = oAuthInfo
-
-                return ResponseResult(result = true, code = ResponseCode.SUCCESS, data = oAuthInfo, message = ResponseCode.SUCCESS.MSG)
             }
-            is NetworkResult.Error ->
+            is NetworkResponseBeta.SuccessNoBody ->
             {
-                val apiException = result.exception as APIException
-                throw apiException
+                throw InternalError("일시적으로 조회가 불가능합니다. 다시 확인 부탁드리겠습니다.")
+            }
+            is NetworkResponseBeta.Error ->
+            {
+                throw APIBetaException(result.statusCode, result.errorResponse)
             }
         }
     }
 
-    suspend fun getUserInfo(): ResponseResult<UserDetail>
+    suspend fun getUserInfo(): UserDetail
     {
-        when(val result = UserCall.getUserDetailInfo())
+        val getUserInfo = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java).getUserDetailInfo()
+
+        when(val result = apiCall(call = { getUserInfo }))
         {
-            is NetworkResult.Success ->
+            is NetworkResponseBeta.Success ->
             {
                 val apiResult = result.data
 
-                apiResult.data?.let {userDetail ->
-                    userLocalRepo.setNickname(userDetail.nickname?:"")
-                    userLocalRepo.setPersonalStatusType(userDetail.personalMessage.type)
-                    userLocalRepo.setPersonalStatusMessage(userDetail.personalMessage.message)
+                val userInfo = apiResult.data ?: throw APIBetaException(200, ErrorResponse(401, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
+
+                withContext(Dispatchers.Default){
+                    userLocalRepo.run {
+                        setNickname(userInfo.nickname?:"")
+                        setPersonalStatusType(userInfo.personalMessage.type)
+                        setPersonalStatusMessage(userInfo.personalMessage.message)
+                    }
                 }
 
-                return ResponseResult(true, ResponseCode.SUCCESS, apiResult.data!!, ResponseCode.SUCCESS.MSG)
+                return userInfo
             }
-            is NetworkResult.Error ->
+            is NetworkResponseBeta.SuccessNoBody ->
             {
-                val apiException = result.exception as APIException
-                throw apiException
-
-                /*val exception = result.exception as APIException
-                val responseCode = exception.responseCode
-                val date = SOPOApp.oAuth.let { it?.expiresIn }
-
-                return if(responseCode.HTTP_STATUS == 401 && DateUtil.isOverExpiredDate(date!!)) ResponseResult(false, responseCode, null, "로그인 기한이 만료되었습니다.\n다시 로그인해주세요.", DisplayEnum.DIALOG)
-                else ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)*/
+                throw InternalError("일시적으로 조회가 불가능합니다. 다시 확인 부탁드리겠습니다.")
+            }
+            is NetworkResponseBeta.Error ->
+            {
+                throw APIBetaException(result.statusCode, result.errorResponse)
             }
         }
     }
@@ -114,10 +126,11 @@ class UserRemoteRepository:KoinComponent
 
                 val exception = result.exception as APIException
                 val responseCode = exception.responseCode
-                val date = SOPOApp.oAuth.let { it?.expiresIn }
-
-                return if(responseCode.HTTP_STATUS == 401 && DateUtil.isOverExpiredDate(date!!)) ResponseResult(false, responseCode, null, "로그인 기한이 만료되었습니다.\n다시 로그인해주세요.", DisplayEnum.DIALOG)
-                else ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
+//                val date = SOPOApp.oAuth.let { it?.expiresIn }
+//
+//                return if(responseCode.HTTP_STATUS == 401 && DateUtil.isOverExpiredDate(date!!)) ResponseResult(false, responseCode, null, "로그인 기한이 만료되었습니다.\n다시 로그인해주세요.", DisplayEnum.DIALOG)
+//                else ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
+                return ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
             }
         }
     }

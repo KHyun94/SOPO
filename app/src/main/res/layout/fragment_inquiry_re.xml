@@ -139,13 +139,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:visibility="@{vm.inquiryStatus == InquiryStatusEnum.ONGOING ? View.VISIBLE : View.GONE}"
-                    tools:visibility="gone">
+                    tools:visibility="visible">
 
                     <LinearLayout
                         android:id="@+id/linear_ongoing_parent"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:visibility="@{vm.inquiryStatus == InquiryStatusEnum.ONGOING ? View.VISIBLE : View.INVISIBLE}">
 
                         <LinearLayout
                             android:id="@+id/layout_present_ongoing"
@@ -335,6 +336,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="27dp"
+                    tools:visibility="gone"
                     android:visibility="@{vm.inquiryStatus == InquiryStatusEnum.COMPLETE ? View.VISIBLE : View.INVISIBLE}">
 
                     <!-- 월 spinner ! 촤하단 뷰 -->

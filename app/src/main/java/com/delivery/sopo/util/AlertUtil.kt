@@ -133,7 +133,6 @@ object AlertUtil: KoinComponent
                 userSITORY.removeUserRepo()
 
                 CoroutineScope(Dispatchers.Default).launch { appDataBase.clearAllTables() }
-                SOPOApp.oAuth = null
 
                 Intent(activity, LoginSelectView::class.java).let {
                     it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

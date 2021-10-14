@@ -23,6 +23,8 @@ abstract class BaseService
         {
             SopoLog.e("Fail to network working ${e.toString()} ${e.message}")
             // api 호출 실패 - network error
+
+
             return NetworkResult.Error(null, APIException(e))
         }
 

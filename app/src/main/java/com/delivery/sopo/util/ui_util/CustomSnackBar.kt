@@ -6,7 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.SnackBarCustomBinding
 import com.delivery.sopo.enums.SnackBarEnum
@@ -16,11 +20,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class CustomSnackBar(private val view: View,  private val content: String,  private val duration: Int, private val type: SnackBarEnum? = null,  private val clickListener: Pair<String, View.OnClickListener>? = null)
+class CustomSnackBar(private val view: View, private val content: String, private val duration: Int, private val type: SnackBarEnum? = null, private val clickListener: Pair<String, View.OnClickListener>? = null)
 {
-    companion object{
-        fun make(view: View, content: String, duration: Int, type: SnackBarEnum? = null, clickListener: Pair<String, View.OnClickListener>? = null)
-                = CustomSnackBar(view = view, content = content, duration = duration, type = type, clickListener = clickListener)
+    companion object
+    {
+        fun make(view: View, content: String, duration: Int, type: SnackBarEnum? = null, clickListener: Pair<String, View.OnClickListener>? = null) =
+            CustomSnackBar(view = view, content = content, duration = duration, type = type, clickListener = clickListener)
     }
 
     lateinit var binding: SnackBarCustomBinding
@@ -36,10 +41,9 @@ class CustomSnackBar(private val view: View,  private val content: String,  priv
 
     private fun bindView()
     {
-        binding = SnackBarCustomBinding.inflate(LayoutInflater.from(view.context))
+        binding = DataBindingUtil.inflate(LayoutInflater.from(view.context), R.layout.snack_bar_custom, null, false)
 
         with(snackbarLayout) {
-//            removeAllViews()
             setPadding(0, 0, 0, 0)
             setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
             addView(binding.root, 0)
@@ -54,12 +58,14 @@ class CustomSnackBar(private val view: View,  private val content: String,  priv
         {
             SnackBarEnum.COMMON ->
             {
-                binding.ivExclamationMark.background = ContextCompat.getDrawable(view.context, R.drawable.ic_exclamation_mark_blue)
+                binding.ivExclamationMark.background =
+                    ContextCompat.getDrawable(view.context, R.drawable.ic_exclamation_mark_blue)
                 binding.layoutSnackBar.setBackgroundColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_700))
             }
             SnackBarEnum.ERROR ->
             {
-                binding.ivExclamationMark.background = ContextCompat.getDrawable(view.context, R.drawable.ic_exclamation_mark_gray_scale)
+                binding.ivExclamationMark.background =
+                    ContextCompat.getDrawable(view.context, R.drawable.ic_exclamation_mark_gray_scale)
                 binding.layoutSnackBar.setBackgroundColor(ContextCompat.getColor(view.context, R.color.COLOR_GRAY_800))
             }
         }
@@ -81,35 +87,8 @@ class CustomSnackBar(private val view: View,  private val content: String,  priv
         }
     }
 
-    fun show(){
+    fun show()
+    {
         snackbar.show()
-        //        binding.layoutSnackBar.visibility = View.VISIBLE
-        //
-        //        Handler(Looper.getMainLooper()).postDelayed(Runnable{
-        //            binding.layoutSnackBar.visibility = View.GONE
-        //        }, duration.toLong())
     }
-
-    /*    fun floatingUpperSnackBAr(context : Context, msg : String, isClick : Boolean){
-
-            val inflater = LayoutInflater.from(context)
-
-            var binding : CustomToastMsgBinding = DataBindingUtil.inflate(inflater, R.layout.custom_toast_msg, null, false)
-
-            binding.msg = msg
-
-            var t : Toast = Toast.makeText(context, msg, Toast.LENGTH_LONG);
-
-            t.setGravity(Gravity.CENTER or Gravity.TOP, 0, 50)
-            t.view = binding.root
-
-            if(isClick){
-                binding.ivClear.setOnClickListener {
-                    t.cancel()
-                }
-
-            }
-
-            t.show()
-        }*/
 }

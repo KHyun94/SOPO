@@ -9,13 +9,10 @@ import android.view.View.*
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.widget.*
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -29,7 +26,9 @@ import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.enums.InquiryStatusEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
+import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.models.UpdateAliasRequest
+import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.mapper.MenuMapper
 import com.delivery.sopo.util.AlertUtil
@@ -52,12 +51,16 @@ import kotlin.NoSuchElementException
 import kotlin.system.exitProcess
 
 
-class InquiryFragment: Fragment()
+class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>()
 {
-    private lateinit var parentView: MainView
-    private lateinit var binding: FragmentInquiryReBinding
 
-    private val vm: InquiryViewModel by viewModel()
+    override val layoutRes: Int = R.layout.fragment_inquiry_re
+
+    override val vm: InquiryViewModel by viewModel()
+
+    private val parentView: MainView by lazy {
+        activity as MainView
+    }
 
     // 곧 도착 택배 리스트 adapter, 등록된 택배(진행 중) 리스트 adapter, 도착 완료된 택배 리스트 adapter
     private lateinit var soonArrivalParcelAdapter: InquiryListAdapter
@@ -71,62 +74,23 @@ class InquiryFragment: Fragment()
 
     private var refreshDelay: Boolean = false
 
-    lateinit var callback: OnBackPressedCallback
-
     override fun onAttach(context: Context)
     {
         super.onAttach(context)
-        parentView = activity as MainView
 
-        var pressedTime: Long = 0
-
-        callback = object: OnBackPressedCallback(true)
-        {
-            override fun handleOnBackPressed()
+        onSOPOBackPressedListener = object: OnSOPOBackPressListener{
+            override fun onBackPressedInTime()
             {
-                if(System.currentTimeMillis() - pressedTime > 2000)
-                {
-                    pressedTime = System.currentTimeMillis()
+                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
+                    .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }.show()
+            }
 
-                    Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
-                        .apply {
-                            animationMode = Snackbar.ANIMATION_MODE_SLIDE
-                        }
-                        .show()
-
-                    return
-                }
-
+            override fun onBackPressedOutTime()
+            {
                 ActivityCompat.finishAffinity(parentView)
                 exitProcess(0)
             }
         }
-
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback ?: return)
-    }
-
-
-    @SuppressLint("SourceLockedOrientationActivity", "ClickableViewAccessibility")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
-    {
-        parentView = activity as MainView
-        bindView(inflater, container)
-        setAdapters()
-        setObserver()
-
-        binding.vEmpty2.setOnTouchListener { v, event ->
-            return@setOnTouchListener binding.linearMonthSelector.dispatchTouchEvent(event)
-        }
-
-
-        binding.nestScrollViewComplete.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-            if(scrollY > 0 && oldScrollY == 0) vm.isClickableMonths = false
-            else if(scrollY == 0 && oldScrollY > 0) vm.isClickableMonths = true
-        }
-
-
-        updateCompleteUI()
-        return binding.root
     }
 
     @SuppressLint("ClickableViewAccessibility", "RestrictedApi")
@@ -134,31 +98,41 @@ class InquiryFragment: Fragment()
     {
         super.onViewCreated(view, savedInstanceState)
 
+        setAdapters()
         setListener()
         binding.ivPopMenu.setOnClickListener {
             openInquiryMenu(it)
         }
     }
 
-    override fun onDetach()
+    @SuppressLint("ClickableViewAccessibility")
+    override fun initUI()
     {
-        super.onDetach()
+        SopoLog.d("base fragment - initUI Call2")
 
-        callback.remove()
+
+        setAdapters()
+
+        binding.vEmpty2.setOnTouchListener { v, event ->
+            return@setOnTouchListener binding.linearMonthSelector.dispatchTouchEvent(event)
+        }
+
+        binding.nestScrollViewComplete.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            if(scrollY > 0 && oldScrollY == 0) vm.isClickableMonths = false
+            else if(scrollY == 0 && oldScrollY > 0) vm.isClickableMonths = true
+        }
+
+        updateCompleteUI()
     }
 
-    private fun bindView(inflater: LayoutInflater, container: ViewGroup?)
+    override fun setAfterSetUI()
     {
-        SopoLog.d("bindView() call")
-
-        binding = DataBindingUtil.inflate<FragmentInquiryReBinding>(inflater, R.layout.fragment_inquiry_re, container, false).apply {
-            vm = (this@InquiryFragment).vm
-            lifecycleOwner = this@InquiryFragment
-        }
     }
 
     private fun getAdapter(inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter
     {
+        SopoLog.d("Test2. getAdapter")
+
         return InquiryListAdapter(parcelType = inquiryItemTypeEnum).apply {
             this.setOnParcelClickListener(getParcelClicked())
         }
@@ -180,26 +154,26 @@ class InquiryFragment: Fragment()
         }
     }
 
-    fun activateInquiryStatus(tv: TextView){
+    private fun activateInquiryStatus(tv: TextView){
         tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE))
         tv.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_light_black)
         tv.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
     }
 
-    fun inactivateInquiryStatus(tv: TextView){
+    private fun inactivateInquiryStatus(tv: TextView){
         tv.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium)
         tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
         tv.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_color_gray_400)
     }
 
-    private fun setObserver()
+    override fun setObserve()
     {
-        parentView.currentPage.observe(requireActivity(), Observer {
+        /*parentView.currentPage.observe(requireActivity(), Observer {
             if(it != null && it == TabCode.secondTab)
             {
                 requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), callback)
             }
-        })
+        })*/
 
         // 배송중 , 등록된 택배 리스트
         vm.ongoingList.observe(requireActivity(), Observer { list ->
@@ -214,7 +188,10 @@ class InquiryFragment: Fragment()
 
         // '배송 중' 또는 '배송 완료' 화면에 따른 화면 세팅
         // TODO 데이터 바인딩으로 처리할 수 있으면 처리하도록 수정해야함.
-        vm.inquiryStatus.observe(requireActivity(), Observer {
+        vm.inquiryStatus.observe(requireActivity()) {
+
+            SopoLog.d("Inquiry Status -> ${it}")
+
             when(it)
             {
                 InquiryStatusEnum.ONGOING ->
@@ -229,7 +206,7 @@ class InquiryFragment: Fragment()
                     inactivateInquiryStatus(binding.tvOngoing)
                 }
             }
-        })
+        }
 
         // '더 보기'로 아이템들을 숨기는 것을 해제하여 모든 아이템들을 화면에 노출시킨다.
         vm.isMoreView.observe(requireActivity(), Observer {
@@ -790,15 +767,7 @@ class InquiryFragment: Fragment()
         binding.ivPopMenu.visibility = INVISIBLE
         binding.linearMoreViewParent.visibility = GONE
 
-
         binding.vMoreView.visibility = INVISIBLE
-        /*
-                binding.constraintDeleteSelect.visibility = VISIBLE
-
-                binding.ivDelectStatusClear.visibility = VISIBLE
-
-                binding.tvDeleteTitle.visibility = VISIBLE
-        */
 
         // '하단 탭'이 사라져야한다.
         parentView.binding.vm!!.setMainTabVisibility(GONE)
@@ -813,11 +782,6 @@ class InquiryFragment: Fragment()
         binding.linearStatusSelector.visibility = VISIBLE
         binding.ivPopMenu.visibility = VISIBLE
 
-        /*
-                binding.ivDelectStatusClear.visibility = INVISIBLE
-                binding.tvDeleteTitle.visibility = GONE
-                binding.constraintDeleteSelect.visibility = GONE
-        */
 
         // '하단 탭'이 노출되어야한다.
         parentView.binding.vm!!.setMainTabVisibility(VISIBLE)
@@ -941,6 +905,13 @@ class InquiryFragment: Fragment()
         }
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+
+        SopoLog.d("뭐지 시발 진짜로 -> ${binding.nestedScrollView.visibility == View.VISIBLE}")
+    }
+
     private fun updateCompleteUI()
     {
         val onGlobalLayoutListener = object: ViewTreeObserver.OnGlobalLayoutListener
@@ -966,7 +937,4 @@ class InquiryFragment: Fragment()
 
         binding.frameComplete.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
     }
-
-
-
 }

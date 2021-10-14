@@ -1,32 +1,57 @@
 package com.delivery.sopo.viewmodels.splash
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.enums.ResponseCode
-import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.networks.call.UserCall
+import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.services.network_handler.NetworkResult
+import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
+import com.delivery.sopo.exceptions.APIBetaException
+import com.delivery.sopo.exceptions.InternalServerException
+import com.delivery.sopo.models.api.ErrorResponse
+import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.*
 
-class SplashViewModel(private val userLocalRepo: UserLocalRepository, private val OAuthLocalRepository: OAuthLocalRepository): ViewModel()
+class SplashViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo: UserRemoteRepository,private val oAuthLocalRepo: OAuthLocalRepository): ViewModel()
 {
     var navigator = MutableLiveData<String>()
     var errorMessage: String = ""
 
-    init
-    {
-        requestAfterActivity()
+    private val _error = MutableLiveData<Pair<Int, ErrorResponse>>()
+    val error: LiveData<Pair<Int, ErrorResponse>>
+        get() = _error
+
+    val handler = CoroutineExceptionHandler { context, exception ->
+        when(exception)
+        {
+            is APIBetaException ->
+            {
+                _error.postValue(Pair(exception.getStatusCode(), exception.getErrorResponse()))
+            }
+            is InternalServerException ->
+            {
+                _error.postValue(Pair(500, exception.getErrorResponse()))
+            }
+        }
     }
 
-    private fun requestAfterActivity()
+    private val scope: CoroutineScope = viewModelScope
+
+    init
+    {
+        checkUserStatus()
+    }
+
+    private fun checkUserStatus()
     {
         SopoLog.d(msg = "로그인 상태[${userLocalRepo.getStatus()}]")
 
-        if (userLocalRepo.getStatus() == 1)
+        if (userLocalRepo.getStatus() == StatusConst.ACTIVATE)
         {
             navigator.postValue(NavigatorConst.TO_PERMISSION)
         }
@@ -36,34 +61,39 @@ class SplashViewModel(private val userLocalRepo: UserLocalRepository, private va
         }
     }
 
+    suspend fun requestLoginStatusForKeeping() = scope.launch(Dispatchers.IO){
+
+        try
+        {
+            val isExpired = isExpiredTokenWithinWeek()
+
+            if(isExpired)
+            {
+                userRemoteRepo.requestLogin(userLocalRepo.getUserId(), userLocalRepo.getUserPassword())
+            }
+
+            val userInfo = userRemoteRepo.getUserInfo()
+
+            if(userInfo.nickname == "")
+            {
+                navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
+                return@launch
+            }
+
+        }
+        catch(e: Exception)
+        {
+            handler.handleException(coroutineContext, e)
+        }
+    }
+
     suspend fun getUserInfoWithToken()
     {
-        when (val result = UserCall.getUserDetailInfo())
-        {
-            is NetworkResult.Success ->
-            {
-                val userDetail = result.data.data
 
-                SopoLog.d("자동 로그인 성공 [data:${userDetail.toString()}]")
-
-                userDetail?.let {
-                    userLocalRepo.setUserId(userDetail.userId ?: "")
-                    userLocalRepo.setNickname(userDetail.nickname ?: "")
-                    userLocalRepo.setJoinType(userDetail.joinType ?: "")
-                    userLocalRepo.setPersonalStatusType(userDetail.personalMessage.type)
-                    userLocalRepo.setPersonalStatusMessage(userDetail.personalMessage.message)
-                }
-
-                navigator.postValue(NavigatorConst.TO_MAIN)
-            }
-            is NetworkResult.Error ->
-            {
-                val exception = result.exception as APIException
-                val responseCode = exception.responseCode
-
-                if(responseCode == ResponseCode.TOKEN_ERROR_INVALID_GRANT || responseCode == ResponseCode.TOKEN_ERROR_INVALID_TOKEN)
+/*
+* if(responseCode == ResponseCode.TOKEN_ERROR_INVALID_GRANT || responseCode == ResponseCode.TOKEN_ERROR_INVALID_TOKEN)
                 {
-                    val oAuth =  OAuthLocalRepository.get(userLocalRepo.getUserId())
+                    val oAuth =  oAuthLocalRepo.get(userLocalRepo.getUserId())
 
                     val isOver = DateUtil.isOverExpiredDate(oAuth?.refreshTokenExpiredAt?:"")
 
@@ -89,8 +119,32 @@ class SplashViewModel(private val userLocalRepo: UserLocalRepository, private va
 
                 navigator.postValue(NavigatorConst.TO_INTRO)
                 SopoLog.e(msg = "User Info Call Fai")
-            }
-        }
+*
+*
+* */
 
     }
+
+
+    /**
+     * 토큰 만료일 기준 1주일 내외 일 때
+     * 토큰을 새로 요청함
+     *
+     * true - 갱신 필요
+     * false -갱신 필요 없음
+     */
+    suspend fun isExpiredTokenWithinWeek():Boolean = withContext(Dispatchers.Default) {
+        SopoLog.i("isRefreshTokenWithinWeek() 호출")
+
+        // 로컬 내 oAuth Token의 만료 기일을 로드
+        val currentExpiredDate: String = withContext(Dispatchers.Default) {
+            oAuthLocalRepo.get(userLocalRepo.getUserId())?.run { OAuthMapper.entityToObject(this).refreshTokenExpiredAt }?:""
+        }
+
+        SopoLog.d("O-Auth Token Expired Date(갱신 전) [data:$currentExpiredDate]")
+
+        return@withContext DateUtil.isExpiredDateWithinAWeek(currentExpiredDate)
+    }
+
+
 }

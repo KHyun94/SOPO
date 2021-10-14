@@ -6,38 +6,36 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.abstracts.BasicView
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.SignUpViewBinding
 import com.delivery.sopo.enums.InfoEnum
+import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.extensions.launchActivity
+import com.delivery.sopo.models.base.BaseView
+import com.delivery.sopo.util.OtherUtil
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
+import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.signup.SignUpViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SignUpView: BasicView<SignUpViewBinding>(R.layout.sign_up_view)
+class SignUpView: BaseView<SignUpViewBinding, SignUpViewModel>()
 {
-    private val vm: SignUpViewModel by viewModel()
-    private var progressBar: CustomProgressBar? = CustomProgressBar(this@SignUpView)
 
-    init
-    {
-        parentActivity = this@SignUpView
-    }
+    override val layoutRes: Int
+        get() = R.layout.sign_up_view
+    override val vm: SignUpViewModel by viewModel()
 
-    override fun bindView()
+    override fun setObserve()
     {
-        binding.vm = vm
-    }
-
-    override fun setObserver()
-    {
-        binding.vm!!.focus.observe(this, Observer { focus ->
+        vm.focus.observe(this, Observer { focus ->
             val res = TextInputUtil.changeFocus(this@SignUpView, focus)
-            binding.vm!!.validities[res.first] = res.second
+            vm.validity[res.first] = res.second
         })
 
-        binding.vm!!.invalid.observe(this, Observer { target ->
+        vm.invalidity.observe(this, Observer { target ->
             val message = when(target.first)
             {
                 InfoEnum.EMAIL ->
@@ -62,35 +60,41 @@ class SignUpView: BasicView<SignUpViewBinding>(R.layout.sign_up_view)
                 else -> throw Exception("비정상 형식 에러 발생")
             }
 
-            Toast.makeText(this@SignUpView,message, Toast.LENGTH_LONG).apply {
+            Toast.makeText(this@SignUpView, message, Toast.LENGTH_LONG).apply {
                 setGravity(Gravity.TOP, 0, 180)
             }.show()
         })
 
-        binding.vm!!.isProgress.observe(this, Observer {isProgress ->
-            if(progressBar == null)
+        vm.error.observe(this) {
+
+            OtherUtil.hideKeyboardSoft(this)
+
+            when(it.first)
             {
-                progressBar = CustomProgressBar(this@SignUpView)
+                500 ->
+                {
+                    CustomSnackBar.make(view = binding.constraintSighUp, content = it.second, duration = 3000, type = SnackBarEnum.ERROR).show()
+                }
+                else ->
+                {
+                    CustomSnackBar.make(view = binding.constraintSighUp, content = it.second, duration = 3000, type = SnackBarEnum.ERROR).show()
+                }
             }
+        }
 
-            progressBar?.onStartProgress(isProgress){isDismiss ->
-                if(isDismiss) progressBar = null
-            }
-        })
-
-        binding.vm!!.result.observe(this, Observer { result ->
-
-            if (!result.result)
+        vm.navigator.observe(this) { navigator ->
+            when(navigator)
             {
-                GeneralDialog(act = parentActivity, title = "오류", msg = result.message, detailMsg = result.code?.CODE, rHandler = Pair(first = "네", second = null)).show(supportFragmentManager, "tag")
-                return@Observer
+                NavigatorConst.TO_COMPLETE ->
+                {
+                    GeneralDialog(this, "알림", "정상적으로 회원가입 성공했습니다.", null, Pair("네", { it ->
+                        it.dismiss()
+                        Intent(this@SignUpView, SignUpCompleteView::class.java).launchActivity(this)
+                        finish()
+                    })).show(supportFragmentManager.beginTransaction(), "TAG")
+                }
             }
-
-            GeneralDialog(parentActivity, "알림", "정상적으로 회원가입 성공했습니다.", null, Pair("네", { it ->
-                    it.dismiss()
-                    Intent(this@SignUpView, SignUpCompleteView::class.java).launchActivity(this)
-                    finish()
-                })).show(supportFragmentManager.beginTransaction(), "TAG")
-        })
+        }
     }
+
 }

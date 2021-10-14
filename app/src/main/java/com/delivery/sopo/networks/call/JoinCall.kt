@@ -1,24 +1,49 @@
 package com.delivery.sopo.networks.call
 
-import com.delivery.sopo.models.api.APIResult
+import com.delivery.sopo.exceptions.APIBetaException
+import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.JoinAPI
 import com.delivery.sopo.networks.dto.joins.JoinInfoDTO
-import com.delivery.sopo.services.network_handler.BaseService
-import com.delivery.sopo.services.network_handler.NetworkResult
+import com.delivery.sopo.services.network_handler.BaseServiceBeta
+import com.delivery.sopo.services.network_handler.NetworkResponseBeta
+import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-object JoinCall : BaseService()
+object JoinCall: BaseServiceBeta()
 {
-    var joinAPI : JoinAPI
+    var joinAPI: JoinAPI = NetworkManager.retro().create(JoinAPI::class.java)
 
-    init
-    {
-//        NetworkManager.setLogin(null, null)
-//        joinAPI = NetworkManager.retro.create(JoinAPI::class.java)
-        joinAPI = NetworkManager.retro().create(JoinAPI::class.java)
+    suspend fun requestJoinBySelf(joinInfoDTO: JoinInfoDTO) = withContext(Dispatchers.IO) {
+        when(val result = apiCall(call = { joinAPI.requestJoinBySelf(joinInfoDTO) }))
+        {
+            is NetworkResponseBeta.Error ->
+            {
+                throw APIBetaException(result.statusCode, result.errorResponse)
+            }
+            else ->
+            {
+                withContext(Dispatchers.Default) {
+                   /* userLocalRepo.setUserId(userId = joinInfoDTO.email)
+                    userLocalRepo.setUserPassword(password = joinInfoDTO.password.toMD5())*/
+                }
+                SopoLog.d("자체 회원가입 성공 [email:${joinInfoDTO.email}]")
+            }
+        }
     }
 
-    // TODO 자체 회원 가입 API에 닉네임이 필요없음
-    suspend fun requestJoinBySelf(joinInfoDTO: JoinInfoDTO) = apiCall(call = { joinAPI.requestJoinBySelf(joinInfoDTO) })
-    suspend fun requestJoinByKakao(joinInfoDTO: JoinInfoDTO) = apiCall(call = { joinAPI.requestJoinByKakao(joinInfoDTO) })
+    suspend fun requestJoinByKakao(joinInfoDTO: JoinInfoDTO) = withContext(Dispatchers.IO) {
+        when(val result = apiCall(call = { joinAPI.requestJoinByKakao(joinInfoDTO) }))
+        {
+            is NetworkResponseBeta.Error ->
+            {
+                throw APIBetaException(result.statusCode, result.errorResponse)
+            }
+            else ->
+            {
+                SopoLog.d("카카오 간편 회원가입 성공 [email:${joinInfoDTO.email}]")
+            }
+        }
+    }
 }

@@ -7,8 +7,6 @@ data class JoinInfoDTO(
     val email: String,
     @SerializedName("password")
     val password: String,
-    @SerializedName("deviceInfo")
-    val deviceInfo: String,
     @SerializedName("kakaoUid")
     val kakaoUid: String? = null,
     @SerializedName("nickname")

@@ -13,22 +13,22 @@ import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResult
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import org.koin.java.KoinJavaComponent.inject
 
 object OAuthCall: BaseService(), KoinComponent
 {
     private val userRepo: UserLocalRepository by inject()
     private val oAuthRepo: OAuthLocalRepository by inject()
 
-    suspend fun requestOauth(email: String, password: String, deviceInfo: String): NetworkResult<Any>
+    /*suspend fun requestOauth(email: String, password: String, deviceInfo: String): NetworkResult<Any>
     {
         val requestOauth = NetworkManager.retro(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_PASSWORD)
             .create(OAuthAPI::class.java)
-            .requestOauth(grantType = "password", email = email, password = password.toMD5(),
-                          deviceInfo = deviceInfo)
+            .requestQAuthToken(grantType = "password", email = email, password = password.toMD5(),
+                               deviceInfo = deviceInfo)
+
         return apiCall(call = { requestOauth })
     }
-
+*/
     suspend fun requestRefreshTokenInOAuth(): NetworkResult<Any>
     {
         val oAuthEntity =

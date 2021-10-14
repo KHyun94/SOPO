@@ -19,6 +19,7 @@
         <item name="android:dropDownListViewStyle">@style/PopupMenuListView</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="snackbarStyle">@style/Widget.MaterialComponents.Snackbar.FullWidth</item>
     </style>
 
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">

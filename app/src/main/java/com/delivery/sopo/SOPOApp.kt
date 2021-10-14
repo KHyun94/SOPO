@@ -52,7 +52,6 @@ class SOPOApp: Application()
         super.onCreate()
 
         INSTANCE = this@SOPOApp
-        activity = Activity()
 
         startKoin {
             androidContext(this@SOPOApp)
@@ -91,22 +90,6 @@ class SOPOApp: Application()
         CoroutineScope(Dispatchers.Main).launch {
             currentPage.postValue(getInitViewPagerNumber())
         }
-
-        CoroutineScope(Dispatchers.Default).launch {
-            val oAuthEntity =
-                OAuthLocalRepository.get(userLocalRepository.getUserId()) ?: return@launch
-            oAuth = OAuthMapper.entityToObject(oAuthEntity)
-        }
-
-        SopoLog.d(msg = """
-            구독 설정 시간 >>> ${userLocalRepository.getTopic()}
-            구독 스코프 >>> ${FirebaseMessaging.INSTANCE_ID_SCOPE}
-            구독 isAutoInitEnabled >>> ${FirebaseMessaging.getInstance().isAutoInitEnabled}
-        """.trimIndent())
-
-//        android.os.Handler().postDelayed(Runnable { cntOfBeUpdate.postValue(3) }, 5000)
-//        android.os.Handler().postDelayed(Runnable { cntOfBeUpdate.postValue(5) }, 10000)
-//        android.os.Handler().postDelayed(Runnable { cntOfBeUpdate.postValue(7) }, 25000)
     }
 
     private suspend fun getInitViewPagerNumber(): Int
@@ -132,14 +115,10 @@ class SOPOApp: Application()
         lateinit var INSTANCE: Context
         lateinit var auth: FirebaseAuth
         lateinit var deviceInfo: String
-        lateinit var activity: Activity
         lateinit var alarmManager: AlarmManager
 
         var currentPage = SingleLiveEvent<Int?>()
 
         var cntOfBeUpdate: MutableLiveData<Int> = MutableLiveData<Int>()
-
-        // TODO 없어져야 한 폐단
-        var oAuth: OAuthDTO? = null
     }
 }

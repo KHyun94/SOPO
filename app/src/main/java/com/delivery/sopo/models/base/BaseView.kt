@@ -1,6 +1,7 @@
 package com.delivery.sopo.models.base
 
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
@@ -13,7 +14,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.BR
 
-abstract class BaseView<T: ViewDataBinding, R: ViewModel>: AppCompatActivity(), ProcessInterface {
+abstract class BaseView<T: ViewDataBinding, R: ViewModel>: AppCompatActivity() {
 
     lateinit var binding: T
 
@@ -24,6 +25,9 @@ abstract class BaseView<T: ViewDataBinding, R: ViewModel>: AppCompatActivity(), 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
         binding = bindView(this)
 
         receivedData(intent = intent)
@@ -55,4 +59,24 @@ abstract class BaseView<T: ViewDataBinding, R: ViewModel>: AppCompatActivity(), 
         activityResultLauncher?.unregister()
         activityResultLauncher = null
     }
+
+    /**
+     * 데이터 전달
+     */
+    protected open fun receivedData(intent: Intent){}
+
+    /**
+     * 초기 화면 세팅
+     */
+    protected open fun initUI(){}
+
+    /**
+     * UI 세팅 이후
+     */
+    protected open fun setAfterSetUI(){}
+
+    /**
+     * Observe 로직
+     */
+    protected open fun setObserve(){}
 }

@@ -45,13 +45,11 @@ object NetworkManager : KoinComponent
         {
             NetworkEnum.O_AUTH_TOKEN_LOGIN ->
             {
-                val oAuth : OAuthDTO? = runBlocking(Dispatchers.Default) {
+                val oAuth : OAuthDTO = runBlocking(Dispatchers.Default) {
                     val oAuthEntity = oAuthLocalRepo.get(userLocalRepo.getUserId()) ?: throw NullPointerException("OAuth Token is null")
                     OAuthMapper.entityToObject(oAuthEntity)
                 }
-
-                SopoLog.d(msg = "토큰 정보 => ${oAuth}")
-                retro(oAuth?.accessToken).create(clz)
+                retro(oAuth.accessToken).create(clz)
             }
             NetworkEnum.PUBLIC_LOGIN ->
             {
@@ -97,7 +95,8 @@ object NetworkManager : KoinComponent
             followRedirects(false)
             writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
             readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-            if(INTERCEPTOR_TYPE == 1 && isAuthenticator) authenticator(TokenAuthenticator())
+            authenticator(TokenAuthenticator())
+//            if(INTERCEPTOR_TYPE == 1 && isAuthenticator) authenticator(TokenAuthenticator())
         }.build()
 
         val gson = GsonBuilder().apply {
@@ -106,6 +105,7 @@ object NetworkManager : KoinComponent
 
         return Retrofit.Builder()
             .baseUrl(BuildConfig.API_URL)
+//            .baseUrl("http://172.20.10.2:6443/")
             .client(mOKHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson.create()))
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
