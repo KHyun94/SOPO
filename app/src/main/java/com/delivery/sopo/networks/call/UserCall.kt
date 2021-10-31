@@ -19,8 +19,6 @@ import org.koin.core.inject
 
 object UserCall: BaseService(), KoinComponent
 {
-    private val userRepo: UserLocalRepository by inject()
-    private val oAuthRepo: OAuthLocalRepository by inject()
     private lateinit var userAPI: UserAPI
 
     suspend fun getUserDetailInfo(): NetworkResult<APIResult<UserDetail>>
@@ -30,15 +28,13 @@ object UserCall: BaseService(), KoinComponent
         return apiCall(call = { result })
     }
 
-
-
     suspend fun updateFCMToken(fcmToken: Map<String, String>): NetworkResult<APIResult<String?>>
     {
         userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
         return apiCall(call = { userAPI.updateFCMToken(fcmToken = fcmToken) })
     }
 
-    suspend fun updateNickname(nickname: String): NetworkResult<APIResult<String?>>
+    suspend fun updateNickname(nickname: String): NetworkResult<Unit>
     {
         userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
         return apiCall(call = {

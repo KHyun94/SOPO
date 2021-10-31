@@ -3,6 +3,7 @@ package com.delivery.sopo.models.base
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -11,17 +12,40 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModel
 import com.delivery.sopo.BR
+import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.enums.NetworkStatus
+import com.delivery.sopo.enums.SnackBarEnum
+import com.delivery.sopo.util.NetworkStatusMonitor
+import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ui_util.CustomProgressBar
+import com.delivery.sopo.util.ui_util.CustomSnackBar
 
-abstract class BaseView<T: ViewDataBinding, R: ViewModel>: AppCompatActivity() {
+abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity() {
 
     lateinit var binding: T
-
     abstract val layoutRes: Int
     abstract val vm: R
 
+    abstract val mainLayout: View
+
     private var activityResultLauncher: ActivityResultLauncher<Intent>? = null
+
+    lateinit var networkStatusMonitor:NetworkStatusMonitor
+    /**
+     * Network Status Check
+     */
+    private val disconnectNetworkSnackBar: CustomSnackBar by lazy {
+        CustomSnackBar(mainLayout, "네트워크 오류입니다.", 600000, SnackBarEnum.ERROR)
+    }
+
+    private val reconnectNetworkSnackBar: CustomSnackBar by lazy {
+        CustomSnackBar(mainLayout, "네트워크에 다시 연결되었어요.", 3000, SnackBarEnum.COMMON)
+    }
+
+    private val progressBar: CustomProgressBar by lazy {
+        CustomProgressBar(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,11 +54,16 @@ abstract class BaseView<T: ViewDataBinding, R: ViewModel>: AppCompatActivity() {
 
         binding = bindView(this)
 
+        networkStatusMonitor =  NetworkStatusMonitor(this)
+        networkStatusMonitor.enable()
+        networkStatusMonitor.initNetworkCheck()
+
         receivedData(intent = intent)
-        initUI()
-        setAfterSetUI()
+        onBeforeBinding()
+        onAfterBinding()
         setObserve()
     }
+
 
     private fun bindView(activity: FragmentActivity) : T
     {
@@ -53,13 +82,6 @@ abstract class BaseView<T: ViewDataBinding, R: ViewModel>: AppCompatActivity() {
         activityResultLauncher = getActivityResultLauncher(callback).apply { launch(intent) }
     }
 
-    override fun onDestroy()
-    {
-        super.onDestroy()
-        activityResultLauncher?.unregister()
-        activityResultLauncher = null
-    }
-
     /**
      * 데이터 전달
      */
@@ -68,15 +90,63 @@ abstract class BaseView<T: ViewDataBinding, R: ViewModel>: AppCompatActivity() {
     /**
      * 초기 화면 세팅
      */
-    protected open fun initUI(){}
+    protected open fun onBeforeBinding(){
+    }
 
     /**
      * UI 세팅 이후
      */
-    protected open fun setAfterSetUI(){}
+    protected open fun onAfterBinding(){}
 
     /**
      * Observe 로직
      */
-    protected open fun setObserve(){}
+    protected open fun setObserve(){
+        setInnerObserve()
+    }
+
+    private fun setInnerObserve(){
+
+        SOPOApp.networkStatus.observe(this){ status ->
+
+            SopoLog.d("status [status:$status]")
+
+            if(vm.isCheckNetwork.value != true) return@observe
+
+            when(status){
+
+                NetworkStatus.WIFI, NetworkStatus.CELLULAR ->
+                {
+                    disconnectNetworkSnackBar.dismiss()
+                    reconnectNetworkSnackBar.show()
+                    vm.stopToCheckNetworkStatus()
+                }
+                NetworkStatus.NOT_CONNECT ->
+                {
+                    disconnectNetworkSnackBar.show()
+                }
+            }
+        }
+
+        vm.isLoading.observe(this){ isLoading ->
+            if(isLoading) return@observe progressBar.onStartLoading()
+            else progressBar.onStopLoading()
+        }
+
+        vm.errorSnackBar.observe(this){
+            val snackBar = CustomSnackBar(mainLayout, it, 3000, SnackBarEnum.ERROR)
+            snackBar.show()
+        }
+    }
+
+    override fun onDestroy()
+    {
+        super.onDestroy()
+
+        networkStatusMonitor.disable()
+
+        activityResultLauncher?.unregister()
+        activityResultLauncher = null
+
+    }
 }

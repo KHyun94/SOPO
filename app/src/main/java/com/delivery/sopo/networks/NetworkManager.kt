@@ -96,7 +96,7 @@ object NetworkManager : KoinComponent
             writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
             readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
             authenticator(TokenAuthenticator())
-//            if(INTERCEPTOR_TYPE == 1 && isAuthenticator) authenticator(TokenAuthenticator())
+            if(INTERCEPTOR_TYPE == 1 && isAuthenticator) authenticator(TokenAuthenticator())
         }.build()
 
         val gson = GsonBuilder().apply {

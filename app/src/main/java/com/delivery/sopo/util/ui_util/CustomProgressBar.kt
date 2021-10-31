@@ -7,12 +7,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.R
 import com.delivery.sopo.util.SopoLog
 
-class CustomProgressBar(val activity: AppCompatActivity?): DialogFragment()
+class CustomProgressBar(private val act: FragmentActivity): DialogFragment()
 {
     private var isTurnOn = false
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
@@ -22,20 +22,27 @@ class CustomProgressBar(val activity: AppCompatActivity?): DialogFragment()
         return view
     }
 
-    fun onStartProgress(isProgress: Boolean, callback: (Boolean)->Unit){
+    fun onStartLoading()
+    {
+        show(act.supportFragmentManager, "isLoading")
+    }
+
+    fun onStopLoading()
+    {
+        dismiss()
+    }
+
+
+    fun onStartProgress(isProgress: Boolean, callback: (Boolean) -> Unit)
+    {
 
         SopoLog.d("onStartProgress() call")
 
-
-        if(activity == null)
-        {
-            SopoLog.e("No Activity")
-            return
-        }
-
         if(isProgress && !isTurnOn && !isAdded)
         {
-            show(activity.supportFragmentManager, "Progress")
+            activity?.run {
+                show(supportFragmentManager, "isLoading")
+            }
             SopoLog.d("Turn On ProgressBar")
             isTurnOn = true
             return

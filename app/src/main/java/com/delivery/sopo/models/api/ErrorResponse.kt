@@ -2,6 +2,7 @@ package com.delivery.sopo.models.api
 
 import com.delivery.sopo.enums.ErrorType
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class ErrorResponse(
         @SerializedName("code")
@@ -12,5 +13,5 @@ data class ErrorResponse(
         val message: String,
         @SerializedName("path")
         var path: String
-)
+):Serializable
 

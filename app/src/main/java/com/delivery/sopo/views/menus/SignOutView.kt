@@ -69,7 +69,6 @@ class SignOutView: AppCompatActivity()
                     userLocalRepo.removeUserRepo()
 
                     CoroutineScope(Dispatchers.Default).launch { AlertUtil.appDataBase.clearAllTables() }
-                    SOPOApp.oAuth = null
 
                     Intent(this@SignOutView, LoginSelectView::class.java).let {
                         it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)

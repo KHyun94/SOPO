@@ -28,8 +28,8 @@ class CustomSnackBar(private val view: View, private val content: String, privat
             CustomSnackBar(view = view, content = content, duration = duration, type = type, clickListener = clickListener)
     }
 
-    lateinit var binding: SnackBarCustomBinding
-    private val snackbar = Snackbar.make(view, "", 5000)
+    private lateinit var binding: SnackBarCustomBinding
+    private val snackbar = Snackbar.make(view, content, duration)
     private val snackbarLayout = snackbar.view as Snackbar.SnackbarLayout
 
     init
@@ -58,14 +58,12 @@ class CustomSnackBar(private val view: View, private val content: String, privat
         {
             SnackBarEnum.COMMON ->
             {
-                binding.ivExclamationMark.background =
-                    ContextCompat.getDrawable(view.context, R.drawable.ic_exclamation_mark_blue)
+                binding.ivExclamationMark.background = ContextCompat.getDrawable(view.context, R.drawable.ic_exclamation_mark_blue)
                 binding.layoutSnackBar.setBackgroundColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_700))
             }
             SnackBarEnum.ERROR ->
             {
-                binding.ivExclamationMark.background =
-                    ContextCompat.getDrawable(view.context, R.drawable.ic_exclamation_mark_gray_scale)
+                binding.ivExclamationMark.background = ContextCompat.getDrawable(view.context, R.drawable.ic_exclamation_mark_gray_scale)
                 binding.layoutSnackBar.setBackgroundColor(ContextCompat.getColor(view.context, R.color.COLOR_GRAY_800))
             }
         }
@@ -90,5 +88,10 @@ class CustomSnackBar(private val view: View, private val content: String, privat
     fun show()
     {
         snackbar.show()
+    }
+
+    fun dismiss()
+    {
+        snackbar.dismiss()
     }
 }

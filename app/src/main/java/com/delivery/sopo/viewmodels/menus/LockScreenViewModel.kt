@@ -13,18 +13,16 @@ import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.models.EmailAuthDTO
 import com.delivery.sopo.models.ResponseResult
+import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class LockScreenViewModel(
         private val userLocalRepo: UserLocalRepository,
         private val userRemoteRepo: UserRemoteRepository,
         private val appPasswordRepo: AppPasswordRepository
-        ): ViewModel()
+        ): BaseViewModel()
 {
     // SET,VERIFY,RESET: 현재 입력 받고 있는 비밀번호
     var lockNum = MutableLiveData<String>()
@@ -38,6 +36,9 @@ class LockScreenViewModel(
     private val _error = MutableLiveData<String>()
     val error: LiveData<String>
         get() = _error
+
+    override val exceptionHandler: CoroutineExceptionHandler
+        get() = CoroutineExceptionHandler { coroutineContext, throwable ->  }
 
     // 1차 인증 번호 저장
     private var primaryAuthNumber = ""

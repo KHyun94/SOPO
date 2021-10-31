@@ -12,12 +12,13 @@ import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.firebase.FirebaseNetwork
 import com.delivery.sopo.models.ResponseResult
+import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 
 class MainViewModel(private val userRepo: UserLocalRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val appPasswordRepo: AppPasswordRepository):
-        ViewModel()
+        BaseViewModel()
 {
     val mainTabVisibility = MutableLiveData<Int>()
 
@@ -189,4 +190,7 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
             FirebaseNetwork.subscribedToTopicInFCM()
         }
     }
+
+    override val exceptionHandler: CoroutineExceptionHandler
+        get() = CoroutineExceptionHandler { coroutineContext, throwable ->  }
 }

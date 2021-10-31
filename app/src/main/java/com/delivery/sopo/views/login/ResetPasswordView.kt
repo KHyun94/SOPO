@@ -43,6 +43,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 {
     override val layoutRes: Int = R.layout.reset_password_view
     override val vm: ResetPasswordViewModel by viewModel()
+    override val mainLayout: View by lazy { binding.layoutMainReset }
 
     private var activityResultLauncher: ActivityResultLauncher<Intent>? = null
 
@@ -64,11 +65,11 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
     {
     }
 
-    override fun initUI()
+    override fun onBeforeBinding()
     {
     }
 
-    override fun setAfterSetUI()
+    override fun onAfterBinding()
     {
         activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult(), registerCallback)
     }

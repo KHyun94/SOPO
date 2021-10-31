@@ -9,6 +9,7 @@ import com.delivery.sopo.data.repository.local.repository.*
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.networks.repository.JoinRepositoryImpl
+import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.IntroViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryMainViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
@@ -58,7 +59,7 @@ val appModule = module {
     viewModel { SignUpViewModel(get(), get()) }
     viewModel { SignUpCompleteViewModel(get(), get()) }
     viewModel { RegisterNicknameViewModel(get()) }
-    viewModel { LoginSelectViewModel(get(),get(), get()) }
+    viewModel { LoginSelectViewModel(get(),get()) }
     viewModel { ResetPasswordViewModel(get()) }
     viewModel { MainViewModel(get(), get(), get(), get()) }
     viewModel { MenuSubViewModel() }

@@ -22,7 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class ParcelRepository(
-        private val userLocalRepo: UserLocalRepository
+        private val userLocalRepo: UserLocalRepository,
         private val oAuthRepo: OAuthLocalRepository,
                        private val appDatabase: AppDatabase): ParcelDataSource
 {

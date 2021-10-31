@@ -20,7 +20,7 @@ interface UserAPI
      * 자동 로그인 및 유저 데이터 가져오기
      * @return Response<APIResult<UserDetail?>>
      */
-    @GET("/api/v1/sopo-api/user/detail")
+    @GET("/api/v1/sopo-user/detail")
     @Headers("Accept: application/json")
     suspend fun getUserDetailInfo() : Response<APIResult<UserDetail>>
 
@@ -37,8 +37,8 @@ interface UserAPI
      * @param nickname : String
      * @return Response<APIResult<String?>>
      */
-    @PATCH("/api/v1/sopo-api/user/nickname")
-    suspend fun updateUserNickname(@Body nickname : Map<String, String>) : Response<APIResult<String?>>
+    @PATCH("/api/v1/sopo-user/nickname")
+    suspend fun updateUserNickname(@Body nickname : Map<String, String>) : Response<Unit>
 
     /**
      * Send Email For request PIN CODE

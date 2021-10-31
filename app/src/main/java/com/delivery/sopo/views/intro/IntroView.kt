@@ -1,44 +1,35 @@
 package com.delivery.sopo.views.intro
 
 import android.content.Intent
-import android.view.LayoutInflater
 import android.view.View
 import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.IntroViewBinding
-import com.delivery.sopo.databinding.SnackBarCustomBinding
-import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.interfaces.listener.OnIntroClickListener
 import com.delivery.sopo.interfaces.listener.OnPermissionRequestListener
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.PermissionUtil
-import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.viewmodels.IntroViewModel
 import com.delivery.sopo.views.adapter.IntroPageAdapter
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.login.LoginSelectView
-import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
+class IntroView(): BaseView<IntroViewBinding, IntroViewModel>()
 {
     override val layoutRes: Int = R.layout.intro_view
     override val vm: IntroViewModel by viewModel()
+    override val mainLayout: View by lazy { binding.linearIntro }
 
     var numOfPage = 0
     var lastIndexOfPage = 0
 
-    override fun initUI()
+    override fun onBeforeBinding()
     {
-        super.initUI()
+        super.onBeforeBinding()
 
         setViewPager()
         setListener()
-
-        CustomSnackBar.make(view = binding.linearIntro,
-                            content = "알 수 없는 서버 에러입니다.",
-                            duration = 3000,
-                            type = SnackBarEnum.ERROR).show()
     }
 
     private fun setViewPager(){

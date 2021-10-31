@@ -1,6 +1,7 @@
 package com.delivery.sopo.views.login
 
 import android.content.Intent
+import android.view.View
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
@@ -26,44 +27,27 @@ class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
     override val layoutRes: Int=R.layout.login_select_view
     override val vm : LoginSelectViewModel by viewModel()
 
+    override val mainLayout: View by lazy {
+        binding.constraintMainLoginSelect
+    }
+
     private var sessionCallback : ISessionCallback? = null
-    var progressBar : CustomProgressBar? = null
 
     override fun receivedData(intent: Intent)
     {
     }
 
-    override fun initUI()
+    override fun onBeforeBinding()
     {
     }
 
-    override fun setAfterSetUI()
+    override fun onAfterBinding()
     {
     }
 
     override fun setObserve()
     {
-        vm.errorCode.observe(this) { code ->
-
-            when(code)
-            {
-                ResponseCode.FAIL_TO_LOGIN_KAKAO ->
-                {
-                    CustomSnackBar.make(view = binding.layoutLoginSelect,
-                                        content = "카카오 로그인에 실패했습니다.",
-                                        duration = 3000,
-                                        type = SnackBarEnum.ERROR).show()
-                }
-                else ->
-                {
-                    CustomSnackBar.make(view = binding.layoutLoginSelect,
-                                        content = "알 수 없는 에러입니다.",
-                                        duration = 3000,
-                                        type = SnackBarEnum.ERROR).show()
-                }
-            }
-        }
-
+        super.setObserve()
         vm.navigator.observe(this, Observer { navigator ->
 
             when (navigator)
@@ -106,20 +90,6 @@ class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
                 }
             }
         })
-
-       vm.isProgress.observe(this, Observer { isProgress ->
-            if(isProgress == null) return@Observer
-
-            if(progressBar == null)
-            {
-                progressBar = CustomProgressBar(this)
-            }
-
-            progressBar?.onStartProgress(isProgress){isDismiss ->
-                if(isDismiss) progressBar = null
-            }
-
-        })
     }
 
     override fun onActivityResult(requestCode : Int, resultCode : Int, data : Intent?)
@@ -135,6 +105,8 @@ class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
         super.onDestroy()
         if (sessionCallback != null) Session.getCurrentSession().removeCallback(sessionCallback)
     }
+
+
 
 
 }

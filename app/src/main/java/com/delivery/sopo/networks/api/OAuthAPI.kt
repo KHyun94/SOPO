@@ -40,9 +40,7 @@ interface OAuthAPI
         // 비밀번호
             @Field("user_id") email: String,
         // Firebase uid
-            @Field("refresh_token") refreshToken : String,
-        // 디바이스 정보
-            @Field("deviceInfo") deviceInfo: String
+            @Field("refresh_token") refreshToken : String
     ): Response<Any>
 
     /**
@@ -63,8 +61,6 @@ interface OAuthAPI
         // 비밀번호
         @Field("user_id") email: String,
         // Firebase uid
-        @Field("refresh_token") refreshToken : String,
-        // 디바이스 정보
-        @Field("deviceInfo") deviceInfo: String
-    ): Call<Any>
+        @Field("refresh_token") refreshToken : String
+    ): Response<Any>
 }

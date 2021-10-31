@@ -40,8 +40,7 @@ object OAuthCall: BaseService(), KoinComponent
             NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, OAuthAPI::class.java)
         val result = oAuthAPI.requestRefreshTokenInOAuth(grantType = "refresh_token",
                                                          email = userRepo.getUserId(),
-                                                         refreshToken = oAuthDTO.refreshToken,
-                                                         deviceInfo = SOPOApp.deviceInfo)
+                                                         refreshToken = oAuthDTO.refreshToken)
         return apiCall(call = { result })
     }
 }

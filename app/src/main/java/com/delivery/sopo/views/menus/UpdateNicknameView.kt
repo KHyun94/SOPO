@@ -1,68 +1,65 @@
 package com.delivery.sopo.views.menus
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.databinding.RegisterNicknameViewBinding
 import com.delivery.sopo.databinding.UpdateNicknameViewBinding
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
+import com.delivery.sopo.extensions.launchActivityWithAllClear
+import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.menus.UpdateNicknameViewModel
-import com.delivery.sopo.viewmodels.signup.RegisterNicknameViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.OnAgreeClickListener
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class UpdateNicknameView: AppCompatActivity()
+class UpdateNicknameView: BaseView<UpdateNicknameViewBinding, UpdateNicknameViewModel>()
 {
-    private lateinit var binding: UpdateNicknameViewBinding
-    private val vm: UpdateNicknameViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?)
+    override val layoutRes: Int
+        get() = R.layout.update_nickname_view
+    override val vm: UpdateNicknameViewModel by viewModel()
+    override val mainLayout: View by lazy{ binding.layoutMainUpdateNickname}
+    override fun onBeforeBinding()
     {
-        super.onCreate(savedInstanceState)
+        super.onBeforeBinding()
 
-        binding = DataBindingUtil.setContentView<UpdateNicknameViewBinding>(this, R.layout.update_nickname_view)
-        binding.vm = vm
-        binding.lifecycleOwner = this
-
-        binding.btnSndEmail.backgroundTintList = resources.getColorStateList(R.color.COLOR_GRAY_200, null)
-
+        binding.btnSndEmail.backgroundTintList =
+            resources.getColorStateList(R.color.COLOR_GRAY_200, null)
         binding.btnSndEmail.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
 
-        setObserve()
-    }
-
-    private fun setObserve()
-    {
         binding.etNickname.addTextChangedListener { nickname ->
 
             val isValidate = ValidateUtil.isValidateNickname(nickname.toString())
 
-            if (isValidate)
+            if(isValidate)
             {
-                binding.btnSndEmail.backgroundTintList = resources.getColorStateList(R.color.COLOR_MAIN_700, null)
-                binding.btnSndEmail.setTextColor(resources.getColor(R.color.MAIN_WHITE))
+                binding.btnSndEmail.backgroundTintList =
+                    resources.getColorStateList(R.color.COLOR_MAIN_700, null)
+                binding.btnSndEmail.setTextColor(ContextCompat.getColor(this, R.color.MAIN_WHITE))
             }
             else
             {
-                binding.btnSndEmail.backgroundTintList = resources.getColorStateList(R.color.COLOR_GRAY_200, null)
-                binding.btnSndEmail.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
-
+                binding.btnSndEmail.backgroundTintList =
+                    resources.getColorStateList(R.color.COLOR_GRAY_200, null)
+                binding.btnSndEmail.setTextColor(ContextCompat.getColor(this, R.color.COLOR_GRAY_400))
             }
         }
+    }
+
+    override fun setObserve()
+    {
+        super.setObserve()
 
         vm.focus.observe(this, Observer { focus ->
             val res = TextInputUtil.changeFocus(this@UpdateNicknameView, focus)
@@ -71,7 +68,7 @@ class UpdateNicknameView: AppCompatActivity()
 
         vm.validateError.observe(this, Observer { target ->
 
-            if (target.second)
+            if(target.second)
             {
                 binding.btnSndEmail.backgroundTintList =
                     resources.getColorStateList(R.color.COLOR_MAIN_700, null)
@@ -80,7 +77,7 @@ class UpdateNicknameView: AppCompatActivity()
                 return@Observer
             }
 
-            val message = when (target.first)
+            val message = when(target.first)
             {
                 InfoEnum.NICKNAME ->
                 {
@@ -99,18 +96,23 @@ class UpdateNicknameView: AppCompatActivity()
             }.show()
         })
 
-        vm.navigator.observe(this@UpdateNicknameView, Observer {navigator ->
-            when(navigator){
-                NavigatorConst.TO_COMPLETE -> {
-                    GeneralDialog(this@UpdateNicknameView, "성공", "정상적으로 닉네임을 등록했습니다.", null, Pair("네", object: OnAgreeClickListener
+        vm.navigator.observe(this@UpdateNicknameView, Observer { navigator ->
+            when(navigator)
+            {
+                NavigatorConst.TO_MAIN ->
+                {
+                    GeneralDialog(this@UpdateNicknameView, "성공", "정상적으로 닉네임을 등록했습니다.", null, Pair("네", object:
+                            OnAgreeClickListener
                     {
                         override fun invoke(agree: GeneralDialog)
                         {
+                            Intent(this@UpdateNicknameView, MainView::class.java).launchActivityWithAllClear(this@UpdateNicknameView)
                             finish()
                         }
                     })).show(supportFragmentManager, "DIALOG")
                 }
-                NavigatorConst.TO_BACK_SCREEN -> {
+                NavigatorConst.TO_BACK_SCREEN ->
+                {
                     finish()
                 }
             }
@@ -118,11 +120,11 @@ class UpdateNicknameView: AppCompatActivity()
 
         vm.result.observe(this@UpdateNicknameView, Observer { result ->
 
-            if (!result.result)
+            if(!result.result)
             {
                 SopoLog.d("실패 닉네임 업데이트 여부 확인 ${result.result}, ${result.code}, ${result.message}")
 
-                when (result.displayType)
+                when(result.displayType)
                 {
                     DisplayEnum.TOAST_MESSAGE ->
                     {
@@ -140,4 +142,5 @@ class UpdateNicknameView: AppCompatActivity()
             }
         })
     }
+
 }

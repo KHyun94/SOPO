@@ -137,7 +137,7 @@ class ConfirmParcelFragment: Fragment()
 
             if(progressBar == null)
             {
-                progressBar = CustomProgressBar(parentView)
+                progressBar = CustomProgressBar(requireActivity())
             }
 
             progressBar?.onStartProgress(isProgress) { isDismiss ->

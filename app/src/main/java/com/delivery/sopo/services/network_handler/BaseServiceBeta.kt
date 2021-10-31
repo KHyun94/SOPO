@@ -1,15 +1,20 @@
 package com.delivery.sopo.services.network_handler
 
 import com.delivery.sopo.enums.ErrorType
+import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.exceptions.InternalServerException
+import com.delivery.sopo.exceptions.OAuthException
 import com.delivery.sopo.models.api.ErrorResponse
+import com.delivery.sopo.models.api.Errors
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import okhttp3.ResponseBody
 import retrofit2.Response
 
 abstract class BaseServiceBeta
 {
-    protected suspend fun <T: Any> apiCall(call: suspend () -> Response<T>): NetworkResponseBeta<T>
+    protected suspend fun <T: Any> apiCall(call: suspend () -> Response<T>): NetworkResponse<T>
     {
         val response: Response<T>
 
@@ -22,42 +27,39 @@ abstract class BaseServiceBeta
             throw InternalServerException("일시적으로 서비스를 이용할 수 없습니다.", e)
         }
 
-        // http status code (400 ~ 500)
-        if(!response.isSuccessful) return convertErrorBody(response.code(), response.errorBody())
-
-        // response body is null
-        if(response.body() == null) return checkBodyNotNull(response.code())
-
-        return NetworkResponseBeta.Success(response.code(), response.body()!!)
-    }
-
-    private fun checkBodyNotNull(statusCode: Int): NetworkResponseBeta<Nothing>
-    {
-        return when(statusCode)
+        if(!response.isSuccessful)
         {
-            in 200..399 ->
-            {
-                val errorResponse = ErrorResponse(999, ErrorType.NO_RESOURCE, "API 성공했지만, response Body가 null", "")
-                NetworkResponseBeta.Error(statusCode = statusCode, errorResponse = errorResponse)
-            }
-            else ->
-            {
-                NetworkResponseBeta.SuccessNoBody(statusCode = statusCode)
-            }
+            convertErrorBody(response.code(), response.errorBody())
         }
+
+        return NetworkResponse(response.code(), response.body())
     }
 
-    private fun convertErrorBody(statusCode: Int, errorBody: okhttp3.ResponseBody?): NetworkResponseBeta.Error
+    // TODO Error Response 포멧 변경 예정
+    private fun convertErrorBody(statusCode: Int, errorBody: ResponseBody?)
     {
-        errorBody ?: return NetworkResponseBeta.Error(statusCode, ErrorResponse(999, ErrorType.NO_RESOURCE, "'Data'가 존재하지 않음", ""))
+        errorBody
+            ?: throw SOPOApiException(statusCode, ErrorResponse(999, ErrorType.NO_RESOURCE, "'Data'가 존재하지 않음", ""))
+
         val errorReader = errorBody.charStream()
-        val errorResponse = Gson().fromJson(errorReader, ErrorResponse::class.java)
 
-        if(statusCode == 500)
+        val errors = try
         {
-            throw InternalServerException("일시적으로 서비스를 이용할 수 없습니다.", errorResponse)
+            Gson().fromJson(errorReader, Errors::class.java).errors
+        }
+        catch(e: ClassCastException)
+        {
+            throw InternalServerException("일시적으로 서비스를 이용할 수 없습니다.", e)
         }
 
-        return NetworkResponseBeta.Error(statusCode, errorResponse)
+        val errorResponse = errors[0]
+
+        SopoLog.e("BaseService Error [status:$statusCode] [res:${errorResponse.toString()}]")
+
+        if(statusCode in 400..403 && errorResponse.code in 801..811) throw OAuthException(statusCode, errorResponse)
+
+        if(statusCode == 500) throw InternalServerException("일시적으로 서비스를 이용할 수 없습니다.", errorResponse)
+
+        throw SOPOApiException(statusCode, errorResponse)
     }
 }

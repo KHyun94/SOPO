@@ -26,20 +26,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".views.menus.UpdateNicknameView" />
-        <activity
-            android:name=".views.login.ResetPasswordView"
-            android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".views.signup.RegisterNicknameView" />
-        <activity
-            android:name=".views.main.MainView"
-            android:windowSoftInputMode="adjustNothing" />
-        <activity
-            android:name=".views.signup.SignUpCompleteView"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".views.login.LoginSelectView"
-            android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".views.splash.SplashView"
             android:windowSoftInputMode="adjustResize">
@@ -50,9 +37,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".views.menus.LockScreenView"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".views.intro.IntroView"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -61,6 +45,27 @@
         <activity
             android:name=".views.signup.SignUpView"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".views.menus.UpdateNicknameView" >
+
+        </activity>
+        <activity
+            android:name=".views.login.ResetPasswordView"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".views.signup.RegisterNicknameView" />
+        <activity
+            android:name=".views.main.MainView"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".views.signup.SignUpCompleteView"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".views.login.LoginSelectView"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".views.menus.LockScreenView"
+            android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".views.menus.NotDisturbTimeView"
             android:windowSoftInputMode="adjustPan" />
@@ -100,6 +105,24 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
+
+        <service
+            android:name=".services.NotificationListener"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.service.notification.default_filter_types"
+                android:value="conversations,alerting">
+            </meta-data>
+            <meta-data
+                android:name="android.service.notification.disabled_filter_types"
+                android:value="ongoing,silent">
+            </meta-data>
+        </service>
+
         <receiver
             android:name=".services.receivers.MMSReceiver"
             android:permission="android.permission.BROADCAST_WAP_PUSH">

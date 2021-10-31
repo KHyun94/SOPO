@@ -50,6 +50,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 {
     override val layoutRes: Int = R.layout.main_view
     override val vm: MainViewModel by viewModel()
+    override val mainLayout: View by lazy { binding.layoutViewPager }
 
     lateinit var tab1stBinding: ItemMainTabBinding
     lateinit var tab2ndBinding: ItemMainTabBinding
@@ -64,16 +65,16 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
     var currentPage = MutableLiveData<Int?>()
 
-    override fun initUI()
+    override fun onBeforeBinding()
     {
         setViewPager()
         setTabLayout()
     }
 
-    override fun setAfterSetUI()
+    override fun onAfterBinding()
     {
         PowerManager.checkWhiteList(this)
-        refreshTokenWithinWeek()
+//        refreshTokenWithinWeek()
 
         checkAppPassword()
     }
@@ -137,12 +138,14 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
         })
     }
 
-    private fun refreshTokenWithinWeek()
+/*    private fun refreshTokenWithinWeek()
     {
+         val oAuth =  oAuthLocalRepo.get(userLocalRepo.getUserId())
+
         val isDate =
             DateUtil.isExpiredDateWithinAWeek(SOPOApp.oAuth?.refreshTokenExpiredAt ?: return)
         if(isDate) SOPOWorkManager.refreshOAuthWorkManager(this)
-    }
+    }*/
 
     private fun moveToSpecificTab(pos: Int)
     {

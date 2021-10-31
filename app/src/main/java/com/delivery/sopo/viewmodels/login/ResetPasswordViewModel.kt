@@ -12,13 +12,12 @@ import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.models.PasswordResetDTO
 import com.delivery.sopo.models.ResponseResult
+import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import java.lang.Runnable
 
-class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): ViewModel()
+class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): BaseViewModel()
 {
     val email = MutableLiveData<String>()
     val password = MutableLiveData<String>()
@@ -115,6 +114,9 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
 
 
     }
+
+    override val exceptionHandler: CoroutineExceptionHandler
+        get() = CoroutineExceptionHandler { coroutineContext, throwable ->  }
 
 
 }

@@ -23,7 +23,7 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
 {
     override val layoutRes: Int = R.layout.lock_screen_view
     override val vm: LockScreenViewModel by viewModel()
-
+    override val mainLayout: View by lazy { binding.constraintSetting }
     // 정체를 몰라 건드리지를 못하겠다.
     private var firstCheck = false
     private var firstPassword = ""
@@ -42,7 +42,7 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
         vm.setLockScreenStatus(lockScreenStatus)
     }
 
-    override fun initUI()
+    override fun onBeforeBinding()
     {
         SopoLog.i("initUI(...) 호출")
 
@@ -70,7 +70,7 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
         binding.tvGuideComment.text = guide
     }
 
-    override fun setAfterSetUI()
+    override fun onAfterBinding()
     {
     }
 

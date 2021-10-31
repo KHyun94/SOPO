@@ -2,6 +2,7 @@ package com.delivery.sopo.views.login
 
 import android.content.Intent
 import android.view.Gravity
+import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
@@ -27,26 +28,16 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginView: BaseView<LoginViewBinding, LoginViewModel>()
 {
-    private var progressBar: CustomProgressBar? = CustomProgressBar(this@LoginView)
-
     override val layoutRes: Int = R.layout.login_view
     override val vm: LoginViewModel by viewModel()
 
-    override fun receivedData(intent: Intent)
-    {
-    }
-
-    override fun initUI()
-    {
-    }
-
-    override fun setAfterSetUI()
-    {
-
+    override val mainLayout: View by lazy {
+        binding.constraintMainLogin
     }
 
     override fun setObserve()
     {
+        super.setObserve()
         vm.focus.observe(this, Observer { focus ->
             val res = TextInputUtil.changeFocus(this@LoginView, focus)
             vm.validity[res.first] = res.second
@@ -73,41 +64,6 @@ class LoginView: BaseView<LoginViewBinding, LoginViewModel>()
             }.show()
         }
 
-        vm.errorCode.observe(this){ code ->
-            when(code)
-            {
-                ResponseCode.TOKEN_ERROR_VALIDATION ->
-                {
-                    Toast.makeText(this@LoginView,"이메일 또는 비밀번호를 확인해주세요.", Toast.LENGTH_SHORT).apply {
-                    }.show()
-
-//                    CustomSnackBar.make(view = binding.layoutInput,
-//                                        content = "이메일 또는 비밀번호를 확인해주세요.",
-//                                        duration = 3000,
-//                                        type = SnackBarEnum.ERROR).show()
-                }
-                else ->
-                {
-                    CustomSnackBar.make(view = binding.layoutInput,
-                                        content = "알 수 없는 서버 에러입니다.",
-                                        duration = 3000,
-                                        type = SnackBarEnum.ERROR).show()
-                }
-            }
-        }
-
-        vm.isProgress.observe(this, Observer { isProgress ->
-            if (isProgress == null) return@Observer
-
-            if (progressBar == null)
-            {
-                progressBar = CustomProgressBar(this)
-            }
-
-            progressBar?.onStartProgress(isProgress) { isDismiss ->
-                if (isDismiss) progressBar = null
-            }
-        })
 
         vm.navigator.observe(this@LoginView, Observer { navigator ->
             when (navigator)
@@ -127,6 +83,7 @@ class LoginView: BaseView<LoginViewBinding, LoginViewModel>()
             }
         })
     }
+
 
 
 }

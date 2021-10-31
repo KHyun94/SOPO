@@ -229,7 +229,7 @@ class ParcelDetailView: Fragment()
 
             if(progressBar == null)
             {
-                progressBar = CustomProgressBar(parentView)
+                progressBar = CustomProgressBar(this.requireActivity())
             }
 
             progressBar?.onStartProgress(isProgress) { isDismiss ->
