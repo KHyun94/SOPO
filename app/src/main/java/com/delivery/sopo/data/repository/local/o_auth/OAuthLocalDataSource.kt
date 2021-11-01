@@ -5,7 +5,7 @@ import com.delivery.sopo.models.dto.OAuthDTO
 
 interface OAuthLocalDataSource
 {
-    fun get(userId : String) : OAuthEntity?
+    suspend fun get(userId : String) : OAuthDTO
     fun insert(oAuth : OAuthDTO)
     fun update(OAuth : OAuthEntity)
     fun delete(OAuth : OAuthEntity)

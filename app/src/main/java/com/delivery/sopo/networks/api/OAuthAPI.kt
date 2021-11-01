@@ -14,11 +14,8 @@ interface OAuthAPI
     @POST("api/v1/sopo-auth/oauth/token")
     @Headers("Accept: application/json")
     suspend fun requestQAuthToken(
-        // 유저 이메일
             @Field("grant_type") grantType: String,
-        // 비밀번호
             @Field("username") email: String,
-        // Firebase uid
             @Field("password") password: String
     ):Response<Any>
 
@@ -35,11 +32,8 @@ interface OAuthAPI
     @POST("api/v1/sopo-auth/oauth/token")
     @Headers("Accept: application/json")
     suspend fun requestRefreshTokenInOAuth(
-        // 유저 이메일
             @Field("grant_type") grantType: String,
-        // 비밀번호
             @Field("user_id") email: String,
-        // Firebase uid
             @Field("refresh_token") refreshToken : String
     ): Response<Any>
 
@@ -56,11 +50,8 @@ interface OAuthAPI
     @POST("api/v1/sopo-auth/oauth/token")
     @Headers("Accept: application/json")
     fun requestRefreshOAuthToken(
-        // 유저 이메일
         @Field("grant_type") grantType: String,
-        // 비밀번호
         @Field("user_id") email: String,
-        // Firebase uid
         @Field("refresh_token") refreshToken : String
     ): Response<Any>
 }

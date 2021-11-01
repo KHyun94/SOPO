@@ -29,8 +29,8 @@ interface UserAPI
      * @param fcmToken : String
      * @return Response<APIResult<String?>>
      */
-    @PATCH("/api/v1/sopo-api/user/fcmToken")
-    suspend fun updateFCMToken(@Body fcmToken : Map<String, String>) : Response<APIResult<String?>>
+    @PATCH("/api/v1/sopo-user/fcmToken")
+    suspend fun updateFCMToken(@Body fcmToken : Map<String, String>) : Response<Unit>
 
     /**
      * Nickname UPDATE

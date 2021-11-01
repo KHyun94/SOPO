@@ -2,38 +2,36 @@ package com.delivery.sopo.viewmodels.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.delivery.sopo.consts.StatusConst
-import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
-import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.firebase.FirebaseNetwork
+import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 
-class MainViewModel(private val userRepo: UserLocalRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl, private val appPasswordRepo: AppPasswordRepository):
+class MainViewModel(private val userRepo: UserLocalRepository,
+                    private val parcelRepo: ParcelRepository):
         BaseViewModel()
 {
     val mainTabVisibility = MutableLiveData<Int>()
 
-    // 앱 패스워드 등록 여부
-    /*val isSetAppPassword: LiveData<AppPasswordEntity?>
-        get() = appPasswordRepo.getByLiveData()
-*/
     // 유효성 및 통신 등의 결과 객체
     private var _result = MutableLiveData<ResponseResult<*>>()
     val result: LiveData<ResponseResult<*>>
         get() = _result
 
+    override val exceptionHandler: CoroutineExceptionHandler
+        get() = CoroutineExceptionHandler { coroutineContext, throwable ->  }
+
     init
     {
-        CoroutineScope(Dispatchers.Main).launch {
+        // TODO Parcel tab으로 이동해야 함
+       /* CoroutineScope(Dispatchers.Main).launch {
 
             try
             {
@@ -54,21 +52,19 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
                 checkSubscribedTime()
             }
 
-        }
+        }*/
         updateFCMToken()
     }
 
-    fun setMainTabVisibility(visibility: Int)
-    {
-        mainTabVisibility.postValue(visibility)
-    }
-
+/*
+    // TODO Parcel tab으로 이동해야 함
     // 업데이트 가능한 택배가 있는지 체크 [ParcelStatusEntity - updatableStatus
     private suspend fun isUpdatableParcelStatus(): Boolean = withContext(Dispatchers.Default) {
         SopoLog.d("isUpdatableParcelStatus() call")
         parcelManagementRepoImpl.getCountForUpdatableParcel() > 0
     }
 
+    // TODO Parcel tab으로 이동해야 함
     private suspend fun insertRemoteParcel(entity: ParcelEntity)
     {
         withContext(Dispatchers.Default) {
@@ -83,10 +79,13 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
         }
     }
 
-    /**
+    */
+/**
      * DB 서버 내에 저장된 진행 중인 택배 데이터를 기반으로
      * 로컬 DB에 저장된 택배 데이터를 갱신
-     */
+     *//*
+
+    // TODO Parcel tab으로 이동해야 함
     suspend fun requestOngoingParcels()
     {
         SopoLog.i("refreshOngoingParcel(...) 호출")
@@ -164,13 +163,12 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
             SopoLog.d("업데이트 완료 [parcel id:${remoteParcel.parcelId}]")
         }
     }
+*/
 
     /** Update FCM Token  **/
     private fun updateFCMToken()
     {
-        SopoLog.d(msg = "updateFCMToken 호출 ")
-
-        FirebaseNetwork.updateFCMToken()
+        FirebaseRepository.updateFCMToken()
     }
 
     suspend fun checkSubscribedTime() = withContext(Dispatchers.Default) {
@@ -187,10 +185,9 @@ class MainViewModel(private val userRepo: UserLocalRepository, private val parce
         if(subscribedTopic == "" && ongoingParcelCnt > 0)
         {
             SopoLog.d("구독 중인 시간이 없고, 현재 진행 중인 택배가 있는 상태")
-            FirebaseNetwork.subscribedToTopicInFCM()
+            FirebaseRepository.subscribedToTopicInFCM()
         }
     }
 
-    override val exceptionHandler: CoroutineExceptionHandler
-        get() = CoroutineExceptionHandler { coroutineContext, throwable ->  }
+
 }

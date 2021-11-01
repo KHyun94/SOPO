@@ -29,7 +29,7 @@ object ParcelUseCase
         }
     }
 
-    suspend fun requestParcelRegister(registerDTO: ParcelRegisterDTO): ResponseResult<Int?>
+    /*suspend fun requestParcelRegister(registerDTO: ParcelRegisterDTO): ResponseResult<Int?>
     {
         when(val res = ParcelCall.registerParcel(registerDTO)){
             is NetworkResult.Success ->
@@ -46,7 +46,7 @@ object ParcelUseCase
                 return ResponseResult(false, code, null, "택배 등록이 실패했습니다.[$code]", DisplayEnum.DIALOG)
             }
         }
-    }
+    }*/
 
     suspend fun requestRemoteParcels(): ResponseResult<List<ParcelDTO>?>
     {

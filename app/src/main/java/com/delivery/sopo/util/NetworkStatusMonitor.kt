@@ -42,7 +42,6 @@ class NetworkStatusMonitor(private val activity: AppCompatActivity): Connectivit
     /** Network 모니터링 서비스 시작 **/
     fun enable()
     {
-        //        check(activity.lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED))
         connectivityManager.registerNetworkCallback(networkRequest, this)
     }
 
@@ -50,10 +49,8 @@ class NetworkStatusMonitor(private val activity: AppCompatActivity): Connectivit
     fun disable()
     {
         connectivityManager.unregisterNetworkCallback(this)
-        //        activity.lifecycle.removeObserver(activity)
     }
 
-    /** Network가 Available 상태이면 Call **/
     override fun onAvailable(network: Network)
     {
         super.onAvailable(network)
@@ -61,7 +58,6 @@ class NetworkStatusMonitor(private val activity: AppCompatActivity): Connectivit
         SOPOApp.networkStatus.postValue(getConnectivityStatus(context = activity))
     }
 
-    /** Network가 Available 상태에서 Unavailable로 변경되면 Call **/
     override fun onLost(network: Network)
     {
         super.onLost(network)
@@ -72,7 +68,6 @@ class NetworkStatusMonitor(private val activity: AppCompatActivity): Connectivit
 
     fun getConnectivityStatus(context: Context): NetworkStatus
     {
-        // 네트워크 연결 상태 확인하기 위한 ConnectivityManager 객체 생성
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
@@ -94,8 +89,6 @@ class NetworkStatusMonitor(private val activity: AppCompatActivity): Connectivit
             }
         }
 
-        // 기기 버전이 마시멜로우 버전보다 아래인 경우
-        // getActiveNetworkInfo -> API level 29에 디플리케이트 됨
         val activeNetwork = cm.activeNetworkInfo ?: return NetworkStatus.NOT_CONNECT
 
         return when(activeNetwork.type)

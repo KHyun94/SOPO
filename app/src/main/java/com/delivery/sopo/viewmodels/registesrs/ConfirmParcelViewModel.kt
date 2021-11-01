@@ -4,17 +4,24 @@ import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.delivery.sopo.ParcelExceptionHandler
 import com.delivery.sopo.R
+import com.delivery.sopo.UserExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.data.repository.remote.parcel.ParcelUseCase
 import com.delivery.sopo.enums.DisplayEnum
+import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.*
+import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class ConfirmParcelViewModel: ViewModel()
+class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseViewModel()
 {
     var waybillNum = MutableLiveData<String>()
     var carrier = MutableLiveData<CarrierDTO>()
@@ -23,17 +30,6 @@ class ConfirmParcelViewModel: ViewModel()
     private var _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
         get() = _navigator
-
-    val isProgress = MutableLiveData<Boolean>()
-
-    private var _result = MutableLiveData<ResponseResult<Int?>>()
-    val result: LiveData<ResponseResult<Int?>>
-        get() = _result
-
-    init
-    {
-        isProgress.value = false
-    }
 
     fun onMoveFirstStep(v: View)
     {
@@ -49,41 +45,65 @@ class ConfirmParcelViewModel: ViewModel()
             }
             R.id.tv_register ->
             {
-                isProgress.postValue(true)
-
                 if(alias.value.toString() == "null") alias.value = ""
 
-                val registerDTO = ParcelRegisterDTO(carrier = carrier.value?.carrier?:throw Exception("Carrier must be not null"),
-                                                    waybillNum = waybillNum.value.toString(),
-                                                    alias = alias.value.toString())
+                val registerDTO = ParcelRegisterDTO(carrier = carrier.value?.carrier
+                    ?: throw Exception("Carrier must be not null"), waybillNum = waybillNum.value.toString(), alias = alias.value.toString())
 
-                CoroutineScope(Dispatchers.IO).launch {
-                    requestParcelRegister(registerDTO = registerDTO)
-                }
+
+                requestParcelRegister(registerDTO = registerDTO)
             }
         }
     }
 
     // '등록하기' Button Click event
-    private suspend fun requestParcelRegister(registerDTO: ParcelRegisterDTO)
-    {
-        SopoLog.d("requestParcelRegister(...) 호출[${registerDTO.toString()}]")
+    private fun requestParcelRegister(registerDTO: ParcelRegisterDTO) = scope.launch(Dispatchers.IO) {
+        SopoLog.i("requestParcelRegister(...) 호출[${registerDTO.toString()}]")
 
-        val res = ParcelUseCase.requestParcelRegister(registerDTO = registerDTO)
-
-        isProgress.postValue(false)
-
-        if(!res.result){
-            SopoLog.e("requestParcelRegister(...) 실패[code:${res.code}][message:${res.message}]")
-            return _result.postValue(res)
-        }
-
-        if(res.data == null)
+        try
         {
-            SopoLog.e("requestParcelRegister(...) 실패[code:${res.code}][message:${res.message}]")
-            return _result.postValue(ResponseResult(false, null, null, "서버 오류.", DisplayEnum.DIALOG))
+            parcelRepo.registerParcel(registerDTO).apply {
+                SopoLog.d("택배 등록 성공 [번호:$this]")
+            }
+
+            _navigator.postValue(NavigatorConst.TO_REGISTER_SUCCESS)
+        }
+        catch(e: Exception)
+        {
+            exceptionHandler.handleException(coroutineContext, e)
+        }
+    }
+
+    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    {
+        override fun onRegisterParcelError(error: ErrorEnum)
+        {
+            super.onRegisterParcelError(error)
+
+            postErrorSnackBar(error.message)
         }
 
-        _navigator.postValue(NavigatorConst.TO_REGISTER_SUCCESS)
+        override fun onFailure(error: ErrorEnum)
+        {
+            postErrorSnackBar("알 수 없는 이유로 등록에 실패했습니다.[${error.toString()}]")
+        }
+
+        override fun onInternalServerError(error: ErrorEnum)
+        {
+            super.onInternalServerError(error)
+
+            postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
+        }
+
+        override fun onAuthError(error: ErrorEnum)
+        {
+            super.onAuthError(error)
+
+            postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
+        }
+    }
+
+    override val exceptionHandler: CoroutineExceptionHandler by lazy {
+        ParcelExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 }

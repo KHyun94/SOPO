@@ -1,5 +1,6 @@
 package com.delivery.sopo.di
 
+import android.os.Parcel
 import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.data.repository.database.shared.SharedPref
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
@@ -43,9 +44,9 @@ val appModule = module {
     single { UserLocalRepository(get()) }
     factory { UserRemoteRepository() }
     factory { JoinRepositoryImpl() }
+    factory { ParcelRepository(get(), get(),get()) }
     single { AppDatabase.getInstance(get()) }
     single { CarrierRepository(get()) }
-    single { ParcelRepository(get(), get(), get()) }
     single { ParcelManagementRepoImpl(get()) }
     single { CompletedParcelHistoryRepoImpl(get()) }
     single { AppPasswordRepository(get()) }
@@ -61,7 +62,7 @@ val appModule = module {
     viewModel { RegisterNicknameViewModel(get()) }
     viewModel { LoginSelectViewModel(get(),get()) }
     viewModel { ResetPasswordViewModel(get()) }
-    viewModel { MainViewModel(get(), get(), get(), get()) }
+    viewModel { MainViewModel(get(), get()) }
     viewModel { MenuSubViewModel() }
     viewModel { LockScreenViewModel(get(), get(), get()) }
     viewModel { SettingViewModel(get()) }
@@ -77,9 +78,9 @@ val appModule = module {
 
     viewModel { InquiryMainViewModel() }
     viewModel { MenuMainViewModel() }
-    viewModel { ParcelDetailViewModel(get(), get(), get(), get()) }
+    viewModel { ParcelDetailViewModel(get(), get(), get()) }
 
     viewModel { InputParcelViewModel(get()) }
     viewModel { SelectCarrierViewModel(get()) }
-    viewModel { ConfirmParcelViewModel() }
+    viewModel { ConfirmParcelViewModel(get()) }
 }

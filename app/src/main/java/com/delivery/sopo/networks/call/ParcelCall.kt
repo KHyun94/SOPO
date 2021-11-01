@@ -1,7 +1,6 @@
 package com.delivery.sopo.networks.call
 
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
-import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.ParcelDTO
@@ -11,7 +10,6 @@ import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.ResponseCode
-import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.UpdateAliasRequest
 
@@ -35,15 +33,10 @@ object ParcelCall : BaseService(), KoinComponent
 
     init
     {
-        val oAuth : OAuthEntity? = runBlocking {  oAuthLocalRepo.get(userId = email) }
+        val oAuth = runBlocking { oAuthLocalRepo.get(userLocalRepo.getUserId()) }
         parcelAPI = NetworkManager.retro(oAuth?.accessToken).create(ParcelAPI::class.java)
     }
 
-    suspend fun registerParcel(registerDto: ParcelRegisterDTO):NetworkResult<APIResult<Int?>>
-    {
-        val result = parcelAPI.registerParcel(registerDto = registerDto)
-        return apiCall(call = {result})
-    }
 
     suspend fun getOngoingParcels(): NetworkResult<APIResult<List<ParcelDTO>?>>
     {
@@ -122,7 +115,7 @@ object ParcelCall : BaseService(), KoinComponent
 
     suspend fun getSingleParcel(parcelId:Int): ResponseResult<ParcelDTO?>
     {
-        val result = parcelAPI.getSingleParcel(parcelId)
+        val result = parcelAPI.getParcel(parcelId)
 
         when(val res = apiCall(call = { result }))
         {

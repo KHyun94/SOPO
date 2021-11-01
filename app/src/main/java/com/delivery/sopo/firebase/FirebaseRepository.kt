@@ -11,7 +11,7 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 import java.util.*
 
-object FirebaseNetwork: KoinComponent
+object FirebaseRepository: KoinComponent
 {
     private val userLocalRepo: UserLocalRepository by inject()
     private val userRemoteRepo: UserRemoteRepository by inject()
@@ -181,14 +181,16 @@ object FirebaseNetwork: KoinComponent
 
     fun updateFCMToken()
     {
-        SopoLog.d(msg = "updateFCMToken(...) 호출")
+        SopoLog.i(msg = "updateFCMToken(...) 호출")
         FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
             if(!task.isSuccessful)
             {
+                SopoLog.e("updateFCMToken(...) 실패", task.exception)
                 return@addOnCompleteListener
             }
 
-            CoroutineScope(Dispatchers.Main).launch {
+            SopoLog.d("updateFCMToken(...) 성공")
+            CoroutineScope(Dispatchers.IO).launch {
                 userRemoteRepo.updateFCMToken(task.result.token)
             }
         }

@@ -88,6 +88,7 @@ class SplashViewModel(
 
             val userInfo = userRemoteRepo.getUserInfo()
             SopoLog.d("로그인 성공 - [UserInfo:${userInfo.toString()}]")
+            navigator.postValue(NavigatorConst.TO_MAIN)
         }
         catch(e: Exception)
         {
@@ -106,10 +107,7 @@ class SplashViewModel(
         SopoLog.i("isRefreshTokenWithinWeek() 호출")
 
         // 로컬 내 oAuth Token의 만료 기일을 로드
-        val currentExpiredDate: String = withContext(Dispatchers.Default) {
-            oAuthLocalRepo.get(userLocalRepo.getUserId())
-                ?.run { OAuthMapper.entityToObject(this).refreshTokenExpiredAt } ?: ""
-        }
+        val currentExpiredDate: String = oAuthLocalRepo.get(userLocalRepo.getUserId()).refreshTokenExpiredAt
 
         SopoLog.d("O-Auth Token Expired Date(갱신 전) [data:$currentExpiredDate]")
 

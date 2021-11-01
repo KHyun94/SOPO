@@ -12,12 +12,11 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.TabCode
-import com.delivery.sopo.firebase.FirebaseNetwork
+import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.databinding.FragmentConfirmParcelBinding
 import com.delivery.sopo.models.*
 import com.delivery.sopo.models.mapper.CarrierMapper
-import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
@@ -132,19 +131,6 @@ class ConfirmParcelFragment: Fragment()
                 "BackPressedClick is null"))
         })
 
-        vm.isProgress.observe(this, Observer { isProgress ->
-            if(isProgress == null) return@Observer
-
-            if(progressBar == null)
-            {
-                progressBar = CustomProgressBar(requireActivity())
-            }
-
-            progressBar?.onStartProgress(isProgress) { isDismiss ->
-                if(isDismiss) progressBar = null
-            }
-        })
-
         vm.navigator.observe(this, Observer { navigator ->
 
             TabCode.REGISTER_INPUT.FRAGMENT  = when(navigator)
@@ -159,7 +145,7 @@ class ConfirmParcelFragment: Fragment()
                 }
                 NavigatorConst.TO_REGISTER_SUCCESS ->
                 {
-                    val defer = FirebaseNetwork.subscribedToTopic()
+                    val defer = FirebaseRepository.subscribedToTopic()
                     defer.start()
 
                     InputParcelFragment.newInstance(null, RegisterMainFrame.REGISTER_PROCESS_SUCCESS)
@@ -175,11 +161,6 @@ class ConfirmParcelFragment: Fragment()
 
         })
 
-        vm.result.observe(this, Observer { res ->
-
-//            when(res.displayType)
-
-        })
     }
 
     override fun onDetach()

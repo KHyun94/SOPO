@@ -29,7 +29,13 @@ enum class ErrorEnum(val httpStatusCode: Int, val code: Int, val errorType: Erro
     KAKAO_ERROR(401, 606, ErrorType.AUTHENTICATION, "서버 내 카카오 서버와 연동할 때 에러가 발생했습니다.", ""),
     USER_NOT_FOUND(404, 607, ErrorType.NO_RESOURCE, "해당하는 id에 부합하는 유저를 찾을 수 없습니다.", ""),
     FCM_TOKEN_NOT_FOUND(404,608, ErrorType.NO_RESOURCE,"fcm-token이 존재하지 않습니다.", ""),
-    NICK_NAME_NOT_FOUND(404, 609, ErrorType.NO_RESOURCE, "Nickname이 등록되지 않았습니다.", "Nickname이 등록되지 않았습니다.");
+    NICK_NAME_NOT_FOUND(404, 609, ErrorType.NO_RESOURCE, "Nickname이 등록되지 않았습니다.", "Nickname이 등록되지 않았습니다."),
+
+    ALREADY_REGISTERED_PARCEL(409, 701, ErrorType.CONFLICT, "이미 등록된 택배입니다.", "이미 등록된 택배입니다."),
+    OVER_REGISTERED_PARCEL(409, 702, ErrorType.CONFLICT, "등록할 수 있는 택배의 개수를 초과하였습니다.", "등록할 수 있는 택배의 개수를 초과하였습니다."),
+    PARCEL_NOT_FOUND(404, 703, ErrorType.NO_RESOURCE, "해당하는 id에 부합하는 택배를 찾을 수 없습니다.", "해당하는 id에 부합하는 택배를 찾을 수 없습니다.");
+
+
 
     companion object{
         fun getErrorCode(code: Int): ErrorEnum

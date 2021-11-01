@@ -769,9 +769,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
         binding.vMoreView.visibility = INVISIBLE
 
-        // '하단 탭'이 사라져야한다.
-        parentView.binding.vm!!.setMainTabVisibility(GONE)
-        //        mainVm.setTabLayoutVisibility(GONE)
     }
 
     // X 버튼으로 '삭제하기 취소'가 되었을때 화면 세팅
@@ -783,8 +780,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         binding.ivPopMenu.visibility = VISIBLE
 
 
-        // '하단 탭'이 노출되어야한다.
-        parentView.binding.vm!!.setMainTabVisibility(VISIBLE)
 
         // 삭제하기 취소가 되었을때 화면의 리스트들을 앱이 켜졌을때 처럼 초기화 시켜준다.( '더보기'가 눌렸었는지 아니면 내가 전에 리스트들의 스크롤을 얼마나 내렸는지를 일일이 알고 있기 힘들기 때문에)
         viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())

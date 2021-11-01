@@ -31,16 +31,14 @@ object OAuthCall: BaseService(), KoinComponent
 */
     suspend fun requestRefreshTokenInOAuth(): NetworkResult<Any>
     {
-        val oAuthEntity =
-            oAuthRepo.get(userId = userRepo.getUserId()) ?: throw Exception("o auth data is null")
-        val oAuthDTO = OAuthMapper.entityToObject(oAuthEntity)
+        val oAuthToken = oAuthRepo.get(userId = userRepo.getUserId())
 
 
         val oAuthAPI =
             NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, OAuthAPI::class.java)
         val result = oAuthAPI.requestRefreshTokenInOAuth(grantType = "refresh_token",
                                                          email = userRepo.getUserId(),
-                                                         refreshToken = oAuthDTO.refreshToken)
+                                                         refreshToken = oAuthToken.refreshToken)
         return apiCall(call = { result })
     }
 }

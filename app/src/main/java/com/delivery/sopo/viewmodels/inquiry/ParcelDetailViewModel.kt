@@ -16,9 +16,9 @@ import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.models.ResponseResult
+import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.views.adapter.TimeLineRvAdapter
@@ -26,8 +26,8 @@ import com.google.gson.Gson
 import kotlinx.coroutines.*
 import java.lang.NullPointerException
 
-class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository, private val carrierRepository: CarrierRepository, private val parcelRepository: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl):
-        ViewModel()
+class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl):
+        BaseViewModel()
 {
     // 택배 인포의 pk
     val parcelId = MutableLiveData<Int>()
@@ -142,7 +142,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
         SopoLog.d("requestLocalParcel() 호출 - parcelId[${parcelId}]")
 
         val parcelEntity =
-            parcelRepository.getLocalParcelById(parcelId = parcelId) ?: throw NullPointerException(
+            parcelRepo.getLocalParcelById(parcelId = parcelId) ?: throw NullPointerException(
                 "내부에 저장된 parcelId[$parcelId]의 상세 내역이 존재하지 않습니다.")
         val parcelDTO = ParcelMapper.parcelEntityToParcel(parcelEntity = parcelEntity)
 
@@ -177,31 +177,31 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
         }
     }
 
-    suspend fun getRemoteParcel(parcelId: Int)
-    {
-        SopoLog.d("getRemoteParcel() 호출 - parcelId[${parcelId.toString()}]")
+    fun getRemoteParcel(parcelId: Int) = scope.launch(Dispatchers.IO) {
+        SopoLog.i("getRemoteParcel(...) 호출 [택배 번호:${parcelId.toString()}]")
 
-        val result = ParcelCall.getSingleParcel(parcelId)
+        try
+        {
+            val result = parcelRepo.getRemoteParcelById(parcelId = parcelId)
 
-        if(!result.result) return _result.postValue(result)
+            val parcelDTO = result
 
+            updateParcelToUI(parcelDTO)
 
-        val parcelDTO = result.data ?: return _result.postValue(
-            ResponseResult.fail<Unit>(code = ResponseCode.SEARCH_PARCEL_NULL_ERROR,
-                                      message = "택배 정보를 불러오는데 실패했습니다.",
-                                      displayType = DisplayEnum.DIALOG))
+            val parcelEntity = ParcelMapper.parcelToParcelEntity(parcelDTO)
 
-        updateParcelToUI(parcelDTO)
+            updateParcelData(parcelEntity = parcelEntity)
+            updateIsBeUpdate(parcelId = parcelId, status = StatusConst.DEACTIVATE)
+        }catch(e:Exception)
+        {
+            exceptionHandler.handleException(coroutineContext, e)
+        }
 
-        val parcelEntity = ParcelMapper.parcelToParcelEntity(parcelDTO)
-
-        updateParcelData(parcelEntity = parcelEntity)
-        updateIsBeUpdate(parcelId = parcelId, status = StatusConst.DEACTIVATE)
     }
 
     private suspend fun updateParcelData(parcelEntity: ParcelEntity) =
         withContext(Dispatchers.Default) {
-            parcelRepository.updateEntity(parcelEntity)
+            parcelRepo.updateEntity(parcelEntity)
         }
 
     private suspend fun updateIsBeUpdate(parcelId: Int, status: Int) =
@@ -232,4 +232,7 @@ class ParcelDetailViewModel(private val userLocalRepository: UserLocalRepository
             isDragOut.value = true
         }
     }
+
+    override val exceptionHandler: CoroutineExceptionHandler
+        get() = TODO("Not yet implemented")
 }

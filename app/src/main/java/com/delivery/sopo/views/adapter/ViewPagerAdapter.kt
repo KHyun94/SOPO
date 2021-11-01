@@ -43,6 +43,7 @@ class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
             NavigatorConst.INQUIRY_TAB ->
             {
                 tab2ndFragment
+//                tab1stFragment
             }
             NavigatorConst.MY_MENU_TAB ->
             {
@@ -68,7 +69,5 @@ class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any)
     {
-        // 200827 프래그먼트 갱신 OFF
-//        super.destroyItem(container, position, `object`)
     }
 }

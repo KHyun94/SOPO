@@ -64,15 +64,10 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
 
     suspend fun refreshOAuthToken(): OAuthDTO
     {
-        val oAuthDTO: OAuthDTO = withContext(Dispatchers.Default) {
-            val entity: OAuthEntity =
-                oAuthLocalRepo.get(userLocalRepo.getUserId()) ?: throw Exception()
-            OAuthMapper.entityToObject(entity)
-        }
+        val oAuthDTO: OAuthDTO = oAuthLocalRepo.get(userLocalRepo.getUserId())
 
         val refreshOAuthToken =
-            NetworkManager.retro(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_PASSWORD)
-                .create(OAuthAPI::class.java)
+            NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, OAuthAPI::class.java)
                 .requestRefreshOAuthToken(grantType = "refresh_token", email = userLocalRepo.getUserId(), refreshToken = oAuthDTO.refreshToken)
 
         val result = apiCall(call = { refreshOAuthToken })
@@ -192,30 +187,13 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
         }
     }
 
-    suspend fun updateFCMToken(fcmToken: String): ResponseResult<Unit>
+    suspend fun updateFCMToken(fcmToken: String)
     {
-
         val fcmTokenToMap = mapOf(Pair("fcmToken", fcmToken))
 
-        when(val result = UserCall.updateFCMToken(fcmToken = fcmTokenToMap))
-        {
-            is NetworkResult.Success ->
-            {
-                val apiResult = result.data
-
-                SopoLog.d("Success to update fcm token")
-
-                return ResponseResult(true, ResponseCode.SUCCESS, Unit, ResponseCode.SUCCESS.MSG)
-            }
-            is NetworkResult.Error ->
-            {
-                SopoLog.d("Fail to request reset password")
-
-                val exception = result.exception as APIException
-                val responseCode = exception.responseCode
-
-                return ResponseResult(false, responseCode, Unit, responseCode.MSG, DisplayEnum.DIALOG)
-            }
+        val updateFCMToken = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java).updateFCMToken(fcmToken = fcmTokenToMap)
+        val result = apiCall { updateFCMToken }.apply {
+            SopoLog.d("FCM Token 업데이트 성공")
         }
     }
 

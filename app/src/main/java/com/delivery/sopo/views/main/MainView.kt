@@ -56,17 +56,14 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
     lateinit var tab2ndBinding: ItemMainTabBinding
     lateinit var tab3rdBinding: ItemMainTabBinding
 
-    override fun receivedData(intent: Intent)
-    {
-
-    }
-
     private val appPasswordRepo: AppPasswordRepository by inject()
 
     var currentPage = MutableLiveData<Int?>()
 
     override fun onBeforeBinding()
     {
+        checkAppPassword()
+
         setViewPager()
         setTabLayout()
     }
@@ -74,14 +71,14 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
     override fun onAfterBinding()
     {
         PowerManager.checkWhiteList(this)
-//        refreshTokenWithinWeek()
-
-        checkAppPassword()
     }
 
     override fun setObserve()
     {
-        SOPOApp.cntOfBeUpdate.observe(this, Observer { cnt ->
+        super.setObserve()
+
+        // TODO Parcel tab으로 이동해야 함
+        /*SOPOApp.cntOfBeUpdate.observe(this, Observer { cnt ->
             if(cnt > 0)
             {
                 SopoLog.d(msg = "업데이트 가능 택배 갯수[Size:$cnt]")
@@ -102,7 +99,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
                     onStart()
                 }
             }
-        })
+        })*/
 
         SOPOApp.currentPage.observe(this, Observer {
             if(it == null) return@Observer
@@ -174,7 +171,6 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
     private fun setTabLayout()
     {
-
         binding.layoutMainTab.run {
             setupWithViewPager(binding.layoutViewPager)
             setTabIcons(this)
@@ -333,9 +329,9 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
     fun onCompleteRegister()
     {
         binding.layoutViewPager.currentItem = 1
-        GlobalScope.launch {
+        /*GlobalScope.launch {
             vm.requestOngoingParcels()
-        }
+        }*/
 
     }
 }

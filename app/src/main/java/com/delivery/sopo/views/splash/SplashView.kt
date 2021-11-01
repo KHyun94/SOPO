@@ -1,7 +1,8 @@
 package com.delivery.sopo.views.splash
 
 import android.content.Intent
-import androidx.core.app.NotificationManagerCompat
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
@@ -34,14 +35,14 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
     {
         super.setObserve()
 
-        NotificationManagerCompat.getEnabledListenerPackages(applicationContext).any {
+/*        NotificationManagerCompat.getEnabledListenerPackages(applicationContext).any {
             it == packageName
         }
 
         val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-        startActivity(intent)
+        startActivity(intent)*/
 
-//        Handler(Looper.getMainLooper()).postDelayed(Runnable { moveToActivity() }, 1500)
+        Handler(Looper.getMainLooper()).postDelayed(Runnable { moveToActivity() }, 1500)
     }
 
     private fun moveToActivity()

@@ -1,6 +1,6 @@
 package com.delivery.sopo.data.repository.local.user
 
-import com.delivery.sopo.firebase.FirebaseNetwork
+import com.delivery.sopo.firebase.FirebaseRepository
 import org.koin.core.KoinComponent
 
 class UserLocalRepository(private val userShared: UserSharedPrefHelper): UserLocalDataSource, KoinComponent
@@ -145,7 +145,7 @@ class UserLocalRepository(private val userShared: UserSharedPrefHelper): UserLoc
         setStatus(0)
         setDeviceInfo("")
 
-        FirebaseNetwork.unsubscribedToTopicInFCM()
+        FirebaseRepository.unsubscribedToTopicInFCM()
     }
 
 }

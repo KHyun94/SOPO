@@ -46,8 +46,7 @@ object NetworkManager : KoinComponent
             NetworkEnum.O_AUTH_TOKEN_LOGIN ->
             {
                 val oAuth : OAuthDTO = runBlocking(Dispatchers.Default) {
-                    val oAuthEntity = oAuthLocalRepo.get(userLocalRepo.getUserId()) ?: throw NullPointerException("OAuth Token is null")
-                    OAuthMapper.entityToObject(oAuthEntity)
+                    oAuthLocalRepo.get(userId = userLocalRepo.getUserId())
                 }
                 retro(oAuth.accessToken).create(clz)
             }
