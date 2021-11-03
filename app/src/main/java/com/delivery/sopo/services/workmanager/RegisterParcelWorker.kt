@@ -4,8 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.data.repository.remote.parcel.ParcelUseCase
-import com.delivery.sopo.models.ParcelRegisterDTO
+import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
@@ -23,7 +22,7 @@ class RegisterParcelWorker(val context: Context, private val params: WorkerParam
 
     private val parcelRepo: ParcelRepository by inject()
 
-    private fun changeJsonToObj(json:String):ParcelRegisterDTO = Gson().fromJson(json, ParcelRegisterDTO::class.java)
+    private fun changeJsonToObj(json:String):ParcelRegister = Gson().fromJson(json, ParcelRegister::class.java)
 
     override suspend fun doWork(): Result = coroutineScope {
 
@@ -39,7 +38,7 @@ class RegisterParcelWorker(val context: Context, private val params: WorkerParam
 
         val res = parcelRepo.registerParcel(parcel = registerDTO)
 
-        NotificationImpl.alertRegisterParcel(context = context, registerDTO = registerDTO)
+        NotificationImpl.alertRegisterParcel(context = context, register = registerDTO)
 
         return@coroutineScope Result.success()
     }

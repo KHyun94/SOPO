@@ -12,7 +12,7 @@ import androidx.core.app.NotificationCompat
 import com.delivery.sopo.R
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.interfaces.notification.Notification
-import com.delivery.sopo.models.ParcelRegisterDTO
+import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.TimeUtil
 import com.delivery.sopo.views.splash.SplashView
@@ -55,7 +55,7 @@ object NotificationImpl: Notification
         nManager.notify(30001, nBuilder.build())
     }
 
-    fun alertRegisterParcel(context: Context, registerDTO: ParcelRegisterDTO) {
+    fun alertRegisterParcel(context: Context, register: ParcelRegister) {
         val channelId = "${context.packageName}SOPO"
 
         val intent = Intent(context, SplashView::class.java)
@@ -69,7 +69,7 @@ object NotificationImpl: Notification
         val nBuilder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_icon_notification)
             .setContentTitle("SOPO")
-            .setContentText("택배 [${registerDTO.alias}]가 등록되었습니다.")
+            .setContentText("택배 [${register.alias}]가 등록되었습니다.")
             .setAutoCancel(true)
             .setSound(defaultSoundUri)
             .setVibrate(longArrayOf(1000, 1000))

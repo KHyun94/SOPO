@@ -68,7 +68,7 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
     private fun bindView(activity: FragmentActivity) : T
     {
         return DataBindingUtil.setContentView<T>(activity, layoutRes).apply{
-            this.lifecycleOwner = lifecycleOwner
+            this.lifecycleOwner = this@BaseView
             this.setVariable(BR.vm, vm)
             executePendingBindings()
         }

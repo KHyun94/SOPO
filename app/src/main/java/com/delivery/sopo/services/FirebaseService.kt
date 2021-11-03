@@ -3,7 +3,6 @@ package com.delivery.sopo.services
 import android.content.Intent
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.StatusConst
-import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.models.mapper.ParcelMapper
@@ -12,11 +11,9 @@ import com.delivery.sopo.networks.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.models.parcel.ParcelDTO
 import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
-import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.splash.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage

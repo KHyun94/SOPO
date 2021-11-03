@@ -2,7 +2,7 @@ package com.delivery.sopo.data.repository.database.room.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import com.delivery.sopo.models.parcel.ParcelDTO
+import com.delivery.sopo.models.parcel.ParcelResponse
 import com.delivery.sopo.util.SopoLog
 
 @Entity(
@@ -70,19 +70,19 @@ data class ParcelEntity(
     )
     var status: Int
 ){
-    fun update(parcelDTO: ParcelDTO){
+    fun update(parcelResponse: ParcelResponse){
 
-        SopoLog.d(msg = "ParcelEntity Update => $parcelDTO")
+        SopoLog.d(msg = "ParcelEntity Update => $parcelResponse")
 
-        this.alias = parcelDTO.alias
-        this.inquiryResult = parcelDTO.inquiryResult
-        this.inquiryHash = parcelDTO.inquiryHash
-        this.deliveryStatus = parcelDTO.deliveryStatus
-        parcelDTO.arrivalDte?.let {
+        this.alias = parcelResponse.alias
+        this.inquiryResult = parcelResponse.inquiryResult
+        this.inquiryHash = parcelResponse.inquiryHash
+        this.deliveryStatus = parcelResponse.deliveryStatus
+        parcelResponse.arrivalDte?.let {
             this.arrivalDte = it
         }
-        this.auditDte = parcelDTO.auditDte
-        parcelDTO.status?.let {
+        this.auditDte = parcelResponse.auditDte
+        parcelResponse.status?.let {
             this.status = it
         }
     }

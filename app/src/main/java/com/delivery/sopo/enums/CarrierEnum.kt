@@ -9,6 +9,7 @@ enum class CarrierEnum(
     val CODE: String,
     @SerializedName("carrierName")
     val NAME: String) {
+
     DHL("DHL","DHL"),
     SAGAWA("SAGAWA", "Sagawa"),
     YAMATO("YAMATO", "Kuroneko Yamato"),
@@ -20,7 +21,6 @@ enum class CarrierEnum(
     CWAY("CWAY", "CWAY (Woori Express)"),
     DAESIN("DAESIN", "대신택배"),
     EPOST("EPOST", "우체국택배"),
-//    HANIPS("kr.hanips", "한의사랑택배"),
     HANJINS("HANJINS", "한진택배"),
     HDEXP("HDEXP", "합동택배"),
     HOMEPICK("HOMEPICK", "홈픽"),
@@ -41,9 +41,7 @@ enum class CarrierEnum(
     companion object{
         fun getCarrierByCode(code: String): CarrierEnum
         {
-            val carrier = CarrierEnum.values().findLast {
-                it.CODE == code
-            }
+            val carrier = values().findLast { it.CODE == code }
             carrier ?: throw NullPointerException("not defined enum")
             return carrier
         }

@@ -7,7 +7,7 @@ import com.delivery.sopo.data.repository.database.room.entity.CarrierEntity
 import org.jetbrains.annotations.NotNull
 
 @Dao
-interface CarrierDAO
+interface CarrierDao
 {
     @Query("SELECT * FROM CARRIER")
     fun getAll() : List<CarrierEntity>

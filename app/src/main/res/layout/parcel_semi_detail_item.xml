@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.delivery.sopo.models.parcel.ParcelDetailDTO" />
+            type="com.delivery.sopo.models.parcel.ParcelDetailInfo" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

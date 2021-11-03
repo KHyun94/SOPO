@@ -3,7 +3,7 @@ package com.delivery.sopo.networks.call
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.models.parcel.ParcelDTO
+import com.delivery.sopo.models.parcel.ParcelResponse
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
@@ -38,7 +38,7 @@ object ParcelCall : BaseService(), KoinComponent
     }
 
 
-    suspend fun getOngoingParcels(): NetworkResult<APIResult<List<ParcelDTO>?>>
+    suspend fun getOngoingParcels(): NetworkResult<APIResult<List<ParcelResponse>?>>
     {
         val result = parcelAPI.getOngoingParcels()
         return apiCall(call = {result})
@@ -60,7 +60,7 @@ object ParcelCall : BaseService(), KoinComponent
         }
     }
 
-    suspend fun getCompleteParcelsByPage(page: Int, inquiryDate:String):ResponseResult<MutableList<ParcelDTO>?>
+    suspend fun getCompleteParcelsByPage(page: Int, inquiryDate:String):ResponseResult<MutableList<ParcelResponse>?>
     {
 
         when( val result = apiCall { parcelAPI.getParcelsComplete(page = page, inquiryDate = inquiryDate) } )
@@ -113,7 +113,7 @@ object ParcelCall : BaseService(), KoinComponent
         }
     }
 
-    suspend fun getSingleParcel(parcelId:Int): ResponseResult<ParcelDTO?>
+    suspend fun getSingleParcel(parcelId:Int): ResponseResult<ParcelResponse?>
     {
         val result = parcelAPI.getParcel(parcelId)
 
@@ -122,7 +122,7 @@ object ParcelCall : BaseService(), KoinComponent
             is NetworkResult.Success ->
             {
                 val apiResult = res.data
-                val data: ParcelDTO = apiResult.data?:throw Exception("Parcel data가 조회되지 않습니다.")
+                val data: ParcelResponse = apiResult.data?:throw Exception("Parcel data가 조회되지 않습니다.")
 
                 return ResponseResult.success(CodeUtil.getCode(apiResult.code), data, "성공")
             }

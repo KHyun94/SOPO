@@ -8,11 +8,10 @@ import com.delivery.sopo.util.SopoLog
 
 object CarrierMapper
 {
-    fun entityToObject(carrierEntity: CarrierEntity?): CarrierDTO?{
-        if(carrierEntity == null) return null
+    fun entityToObject(carrierEntity: CarrierEntity): CarrierDTO{
         val carrierEnum = CarrierEnum.getCarrierByCode(carrierEntity.carrierCode)
         val icons = CarrierUtil.getCarrierImages(carrierEnum)
-        return CarrierDTO(carrierEnum, icons?: emptyList())
+        return CarrierDTO(carrierEnum, icons)
     }
 
     fun enumToObject(carrierEnum: CarrierEnum): CarrierDTO {

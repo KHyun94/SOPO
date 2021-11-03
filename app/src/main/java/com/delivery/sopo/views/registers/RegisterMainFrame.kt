@@ -17,17 +17,8 @@ import com.delivery.sopo.views.main.MainView
 class RegisterMainFrame : Fragment()
 {
     private lateinit var binding : RegisterMainFrameBinding
-    private lateinit var parentView: MainView
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-        parentView = activity as MainView
-    }
-
-    override fun onCreateView(
-        inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?
-    ) : View
+    override fun onCreateView(inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?) : View
     {
         binding = bindView<RegisterMainFrameBinding>(inflater, R.layout.register_main_frame, container)
         viewId = binding.layoutRegisterMain.id

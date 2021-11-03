@@ -4,14 +4,14 @@ import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistor
 
 import com.delivery.sopo.data.repository.database.room.entity.CompletedParcelHistoryEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.models.parcel.ParcelDTO
+import com.delivery.sopo.models.parcel.ParcelResponse
 
 object CompletedParcelHistoryMapper
 {
     fun dtoToEntity(dto: CompletedParcelHistory) =  with(dto) { CompletedParcelHistoryEntity(date, count) }
-    fun timeCountEntityListToInquiryItemList(parcelDTOList: MutableList<ParcelDTO>): MutableList<InquiryListItem>{
-        return parcelDTOList.map {
-            InquiryListItem(parcelDTO = it)
+    fun timeCountEntityListToInquiryItemList(parcelResponseList: MutableList<ParcelResponse>): MutableList<InquiryListItem>{
+        return parcelResponseList.map {
+            InquiryListItem(parcelResponse = it)
         } as MutableList<InquiryListItem>
     }
 

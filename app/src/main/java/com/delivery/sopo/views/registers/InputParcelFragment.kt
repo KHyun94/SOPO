@@ -1,27 +1,23 @@
 package com.delivery.sopo.views.registers
 
-import android.content.Context
 import android.os.Bundle
-import android.os.Handler
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.data.repository.database.room.RoomActivate
 import com.delivery.sopo.databinding.FragmentInputParcelBinding
 import com.delivery.sopo.enums.InfoEnum
+import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.isGreaterThanOrEqual
-import com.delivery.sopo.models.ParcelRegisterDTO
+import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
+import com.delivery.sopo.models.ParcelRegister
+import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.util.*
-import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.registesrs.InputParcelViewModel
 import com.delivery.sopo.views.main.MainView
@@ -35,143 +31,103 @@ import kotlin.system.exitProcess
 /**
  * 택배 등록 1단
  */
-class InputParcelFragment: Fragment()
+class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelViewModel>()
 {
-    private lateinit var parentView: MainView
-    private lateinit var binding: FragmentInputParcelBinding
-    lateinit var callback: OnBackPressedCallback
+    override val layoutRes: Int = R.layout.fragment_input_parcel
+    override val vm: InputParcelViewModel by viewModel()
+    override val mainLayout: View by lazy { binding.constraintMainRegister }
 
-    private val vm: InputParcelViewModel by viewModel()
+    private val parentView: MainView by lazy { activity as MainView }
 
-    private var registerDTO: ParcelRegisterDTO? = null
+    private lateinit var parcelRegister: ParcelRegister
     private var returnType: Int? = null
-
-    override fun onAttach(context: Context)
-    {
-        super.onAttach(context)
-
-        var pressedTime: Long = 0
-
-        callback = object: OnBackPressedCallback(true)
-        {
-            override fun handleOnBackPressed()
-            {
-                if (System.currentTimeMillis() - pressedTime > 2000)
-                {
-                    pressedTime = System.currentTimeMillis()
-                    Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).let { bar ->
-                        bar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
-                    }
-                }
-                else
-                {
-                    ActivityCompat.finishAffinity(requireActivity())
-                    exitProcess(0)
-                }
-            }
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
 
-        parentView = activity as MainView
+        onSOPOBackPressedListener = object: OnSOPOBackPressListener
+        {
+            override fun onBackPressedInTime()
+            {
+                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply {
+                    animationMode = Snackbar.ANIMATION_MODE_SLIDE
+                }.show()
+            }
 
-        // 다른 화면에서 1단계로 다시 이동할 때 전달받은 값
-        arguments?.let { bundle ->
-            registerDTO = bundle.getSerializable(RegisterMainFrame.REGISTER_INFO) as ParcelRegisterDTO?
-            returnType = bundle.getInt(RegisterMainFrame.RETURN_TYPE)
+            override fun onBackPressedOutTime()
+            {
+                ActivityCompat.finishAffinity(requireActivity())
+                exitProcess(0)
+            }
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
+    override fun receiveData(bundle: Bundle)
     {
-        binding = FragmentInputParcelBinding.inflate(inflater, container, false)
-        binding.vm = vm
-        binding.lifecycleOwner = this
+        super.receiveData(bundle)
 
-        setObserve()
-        moveToInquiryTab()
+        bundle.getSerializable(RegisterMainFrame.REGISTER_INFO).let { data ->
+            if(data !is ParcelRegister) return@let
+            parcelRegister = data
+        }
 
-        registerDTO?.let { data ->
-            data.waybillNum?.let { waybillNo ->
-                binding.layoutWaybillNum.hint = ""
-                vm.waybillNum.postValue(waybillNo)
-            }
-            data.carrier?.let { carrierEnum ->
-                vm.carrierDTO.postValue(CarrierMapper.enumToObject(carrierEnum))
+        returnType = bundle.getInt(RegisterMainFrame.RETURN_TYPE)
+    }
+
+    override fun setAfterBinding()
+    {
+        super.setAfterBinding()
+
+        if(::parcelRegister.isInitialized)
+        {
+            vm.waybillNum.postValue(parcelRegister.waybillNum)
+            binding.layoutWaybillNum.hint = ""
+
+            parcelRegister.carrier?.let {
+                vm.carrier.postValue(CarrierMapper.enumToObject(it))
             }
         }
 
-        binding.layoutMainRegister.setOnClickListener {
+        binding.constraintMainRegister.setOnClickListener {
             it.requestFocus()
             OtherUtil.hideKeyboardSoft(requireActivity())
         }
-
-        return binding.root
     }
 
-    override fun onDetach()
+    override fun setObserve()
     {
-        super.onDetach()
-        callback.remove()
-    }
+        parentView.currentPage.observe(this) {
 
-    // 등록 완료 시 조회탭으로 이동
-    private fun moveToInquiryTab()
-    {
-        if (returnType != null && returnType == 1) Handler().post { parentView.onCompleteRegister() }
-    }
+            it ?: return@observe
+            if(it != 0) return@observe
 
-    private fun setObserve()
-    {
-        parentView.currentPage.observe(this, Observer {
-            if (it != null && it == 0)
-            {
-                requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-            }
-        })
+            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        }
 
-        vm.waybillNum.observe(this, Observer { waybillNum ->
-
-            if (waybillNum == null) return@Observer
-
-            if (waybillNum.isNotEmpty()) vm.clipboardText.value = ""
-
-            if (registerDTO?.carrier != null) return@Observer
-
-            if (!waybillNum.isGreaterThanOrEqual(9))
-            {
-                SopoLog.d("input waybill num's length < 9. ")
-                binding.vm!!.carrierDTO.value = null
-                return@Observer
-            }
-
-            CoroutineScope(Dispatchers.Default).launch {
-                val carrierList = RoomActivate.recommendAutoCarrier(waybillNum, 1)
-
-                SopoLog.d("input waybill num's length >= 9. Select Carrier:[${carrierList.joinToString()}]")
-
-                if (carrierList.isNotEmpty())
-                {
-                    SopoLog.d("운송사 리스트 >>> ${carrierList.joinToString()}")
-                    binding.vm!!.carrierDTO.postValue(carrierList[0])
-                }
-            }
-        })
-
-        binding.vm!!.focus.observe(this, Observer { focus ->
+        vm.focus.observe(this) { focus ->
             val res = TextInputUtil.changeFocus(requireContext(), focus)
-            CoroutineScope(Dispatchers.Main).launch {
-                binding.vm!!.validates[res.first] = res.second
-            }
-        })
+            vm.validity[res.first] = res.second
+        }
 
-        binding.vm!!.validateError.observe(this, Observer { target ->
-            val message = when (target.first)
+        vm.waybillNum.observe(this) { waybillNum ->
+
+            if(waybillNum.isEmpty()) return@observe
+
+            vm.clipboardText.value = ""
+
+            if(!waybillNum.isGreaterThanOrEqual(9))
+            {
+                vm.carrier.value = null
+                return@observe
+            }
+
+            vm.recommendCarrierByWaybill(waybillNum)
+        }
+
+
+        vm.invalidity.observe(this) { target ->
+            val message = when(target.first)
             {
                 InfoEnum.WAYBILL_NUMBER ->
                 {
@@ -185,17 +141,16 @@ class InputParcelFragment: Fragment()
             Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).apply {
                 setGravity(Gravity.TOP, 0, 180)
             }.show()
-        })
+        }
 
-        binding.vm!!.errorMsg.observe(this, Observer {
-            if (!it.isNullOrEmpty())
+        vm.errorMsg.observe(this, Observer {
+            if(!it.isNullOrEmpty())
             {
-//                TODO 커스텀 스낵바
-//                CustomSnackBar(context = requireContext()).floatingUpperSnackBAr(requireContext(), it, true)
-                binding.vm!!.errorMsg.value = ""
+                //                TODO 커스텀 스낵바
+                //                CustomSnackBar(context = requireContext()).floatingUpperSnackBAr(requireContext(), it, true)
+                vm.errorMsg.value = ""
             }
         })
-
         /**
          *  1. 송장번호를 입력했을 때 자동으로 택배사를 추천
          *      -> '다음'버튼을 눌렀을 때 Step3로 이동
@@ -212,34 +167,31 @@ class InputParcelFragment: Fragment()
          *
          */
 
-        binding.vm!!.moveFragment.observe(this, Observer {
+        vm.navigator.observe(this) { nav ->
 
-            val registerDTO = ParcelRegisterDTO(vm.waybillNum.value, vm.carrierDTO.value?.carrier, null)
+            val registerDTO = ParcelRegister(vm.waybillNum.value, vm.carrier.value?.carrier, null)
 
-            when (it)
+            when(nav)
             {
-                TabCode.REGISTER_SELECT.NAME ->
+                NavigatorEnum.REGISTER_SELECT ->
                 {
-                    SopoLog.d(
-                        """
-                        운송장 번호 >>> ${binding.vm!!.waybillNum.value ?: "미입력"}
-                        택배사 >>> ${binding.vm!!.carrierDTO.value ?: "미선택"}
-                    """.trimIndent()
-                    )
+                    SopoLog.d("""
+                        운송장 번호 >>> ${vm.waybillNum.value ?: "미입력"}
+                        택배사 >>> ${vm.carrier.value ?: "미선택"}
+                    """.trimIndent())
                     TabCode.REGISTER_SELECT.FRAGMENT =
-                        SelectCarrierFragment.newInstance(vm.waybillNum.value?:"")
+                        SelectCarrierFragment.newInstance(vm.waybillNum.value ?: "")
                     FragmentManager.move(parentView, TabCode.REGISTER_SELECT, RegisterMainFrame.viewId)
-                    binding.vm!!.moveFragment.value = ""
                 }
-                TabCode.REGISTER_CONFIRM.NAME ->
+                NavigatorEnum.REGISTER_CONFIRM ->
                 {
-
-                    TabCode.REGISTER_CONFIRM.FRAGMENT = ConfirmParcelFragment.newInstance(registerDTO = registerDTO)
+                    TabCode.REGISTER_CONFIRM.FRAGMENT =
+                        ConfirmParcelFragment.newInstance(register = registerDTO)
                     FragmentManager.move(parentView, TabCode.REGISTER_CONFIRM, RegisterMainFrame.viewId)
-                    binding.vm!!.moveFragment.value = ""
                 }
             }
-        })
+
+        }
     }
 
     override fun onResume()
@@ -251,25 +203,23 @@ class InputParcelFragment: Fragment()
         // 0922 kh 추가사항 - 클립보드에 저장되어있는 운송장 번호가 로컬에 등록된 택배가 있을 때, 안띄어주는 로직 추가
 
         CoroutineScope(Dispatchers.Main).launch {
-            val clipboardText = ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE)?:return@launch
+            val clipboardText = ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE) ?: return@launch
 
-            val isRegister = binding.vm!!.waybillNum.value.isNullOrEmpty()
+            val isWrite = vm.waybillNum.value.isNullOrEmpty()
 
-            if ((clipboardText.isEmpty() || !isRegister).not())
+            if((clipboardText.isEmpty() || !isWrite).not())
             {
-                binding.vm!!.clipboardText.postValue(clipboardText)
+                vm.clipboardText.postValue(clipboardText)
             }
         }
     }
 
     companion object
     {
-
-
-        fun newInstance(registerDTO: ParcelRegisterDTO?, returnType: Int?): InputParcelFragment
+        fun newInstance(register: ParcelRegister?, returnType: Int?): InputParcelFragment
         {
             val args = Bundle().apply {
-                putSerializable(RegisterMainFrame.REGISTER_INFO, registerDTO)
+                putSerializable(RegisterMainFrame.REGISTER_INFO, register)
                 putInt(RegisterMainFrame.RETURN_TYPE, returnType ?: RegisterMainFrame.REGISTER_PROCESS_RESET)
             }
 
@@ -278,4 +228,6 @@ class InputParcelFragment: Fragment()
             }
         }
     }
+
+
 }

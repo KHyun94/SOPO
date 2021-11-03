@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.R
 import com.delivery.sopo.enums.DeliveryStatusEnum
-import com.delivery.sopo.models.parcel.ParcelDTO
+import com.delivery.sopo.models.parcel.ParcelResponse
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
@@ -14,7 +14,7 @@ import org.koin.core.inject
 import java.text.SimpleDateFormat
 import java.util.*
 
-class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false): KoinComponent, BaseObservable()
+class InquiryListItem(val parcelResponse: ParcelResponse, var isSelected: Boolean = false): KoinComponent, BaseObservable()
 {
     private val parcelRepository: ParcelRepository by inject()
 
@@ -45,20 +45,20 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
         Calendar.getInstance()
             .apply {
                 this.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(
-                    parcelDTO.arrivalDte?.replace("T", " "))
+                    parcelResponse.arrivalDte?.replace("T", " "))
             }
     }
     private val ongoingTimeDate: Calendar by lazy {
         Calendar.getInstance()
             .apply {
                 this.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(
-                    parcelDTO.auditDte.replace("T", " "))
+                    parcelResponse.auditDte.replace("T", " "))
             }
     }
 
     private fun getParseString(): String
     {
-        return parcelDTO.arrivalDte?.let {
+        return parcelResponse.arrivalDte?.let {
             it.substring(0, it.indexOf("T"))
         } ?: " "
     }
@@ -138,7 +138,7 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
             var update: LiveData<Int?>? = null
 
             withContext(Dispatchers.Default) {
-                update = parcelRepository.getIsUnidentifiedAsLiveData(parcelDTO.parcelId)
+                update = parcelRepository.getIsUnidentifiedAsLiveData(parcelResponse.parcelId)
             }
 
             // TODO 이렇게 옵저빙안하고도 변경 가능한지 테스트 필시 해야함
@@ -150,7 +150,7 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
 
     private fun getStatusText(): String
     {
-        return when(parcelDTO.deliveryStatus)
+        return when(parcelResponse.deliveryStatus)
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> "준비중"
             //상품 준비중
@@ -167,7 +167,7 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
 
     private fun getStatusTextColorResource(): Int
     {
-        return when(parcelDTO.deliveryStatus)
+        return when(parcelResponse.deliveryStatus)
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.color.COLOR_GRAY_300
             //상품 준비중
@@ -184,7 +184,7 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
 
     private fun getStatusBackgroundColorResource(): Int
     {
-        return when(parcelDTO.deliveryStatus)
+        return when(parcelResponse.deliveryStatus)
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.color.STATUS_PREPARING
             //상품 준비중
@@ -201,7 +201,7 @@ class InquiryListItem(val parcelDTO: ParcelDTO, var isSelected: Boolean = false)
 
     private fun getStatusBackgroundResource(): Int
     {
-        return when(parcelDTO.deliveryStatus)
+        return when(parcelResponse.deliveryStatus)
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.drawable.ic_inquiry_cardview_not_registered
             //상품 준비중

@@ -55,8 +55,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 {
 
     override val layoutRes: Int = R.layout.fragment_inquiry_re
-
     override val vm: InquiryViewModel by viewModel()
+    override val mainLayout: View by lazy { binding.constraintMainInquiry }
 
     private val parentView: MainView by lazy {
         activity as MainView
@@ -106,7 +106,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    override fun initUI()
+    override fun setBeforeBinding()
     {
         SopoLog.d("base fragment - initUI Call2")
 
@@ -125,7 +125,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         updateCompleteUI()
     }
 
-    override fun setAfterSetUI()
+    override fun setAfterBinding()
     {
     }
 
@@ -269,7 +269,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             ml.addAll(list)
             ml.addAll(list)
 
-            list.sortByDescending { it.parcelDTO.arrivalDte }
+            list.sortByDescending { it.parcelResponse.arrivalDte }
             completedParcelAdapter.notifyChanged(ml)
         })
 

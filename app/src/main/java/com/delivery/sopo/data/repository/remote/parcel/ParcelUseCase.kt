@@ -2,10 +2,9 @@ package com.delivery.sopo.data.repository.remote.parcel
 
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.models.ParcelRegisterDTO
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.UpdateAliasRequest
-import com.delivery.sopo.models.parcel.ParcelDTO
+import com.delivery.sopo.models.parcel.ParcelResponse
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.CodeUtil
@@ -48,7 +47,7 @@ object ParcelUseCase
         }
     }*/
 
-    suspend fun requestRemoteParcels(): ResponseResult<List<ParcelDTO>?>
+    suspend fun requestRemoteParcels(): ResponseResult<List<ParcelResponse>?>
     {
         when(val res = ParcelCall.getOngoingParcels())
         {

@@ -36,7 +36,7 @@ class ConfirmParcelFragment: Fragment()
 
     private val userLocalRepo: UserLocalRepository by inject()
 
-    private lateinit var registerDTO: ParcelRegisterDTO
+    private lateinit var register: ParcelRegister
 
     private var progressBar: CustomProgressBar? = null
 
@@ -65,21 +65,21 @@ class ConfirmParcelFragment: Fragment()
         try
         {
             arguments.let { bundle ->
-                registerDTO = bundle?.getSerializable(RegisterMainFrame.REGISTER_INFO) as ParcelRegisterDTO
-                SopoLog.d("receive bundle data >>> ${registerDTO.toString()}")
+                register = bundle?.getSerializable(RegisterMainFrame.REGISTER_INFO) as ParcelRegister
+                SopoLog.d("receive bundle data >>> ${register.toString()}")
             }
 
-            registerDTO.waybillNum.let { waybillNo ->
+            register.waybillNum.let { waybillNo ->
                 requireNotNull(waybillNo)
                 vm.waybillNum.value = waybillNo
             }
 
-            registerDTO.carrier.let { carrierEnum ->
+            register.carrier.let { carrierEnum ->
                 requireNotNull(carrierEnum)
                 vm.carrier.value = CarrierMapper.enumToObject(carrierEnum)
             }
 
-            registerDTO.alias?.let { alias -> vm.alias.value = alias }
+            register.alias?.let { alias -> vm.alias.value = alias }
         }
         catch(e: Exception)
         {
@@ -141,7 +141,7 @@ class ConfirmParcelFragment: Fragment()
                 }
                 NavigatorConst.TO_REGISTER_REVISE ->
                 {
-                    InputParcelFragment.newInstance(registerDTO, RegisterMainFrame.REGISTER_PROCESS_RESET)
+                    InputParcelFragment.newInstance(register, RegisterMainFrame.REGISTER_PROCESS_RESET)
                 }
                 NavigatorConst.TO_REGISTER_SUCCESS ->
                 {
@@ -171,10 +171,10 @@ class ConfirmParcelFragment: Fragment()
 
     companion object
     {
-        fun newInstance(registerDTO: ParcelRegisterDTO?): ConfirmParcelFragment
+        fun newInstance(register: ParcelRegister?): ConfirmParcelFragment
         {
             val args = Bundle().apply {
-                putSerializable(RegisterMainFrame.REGISTER_INFO, registerDTO)
+                putSerializable(RegisterMainFrame.REGISTER_INFO, register)
             }
 
             return ConfirmParcelFragment().apply {

@@ -4,7 +4,7 @@ import com.delivery.sopo.enums.CarrierEnum
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
-data class ParcelRegisterDTO(
+data class ParcelRegister(
         @SerializedName("waybillNum")
         var waybillNum: String?,
         @SerializedName("carrier")

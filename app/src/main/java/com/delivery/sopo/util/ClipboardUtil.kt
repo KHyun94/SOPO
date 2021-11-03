@@ -35,7 +35,7 @@ object ClipboardUtil: KoinComponent
 
         clipboardText = getOnlyDigit(item.text.toString())
 
-        if(clipboardText.length < 9)
+        if(clipboardText.length < 9 || clipboardText.length >=15)
         {
             return null
         }
@@ -50,7 +50,7 @@ object ClipboardUtil: KoinComponent
         return clipboardText
     }
 
-    suspend fun isExistParcel(waybillNum: String): Boolean
+    private suspend fun isExistParcel(waybillNum: String): Boolean
     {
         return withContext(Dispatchers.Default) {
             PARCEL_IMPL.getSingleParcelWithWaybillNum(waybillNum = waybillNum)

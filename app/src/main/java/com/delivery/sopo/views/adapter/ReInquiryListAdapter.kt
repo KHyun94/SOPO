@@ -128,7 +128,7 @@ class ReInquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveDa
                         if (mClickListener != null)
                         {
                             mClickListener!!.onParcelClicked(
-                                view = it, type = 0, parcelId = inquiryListItem.parcelDTO.parcelId
+                                view = it, type = 0, parcelId = inquiryListItem.parcelResponse.parcelId
                             )
                         }
                     }
@@ -138,7 +138,7 @@ class ReInquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveDa
                     if (!isRemovable && mClickListener != null)
                     {
                         mClickListener!!.onParcelLongClicked(
-                            view = it, type = 0, parcelId = inquiryListItem.parcelDTO.parcelId
+                            view = it, type = 0, parcelId = inquiryListItem.parcelResponse.parcelId
                         )
                     }
                     return@setOnLongClickListener true
@@ -180,7 +180,7 @@ class ReInquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveDa
                         if (mClickListener != null)
                         {
                             mClickListener!!.onParcelClicked(
-                                view = it, type = 1, parcelId = inquiryListItem.parcelDTO.parcelId
+                                view = it, type = 1, parcelId = inquiryListItem.parcelResponse.parcelId
                             )
                         }
                     }
@@ -190,7 +190,7 @@ class ReInquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveDa
                     if (!isRemovable && mClickListener != null)
                     {
                         mClickListener!!.onParcelLongClicked(
-                            view = it, type = 1, parcelId = inquiryListItem.parcelDTO.parcelId
+                            view = it, type = 1, parcelId = inquiryListItem.parcelResponse.parcelId
                         )
                     }
                     return@setOnLongClickListener true
@@ -230,7 +230,7 @@ class ReInquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveDa
         return list.filter {
             it.isSelected
         }.map {
-            it.parcelDTO.parcelId
+            it.parcelResponse.parcelId
         }
     }
 
@@ -290,7 +290,7 @@ class ReInquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveDa
     //현재는 '배송완료'에만 적용되어있음. 데이터를 무조건 notifyDataSetChanged()로 데이터를 리프레쉬하지 않고 진짜 변경된 데이터만 변경할 수 있도록함.
     fun notifyChanged(updatedList: MutableList<InquiryListItem>)
     {
-        updatedList.sortByDescending { it.parcelDTO.arrivalDte }
+        updatedList.sortByDescending { it.parcelResponse.arrivalDte }
 
         if (list.size > updatedList.size)
         {
@@ -303,13 +303,13 @@ class ReInquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveDa
         {
             if (list.getOrNull(index) == null)
             {
-                SopoLog.d("기존 리스트에 해당 index[$index]가 존재하지 않아 list[$index]에 ${updatedList[index].parcelDTO.alias} 아이템을 추가합니다.")
+                SopoLog.d("기존 리스트에 해당 index[$index]가 존재하지 않아 list[$index]에 ${updatedList[index].parcelResponse.alias} 아이템을 추가합니다.")
                 list.add(updatedList[index])
                 notifyIndexList.add(index)
             }
-            else if (updatedList[index].parcelDTO.parcelId != list[index].parcelDTO.parcelId)
+            else if (updatedList[index].parcelResponse.parcelId != list[index].parcelResponse.parcelId)
             {
-                SopoLog.d("index[$index]에 해당하는 ${list[index].parcelDTO.alias}와 업데이트될 아이템(${updatedList[index].parcelDTO.alias}) 일치하지 않아 기존 아이템에 업데이트될 아이템을 덮어씁니다.")
+                SopoLog.d("index[$index]에 해당하는 ${list[index].parcelResponse.alias}와 업데이트될 아이템(${updatedList[index].parcelResponse.alias}) 일치하지 않아 기존 아이템에 업데이트될 아이템을 덮어씁니다.")
                 list[index] = updatedList[index]
                 notifyIndexList.add(index)
             }
@@ -331,19 +331,19 @@ class ReInquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveDa
             InquiryItemTypeEnum.Soon ->
             {
                 list.filter {
-                    it.parcelDTO.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
+                    it.parcelResponse.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
                 }.toMutableList()
             }
             InquiryItemTypeEnum.Registered ->
             {
                 list.filter {
-                    it.parcelDTO.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE && it.parcelDTO.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
+                    it.parcelResponse.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE && it.parcelResponse.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
                 }.toMutableList()
             }
             InquiryItemTypeEnum.Complete ->
             {
                 list.filter {
-                    it.parcelDTO.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
+                    it.parcelResponse.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
                 }.toMutableList()
             }
         }

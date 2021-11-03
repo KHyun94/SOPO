@@ -2,7 +2,7 @@ package com.delivery.sopo.models.parcel
 
 import com.delivery.sopo.models.CarrierDTO
 
-data class ParcelDetailDTO(
+data class ParcelDetailInfo(
     // 앱에서 택배 등록한 일자
         val regDt: String,
     // 택배 별칭 "Default:default" -> if default {from_name}이 보내신 택배

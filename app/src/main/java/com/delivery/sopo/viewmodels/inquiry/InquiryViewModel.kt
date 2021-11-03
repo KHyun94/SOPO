@@ -17,7 +17,7 @@ import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.mapper.CompletedParcelHistoryMapper
 import com.delivery.sopo.models.mapper.ParcelMapper
-import com.delivery.sopo.models.parcel.ParcelDTO
+import com.delivery.sopo.models.parcel.ParcelResponse
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*
@@ -368,7 +368,7 @@ class InquiryViewModel(
 
 
     // 배송완료 리스트를 가져온다.(페이징 포함)
-    suspend fun getCompleteListWithPaging(inquiryDate: String): List<ParcelDTO>
+    suspend fun getCompleteListWithPaging(inquiryDate: String): List<ParcelResponse>
     {
         SopoLog.i("getCompleteListWithPaging(...) 호출 [data:$inquiryDate]")
 
@@ -403,8 +403,8 @@ class InquiryViewModel(
 
         remoteCompleteParcels.sortByDescending { it.arrivalDte } // 도착한 시간을 기준으로 내림차순으로 정렬
 
-        val updateParcels = mutableListOf<ParcelDTO>() // list에 모았다가 한번에 업데이트
-        val insertParcels = mutableListOf<ParcelDTO>()
+        val updateParcels = mutableListOf<ParcelResponse>() // list에 모았다가 한번에 업데이트
+        val insertParcels = mutableListOf<ParcelResponse>()
 
         for(parcel in remoteCompleteParcels)
         {
@@ -427,7 +427,7 @@ class InquiryViewModel(
     }
 
 
-    private suspend fun insertNewParcels(list: List<ParcelDTO>) = withContext(Dispatchers.Default) {
+    private suspend fun insertNewParcels(list: List<ParcelResponse>) = withContext(Dispatchers.Default) {
         val parcelStatuses = list.map {
             ParcelMapper.parcelToParcelManagementEntity(it).apply { isNowVisible = 1 }
         }
@@ -435,7 +435,7 @@ class InquiryViewModel(
         parcelManagementRepo.insertEntities(parcelStatuses)
     }
 
-    private suspend fun updateExistParcels(list: List<ParcelDTO>) =
+    private suspend fun updateExistParcels(list: List<ParcelResponse>) =
         withContext(Dispatchers.Default) {
             val parcelStatuses = list.map {
                 ParcelMapper.parcelToParcelManagementEntity(it).apply { isNowVisible = 1 }
@@ -486,48 +486,48 @@ class InquiryViewModel(
 
         val elseList = list.asSequence().filter { item ->
 
-            if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
+            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
             {
                 multiList[0].add(item)
             }
 
-            item.parcelDTO.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
+            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
         }.filter { item ->
-            if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE)
+            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE)
             {
                 multiList[1].add(item)
             }
 
-            item.parcelDTO.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
+            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
         }.filter { item ->
-            if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE)
+            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE)
             {
                 multiList[2].add(item)
             }
 
-            item.parcelDTO.deliveryStatus != DeliveryStatusEnum.IN_TRANSIT.CODE
+            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.IN_TRANSIT.CODE
         }.filter { item ->
-            if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE)
+            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE)
             {
                 multiList[3].add(item)
             }
 
-            item.parcelDTO.deliveryStatus != DeliveryStatusEnum.AT_PICKUP.CODE
+            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.AT_PICKUP.CODE
         }.filter { item ->
-            if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE)
+            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE)
             {
                 multiList[4].add(item)
             }
 
-            item.parcelDTO.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
+            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
         }.filter { item ->
-            if(item.parcelDTO.deliveryStatus == DeliveryStatusEnum.NOT_REGISTERED.CODE)
+            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.NOT_REGISTERED.CODE)
             {
                 //                SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
                 multiList[5].add(item)
             }
 
-            item.parcelDTO.deliveryStatus != DeliveryStatusEnum.NOT_REGISTERED.CODE
+            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.NOT_REGISTERED.CODE
         }.toList()
 
         multiList[6].addAll(elseList)
@@ -543,7 +543,7 @@ class InquiryViewModel(
     {
         override fun compare(p0: InquiryListItem, p1: InquiryListItem): Int
         {
-            return p0.parcelDTO.auditDte.compareTo(p1.parcelDTO.auditDte)
+            return p0.parcelResponse.auditDte.compareTo(p1.parcelResponse.auditDte)
         }
     }
 }

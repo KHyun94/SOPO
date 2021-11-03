@@ -1,8 +1,10 @@
 package com.delivery.sopo.views.splash
 
 import android.content.Intent
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
@@ -30,6 +32,15 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
     override val mainLayout by lazy { binding.constraintMainSplash }
 
     private val userLocalRepo: UserLocalRepository by inject()
+
+    override fun onBeforeBinding()
+    {
+        super.onBeforeBinding()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = ContextCompat.getColor(this, R.color.COLOR_MAIN_700);
+        }
+    }
 
     override fun setObserve()
     {

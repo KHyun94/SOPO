@@ -14,7 +14,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentSelectCarrierBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.models.CarrierDTO
-import com.delivery.sopo.models.ParcelRegisterDTO
+import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
@@ -108,7 +108,7 @@ class SelectCarrierFragment: Fragment()
             SopoLog.d("moveFragment >>> ${it}")
 
             val registerDTO =
-                ParcelRegisterDTO(vm.waybillNum.value, vm.selectedItem.value?.item?.carrier, null)
+                ParcelRegister(vm.waybillNum.value, vm.selectedItem.value?.item?.carrier, null)
 
             when(it)
             {
@@ -120,7 +120,7 @@ class SelectCarrierFragment: Fragment()
                         if(vm.waybillNum.value == null || vm.waybillNum.value == "")
                         {
                             TabCode.REGISTER_INPUT.FRAGMENT =
-                                InputParcelFragment.newInstance(registerDTO = registerDTO,
+                                InputParcelFragment.newInstance(register = registerDTO,
                                                                 returnType = 0)
 
                             FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT,
@@ -129,7 +129,7 @@ class SelectCarrierFragment: Fragment()
                         else
                         {
                             TabCode.REGISTER_CONFIRM.FRAGMENT =
-                                ConfirmParcelFragment.newInstance(registerDTO = registerDTO)
+                                ConfirmParcelFragment.newInstance(register = registerDTO)
 
                             FragmentManager.move(requireActivity(), TabCode.REGISTER_CONFIRM,
                                                  RegisterMainFrame.viewId)
@@ -148,7 +148,7 @@ class SelectCarrierFragment: Fragment()
                     binding.vm?.moveFragment?.value = ""
 
                     TabCode.REGISTER_INPUT.FRAGMENT =
-                        InputParcelFragment.newInstance(registerDTO = registerDTO, returnType = 0)
+                        InputParcelFragment.newInstance(register = registerDTO, returnType = 0)
 
                     FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT,
                                          RegisterMainFrame.viewId)

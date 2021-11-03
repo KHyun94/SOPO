@@ -4,9 +4,9 @@ import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistor
 
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.data.repository.database.room.dto.DeleteParcelsDTO
-import com.delivery.sopo.models.ParcelRegisterDTO
+import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.UpdateAliasRequest
-import com.delivery.sopo.models.parcel.ParcelDTO
+import com.delivery.sopo.models.parcel.ParcelResponse
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -21,7 +21,7 @@ interface ParcelAPI
      */
     @POST("api/v1/sopo-parcel/delivery/parcel")
     @Headers("Accept: application/json")
-    suspend fun registerParcel(@Body registerDto: ParcelRegisterDTO): Response<APIResult<Int>>
+    suspend fun registerParcel(@Body register: ParcelRegister): Response<APIResult<Int>>
 
     /**
      * 단일 택배 정보 요청
@@ -31,7 +31,7 @@ interface ParcelAPI
 
     @GET("/api/v1/sopo-parcel/delivery/parcel/{parcelId}")
     @Headers("Accept: application/json")
-    suspend fun getParcel(@Path("parcelId") parcelId: Int): Response<APIResult<ParcelDTO>>
+    suspend fun getParcel(@Path("parcelId") parcelId: Int): Response<APIResult<ParcelResponse>>
 
 
     @GET("api/v1/sopo-parcel/delivery/parcels/months")
@@ -41,13 +41,13 @@ interface ParcelAPI
     // 배송중 & 곧 도착 리스트 가져오는 api
     @GET("api/v1/sopo-parcel/delivery/parcels/ongoing")
     @Headers("Accept: application/json")
-    suspend fun getParcelsOngoing(): APIResult<MutableList<ParcelDTO>?>
+    suspend fun getParcelsOngoing(): APIResult<MutableList<ParcelResponse>?>
 
     // '배송완료' 리스트 가져오는 api
     @GET("api/v1/sopo-parcel/delivery/parcels/complete")
     @Headers("Accept: application/json")
     suspend fun getParcelsComplete(
-            @Query("page") page: Int, @Query("inquiryDate") inquiryDate: String): Response<APIResult<MutableList<ParcelDTO>?>>
+            @Query("page") page: Int, @Query("inquiryDate") inquiryDate: String): Response<APIResult<MutableList<ParcelResponse>?>>
 
     @HTTP(method = "DELETE", path = "api/v1/sopo-parcel/delivery/parcels", hasBody = true)
     @Headers("Accept: application/json")
@@ -61,7 +61,7 @@ interface ParcelAPI
     // 배송중 & 곧 도착 리스트 가져오는 api
     @GET("api/v1/sopo-parcel/delivery/parcels/ongoing")
     @Headers("Accept: application/json")
-    suspend fun getOngoingParcels(): Response<APIResult<List<ParcelDTO>?>>
+    suspend fun getOngoingParcels(): Response<APIResult<List<ParcelResponse>?>>
 
     /**
      * 택배 리스트 전체 업데이트 요청

@@ -3,21 +3,16 @@ package com.delivery.sopo.viewmodels.registesrs
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.delivery.sopo.ParcelExceptionHandler
 import com.delivery.sopo.R
-import com.delivery.sopo.UserExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.data.repository.remote.parcel.ParcelUseCase
-import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.*
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -47,22 +42,22 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
             {
                 if(alias.value.toString() == "null") alias.value = ""
 
-                val registerDTO = ParcelRegisterDTO(carrier = carrier.value?.carrier
+                val registerDTO = ParcelRegister(carrier = carrier.value?.carrier
                     ?: throw Exception("Carrier must be not null"), waybillNum = waybillNum.value.toString(), alias = alias.value.toString())
 
 
-                requestParcelRegister(registerDTO = registerDTO)
+                requestParcelRegister(register = registerDTO)
             }
         }
     }
 
     // '등록하기' Button Click event
-    private fun requestParcelRegister(registerDTO: ParcelRegisterDTO) = scope.launch(Dispatchers.IO) {
-        SopoLog.i("requestParcelRegister(...) 호출[${registerDTO.toString()}]")
+    private fun requestParcelRegister(register: ParcelRegister) = scope.launch(Dispatchers.IO) {
+        SopoLog.i("requestParcelRegister(...) 호출[${register.toString()}]")
 
         try
         {
-            parcelRepo.registerParcel(registerDTO).apply {
+            parcelRepo.registerParcel(register).apply {
                 SopoLog.d("택배 등록 성공 [번호:$this]")
             }
 

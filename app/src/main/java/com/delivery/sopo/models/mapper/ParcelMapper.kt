@@ -5,7 +5,7 @@ import com.delivery.sopo.data.repository.database.room.entity.CompletedParcelHis
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.models.parcel.ParcelDTO
+import com.delivery.sopo.models.parcel.ParcelResponse
 
 object ParcelMapper
 {
@@ -20,10 +20,10 @@ object ParcelMapper
         return with(dto){ CompletedParcelHistoryEntity("${parseYear()}-${parseMonth()}", count, visibility, status, auditDte) }
     }
 
-    fun parcelToParcelManagementEntity(parcelDTO: ParcelDTO): ParcelStatusEntity
+    fun parcelToParcelManagementEntity(parcelResponse: ParcelResponse): ParcelStatusEntity
     {
         return ParcelStatusEntity(
-            parcelId = parcelDTO.parcelId
+            parcelId = parcelResponse.parcelId
         )
     }
 
@@ -34,37 +34,37 @@ object ParcelMapper
         )
     }
 
-    fun parcelEntityToParcel(parcelEntity: ParcelEntity): ParcelDTO{
-        return ParcelDTO(parcelId = parcelEntity.parcelId,
-            userId = parcelEntity.userId,
-            waybillNum = parcelEntity.waybillNum,
-            carrier = parcelEntity.carrier,
-            alias = parcelEntity.alias,
-            inquiryResult = parcelEntity.inquiryResult,
-            inquiryHash = parcelEntity.inquiryHash,
-            deliveryStatus = parcelEntity.deliveryStatus,
-            arrivalDte = parcelEntity.arrivalDte,
-            auditDte = parcelEntity.auditDte,
-            status = parcelEntity.status,
-            regDt = parcelEntity.regDt
+    fun parcelEntityToParcel(parcelEntity: ParcelEntity): ParcelResponse{
+        return ParcelResponse(parcelId = parcelEntity.parcelId,
+                              userId = parcelEntity.userId,
+                              waybillNum = parcelEntity.waybillNum,
+                              carrier = parcelEntity.carrier,
+                              alias = parcelEntity.alias,
+                              inquiryResult = parcelEntity.inquiryResult,
+                              inquiryHash = parcelEntity.inquiryHash,
+                              deliveryStatus = parcelEntity.deliveryStatus,
+                              arrivalDte = parcelEntity.arrivalDte,
+                              auditDte = parcelEntity.auditDte,
+                              status = parcelEntity.status,
+                              regDt = parcelEntity.regDt
         )
     }
 
-    fun parcelToParcelEntity(parcelDTO: ParcelDTO): ParcelEntity
+    fun parcelToParcelEntity(parcelResponse: ParcelResponse): ParcelEntity
     {
         return ParcelEntity(
-            parcelId = parcelDTO.parcelId,
-            userId = parcelDTO.userId,
-            waybillNum = parcelDTO.waybillNum,
-            carrier = parcelDTO.carrier,
-            alias = parcelDTO.alias,
-            inquiryResult = parcelDTO.inquiryResult,
-            inquiryHash = parcelDTO.inquiryHash,
-            deliveryStatus = parcelDTO.deliveryStatus,
-            arrivalDte = parcelDTO.arrivalDte.toString(),
-            auditDte = parcelDTO.auditDte,
-            regDt = parcelDTO.regDt,
-            status = parcelDTO.status ?: 0
+            parcelId = parcelResponse.parcelId,
+            userId = parcelResponse.userId,
+            waybillNum = parcelResponse.waybillNum,
+            carrier = parcelResponse.carrier,
+            alias = parcelResponse.alias,
+            inquiryResult = parcelResponse.inquiryResult,
+            inquiryHash = parcelResponse.inquiryHash,
+            deliveryStatus = parcelResponse.deliveryStatus,
+            arrivalDte = parcelResponse.arrivalDte.toString(),
+            auditDte = parcelResponse.auditDte,
+            regDt = parcelResponse.regDt,
+            status = parcelResponse.status ?: 0
         )
     }
 
@@ -72,7 +72,7 @@ object ParcelMapper
         return parcelEntity.parcelId
     }
 
-    fun parcelListToInquiryItemList(list: List<ParcelDTO>): MutableList<InquiryListItem>{
-        return list.map { InquiryListItem(parcelDTO = it) }.toMutableList()
+    fun parcelListToInquiryItemList(list: List<ParcelResponse>): MutableList<InquiryListItem>{
+        return list.map { InquiryListItem(parcelResponse = it) }.toMutableList()
     }
 }

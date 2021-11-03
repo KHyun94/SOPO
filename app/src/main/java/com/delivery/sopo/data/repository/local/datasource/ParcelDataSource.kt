@@ -5,28 +5,28 @@ import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistor
 
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
-import com.delivery.sopo.models.parcel.ParcelDTO
+import com.delivery.sopo.models.parcel.ParcelResponse
 
 interface ParcelDataSource {
-   suspend fun getRemoteOngoingParcels(): MutableList<ParcelDTO>?
+   suspend fun getRemoteOngoingParcels(): MutableList<ParcelResponse>?
    suspend fun getRemoteMonths(): List<CompletedParcelHistory>?
 
-   suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<ParcelDTO>?
+   suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<ParcelResponse>?
 
    suspend fun getLocalParcelById(parcelId: Int): ParcelEntity?
 
-   fun getLocalCompleteParcelsLiveData(): LiveData<List<ParcelDTO>>
-   fun getLocalCompleteParcels(): List<ParcelDTO>
-   suspend fun getLocalOngoingParcels(): List<ParcelDTO>?
+   fun getLocalCompleteParcelsLiveData(): LiveData<List<ParcelResponse>>
+   fun getLocalCompleteParcels(): List<ParcelResponse>
+   suspend fun getLocalOngoingParcels(): List<ParcelResponse>?
 
    fun getSoonDataCntLiveData(): LiveData<Int>
    fun getOngoingDataCntLiveData(): LiveData<Int>
 
    suspend fun insetEntity(parcel: ParcelEntity)
-   suspend fun insertEntities(parcelDTOList: List<ParcelDTO>)
+   suspend fun insertEntities(parcelResponseList: List<ParcelResponse>)
 
    suspend fun updateEntity(parcel: ParcelEntity): Int
-    suspend fun updateEntities(parcelDTOList: List<ParcelDTO>)
+    suspend fun updateEntities(parcelResponseList: List<ParcelResponse>)
 
    suspend fun deleteLocalParcels(parcelIdList: List<Int>)
    suspend fun deleteRemoteParcels(): APIResult<String?>?
@@ -42,5 +42,5 @@ interface ParcelDataSource {
    fun getLocalOnGoingParcelCnt() : LiveData<Int>
 
    // 배송 중인 택배 리스트를 LiveData로 받기
-   fun getLocalOngoingParcelsAsLiveData(): LiveData<List<ParcelDTO>>
+   fun getLocalOngoingParcelsAsLiveData(): LiveData<List<ParcelResponse>>
 }

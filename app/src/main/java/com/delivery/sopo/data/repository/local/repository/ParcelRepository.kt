@@ -2,34 +2,23 @@ package com.delivery.sopo.data.repository.local.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import com.delivery.sopo.BuildConfig
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.database.room.dto.DeleteParcelsDTO
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.models.parcel.ParcelDTO
+import com.delivery.sopo.models.parcel.ParcelResponse
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 
 import com.delivery.sopo.data.repository.local.datasource.ParcelDataSource
-import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.exceptions.OAuthException
-import com.delivery.sopo.models.ParcelRegisterDTO
-import com.delivery.sopo.models.api.ErrorResponse
-import com.delivery.sopo.models.dto.OAuthDTO
-import com.delivery.sopo.models.mapper.OAuthMapper
-import com.delivery.sopo.networks.api.OAuthAPI
+import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.services.network_handler.BaseServiceBeta
 import com.delivery.sopo.util.TimeUtil
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 
 class ParcelRepository(private val userLocalRepo: UserLocalRepository,
                        private val oAuthRepo: OAuthLocalRepository,
@@ -38,15 +27,15 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         BaseServiceBeta()
 {
 
-    suspend fun registerParcel(parcel: ParcelRegisterDTO):Int
+    suspend fun registerParcel(parcel: ParcelRegister):Int
     {
         val oAuthToken = oAuthRepo.get(userId = ParcelCall.email)
-        val registerParcel = NetworkManager.retro(oAuthToken.accessToken).create(ParcelAPI::class.java).registerParcel(registerDto = parcel)
+        val registerParcel = NetworkManager.retro(oAuthToken.accessToken).create(ParcelAPI::class.java).registerParcel(register = parcel)
         val result = apiCall{ registerParcel }
         return result.data?.data?:throw NullPointerException()
     }
 
-    suspend fun getRemoteParcelById(parcelId: Int):ParcelDTO
+    suspend fun getRemoteParcelById(parcelId: Int):ParcelResponse
     {
         val oAuthToken = oAuthRepo.get(userId = ParcelCall.email)
         val getRemoteParcel = NetworkManager.retro(oAuthToken.accessToken).create(ParcelAPI::class.java).getParcel(parcelId = parcelId)
@@ -54,7 +43,7 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         return result.data?.data?:throw NullPointerException()
     }
 
-    override suspend fun getRemoteOngoingParcels(): MutableList<ParcelDTO>?
+    override suspend fun getRemoteOngoingParcels(): MutableList<ParcelResponse>?
     {
         val userId = userLocalRepo.getUserId()
         val oAuthToken = oAuthRepo.get(userId = userId)
@@ -75,10 +64,10 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         }
     }
 
-    override suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<ParcelDTO>
+    override suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<ParcelResponse>
     {
         return ParcelCall.getCompleteParcelsByPage(page, inquiryDate).data
-            ?: emptyList<ParcelDTO>().toMutableList()
+            ?: emptyList<ParcelResponse>().toMutableList()
     }
 
     override suspend fun getLocalParcelById(parcelId: Int): ParcelEntity?
@@ -87,14 +76,14 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
     }
 
     // 배송 중인 택배 리스트를 LiveData로 받기
-    override fun getLocalOngoingParcelsAsLiveData(): LiveData<List<ParcelDTO>>
+    override fun getLocalOngoingParcelsAsLiveData(): LiveData<List<ParcelResponse>>
     {
         return Transformations.map(appDatabase.parcelDao().getOngoingLiveData()) { entityList ->
             entityList.map(ParcelMapper::parcelEntityToParcel)
         }
     }
 
-    override fun getLocalCompleteParcelsLiveData(): LiveData<List<ParcelDTO>>
+    override fun getLocalCompleteParcelsLiveData(): LiveData<List<ParcelResponse>>
     {
         return Transformations.map(appDatabase.parcelDao().getCompleteLiveData()) { entity ->
             entity.map(ParcelMapper::parcelEntityToParcel)
@@ -110,19 +99,19 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         }
     */
 
-    fun getCompleteParcelsByDate(date: String): List<ParcelDTO>
+    fun getCompleteParcelsByDate(date: String): List<ParcelResponse>
     {
         val entity = appDatabase.parcelDao().getCompleteParcelByDate(date)
         return entity.filterNotNull().map(ParcelMapper::parcelEntityToParcel)
     }
 
 
-    override fun getLocalCompleteParcels(): List<ParcelDTO>
+    override fun getLocalCompleteParcels(): List<ParcelResponse>
     {
         return appDatabase.parcelDao().getComplete().map(ParcelMapper::parcelEntityToParcel)
     }
 
-    override suspend fun getLocalOngoingParcels(): List<ParcelDTO>
+    override suspend fun getLocalOngoingParcels(): List<ParcelResponse>
     {
         return appDatabase.parcelDao().getOngoingData().map(ParcelMapper::parcelEntityToParcel)
     }
@@ -150,9 +139,9 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         return appDatabase.parcelDao().getOngoingDataCntLiveData()
     }
 
-    override suspend fun insertEntities(parcelDTOList: List<ParcelDTO>)
+    override suspend fun insertEntities(parcelResponseList: List<ParcelResponse>)
     {
-        appDatabase.parcelDao().insert(parcelDTOList.map(ParcelMapper::parcelToParcelEntity))
+        appDatabase.parcelDao().insert(parcelResponseList.map(ParcelMapper::parcelToParcelEntity))
     }
 
     override suspend fun insetEntity(parcel: ParcelEntity)
@@ -161,9 +150,9 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
     }
 
 
-    suspend fun saveLocalCompleteParcels(parcelDTOList: List<ParcelDTO>)
+    suspend fun saveLocalCompleteParcels(parcelResponseList: List<ParcelResponse>)
     {
-        appDatabase.parcelDao().insert(parcelDTOList.map(ParcelMapper::parcelToParcelEntity))
+        appDatabase.parcelDao().insert(parcelResponseList.map(ParcelMapper::parcelToParcelEntity))
     }
 
 
@@ -173,9 +162,9 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         return appDatabase.parcelDao().update(parcel)
     }
 
-    override suspend fun updateEntities(parcelDTOList: List<ParcelDTO>)
+    override suspend fun updateEntities(parcelResponseList: List<ParcelResponse>)
     {
-        appDatabase.parcelDao().update(parcelDTOList.map(ParcelMapper::parcelToParcelEntity))
+        appDatabase.parcelDao().update(parcelResponseList.map(ParcelMapper::parcelToParcelEntity))
     }
 
     override suspend fun deleteRemoteParcels(): APIResult<String?>?

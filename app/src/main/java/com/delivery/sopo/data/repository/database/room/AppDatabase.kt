@@ -19,7 +19,7 @@ import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 )
 abstract class AppDatabase : RoomDatabase()
 {
-    abstract fun carrierDAO(): CarrierDAO
+    abstract fun carrierDao(): CarrierDao
     abstract fun parcelDao(): ParcelDao
     abstract fun parcelManagementDao(): ParcelStatusDAO
     abstract fun completeParcelStatusDao(): CompleteParcelStatusDao

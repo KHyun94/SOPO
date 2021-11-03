@@ -1,92 +1,92 @@
 package com.delivery.sopo.viewmodels.registesrs
 
-import android.os.Handler
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import com.delivery.sopo.ParcelExceptionHandler
 import com.delivery.sopo.bindings.FocusChangeCallback
-import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.enums.TabCode
-import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
-import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.InfoEnum
+import com.delivery.sopo.enums.NavigatorEnum
+import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
+import com.delivery.sopo.models.CarrierDTO
+import com.delivery.sopo.models.base.BaseViewModel
+import kotlinx.coroutines.*
 
 
-class InputParcelViewModel(private val carrierRepository: CarrierRepository) : ViewModel()
+class InputParcelViewModel(private val carrierRepository: CarrierRepository): BaseViewModel()
 {
-    var waybillNum = MutableLiveData<String?>()
-    var carrierDTO = MutableLiveData<CarrierDTO?>()
-    // 가져온 클립보드 문자열
-    var clipboardText = MutableLiveData<String>()
+    var waybillNum = MutableLiveData<String>().apply { value = "" }
+    var carrier = MutableLiveData<CarrierDTO?>()
 
-    var moveFragment = MutableLiveData<String>()
+    // 가져온 클립보드 문자열
+    var clipboardText = MutableLiveData<String>().apply { value = "" }
+
+    //    var moveFragment = MutableLiveData<String>()
 
     val errorMsg = MutableLiveData<String>()
 
-    private var _navigator = MutableLiveData<String>()
-    val navigator: LiveData<String>
+    private var _navigator = MutableLiveData<NavigatorEnum>()
+    val navigator: LiveData<NavigatorEnum>
         get() = _navigator
 
-    val validates = mutableMapOf<InfoEnum, Boolean>()
+    val validity = mutableMapOf<InfoEnum, Boolean>()
 
-    private var _validateError = MutableLiveData<Pair<InfoEnum, Boolean>>()
-    val validateError: LiveData<Pair<InfoEnum, Boolean>>
-        get() = _validateError
+    private var _invalidity = MutableLiveData<Pair<InfoEnum, Boolean>>()
+    val invalidity: LiveData<Pair<InfoEnum, Boolean>>
+        get() = _invalidity
 
     private val _focus = MutableLiveData<Triple<View, Boolean, InfoEnum>>()
     val focus: MutableLiveData<Triple<View, Boolean, InfoEnum>>
         get() = _focus
 
-    val focusChangeCallback: FocusChangeCallback = FocusChangeCallback@{ v, hasFocus, type->
-        SopoLog.i("${type.NAME} >>> $hasFocus")
-        Handler().postDelayed(Runnable { _focus.value = (Triple(v, hasFocus, type)) }, 50)
+    val focusChangeCallback: FocusChangeCallback = FocusChangeCallback@{ v, hasFocus, type ->
+        _focus.value = (Triple(v, hasFocus, type))
     }
 
     init
     {
-        validates[InfoEnum.WAYBILL_NUMBER] = false
-
-        moveFragment.value = ""
-        clipboardText.value = ""
+        validity[InfoEnum.WAYBILL_NUMBER] = false
     }
 
-    fun onMove2ndStepClicked()
+    fun onMoveCarrierSelectorClicked()
     {
-        moveFragment.value = TabCode.REGISTER_SELECT.NAME
+        _navigator.postValue(NavigatorEnum.REGISTER_SELECT)
+        //        moveFragment.value = TabCode.REGISTER_SELECT.NAME
     }
 
     fun onMove3rdStepClicked(v: View)
     {
-        v.clearFocus()
+        v.requestFocusFromTouch()
 
-        val carrierCode = carrierDTO.value!!.carrier.CODE
-        val waybillNum = waybillNum.value
-
-        CoroutineScope(Dispatchers.Default).launch {
-            val carrierEntity = carrierRepository.getCarrierEntityWithCode(carrierCode)
-            val minLen = carrierEntity.min
-            val maxLen = carrierEntity.max
-
-            withContext(Dispatchers.Main){
-                moveFragment.postValue(TabCode.REGISTER_CONFIRM.NAME)
-//                if(waybillNum?.length in minLen..maxLen || minLen == 0)
-//                {
-//
-//                }
-//                else
-//                {
-//                    errorMsg.postValue("운송장 번호를 다시 확인해주세요.\n(택배사마다 정해진 길이가 안맞아서 발생)")
-//                }
+        validity.forEach { (k, v) ->
+            if(!v)
+            {
+                return _invalidity.postValue(Pair(k, v))
             }
-
         }
 
+        scope.launch(Dispatchers.Main) {
 
+            v.clearFocus()
+
+            val carrierCode = carrier.value!!.carrier.CODE
+            val waybillNum = waybillNum.value
+
+            carrierRepository.getCarrierEntityWithCode(carrierCode)
+
+            _navigator.postValue(NavigatorEnum.REGISTER_CONFIRM)
+        }
+
+    }
+
+    fun recommendCarrierByWaybill(waybillNum: String) = scope.launch(Dispatchers.Default) {
+        val carrier = carrierRepository.recommendAutoCarrier(waybillNum, 1).apply {
+            if(size == 0) return@launch
+        }.first()
+
+        this@InputParcelViewModel.carrier.postValue(carrier)
     }
 
     // clipBoardWord(클립보드에 저장된 값)을 waybillNum(택배 운송장 번호) 입력 란으로 삽입
@@ -95,5 +95,13 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository) : V
         waybillNum.value = clipboardText.value
     }
 
+    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    {
+        override fun onFailure(error: ErrorEnum) { }
+    }
+
+    override val exceptionHandler: CoroutineExceptionHandler by lazy {
+        ParcelExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
+    }
 }
 

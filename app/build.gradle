@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-//    id 'kotlin-android-extensions'
     id 'kotlin-kapt'
 }
 
@@ -155,9 +154,6 @@ dependencies {
 
     // optional - GCMNetworkManager support
     implementation "androidx.work:work-gcm:$work_version"
-
-//    //Logging 
-//    implementation 'com.bugfender.sdk:android:2.+'
 
     // Koin for Kotlin
     implementation "org.koin:koin-core:$koin_version"

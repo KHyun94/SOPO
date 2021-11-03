@@ -3,7 +3,6 @@ package com.delivery.sopo.viewmodels.inquiry
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.delivery.sopo.consts.DeliveryStatusConst
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.consts.StatusConst
@@ -16,7 +15,6 @@ import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
@@ -37,7 +35,7 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
     var adapter = MutableLiveData<TimeLineRvAdapter?>()
 
     // 상세 화면에서 사용할 데이터 객체
-    var item = MutableLiveData<ParcelDetailDTO?>()
+    var item = MutableLiveData<ParcelDetailInfo?>()
 
     // 상세 페이지 택배 상태(백그라운드 이미지, 텍스트)
     var deliveryStatus = MutableLiveData<DeliveryStatusEnum?>()
@@ -69,13 +67,13 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
     }
 
     // 택배 상세 UI 세팅
-    private suspend fun updateParcelToUI(parcelDTO: ParcelDTO)
+    private suspend fun updateParcelToUI(parcelResponse: ParcelResponse)
     {
         SopoLog.d("updateParcelToUI() 호출")
 
         val progressList = mutableListOf<TimeLineProgress>()
 
-        val deliveryStatus = DeliveryStatusConst.getDeliveryStatus(parcelDTO.deliveryStatus)
+        val deliveryStatus = DeliveryStatusConst.getDeliveryStatus(parcelResponse.deliveryStatus)
 
         deliveryStatus.let { enum ->
             this.deliveryStatus.postValue(enum)
@@ -83,11 +81,11 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
         }
 
         // ParcelEntity의 택배사 코드를 이용하여 택배사 정보를 로컬 DB에서 읽어온다.
-        val carrierDTO = carrierRepository.getCarrierWithCode(parcelDTO.carrier)
+        val carrierDTO = carrierRepository.getCarrierWithCode(parcelResponse.carrier)
 
-        if(parcelDTO.inquiryResult != null && parcelDTO.inquiryResult != "")
+        if(parcelResponse.inquiryResult != null && parcelResponse.inquiryResult != "")
         {
-            val parcelItem: ParcelItem = Gson().fromJson<ParcelItem>(parcelDTO.inquiryResult, ParcelItem::class.java)
+            val parcelItem: ParcelItem = Gson().fromJson<ParcelItem>(parcelResponse.inquiryResult, ParcelItem::class.java)
 
             parcelItem.progresses.forEach { progressess ->
                 val date = progressess?.getDate()
@@ -98,11 +96,11 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
             }
         }
 
-        val parcelDetailDTO = ParcelDetailDTO(regDt = parcelDTO.regDt, alias = parcelDTO.alias,
-                                              carrierDTO = carrierDTO,
-                                              waybillNum = parcelDTO.waybillNum,
-                                              deliverStatus = this.deliveryStatus.value?.TITLE,
-                                              timeLineProgresses = progressList)
+        val parcelDetailDTO = ParcelDetailInfo(regDt = parcelResponse.regDt, alias = parcelResponse.alias,
+                                               carrierDTO = carrierDTO,
+                                               waybillNum = parcelResponse.waybillNum,
+                                               deliverStatus = this.deliveryStatus.value?.TITLE,
+                                               timeLineProgresses = progressList)
 
         item.postValue(parcelDetailDTO)
         adapter.postValue(getTimeLineRvAdapter(progressList))

@@ -1,20 +1,16 @@
  package com.delivery.sopo.services.workmanager
 
-import android.app.Activity
 import android.content.Context
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.work.*
 import com.delivery.sopo.data.repository.database.room.AppDatabase
-import com.delivery.sopo.models.ParcelRegisterDTO
+import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import java.util.*
@@ -84,13 +80,13 @@ object SOPOWorkManager: KoinComponent
         }
     }
 
-    suspend fun registerParcelWorkManager(context: Context, registerParcelRegisterDTO: ParcelRegisterDTO)
+    suspend fun registerParcelWorkManager(context: Context, registerParcelRegister: ParcelRegister)
     {
-        SopoLog.i(msg = "registerParcelWorkManager() 호출 [data:${registerParcelRegisterDTO.toString()}]")
+        SopoLog.i(msg = "registerParcelWorkManager() 호출 [data:${registerParcelRegister.toString()}]")
 
         val workManager = WorkManager.getInstance(context)
 
-        val jsonStr = Gson().toJson(registerParcelRegisterDTO)
+        val jsonStr = Gson().toJson(registerParcelRegister)
 
         val inputData = Data.Builder().putString("RECEIVED_STR", jsonStr).build()
 

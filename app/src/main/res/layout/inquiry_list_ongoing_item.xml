@@ -141,7 +141,7 @@
                         android:layout_marginBottom="6dp"
                         android:letterSpacing="-0.01"
                         android:textSize="15.5dp"
-                        android:text="@{ongoingInquiryData.parcelDTO.alias}"
+                        android:text="@{ongoingInquiryData.parcelResponse.alias}"
                         tools:text="갤럭시 버즈 플러스 화이트777갤1234ABCabc" />
 
                     <TextView
@@ -181,7 +181,7 @@
                         android:layout_marginBottom="6dp"
                         android:fontFamily="@font/roboto_bold"
                         android:letterSpacing="0"
-                        android:text="@{ongoingInquiryData.parcelDTO.alias}"
+                        android:text="@{ongoingInquiryData.parcelResponse.alias}"
                         android:textColor="@color/COLOR_MAIN_RED_500"
                         android:textSize="14.5dp"
                         tools:text="갤럭시 버즈 플러스 화이트777갤1234ABCabc" />
