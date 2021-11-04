@@ -23,8 +23,6 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository): Ba
     // 가져온 클립보드 문자열
     var clipboardText = MutableLiveData<String>().apply { value = "" }
 
-    //    var moveFragment = MutableLiveData<String>()
-
     val errorMsg = MutableLiveData<String>()
 
     private var _navigator = MutableLiveData<NavigatorEnum>()

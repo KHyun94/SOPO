@@ -16,7 +16,6 @@ class FaqExpandableAdapter(private val context: Context, private val groupData: 
     private val childLay: Int = R.layout.expandable_faq_item_child
     val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-
     override fun getGroupView(groupPosition: Int, isExpanded: Boolean, convertView: View?, parent: ViewGroup?): View
     {
         var convertView = convertView

@@ -69,21 +69,4 @@ data class ParcelEntity(
         typeAffinity = ColumnInfo.INTEGER
     )
     var status: Int
-){
-    fun update(parcelResponse: ParcelResponse){
-
-        SopoLog.d(msg = "ParcelEntity Update => $parcelResponse")
-
-        this.alias = parcelResponse.alias
-        this.inquiryResult = parcelResponse.inquiryResult
-        this.inquiryHash = parcelResponse.inquiryHash
-        this.deliveryStatus = parcelResponse.deliveryStatus
-        parcelResponse.arrivalDte?.let {
-            this.arrivalDte = it
-        }
-        this.auditDte = parcelResponse.auditDte
-        parcelResponse.status?.let {
-            this.status = it
-        }
-    }
-}
+)

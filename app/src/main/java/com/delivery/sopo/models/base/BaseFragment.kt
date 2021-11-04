@@ -48,7 +48,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: ViewModel>: Fragment()
 
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
-        arguments?.let { receiveData(it) }
+        arguments?.let { bundle -> receiveData(bundle) }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
