@@ -2,9 +2,7 @@ package com.delivery.sopo.data.repository.database.room.dao
 
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
-import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.data.repository.database.room.entity.CarrierEntity
-import org.jetbrains.annotations.NotNull
 
 @Dao
 interface CarrierDao

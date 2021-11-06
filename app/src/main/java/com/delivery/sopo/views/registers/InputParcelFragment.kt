@@ -97,6 +97,7 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
 
     override fun setObserve()
     {
+        super.setObserve()
         parentView.currentPage.observe(this) {
 
             it ?: return@observe
@@ -113,8 +114,10 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         vm.waybillNum.observe(this) { waybillNum ->
 
             if(waybillNum.isEmpty()) return@observe
-
             vm.clipboardText.value = ""
+
+            if(!binding.layoutWaybillNum.hasFocus()) binding.layoutWaybillNum.requestFocus()
+            if(returnType == RegisterMainFrame.REGISTER_PROCESS_RESET && ::parcelRegister.isInitialized && parcelRegister.carrier != null) return@observe
 
             if(!waybillNum.isGreaterThanOrEqual(9))
             {
@@ -143,30 +146,6 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
             }.show()
         }
 
-        vm.errorMsg.observe(this, Observer {
-            if(!it.isNullOrEmpty())
-            {
-                //                TODO 커스텀 스낵바
-                //                CustomSnackBar(context = requireContext()).floatingUpperSnackBAr(requireContext(), it, true)
-                vm.errorMsg.value = ""
-            }
-        })
-        /**
-         *  1. 송장번호를 입력했을 때 자동으로 택배사를 추천
-         *      -> '다음'버튼을 눌렀을 때 Step3로 이동
-         *      -> '이 택배사가 아닌가요?' 또는 택배사를 선택했을 때 Step2로 이동
-         *      -> Step2에서 택배사를 선택했을 때 Step3로 이동
-         *      -> Step3에서 '수정하기'를 선택했을 때 Step1으로 이동
-         *      (택배사 정규식에 맞지 않으면 에러 발생)
-         *
-         *  2. 택배사를 먼저 선택했을 때
-         *      -> Step2로 이동
-         *      -> 택배사 선택 시 Step1으로 이동
-         *      (송장번호에 따라 우선설정되는 택배사를 step2에서 보여주지만 현재
-         *      이외 모든 택배사도 보여줌으로 송장번호와 택배사의 정규식이 부합하지 않더라도 등록 가능)
-         *
-         */
-
         vm.navigator.observe(this) { nav ->
 
             val registerDTO = ParcelRegister(vm.waybillNum.value, vm.carrier.value?.carrier, null)
@@ -175,18 +154,12 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
             {
                 NavigatorEnum.REGISTER_SELECT ->
                 {
-                    SopoLog.d("""
-                        운송장 번호 >>> ${vm.waybillNum.value ?: "미입력"}
-                        택배사 >>> ${vm.carrier.value ?: "미선택"}
-                    """.trimIndent())
-                    TabCode.REGISTER_SELECT.FRAGMENT =
-                        SelectCarrierFragment.newInstance(vm.waybillNum.value ?: "")
+                    TabCode.REGISTER_SELECT.FRAGMENT = SelectCarrierFragment.newInstance(vm.waybillNum.value ?: "")
                     FragmentManager.move(parentView, TabCode.REGISTER_SELECT, RegisterMainFrame.viewId)
                 }
                 NavigatorEnum.REGISTER_CONFIRM ->
                 {
-                    TabCode.REGISTER_CONFIRM.FRAGMENT =
-                        ConfirmParcelFragment.newInstance(register = registerDTO)
+                    TabCode.REGISTER_CONFIRM.FRAGMENT = ConfirmParcelFragment.newInstance(register = registerDTO)
                     FragmentManager.move(parentView, TabCode.REGISTER_CONFIRM, RegisterMainFrame.viewId)
                 }
             }

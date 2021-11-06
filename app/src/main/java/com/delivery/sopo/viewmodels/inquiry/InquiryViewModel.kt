@@ -2,6 +2,8 @@ package com.delivery.sopo.viewmodels.inquiry
 
 import android.widget.TextView
 import androidx.lifecycle.*
+import com.delivery.sopo.UserExceptionHandler
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
@@ -10,9 +12,12 @@ import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoIm
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.data.repository.remote.parcel.ParcelUseCase
 import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.InquiryStatusEnum
+import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.UpdateAliasRequest
+import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.mapper.CompletedParcelHistoryMapper
@@ -22,11 +27,8 @@ import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*
 
-class InquiryViewModel(
-        private val parcelRepo: ParcelRepository,
-        private val parcelManagementRepo: ParcelManagementRepoImpl,
-        private val historyRepo: CompletedParcelHistoryRepoImpl
-        ): ViewModel()
+class InquiryViewModel(private val parcelRepo: ParcelRepository, private val parcelManagementRepo: ParcelManagementRepoImpl, private val historyRepo: CompletedParcelHistoryRepoImpl):
+        BaseViewModel()
 {
     /**
      * 공용
@@ -125,7 +127,8 @@ class InquiryViewModel(
         return inquiryStatus.value
     }
 
-    fun changeCompletedParcelHistoryDate(year: String){
+    fun changeCompletedParcelHistoryDate(year: String)
+    {
         pagingManagement = PagingManagement(0, "", true)
         yearOfCalendar.postValue(year)
         updateMonthsSelector(year)
@@ -184,13 +187,15 @@ class InquiryViewModel(
         return histories
     }
 
-    fun updateCompletedParcelCalendar(year: String){
+    fun updateCompletedParcelCalendar(year: String)
+    {
         updateYearSpinner(year = year)
         updateMonthsSelector(year = year)
         _completeList.postValue(emptyList<InquiryListItem>().toMutableList())
     }
 
-    fun updateYearSpinner(year: String){
+    fun updateYearSpinner(year: String)
+    {
         SopoLog.i("updateYearSpinner(...) 호출 [data:$year]")
         yearOfCalendar.postValue(year)
     }
@@ -263,8 +268,8 @@ class InquiryViewModel(
             SopoLog.i("refreshOngoingParcel(...) 호출")
 
             // 1. 서버로부터 택배 데이터를 호출
-            val remoteParcels = parcelRepo.getRemoteOngoingParcels() ?: return@launch SopoLog.d(
-                "업데이트할 택배 데이터가 없습니다.")
+            val remoteParcels = parcelRepo.getRemoteOngoingParcels()
+                ?: return@launch SopoLog.d("업데이트할 택배 데이터가 없습니다.")
 
             for(i in remoteParcels.indices)
             {
@@ -298,8 +303,7 @@ class InquiryViewModel(
                 if(isUnidentifiedStatus == StatusConst.ACTIVATE)
                 {
                     withContext(Dispatchers.Default) {
-                        parcelManagementRepo.updateIsUnidentified(localParcel.parcelId,
-                                                                  StatusConst.DEACTIVATE)
+                        parcelManagementRepo.updateIsUnidentified(localParcel.parcelId, StatusConst.DEACTIVATE)
                     }
                 }
 
@@ -324,15 +328,13 @@ class InquiryViewModel(
 
                         if(localParcel.deliveryStatus != remoteParcel.deliveryStatus)
                         {
-                            SopoLog.d(
-                                "해당 택배는 상태가 [${localParcel.deliveryStatus} -> ${remoteParcel.deliveryStatus}]로 변경")
+                            SopoLog.d("해당 택배는 상태가 [${localParcel.deliveryStatus} -> ${remoteParcel.deliveryStatus}]로 변경")
                             unidentifiedStatus = 1
                         }
 
                         // unidentifiedStatus가 이미 활성화 상태이면 비활성화 조치
                         withContext(Dispatchers.Default) {
-                            parcelManagementRepo.getUnidentifiedStatusByParcelId(
-                                localParcel.parcelId) == 1
+                            parcelManagementRepo.getUnidentifiedStatusByParcelId(localParcel.parcelId) == 1
                         }
 
                         updatableStatus = 0
@@ -386,8 +388,7 @@ class InquiryViewModel(
         if(!pagingManagement.hasNext) return emptyList()
 
         val remoteCompleteParcels = withContext(Dispatchers.IO) {
-            parcelRepo.getRemoteCompleteParcels(page = pagingManagement.pagingNum,
-                                                inquiryDate = inquiryDate)
+            parcelRepo.getRemoteCompleteParcels(page = pagingManagement.pagingNum, inquiryDate = inquiryDate)
         }
 
         // null이거나 0이면 다음 데이터가 없는 것이므로 페이징 숫자를 1빼고 hasNext를 false로 바꾼다.
@@ -427,13 +428,14 @@ class InquiryViewModel(
     }
 
 
-    private suspend fun insertNewParcels(list: List<ParcelResponse>) = withContext(Dispatchers.Default) {
-        val parcelStatuses = list.map {
-            ParcelMapper.parcelToParcelManagementEntity(it).apply { isNowVisible = 1 }
+    private suspend fun insertNewParcels(list: List<ParcelResponse>) =
+        withContext(Dispatchers.Default) {
+            val parcelStatuses = list.map {
+                ParcelMapper.parcelToParcelManagementEntity(it).apply { isNowVisible = 1 }
+            }
+            parcelRepo.insertEntities(list)
+            parcelManagementRepo.insertEntities(parcelStatuses)
         }
-        parcelRepo.insertEntities(list)
-        parcelManagementRepo.insertEntities(parcelStatuses)
-    }
 
     private suspend fun updateExistParcels(list: List<ParcelResponse>) =
         withContext(Dispatchers.Default) {
@@ -480,9 +482,7 @@ class InquiryViewModel(
 
         val sortedList = mutableListOf<InquiryListItem>()
         val multiList =
-            listOf<MutableList<InquiryListItem>>(mutableListOf(), mutableListOf(), mutableListOf(),
-                                                 mutableListOf(), mutableListOf(), mutableListOf(),
-                                                 mutableListOf())
+            listOf<MutableList<InquiryListItem>>(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
 
         val elseList = list.asSequence().filter { item ->
 
@@ -545,5 +545,15 @@ class InquiryViewModel(
         {
             return p0.parcelResponse.auditDte.compareTo(p1.parcelResponse.auditDte)
         }
+    }
+
+    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    {
+        override fun onFailure(error: ErrorEnum)
+        {
+        }
+    }
+    override val exceptionHandler: CoroutineExceptionHandler by lazy {
+        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 }

@@ -110,7 +110,10 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     {
         SopoLog.d("base fragment - initUI Call2")
 
+    }
 
+    override fun setAfterBinding()
+    {
         setAdapters()
 
         binding.vEmpty2.setOnTouchListener { v, event ->
@@ -123,10 +126,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         }
 
         updateCompleteUI()
-    }
-
-    override fun setAfterBinding()
-    {
     }
 
     private fun getAdapter(inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter

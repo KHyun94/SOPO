@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,10 +19,32 @@ import io.reactivex.Observable.just
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 
-abstract class BaseViewModel:ViewModel()
+abstract class BaseViewModel: ViewModel()
 {
+    private val _isClickEvent = MutableLiveData<Boolean>()
+    val isClickEvent: LiveData<Boolean>
+        get() = _isClickEvent
+
+    fun checkFocus(event: () -> Unit)
+    {
+        _isClickEvent.postValue(true)
+
+        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+            try
+            {
+                event.invoke()
+            }
+            finally
+            {
+                _isClickEvent.postValue(false)
+            }
+        }, 50)
+    }
+
     private val _isCheckNetwork = MutableLiveData<Boolean>()
     val isCheckNetwork: LiveData<Boolean>
         get() = _isCheckNetwork
@@ -37,8 +61,8 @@ abstract class BaseViewModel:ViewModel()
 
     abstract val exceptionHandler: CoroutineExceptionHandler
 
-    fun checkNetworkStatus():Boolean{
-
+    fun checkNetworkStatus(): Boolean
+    {
         val networkStatus = getConnectivityStatus(SOPOApp.INSTANCE)
 
         if(networkStatus != NetworkStatus.NOT_CONNECT)
@@ -54,24 +78,29 @@ abstract class BaseViewModel:ViewModel()
         return false
     }
 
-    fun startToCheckNetworkStatus(){
+    fun startToCheckNetworkStatus()
+    {
         _isCheckNetwork.postValue(true)
     }
 
-    fun stopToCheckNetworkStatus(){
+    fun stopToCheckNetworkStatus()
+    {
         _isCheckNetwork.postValue(false)
     }
 
-    fun postErrorSnackBar(msg: String){
+    fun postErrorSnackBar(msg: String)
+    {
         SopoLog.d("MSG : $msg")
         _errorSnackBar.postValue(msg)
     }
 
-    fun onStartLoading(){
+    fun onStartLoading()
+    {
         _isLoading.postValue(true)
     }
 
-    fun onStopLoading(){
+    fun onStopLoading()
+    {
         _isLoading.postValue(false)
     }
 
