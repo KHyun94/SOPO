@@ -18,6 +18,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_main_confirm_parcel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/COLOR_GRAY_50">
@@ -96,7 +97,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:backgroundTint="@color/COLOR_MAIN_100"
-                android:onClick="@{() -> vm.onMoveFirstStep(tvRevise)}"
+                android:onClick="@{() -> vm.onMoveToNav(tvRevise)}"
                 android:paddingHorizontal="22dp"
                 android:paddingVertical="11dp"
                 android:text="수정하기"
@@ -140,7 +141,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="45sp"
-            android:onClick="@{()->vm.onMoveFirstStep(tvRegister)}"
+            android:onClick="@{()->vm.onMoveToNav(tvRegister)}"
             android:text="등록하기"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -157,7 +158,7 @@
             android:textColor="@color/COLOR_MAIN_700"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:onClick="@{()->vm.onMoveFirstStep(tvInit)}"
+            android:onClick="@{()->vm.onMoveToNav(tvInit)}"
             app:layout_constraintTop_toBottomOf="@+id/tv_register" />
 
 

@@ -149,9 +149,12 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
 
         vm.isClickEvent.observe(viewLifecycleOwner) {
 
+            SopoLog.d("Base Click Event [data:$it]")
+
             if(!it) return@observe
 
-            mainLayout.requestFocus()
+            val a = mainLayout.requestFocus()
+            SopoLog.d("request Focus [${a}]")
             OtherUtil.hideKeyboardSoft(requireActivity())
         }
 

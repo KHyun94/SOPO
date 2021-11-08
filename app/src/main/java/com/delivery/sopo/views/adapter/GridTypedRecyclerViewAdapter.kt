@@ -20,8 +20,10 @@ import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.adapter.GridTypedRecyclerViewAdapter.GridRvViewHolder
 
-class GridTypedRecyclerViewAdapter(private var items: List<SelectItem<CarrierDTO?>>?): RecyclerView.Adapter<GridRvViewHolder>()
+class GridTypedRecyclerViewAdapter(items: List<SelectItem<CarrierDTO?>>): RecyclerView.Adapter<GridRvViewHolder>()
 {
+    private var carriers: List<SelectItem<CarrierDTO?>> = items
+
     var isClicked = MutableLiveData<Boolean>()
     var paste: Pair<View, SelectItem<CarrierDTO?>>? = null
 
@@ -53,9 +55,9 @@ class GridTypedRecyclerViewAdapter(private var items: List<SelectItem<CarrierDTO
 
     override fun onBindViewHolder(holder: GridRvViewHolder, position: Int)
     {
-        if (items == null || items?.get(position)?.item == null) return
+//        if (carriers == null || carriers?.get(position)?.item == null) return
 
-        val selectItem = items!![position]
+        val selectItem = carriers[position]
 
         SopoLog.d(msg = "[$position]:$selectItem")
 
@@ -74,7 +76,12 @@ class GridTypedRecyclerViewAdapter(private var items: List<SelectItem<CarrierDTO
 
     override fun getItemCount(): Int
     {
-        return items?.size ?: 0
+        return carriers.size
+    }
+
+    fun setItems(items:List<SelectItem<CarrierDTO?>>){
+        carriers = items
+        notifyDataSetChanged()
     }
 
     inner class GridRvViewHolder(binding: ItemImgBinding): RecyclerView.ViewHolder(binding.root)
@@ -90,7 +97,6 @@ class GridTypedRecyclerViewAdapter(private var items: List<SelectItem<CarrierDTO
 
                 if (paste != null)
                 {
-                    SopoLog.d(msg = "Paste => $paste")
                     val layout = paste!!.first as LinearLayout
 
                     (paste!!.first as LinearLayout).setBackgroundResource(R.drawable.border_non_click_img)
@@ -105,7 +111,7 @@ class GridTypedRecyclerViewAdapter(private var items: List<SelectItem<CarrierDTO
 
                 val pos = adapterPosition
 
-                val item = items!![pos]
+                val item = carriers[pos]
 
                 if (pos != RecyclerView.NO_POSITION)
                 {
@@ -132,7 +138,7 @@ class GridTypedRecyclerViewAdapter(private var items: List<SelectItem<CarrierDTO
 
                         binding.isClick = item.isSelect
 
-                        mListener!!.onItemClicked(it, pos, items!!)
+                        mListener!!.onItemClicked(it, pos, carriers)
 
                         paste = Pair(binding.layoutItem, item)
 

@@ -14,60 +14,59 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.databinding.ConfirmDeleteDialogBinding
 import com.delivery.sopo.databinding.FragmentConfirmParcelBinding
+import com.delivery.sopo.enums.NavigatorEnum
+import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.models.*
+import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.registesrs.ConfirmParcelViewModel
+import com.delivery.sopo.viewmodels.registesrs.InputParcelViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.OnAgreeClickListener
 import com.delivery.sopo.views.main.MainView
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ConfirmParcelFragment: Fragment()
+class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmParcelViewModel>()
 {
-    private lateinit var parentView: MainView
+    override val layoutRes: Int = R.layout.fragment_confirm_parcel
+    override val vm: ConfirmParcelViewModel by viewModel()
+    override val mainLayout: View by lazy { binding.constraintMainConfirmParcel }
 
-    private lateinit var binding: FragmentConfirmParcelBinding
-    private val vm: ConfirmParcelViewModel by viewModel()
-
-    private val userLocalRepo: UserLocalRepository by inject()
+    private val parentView: MainView by lazy { activity as MainView }
 
     private lateinit var register: ParcelRegister
 
-    private var progressBar: CustomProgressBar? = null
-
-    var callback: OnBackPressedCallback? = null
-
-    override fun onAttach(context: Context)
+    override fun onCreate(savedInstanceState: Bundle?)
     {
-        super.onAttach(context)
+        super.onCreate(savedInstanceState)
 
-        callback = object: OnBackPressedCallback(true)
+        onSOPOBackPressedListener = object: OnSOPOBackPressListener
         {
-            override fun handleOnBackPressed()
+            override fun onBackPressedInTime()
             {
-                SopoLog.d(msg = "Register Step::3 BackPressListener")
                 requireActivity().supportFragmentManager.popBackStack()
             }
 
+            override fun onBackPressedOutTime()
+            {
+                requireActivity().supportFragmentManager.popBackStack()
+            }
         }
-
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback ?: throw Exception("BackPressedClick is null"))
     }
 
-    // TODO 값이 없다면 이전 화면으로 이동
-    private fun receiveBundleData()
+    override fun receiveData(bundle: Bundle)
     {
+        super.receiveData(bundle)
+
         try
         {
-            arguments.let { bundle ->
-                register = bundle?.getSerializable(RegisterMainFrame.REGISTER_INFO) as ParcelRegister
-                SopoLog.d("receive bundle data >>> ${register.toString()}")
-            }
+            register = bundle.getSerializable(RegisterMainFrame.REGISTER_INFO) as ParcelRegister
 
             register.waybillNum.let { waybillNo ->
                 requireNotNull(waybillNo)
@@ -87,7 +86,9 @@ class ConfirmParcelFragment: Fragment()
 
             alertErrorMessage()
         }
+
     }
+
 
     fun alertErrorMessage(){
         GeneralDialog(requireActivity(), "등록 오류", "시스템 오류로 다시 입력을 부탁드립니다. ㅠㅡㅜ", null, Pair("이동", object: OnAgreeClickListener
@@ -105,45 +106,30 @@ class ConfirmParcelFragment: Fragment()
         })).show(requireFragmentManager(), "DIALOG")
     }
 
-    override fun onCreate(savedInstanceState: Bundle?)
+    override fun setObserve()
     {
-        super.onCreate(savedInstanceState)
-        receiveBundleData()
-    }
+        super.setObserve()
+        parentView.currentPage.observe(this) {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
-    {
-        parentView = activity as MainView
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_confirm_parcel, container, false)
-        binding.vm = vm
+            it ?: return@observe
+            if(it != 0) return@observe
 
-        setObserve()
-
-        return binding.root
-    }
-
-    private fun setObserve()
-    {
-        parentView.currentPage.observe(this, Observer { currentPage ->
-            if(currentPage == null || currentPage != 0) return@Observer
-
-            requireActivity().onBackPressedDispatcher.addCallback(this, callback ?: throw Exception(
-                "BackPressedClick is null"))
-        })
+            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        }
 
         vm.navigator.observe(this, Observer { navigator ->
 
             TabCode.REGISTER_INPUT.FRAGMENT  = when(navigator)
             {
-                NavigatorConst.TO_REGISTER_INIT ->
+                NavigatorEnum.REGISTER_INPUT_INIT ->
                 {
                     InputParcelFragment.newInstance(null, RegisterMainFrame.REGISTER_PROCESS_RESET)
                 }
-                NavigatorConst.TO_REGISTER_REVISE ->
+                NavigatorEnum.REGISTER_INPUT_REVISE ->
                 {
                     InputParcelFragment.newInstance(register, RegisterMainFrame.REGISTER_PROCESS_RESET)
                 }
-                NavigatorConst.TO_REGISTER_SUCCESS ->
+                NavigatorEnum.REGISTER_INPUT_SUCCESS ->
                 {
                     val defer = FirebaseRepository.subscribedToTopic()
                     defer.start()
@@ -163,12 +149,6 @@ class ConfirmParcelFragment: Fragment()
 
     }
 
-    override fun onDetach()
-    {
-        super.onDetach()
-        callback?.remove()
-    }
-
     companion object
     {
         fun newInstance(register: ParcelRegister?): ConfirmParcelFragment
@@ -182,4 +162,6 @@ class ConfirmParcelFragment: Fragment()
             }
         }
     }
+
+
 }

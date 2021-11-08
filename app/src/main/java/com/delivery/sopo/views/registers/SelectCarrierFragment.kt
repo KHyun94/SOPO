@@ -1,177 +1,185 @@
 package com.delivery.sopo.views.registers
 
-import android.content.Context
 import android.os.Bundle
 import android.os.Handler
-import android.view.LayoutInflater
+import android.os.Looper
 import android.view.View
-import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
+import android.widget.Toast
+import androidx.recyclerview.widget.GridLayoutManager
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentSelectCarrierBinding
+import com.delivery.sopo.enums.CarrierEnum
+import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.models.CarrierDTO
 import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.SelectItem
+import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.setting.GridSpacingItemDecoration
 import com.delivery.sopo.viewmodels.registesrs.SelectCarrierViewModel
 import com.delivery.sopo.views.adapter.GridTypedRecyclerViewAdapter
 import com.delivery.sopo.views.main.MainView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SelectCarrierFragment: Fragment()
+class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCarrierViewModel>()
 {
-    private lateinit var parentView: MainView
+    override val layoutRes: Int = R.layout.fragment_select_carrier
+    override val vm: SelectCarrierViewModel by viewModel()
+    override val mainLayout: View by lazy { binding.constraintMainSelectCarrier }
 
-    private lateinit var binding: FragmentSelectCarrierBinding
-    private val vm: SelectCarrierViewModel by viewModel()
+    private val parentView: MainView by lazy { activity as MainView }
 
-    lateinit var callback: OnBackPressedCallback
-
-    override fun onAttach(context: Context)
-    {
-        super.onAttach(context)
-
-        callback = object: OnBackPressedCallback(true)
-        {
-            override fun handleOnBackPressed()
-            {
-                SopoLog.d(msg = "Register Step::2 BackPressListener")
-                requireActivity().supportFragmentManager.popBackStack()
-            }
-
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-    }
+    lateinit var adapter: GridTypedRecyclerViewAdapter
+    lateinit var waybillNum: String
+    var carrier: CarrierEnum? = null
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        parentView = activity as MainView
-        receiveBundleData()
-    }
 
-    private fun receiveBundleData()
-    {
-        arguments?.let { bundle ->
-            val waybillNum = bundle.getString(RegisterMainFrame.WAYBILL_NO)
-            vm.waybillNum.value = waybillNum
-            SopoLog.d("receiveBundleData >>> $waybillNum ${vm.waybillNum.value}")
+        onSOPOBackPressedListener = object: OnSOPOBackPressListener
+        {
+            override fun onBackPressedInTime()
+            {
+//                requireActivity().supportFragmentManager.popBackStack()
+                FragmentManager.remove(activity = requireActivity())
+
+                val parcelRegister = ParcelRegister("", null, null)
+
+                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(register = parcelRegister, returnType = 0)
+
+                FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFrame.viewId)
+            }
+
+            override fun onBackPressedOutTime()
+            {
+//                requireActivity().supportFragmentManager.popBackStack()
+                FragmentManager.remove(activity = requireActivity())
+
+                val parcelRegister = ParcelRegister("", null, null)
+
+                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(register = parcelRegister, returnType = 0)
+
+                FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFrame.viewId)
+            }
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    override fun receiveData(bundle: Bundle)
     {
-        bindView(inflater, container)
-        setObserve()
+        super.receiveData(bundle)
 
-        return binding.root
+        waybillNum = bundle.getString(RegisterMainFrame.WAYBILL_NO) ?: ""
+        SopoLog.d("운송장 번호 $waybillNum")
     }
 
-    fun bindView(inflater: LayoutInflater, container: ViewGroup?)
+    override fun setAfterBinding()
     {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_select_carrier, container, false)
-        binding.vm = vm
-        binding.lifecycleOwner = this
+        super.setAfterBinding()
+
+        setRecyclerViewAdapter()
+        setRecyclerViewItem()
     }
 
-    private fun setObserve()
+    override fun setObserve()
     {
-        parentView.currentPage.observe(this, Observer {
-            if(it != null && it == 0)
+        super.setObserve()
+
+        parentView.currentPage.observe(this) {
+
+            it ?: return@observe
+            if(it != 0) return@observe
+
+            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        }
+
+        vm.navigator.observe(this) { nav ->
+
+            vm.setNavigator(null)
+
+            val parcelRegister = ParcelRegister(waybillNum, carrier, null)
+
+            SopoLog.d("Nav [data:${parcelRegister.toString()}] [nav:$nav]")
+
+            when(nav)
             {
-                callback = object: OnBackPressedCallback(true)
+                NavigatorEnum.REGISTER_CONFIRM ->
                 {
-                    override fun handleOnBackPressed()
-                    {
-                        SopoLog.d(msg = "Register Step::2 BackPressListener")
-                        requireActivity().supportFragmentManager.popBackStack()
-                    }
+                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
 
-                }
-
-                requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
-            }
-        })
-
-        SopoLog.d("setObserve >>> ${vm.waybillNum.value}")
-
-        vm.setCarrierAdapter(_waybillNum = vm.waybillNum.value ?: return)
-
-        vm.moveFragment.observe(this, Observer {
-
-            SopoLog.d("moveFragment >>> ${it}")
-
-            val registerDTO =
-                ParcelRegister(vm.waybillNum.value, vm.selectedItem.value?.item?.carrier, null)
-
-            when(it)
-            {
-                TabCode.REGISTER_CONFIRM.NAME ->
-                {
-                    val mHandler = Handler()
-                    mHandler.postDelayed(Runnable {
-
-                        if(vm.waybillNum.value == null || vm.waybillNum.value == "")
+                        if(waybillNum == "")
                         {
                             TabCode.REGISTER_INPUT.FRAGMENT =
-                                InputParcelFragment.newInstance(register = registerDTO,
-                                                                returnType = 0)
+                                InputParcelFragment.newInstance(register = parcelRegister, returnType = 0)
 
-                            FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT,
-                                                 RegisterMainFrame.viewId)
-                        }
-                        else
-                        {
-                            TabCode.REGISTER_CONFIRM.FRAGMENT =
-                                ConfirmParcelFragment.newInstance(register = registerDTO)
-
-                            FragmentManager.move(requireActivity(), TabCode.REGISTER_CONFIRM,
-                                                 RegisterMainFrame.viewId)
+                            FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFrame.viewId)
+                            return@Runnable
                         }
 
+                        TabCode.REGISTER_CONFIRM.FRAGMENT =
+                            ConfirmParcelFragment.newInstance(register = parcelRegister)
 
+                        FragmentManager.move(requireActivity(), TabCode.REGISTER_CONFIRM, RegisterMainFrame.viewId)
 
-                        binding.vm?.moveFragment?.value = ""
-
-                    }, 300) // 0.5초후
+                    }, 500) // 0.5초후
                 }
 
-                TabCode.REGISTER_SELECT.NAME ->
+                NavigatorEnum.REGISTER_INPUT ->
                 {
+
+//                    requireActivity().supportFragmentManager.popBackStack()
                     FragmentManager.remove(activity = requireActivity())
-                    binding.vm?.moveFragment?.value = ""
 
                     TabCode.REGISTER_INPUT.FRAGMENT =
-                        InputParcelFragment.newInstance(register = registerDTO, returnType = 0)
+                        InputParcelFragment.newInstance(register = parcelRegister, returnType = 0)
 
-                    FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT,
-                                         RegisterMainFrame.viewId)
+                    FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFrame.viewId)
                 }
             }
-        })
+        }
+    }
 
-        binding.vm!!.adapter.observe(this, Observer {
-            it?.setOnItemClickListener(object: GridTypedRecyclerViewAdapter.OnItemClickListener<List<SelectItem<CarrierDTO?>>>
-                                       {
-                                           override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<CarrierDTO?>>)
-                                           {
-                                               val item = items[pos]
+    private fun setRecyclerViewAdapter()
+    {
+        adapter = GridTypedRecyclerViewAdapter(emptyList())
 
-                                               if(item.isSelect)
-                                               {
-                                                   vm.selectedItem.value = item
-                                                   vm.moveFragment.value = TabCode.REGISTER_CONFIRM.NAME
-                                               }
-                                           }
+        val decoration = GridSpacingItemDecoration(3, 32, true)
 
-                                       })
-        })
+        binding.recyclerCarriers.layoutManager = GridLayoutManager(this.context, 3)
+        binding.recyclerCarriers.adapter = adapter
+        binding.recyclerCarriers.addItemDecoration(decoration)
+    }
+
+    private fun setRecyclerViewItem() = CoroutineScope(Dispatchers.Main).launch {
+        adapter.setItems(vm.getCarriers(waybillNum = waybillNum))
+
+        val listener =
+            object: GridTypedRecyclerViewAdapter.OnItemClickListener<List<SelectItem<CarrierDTO?>>>
+            {
+                override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<CarrierDTO?>>)
+                {
+                    val item = items[pos]
+
+                    if(item.isSelect)
+                    {
+                        item.item?.let { carrier ->
+                            this@SelectCarrierFragment.carrier = carrier.carrier
+                        }
+
+                        vm.setNavigator(NavigatorEnum.REGISTER_CONFIRM)
+
+                    }
+                }
+
+            }
+
+        adapter.setOnItemClickListener(listener)
     }
 
     companion object
@@ -186,11 +194,5 @@ class SelectCarrierFragment: Fragment()
                 arguments = args
             }
         }
-    }
-
-    override fun onDetach()
-    {
-        super.onDetach()
-        callback!!.remove()
     }
 }

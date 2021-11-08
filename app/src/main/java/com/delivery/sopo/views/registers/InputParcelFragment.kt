@@ -42,6 +42,18 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
     private lateinit var parcelRegister: ParcelRegister
     private var returnType: Int? = null
 
+    override fun receiveData(bundle: Bundle)
+    {
+        super.receiveData(bundle)
+
+        bundle.getSerializable(RegisterMainFrame.REGISTER_INFO).let { data ->
+            if(data !is ParcelRegister) return@let
+            parcelRegister = data
+        }
+
+        returnType = bundle.getInt(RegisterMainFrame.RETURN_TYPE)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -61,18 +73,6 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
                 exitProcess(0)
             }
         }
-    }
-
-    override fun receiveData(bundle: Bundle)
-    {
-        super.receiveData(bundle)
-
-        bundle.getSerializable(RegisterMainFrame.REGISTER_INFO).let { data ->
-            if(data !is ParcelRegister) return@let
-            parcelRegister = data
-        }
-
-        returnType = bundle.getInt(RegisterMainFrame.RETURN_TYPE)
     }
 
     override fun setAfterBinding()
@@ -147,6 +147,8 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         }
 
         vm.navigator.observe(this) { nav ->
+
+            vm.setNavigator(null)
 
             val registerDTO = ParcelRegister(vm.waybillNum.value, vm.carrier.value?.carrier, null)
 

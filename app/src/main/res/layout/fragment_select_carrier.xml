@@ -10,6 +10,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_main_select_carrier"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/COLOR_GRAY_50">
@@ -38,16 +39,13 @@
             app:layout_constraintTop_toTopOf="@+id/tv_title" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_select_co"
+            android:id="@+id/recycler_carriers"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center_horizontal"
             android:layout_marginHorizontal="16dp"
             android:layout_marginVertical="40dp"
             android:paddingBottom="130dp"
-            app:gridRvAdapter="@{vm.adapter}"
-            app:gridSpan="@{vm.rowCnt}"
-            app:layoutManager="@{vm.decoration}"
             app:layout_constrainedHeight="true"
             app:layout_constraintTop_toBottomOf="@id/tv_title" />
 

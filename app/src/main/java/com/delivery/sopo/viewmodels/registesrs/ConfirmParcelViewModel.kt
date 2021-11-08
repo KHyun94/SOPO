@@ -8,6 +8,8 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.NavigatorEnum
+import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.*
 import com.delivery.sopo.models.base.BaseViewModel
@@ -22,21 +24,20 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
     var carrier = MutableLiveData<CarrierDTO>()
     var alias = MutableLiveData<String?>()
 
-    private var _navigator = MutableLiveData<String>()
-    val navigator: LiveData<String>
+    private var _navigator = MutableLiveData<NavigatorEnum?>()
+    val navigator: LiveData<NavigatorEnum?>
         get() = _navigator
 
-    fun onMoveFirstStep(v: View)
-    {
+    fun onMoveToNav(v: View) = checkStatus(checkNetwork = true) {
         when(v.id)
         {
             R.id.tv_revise ->
             {
-                _navigator.value = NavigatorConst.TO_REGISTER_REVISE
+                _navigator.value = NavigatorEnum.REGISTER_INPUT_REVISE
             }
             R.id.tv_init ->
             {
-                _navigator.value = NavigatorConst.TO_REGISTER_INIT
+                _navigator.value = NavigatorEnum.REGISTER_INPUT_INIT
             }
             R.id.tv_register ->
             {
@@ -44,7 +45,6 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
 
                 val registerDTO = ParcelRegister(carrier = carrier.value?.carrier
                     ?: throw Exception("Carrier must be not null"), waybillNum = waybillNum.value.toString(), alias = alias.value.toString())
-
 
                 requestParcelRegister(register = registerDTO)
             }
@@ -61,7 +61,7 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
                 SopoLog.d("택배 등록 성공 [번호:$this]")
             }
 
-            _navigator.postValue(NavigatorConst.TO_REGISTER_SUCCESS)
+            _navigator.postValue(NavigatorEnum.REGISTER_INPUT_SUCCESS)
         }
         catch(e: Exception)
         {
