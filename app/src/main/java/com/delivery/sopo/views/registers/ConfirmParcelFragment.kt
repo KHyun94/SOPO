@@ -1,20 +1,11 @@
 package com.delivery.sopo.views.registers
 
-import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.firebase.FirebaseRepository
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.databinding.ConfirmDeleteDialogBinding
 import com.delivery.sopo.databinding.FragmentConfirmParcelBinding
 import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
@@ -23,13 +14,10 @@ import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.registesrs.ConfirmParcelViewModel
-import com.delivery.sopo.viewmodels.registesrs.InputParcelViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.OnAgreeClickListener
 import com.delivery.sopo.views.main.MainView
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmParcelViewModel>()
@@ -66,7 +54,7 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
 
         try
         {
-            register = bundle.getSerializable(RegisterMainFrame.REGISTER_INFO) as ParcelRegister
+            register = bundle.getSerializable(RegisterMainFragment.REGISTER_INFO) as ParcelRegister
 
             register.waybillNum.let { waybillNo ->
                 requireNotNull(waybillNo)
@@ -95,10 +83,10 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
         {
             override fun invoke(agree: GeneralDialog)
             {
-                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(null, RegisterMainFrame.REGISTER_PROCESS_RESET)
+                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(null, RegisterMainFragment.REGISTER_PROCESS_RESET)
 
                 FragmentManager.initFragment(activity = requireActivity(),
-                                             viewId = RegisterMainFrame.viewId,
+                                             viewId = RegisterMainFragment.viewId,
                                              currentFragment = this@ConfirmParcelFragment,
                                              nextFragment = TabCode.REGISTER_INPUT.FRAGMENT,
                                              nextFragmentTag = TabCode.REGISTER_INPUT.NAME)
@@ -123,24 +111,24 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
             {
                 NavigatorEnum.REGISTER_INPUT_INIT ->
                 {
-                    InputParcelFragment.newInstance(null, RegisterMainFrame.REGISTER_PROCESS_RESET)
+                    InputParcelFragment.newInstance(null, RegisterMainFragment.REGISTER_PROCESS_RESET)
                 }
                 NavigatorEnum.REGISTER_INPUT_REVISE ->
                 {
-                    InputParcelFragment.newInstance(register, RegisterMainFrame.REGISTER_PROCESS_RESET)
+                    InputParcelFragment.newInstance(register, RegisterMainFragment.REGISTER_PROCESS_RESET)
                 }
                 NavigatorEnum.REGISTER_INPUT_SUCCESS ->
                 {
                     val defer = FirebaseRepository.subscribedToTopic()
                     defer.start()
 
-                    InputParcelFragment.newInstance(null, RegisterMainFrame.REGISTER_PROCESS_SUCCESS)
+                    InputParcelFragment.newInstance(null, RegisterMainFragment.REGISTER_PROCESS_SUCCESS)
                 }
                 else -> throw Exception("NOT SUPPORT REGISTER TYPE")
             }
 
             FragmentManager.initFragment(activity = requireActivity(),
-                                         viewId = RegisterMainFrame.viewId,
+                                         viewId = RegisterMainFragment.viewId,
                                          currentFragment = this@ConfirmParcelFragment,
                                          nextFragment = TabCode.REGISTER_INPUT.FRAGMENT,
                                          nextFragmentTag = TabCode.REGISTER_INPUT.NAME)
@@ -154,7 +142,7 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
         fun newInstance(register: ParcelRegister?): ConfirmParcelFragment
         {
             val args = Bundle().apply {
-                putSerializable(RegisterMainFrame.REGISTER_INFO, register)
+                putSerializable(RegisterMainFragment.REGISTER_INFO, register)
             }
 
             return ConfirmParcelFragment().apply {

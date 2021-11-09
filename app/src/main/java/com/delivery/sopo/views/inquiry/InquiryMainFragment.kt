@@ -12,7 +12,7 @@ import com.delivery.sopo.viewmodels.inquiry.InquiryMainViewModel
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class InquiryMainFrame : Fragment()
+class InquiryMainFragment : Fragment()
 {
     lateinit var binding: InquiryMainFrameBinding
     val vm: InquiryMainViewModel by viewModel()

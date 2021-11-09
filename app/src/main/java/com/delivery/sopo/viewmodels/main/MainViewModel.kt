@@ -18,8 +18,6 @@ class MainViewModel(private val userRepo: UserLocalRepository,
                     private val parcelRepo: ParcelRepository):
         BaseViewModel()
 {
-    val mainTabVisibility = MutableLiveData<Int>()
-
     // 유효성 및 통신 등의 결과 객체
     private var _result = MutableLiveData<ResponseResult<*>>()
     val result: LiveData<ResponseResult<*>>

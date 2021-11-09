@@ -497,7 +497,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             {
                 TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelId)
                 FragmentManager.move(requireActivity(), TabCode.INQUIRY_DETAIL,
-                                     InquiryMainFrame.viewId)
+                                     InquiryMainFragment.viewId)
             }
 
             override fun onParcelLongClicked(view: View, type: Int, parcelId: Int)

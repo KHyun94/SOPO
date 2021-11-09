@@ -1,73 +1,76 @@
 package com.delivery.sopo.views.adapter
 
-import android.os.Bundle
-import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
-import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.viewmodels.menus.MenuMainFrame
-import com.delivery.sopo.views.inquiry.InquiryMainFrame
-import com.delivery.sopo.views.registers.RegisterMainFrame
+import androidx.fragment.app.FragmentActivity
+import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class ViewPagerAdapter(fm: FragmentManager, val pageCnt: Int) :
-    FragmentStatePagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT)
+class ViewPagerAdapter(fragmentActivity: FragmentActivity, fragments:ArrayList<Fragment>) : FragmentStateAdapter(fragmentActivity)
 {
-    var currentFragment: Fragment
+    private var items: ArrayList<Fragment> = fragments
 
-    var tab1stFragment: Fragment = RegisterMainFrame()
-    var tab2ndFragment: Fragment = InquiryMainFrame()
-    var tab3rdFragment: Fragment = MenuMainFrame()
-
-    var data: Bundle? = null
-
-    init
+    override fun getItemCount(): Int
     {
-        currentFragment = tab1stFragment
+        return items.size
     }
 
-    override fun getPageTitle(position: Int): CharSequence?
+    override fun createFragment(position: Int): Fragment
     {
-        return super.getPageTitle(position)
+        return items[position]
     }
+    /*   var currentFragment: Fragment
 
-    override fun getItem(position: Int): Fragment
-    {
-        return when (position)
-        {
-            NavigatorConst.REGISTER_TAB ->
-            {
-                tab1stFragment
-            }
-            NavigatorConst.INQUIRY_TAB ->
-            {
-                tab2ndFragment
-//                tab1stFragment
-            }
-            NavigatorConst.MY_MENU_TAB ->
-            {
-                tab3rdFragment
-            }
-            else ->
-            {
-                tab1stFragment
-            }
-        }
-    }
+       var tab1stFragment: Fragment = RegisterMainFrame()
+       var tab2ndFragment: Fragment = InquiryMainFrame()
+       var tab3rdFragment: Fragment = MenuMainFrame()
 
-    fun nextFragment()
-    {
+       var data: Bundle? = null
 
-    }
+       init
+       {
+           currentFragment = tab1stFragment
+       }
+
+       override fun getPageTitle(position: Int): CharSequence?
+       {
+           return super.getPageTitle(position)
+       }
+
+       override fun getItem(position: Int): Fragment
+       {
+           return when (position)
+           {
+               NavigatorConst.REGISTER_TAB ->
+               {
+                   tab1stFragment
+               }
+               NavigatorConst.INQUIRY_TAB ->
+               {
+                   tab2ndFragment
+   //                tab1stFragment
+               }
+               NavigatorConst.MY_MENU_TAB ->
+               {
+                   tab3rdFragment
+               }
+               else ->
+               {
+                   tab1stFragment
+               }
+           }
+       }
+
+       fun nextFragment()
+       {
+
+       }
 
 
-    override fun getCount(): Int
-    {
-        return pageCnt
-    }
+       override fun getCount(): Int
+       {
+           return pageCnt
+       }
 
-    override fun destroyItem(container: ViewGroup, position: Int, `object`: Any)
-    {
-    }
+       override fun destroyItem(container: ViewGroup, position: Int, `object`: Any)
+       {
+       }*/
 }

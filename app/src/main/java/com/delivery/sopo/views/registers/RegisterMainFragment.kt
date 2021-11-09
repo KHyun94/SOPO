@@ -12,9 +12,8 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterMainFrameBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.views.main.MainView
 
-class RegisterMainFrame : Fragment()
+class RegisterMainFragment : Fragment()
 {
     private lateinit var binding : RegisterMainFrameBinding
 
@@ -31,7 +30,7 @@ class RegisterMainFrame : Fragment()
     fun <T : ViewDataBinding> bindView(inflater : LayoutInflater, @LayoutRes layoutId : Int, container : ViewGroup?) : T
     {
         return DataBindingUtil.inflate<T>(inflater, layoutId, container, false).apply{
-            lifecycleOwner = this@RegisterMainFrame
+            lifecycleOwner = this@RegisterMainFragment
             executePendingBindings()
         }
     }

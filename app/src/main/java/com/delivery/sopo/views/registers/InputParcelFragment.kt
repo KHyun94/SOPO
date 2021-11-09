@@ -5,7 +5,6 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.databinding.FragmentInputParcelBinding
@@ -46,12 +45,12 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
     {
         super.receiveData(bundle)
 
-        bundle.getSerializable(RegisterMainFrame.REGISTER_INFO).let { data ->
+        bundle.getSerializable(RegisterMainFragment.REGISTER_INFO).let { data ->
             if(data !is ParcelRegister) return@let
             parcelRegister = data
         }
 
-        returnType = bundle.getInt(RegisterMainFrame.RETURN_TYPE)
+        returnType = bundle.getInt(RegisterMainFragment.RETURN_TYPE)
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -117,7 +116,7 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
             vm.clipboardText.value = ""
 
             if(!binding.layoutWaybillNum.hasFocus()) binding.layoutWaybillNum.requestFocus()
-            if(returnType == RegisterMainFrame.REGISTER_PROCESS_RESET && ::parcelRegister.isInitialized && parcelRegister.carrier != null) return@observe
+            if(returnType == RegisterMainFragment.REGISTER_PROCESS_RESET && ::parcelRegister.isInitialized && parcelRegister.carrier != null) return@observe
 
             if(!waybillNum.isGreaterThanOrEqual(9))
             {
@@ -157,12 +156,13 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
                 NavigatorEnum.REGISTER_SELECT ->
                 {
                     TabCode.REGISTER_SELECT.FRAGMENT = SelectCarrierFragment.newInstance(vm.waybillNum.value ?: "")
-                    FragmentManager.move(parentView, TabCode.REGISTER_SELECT, RegisterMainFrame.viewId)
+                    FragmentManager.move(parentView, TabCode.REGISTER_SELECT, RegisterMainFragment.viewId)
+//                    FragmentManagerBeta.add(parentView, TabCode.REGISTER_SELECT, RegisterMainFrame.viewId)
                 }
                 NavigatorEnum.REGISTER_CONFIRM ->
                 {
                     TabCode.REGISTER_CONFIRM.FRAGMENT = ConfirmParcelFragment.newInstance(register = registerDTO)
-                    FragmentManager.move(parentView, TabCode.REGISTER_CONFIRM, RegisterMainFrame.viewId)
+                    FragmentManager.move(parentView, TabCode.REGISTER_CONFIRM, RegisterMainFragment.viewId)
                 }
             }
 
@@ -194,8 +194,8 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         fun newInstance(register: ParcelRegister?, returnType: Int?): InputParcelFragment
         {
             val args = Bundle().apply {
-                putSerializable(RegisterMainFrame.REGISTER_INFO, register)
-                putInt(RegisterMainFrame.RETURN_TYPE, returnType ?: RegisterMainFrame.REGISTER_PROCESS_RESET)
+                putSerializable(RegisterMainFragment.REGISTER_INFO, register)
+                putInt(RegisterMainFragment.RETURN_TYPE, returnType ?: RegisterMainFragment.REGISTER_PROCESS_RESET)
             }
 
             return InputParcelFragment().apply {

@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.widget.Toast
 import androidx.recyclerview.widget.GridLayoutManager
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentSelectCarrierBinding
@@ -47,26 +46,21 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
         {
             override fun onBackPressedInTime()
             {
+                FragmentManager.remove(this@SelectCarrierFragment.requireActivity())
 //                requireActivity().supportFragmentManager.popBackStack()
-                FragmentManager.remove(activity = requireActivity())
+               /* FragmentManager.remove(activity = requireActivity())
 
                 val parcelRegister = ParcelRegister("", null, null)
 
                 TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(register = parcelRegister, returnType = 0)
 
-                FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFrame.viewId)
+                FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFrame.viewId)*/
             }
 
             override fun onBackPressedOutTime()
             {
 //                requireActivity().supportFragmentManager.popBackStack()
-                FragmentManager.remove(activity = requireActivity())
 
-                val parcelRegister = ParcelRegister("", null, null)
-
-                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(register = parcelRegister, returnType = 0)
-
-                FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFrame.viewId)
             }
         }
     }
@@ -75,7 +69,7 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
     {
         super.receiveData(bundle)
 
-        waybillNum = bundle.getString(RegisterMainFrame.WAYBILL_NO) ?: ""
+        waybillNum = bundle.getString(RegisterMainFragment.WAYBILL_NO) ?: ""
         SopoLog.d("운송장 번호 $waybillNum")
     }
 
@@ -118,14 +112,14 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
                             TabCode.REGISTER_INPUT.FRAGMENT =
                                 InputParcelFragment.newInstance(register = parcelRegister, returnType = 0)
 
-                            FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFrame.viewId)
+                            FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
                             return@Runnable
                         }
 
                         TabCode.REGISTER_CONFIRM.FRAGMENT =
                             ConfirmParcelFragment.newInstance(register = parcelRegister)
 
-                        FragmentManager.move(requireActivity(), TabCode.REGISTER_CONFIRM, RegisterMainFrame.viewId)
+                        FragmentManager.move(requireActivity(), TabCode.REGISTER_CONFIRM, RegisterMainFragment.viewId)
 
                     }, 500) // 0.5초후
                 }
@@ -139,7 +133,7 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
                     TabCode.REGISTER_INPUT.FRAGMENT =
                         InputParcelFragment.newInstance(register = parcelRegister, returnType = 0)
 
-                    FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFrame.viewId)
+                    FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
                 }
             }
         }
@@ -187,7 +181,7 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
         fun newInstance(waybillNum: String): SelectCarrierFragment
         {
             val args = Bundle().apply {
-                putSerializable(RegisterMainFrame.WAYBILL_NO, waybillNum)
+                putSerializable(RegisterMainFragment.WAYBILL_NO, waybillNum)
             }
 
             return SelectCarrierFragment().apply {
