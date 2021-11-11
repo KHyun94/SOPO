@@ -5,6 +5,7 @@ import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.ParcelItem
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.models.parcel.ParcelResponse
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
@@ -23,11 +24,11 @@ data class UpdateParcelDao(
 
     suspend fun getParcel() = parcelRepository.getLocalParcelById(parcelId = parcelId)
 
-    fun compareDeliveryStatus(parcelEntity: ParcelEntity): Boolean {
+    fun compareDeliveryStatus(parcelResponse: ParcelResponse): Boolean {
         SopoLog.d("""
-            compareDeliveryStatus() call >>> [기존: ${parcelEntity.deliveryStatus} VS 변경: ${deliveryStatus}] 활성화 상태: ${parcelEntity.status}
+            compareDeliveryStatus() call >>> [기존: ${parcelResponse.deliveryStatus} VS 변경: ${deliveryStatus}] 활성화 상태: ${parcelResponse.status}
         """.trimIndent())
-        return parcelEntity.deliveryStatus != deliveryStatus && parcelEntity.status == 1
+        return parcelResponse.deliveryStatus != deliveryStatus && parcelResponse.status == 1
     }
 
     fun getMessage(parcelEntity: ParcelEntity) : String

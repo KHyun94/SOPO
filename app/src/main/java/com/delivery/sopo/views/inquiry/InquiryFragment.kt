@@ -58,9 +58,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     override val vm: InquiryViewModel by viewModel()
     override val mainLayout: View by lazy { binding.constraintMainInquiry }
 
-    private val parentView: MainView by lazy {
-        activity as MainView
-    }
+    private val parentView: MainView by lazy { activity as MainView }
 
     // 곧 도착 택배 리스트 adapter, 등록된 택배(진행 중) 리스트 adapter, 도착 완료된 택배 리스트 adapter
     private lateinit var soonArrivalParcelAdapter: InquiryListAdapter

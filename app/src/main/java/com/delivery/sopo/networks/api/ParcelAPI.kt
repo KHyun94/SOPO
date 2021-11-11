@@ -41,7 +41,7 @@ interface ParcelAPI
     // 배송중 & 곧 도착 리스트 가져오는 api
     @GET("api/v1/sopo-parcel/delivery/parcels/ongoing")
     @Headers("Accept: application/json")
-    suspend fun getParcelsOngoing(): APIResult<MutableList<ParcelResponse>?>
+    suspend fun getParcelsOngoing(): Response<APIResult<List<ParcelResponse>>>
 
     // '배송완료' 리스트 가져오는 api
     @GET("api/v1/sopo-parcel/delivery/parcels/complete")

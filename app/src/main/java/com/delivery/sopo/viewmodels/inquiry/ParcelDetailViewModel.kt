@@ -96,7 +96,7 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
             }
         }
 
-        val parcelDetailDTO = ParcelDetailInfo(regDt = parcelResponse.regDt, alias = parcelResponse.alias,
+        val parcelDetailDTO = ParcelDetailInfo(regDt = parcelResponse.regDte, alias = parcelResponse.alias,
                                                carrierDTO = carrierDTO,
                                                waybillNum = parcelResponse.waybillNum,
                                                deliverStatus = this.deliveryStatus.value?.TITLE,
@@ -139,12 +139,11 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
     {
         SopoLog.d("requestLocalParcel() 호출 - parcelId[${parcelId}]")
 
-        val parcelEntity =
+        val parcelResponse =
             parcelRepo.getLocalParcelById(parcelId = parcelId) ?: throw NullPointerException(
                 "내부에 저장된 parcelId[$parcelId]의 상세 내역이 존재하지 않습니다.")
-        val parcelDTO = ParcelMapper.parcelEntityToParcel(parcelEntity = parcelEntity)
 
-        updateParcelToUI(parcelDTO)
+        updateParcelToUI(parcelResponse)
     }
 
     suspend fun requestParcelForRefresh(parcelId: Int)

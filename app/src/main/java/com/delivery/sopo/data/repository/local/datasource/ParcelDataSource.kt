@@ -8,12 +8,12 @@ import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.parcel.ParcelResponse
 
 interface ParcelDataSource {
-   suspend fun getRemoteOngoingParcels(): MutableList<ParcelResponse>?
+   suspend fun getRemoteParcelByOngoing(): List<ParcelResponse>
    suspend fun getRemoteMonths(): List<CompletedParcelHistory>?
 
    suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<ParcelResponse>?
 
-   suspend fun getLocalParcelById(parcelId: Int): ParcelEntity?
+   suspend fun getLocalParcelById(parcelId: Int): ParcelResponse?
 
    fun getLocalCompleteParcelsLiveData(): LiveData<List<ParcelResponse>>
    fun getLocalCompleteParcels(): List<ParcelResponse>

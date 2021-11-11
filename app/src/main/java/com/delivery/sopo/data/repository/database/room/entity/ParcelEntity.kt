@@ -10,61 +10,61 @@ import com.delivery.sopo.util.SopoLog
     primaryKeys = ["PARCEL_ID"]
 )
 data class ParcelEntity(
-    @ColumnInfo(
+        @ColumnInfo(
         name = "PARCEL_ID",
         typeAffinity = ColumnInfo.INTEGER
     )
     var parcelId: Int,
-    @ColumnInfo(
+        @ColumnInfo(
         name = "USER_ID",
         typeAffinity = ColumnInfo.TEXT
     ) var userId: String,
-    @ColumnInfo(
+        @ColumnInfo(
         name = "WAYBILL_NUM",
         typeAffinity = ColumnInfo.TEXT
     )
     var waybillNum: String,
-    @ColumnInfo(
+        @ColumnInfo(
         name = "CARRIER",
         typeAffinity = ColumnInfo.TEXT
     )
     var carrier: String,
-    @ColumnInfo(
+        @ColumnInfo(
         name = "ALIAS",
         typeAffinity = ColumnInfo.TEXT
     )
     var alias: String,
-    @ColumnInfo(
+        @ColumnInfo(
         name = "INQUIRY_RESULT",
         typeAffinity = ColumnInfo.TEXT
     )
     var inquiryResult: String?,
-    @ColumnInfo(
+        @ColumnInfo(
         name = "INQUIRY_HASH",
         typeAffinity = ColumnInfo.TEXT
     )
     var inquiryHash: String?,
-    @ColumnInfo(
+        @ColumnInfo(
         name = "DELIVERY_STATUS",
         typeAffinity = ColumnInfo.TEXT
     )
     var deliveryStatus: String,
-    @ColumnInfo(
+        @ColumnInfo(
         name = "ARRIVAL_DTE",
         typeAffinity = ColumnInfo.TEXT
     )
     var arrivalDte: String,
-    @ColumnInfo(
+        @ColumnInfo(
         name = "REG_DT",
         typeAffinity = ColumnInfo.TEXT
     )
-    var regDt: String,
-    @ColumnInfo(
+    var regDte: String,
+        @ColumnInfo(
         name = "AUDIT_DTE",
         typeAffinity = ColumnInfo.TEXT
     )
     var auditDte: String,
-    @ColumnInfo(
+        @ColumnInfo(
         name = "STATUS",
         typeAffinity = ColumnInfo.INTEGER
     )

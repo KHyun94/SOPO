@@ -15,10 +15,13 @@ import com.delivery.sopo.networks.api.ParcelAPI
 import com.delivery.sopo.data.repository.local.datasource.ParcelDataSource
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.services.network_handler.BaseServiceBeta
 import com.delivery.sopo.util.TimeUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ParcelRepository(private val userLocalRepo: UserLocalRepository,
                        private val oAuthRepo: OAuthLocalRepository,
@@ -27,9 +30,12 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         BaseServiceBeta()
 {
 
+    private val userId: String by lazy { userLocalRepo.getUserId() }
+
+
     suspend fun registerParcel(parcel: ParcelRegister):Int
     {
-        val oAuthToken = oAuthRepo.get(userId = ParcelCall.email)
+        val oAuthToken = oAuthRepo.get(userId = userId)
         val registerParcel = NetworkManager.retro(oAuthToken.accessToken).create(ParcelAPI::class.java).registerParcel(register = parcel)
         val result = apiCall{ registerParcel }
         return result.data?.data?:throw NullPointerException()
@@ -37,19 +43,17 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
 
     suspend fun getRemoteParcelById(parcelId: Int):ParcelResponse
     {
-        val oAuthToken = oAuthRepo.get(userId = ParcelCall.email)
+        val oAuthToken = oAuthRepo.get(userId = userId)
         val getRemoteParcel = NetworkManager.retro(oAuthToken.accessToken).create(ParcelAPI::class.java).getParcel(parcelId = parcelId)
         val result = apiCall { getRemoteParcel }
         return result.data?.data?:throw NullPointerException()
     }
 
-    override suspend fun getRemoteOngoingParcels(): MutableList<ParcelResponse>?
+    override suspend fun getRemoteParcelByOngoing(): List<ParcelResponse>
     {
-        val userId = userLocalRepo.getUserId()
-        val oAuthToken = oAuthRepo.get(userId = userId)
-        return NetworkManager.retro(oAuthToken.accessToken)
-            .create(ParcelAPI::class.java)
-            .getParcelsOngoing().data
+        val getRemoteParcelByOngoing = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcelsOngoing()
+        val result = apiCall { getRemoteParcelByOngoing }
+        return result.data?.data?: emptyList<ParcelResponse>()
     }
 
     override suspend fun getRemoteMonths(): List<CompletedParcelHistory>
@@ -70,9 +74,8 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
             ?: emptyList<ParcelResponse>().toMutableList()
     }
 
-    override suspend fun getLocalParcelById(parcelId: Int): ParcelEntity?
-    {
-        return appDatabase.parcelDao().getById(parcelId)
+    override suspend fun getLocalParcelById(parcelId: Int): ParcelResponse? = withContext(Dispatchers.Default){
+        return@withContext appDatabase.parcelDao().getById(parcelId)?.let { ParcelMapper.entityToObject(it) }
     }
 
     // 배송 중인 택배 리스트를 LiveData로 받기

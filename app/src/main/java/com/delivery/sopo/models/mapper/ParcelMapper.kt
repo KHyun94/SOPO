@@ -1,6 +1,5 @@
 package com.delivery.sopo.models.mapper
 
-import android.os.Parcel
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.database.room.entity.CompletedParcelHistoryEntity
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
@@ -13,11 +12,11 @@ import kotlinx.coroutines.withContext
 object ParcelMapper
 {
     suspend fun entityToObject(req:ParcelEntity): ParcelResponse = withContext(Dispatchers.Default) {
-        return@withContext with(req){ ParcelResponse(parcelId = parcelId, userId = userId, waybillNum = waybillNum, carrier = carrier, alias = alias, inquiryResult = inquiryResult, inquiryHash = inquiryHash, deliveryStatus = deliveryStatus, regDt = regDt, arrivalDte = arrivalDte, auditDte = auditDte, status = status)}
+        return@withContext with(req){ ParcelResponse(parcelId = parcelId, userId = userId, waybillNum = waybillNum, carrier = carrier, alias = alias, inquiryResult = inquiryResult, inquiryHash = inquiryHash, deliveryStatus = deliveryStatus, regDte = regDte, arrivalDte = arrivalDte, auditDte = auditDte, status = status)}
     }
 
     suspend fun objectToEntity(req:ParcelResponse) = withContext(Dispatchers.Default) {
-        return@withContext with(req) { ParcelEntity(parcelId, userId, waybillNum, carrier, alias, inquiryResult, inquiryHash, deliveryStatus, arrivalDte?:"", regDt, auditDte, status?:0)}
+        return@withContext with(req) { ParcelEntity(parcelId, userId, waybillNum, carrier, alias, inquiryResult, inquiryHash, deliveryStatus, arrivalDte?:"", regDte, auditDte, status?:0)}
     }
 
     fun completeParcelStatusEntityToDTO(entity: CompletedParcelHistoryEntity): CompletedParcelHistory
@@ -57,7 +56,7 @@ object ParcelMapper
                               arrivalDte = parcelEntity.arrivalDte,
                               auditDte = parcelEntity.auditDte,
                               status = parcelEntity.status,
-                              regDt = parcelEntity.regDt
+                              regDte = parcelEntity.regDte
         )
     }
 
@@ -74,7 +73,7 @@ object ParcelMapper
             deliveryStatus = parcelResponse.deliveryStatus,
             arrivalDte = parcelResponse.arrivalDte.toString(),
             auditDte = parcelResponse.auditDte,
-            regDt = parcelResponse.regDt,
+            regDte = parcelResponse.regDte,
             status = parcelResponse.status ?: 0
         )
     }

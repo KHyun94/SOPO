@@ -5,28 +5,28 @@ import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 data class ParcelResponse(
-    @SerializedName("parcelId")
+        @SerializedName("parcelId")
     var parcelId: Int,
-    @SerializedName("userId")
+        @SerializedName("userId")
     var userId: String,
-    @SerializedName("waybillNum")
+        @SerializedName("waybillNum")
     var waybillNum: String,
-    @SerializedName("carrier")
+        @SerializedName("carrier")
     var carrier: String,
-    @SerializedName("alias")
+        @SerializedName("alias")
     var alias: String,
-    @SerializedName("inquiryResult")
+        @SerializedName("inquiryResult")
     var inquiryResult: String?,
-    @SerializedName("inquiryHash")
+        @SerializedName("inquiryHash")
     var inquiryHash: String?,
-    @SerializedName("deliveryStatus")
+        @SerializedName("deliveryStatus")
     var deliveryStatus: String,
-    @SerializedName("regDt")
-    var regDt: String,
-    @SerializedName("arrivalDte")
+        @SerializedName("regDte")
+    var regDte: String,
+        @SerializedName("arrivalDte")
     var arrivalDte: String?,
-    @SerializedName("auditDte")
+        @SerializedName("auditDte")
     var auditDte: String,
-    @SerializedName("status")
+        @SerializedName("status")
     var status: Int?
 ):Serializable

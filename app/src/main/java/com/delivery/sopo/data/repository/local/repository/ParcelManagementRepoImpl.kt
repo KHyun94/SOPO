@@ -5,6 +5,8 @@ import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.data.repository.local.datasource.ParcelManagementRepository
 import com.delivery.sopo.util.TimeUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelManagementRepository
 {
@@ -38,7 +40,9 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
     }
 
     // 업데이트 미확인 체크용도
-    override suspend fun getUnidentifiedStatusByParcelId(parcelId:Int) = appDatabase.parcelManagementDao().getUnidentifiedStatusByParcelId(parcelId = parcelId)
+    override suspend fun getUnidentifiedStatusByParcelId(parcelId:Int): Int = withContext(Dispatchers.Default) {
+        appDatabase.parcelManagementDao().getUnidentifiedStatusByParcelId(parcelId = parcelId)
+    }
 
     override fun insertEntity(parcelStatusEntity: ParcelStatusEntity){
         appDatabase.parcelManagementDao().insert(parcelStatusEntity)

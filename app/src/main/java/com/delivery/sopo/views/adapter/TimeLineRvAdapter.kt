@@ -68,10 +68,10 @@ class TimeLineRvAdapter : RecyclerView.Adapter<TimeLineViewHolder>()
 
         fun onBind(item: TimeLineProgress)
         {
-            itemBindingUtil.tvDateHhmmss.text = item.date!!.HHmmss
-            itemBindingUtil.tvDateYymmdd.text = item.date.yyMMdd
+            itemBindingUtil.tvDateHhmmss.text = item.date?.HHmmss
+            itemBindingUtil.tvDateYymmdd.text = item.date?.yyMMdd
             itemBindingUtil.tvDeliveryLocation.text = item.location
-            itemBindingUtil.tvDeliveryStatus.text = item.status!!.text
+            itemBindingUtil.tvDeliveryStatus.text = item.status?.text
         }
     }
 
