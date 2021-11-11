@@ -46,7 +46,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
     lateinit var tab2ndBinding: ItemMainTabBinding
     lateinit var tab3rdBinding: ItemMainTabBinding
 
-    val baseFragments = arrayListOf(InputParcelFragment(), InquiryFragment(), MenuFragment())
+    private val baseFragments = arrayListOf(RegisterMainFragment(), InquiryMainFragment(), MenuMainFrame())
 
     private val appPasswordRepo: AppPasswordRepository by inject()
 

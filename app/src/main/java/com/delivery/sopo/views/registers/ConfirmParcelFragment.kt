@@ -28,7 +28,8 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
 
     private val parentView: MainView by lazy { activity as MainView }
 
-    private lateinit var register: ParcelRegister
+    private lateinit var parcelRegister: ParcelRegister
+    private var beforeStep: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -38,13 +39,23 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
         {
             override fun onBackPressedInTime()
             {
-                requireActivity().supportFragmentManager.popBackStack()
+                when(beforeStep)
+                {
+                    0->
+                    {
+                        TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
+                        FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
+                    }
+                    1->
+                    {
+                        TabCode.REGISTER_SELECT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
+                        FragmentManager.move(requireActivity(), TabCode.REGISTER_SELECT, RegisterMainFragment.viewId)
+                    }
+                }
+
             }
 
-            override fun onBackPressedOutTime()
-            {
-                requireActivity().supportFragmentManager.popBackStack()
-            }
+            override fun onBackPressedOutTime() {}
         }
     }
 
@@ -54,19 +65,24 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
 
         try
         {
-            register = bundle.getSerializable(RegisterMainFragment.REGISTER_INFO) as ParcelRegister
+            val parcelSerializable = bundle.getSerializable(RegisterMainFragment.REGISTER_INFO) ?: throw NullPointerException("등록 데이터가 정상적으로 오지 않았습니다.")
 
-            register.waybillNum.let { waybillNo ->
+            if(parcelSerializable !is ParcelRegister) throw IllegalArgumentException("등록 데이터가 정상적으로 오지 않았습니다.")
+
+            parcelRegister = parcelSerializable
+            beforeStep = bundle.getInt("beforeStep")
+
+            parcelRegister.waybillNum.let { waybillNo ->
                 requireNotNull(waybillNo)
                 vm.waybillNum.value = waybillNo
             }
 
-            register.carrier.let { carrierEnum ->
+            parcelRegister.carrier.let { carrierEnum ->
                 requireNotNull(carrierEnum)
                 vm.carrier.value = CarrierMapper.enumToObject(carrierEnum)
             }
 
-            register.alias?.let { alias -> vm.alias.value = alias }
+            parcelRegister.alias?.let { alias -> vm.alias.value = alias }
         }
         catch(e: Exception)
         {
@@ -78,7 +94,7 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
     }
 
 
-    fun alertErrorMessage(){
+    private fun alertErrorMessage(){
         GeneralDialog(requireActivity(), "등록 오류", "시스템 오류로 다시 입력을 부탁드립니다. ㅠㅡㅜ", null, Pair("이동", object: OnAgreeClickListener
         {
             override fun invoke(agree: GeneralDialog)
@@ -115,7 +131,7 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
                 }
                 NavigatorEnum.REGISTER_INPUT_REVISE ->
                 {
-                    InputParcelFragment.newInstance(register, RegisterMainFragment.REGISTER_PROCESS_RESET)
+                    InputParcelFragment.newInstance(parcelRegister, RegisterMainFragment.REGISTER_PROCESS_RESET)
                 }
                 NavigatorEnum.REGISTER_INPUT_SUCCESS ->
                 {
@@ -139,10 +155,11 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
 
     companion object
     {
-        fun newInstance(register: ParcelRegister?): ConfirmParcelFragment
+        fun newInstance(register: ParcelRegister?, beforeStep:Int): ConfirmParcelFragment
         {
             val args = Bundle().apply {
                 putSerializable(RegisterMainFragment.REGISTER_INFO, register)
+                putInt("beforeStep", beforeStep)
             }
 
             return ConfirmParcelFragment().apply {

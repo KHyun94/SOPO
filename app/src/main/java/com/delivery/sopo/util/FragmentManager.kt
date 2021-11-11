@@ -4,9 +4,22 @@ import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.enums.TabCode
+import com.google.android.material.tabs.TabLayout
 
 object FragmentManager
 {
+    fun add(activity: FragmentActivity, code: TabCode, @IdRes viewId: Int)
+    {
+        SopoLog.d("add() 호출:[Fragment:${code.NAME}][viewId:$viewId]")
+
+        val fm = activity.supportFragmentManager
+        val transaction = fm.beginTransaction()
+
+        transaction.add(viewId, code.FRAGMENT, code.NAME)
+            .addToBackStack(null)
+            .commit()
+    }
+
     fun move(activity: FragmentActivity, code: TabCode, @IdRes viewId: Int)
     {
         SopoLog.d("move() 호출:[Fragment:${code.NAME}][viewId:$viewId]")
@@ -21,10 +34,24 @@ object FragmentManager
             SopoLog.d("중첩 프래그먼트[${code}] 존재 삭제 중? : ${code.FRAGMENT.isRemoving}")
         }
 */
+        when(code.TAB_NO)
+        {
+            TabCode.firstTab ->
+            {
+            }
+            TabCode.secondTab ->
+            {
+
+            }
+            TabCode.thirdTab ->
+            {
+
+            }
+        }
 
         transaction.run {
             replace(viewId, code.FRAGMENT, code.NAME)
-            addToBackStack(null)
+//            addToBackStack(null)
             commit()
         }
     }

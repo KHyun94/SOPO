@@ -20,9 +20,9 @@ import kotlinx.coroutines.launch
 
 class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseViewModel()
 {
-    var waybillNum = MutableLiveData<String>()
-    var carrier = MutableLiveData<CarrierDTO>()
-    var alias = MutableLiveData<String?>()
+    val waybillNum = MutableLiveData<String>()
+    val carrier = MutableLiveData<CarrierDTO>()
+    val alias = MutableLiveData<String?>()
 
     private var _navigator = MutableLiveData<NavigatorEnum?>()
     val navigator: LiveData<NavigatorEnum?>

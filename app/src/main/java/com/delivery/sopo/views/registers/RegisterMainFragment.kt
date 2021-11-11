@@ -22,7 +22,7 @@ class RegisterMainFragment : Fragment()
         binding = bindView<RegisterMainFrameBinding>(inflater, R.layout.register_main_frame, container)
         viewId = binding.layoutRegisterMain.id
 
-        FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, viewId)
+        FragmentManager.add(requireActivity(), TabCode.REGISTER_INPUT, viewId)
 
         return binding.root
     }

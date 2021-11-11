@@ -46,15 +46,13 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
         {
             override fun onBackPressedInTime()
             {
-                FragmentManager.remove(this@SelectCarrierFragment.requireActivity())
-//                requireActivity().supportFragmentManager.popBackStack()
-               /* FragmentManager.remove(activity = requireActivity())
+//               FragmentManager.remove(activity = requireActivity())
 
                 val parcelRegister = ParcelRegister("", null, null)
 
-                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(register = parcelRegister, returnType = 0)
+                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
 
-                FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFrame.viewId)*/
+                FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
             }
 
             override fun onBackPressedOutTime()
@@ -110,14 +108,14 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
                         if(waybillNum == "")
                         {
                             TabCode.REGISTER_INPUT.FRAGMENT =
-                                InputParcelFragment.newInstance(register = parcelRegister, returnType = 0)
+                                InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
 
                             FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
                             return@Runnable
                         }
 
                         TabCode.REGISTER_CONFIRM.FRAGMENT =
-                            ConfirmParcelFragment.newInstance(register = parcelRegister)
+                            ConfirmParcelFragment.newInstance(register = parcelRegister,beforeStep = 1)
 
                         FragmentManager.move(requireActivity(), TabCode.REGISTER_CONFIRM, RegisterMainFragment.viewId)
 
@@ -131,7 +129,7 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
                     FragmentManager.remove(activity = requireActivity())
 
                     TabCode.REGISTER_INPUT.FRAGMENT =
-                        InputParcelFragment.newInstance(register = parcelRegister, returnType = 0)
+                        InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
 
                     FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
                 }

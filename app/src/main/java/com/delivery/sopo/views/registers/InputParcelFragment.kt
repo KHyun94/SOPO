@@ -157,11 +157,10 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
                 {
                     TabCode.REGISTER_SELECT.FRAGMENT = SelectCarrierFragment.newInstance(vm.waybillNum.value ?: "")
                     FragmentManager.move(parentView, TabCode.REGISTER_SELECT, RegisterMainFragment.viewId)
-//                    FragmentManagerBeta.add(parentView, TabCode.REGISTER_SELECT, RegisterMainFrame.viewId)
                 }
                 NavigatorEnum.REGISTER_CONFIRM ->
                 {
-                    TabCode.REGISTER_CONFIRM.FRAGMENT = ConfirmParcelFragment.newInstance(register = registerDTO)
+                    TabCode.REGISTER_CONFIRM.FRAGMENT = ConfirmParcelFragment.newInstance(register = registerDTO, beforeStep = 0)
                     FragmentManager.move(parentView, TabCode.REGISTER_CONFIRM, RegisterMainFragment.viewId)
                 }
             }
@@ -174,8 +173,6 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         super.onResume()
 
         SopoLog.d(msg = "OnResume")
-
-        // 0922 kh 추가사항 - 클립보드에 저장되어있는 운송장 번호가 로컬에 등록된 택배가 있을 때, 안띄어주는 로직 추가
 
         CoroutineScope(Dispatchers.Main).launch {
             val clipboardText = ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE) ?: return@launch
@@ -191,10 +188,10 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
 
     companion object
     {
-        fun newInstance(register: ParcelRegister?, returnType: Int?): InputParcelFragment
+        fun newInstance(parcelRegister: ParcelRegister?, returnType: Int?): InputParcelFragment
         {
             val args = Bundle().apply {
-                putSerializable(RegisterMainFragment.REGISTER_INFO, register)
+                putSerializable(RegisterMainFragment.REGISTER_INFO, parcelRegister)
                 putInt(RegisterMainFragment.RETURN_TYPE, returnType ?: RegisterMainFragment.REGISTER_PROCESS_RESET)
             }
 
