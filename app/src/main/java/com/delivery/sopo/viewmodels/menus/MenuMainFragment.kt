@@ -10,7 +10,7 @@ import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.views.main.MainView
 
-class MenuMainFrame: Fragment()
+class MenuMainFragment : Fragment()
 {
     lateinit var binding: FragmentMenuMainFrameBinding
     lateinit var parentView: MainView
@@ -27,7 +27,7 @@ class MenuMainFrame: Fragment()
         binding.lifecycleOwner = this
         viewId = binding.layoutMainMenuFrame.id
 
-        FragmentManager.move(parentView, TabCode.MY_MENU_MAIN, viewId)
+        FragmentManager.add(parentView, TabCode.MY_MENU_MAIN, viewId)
 
         return binding.root
     }

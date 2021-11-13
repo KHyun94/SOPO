@@ -12,7 +12,6 @@ import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
-import androidx.lifecycle.map
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
@@ -21,10 +20,9 @@ import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.viewmodels.menus.MenuMainFrame
+import com.delivery.sopo.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.viewmodels.menus.MenuSubViewModel
 import com.delivery.sopo.views.main.MainView
-import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import org.koin.android.ext.android.inject
 
 class MenuSubFragment: Fragment()
@@ -138,7 +136,7 @@ class MenuSubFragment: Fragment()
         SopoLog.d("!@#!@#!@#!@#!@#")
         FragmentManager.run {
             remove(parentView)
-            move(parentView, TabCode.MY_MENU_MAIN.apply { FRAGMENT = MenuFragment.newInstance() }, MenuMainFrame.viewId)
+            move(parentView, TabCode.MY_MENU_MAIN.apply { FRAGMENT = MenuFragment.newInstance() }, MenuMainFragment.viewId)
         }
     }
 

@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentInputParcelBinding
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.NavigatorEnum
@@ -72,6 +73,11 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
                 exitProcess(0)
             }
         }
+
+        if(returnType == RegisterMainFragment.REGISTER_PROCESS_SUCCESS)
+        {
+            SOPOApp.currentPage.postValue(NavigatorConst.INQUIRY_TAB)
+        }
     }
 
     override fun setAfterBinding()
@@ -83,9 +89,7 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
             vm.waybillNum.postValue(parcelRegister.waybillNum)
             binding.layoutWaybillNum.hint = ""
 
-            parcelRegister.carrier?.let {
-                vm.carrier.postValue(CarrierMapper.enumToObject(it))
-            }
+            parcelRegister.carrier?.let { vm.carrier.postValue(CarrierMapper.enumToObject(it)) }
         }
 
         binding.constraintMainRegister.setOnClickListener {

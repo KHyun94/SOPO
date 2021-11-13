@@ -31,34 +31,6 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
     private lateinit var parcelRegister: ParcelRegister
     private var beforeStep: Int = 0
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-
-        onSOPOBackPressedListener = object: OnSOPOBackPressListener
-        {
-            override fun onBackPressedInTime()
-            {
-                when(beforeStep)
-                {
-                    0->
-                    {
-                        TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
-                        FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
-                    }
-                    1->
-                    {
-                        TabCode.REGISTER_SELECT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
-                        FragmentManager.move(requireActivity(), TabCode.REGISTER_SELECT, RegisterMainFragment.viewId)
-                    }
-                }
-
-            }
-
-            override fun onBackPressedOutTime() {}
-        }
-    }
-
     override fun receiveData(bundle: Bundle)
     {
         super.receiveData(bundle)
@@ -87,11 +59,40 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
         catch(e: Exception)
         {
             SopoLog.e("등록 3단계 실패 - 데이터를 정상적으로 받지 못했습니다.", e)
-
             alertErrorMessage()
         }
 
     }
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+
+        onSOPOBackPressedListener = object: OnSOPOBackPressListener
+        {
+            override fun onBackPressedInTime()
+            {
+                when(beforeStep)
+                {
+                    0->
+                    {
+                        TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
+                        FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
+                    }
+                    1->
+                    {
+                        TabCode.REGISTER_SELECT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
+                        FragmentManager.move(requireActivity(), TabCode.REGISTER_SELECT, RegisterMainFragment.viewId)
+                    }
+                }
+
+            }
+
+            override fun onBackPressedOutTime() {}
+        }
+    }
+
+
 
 
     private fun alertErrorMessage(){
@@ -143,11 +144,14 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
                 else -> throw Exception("NOT SUPPORT REGISTER TYPE")
             }
 
-            FragmentManager.initFragment(activity = requireActivity(),
+            FragmentManager.remove(requireActivity())
+            FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
+
+           /* FragmentManager.initFragment(activity = requireActivity(),
                                          viewId = RegisterMainFragment.viewId,
                                          currentFragment = this@ConfirmParcelFragment,
                                          nextFragment = TabCode.REGISTER_INPUT.FRAGMENT,
-                                         nextFragmentTag = TabCode.REGISTER_INPUT.NAME)
+                                         nextFragmentTag = TabCode.REGISTER_INPUT.NAME)*/
 
         })
 

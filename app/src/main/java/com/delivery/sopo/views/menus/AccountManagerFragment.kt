@@ -5,24 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentAccountManagerBinding
-import com.delivery.sopo.enums.MenuEnum
-import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.launchActivity
-import com.delivery.sopo.util.AlertUtil
-import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.AccountManagerViewModel
-import com.delivery.sopo.viewmodels.menus.MenuMainFrame
 import com.delivery.sopo.views.login.ResetPasswordView
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.function.Function
 
 
 class AccountManagerFragment: Fragment()

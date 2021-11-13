@@ -12,24 +12,19 @@ import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.databinding.FragmentMenuBinding
 import com.delivery.sopo.enums.TabCode
-import com.delivery.sopo.models.PersonalMessage
-import com.delivery.sopo.util.BindUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.viewmodels.menus.MenuMainFrame
+import com.delivery.sopo.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.KoinComponent
-import org.koin.core.inject
 import kotlin.system.exitProcess
 
 class MenuFragment: Fragment(), KoinComponent
@@ -150,7 +145,7 @@ class MenuFragment: Fragment(), KoinComponent
                 else -> throw Exception("Menu is null")
             }
 
-            FragmentManager.move(parentView, TabCode.MY_MENU_SUB, MenuMainFrame.viewId)
+            FragmentManager.move(parentView, TabCode.MY_MENU_SUB, MenuMainFragment.viewId)
         })
     }
 

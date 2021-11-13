@@ -18,6 +18,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SimpleItemAnimator
 import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.databinding.FragmentInquiryReBinding
@@ -140,14 +141,21 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         getAdapter(InquiryItemTypeEnum.Soon).let { adapter ->
             soonArrivalParcelAdapter = adapter
             binding.recyclerviewSoonArrival.adapter = soonArrivalParcelAdapter
+            val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
+            animator.supportsChangeAnimations = false
+
         }
         getAdapter(InquiryItemTypeEnum.Registered).let { adapter ->
             registeredParcelAdapter = adapter
             binding.recyclerviewRegisteredParcel.adapter = registeredParcelAdapter
+            val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
+            animator.supportsChangeAnimations = false
         }
         getAdapter(InquiryItemTypeEnum.Complete).let { adapter ->
             completedParcelAdapter = adapter
             binding.recyclerviewCompleteParcel.adapter = completedParcelAdapter
+            val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
+            animator.supportsChangeAnimations = false
         }
     }
 
@@ -165,12 +173,12 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
     override fun setObserve()
     {
-        /*parentView.currentPage.observe(requireActivity(), Observer {
+        parentView.currentPage.observe(requireActivity(), Observer {
             if(it != null && it == TabCode.secondTab)
             {
-                requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), callback)
+                requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), onBackPressedCallback)
             }
-        })*/
+        })
 
         // 배송중 , 등록된 택배 리스트
         vm.ongoingList.observe(requireActivity(), Observer { list ->
@@ -494,8 +502,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             override fun onParcelClicked(view: View, type: Int, parcelId: Int)
             {
                 TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelId)
-                FragmentManager.move(requireActivity(), TabCode.INQUIRY_DETAIL,
-                                     InquiryMainFragment.viewId)
+                FragmentManager.move(requireActivity(), TabCode.INQUIRY_DETAIL, InquiryMainFragment.viewId)
             }
 
             override fun onParcelLongClicked(view: View, type: Int, parcelId: Int)

@@ -1,5 +1,6 @@
 package com.delivery.sopo.views.adapter
 
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -17,6 +18,12 @@ class ViewPagerAdapter(fragmentActivity: FragmentActivity, fragments:ArrayList<F
     {
         return items[position]
     }
+
+    override fun getItemId(position: Int): Long
+    {
+        return super.getItemId(position)
+    }
+
     /*   var currentFragment: Fragment
 
        var tab1stFragment: Fragment = RegisterMainFrame()

@@ -25,6 +25,7 @@ import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.models.SelectItem
+import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
@@ -40,11 +41,14 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class ParcelDetailView: Fragment()
+class ParcelDetailView: BaseView<ParcelDetailViewBinding, ParcelDetailViewModel>()
 {
-    private lateinit var parentView: MainView
-    lateinit var binding: ParcelDetailViewBinding
-    private val vm: ParcelDetailViewModel by viewModel()
+
+
+    override val layoutRes: Int = R.layout.parcel_detail_view
+    override val mainLayout: View by lazy { binding.relativeMainInquiryDetail }
+
+    override val vm: ParcelDetailViewModel by viewModel()
 
     private var slideViewStatus = 0
 

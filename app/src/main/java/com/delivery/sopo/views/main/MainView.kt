@@ -21,10 +21,10 @@ import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.services.PowerManager
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.main.MainViewModel
-import com.delivery.sopo.viewmodels.menus.MenuMainFrame
+import com.delivery.sopo.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
-import com.delivery.sopo.views.inquiry.InquiryFragment
 import com.delivery.sopo.views.inquiry.InquiryMainFragment
 import com.delivery.sopo.views.menus.LockScreenView
 import com.delivery.sopo.views.menus.MenuFragment
@@ -46,7 +46,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
     lateinit var tab2ndBinding: ItemMainTabBinding
     lateinit var tab3rdBinding: ItemMainTabBinding
 
-    private val baseFragments = arrayListOf(RegisterMainFragment(), InquiryMainFragment(), MenuMainFrame())
+    private val baseFragments = arrayListOf(RegisterMainFragment(), InquiryMainFragment(), MenuMainFragment())
 
     private val appPasswordRepo: AppPasswordRepository by inject()
 
@@ -94,6 +94,9 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
         SOPOApp.currentPage.observe(this, Observer {
             if(it == null) return@Observer
+
+            SopoLog.d("MainView:CurrentPage [pos:$it]")
+
             when(it)
             {
                 NavigatorConst.REGISTER_TAB -> binding.layoutViewPager.setCurrentItem(NavigatorConst.REGISTER_TAB, true)
@@ -200,7 +203,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
                     {
                         FragmentManager.move(activity = this@MainView, code = TabCode.MY_MENU_MAIN.apply {
                             FRAGMENT = MenuFragment.newInstance()
-                        }, viewId = MenuMainFrame.viewId)
+                        }, viewId = MenuMainFragment.viewId)
                     }
                 }
             }
