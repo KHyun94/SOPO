@@ -21,7 +21,6 @@ import com.delivery.sopo.util.ui_util.CustomSnackBar
 
 abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
 {
-
     lateinit var binding: T
     abstract val layoutRes: Int
     abstract val vm: R
