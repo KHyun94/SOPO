@@ -155,6 +155,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
         val adapter = ViewPagerAdapter(this, baseFragments)
 
         binding.layoutViewPager.adapter = adapter
+        binding.layoutViewPager.offscreenPageLimit = 2
 
         val onTabSelectedListener = object: TabLayout.OnTabSelectedListener
         {
@@ -246,14 +247,5 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
         tabBinding.tvTabName.setTextColor(ContextCompat.getColor(this@MainView, textColor))
 
         return tabBinding
-    }
-
-    fun onCompleteRegister()
-    {
-        binding.layoutViewPager.currentItem = 1
-        /*GlobalScope.launch {
-            vm.requestOngoingParcels()
-        }*/
-
     }
 }

@@ -25,7 +25,7 @@ interface ParcelDataSource {
    suspend fun insetEntity(parcel: ParcelEntity)
    suspend fun insertEntities(parcelResponseList: List<ParcelResponse>)
 
-   suspend fun updateEntity(parcel: ParcelEntity): Int
+   suspend fun update(parcel: ParcelEntity): Int
     suspend fun updateEntities(parcelResponseList: List<ParcelResponse>)
 
    suspend fun deleteLocalParcels(parcelIdList: List<Int>)

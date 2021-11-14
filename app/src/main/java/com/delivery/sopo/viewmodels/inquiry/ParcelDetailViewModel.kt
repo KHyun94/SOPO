@@ -198,7 +198,7 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
 
     private suspend fun updateParcelData(parcelEntity: ParcelEntity) =
         withContext(Dispatchers.Default) {
-            parcelRepo.updateEntity(parcelEntity)
+            parcelRepo.update(parcelEntity)
         }
 
     private suspend fun updateIsBeUpdate(parcelId: Int, status: Int) =
@@ -218,7 +218,7 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
     suspend fun updateUnidentifiedStatusToZero(parcelId: Int) = withContext(Dispatchers.Default) {
         parcelManagementRepoImpl.run {
             val status = getUnidentifiedStatusByParcelId(parcelId)
-            if(status == StatusConst.ACTIVATE) parcelManagementRepoImpl.updateIsUnidentified(
+            if(status == StatusConst.ACTIVATE) parcelManagementRepoImpl.updateUnidentifiedStatus(
                 parcelId = parcelId, value = StatusConst.DEACTIVATE)
         }
     }

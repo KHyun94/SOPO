@@ -152,17 +152,9 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         appDatabase.parcelDao().insert(parcel)
     }
 
-
-    suspend fun saveLocalCompleteParcels(parcelResponseList: List<ParcelResponse>)
-    {
-        appDatabase.parcelDao().insert(parcelResponseList.map(ParcelMapper::parcelToParcelEntity))
-    }
-
-
-    override suspend fun updateEntity(parcel: ParcelEntity): Int
-    {
+    override suspend fun update(parcel: ParcelEntity): Int = withContext(Dispatchers.Default) {
         parcel.auditDte = TimeUtil.getDateTime()
-        return appDatabase.parcelDao().update(parcel)
+        return@withContext appDatabase.parcelDao().update(parcel)
     }
 
     override suspend fun updateEntities(parcelResponseList: List<ParcelResponse>)

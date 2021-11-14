@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.LayoutRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.app.ActivityCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -24,7 +25,9 @@ import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
 import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.models.SelectItem
+import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.FragmentManager
@@ -33,55 +36,64 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.views.main.MainView
+import com.google.android.material.snackbar.Snackbar
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.properties.Delegates
+import kotlin.system.exitProcess
 
 
-class ParcelDetailView: BaseView<ParcelDetailViewBinding, ParcelDetailViewModel>()
+class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewModel>()
 {
-
+    private val parentView: MainView by lazy { activity as MainView }
 
     override val layoutRes: Int = R.layout.parcel_detail_view
     override val mainLayout: View by lazy { binding.relativeMainInquiryDetail }
-
     override val vm: ParcelDetailViewModel by viewModel()
 
     private var slideViewStatus = 0
 
     private var progressBar: CustomProgressBar? = null
 
+    var parcelId by Delegates.notNull<Int>()
+
+    override fun receiveData(bundle: Bundle)
+    {
+        super.receiveData(bundle)
+
+        parcelId = bundle.getInt(PARCEL_ID)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
 
-        parentView = activity as MainView
-        receiveBundleData()
+        onSOPOBackPressedListener = object: OnSOPOBackPressListener
+        {
+            override fun onBackPressedInTime()
+            {
+                FragmentManager.remove(requireActivity())
+            }
+
+            override fun onBackPressedOutTime()
+            {
+            }
+        }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+
+    override fun setAfterBinding()
     {
-        binding = bindView(inflater = inflater, container = container, layoutRes = R.layout.parcel_detail_view)
-        setObserve()
+        super.setAfterBinding()
+
+        vm.parcelId.postValue(parcelId)
+
         setViewSetting()
         setListener()
-
-        return binding.root
-    }
-
-    override fun onDestroyView()
-    {
-        super.onDestroyView()
-        val vg = binding.root.parent as ViewGroup?
-        vg?.removeView(binding.root)
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?)
-    {
-        super.onActivityCreated(savedInstanceState)
 
         var _slideOffset: Float = 0.0f
 
@@ -117,10 +129,10 @@ class ParcelDetailView: BaseView<ParcelDetailViewBinding, ParcelDetailViewModel>
                             binding.includeFull.root.visibility = View.VISIBLE
                             slideViewStatus = 1
                         }
-                     }
-                 }
+                    }
+                }
 
-             }
+            }
 
             override fun onPanelStateChanged(panel: View?, previousState: PanelState?, newState: PanelState)
             {
@@ -134,19 +146,11 @@ class ParcelDetailView: BaseView<ParcelDetailViewBinding, ParcelDetailViewModel>
         })
     }
 
-    override fun onDetach()
+    override fun onDestroyView()
     {
-        super.onDetach()
-        callback!!.remove()
-    }
-
-    private fun receiveBundleData()
-    {
-        arguments?.let { bundle ->
-            val parcelId = bundle.getInt(PARCEL_ID)
-            SopoLog.d("[$parcelId]의 상세 페이지")
-            vm.parcelId.value = parcelId
-        }
+        super.onDestroyView()
+        val vg = binding.root.parent as ViewGroup?
+        vg?.removeView(binding.root)
     }
 
     private fun pasteWaybillNumIntoClipboard(tv: TextView)
@@ -170,17 +174,12 @@ class ParcelDetailView: BaseView<ParcelDetailViewBinding, ParcelDetailViewModel>
             pasteWaybillNumIntoClipboard(binding.includeFull.tvWaybillNum)
         }
     }
-
-    private fun <T: ViewDataBinding> bindView(inflater: LayoutInflater, @LayoutRes layoutRes: Int, container: ViewGroup?): T
+    override fun setObserve()
     {
-        val binding = DataBindingUtil.inflate<T>(inflater, layoutRes, container, false)
-        binding.setVariable(BR.vm, vm)
-        binding.lifecycleOwner = this
-        return binding
-    }
+        super.setObserve()
 
-    private fun setObserve()
-    {
+        if(activity == null) return
+
         parentView.currentPage.observe(requireActivity(), Observer {
             if(it != null && it == TabCode.secondTab)
             {

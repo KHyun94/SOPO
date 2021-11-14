@@ -15,13 +15,13 @@ interface ParcelManagementRepository {
    suspend fun getUnidentifiedStatusByParcelId(parcelId: Int) : Int
    fun insertEntity(parcelStatusEntity: ParcelStatusEntity)
    fun insertEntities(parcelStatusEntityList: List<ParcelStatusEntity>)
-   suspend fun updateEntity(parcelStatusEntity: ParcelStatusEntity)
+   suspend fun update(parcelStatusEntity: ParcelStatusEntity)
    suspend fun updateEntities(parcelStatusEntityList: List<ParcelStatusEntity>)
    suspend fun updateUpdatableStatus(parcelId:Int, status : Int)
    fun getEntity(parcelId: Int): ParcelStatusEntity?
    suspend fun initializeIsBeUpdate(parcelId:Int)
    suspend fun updateTotalIsBeDeliveredToZero()
    suspend fun updateIsBeDeleteToOneByParcelIdList(parcelIdList: List<Int>)
-   fun updateIsUnidentified(parcelId: Int, value : Int) : Int
+   suspend fun updateUnidentifiedStatus(parcelId: Int, value : Int) : Int
 
 }

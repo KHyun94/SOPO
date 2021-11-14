@@ -20,7 +20,7 @@ object FragmentManager
             .commit()
     }
 
-    fun move(activity: FragmentActivity, code: TabCode, @IdRes viewId: Int)
+    fun move(activity: FragmentActivity, code: TabCode, @IdRes viewId: Int, isAdd:Boolean = false)
     {
         SopoLog.d("move() 호출:[Fragment:${code.NAME}][viewId:$viewId]")
 
@@ -34,24 +34,10 @@ object FragmentManager
             SopoLog.d("중첩 프래그먼트[${code}] 존재 삭제 중? : ${code.FRAGMENT.isRemoving}")
         }
 */
-        when(code.TAB_NO)
-        {
-            TabCode.firstTab ->
-            {
-            }
-            TabCode.secondTab ->
-            {
-
-            }
-            TabCode.thirdTab ->
-            {
-
-            }
-        }
 
         transaction.run {
             replace(viewId, code.FRAGMENT, code.NAME)
-//            addToBackStack(null)
+            if(isAdd) addToBackStack(null)
             commit()
         }
     }

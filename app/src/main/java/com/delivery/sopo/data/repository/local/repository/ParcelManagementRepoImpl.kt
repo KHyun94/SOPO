@@ -53,7 +53,7 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
         appDatabase.parcelManagementDao().insert(parcelStatusEntityList)
     }
 
-    override suspend fun updateEntity(parcelStatusEntity: ParcelStatusEntity){
+    override suspend fun update(parcelStatusEntity: ParcelStatusEntity)= withContext(Dispatchers.Default){
         parcelStatusEntity.auditDte = TimeUtil.getDateTime()
         appDatabase.parcelManagementDao().update(parcelStatusEntity)
     }
@@ -79,7 +79,9 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
         }
     }
 
-    override fun updateIsUnidentified(parcelId:Int, value: Int) = appDatabase.parcelManagementDao().updateIsUnidentified(parcelId, value)
+    override suspend fun updateUnidentifiedStatus(parcelId:Int, value: Int) = withContext(Dispatchers.Default){
+        appDatabase.parcelManagementDao().updateIsUnidentified(parcelId, value)
+    }
 
     override suspend fun initializeIsBeUpdate(parcelId:Int){
         getEntity(parcelId = parcelId)?.apply {

@@ -1,7 +1,6 @@
 package com.delivery.sopo.views.inquiry
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -36,7 +35,6 @@ import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
@@ -48,7 +46,6 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import java.util.function.Function
-import kotlin.NoSuchElementException
 import kotlin.system.exitProcess
 
 
@@ -69,19 +66,19 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     private var menuPopUpWindow: PopupWindow? = null
     private var historyPopUpWindow: PopupWindow? = null
 
-    private var progressBar: CustomProgressBar? = null
-
     private var refreshDelay: Boolean = false
 
-    override fun onAttach(context: Context)
+    override fun onCreate(savedInstanceState: Bundle?)
     {
-        super.onAttach(context)
+        super.onCreate(savedInstanceState)
 
-        onSOPOBackPressedListener = object: OnSOPOBackPressListener{
+        onSOPOBackPressedListener = object: OnSOPOBackPressListener
+        {
             override fun onBackPressedInTime()
             {
                 Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
-                    .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }.show()
+                    .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }
+                    .show()
             }
 
             override fun onBackPressedOutTime()
@@ -92,17 +89,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility", "RestrictedApi")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
-    {
-        super.onViewCreated(view, savedInstanceState)
-
-        setAdapters()
-        setListener()
-        binding.ivPopMenu.setOnClickListener {
-            openInquiryMenu(it)
-        }
-    }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun setBeforeBinding()
@@ -114,6 +100,10 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     override fun setAfterBinding()
     {
         setAdapters()
+        setListener()
+        binding.ivPopMenu.setOnClickListener {
+            openInquiryMenu(it)
+        }
 
         binding.vEmpty2.setOnTouchListener { v, event ->
             return@setOnTouchListener binding.linearMonthSelector.dispatchTouchEvent(event)
@@ -129,8 +119,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
     private fun getAdapter(inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter
     {
-        SopoLog.d("Test2. getAdapter")
-
         return InquiryListAdapter(parcelType = inquiryItemTypeEnum).apply {
             this.setOnParcelClickListener(getParcelClicked())
         }
@@ -143,7 +131,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             binding.recyclerviewSoonArrival.adapter = soonArrivalParcelAdapter
             val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
             animator.supportsChangeAnimations = false
-
         }
         getAdapter(InquiryItemTypeEnum.Registered).let { adapter ->
             registeredParcelAdapter = adapter
@@ -159,13 +146,15 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         }
     }
 
-    private fun activateInquiryStatus(tv: TextView){
+    private fun activateInquiryStatus(tv: TextView)
+    {
         tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE))
         tv.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_light_black)
         tv.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
     }
 
-    private fun inactivateInquiryStatus(tv: TextView){
+    private fun inactivateInquiryStatus(tv: TextView)
+    {
         tv.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium)
         tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
         tv.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_color_gray_400)
@@ -173,7 +162,11 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
     override fun setObserve()
     {
+        super.setObserve()
+
+        if(activity == null) return
         parentView.currentPage.observe(requireActivity(), Observer {
+
             if(it != null && it == TabCode.secondTab)
             {
                 requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), onBackPressedCallback)
@@ -183,6 +176,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         // 배송중 , 등록된 택배 리스트
         vm.ongoingList.observe(requireActivity(), Observer { list ->
 
+            SopoLog.d("TEST -> 택배는 어디갔냐 ${list.size}")
+
             soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
             registeredParcelAdapter.separateDeliveryListByStatus(list)
 
@@ -190,12 +185,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
         })
 
-
-        // '배송 중' 또는 '배송 완료' 화면에 따른 화면 세팅
-        // TODO 데이터 바인딩으로 처리할 수 있으면 처리하도록 수정해야함.
         vm.inquiryStatus.observe(requireActivity()) {
-
-            SopoLog.d("Inquiry Status -> ${it}")
 
             when(it)
             {
@@ -238,44 +228,10 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         })
 
 
-        /** 배송 완료
-         */
-        // 배송완료 리스트에서 해당 년월에 속해있는 택배들을 전부 삭제했을 때는 서버로 통신해서 새로고침하면 안돼고 무조건 로컬에 있는 데이터로 새로고침 해야한다.
-        // (서버로 통신해서 새로고침하면 서버에 있는 데이터(우선순위가 높음)로 덮어써버리기 때문에 '삭제취소'를 통해 복구를 못함..)
-        // (새로고침하면 내부에 저장된 '삭제할 데이터'들을 모두 서버로 통신하여 Remote database에서도 삭제처리(데이터 동기화)를 하고 나서 새로운 데이터를 받아옴)
-/*        vm.refreshCompleteListByOnlyLocalData.observe(requireActivity(), Observer {
-            if(it > 0)
-            {
-                vm.refreshCompleteListByOnlyLocalData()
-            }
-        })*/
-
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity(), Observer { list ->
-            SopoLog.d("!!! 완료 택배 갯수 ${list.size}")
-
-            val ml = list.toMutableList()
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-            ml.addAll(list)
-
             list.sortByDescending { it.parcelResponse.arrivalDte }
-            completedParcelAdapter.notifyChanged(ml)
+            completedParcelAdapter.notifyChanged(list)
         })
 
 
@@ -288,9 +244,12 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                 return@observe
             }
 
-            val latestDate = try {
-                dates.first { date -> date.count > 0}
-            } catch(e:NoSuchElementException){
+            val latestDate = try
+            {
+                dates.first { date -> date.count > 0 }
+            }
+            catch(e: NoSuchElementException)
+            {
                 dates.first()
             }
 
@@ -320,19 +279,12 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
                 val (clickable, textColor, font) = if(it.item.count > 0)
                 {
-                    Triple(first = true,
-                           second = if(it.isSelect) ContextCompat.getColor(requireContext(),
-                                                                           R.color.MAIN_WHITE)
-                           else ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800),
-                           third = ResourcesCompat.getFont(requireContext(),
-                                                           R.font.spoqa_han_sans_neo_bold))
+                    Triple(first = true, second = if(it.isSelect) ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE)
+                    else ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800), third = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_bold))
                 }
                 else
                 {
-                    Triple(first = false, second = ContextCompat.getColor(requireContext(),
-                                                                          R.color.COLOR_GRAY_300),
-                           third = ResourcesCompat.getFont(requireContext(),
-                                                           R.font.spoqa_han_sans_neo_regular))
+                    Triple(first = false, second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300), third = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular))
                 }
 
                 when(it.item.month)
@@ -344,9 +296,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                             typeface = font
                             isClickable = clickable
                             isFocusable = clickable
-                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
-                                                                                   R.drawable.oval_24dp_gray_scale)
-                            else null
+                            background =
+                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                else null
                         }
                     }
                     "02" ->
@@ -356,9 +308,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                             typeface = font
                             isClickable = clickable
                             isFocusable = clickable
-                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
-                                                                                   R.drawable.oval_24dp_gray_scale)
-                            else null
+                            background =
+                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                else null
                         }
                     }
                     "03" ->
@@ -369,9 +321,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                             isClickable = clickable
                             isFocusable = clickable
                             isFocusable = clickable
-                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
-                                                                                   R.drawable.oval_24dp_gray_scale)
-                            else null
+                            background =
+                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                else null
                         }
                     }
                     "04" ->
@@ -381,9 +333,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                             typeface = font
                             isClickable = clickable
                             isFocusable = clickable
-                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
-                                                                                   R.drawable.oval_24dp_gray_scale)
-                            else null
+                            background =
+                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                else null
                         }
                     }
                     "05" ->
@@ -393,9 +345,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                             typeface = font
                             isClickable = clickable
                             isFocusable = clickable
-                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
-                                                                                   R.drawable.oval_24dp_gray_scale)
-                            else null
+                            background =
+                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                else null
                         }
                     }
                     "06" ->
@@ -405,9 +357,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                             typeface = font
                             isClickable = clickable
                             isFocusable = clickable
-                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
-                                                                                   R.drawable.oval_24dp_gray_scale)
-                            else null
+                            background =
+                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                else null
                         }
                     }
                     "07" ->
@@ -417,9 +369,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                             typeface = font
                             isClickable = clickable
                             isFocusable = clickable
-                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
-                                                                                   R.drawable.oval_24dp_gray_scale)
-                            else null
+                            background =
+                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                else null
                         }
                     }
                     "08" ->
@@ -429,9 +381,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                             typeface = font
                             isClickable = clickable
                             isFocusable = clickable
-                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
-                                                                                   R.drawable.oval_24dp_gray_scale)
-                            else null
+                            background =
+                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                else null
                         }
                     }
                     "09" ->
@@ -441,9 +393,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                             typeface = font
                             isClickable = clickable
                             isFocusable = clickable
-                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
-                                                                                   R.drawable.oval_24dp_gray_scale)
-                            else null
+                            background =
+                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                else null
                         }
                     }
                     "10" ->
@@ -453,9 +405,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                             typeface = font
                             isClickable = clickable
                             isFocusable = clickable
-                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
-                                                                                   R.drawable.oval_24dp_gray_scale)
-                            else null
+                            background =
+                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                else null
                         }
                     }
                     "11" ->
@@ -465,9 +417,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                             typeface = font
                             isClickable = clickable
                             isFocusable = clickable
-                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
-                                                                                   R.drawable.oval_24dp_gray_scale)
-                            else null
+                            background =
+                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                else null
                         }
                     }
                     "12" ->
@@ -477,9 +429,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                             typeface = font
                             isClickable = clickable
                             isFocusable = clickable
-                            background = if(it.isSelect) ContextCompat.getDrawable(requireContext(),
-                                                                                   R.drawable.oval_24dp_gray_scale)
-                            else null
+                            background =
+                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                else null
                         }
                     }
                 }
@@ -502,37 +454,35 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             override fun onParcelClicked(view: View, type: Int, parcelId: Int)
             {
                 TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelId)
-                FragmentManager.move(requireActivity(), TabCode.INQUIRY_DETAIL, InquiryMainFragment.viewId)
+                FragmentManager.move(requireActivity(), TabCode.INQUIRY_DETAIL, InquiryMainFragment.viewId, true)
             }
 
             override fun onParcelLongClicked(view: View, type: Int, parcelId: Int)
             {
                 val edit = MutableLiveData<String>()
 
-                AlertUtil.updateValueDialog(requireContext(), "물품명을 입력해주세요.",
-                                            Pair("확인", View.OnClickListener {
-                                                edit.observe(requireActivity(), Observer { alias ->
+                AlertUtil.updateValueDialog(requireContext(), "물품명을 입력해주세요.", Pair("확인", View.OnClickListener {
+                    edit.observe(requireActivity(), Observer { alias ->
 
-                                                    val updateAliasRequest =
-                                                        UpdateAliasRequest(parcelId = parcelId,
-                                                                           alias = alias)
+                        val updateAliasRequest =
+                            UpdateAliasRequest(parcelId = parcelId, alias = alias)
 
-                                                    vm.onUpdateParcelAlias(updateAliasRequest)
+                        vm.onUpdateParcelAlias(updateAliasRequest)
 
-                                                    AlertUtil.onDismiss()
+                        AlertUtil.onDismiss()
 
-                                                    if(type == 0)
-                                                    {
-                                                        vm.refreshOngoingParcels()
-                                                    }
-                                                    else
-                                                    {
-                                                        vm.refreshCompleteParcels()
-                                                    }
-                                                })
-                                            }), Pair("취소", null), Function {
-                        edit.value = it
+                        if(type == 0)
+                        {
+                            vm.syncParcelsByOngoing()
+                        }
+                        else
+                        {
+                            vm.refreshCompleteParcels()
+                        }
                     })
+                }), Pair("취소", null), Function {
+                    edit.value = it
+                })
             }
 
         }
@@ -552,16 +502,15 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
         val popUpView: PopupMenuViewBinding =
             PopupMenuViewBinding.inflate(LayoutInflater.from(requireContext())).also { v ->
-                val popupMenuListAdapter = PopupMenuListAdapter(
-                    MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
+                val popupMenuListAdapter =
+                    PopupMenuListAdapter(MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
 
 
                 v.recyclerviewInquiryPopupMenu.also {
                     it.adapter = popupMenuListAdapter
                     val dividerItemDecoration =
                         DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                    dividerItemDecoration.setDrawable(
-                        ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
+                    dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
                     it.addItemDecoration(dividerItemDecoration)
 
                     // 'Inquiry' 화면 우측 상단의 메뉴 아이템 이벤트
@@ -577,7 +526,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                                                                  override fun refreshItems(v: View)
                                                                  {
                                                                      // 새로고침
-                                                                     vm.refreshOngoingParcels()
+                                                                     vm.syncParcelsByOngoing()
                                                                      menuPopUpWindow?.dismiss()
                                                                  }
 
@@ -591,8 +540,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             }
 
         menuPopUpWindow =
-            PopupWindow(popUpView.root, SizeUtil.changeDpToPx(binding.root.context, 175F),
-                        ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
+            PopupWindow(popUpView.root, SizeUtil.changeDpToPx(binding.root.context, 175F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
                 showAsDropDown(anchorView)
             }
 
@@ -602,15 +550,18 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun drawCompletedParcelHistoryPopMenu(anchorView: View, histories: List<CompletedParcelHistory>)
     {
-        val historyPopUpView: PopupMenuViewBinding = PopupMenuViewBinding.inflate(LayoutInflater.from(context)).also { v ->
+        val historyPopUpView: PopupMenuViewBinding =
+            PopupMenuViewBinding.inflate(LayoutInflater.from(context)).also { v ->
 
-                val inquiryMenuItems = MenuMapper.completeParcelStatusDTOToMenuItem(histories) as MutableList<InquiryMenuItem>
+                val inquiryMenuItems =
+                    MenuMapper.completeParcelStatusDTOToMenuItem(histories) as MutableList<InquiryMenuItem>
 
                 val popupMenuListAdapter = PopupMenuListAdapter(inquiryMenuItems)
 
                 v.recyclerviewInquiryPopupMenu.also {
                     it.adapter = popupMenuListAdapter
-                    val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                    val dividerItemDecoration =
+                        DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
                     dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
                     it.addItemDecoration(dividerItemDecoration)
 
@@ -629,15 +580,13 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             }
         historyPopUpWindow = if(histories.size > 2)
         {
-            PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F),
-                        SizeUtil.changeDpToPx(binding.root.context, 35 * 6F), true).apply {
+            PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F), SizeUtil.changeDpToPx(binding.root.context, 35 * 6F), true).apply {
                 showAsDropDown(anchorView)
             }
         }
         else
         {
-            PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F),
-                        ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
+            PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
                 showAsDropDown(anchorView)
             }
         }
@@ -660,7 +609,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                     }
                     InquiryStatusEnum.ONGOING ->
                     {
-                        vm.refreshOngoingParcels()
+                        vm.syncParcelsByOngoing()
                     }
                 }
 
@@ -701,7 +650,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                     SopoLog.d("완료 택배 RecyclerView $date")
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        vm.getCompleteListWithPaging(MenuMapper.titleToInquiryDate(date ?: return@launch))
+                        vm.getCompleteListWithPaging(MenuMapper.titleToInquiryDate(date
+                                                                                       ?: return@launch))
                     }
                 }
             }
@@ -784,7 +734,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         binding.ivPopMenu.visibility = VISIBLE
 
 
-
         // 삭제하기 취소가 되었을때 화면의 리스트들을 앱이 켜졌을때 처럼 초기화 시켜준다.( '더보기'가 눌렸었는지 아니면 내가 전에 리스트들의 스크롤을 얼마나 내렸는지를 일일이 알고 있기 힘들기 때문에)
         viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
         viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
@@ -792,11 +741,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
     fun setDefaultMonthSelector()
     {
-        val (clickable, textColor, font) = Triple(first = false,
-                                                  second = ContextCompat.getColor(requireContext(),
-                                                                                  R.color.COLOR_GRAY_300),
-                                                  third = ResourcesCompat.getFont(requireContext(),
-                                                                                  R.font.spoqa_han_sans_neo_regular))
+        val (clickable, textColor, font) = Triple(first = false, second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300), third = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular))
 
 
         binding.tvJan.apply {
