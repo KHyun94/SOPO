@@ -137,7 +137,7 @@ class FirebaseService: FirebaseMessagingService()
             }
             else
             {
-                val parcelDTO = ParcelMapper.parcelEntityToParcel(parcelEntity = ParcelMapper.objectToEntity(parcelEntity))
+                val parcelDTO = ParcelMapper.parcelEntityToParcel(parcelEntity = ParcelMapper.parcelObjectToEntity(parcelEntity))
                 listOf(parcelDTO)
             }
         }
@@ -148,9 +148,9 @@ class FirebaseService: FirebaseMessagingService()
             if(parcels[index]?.status != StatusConst.ACTIVATE) continue
             if(parcels[index]?.deliveryStatus == updateParcelIds[index].deliveryStatus) continue
 
-            val parcelStatusEntity = parcelManagementRepo.getEntity(updateParcelIds[index].parcelId) ?: ParcelMapper.parcelToParcelManagementEntity(parcels[index] ?: continue)
+            val parcelStatus = parcelManagementRepo.getParcelStatus(updateParcelIds[index].parcelId) ?: ParcelMapper.parcelToParcelStatus(parcels[index] ?: continue)
 
-            parcelStatusEntity.apply {
+            parcelStatus.apply {
                 // 업데이트 가능 상태, 앱을 켜면 자동 업데이트
                 updatableStatus = 1
                 auditDte = TimeUtil.getDateTime()
@@ -158,8 +158,6 @@ class FirebaseService: FirebaseMessagingService()
                 // 배송 상태가 완료로 변경되있을 시 완료 뱃지에 수를 표기하기 위한 상태값 변경
                 if(parcels[index]?.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE) deliveredStatus = 1
             }
-
-
         }
 
         info.updatedParcelIds.forEach { updateParcelDao ->
@@ -170,13 +168,13 @@ class FirebaseService: FirebaseMessagingService()
 
             if(!updateParcelDao.compareDeliveryStatus(parcelResponse)) return
 
-            val parcelEntity = ParcelMapper.objectToEntity(updateParcelDao.getParcel() ?: return)
+            val parcel = updateParcelDao.getParcel() ?: return
 
             // 현재 해당 택배가 가지고 있는 배송 상태와 fcm으로 넘어온 배송상태가 다른 경우만 노티피케이션을 띄운다!
-            val parcelManagementEntity = parcelManagementRepo.getEntity(updateParcelDao.parcelId)
-                ?: ParcelMapper.parcelEntityToParcelManagementEntity(parcelEntity)
+            val parcelStatus = parcelManagementRepo.getParcelStatus(updateParcelDao.parcelId)
+                ?: ParcelMapper.parcelToParcelStatus(parcel)
 
-            parcelManagementEntity.run {
+            parcelStatus.run {
 
                 SopoLog.d("parcelManagementEntity Update>>> ")
 
@@ -196,10 +194,10 @@ class FirebaseService: FirebaseMessagingService()
             }
 
             withContext(Dispatchers.Default) {
-                parcelManagementRepo.insertEntity(parcelManagementEntity)
+                parcelManagementRepo.insertParcelStatus(parcelStatus)
             }
 
-            with(updateParcelDao.getMessage(parcelEntity)) {
+            with(updateParcelDao.getMessage(parcel)) {
                 SopoLog.d("Noti Msg >>> $this")
                 msgList.add(this)
             }

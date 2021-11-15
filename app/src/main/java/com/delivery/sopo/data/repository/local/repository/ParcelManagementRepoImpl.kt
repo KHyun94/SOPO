@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.data.repository.local.datasource.ParcelManagementRepository
+import com.delivery.sopo.models.mapper.ParcelMapper
+import com.delivery.sopo.models.parcel.ParcelStatus
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -44,13 +46,20 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
         appDatabase.parcelManagementDao().getUnidentifiedStatusByParcelId(parcelId = parcelId)
     }
 
-    override fun insertEntity(parcelStatusEntity: ParcelStatusEntity){
+/*    override fun insertEntity(parcelStatusEntity: ParcelStatusEntity){
         appDatabase.parcelManagementDao().insert(parcelStatusEntity)
+    }*/
+
+    override fun insertParcelStatus(parcelStatus: ParcelStatus){
+        appDatabase.parcelManagementDao().insert(ParcelMapper.parcelStatusObjectToEntity(parcelStatus))
     }
 
-    override fun insertEntities(parcelStatusEntityList: List<ParcelStatusEntity>){
-        parcelStatusEntityList.forEach { it.auditDte = TimeUtil.getDateTime() }
-        appDatabase.parcelManagementDao().insert(parcelStatusEntityList)
+    override fun insertParcelStatuses(parcelStatusList: List<ParcelStatus>){
+        val entities = parcelStatusList.map{
+            it.auditDte =TimeUtil.getDateTime()
+            ParcelMapper.parcelStatusObjectToEntity(it)
+        }
+        appDatabase.parcelManagementDao().insert(entities)
     }
 
     override suspend fun update(parcelStatusEntity: ParcelStatusEntity)= withContext(Dispatchers.Default){
@@ -58,15 +67,16 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
         appDatabase.parcelManagementDao().update(parcelStatusEntity)
     }
 
-    override suspend fun updateEntities(parcelStatusEntityList: List<ParcelStatusEntity>){
-        parcelStatusEntityList.forEach { it.auditDte = TimeUtil.getDateTime() }
-        appDatabase.parcelManagementDao().update(parcelStatusEntityList)
+    override suspend fun updateParcelStatuses(parcelStatuses: List<ParcelStatus>){
+        val entities = parcelStatuses.map(ParcelMapper::parcelStatusObjectToEntity)
+        appDatabase.parcelManagementDao().update(entities)
     }
 
     override suspend fun updateUpdatableStatus(parcelId:Int, status : Int) = appDatabase.parcelManagementDao().updateIsBeUpdate(parcelId, status)
 
-    override fun getEntity(parcelId:Int): ParcelStatusEntity? {
-        return appDatabase.parcelManagementDao().getById(parcelId)
+    override fun getParcelStatus(parcelId:Int): ParcelStatus? {
+        val entity = appDatabase.parcelManagementDao().getById(parcelId)?:return null
+        return ParcelMapper.parcelStatusEntityToObject(entity)
     }
 
     override suspend fun updateTotalIsBeDeliveredToZero(){
@@ -81,14 +91,6 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
 
     override suspend fun updateUnidentifiedStatus(parcelId:Int, value: Int) = withContext(Dispatchers.Default){
         appDatabase.parcelManagementDao().updateIsUnidentified(parcelId, value)
-    }
-
-    override suspend fun initializeIsBeUpdate(parcelId:Int){
-        getEntity(parcelId = parcelId)?.apply {
-            this.updatableStatus = 0
-            this.auditDte = TimeUtil.getDateTime()
-            insertEntity(this)
-        }
     }
 
     override suspend fun getAll(): List<ParcelStatusEntity>?{

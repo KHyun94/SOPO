@@ -10,6 +10,7 @@ import com.delivery.sopo.data.repository.local.repository.*
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.networks.repository.JoinRepositoryImpl
+import com.delivery.sopo.use_case.SyncParcelsUseCase
 import com.delivery.sopo.util.ui_util.CustomProgressBar
 import com.delivery.sopo.viewmodels.IntroViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryMainViewModel
@@ -44,7 +45,7 @@ val appModule = module {
     single { UserLocalRepository(get()) }
     factory { UserRemoteRepository() }
     factory { JoinRepositoryImpl() }
-    factory { ParcelRepository(get(), get(),get()) }
+    factory { ParcelRepository(get(), get(),get(), get()) }
     single { AppDatabase.getInstance(get()) }
     single { CarrierRepository(get()) }
     single { ParcelManagementRepoImpl(get()) }
@@ -52,7 +53,7 @@ val appModule = module {
     single { AppPasswordRepository(get()) }
     single { OAuthLocalRepository(get()) }
 
-//    factory { LoginBySelfUseCase(get(), get()) }
+    factory { SyncParcelsUseCase(get()) }
 
     viewModel { SplashViewModel(get(), get(), get()) }
     viewModel { IntroViewModel() }
@@ -70,7 +71,7 @@ val appModule = module {
     viewModel { FaqViewModel() }
     viewModel { AppInfoViewModel() }
     viewModel { NotDisturbTimeViewModel() }
-    viewModel { InquiryViewModel(get(), get(), get()) }
+    viewModel { InquiryViewModel(get(), get(), get(), get()) }
     viewModel { MenuViewModel(get()) }
     viewModel { AccountManagerViewModel() }
     viewModel { SignOutViewModel(get()) }

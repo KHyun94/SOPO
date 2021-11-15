@@ -23,10 +23,10 @@ interface ParcelDataSource {
    fun getOngoingDataCntLiveData(): LiveData<Int>
 
    suspend fun insetEntity(parcel: ParcelEntity)
-   suspend fun insertEntities(parcelResponseList: List<ParcelResponse>)
+   suspend fun insertParcels(parcelResponseList: List<ParcelResponse>)
 
    suspend fun update(parcel: ParcelEntity): Int
-    suspend fun updateEntities(parcelResponseList: List<ParcelResponse>)
+    suspend fun updateLocalParcels(parcelResponseList: List<ParcelResponse>)
 
    suspend fun deleteLocalParcels(parcelIdList: List<Int>)
    suspend fun deleteRemoteParcels(): APIResult<String?>?

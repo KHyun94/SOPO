@@ -6,17 +6,30 @@ import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.ParcelResponse
+import com.delivery.sopo.models.parcel.ParcelStatus
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 object ParcelMapper
 {
-    suspend fun entityToObject(req:ParcelEntity): ParcelResponse = withContext(Dispatchers.Default) {
-        return@withContext with(req){ ParcelResponse(parcelId = parcelId, userId = userId, waybillNum = waybillNum, carrier = carrier, alias = alias, inquiryResult = inquiryResult, inquiryHash = inquiryHash, deliveryStatus = deliveryStatus, regDte = regDte, arrivalDte = arrivalDte, auditDte = auditDte, status = status)}
+    fun parcelEntityToObject(req:ParcelEntity): ParcelResponse {
+        return with(req){ ParcelResponse(parcelId = parcelId, userId = userId, waybillNum = waybillNum, carrier = carrier, alias = alias, inquiryResult = inquiryResult, inquiryHash = inquiryHash, deliveryStatus = deliveryStatus, regDte = regDte, arrivalDte = arrivalDte, auditDte = auditDte, status = status)}
     }
 
-    suspend fun objectToEntity(req:ParcelResponse) = withContext(Dispatchers.Default) {
-        return@withContext with(req) { ParcelEntity(parcelId, userId, waybillNum, carrier, alias, inquiryResult, inquiryHash, deliveryStatus, arrivalDte?:"", regDte, auditDte, status?:0)}
+    fun parcelObjectToEntity(req:ParcelResponse):ParcelEntity {
+        return with(req) { ParcelEntity(parcelId, userId, waybillNum, carrier, alias, inquiryResult, inquiryHash, deliveryStatus, arrivalDte?:"", regDte, auditDte, status?:0)}
+    }
+
+    fun parcelStatusEntityToObject(req:ParcelStatusEntity):ParcelStatus{
+        return with(req) { ParcelStatus(parcelId = parcelId, isBeDelete = isBeDelete, updatableStatus = updatableStatus, unidentifiedStatus = unidentifiedStatus, deliveredStatus = deliveredStatus, isNowVisible = isNowVisible, auditDte = auditDte) }
+    }
+
+    fun parcelStatusObjectToEntity(req:ParcelStatus):ParcelStatusEntity{
+        return with(req) { ParcelStatusEntity(parcelId = parcelId, isBeDelete = isBeDelete, updatableStatus = updatableStatus, unidentifiedStatus = unidentifiedStatus, deliveredStatus = deliveredStatus, isNowVisible = isNowVisible, auditDte = auditDte) }
+    }
+
+    fun parcelToParcelStatus(parcel:ParcelResponse):ParcelStatus{
+        return with(parcel) { ParcelStatus(parcelId = parcelId) }
     }
 
     fun completeParcelStatusEntityToDTO(entity: CompletedParcelHistoryEntity): CompletedParcelHistory

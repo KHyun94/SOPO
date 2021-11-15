@@ -176,8 +176,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         // 배송중 , 등록된 택배 리스트
         vm.ongoingList.observe(requireActivity(), Observer { list ->
 
-            SopoLog.d("TEST -> 택배는 어디갔냐 ${list.size}")
-
             soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
             registeredParcelAdapter.separateDeliveryListByStatus(list)
 

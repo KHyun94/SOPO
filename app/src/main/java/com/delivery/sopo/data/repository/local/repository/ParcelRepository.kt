@@ -17,21 +17,88 @@ import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.models.ParcelRegister
+import com.delivery.sopo.models.parcel.ParcelStatus
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.services.network_handler.BaseServiceBeta
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class ParcelRepository(private val userLocalRepo: UserLocalRepository,
                        private val oAuthRepo: OAuthLocalRepository,
+                       private val parcelManagementRepo:ParcelManagementRepoImpl,
                        private val appDatabase: AppDatabase):
-        ParcelDataSource,
-        BaseServiceBeta()
+        ParcelDataSource, BaseServiceBeta()
 {
 
     private val userId: String by lazy { userLocalRepo.getUserId() }
 
+    suspend fun insertNewParcelFromServer(parcels:List<ParcelResponse>){
+
+        val insertParcels = parcels.filter { getLocalParcelById(it.parcelId) == null }.apply {
+            SopoLog.d("!!!!!!!!!!! insert1 size - ${this.size}")
+        }
+        val insertParcelStatuses = insertParcels.map{
+            ParcelMapper.parcelToParcelStatus(it).apply {
+                unidentifiedStatus = 1
+                auditDte = TimeUtil.getDateTime()
+            }
+        }.apply {
+            SopoLog.d("!!!!!!!!!!! insert2 size - ${this.size}")
+        }
+
+        insertParcels(insertParcels)
+        parcelManagementRepo.insertParcelStatuses(insertParcelStatuses)
+    }
+
+    suspend fun updateParcelFromServer(parcels:List<ParcelResponse>){
+
+        val updateParcels = parcels.filter { remote ->
+            val local = getLocalParcelById(remote.parcelId)?:return@filter false
+
+            val unidentifiedStatus = getIsUnidentifiedAsLiveData(remote.parcelId).value?:0
+            if(unidentifiedStatus == 1)
+            {
+                SopoLog.d("!!!!!!!!!!! 상태 변경 !!!!!")
+                parcelManagementRepo.updateUnidentifiedStatus(remote.parcelId, 0)
+            }
+
+            remote.inquiryHash != local.inquiryHash
+        }.apply {
+            SopoLog.d("!!!!!!!!!!! update1 size - ${this.size}")
+        }
+
+        val updateParcelStatuses = updateParcels.map{
+
+            val parcelStatus = parcelManagementRepo.getParcelStatus(it.parcelId) ?: ParcelStatus(parcelId = it.parcelId)
+
+            parcelStatus.apply {
+
+                if(unidentifiedStatus == 1) this.unidentifiedStatus = 0 else unidentifiedStatus = 1
+                auditDte = TimeUtil.getDateTime()
+            }
+        }.apply {
+            SopoLog.d("!!!!!!!!!!! update2 size - ${this.size}")
+        }
+
+        updateLocalParcels(updateParcels)
+        parcelManagementRepo.updateParcelStatuses(updateParcelStatuses)
+    }
+
+    suspend fun updateUnidentifiedStatus(parcels:List<ParcelResponse>){
+        val parcelStatuses = parcels.mapNotNull { parcelManagementRepo.getParcelStatus(it.parcelId) }
+            .filter { it.unidentifiedStatus == 1 }
+
+        parcelStatuses.forEach { it.unidentifiedStatus = 0 }
+
+        parcelManagementRepo.updateParcelStatuses(parcelStatuses)
+    }
+
+    suspend fun deleteParcelFromServer(parcels:List<ParcelResponse>){
+        val insertList = parcels.filter { getLocalParcelById(it.parcelId) == null }
+        insertParcels(insertList)
+    }
 
     suspend fun registerParcel(parcel: ParcelRegister):Int
     {
@@ -75,7 +142,7 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
     }
 
     override suspend fun getLocalParcelById(parcelId: Int): ParcelResponse? = withContext(Dispatchers.Default){
-        return@withContext appDatabase.parcelDao().getById(parcelId)?.let { ParcelMapper.entityToObject(it) }
+        return@withContext appDatabase.parcelDao().getById(parcelId)?.let { ParcelMapper.parcelEntityToObject(it) }
     }
 
     // 배송 중인 택배 리스트를 LiveData로 받기
@@ -142,9 +209,9 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         return appDatabase.parcelDao().getOngoingDataCntLiveData()
     }
 
-    override suspend fun insertEntities(parcelResponseList: List<ParcelResponse>)
+    override suspend fun insertParcels(parcels: List<ParcelResponse>)
     {
-        appDatabase.parcelDao().insert(parcelResponseList.map(ParcelMapper::parcelToParcelEntity))
+        appDatabase.parcelDao().insert(parcels.map(ParcelMapper::parcelToParcelEntity))
     }
 
     override suspend fun insetEntity(parcel: ParcelEntity)
@@ -157,7 +224,7 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         return@withContext appDatabase.parcelDao().update(parcel)
     }
 
-    override suspend fun updateEntities(parcelResponseList: List<ParcelResponse>)
+    override suspend fun updateLocalParcels(parcelResponseList: List<ParcelResponse>)
     {
         appDatabase.parcelDao().update(parcelResponseList.map(ParcelMapper::parcelToParcelEntity))
     }

@@ -2,6 +2,7 @@ package com.delivery.sopo.data.repository.local.datasource
 
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
+import com.delivery.sopo.models.parcel.ParcelStatus
 
 interface ParcelManagementRepository {
    suspend fun getAll(): List<ParcelStatusEntity>?
@@ -13,13 +14,12 @@ interface ParcelManagementRepository {
    suspend fun getIsDeliveredCnt(): Int
    suspend fun getCancelIsBeDelete():  List<ParcelStatusEntity>?
    suspend fun getUnidentifiedStatusByParcelId(parcelId: Int) : Int
-   fun insertEntity(parcelStatusEntity: ParcelStatusEntity)
-   fun insertEntities(parcelStatusEntityList: List<ParcelStatusEntity>)
+   fun insertParcelStatus(parcelStatus: ParcelStatus)
+   fun insertParcelStatuses(parcelStatusList: List<ParcelStatus>)
    suspend fun update(parcelStatusEntity: ParcelStatusEntity)
-   suspend fun updateEntities(parcelStatusEntityList: List<ParcelStatusEntity>)
+   suspend fun updateParcelStatuses(parcelStatuses: List<ParcelStatus>)
    suspend fun updateUpdatableStatus(parcelId:Int, status : Int)
-   fun getEntity(parcelId: Int): ParcelStatusEntity?
-   suspend fun initializeIsBeUpdate(parcelId:Int)
+   fun getParcelStatus(parcelId: Int): ParcelStatus?
    suspend fun updateTotalIsBeDeliveredToZero()
    suspend fun updateIsBeDeleteToOneByParcelIdList(parcelIdList: List<Int>)
    suspend fun updateUnidentifiedStatus(parcelId: Int, value : Int) : Int
