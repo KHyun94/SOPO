@@ -4,6 +4,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
+import com.delivery.sopo.util.SopoLog
 
 internal fun View?.findSuitableParent(): ViewGroup? {
     var view = this
@@ -32,4 +36,20 @@ internal fun View?.findSuitableParent(): ViewGroup? {
 
     // If we reach here then we didn't find a CoL or a suitable content view so we'll fallback
     return fallback
+}
+
+fun ViewPager2.reduceSensitive(){
+    try
+    {
+        val recyclerViewField = ViewPager2::class.java.getDeclaredField("mRecyclerView")
+        recyclerViewField.isAccessible = true
+        val recyclerView = recyclerViewField.get(this)
+        val touchSlopField = RecyclerView::class.java.getDeclaredField("mTouchSlop")
+        touchSlopField.isAccessible = true
+        touchSlopField.set(recyclerView, touchSlopField.getInt(recyclerView) * 6) //6 is empirical value
+    }
+    catch(ignore: java.lang.Exception)
+    {
+        SopoLog.e("Fail to reduce ViewPager2 Sensitive [message:${ignore.toString()}]", ignore)
+    }
 }

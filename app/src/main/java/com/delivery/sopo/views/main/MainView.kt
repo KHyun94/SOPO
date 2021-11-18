@@ -9,6 +9,8 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager2.widget.ViewPager2
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.IntentConst
@@ -18,6 +20,7 @@ import com.delivery.sopo.databinding.ItemMainTabBinding
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.extensions.reduceSensitive
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.services.PowerManager
 import com.delivery.sopo.util.FragmentManager
@@ -36,6 +39,7 @@ import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+
 class MainView: BaseView<MainViewBinding, MainViewModel>()
 {
     override val layoutRes: Int = R.layout.main_view
@@ -46,7 +50,8 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
     lateinit var tab2ndBinding: ItemMainTabBinding
     lateinit var tab3rdBinding: ItemMainTabBinding
 
-    private val baseFragments = arrayListOf(RegisterMainFragment(), InquiryMainFragment(), MenuMainFragment())
+    private val baseFragments =
+        arrayListOf(RegisterMainFragment(), InquiryMainFragment(), MenuMainFragment())
 
     private val appPasswordRepo: AppPasswordRepository by inject()
 
@@ -156,6 +161,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
         binding.layoutViewPager.adapter = adapter
         binding.layoutViewPager.offscreenPageLimit = 2
+        binding.layoutViewPager.reduceSensitive()
 
         val onTabSelectedListener = object: TabLayout.OnTabSelectedListener
         {

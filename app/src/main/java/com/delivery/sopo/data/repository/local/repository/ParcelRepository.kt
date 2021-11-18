@@ -36,16 +36,12 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
 
     suspend fun insertNewParcelFromServer(parcels:List<ParcelResponse>){
 
-        val insertParcels = parcels.filter { getLocalParcelById(it.parcelId) == null }.apply {
-            SopoLog.d("!!!!!!!!!!! insert1 size - ${this.size}")
-        }
+        val insertParcels = parcels.filter { getLocalParcelById(it.parcelId) == null }
         val insertParcelStatuses = insertParcels.map{
             ParcelMapper.parcelToParcelStatus(it).apply {
                 unidentifiedStatus = 1
                 auditDte = TimeUtil.getDateTime()
             }
-        }.apply {
-            SopoLog.d("!!!!!!!!!!! insert2 size - ${this.size}")
         }
 
         insertParcels(insertParcels)
