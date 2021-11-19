@@ -228,7 +228,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity(), Observer { list ->
-            list.sortByDescending { it.parcelResponse.arrivalDte }
+            SopoLog.d("Test 도대체 어디로 도망간걸까? ${list.size}")
             completedParcelAdapter.notifyChanged(list)
         })
 
@@ -643,13 +643,13 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
                 if(!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) // 리스트뷰의 마지막
                 {
-                    val date = vm.selectedDate.value?.replace("년 ", "")?.replace("월", "")
+                    val inquiryDate = vm.selectedDate.value?.replace("년 ", "")?.replace("월", "")?:return
 
-                    SopoLog.d("완료 택배 RecyclerView $date")
+                    SopoLog.d("완료 택배 RecyclerView $inquiryDate")
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        vm.getCompleteParcelsWithPaging(MenuMapper.titleToInquiryDate(date
-                                                                                       ?: return@launch))
+                        vm.getCompleteParcelsWithPaging(inquiryDate = inquiryDate)
+
                     }
                 }
             }
@@ -851,7 +851,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     {
         super.onResume()
 
-        SopoLog.d("뭐지 시발 진짜로 -> ${binding.nestedScrollView.visibility == View.VISIBLE}")
+//        SopoLog.d("뭐지 시발 진짜로 -> ${binding.nestedScrollView.visibility == View.VISIBLE}")
     }
 
     private fun updateCompleteUI()

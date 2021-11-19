@@ -285,10 +285,10 @@ class InquiryViewModel(
             InquiryListItem(it, false)
         }.toMutableList()
 
-        val previousParcels = _completeList.value?: emptyList<InquiryListItem>()
-        val currentParcels = previousParcels + list
+//        val previousParcels = _completeList.value?: emptyList<InquiryListItem>()
+//        val currentParcels = previousParcels + list
 
-        _completeList.postValue(currentParcels.toMutableList())
+        _completeList.postValue(list)
     }
 
 

@@ -9,6 +9,7 @@ import com.delivery.sopo.data.repository.local.repository.*
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.networks.repository.JoinRepositoryImpl
+import com.delivery.sopo.usecase.parcel.GetCompleteParcelUseCase
 import com.delivery.sopo.usecase.parcel.RefreshParcelsUseCase
 import com.delivery.sopo.usecase.parcel.SyncParcelsUseCase
 import com.delivery.sopo.viewmodels.IntroViewModel
@@ -35,16 +36,11 @@ import org.koin.dsl.module
 val appModule = module {
 
     single { SharedPref(androidApplication()) }
-    single {
-        UserSharedPrefHelper(
-            get(), androidApplication()
-        )
-    }
-
+    single { UserSharedPrefHelper(get(), androidApplication()) }
     single { UserLocalRepository(get()) }
-    factory { UserRemoteRepository() }
-    factory { JoinRepositoryImpl() }
-    factory { ParcelRepository(get(), get(),get(), get()) }
+    single { UserRemoteRepository() }
+    single { JoinRepositoryImpl() }
+    single { ParcelRepository(get(), get(),get(), get()) }
     single { AppDatabase.getInstance(get()) }
     single { CarrierRepository(get()) }
     single { ParcelManagementRepoImpl(get()) }
@@ -53,6 +49,7 @@ val appModule = module {
     single { OAuthLocalRepository(get()) }
 
     factory { SyncParcelsUseCase(get()) }
+    factory { GetCompleteParcelUseCase(get()) }
     factory { RefreshParcelsUseCase(get()) }
 
     viewModel { SplashViewModel(get(), get(), get()) }
@@ -71,7 +68,7 @@ val appModule = module {
     viewModel { FaqViewModel() }
     viewModel { AppInfoViewModel() }
     viewModel { NotDisturbTimeViewModel() }
-    viewModel { InquiryViewModel(get(), get(), get(), get(), get()) }
+    viewModel { InquiryViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { MenuViewModel(get()) }
     viewModel { AccountManagerViewModel() }
     viewModel { SignOutViewModel(get()) }
