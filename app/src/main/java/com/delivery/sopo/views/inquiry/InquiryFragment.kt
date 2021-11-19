@@ -648,7 +648,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                     SopoLog.d("완료 택배 RecyclerView $date")
 
                     CoroutineScope(Dispatchers.IO).launch {
-                        vm.getCompleteListWithPaging(MenuMapper.titleToInquiryDate(date
+                        vm.getCompleteParcelsWithPaging(MenuMapper.titleToInquiryDate(date
                                                                                        ?: return@launch))
                     }
                 }

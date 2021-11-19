@@ -251,7 +251,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                         CoroutineScope(Dispatchers.Main).launch {
                             val parcelId = vm.parcelId.value ?: throw Exception("Parcel id가 존재하지 않습니다.")
                             vm.getRemoteParcel(parcelId)
-                            parentView.getAlertMessageBar().onDismiss()
+//                            parentView.getAlertMessageBar().onDismiss()
                         }
                     })
                 }
@@ -262,18 +262,18 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                             val parcelId =
                                 vm.parcelId.value ?: throw Exception("Parcel id가 존재하지 않습니다.")
                             vm.requestParcelForRefresh(parcelId)
-                            parentView.getAlertMessageBar().onDismiss()
+//                            parentView.getAlertMessageBar().onDismiss()
                         }
                     })
                 }
                 else -> return@Observer SopoLog.e("올바른 업데이트 형식이 아닙니다. - type[${type}]")
             }
 
-            parentView.getAlertMessageBar().run {
-                setText(message)
-                setOnCancelClicked(clickMessage, null, clickListener)
-                onStart()
-            }
+//            parentView.getAlertMessageBar().run {
+//                setText(message)
+//                setOnCancelClicked(clickMessage, null, clickListener)
+//                onStart()
+//            }
 
         })
 

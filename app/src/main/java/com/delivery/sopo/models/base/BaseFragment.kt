@@ -8,13 +8,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
 import com.delivery.sopo.BR
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
-import com.delivery.sopo.use_case.SyncParcelsUseCase
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomProgressBar

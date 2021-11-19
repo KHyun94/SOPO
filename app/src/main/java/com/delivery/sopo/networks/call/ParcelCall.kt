@@ -37,13 +37,6 @@ object ParcelCall : BaseService(), KoinComponent
         parcelAPI = NetworkManager.retro(oAuth?.accessToken).create(ParcelAPI::class.java)
     }
 
-
-    suspend fun getOngoingParcels(): NetworkResult<APIResult<List<ParcelResponse>?>>
-    {
-        val result = parcelAPI.getOngoingParcels()
-        return apiCall(call = {result})
-    }
-
     suspend fun getCompleteParcelsMonth(): ResponseResult<List<CompletedParcelHistory>?>
     {
         when(val result = apiCall { parcelAPI.getMonths() })
@@ -60,7 +53,7 @@ object ParcelCall : BaseService(), KoinComponent
         }
     }
 
-    suspend fun getCompleteParcelsByPage(page: Int, inquiryDate:String):ResponseResult<MutableList<ParcelResponse>?>
+    /*suspend fun getCompleteParcelsByPage(page: Int, inquiryDate:String):ResponseResult<MutableList<ParcelResponse>?>
     {
 
         when( val result = apiCall { parcelAPI.getParcelsComplete(page = page, inquiryDate = inquiryDate) } )
@@ -75,13 +68,7 @@ object ParcelCall : BaseService(), KoinComponent
                 throw apiException
             }
         }
-    }
-
-    suspend fun requestParcelsForRefresh() : NetworkResult<APIResult<String?>>
-    {
-        val result = parcelAPI.requestParcelsForRefresh()
-        return apiCall(call = { result })
-    }
+    }*/
 
     suspend fun requestParcelForRefresh(parcelId : Int) : ResponseResult<Unit?>
     {

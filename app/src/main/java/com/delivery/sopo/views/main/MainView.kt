@@ -73,45 +73,18 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
     {
         super.setObserve()
 
-        // TODO Parcel tab으로 이동해야 함
-        /*SOPOApp.cntOfBeUpdate.observe(this, Observer { cnt ->
-            if(cnt > 0)
-            {
-                SopoLog.d(msg = "업데이트 가능 택배 갯수[Size:$cnt]")
-
-                binding.alertMessageBar.run {
-                    setText("${cnt}개의 새로운 배송정보가 있어요.")
-                    setTextColor(R.color.MAIN_WHITE)
-                    setOnCancelClicked("업데이트", R.color.MAIN_WHITE, View.OnClickListener {
-
-                        moveToSpecificTab(TabCode.secondTab)
-
-                        GlobalScope.launch {
-                            vm.requestOngoingParcels()
-                        }
-
-                        onDismiss()
-                    })
-                    onStart()
-                }
-            }
-        })*/
-
         SOPOApp.currentPage.observe(this, Observer {
-            if(it == null) return@Observer
 
             SopoLog.d("MainView:CurrentPage [pos:$it]")
 
-            when(it)
+            when(it?:return@Observer)
             {
                 NavigatorConst.REGISTER_TAB -> binding.layoutViewPager.setCurrentItem(NavigatorConst.REGISTER_TAB, true)
                 NavigatorConst.INQUIRY_TAB -> binding.layoutViewPager.setCurrentItem(NavigatorConst.INQUIRY_TAB, true)
                 NavigatorConst.MY_MENU_TAB -> binding.layoutViewPager.setCurrentItem(NavigatorConst.MY_MENU_TAB, true)
                 else -> throw Exception("NO TAB")
             }
-
         })
-
     }
 
     private fun checkAppPassword()
@@ -130,18 +103,6 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
             }
         })
     }
-
-    /*    private fun refreshTokenWithinWeek()
-        {
-             val oAuth =  oAuthLocalRepo.get(userLocalRepo.getUserId())
-
-            val isDate =
-                DateUtil.isExpiredDateWithinAWeek(SOPOApp.oAuth?.refreshTokenExpiredAt ?: return)
-            if(isDate) SOPOWorkManager.refreshOAuthWorkManager(this)
-        }*/
-
-
-    fun getAlertMessageBar() = binding.alertMessageBar
 
     fun activateTab(binding: ItemMainTabBinding, resId: Int)
     {
@@ -190,9 +151,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
             override fun onTabReselected(tab: TabLayout.Tab?)
             {
-                if(tab == null) return
-
-                when(tab.position)
+                when(tab?.position?:return)
                 {
                     NavigatorConst.REGISTER_TAB ->
                     {
@@ -233,20 +192,15 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
         tab.setCustomView(R.layout.item_main_tab)
         when(pos)
         {
-            0 -> tab1stBinding =
-                setTabIcon(tab, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
-            1 -> tab2ndBinding =
-                setTabIcon(tab, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
-            2 -> tab3rdBinding =
-                setTabIcon(tab, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
+            TabCode.firstTab -> tab1stBinding = setTabIcon(tab, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
+            TabCode.secondTab -> tab2ndBinding = setTabIcon(tab, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
+            TabCode.thirdTab -> tab3rdBinding = setTabIcon(tab, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
         }
     }
 
-    private fun setTabIcon(tab: TabLayout.Tab,
-                           @DrawableRes iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
+    private fun setTabIcon(tab: TabLayout.Tab, @DrawableRes iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
     {
-        val tabBinding =
-            ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
+        val tabBinding = ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
 
         tabBinding.ivTab.setBackgroundResource(iconRes)
         tabBinding.tvTabName.text = tabName

@@ -3,9 +3,7 @@ package com.delivery.sopo.viewmodels.inquiry
 import android.widget.TextView
 import androidx.lifecycle.*
 import com.delivery.sopo.UserExceptionHandler
-import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
-import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
@@ -22,16 +20,20 @@ import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.mapper.CompletedParcelHistoryMapper
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.ParcelResponse
-import com.delivery.sopo.use_case.SyncParcelsUseCase
+import com.delivery.sopo.usecase.parcel.GetCompleteParcelUseCase
+import com.delivery.sopo.usecase.parcel.RefreshParcelsUseCase
+import com.delivery.sopo.usecase.parcel.SyncParcelsUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*
 
 class InquiryViewModel(
+        private val getCompleteParcelUseCase: GetCompleteParcelUseCase,
+        private val refreshParcelsUseCase: RefreshParcelsUseCase,
         private val syncParcelsUseCase: SyncParcelsUseCase,
         private val parcelRepo: ParcelRepository,
-                       private val parcelManagementRepo: ParcelManagementRepoImpl,
-                       private val historyRepo: CompletedParcelHistoryRepoImpl):
+        private val parcelManagementRepo: ParcelManagementRepoImpl,
+        private val historyRepo: CompletedParcelHistoryRepoImpl):
         BaseViewModel()
 {
     /**
@@ -39,7 +41,7 @@ class InquiryViewModel(
      */
 
     // '배송 중' 또는 '배송완료' 화면 선택의 기준
-    private val _inquiryStatus = MutableLiveData<InquiryStatusEnum>()
+    private val _inquiryStatus = MutableLiveData<InquiryStatusEnum>().apply { value = InquiryStatusEnum.ONGOING }
     val inquiryStatus: LiveData<InquiryStatusEnum>
         get() = _inquiryStatus
 
@@ -67,7 +69,7 @@ class InquiryViewModel(
         }
 
     // 화면에 전체 아이템의 노출 여부
-    private val _isMoreView = MutableLiveData<Boolean>()
+    private val _isMoreView = MutableLiveData<Boolean>().apply { value =  false }
     val isMoreView: LiveData<Boolean>
         get() = _isMoreView
 
@@ -93,11 +95,8 @@ class InquiryViewModel(
 
     init
     {
-        _isMoreView.value = false
-        _inquiryStatus.value = InquiryStatusEnum.ONGOING
 
         viewModelScope.launch(Dispatchers.Main) {
-//            checkIsNeedForceUpdate()
             syncParcelsByOngoing()
             requestCompletedParcelHistory()
             pagingManagement = PagingManagement(0, "", true)
@@ -120,8 +119,8 @@ class InquiryViewModel(
         _inquiryStatus.value = InquiryStatusEnum.COMPLETE
 
         if(isFirstLoading) return
-
         isFirstLoading = !isFirstLoading
+
         refreshCompleteParcels()
     }
 
@@ -157,7 +156,7 @@ class InquiryViewModel(
                     nextVisibleEntity.visibility = 1
                     historyRepo.updateEntity(nextVisibleEntity)
 
-                    getCompleteListWithPaging(nextVisibleEntity.date.replace("-", ""))
+                    getCompleteParcelsWithPaging(nextVisibleEntity.date.replace("-", ""))
                 }
                 // 전부 다 존재하긴 하지만 count가 0개일때는 TimeCount 자체가 쓸모가 없는 상태로 visibility를 -1로 세팅하여
                 // monthList(LiveData)에서 제외 (deleteAll로 삭제하면 '삭제취소'로 복구를 할 수가 없기 때문에 visibility를 -1로 세팅한다.
@@ -253,13 +252,17 @@ class InquiryViewModel(
         _isMoreView.postValue(!beforeStatus)
     }
 
-    // 앱이 켜졌을 때 택배의 변동사항이 있어 사용자에게 업데이트된 내용을 보여줘야할 때 강제 업데이트를 한다.
-    private suspend fun checkIsNeedForceUpdate()
-    {
-        val ongoingCnt = withContext(Dispatchers.Default) { parcelRepo.getOnGoingDataCnt() }
-        if(ongoingCnt > 0) return
+    fun onRefreshParcelsClicked(){
+        SopoLog.i("onRefreshParcelsClicked(...) 호출")
 
-        syncParcelsByOngoing()
+        try
+        {
+            refreshParcelsUseCase.invoke()
+        }
+        catch(e: Exception)
+        {
+
+        }
     }
 
     fun syncParcelsByOngoing() = scope.launch(Dispatchers.IO) {
@@ -277,90 +280,44 @@ class InquiryViewModel(
         }
     }
 
-    fun refreshCompleteParcelsByDate(date: String) = CoroutineScope(Dispatchers.IO).launch {
-        val list = getCompleteListWithPaging(date).map {
+    fun refreshCompleteParcelsByDate(inquiryDate: String) = CoroutineScope(Dispatchers.IO).launch {
+        val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map {
             InquiryListItem(it, false)
         }.toMutableList()
 
-        _completeList.postValue(list)
+        val previousParcels = _completeList.value?: emptyList<InquiryListItem>()
+        val currentParcels = previousParcels + list
+
+        _completeList.postValue(currentParcels.toMutableList())
     }
 
 
     // 배송완료 리스트를 가져온다.(페이징 포함)
-    suspend fun getCompleteListWithPaging(inquiryDate: String): List<ParcelResponse>
+    suspend fun getCompleteParcelsWithPaging(inquiryDate: String): List<ParcelResponse>
     {
         SopoLog.i("getCompleteListWithPaging(...) 호출 [data:$inquiryDate]")
 
         if(pagingManagement.inquiryDate != inquiryDate)
         {
-            SopoLog.d("paging 초기화")
             pagingManagement = PagingManagement(0, inquiryDate, true)
-        }
-        else
-        {
-            pagingManagement.pagingNum += 1
-            SopoLog.d("paging 다음으로 [page:${pagingManagement.pagingNum}]")
         }
 
         if(!pagingManagement.hasNext) return emptyList()
 
-        val remoteCompleteParcels = withContext(Dispatchers.IO) {
-            parcelRepo.getRemoteCompleteParcels(page = pagingManagement.pagingNum, inquiryDate = inquiryDate)
-        }
+        val completeParcels = getCompleteParcelUseCase.invoke(pagingManagement)
 
-        // null이거나 0이면 다음 데이터가 없는 것이므로 페이징 숫자를 1빼고 hasNext를 false로 바꾼다.
-        if(remoteCompleteParcels.size == 0)
+        pagingManagement = if(completeParcels.isEmpty())
         {
-            pagingManagement.pagingNum -= 1
-            pagingManagement.hasNext = false
-
-            SopoLog.d("업데이트할 완료 택배가 없음 [data:${pagingManagement.toString()}]")
-
-            return emptyList()
+            with(pagingManagement) { PagingManagement(pagingNum - 1, this.inquiryDate, false) }
         }
-
-        remoteCompleteParcels.sortByDescending { it.arrivalDte } // 도착한 시간을 기준으로 내림차순으로 정렬
-
-        val updateParcels = mutableListOf<ParcelResponse>() // list에 모았다가 한번에 업데이트
-        val insertParcels = mutableListOf<ParcelResponse>()
-
-        for(parcel in remoteCompleteParcels)
+        else
         {
-            val localParcel = parcelRepo.getLocalParcelById(parcel.parcelId)
-
-            if(localParcel == null)
-            {
-                insertParcels.add(parcel)
-            }
-            else
-            {
-                updateParcels.add(parcel)
-            }
+            with(pagingManagement) { PagingManagement(pagingNum + 1, this.inquiryDate, true) }
         }
 
-        parcelRepo.insertNewParcelFromServer(insertParcels)
-        parcelRepo.updateParcelFromServer(updateParcels)
-/*        insertNewParcels(insertParcels)
-        updateExistParcels(updateParcels)*/
-
-        return remoteCompleteParcels
+        return completeParcels
     }
 
-
-/*
-    private suspend fun insertNewParcels(list: List<ParcelResponse>) =
-        withContext(Dispatchers.Default) {
-            parcelRepo.insertParcels(list)
-            parcelManagementRepo.insertParcelStatuses(list)
-        }
-
-    private suspend fun updateExistParcels(list: List<ParcelResponse>) =
-        withContext(Dispatchers.Default) {
-            parcelRepo.updateLocalParcels(list)
-            val parcelStatuses = ParcelMapper.parcelToParcelStatus(list)
-            parcelManagementRepo.updateParcelStatuses(parcelStatuses)
-        }
-*/
 
     // 전체 배송 완료로 표시된 상태를 1-> 0 으로 초기화시켜준다.
     private fun clearDeliveredStatus(): Job

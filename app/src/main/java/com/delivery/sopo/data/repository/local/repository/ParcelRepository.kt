@@ -20,6 +20,8 @@ import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.parcel.ParcelStatus
 import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.services.network_handler.BaseServiceBeta
+import com.delivery.sopo.services.network_handler.NetworkResponse
+import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +36,7 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
 
     private val userId: String by lazy { userLocalRepo.getUserId() }
 
-    suspend fun insertNewParcelFromServer(parcels:List<ParcelResponse>){
+    suspend fun insertParcelsFromServer(parcels:List<ParcelResponse>){
 
         val insertParcels = parcels.filter { getLocalParcelById(it.parcelId) == null }
         val insertParcelStatuses = insertParcels.map{
@@ -48,7 +50,7 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         parcelManagementRepo.insertParcelStatuses(insertParcelStatuses)
     }
 
-    suspend fun updateParcelFromServer(parcels:List<ParcelResponse>){
+    suspend fun updateParcelsFromServer(parcels:List<ParcelResponse>){
 
         val updateParcels = parcels.filter { remote ->
             val local = getLocalParcelById(remote.parcelId)?:return@filter false
@@ -56,13 +58,10 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
             val unidentifiedStatus = getIsUnidentifiedAsLiveData(remote.parcelId).value?:0
             if(unidentifiedStatus == 1)
             {
-                SopoLog.d("!!!!!!!!!!! 상태 변경 !!!!!")
                 parcelManagementRepo.updateUnidentifiedStatus(remote.parcelId, 0)
             }
 
             remote.inquiryHash != local.inquiryHash
-        }.apply {
-            SopoLog.d("!!!!!!!!!!! update1 size - ${this.size}")
         }
 
         val updateParcelStatuses = updateParcels.map{
@@ -96,46 +95,6 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         insertParcels(insertList)
     }
 
-    suspend fun registerParcel(parcel: ParcelRegister):Int
-    {
-        val oAuthToken = oAuthRepo.get(userId = userId)
-        val registerParcel = NetworkManager.retro(oAuthToken.accessToken).create(ParcelAPI::class.java).registerParcel(register = parcel)
-        val result = apiCall{ registerParcel }
-        return result.data?.data?:throw NullPointerException()
-    }
-
-    suspend fun getRemoteParcelById(parcelId: Int):ParcelResponse
-    {
-        val oAuthToken = oAuthRepo.get(userId = userId)
-        val getRemoteParcel = NetworkManager.retro(oAuthToken.accessToken).create(ParcelAPI::class.java).getParcel(parcelId = parcelId)
-        val result = apiCall { getRemoteParcel }
-        return result.data?.data?:throw NullPointerException()
-    }
-
-    override suspend fun getRemoteParcelByOngoing(): List<ParcelResponse>
-    {
-        val getRemoteParcelByOngoing = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcelsOngoing()
-        val result = apiCall { getRemoteParcelByOngoing }
-        return result.data?.data?: emptyList<ParcelResponse>()
-    }
-
-    override suspend fun getRemoteMonths(): List<CompletedParcelHistory>
-    {
-        return try
-        {
-            ParcelCall.getCompleteParcelsMonth().data ?: emptyList<CompletedParcelHistory>()
-        }
-        catch(e: Exception)
-        {
-            emptyList<CompletedParcelHistory>()
-        }
-    }
-
-    override suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<ParcelResponse>
-    {
-        return ParcelCall.getCompleteParcelsByPage(page, inquiryDate).data
-            ?: emptyList<ParcelResponse>().toMutableList()
-    }
 
     override suspend fun getLocalParcelById(parcelId: Int): ParcelResponse? = withContext(Dispatchers.Default){
         return@withContext appDatabase.parcelDao().getById(parcelId)?.let { ParcelMapper.parcelEntityToObject(it) }
@@ -267,4 +226,57 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
     {
         return appDatabase.parcelDao().getOngoingDataCnt()
     }
+
+    suspend fun registerParcel(parcel: ParcelRegister):Int
+    {
+        val registerParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).registerParcel(register = parcel)
+        val result = apiCall{ registerParcel }
+        return result.data?.data?:throw NullPointerException()
+    }
+
+    suspend fun getRemoteParcelById(parcelId: Int):ParcelResponse
+    {
+        val oAuthToken = oAuthRepo.get(userId = userId)
+        val getRemoteParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcel(parcelId = parcelId)
+        val result = apiCall { getRemoteParcel }
+        return result.data?.data?:throw NullPointerException()
+    }
+
+    override suspend fun getRemoteParcelByOngoing(): List<ParcelResponse>
+    {
+        val getRemoteParcelByOngoing = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcelsOngoing()
+        val result = apiCall { getRemoteParcelByOngoing }
+        return result.data?.data?: emptyList<ParcelResponse>()
+    }
+
+    override suspend fun getRemoteMonths(): List<CompletedParcelHistory>
+    {
+        return try
+        {
+            ParcelCall.getCompleteParcelsMonth().data ?: emptyList<CompletedParcelHistory>()
+        }
+        catch(e: Exception)
+        {
+            emptyList<CompletedParcelHistory>()
+        }
+    }
+
+    override suspend fun getCompleteParcelsByRemote(page: Int, inquiryDate: String): List<ParcelResponse>
+    {
+        val getCompleteParcelsByRemote = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcelsComplete(page = page, inquiryDate = inquiryDate)
+        val result = apiCall { getCompleteParcelsByRemote }
+        return result.data?.data?: emptyList<ParcelResponse>()
+    }
+
+
+    /**
+     * 택배 업데이트 관련
+     * 'Tracking Server'로 업데이트 요청
+     */
+    suspend fun requestParcelsForRefresh() : NetworkResponse<APIResult<String>>
+    {
+        val result = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).requestParcelsForRefresh()
+        return apiCall{ result }
+    }
+
 }

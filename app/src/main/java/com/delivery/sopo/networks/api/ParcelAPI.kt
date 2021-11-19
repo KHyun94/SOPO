@@ -46,8 +46,7 @@ interface ParcelAPI
     // '배송완료' 리스트 가져오는 api
     @GET("api/v1/sopo-parcel/delivery/parcels/complete")
     @Headers("Accept: application/json")
-    suspend fun getParcelsComplete(
-            @Query("page") page: Int, @Query("inquiryDate") inquiryDate: String): Response<APIResult<MutableList<ParcelResponse>?>>
+    suspend fun getParcelsComplete(@Query("page") page: Int, @Query("inquiryDate") inquiryDate: String): Response<APIResult<List<ParcelResponse>>>
 
     @HTTP(method = "DELETE", path = "api/v1/sopo-parcel/delivery/parcels", hasBody = true)
     @Headers("Accept: application/json")
@@ -58,11 +57,6 @@ interface ParcelAPI
     @Headers("Content-Type: application/json")
     suspend fun updateParcelAlias(@Body req: UpdateAliasRequest): Response<APIResult<Unit?>>
 
-    // 배송중 & 곧 도착 리스트 가져오는 api
-    @GET("api/v1/sopo-parcel/delivery/parcels/ongoing")
-    @Headers("Accept: application/json")
-    suspend fun getOngoingParcels(): Response<APIResult<List<ParcelResponse>?>>
-
     /**
      * 택배 리스트 전체 업데이트 요청
      * 서버에서 해당 통신 이외로 업데이트 데이터를 FCM을 통해 던진다.
@@ -70,7 +64,7 @@ interface ParcelAPI
      */
     @POST("/api/v1/sopo-parcel/delivery/parcels/refresh")
     @Headers("Accept: application/json")
-    suspend fun requestParcelsForRefresh(): Response<APIResult<String?>>
+    suspend fun requestParcelsForRefresh(): Response<APIResult<String>>
 
     /**
      * 택배 리스트 단일 업데이트 요청

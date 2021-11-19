@@ -14,6 +14,7 @@ import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
 import com.delivery.sopo.util.ClipboardUtil
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -74,19 +75,18 @@ class SOPOApp: Application()
         }
 
         CoroutineScope(Dispatchers.Main).launch {
-            currentPage.postValue(getInitViewPagerNumber())
+            currentPage.postValue(getInitViewPagerNumber().apply { SopoLog.d("초기 페이지 번호 [data:$this]") })
         }
     }
 
-    private suspend fun getInitViewPagerNumber(): Int
-    {
+    private suspend fun getInitViewPagerNumber(): Int = withContext(Dispatchers.Default) {
         val clipboardText = ClipboardUtil.pasteClipboardText(context = this@SOPOApp)
 
-        if(clipboardText != null) return NavigatorConst.REGISTER_TAB
+        if(clipboardText != null) return@withContext NavigatorConst.REGISTER_TAB
 
-        val cnt = withContext(Dispatchers.Default) { parcelRepository.getOnGoingDataCnt() }
+        val cnt = parcelRepository.getOnGoingDataCnt()
 
-        return if(cnt == 0)
+        return@withContext if(cnt == 0)
         {
             NavigatorConst.REGISTER_TAB
         }

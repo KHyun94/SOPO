@@ -74,14 +74,13 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="2dp"
                     android:fontFamily="@font/spoqa_han_sans_neo_bold"
-                    android:textColor="@color/MAIN_WHITE"
                     android:textSize="10sp"
                     android:letterSpacing="-0.04"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/guide_3rd"
-                    app:setText="@{ongoingInquiryData.statusText}"
-                    app:setTextColor="@{ongoingInquiryData.statusTextColorResource}"
+                    android:text="@{ongoingInquiryData.statusText}"
+                    android:textColor="@{ongoingInquiryData.statusTextColorResource}"
                     tools:text="배송중"
                     tools:textColor="@color/COLOR_GRAY_800"/>
 

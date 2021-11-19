@@ -11,7 +11,7 @@ interface ParcelDataSource {
    suspend fun getRemoteParcelByOngoing(): List<ParcelResponse>
    suspend fun getRemoteMonths(): List<CompletedParcelHistory>?
 
-   suspend fun getRemoteCompleteParcels(page: Int, inquiryDate: String): MutableList<ParcelResponse>?
+   suspend fun getCompleteParcelsByRemote(page: Int, inquiryDate: String): List<ParcelResponse>
 
    suspend fun getLocalParcelById(parcelId: Int): ParcelResponse?
 

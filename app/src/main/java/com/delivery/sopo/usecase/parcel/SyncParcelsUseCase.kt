@@ -1,4 +1,4 @@
-package com.delivery.sopo.use_case
+package com.delivery.sopo.usecase.parcel
 
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.util.SopoLog
@@ -12,7 +12,7 @@ class SyncParcelsUseCase(private val parcelRepo: ParcelRepository)
         SopoLog.i("SyncParcelsUseCase(...)")
         val remoteParcels = parcelRepo.getRemoteParcelByOngoing()
         parcelRepo.updateUnidentifiedStatus(remoteParcels)
-        parcelRepo.insertNewParcelFromServer(remoteParcels)
-        parcelRepo.updateParcelFromServer(remoteParcels)
+        parcelRepo.insertParcelsFromServer(remoteParcels)
+        parcelRepo.updateParcelsFromServer(remoteParcels)
     }
 }

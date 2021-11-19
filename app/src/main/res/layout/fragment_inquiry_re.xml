@@ -26,30 +26,58 @@
         android:layout_height="match_parent"
         android:background="@color/COLOR_GRAY_50">
 
-        <TextView
-            android:id="@+id/tv_title"
-            style="@style/kor_H2"
-            android:layout_width="wrap_content"
+        <RelativeLayout
+            android:id="@+id/relative_header"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="11dp"
-            android:text="@string/INQUIRY_VIEW_MAIN_TITLE"
-            android:visibility="visible"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:id="@+id/iv_pop_menu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:src="@drawable/ic_24_meatball"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tv_title" />
+            <TextView
+                android:id="@+id/tv_title"
+                style="@style/kor_H2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="11dp"
+                android:text="@string/INQUIRY_VIEW_MAIN_TITLE"
+                android:visibility="visible"
+                android:layout_centerVertical="true"/>
+
+            <TextView
+                android:id="@+id/tv_refresh_parcel"
+                style="@style/kor_H6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="지금 업데이트"
+                android:includeFontPadding="false"
+                android:visibility="visible"
+                android:backgroundTint="@color/COLOR_GRAY_200"
+                android:background="@drawable/border_15dp_blue_rounder"
+               android:layout_centerVertical="true"
+                android:paddingTop="6.75dp"
+                android:paddingBottom="7.75dp"
+                android:paddingLeft="9.8dp"
+                android:paddingRight="9.8dp"
+                app:drawableLeftCompat="@drawable/ic_refresh_17dp_gray_scale"
+                android:layout_toLeftOf="@+id/iv_pop_menu"
+                android:layout_marginRight="16dp"
+                android:gravity="center"
+                android:onClick="@{()->vm.onRefreshParcelsClicked()}"/>
+
+
+            <ImageView
+                android:id="@+id/iv_pop_menu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:src="@drawable/ic_24_meatball"
+                android:visibility="visible"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true" />
+
+        </RelativeLayout>
 
         <!-- 택배 상태별 조회 버튼[진행 중/배송 완료] -->
         <LinearLayout
@@ -59,7 +87,7 @@
             android:layout_marginTop="16dp"
             android:gravity="center"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title">
+            app:layout_constraintTop_toBottomOf="@+id/relative_header">
 
             <TextView
                 android:id="@+id/tv_ongoing"

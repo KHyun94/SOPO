@@ -35,16 +35,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:tabIndicatorColor="@android:color/transparent" />
 
-        <com.delivery.sopo.views.widget.AlertMessageBar
-            android:id="@+id/alert_message_bar"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            app:layout_constraintBottom_toTopOf="@+id/layout_main_tab"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:markImage="@drawable/ic_blue_marker"
-            app:msgtext="테스트" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
