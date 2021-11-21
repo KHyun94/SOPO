@@ -29,12 +29,19 @@ abstract class BaseViewModel: ViewModel()
     val isClickEvent: LiveData<Boolean>
         get() = _isClickEvent
 
-    fun checkStatus(checkNetwork:Boolean = false, delayMillisecond: Long = 100,event: () -> Unit)
+    fun checkEventStatus(checkNetwork: Boolean = false, delayMillisecond: Long = 100, event: () -> Unit)
     {
-        SopoLog.d("11111111111111")
+        _isLoading.postValue(true)
+
         if(checkNetwork)
         {
-            checkNetworkStatus().also { value -> if(!value) return }
+            checkNetworkStatus().also { value ->
+                if(!value)
+                {
+                    _isLoading.postValue(false)
+                    return
+                }
+            }
         }
 
         _isClickEvent.postValue(true)
@@ -42,19 +49,14 @@ abstract class BaseViewModel: ViewModel()
         Handler(Looper.getMainLooper()).postDelayed(Runnable {
             try
             {
-                SopoLog.d("222222222222")
-
                 event.invoke()
-//                _isClickEvent.postValue(false)
             }
             finally
             {
-                SopoLog.d("33333333333")
+                _isLoading.postValue(false)
                 _isClickEvent.postValue(false)
             }
         }, delayMillisecond)
-
-        SopoLog.d("44444444444")
     }
 
     private val _isCheckNetwork = MutableLiveData<Boolean>()

@@ -6,13 +6,9 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.LoginSelectViewBinding
-import com.delivery.sopo.enums.ResponseCode
-import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.extensions.launchActivityWithAllClear
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.CustomProgressBar
-import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
 import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.signup.RegisterNicknameView

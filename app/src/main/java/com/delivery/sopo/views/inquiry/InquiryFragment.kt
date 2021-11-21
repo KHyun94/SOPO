@@ -2,11 +2,8 @@ package com.delivery.sopo.views.inquiry
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
+import android.view.*
 import android.view.View.*
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.widget.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
@@ -18,6 +15,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.databinding.FragmentInquiryReBinding
@@ -101,7 +99,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     {
         setAdapters()
         setListener()
-        binding.ivPopMenu.setOnClickListener {
+
+        binding.includeHeader.ivRightIcon.setOnClickListener {
             openInquiryMenu(it)
         }
 
@@ -229,6 +228,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity(), Observer { list ->
             SopoLog.d("Test 도대체 어디로 도망간걸까? ${list.size}")
+
+//            val mocks = list + list + list + list + list + list + list
+
             completedParcelAdapter.notifyChanged(list)
         })
 
@@ -255,6 +257,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
             // TODO 다른 곳으로 빼야할듯
             binding.constraintYearSpinner.setOnClickListener { v ->
+//                drawCompletedParcelHistoryPopMenu(v, dates)
                 drawCompletedParcelHistoryPopMenu(v, dates)
             }
         }
@@ -268,173 +271,176 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
             val reversedList = list.reversed()
 
-            reversedList.forEach {
+            CoroutineScope(Dispatchers.Main).launch {
+                reversedList.forEach {
 
-                if(it.item.count > 0 && it.isSelect)
-                {
-                    vm.selectedDate.postValue("${it.item.year}년 ${it.item.month}월")
-                }
+                    if(it.item.count > 0 && it.isSelect)
+                    {
+                        vm.selectedDate.postValue("${it.item.year}년 ${it.item.month}월")
+                    }
 
-                val (clickable, textColor, font) = if(it.item.count > 0)
-                {
-                    Triple(first = true, second = if(it.isSelect) ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE)
-                    else ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800), third = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_bold))
-                }
-                else
-                {
-                    Triple(first = false, second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300), third = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular))
-                }
+                    val (clickable, textColor, font) = if(it.item.count > 0)
+                    {
+                        Triple(first = true, second = if(it.isSelect) ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE)
+                        else ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800), third = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold))
+                    }
+                    else
+                    {
+                        Triple(first = false, second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300), third = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium))
+                    }
 
-                when(it.item.month)
-                {
-                    "01" ->
+                    when(it.item.month)
                     {
-                        binding.tvJan.apply {
-                            setTextColor(textColor)
-                            typeface = font
-                            isClickable = clickable
-                            isFocusable = clickable
-                            background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                else null
+                        "01" ->
+                        {
+                            binding.tvJan.apply {
+                                setTextColor(textColor)
+                                typeface = font
+                                isClickable = clickable
+                                isFocusable = clickable
+                                background =
+                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                    else null
+                            }
+                        }
+                        "02" ->
+                        {
+                            binding.tvFeb.apply {
+                                setTextColor(textColor)
+                                typeface = font
+                                isClickable = clickable
+                                isFocusable = clickable
+                                background =
+                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                    else null
+                            }
+                        }
+                        "03" ->
+                        {
+                            binding.tvMar.apply {
+                                setTextColor(textColor)
+                                typeface = font
+                                isClickable = clickable
+                                isFocusable = clickable
+                                isFocusable = clickable
+                                background =
+                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                    else null
+                            }
+                        }
+                        "04" ->
+                        {
+                            binding.tvApr.apply {
+                                setTextColor(textColor)
+                                typeface = font
+                                isClickable = clickable
+                                isFocusable = clickable
+                                background =
+                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                    else null
+                            }
+                        }
+                        "05" ->
+                        {
+                            binding.tvMay.apply {
+                                setTextColor(textColor)
+                                typeface = font
+                                isClickable = clickable
+                                isFocusable = clickable
+                                background =
+                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                    else null
+                            }
+                        }
+                        "06" ->
+                        {
+                            binding.tvJun.apply {
+                                setTextColor(textColor)
+                                typeface = font
+                                isClickable = clickable
+                                isFocusable = clickable
+                                background =
+                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                    else null
+                            }
+                        }
+                        "07" ->
+                        {
+                            binding.tvJul.apply {
+                                setTextColor(textColor)
+                                typeface = font
+                                isClickable = clickable
+                                isFocusable = clickable
+                                background =
+                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                    else null
+                            }
+                        }
+                        "08" ->
+                        {
+                            binding.tvAug.apply {
+                                setTextColor(textColor)
+                                typeface = font
+                                isClickable = clickable
+                                isFocusable = clickable
+                                background =
+                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                    else null
+                            }
+                        }
+                        "09" ->
+                        {
+                            binding.tvSep.apply {
+                                setTextColor(textColor)
+                                typeface = font
+                                isClickable = clickable
+                                isFocusable = clickable
+                                background =
+                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                    else null
+                            }
+                        }
+                        "10" ->
+                        {
+                            binding.tvOct.apply {
+                                setTextColor(textColor)
+                                typeface = font
+                                isClickable = clickable
+                                isFocusable = clickable
+                                background =
+                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                    else null
+                            }
+                        }
+                        "11" ->
+                        {
+                            binding.tvNov.apply {
+                                setTextColor(textColor)
+                                typeface = font
+                                isClickable = clickable
+                                isFocusable = clickable
+                                background =
+                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                    else null
+                            }
+                        }
+                        "12" ->
+                        {
+                            binding.tvDec.apply {
+                                setTextColor(textColor)
+                                typeface = font
+                                isClickable = clickable
+                                isFocusable = clickable
+                                background =
+                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
+                                    else null
+                            }
                         }
                     }
-                    "02" ->
-                    {
-                        binding.tvFeb.apply {
-                            setTextColor(textColor)
-                            typeface = font
-                            isClickable = clickable
-                            isFocusable = clickable
-                            background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                else null
-                        }
-                    }
-                    "03" ->
-                    {
-                        binding.tvMar.apply {
-                            setTextColor(textColor)
-                            typeface = font
-                            isClickable = clickable
-                            isFocusable = clickable
-                            isFocusable = clickable
-                            background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                else null
-                        }
-                    }
-                    "04" ->
-                    {
-                        binding.tvApr.apply {
-                            setTextColor(textColor)
-                            typeface = font
-                            isClickable = clickable
-                            isFocusable = clickable
-                            background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                else null
-                        }
-                    }
-                    "05" ->
-                    {
-                        binding.tvMay.apply {
-                            setTextColor(textColor)
-                            typeface = font
-                            isClickable = clickable
-                            isFocusable = clickable
-                            background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                else null
-                        }
-                    }
-                    "06" ->
-                    {
-                        binding.tvJun.apply {
-                            setTextColor(textColor)
-                            typeface = font
-                            isClickable = clickable
-                            isFocusable = clickable
-                            background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                else null
-                        }
-                    }
-                    "07" ->
-                    {
-                        binding.tvJul.apply {
-                            setTextColor(textColor)
-                            typeface = font
-                            isClickable = clickable
-                            isFocusable = clickable
-                            background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                else null
-                        }
-                    }
-                    "08" ->
-                    {
-                        binding.tvAug.apply {
-                            setTextColor(textColor)
-                            typeface = font
-                            isClickable = clickable
-                            isFocusable = clickable
-                            background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                else null
-                        }
-                    }
-                    "09" ->
-                    {
-                        binding.tvSep.apply {
-                            setTextColor(textColor)
-                            typeface = font
-                            isClickable = clickable
-                            isFocusable = clickable
-                            background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                else null
-                        }
-                    }
-                    "10" ->
-                    {
-                        binding.tvOct.apply {
-                            setTextColor(textColor)
-                            typeface = font
-                            isClickable = clickable
-                            isFocusable = clickable
-                            background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                else null
-                        }
-                    }
-                    "11" ->
-                    {
-                        binding.tvNov.apply {
-                            setTextColor(textColor)
-                            typeface = font
-                            isClickable = clickable
-                            isFocusable = clickable
-                            background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                else null
-                        }
-                    }
-                    "12" ->
-                    {
-                        binding.tvDec.apply {
-                            setTextColor(textColor)
-                            typeface = font
-                            isClickable = clickable
-                            isFocusable = clickable
-                            background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                else null
-                        }
-                    }
-                }
 
+                }
             }
+
 
         }
 
@@ -452,7 +458,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             override fun onParcelClicked(view: View, type: Int, parcelId: Int)
             {
                 TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelId)
-                FragmentManager.move(requireActivity(), TabCode.INQUIRY_DETAIL, InquiryMainFragment.viewId, true)
+                FragmentManager.add(requireActivity(), TabCode.INQUIRY_DETAIL, InquiryMainFragment.viewId)
             }
 
             override fun onParcelLongClicked(view: View, type: Int, parcelId: Int)
@@ -579,13 +585,19 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         historyPopUpWindow = if(histories.size > 2)
         {
             PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F), SizeUtil.changeDpToPx(binding.root.context, 35 * 6F), true).apply {
-                showAsDropDown(anchorView)
+                CoroutineScope(Dispatchers.Main).launch {
+                    showAsDropDown(anchorView, -80, 0, Gravity.CENTER)
+                }
             }
         }
         else
         {
             PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
-                showAsDropDown(anchorView)
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    showAsDropDown(anchorView, -80, 0, Gravity.CENTER)
+                }
+
             }
         }
     }
@@ -712,7 +724,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
     //팝업 메뉴에서 '삭제하기'가 선택되었을때 화면 세팅
     // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
-    private fun viewSettingForPopupMenuDelete()
+/*    private fun viewSettingForPopupMenuDelete()
     {
         binding.tvTitle.visibility = INVISIBLE
         binding.linearStatusSelector.visibility = INVISIBLE
@@ -721,11 +733,11 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
         binding.vMoreView.visibility = INVISIBLE
 
-    }
+    }*/
 
     // X 버튼으로 '삭제하기 취소'가 되었을때 화면 세팅
     // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
-    private fun viewSettingForPopupMenuDeleteCancel()
+ /*   private fun viewSettingForPopupMenuDeleteCancel()
     {
         binding.tvTitle.visibility = VISIBLE
         binding.linearStatusSelector.visibility = VISIBLE
@@ -736,10 +748,10 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
         viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
     }
-
+*/
     fun setDefaultMonthSelector()
     {
-        val (clickable, textColor, font) = Triple(first = false, second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300), third = ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_regular))
+        val (clickable, textColor, font) = Triple(first = false, second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300), third = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium))
 
 
         binding.tvJan.apply {

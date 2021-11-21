@@ -2,24 +2,16 @@ package com.delivery.sopo.views.inquiry
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.LayoutRes
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.app.ActivityCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
@@ -28,15 +20,13 @@ import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseFragment
-import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.CustomProgressBar
+import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.views.main.MainView
-import com.google.android.material.snackbar.Snackbar
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
 import kotlinx.coroutines.CoroutineScope
@@ -44,8 +34,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.properties.Delegates
-import kotlin.system.exitProcess
-
 
 class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewModel>()
 {
@@ -57,7 +45,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
 
     private var slideViewStatus = 0
 
-    private var progressBar: CustomProgressBar? = null
+    private var progressBar: SopoLoadingBar? = null
 
     var parcelId by Delegates.notNull<Int>()
 
@@ -161,8 +149,8 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     }
 
     private fun setViewSetting(){
-        binding.ivStatus.bringToFront()
-        binding.tvSubtext.bringToFront()
+//        binding.ivStatus.bringToFront()
+//        binding.tvSubtext.bringToFront()
     }
 
     private fun setListener(){
@@ -217,7 +205,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         vm.statusList.observe(requireActivity(), Observer { list ->
             if(list == null) return@Observer
 
-            setIndicatorView(topView = binding.includeSemi.layoutAddView, bottomView = null,
+            setIndicatorView(topView = binding.includeSemi.vGuideline, bottomView = binding.includeSemi.linearBottomEmpty,
                              baseLayout = binding.includeSemi.layoutDetailContent, list = list)
 
             updateDrawerLayoutSize(binding.includeSemi.root)
@@ -225,20 +213,6 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             setIndicatorView(topView = binding.includeFull.tvTitle,
                              bottomView = binding.includeFull.vEmpty,
                              baseLayout = binding.includeFull.layoutDetailContent, list = list)
-        })
-
-        vm.isProgress.observe(requireActivity(), Observer { isProgress ->
-            if(isProgress == null) return@Observer
-
-            if(progressBar == null)
-            {
-                progressBar = CustomProgressBar(this.requireActivity())
-            }
-
-            progressBar?.onStartProgress(isProgress) { isDismiss ->
-                if(isDismiss) progressBar = null
-            }
-
         })
 
         vm.updateType.observe(requireActivity(), Observer { type ->
@@ -346,9 +320,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         {
             if(topView is LinearLayout)
             {
-                val constraintParams =
-                    ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,
-                                                  ConstraintLayout.LayoutParams.WRAP_CONTENT)
+                val constraintParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
 
                 constraintParams.topToBottom = topView.id
                 constraintParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID
@@ -356,6 +328,15 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                 constraintParams.topMargin = SizeUtil.changeDpToPx(requireActivity(), 34.0f)
 
                 baseLayout.layoutParams = constraintParams
+
+                val constraintParams2 =
+                    ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT,
+                                                  SizeUtil.changeDpToPx(requireActivity(), 8.0f))
+
+                constraintParams2.topToBottom = baseLayout.id
+                constraintParams2.topMargin = SizeUtil.changeDpToPx(requireActivity(), 40.0f)
+
+                bottomView!!.layoutParams = constraintParams2
             }
             else
             {

@@ -153,6 +153,7 @@ class InquiryListItem(val parcelResponse: ParcelResponse, var isSelected: Boolea
         return when(parcelResponse.deliveryStatus)
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> "준비중"
+            DeliveryStatusEnum.ORPHANED.CODE -> "조회불가"
             //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> "준비중"
             //상품 인수
@@ -170,6 +171,7 @@ class InquiryListItem(val parcelResponse: ParcelResponse, var isSelected: Boolea
         return when(parcelResponse.deliveryStatus)
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.color.COLOR_GRAY_300
+            DeliveryStatusEnum.ORPHANED.CODE -> R.color.COLOR_MAIN_300
             //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> R.color.COLOR_GRAY_300
             //상품 인수
@@ -187,6 +189,7 @@ class InquiryListItem(val parcelResponse: ParcelResponse, var isSelected: Boolea
         return when(parcelResponse.deliveryStatus)
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.color.STATUS_PREPARING
+            DeliveryStatusEnum.ORPHANED.CODE -> R.color.MAIN_WHITE
             //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> R.color.STATUS_PREPARING
             //상품 인수
@@ -204,6 +207,7 @@ class InquiryListItem(val parcelResponse: ParcelResponse, var isSelected: Boolea
         return when(parcelResponse.deliveryStatus)
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.drawable.ic_inquiry_cardview_not_registered
+            DeliveryStatusEnum.ORPHANED.CODE -> R.drawable.ic_inquiry_cardview_orphaned
             //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> R.drawable.ic_inquiry_cardview_not_registered
             //상품 인수

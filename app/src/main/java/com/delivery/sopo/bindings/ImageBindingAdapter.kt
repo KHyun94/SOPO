@@ -25,21 +25,21 @@ object ImageBindingAdapter
             DeliveryStatusEnum.INFORMATION_RECEIVED -> { }
             DeliveryStatusEnum.AT_PICKUP ->
             {
-                view.setAnimation(R.raw.inquiry_cardview_at_pickup)
+                view.setAnimation(R.raw.inquiry_2depth_at_pickup)
 
             }
             DeliveryStatusEnum.IN_TRANSIT ->
             {
-                view.setAnimation(R.raw.inquiry_cardview_in_transit)
+                view.setAnimation(R.raw.inquiry_2depth_in_transit)
 
             }
             DeliveryStatusEnum.OUT_FOR_DELIVERY ->
             {
-                view.setAnimation( R.raw.inquiry_cardview_out_for_delivery)
+                view.setAnimation(R.raw.inquiry_2depth_out_for_delivery)
             }
             DeliveryStatusEnum.DELIVERED ->
             {
-                view.setAnimation(R.raw.inquiry_cardview_delivered)
+                view.setAnimation(R.raw.inquiry_2depth_delivered)
 
             }
             DeliveryStatusEnum.ERROR -> { }

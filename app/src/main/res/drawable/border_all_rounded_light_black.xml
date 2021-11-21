@@ -6,7 +6,7 @@
     android:shape="rectangle">
 
     <solid
-        android:color="@color/PRIMARY_800"/>
+        android:color="@color/COLOR_GRAY_800"/>
 
     <stroke
         android:width="0dp"

@@ -15,7 +15,7 @@ import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.CustomProgressBar
+import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 
 abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
@@ -41,8 +41,8 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
         CustomSnackBar(mainLayout, "네트워크에 다시 연결되었어요.", 3000, SnackBarEnum.COMMON)
     }
 
-    private val progressBar: CustomProgressBar by lazy {
-        CustomProgressBar(this.requireActivity())
+    private val progressBar: SopoLoadingBar by lazy {
+        SopoLoadingBar(this.requireActivity())
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -157,8 +157,8 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
         }
 
         vm.isLoading.observe(viewLifecycleOwner){ isLoading ->
-            if(isLoading) return@observe progressBar.onStartLoading()
-            else progressBar.onStopLoading()
+            if(isLoading) return@observe progressBar.show()
+            else progressBar.dismiss()
         }
 
         vm.errorSnackBar.observe(viewLifecycleOwner){

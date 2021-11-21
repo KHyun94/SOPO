@@ -10,16 +10,13 @@ object DeliveryStatusConst
     const val IN_TRANSIT = "IN_TRANSIT" // 2. 배송 중
     const val OUT_FOR_DELIVERY = "OUT_FOR_DELIVERY" // 3. 동네 도착(택배 준비 중)
     const val DELIVERED = "DELIVERED" // 4. 배송 완료
-
-    const val CHANGED="CHANGED"
-    const val UNCHANGED="UNCHANGED"
-    const val UNIDENTIFIED_DELIVERED_PARCEL="UNIDENTIFIED_DELIVERED_PARCEL"
-    const val ORPHAN_PARCEL="ORPHAN_PARCEL"
+    const val ORPHANED="ORPHANED"
 
     fun getDeliveryStatus(deliveryStatus: String): DeliveryStatusEnum
     {
         return when (deliveryStatus)
         {
+            ORPHANED -> DeliveryStatusEnum.ORPHANED
             NOT_REGISTERED -> DeliveryStatusEnum.NOT_REGISTERED
             INFORMATION_RECEIVED -> DeliveryStatusEnum.INFORMATION_RECEIVED
             AT_PICKUP -> DeliveryStatusEnum.AT_PICKUP

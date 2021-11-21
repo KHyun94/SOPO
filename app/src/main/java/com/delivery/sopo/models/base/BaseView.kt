@@ -17,8 +17,9 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.util.NetworkStatusMonitor
+import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.CustomProgressBar
+import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 
 abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity() {
@@ -43,8 +44,8 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         CustomSnackBar(mainLayout, "네트워크에 다시 연결되었어요.", 3000, SnackBarEnum.COMMON)
     }
 
-    private val progressBar: CustomProgressBar by lazy {
-        CustomProgressBar(this)
+    private val loadingBar: SopoLoadingBar by lazy {
+        SopoLoadingBar(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -128,9 +129,20 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
             }
         }
 
+        vm.isClickEvent.observe(this) {
+
+            SopoLog.d("Base Click Event [data:$it]")
+
+            if(!it) return@observe
+
+            val a = mainLayout.requestFocus()
+            SopoLog.d("request Focus [${a}]")
+            OtherUtil.hideKeyboardSoft(this)
+        }
+
         vm.isLoading.observe(this){ isLoading ->
-            if(isLoading) return@observe progressBar.onStartLoading()
-            else progressBar.onStopLoading()
+            if(isLoading) return@observe loadingBar.show()
+            else loadingBar.dismiss()
         }
 
         vm.errorSnackBar.observe(this){

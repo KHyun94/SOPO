@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-    <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
         <import type="com.delivery.sopo.R" />
 
         <variable
@@ -22,11 +24,11 @@
             android:id="@+id/layout_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/COLOR_GRAY_50"
             android:gravity="bottom"
             app:umanoDragView="@+id/layout_drawer"
             app:umanoOverlay="true"
-            app:umanoShadowHeight="0dp"
-            android:background="@color/COLOR_GRAY_50">
+            app:umanoShadowHeight="0dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -50,27 +52,63 @@
                     style="@style/kor_H2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="11dp"
+                    android:layout_marginTop="17dp"
+                    android:letterSpacing="-0.07"
                     android:text="상세 조회"
                     android:textColor="@color/COLOR_GRAY_800"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:letterSpacing="-0.07"/>
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
+                <LinearLayout
+                    android:id="@+id/layout_body"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toTopOf="@+id/layout_tail"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_title">
+
+                    <TextView
+                        android:id="@+id/tv_subtext"
+                        style="@style/kor_H3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/pretendard_medium"
+                        android:includeFontPadding="false"
+                        android:text="@{vm.deliveryStatus.MSG}"
+                        android:textColor="@color/COLOR_GRAY_400"
+                        android:visibility="@{vm.deliveryStatus != null ? View.VISIBLE:View.GONE}" />
+
+
+                    <com.airbnb.lottie.LottieAnimationView
+                        android:id="@+id/iv_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        app:lottie_autoPlay="true"
+                        app:lottie_loop="true"
+                        app:setDeliveryStatusInLottie="@{vm.deliveryStatus}"
+                        tools:setDeliveryStatusInLottie="@raw/inquiry_2depth_out_for_delivery.json" />
+
+                </LinearLayout>
+
+                <!--<TextView
                     android:id="@+id/tv_subtext"
                     style="@style/kor_H3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="39dp"
-                    android:fontFamily="@font/spoqa_han_sans_neo_regular"
+                    android:fontFamily="@font/pretendard_medium"
                     android:includeFontPadding="false"
                     android:text="@{vm.deliveryStatus.MSG}"
-                    android:textColor="@color/COLOR_GRAY_800"
+                    android:textColor="@color/COLOR_GRAY_400"
                     android:visibility="@{vm.deliveryStatus != null ? View.VISIBLE:View.GONE}"
                     app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
                 <LinearLayout
@@ -80,7 +118,7 @@
                     android:gravity="center"
                     app:layout_constraintBottom_toTopOf="@+id/layout_tail"
                     app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tv_subtext">
 
                     <com.airbnb.lottie.LottieAnimationView
@@ -90,10 +128,11 @@
                         android:layout_gravity="center"
                         android:adjustViewBounds="true"
                         app:lottie_autoPlay="true"
+                        app:lottie_loop="true"
                         app:setDeliveryStatusInLottie="@{vm.deliveryStatus}"
-                        app:lottie_loop="true" />
+                        tools:setDeliveryStatusInLottie="@raw/inquiry_2depth_out_for_delivery.json" />
 
-                </LinearLayout>
+                </LinearLayout>-->
 
                 <LinearLayout
                     android:id="@+id/layout_tail"
@@ -102,7 +141,7 @@
                     android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/layout_body" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

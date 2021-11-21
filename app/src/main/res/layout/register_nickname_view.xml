@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="11dp"
+            android:layout_marginTop="17dp"
             android:text="@string/SIGN_UP_COMPLETE_VIEW_TITLE"
             android:textColor="@color/COLOR_GRAY_800"
             app:layout_constraintStart_toStartOf="parent"

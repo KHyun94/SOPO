@@ -1,5 +1,7 @@
 package com.delivery.sopo.viewmodels.inquiry
 
+import android.os.Handler
+import android.os.Looper
 import android.widget.TextView
 import androidx.lifecycle.*
 import com.delivery.sopo.UserExceptionHandler
@@ -11,6 +13,7 @@ import com.delivery.sopo.data.repository.remote.parcel.ParcelUseCase
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.InquiryStatusEnum
+import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.UpdateAliasRequest
@@ -41,7 +44,7 @@ class InquiryViewModel(
      */
 
     // '배송 중' 또는 '배송완료' 화면 선택의 기준
-    private val _inquiryStatus = MutableLiveData<InquiryStatusEnum>().apply { value = InquiryStatusEnum.ONGOING }
+    private val _inquiryStatus = MutableLiveData<InquiryStatusEnum>().initialize(InquiryStatusEnum.ONGOING)
     val inquiryStatus: LiveData<InquiryStatusEnum>
         get() = _inquiryStatus
 
@@ -49,6 +52,11 @@ class InquiryViewModel(
     private val _cntOfBeDelivered = parcelManagementRepo.getIsDeliveredCntLiveData()
     val cntOfBeDelivered: LiveData<Int>
         get() = _cntOfBeDelivered
+
+
+    private val _isAvailableRefresh = MutableLiveData<Boolean>().initialize(true)
+    val isAvailableRefresh:LiveData<Boolean>
+    get() = _isAvailableRefresh
 
     private var isFirstLoading: Boolean = false
 
@@ -252,8 +260,10 @@ class InquiryViewModel(
         _isMoreView.postValue(!beforeStatus)
     }
 
-    fun onRefreshParcelsClicked(){
+    fun onRefreshParcelsClicked() = scope.launch{
         SopoLog.i("onRefreshParcelsClicked(...) 호출")
+
+        _isAvailableRefresh.postValue(false)
 
         try
         {
@@ -261,6 +271,13 @@ class InquiryViewModel(
         }
         catch(e: Exception)
         {
+
+        }
+        finally
+        {
+            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                _isAvailableRefresh.postValue(true)
+            }, 3000)
 
         }
     }
@@ -285,9 +302,6 @@ class InquiryViewModel(
             InquiryListItem(it, false)
         }.toMutableList()
 
-//        val previousParcels = _completeList.value?: emptyList<InquiryListItem>()
-//        val currentParcels = previousParcels + list
-
         _completeList.postValue(list)
     }
 
@@ -295,7 +309,7 @@ class InquiryViewModel(
     // 배송완료 리스트를 가져온다.(페이징 포함)
     suspend fun getCompleteParcelsWithPaging(inquiryDate: String): List<ParcelResponse>
     {
-        SopoLog.i("getCompleteListWithPaging(...) 호출 [data:$inquiryDate]")
+        SopoLog.i("getCompleteListWithPaging(...) 호출 [date:$inquiryDate]")
 
         if(pagingManagement.inquiryDate != inquiryDate)
         {
@@ -306,7 +320,7 @@ class InquiryViewModel(
 
         val completeParcels = getCompleteParcelUseCase.invoke(pagingManagement)
 
-        pagingManagement = if(completeParcels.isEmpty())
+        pagingManagement = if(completeParcels.size < 10)
         {
             with(pagingManagement) { PagingManagement(pagingNum - 1, this.inquiryDate, false) }
         }

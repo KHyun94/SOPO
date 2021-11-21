@@ -29,7 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="11dp"
+            android:layout_marginTop="17dp"
             android:text="등록정보 확인"
             android:textColor="@color/MAIN_BLACK"
             app:layout_constraintStart_toStartOf="parent"

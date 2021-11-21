@@ -21,16 +21,24 @@
         android:focusable="true"
         android:background="@color/COLOR_GRAY_50">
 
-        <TextView
+        <include
+            android:id="@+id/include_header"
+            layout="@layout/include_header_left_title_with_right_button"
+            app:title='@{"운송장 등록"}'
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/layout_waybill_num" />
+
+   <!--     <TextView
             style="@style/kor_H2"
             android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="11dp"
+            android:layout_marginTop="17dp"
             android:layout_marginHorizontal="24dp"
             android:text="운송장 등록"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent" />-->
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layout_waybill_num"
@@ -57,7 +65,7 @@
             app:hintTextColor="@color/COLOR_MAIN_700"
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="32dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_title">
+            app:layout_constraintTop_toBottomOf="@id/include_header">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_email"

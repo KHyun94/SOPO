@@ -18,6 +18,11 @@ object MutableLiveDataExtension
         this.value = value
     }
 
+    fun <T> MutableLiveData<T>.initialize(value:T):MutableLiveData<T> {
+        this.value = value
+        return this
+    }
+
     fun <T> MutableLiveData<T>.notifyObserver() {
         this.value = this.value
     }

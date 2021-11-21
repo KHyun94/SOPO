@@ -65,12 +65,12 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository): Ba
         _navigator.postValue(NavigatorEnum.REGISTER_SELECT)
     }
 
-    fun onMove3rdStepClicked(v: View) = checkStatus(checkNetwork = true) {
+    fun onMove3rdStepClicked(v: View) = checkEventStatus(checkNetwork = true) {
         SopoLog.i("onMove3rdStepClicked(...) 호출")
         validity.forEach { (k, v) ->
             if(!v)
             {
-                return@checkStatus _invalidity.postValue(Pair(k, v))
+                return@checkEventStatus _invalidity.postValue(Pair(k, v))
             }
         }
 

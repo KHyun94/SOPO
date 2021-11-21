@@ -1,8 +1,6 @@
 package com.delivery.sopo.models.push
 
 import com.delivery.sopo.consts.DeliveryStatusConst
-import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
-import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.ParcelItem
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.models.parcel.ParcelResponse
@@ -47,6 +45,10 @@ data class UpdateParcelDao(
 
         return when(deliveryStatus)
         {
+            DeliveryStatusConst.ORPHANED ->
+            {
+                ""
+            }
             DeliveryStatusConst.NOT_REGISTERED ->
             {
                 ""

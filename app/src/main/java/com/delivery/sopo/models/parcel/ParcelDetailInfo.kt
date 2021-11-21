@@ -1,6 +1,7 @@
 package com.delivery.sopo.models.parcel
 
 import com.delivery.sopo.models.CarrierDTO
+import java.text.SimpleDateFormat
 
 data class ParcelDetailInfo(
     // 앱에서 택배 등록한 일자
@@ -15,3 +16,10 @@ data class ParcelDetailInfo(
         val deliverStatus: String?,
         val timeLineProgresses: MutableList<TimeLineProgress>?
 )
+{
+    fun changeRegDtFormat():String
+    {
+        val yyMMdd = regDt.split(" ")[0].split("-")
+        return with(yyMMdd) { "${get(0)}년 ${get(1)}월 ${get(2)}일 등록" }
+    }
+}

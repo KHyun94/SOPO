@@ -96,9 +96,8 @@ class LoginViewModel(private val userRemoteRepo: UserRemoteRepository): BaseView
         validity[InfoEnum.PASSWORD] = false
     }
 
-    fun onLoginClicked(v: View)
+    fun onLoginClicked(v: View) = checkEventStatus(checkNetwork = true)
     {
-        v.requestFocusFromTouch()
         requestLoginBySelf()
     }
 

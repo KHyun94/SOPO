@@ -90,7 +90,6 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository, pri
      */
     fun onLoginClicked()
     {
-
         _navigator.value = NavigatorConst.TO_LOGIN
     }
 
@@ -106,8 +105,7 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository, pri
     }
 
     // 카카오톡 로그인을 통해 사용자에 대한 정보를 가져온다
-    fun requestKakaoLogin()
-    {
+    fun requestKakaoLogin() = checkEventStatus(true, 0) {
         SopoLog.i(msg = "requestKakaoLogin(...) 호출")
 
         val keys: MutableList<String> = ArrayList()
