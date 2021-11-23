@@ -23,17 +23,10 @@
         android:layout_height="match_parent"
         android:background="@color/COLOR_GRAY_50">
 
-        <TextView
-            android:id="@+id/tv_title"
-            style="@style/kor_H2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="17dp"
-            android:text="등록정보 확인"
-            android:textColor="@color/MAIN_BLACK"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <include
+            android:id="@+id/include_header"
+            layout="@layout/include_header_left_title_with_right_button"
+            app:title="등록정보 확인"/>
 
         <RelativeLayout
             android:id="@+id/layout_carrier_info"
@@ -43,8 +36,7 @@
             android:layout_marginTop="28dp"
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_title">
-
+            app:layout_constraintTop_toBottomOf="@id/include_header">
 
             <ImageView
                 android:id="@+id/iv_carrier"
