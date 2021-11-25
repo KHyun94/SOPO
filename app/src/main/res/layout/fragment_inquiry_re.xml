@@ -30,11 +30,10 @@
         <include
             android:id="@+id/include_header"
             layout="@layout/include_header_left_title_with_right_button"
-            app:title='@{"택배 조회"}'
             app:leftEventIcon="@{vm.isAvailableRefresh()?R.drawable.ic_bttn_update_active:R.drawable.ic_bttn_update_inactive}"
-            app:rightEventIcon="@{R.drawable.ic_24_meatball}"
             app:onLeftEventClickListener="@{()->vm.onRefreshParcelsClicked()}"
-            />
+            app:rightEventIcon="@{R.drawable.ic_24_meatball}"
+            app:title='@{"택배 조회"}' />
 
         <!-- 택배 상태별 조회 버튼[진행 중/배송 완료] -->
         <LinearLayout
@@ -117,19 +116,19 @@
             app:layout_constraintTop_toBottomOf="@+id/linear_status_selector">
 
             <FrameLayout
-                android:id="@+id/frame_container"
+                android:id="@+id/frame_main_inquiry"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <!-- 택배[진행 중] -->
                 <androidx.core.widget.NestedScrollView
-                    android:id="@+id/nestedScrollView"
+                    android:id="@+id/nested_sv_main_ongoing_inquiry"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:visibility="@{vm.inquiryStatus == InquiryStatusEnum.ONGOING ? View.VISIBLE : View.GONE}"
-                    tools:visibility="gone">
+                    tools:visibility="visible">
 
-                    <LinearLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/linear_ongoing_parent"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -137,14 +136,49 @@
                         android:visibility="@{vm.inquiryStatus == InquiryStatusEnum.ONGOING ? View.VISIBLE : View.INVISIBLE}">
 
                         <LinearLayout
+                            android:id="@+id/linear_no_item"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:visibility="gone"
+                            tools:visibility="gone">
+
+                            <include
+                                android:id="@+id/include_ongoing_no_item"
+                                layout="@layout/include_no_item"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="92dp"
+                                app:content='@{"등록된 택배가 없습니다.\n새로운 택배를 등록해주세요."}' />
+
+                            <TextView
+                                android:id="@+id/tv_move_to_register"
+                                style="@style/buttonBasicStyle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="96dp"
+                                android:focusable="true"
+                                android:onClick="@{()->vm.onMoveToRegister()}"
+                                android:text="운송장 등록하기"
+                                tools:visibility="visible" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
                             android:id="@+id/layout_present_ongoing"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="39.5dp"
-                            android:layout_marginBottom="40dp"
                             android:orientation="horizontal"
                             android:visibility="@{vm.cntOfPresentOngoingParcels > 0 ? View.VISIBLE : View.GONE}"
-                            android:weightSum="10">
+                            android:weightSum="10"
+                            app:layout_constraintBottom_toTopOf="@+id/linear_ongoing_content_view"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
 
                             <!--                            android:visibility="@{vm.cntOfPresentOngoingParcels > 0 &amp;&amp; !vm.isRemovable() ? View.VISIBLE : View.GONE}"-->
                             <LinearLayout
@@ -201,17 +235,19 @@
                             android:id="@+id/linear_ongoing_content_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="48dp"
+                            android:layout_marginTop="40dp"
                             android:orientation="vertical"
-                            android:visibility="@{(vm.ongoingList.size() > 0 &amp;&amp; vm.inquiryStatus == InquiryStatusEnum.ONGOING) ? View.VISIBLE : View.GONE}">
+                            android:visibility="@{(vm.ongoingList.size() > 0 &amp;&amp; vm.inquiryStatus == InquiryStatusEnum.ONGOING) ? View.VISIBLE : View.GONE}"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/layout_present_ongoing">
 
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:id="@+id/constraint_soon_arrival"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:visibility="visible">
+                                android:layout_marginBottom="48dp">
 
-                                <!-- TODO 라벨 컨포넌트화 -->
                                 <TextView
                                     android:id="@+id/tv_soon_arrival"
                                     android:layout_width="wrap_content"
@@ -240,6 +276,7 @@
                                     android:layout_marginTop="9dp"
                                     android:layout_marginRight="10.5dp"
                                     android:layout_marginBottom="15dp"
+                                    android:nestedScrollingEnabled="false"
                                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                                     app:layout_constraintTop_toBottomOf="@+id/tv_soon_arrival"
                                     tools:itemCount="2"
@@ -328,6 +365,7 @@
                                     android:layout_marginLeft="10.5dp"
                                     android:layout_marginTop="9dp"
                                     android:layout_marginRight="10.5dp"
+                                    android:nestedScrollingEnabled="false"
                                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                                     app:layout_constraintTop_toBottomOf="@+id/tv_registered_arrival"
                                     tools:itemCount="3"
@@ -336,7 +374,7 @@
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
                         </LinearLayout>
-                    </LinearLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.core.widget.NestedScrollView>
 
                 <FrameLayout
@@ -345,7 +383,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="27dp"
                     android:visibility="@{vm.inquiryStatus == InquiryStatusEnum.COMPLETE ? View.VISIBLE : View.INVISIBLE}"
-                    tools:visibility="visible">
+                    tools:visibility="gone">
 
                     <!-- 월 spinner ! 촤하단 뷰 -->
                     <LinearLayout

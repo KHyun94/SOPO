@@ -176,10 +176,19 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         // 배송중 , 등록된 택배 리스트
         vm.ongoingList.observe(requireActivity(), Observer { list ->
 
+            if(list.size == 0)
+            {
+                binding.linearNoItem.visibility = VISIBLE
+            }
+            else
+            {
+                binding.linearNoItem.visibility = GONE
+            }
+
             soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
             registeredParcelAdapter.separateDeliveryListByStatus(list)
 
-//            viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
+            viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
             viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
         })
 
@@ -672,11 +681,20 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     }
 
     // '곧 도착' 리스트의 아이템의 개수에 따른 화면세팅
-  /*  private fun viewSettingForSoonArrivalList(listSize: Int)
+    private fun viewSettingForSoonArrivalList(listSize: Int)
     {
+        if(listSize > 0)
+        {
+            binding.constraintSoonArrival.visibility = VISIBLE
+            return
+        }
+
+        binding.constraintSoonArrival.visibility = GONE
+
         when(listSize)
         {
-            // 아이템의 개수가 0개일때
+
+            /*// 아이템의 개수가 0개일때
             0 ->
             {
                 // '곧 도착' 텍스트부터 리스트뷰까지 잡혀있는 부모뷰를 GONE 처리
@@ -703,10 +721,10 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                 binding.constraintSoonArrival.visibility = VISIBLE
                 binding.linearMoreViewParent.visibility = VISIBLE
                 binding.vMoreView.visibility = GONE
-            }
+            }*/
         }
     }
-*/
+
     // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
     private fun viewSettingForRegisteredList(listSize: Int)
     {

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <variable
@@ -9,21 +10,33 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-         android:layout_width="match_parent"
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <ImageView
+            android:id="@+id/iv_exclamation_mark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/exclamation_mark_icon"
+            app:layout_constraintBottom_toTopOf="@id/tv_no_item"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="@drawable/exclamation_mark_icon"
-            android:layout_marginBottom="22dp"/>
-        <!--<TextView
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_no_item"
+            style="@style/kor_H4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
--->
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:lineHeight="22dp"
+            android:text="@{content}"
+            android:textColor="@color/COLOR_GRAY_400"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_exclamation_mark"
+            tools:text="등록된 택배가 없습니다.\n새로운 택배를 등록해주세요." />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

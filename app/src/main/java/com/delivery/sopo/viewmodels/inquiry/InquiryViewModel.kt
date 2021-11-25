@@ -42,7 +42,6 @@ class InquiryViewModel(
     /**
      * 공용
      */
-
     // '배송 중' 또는 '배송완료' 화면 선택의 기준
     private val _inquiryStatus = MutableLiveData<InquiryStatusEnum>().initialize(InquiryStatusEnum.ONGOING)
     val inquiryStatus: LiveData<InquiryStatusEnum>
@@ -258,6 +257,10 @@ class InquiryViewModel(
     {
         val beforeStatus = _isMoreView.value ?: false
         _isMoreView.postValue(!beforeStatus)
+    }
+
+    fun onMoveToRegister(){
+
     }
 
     fun onRefreshParcelsClicked() = scope.launch{
