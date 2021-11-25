@@ -5,7 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.data.repository.database.room.entity.LogEntity
-import com.delivery.sopo.usecase.parcel.RefreshParcelsUseCase
+import com.delivery.sopo.usecase.parcel.remote.RefreshParcelsUseCase
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.coroutineScope

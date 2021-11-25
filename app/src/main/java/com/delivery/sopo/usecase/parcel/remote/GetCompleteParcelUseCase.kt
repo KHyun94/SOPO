@@ -1,4 +1,4 @@
-package com.delivery.sopo.usecase.parcel
+package com.delivery.sopo.usecase.parcel.remote
 
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.models.inquiry.PagingManagement

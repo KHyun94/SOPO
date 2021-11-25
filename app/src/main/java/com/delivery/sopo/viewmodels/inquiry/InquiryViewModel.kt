@@ -23,9 +23,9 @@ import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.mapper.CompletedParcelHistoryMapper
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.ParcelResponse
-import com.delivery.sopo.usecase.parcel.GetCompleteParcelUseCase
-import com.delivery.sopo.usecase.parcel.RefreshParcelsUseCase
-import com.delivery.sopo.usecase.parcel.SyncParcelsUseCase
+import com.delivery.sopo.usecase.parcel.remote.GetCompleteParcelUseCase
+import com.delivery.sopo.usecase.parcel.remote.RefreshParcelsUseCase
+import com.delivery.sopo.usecase.parcel.remote.SyncParcelsUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*

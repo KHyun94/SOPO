@@ -49,6 +49,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:setDefaultImage="@{0}"
             app:setImage="@{buttonIcon}"
+            android:adjustViewBounds="true"
+            android:scaleType="center"
             tools:background="@drawable/ic_clear_btn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

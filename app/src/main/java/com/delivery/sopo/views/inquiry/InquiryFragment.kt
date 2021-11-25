@@ -100,7 +100,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         setAdapters()
         setListener()
 
-        binding.includeHeader.ivRightIcon.setOnClickListener {
+        binding.includeHeader.onRightClickListener = View.OnClickListener {
             openInquiryMenu(it)
         }
 
@@ -128,6 +128,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         getAdapter(InquiryItemTypeEnum.Soon).let { adapter ->
             soonArrivalParcelAdapter = adapter
             binding.recyclerviewSoonArrival.adapter = soonArrivalParcelAdapter
+            soonArrivalParcelAdapter.isFullListItem(true)
             val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
             animator.supportsChangeAnimations = false
         }
@@ -178,7 +179,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
             registeredParcelAdapter.separateDeliveryListByStatus(list)
 
-            viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
+//            viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
             viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
         })
 
@@ -201,7 +202,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         }
 
         // '더 보기'로 아이템들을 숨기는 것을 해제하여 모든 아이템들을 화면에 노출시킨다.
-        vm.isMoreView.observe(requireActivity(), Observer {
+        /*vm.isMoreView.observe(requireActivity(), Observer {
             if(it)
             {
                 // '곧 도착' 리스트뷰는 2개 이상의 데이터는 '더 보기'로 숨겨져 있기 때문에 어덥터에 모든 데이터를 표출하라고 지시한다.
@@ -223,7 +224,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                 binding.imageArrow.setBackgroundResource(R.drawable.ic_down_arrow)
             }
         })
-
+*/
 
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity(), Observer { list ->
@@ -671,7 +672,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     }
 
     // '곧 도착' 리스트의 아이템의 개수에 따른 화면세팅
-    private fun viewSettingForSoonArrivalList(listSize: Int)
+  /*  private fun viewSettingForSoonArrivalList(listSize: Int)
     {
         when(listSize)
         {
@@ -705,7 +706,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             }
         }
     }
-
+*/
     // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
     private fun viewSettingForRegisteredList(listSize: Int)
     {
