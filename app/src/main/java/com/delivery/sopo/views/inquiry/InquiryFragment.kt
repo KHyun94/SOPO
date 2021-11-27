@@ -239,6 +239,17 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         vm.completeList.observe(requireActivity(), Observer { list ->
             SopoLog.d("Test 도대체 어디로 도망간걸까? ${list.size}")
 
+            val isExistParcels = (completedParcelAdapter.getList() + list).isNotEmpty()
+
+            if(isExistParcels)
+            {
+                binding.linearNoItem.visibility = VISIBLE
+            }
+            else
+            {
+                binding.linearNoItem.visibility = GONE
+            }
+
 //            val mocks = list + list + list + list + list + list + list
 
             completedParcelAdapter.notifyChanged(list)

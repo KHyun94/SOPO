@@ -126,7 +126,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:visibility="@{vm.inquiryStatus == InquiryStatusEnum.ONGOING ? View.VISIBLE : View.GONE}"
-                    tools:visibility="visible">
+                    tools:visibility="gone">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/linear_ongoing_parent"
@@ -383,7 +383,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="27dp"
                     android:visibility="@{vm.inquiryStatus == InquiryStatusEnum.COMPLETE ? View.VISIBLE : View.INVISIBLE}"
-                    tools:visibility="gone">
+                    tools:visibility="visible">
 
                     <!-- 월 spinner ! 촤하단 뷰 -->
                     <LinearLayout

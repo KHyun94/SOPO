@@ -96,7 +96,7 @@ class LoginViewModel(private val userRemoteRepo: UserRemoteRepository): BaseView
         validity[InfoEnum.PASSWORD] = false
     }
 
-    fun onLoginClicked(v: View) = checkEventStatus(checkNetwork = true)
+    fun onLoginClicked(v: View) = checkEventStatus(checkNetwork = true, delayMillisecond = 300)
     {
         requestLoginBySelf()
     }
