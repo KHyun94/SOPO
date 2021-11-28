@@ -130,13 +130,9 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         }
 
         vm.isClickEvent.observe(this) {
-
             SopoLog.d("Base Click Event [data:$it]")
-
             if(!it) return@observe
-
             val a = mainLayout.requestFocus()
-            SopoLog.d("request Focus [${a}]")
             OtherUtil.hideKeyboardSoft(this)
         }
 

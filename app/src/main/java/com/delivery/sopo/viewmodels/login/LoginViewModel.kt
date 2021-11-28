@@ -96,33 +96,38 @@ class LoginViewModel(private val userRemoteRepo: UserRemoteRepository): BaseView
         validity[InfoEnum.PASSWORD] = false
     }
 
-    fun onLoginClicked(v: View) = checkEventStatus(checkNetwork = true, delayMillisecond = 300)
+    fun onLoginClicked(v: View) =checkEventStatus(checkNetwork = true)
     {
         requestLoginBySelf()
     }
 
-    private fun requestLoginBySelf() = scope.launch(Dispatchers.IO) {
-        try
-        {
-            SopoLog.i(msg = "requestLoginBySelf(...) 호출")
+    private fun requestLoginBySelf() {
 
-            // 입력값의 유효 처리 여부 확인
-            validity.forEach { (k, v) ->
-                if(!v)
-                {
-                    return@launch _invalidity.postValue(Pair(k, v))
-                }
+        SopoLog.i(msg = "requestLoginBySelf(...) 호출")
+
+        // 입력값의 유효 처리 여부 확인
+        validity.forEach { (k, v) ->
+            if(!v)
+            {
+                return _invalidity.postValue(Pair(k, v))
             }
-
-            userRemoteRepo.requestLogin(email = email.value.toString(), password = password.value.toString().toMD5())
-            userRemoteRepo.getUserInfo()
-
-            return@launch _navigator.postValue(NavigatorConst.TO_MAIN)
         }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
+
+        scope.launch(Dispatchers.IO) {
+            try
+            {
+
+                userRemoteRepo.requestLogin(email = email.value.toString(), password = password.value.toString().toMD5())
+                userRemoteRepo.getUserInfo()
+
+                return@launch _navigator.postValue(NavigatorConst.TO_MAIN)
+            }
+            catch(e: Exception)
+            {
+                exceptionHandler.handleException(coroutineContext, e)
+            }
         }
+
 
     }
 

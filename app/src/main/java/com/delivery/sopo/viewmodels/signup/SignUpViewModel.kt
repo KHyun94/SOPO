@@ -62,7 +62,7 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository, private va
         override fun onSignUpError(error: ErrorEnum)
         {
             super.onSignUpError(error)
-            postErrorSnackBar("이메일 또는 비밀번호가 틀렸습니다.")
+            postErrorSnackBar("이미 등록된 사용자입니다.")
         }
 
         override fun onInternalServerError(error: ErrorEnum)
@@ -96,15 +96,13 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository, private va
         validity[InfoEnum.AGREEMENT] = checkBox.isChecked
     }
 
-    fun onSignUpClicked(v: View)
+    fun onSignUpClicked(v: View) = checkEventStatus(checkNetwork = true, delayMillisecond = 500)
     {
-        v.requestFocusFromTouch()
-
         // 입력값의 유효 처리 여부 확인
         validity.forEach { (k, v) ->
             if(!v)
             {
-                return _invalidity.postValue(Pair(k, v))
+                return@checkEventStatus _invalidity.postValue(Pair(k, v))
             }
         }
 

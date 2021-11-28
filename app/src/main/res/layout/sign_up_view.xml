@@ -19,7 +19,9 @@
         android:id="@+id/constraint_main_sign_up"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/COLOR_GRAY_50">
+        android:background="@color/COLOR_GRAY_50"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <TextView
             android:id="@+id/tv_title"

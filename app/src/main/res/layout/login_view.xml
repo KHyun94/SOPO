@@ -20,7 +20,9 @@
         android:id="@+id/constraint_main_login"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/COLOR_GRAY_50">
+        android:background="@color/COLOR_GRAY_50"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <TextView
             android:id="@+id/tv_title"
@@ -75,9 +77,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"
+                    android:maxEms="50"
                     android:singleLine="true"
                     android:text="@={vm.email}"
-                    android:maxEms="50"
                     app:focusChangeListener="@{vm.focusChangeCallback}"
                     app:type="@{InfoEnum.EMAIL}" />
 
@@ -145,9 +147,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
+            android:focusable="true"
             android:onClick="@{()->vm.onLoginClicked(btnLogin)}"
             android:text="@string/DO_LOGIN"
-            android:focusable="true"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_find_pwd" />

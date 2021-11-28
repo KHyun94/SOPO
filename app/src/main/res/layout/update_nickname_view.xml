@@ -17,7 +17,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_main_update_nickname"
+        android:id="@+id/constraint_main_update_nickname"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/COLOR_GRAY_50">

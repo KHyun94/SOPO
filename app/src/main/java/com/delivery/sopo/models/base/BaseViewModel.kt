@@ -31,20 +31,19 @@ abstract class BaseViewModel: ViewModel()
 
     fun checkEventStatus(checkNetwork: Boolean = false, delayMillisecond: Long = 100, event: () -> Unit)
     {
-        _isLoading.postValue(true)
+        _isClickEvent.postValue(true)
 
         if(checkNetwork)
         {
             checkNetworkStatus().also { value ->
                 if(!value)
                 {
-                    _isLoading.postValue(false)
                     return
                 }
             }
         }
 
-        _isClickEvent.postValue(true)
+        if(_isClickEvent.value == true) return
 
         Handler(Looper.getMainLooper()).postDelayed(Runnable {
             try
@@ -53,7 +52,6 @@ abstract class BaseViewModel: ViewModel()
             }
             finally
             {
-                _isLoading.postValue(false)
                 _isClickEvent.postValue(false)
             }
         }, delayMillisecond)

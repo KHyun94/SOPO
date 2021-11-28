@@ -106,7 +106,7 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
         return userInfo
     }
 
-    suspend fun updateNickname(nickname: String)
+    suspend fun updateNickname(nickname: String) = withContext(Dispatchers.IO)
     {
         val updateNickname = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java).updateUserNickname(nickname = mapOf<String, String>(Pair("nickname", nickname)))
         apiCall { updateNickname }

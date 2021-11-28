@@ -61,6 +61,16 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
         vm.navigator.observe(this, Observer {
             when(it)
             {
+                NavigatorConst.TO_UPDATE_NICKNAME ->
+                {
+                    val clz = RegisterNicknameView::class.java
+
+                    Intent(this@SplashView, clz).let { intent ->
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                        startActivity(intent)
+                        finish()
+                    }
+                }
                 NavigatorConst.TO_PERMISSION ->
                 {
                     PermissionUtil.requestPermission(this, object: OnPermissionRequestListener

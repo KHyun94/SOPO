@@ -11,13 +11,16 @@ import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.services.network_handler.NetworkResult
+import com.delivery.sopo.usecase.UpdateNicknameUseCase
 import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class RegisterNicknameViewModel(private val userLocalRepository: UserLocalRepository): ViewModel()
+class RegisterNicknameViewModel(private val updateNicknameUseCase: UpdateNicknameUseCase): BaseViewModel()
 {
     val nickname = MutableLiveData<String>()
     val validates = mutableMapOf<InfoEnum, Boolean>()
@@ -32,7 +35,7 @@ class RegisterNicknameViewModel(private val userLocalRepository: UserLocalReposi
 
     val focusChangeCallback: FocusChangeCallback = FocusChangeCallback@{ v, hasFocus, type ->
         SopoLog.i("${type.NAME} >>> $hasFocus")
-        Handler().postDelayed(Runnable { _focus.value = (Triple(v, hasFocus, type)) }, 50)
+        _focus.value = (Triple(v, hasFocus, type))
     }
 
     // 유효성 및 통신 등의 결과 객체
@@ -49,7 +52,7 @@ class RegisterNicknameViewModel(private val userLocalRepository: UserLocalReposi
         validates[InfoEnum.NICKNAME] = false
     }
 
-    fun onCompleteSignUpClicked(v: View)
+    fun onCompleteSignUpClicked(v: View) = checkEventStatus(checkNetwork = true)
     {
         SopoLog.d("onCompleteSignUpClicked()")
         validates.forEach { (k, v) ->
@@ -57,36 +60,15 @@ class RegisterNicknameViewModel(private val userLocalRepository: UserLocalReposi
             {
                 SopoLog.d("${k.NAME} validate is fail")
                 _validateError.postValue(Pair(k, v))
-                return@onCompleteSignUpClicked
+                return@checkEventStatus
             }
         }
 
         // result가 전부 통과일 때
-        _isProgress.postValue(true)
-
-        CoroutineScope(Dispatchers.IO).launch {
-            _result.postValue(updateNickname(nickname = nickname.value.toString()))
-        }
+        updateNicknameUseCase.invoke(nickname = nickname.value?:"")
     }
 
-    private suspend fun updateNickname(nickname: String): ResponseResult<String>
-    {
-        return when (val result = UserCall.updateNickname(nickname))
-        {
-            is NetworkResult.Success ->
-            {
-                _isProgress.postValue(false)
-                userLocalRepository.setNickname(nickname)
-                SopoLog.d("Success to update nickname")
-                ResponseResult(true, null, nickname, "Success to update nickname")
-            }
-            is NetworkResult.Error ->
-            {
-                _isProgress.postValue(false)
-                SopoLog.e("Fail to update nickname")
-                ResponseResult(false, null, "", "Fail to update nickname", DisplayEnum.DIALOG)
-            }
-        }
-    }
+    override val exceptionHandler: CoroutineExceptionHandler
+        get() = TODO("Not yet implemented")
 
 }

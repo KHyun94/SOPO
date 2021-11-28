@@ -3,6 +3,7 @@ package com.delivery.sopo.views.signup
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -13,6 +14,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterNicknameViewBinding
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
+import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.util.ui_util.TextInputUtil
@@ -22,28 +24,27 @@ import com.delivery.sopo.views.dialog.OnAgreeClickListener
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class RegisterNicknameView: AppCompatActivity()
+class RegisterNicknameView: BaseView<RegisterNicknameViewBinding, RegisterNicknameViewModel>()
 {
-    private lateinit var binding: RegisterNicknameViewBinding
-    private val vm: RegisterNicknameViewModel by viewModel()
+    override val vm: RegisterNicknameViewModel by viewModel()
+    override val layoutRes: Int = R.layout.register_nickname_view
+    override val mainLayout: View by lazy { binding.constraintMainUpdateNickname }
 
-    override fun onCreate(savedInstanceState: Bundle?)
+
+    override fun onBeforeBinding()
     {
-        super.onCreate(savedInstanceState)
-
-        binding = DataBindingUtil.setContentView<RegisterNicknameViewBinding>(this, R.layout.register_nickname_view)
-        binding.vm = vm
-        binding.lifecycleOwner = this
-
-        binding.btnSndEmail.backgroundTintList = resources.getColorStateList(R.color.COLOR_GRAY_200, null)
-
-        binding.btnSndEmail.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
-
-        setObserve()
+        super.onBeforeBinding()
     }
 
-    private fun setObserve()
+    override fun onAfterBinding()
     {
+        super.onAfterBinding()
+
+    }
+
+    override fun setObserve()
+    {
+        super.setObserve()
         binding.etNickname.addTextChangedListener { nickname ->
 
             val isValidate = ValidateUtil.isValidateNickname(nickname.toString())
@@ -61,10 +62,10 @@ class RegisterNicknameView: AppCompatActivity()
             }
         }
 
-        vm.focus.observe(this, Observer { focus ->
+        vm.focus.observe(this){ focus ->
             val res = TextInputUtil.changeFocus(this@RegisterNicknameView, focus)
             vm.validates[res.first] = res.second
-        })
+        }
 
         vm.validateError.observe(this, Observer { target ->
 
@@ -136,4 +137,6 @@ class RegisterNicknameView: AppCompatActivity()
             })).show(supportFragmentManager, "DIALOG")
         })
     }
+
+
 }

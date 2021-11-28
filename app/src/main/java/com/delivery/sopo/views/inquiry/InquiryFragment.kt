@@ -87,11 +87,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         }
     }
 
-
-    @SuppressLint("ClickableViewAccessibility")
     override fun setBeforeBinding()
     {
-        SopoLog.d("base fragment - initUI Call2")
 
     }
 
@@ -176,13 +173,11 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         // 배송중 , 등록된 택배 리스트
         vm.ongoingList.observe(requireActivity(), Observer { list ->
 
-            if(list.size == 0)
-            {
-                binding.linearNoItem.visibility = VISIBLE
-            }
-            else
-            {
-                binding.linearNoItem.visibility = GONE
+            SopoLog.d("진행중인 택배 갯수 [size:${list.size}]")
+
+            CoroutineScope(Dispatchers.Main).launch {
+                if(list.size == 0) binding.linearNoItem.visibility = VISIBLE
+                else binding.linearNoItem.visibility = GONE
             }
 
             soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
@@ -243,16 +238,16 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
             if(isExistParcels)
             {
-                binding.linearNoItem.visibility = VISIBLE
+                binding.includeCompleteNoItem.visible = View.VISIBLE
             }
             else
             {
-                binding.linearNoItem.visibility = GONE
+                binding.includeCompleteNoItem.visible = View.GONE
             }
 
-//            val mocks = list + list + list + list + list + list + list
+            val mocks = list + list + list + list + list + list + list
 
-            completedParcelAdapter.notifyChanged(list)
+            completedParcelAdapter.notifyChanged(mocks.toMutableList())
         })
 
 
@@ -278,7 +273,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
             // TODO 다른 곳으로 빼야할듯
             binding.constraintYearSpinner.setOnClickListener { v ->
-//                drawCompletedParcelHistoryPopMenu(v, dates)
                 drawCompletedParcelHistoryPopMenu(v, dates)
             }
         }
@@ -293,6 +287,17 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             val reversedList = list.reversed()
 
             CoroutineScope(Dispatchers.Main).launch {
+
+
+                if(reversedList.size == 0)
+                {
+                    binding.includeCompleteNoItem.visible = View.VISIBLE
+                }
+                else
+                {
+                    binding.includeCompleteNoItem.visible = View.GONE
+                }
+
                 reversedList.forEach {
 
                     if(it.item.count > 0 && it.isSelect)
@@ -915,10 +920,10 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                     this.height = monthSelectorHeight
                 }
 
-                binding.frameComplete.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                binding.frameMainCompleteInquiry.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         }
 
-        binding.frameComplete.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
+        binding.frameMainCompleteInquiry.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
     }
 }
