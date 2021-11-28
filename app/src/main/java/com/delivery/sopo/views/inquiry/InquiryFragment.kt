@@ -170,23 +170,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             }
         })
 
-        // 배송중 , 등록된 택배 리스트
-        vm.ongoingList.observe(requireActivity(), Observer { list ->
-
-            SopoLog.d("진행중인 택배 갯수 [size:${list.size}]")
-
-            CoroutineScope(Dispatchers.Main).launch {
-                if(list.size == 0) binding.linearNoItem.visibility = VISIBLE
-                else binding.linearNoItem.visibility = GONE
-            }
-
-            soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
-            registeredParcelAdapter.separateDeliveryListByStatus(list)
-
-            viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
-            viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
-        })
-
         vm.inquiryStatus.observe(requireActivity()) {
 
             when(it)
@@ -205,45 +188,40 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             }
         }
 
-        // '더 보기'로 아이템들을 숨기는 것을 해제하여 모든 아이템들을 화면에 노출시킨다.
-        /*vm.isMoreView.observe(requireActivity(), Observer {
-            if(it)
-            {
-                // '곧 도착' 리스트뷰는 2개 이상의 데이터는 '더 보기'로 숨겨져 있기 때문에 어덥터에 모든 데이터를 표출하라고 지시한다.
-                soonArrivalParcelAdapter.isFullListItem(true)
+        // 배송중 , 등록된 택배 리스트
+        vm.ongoingList.observe(requireActivity(), Observer { list ->
 
-                // 모든 아이템들을 노출 시켰을때 화면 세팅
-                binding.linearMoreView.visibility = VISIBLE
-                binding.tvMoreView.text = ""
-                binding.imageArrow.setBackgroundResource(R.drawable.ic_up_arrow)
-            }
-            else
-            {
-                // '곧 도착' 리스트뷰의 2개 이상의 데이터가 존재할떄 '더 보기'로 숨기라고 지시한다.
-                soonArrivalParcelAdapter.isFullListItem(false)
+            SopoLog.d("진행중인 택배 갯수 [size:${list.size}]")
 
-                // 제한된 아이템들을 노출 시킬때의 화면 세팅
-                binding.linearMoreView.visibility = VISIBLE
-                binding.tvMoreView.text = "더 보기"
-                binding.imageArrow.setBackgroundResource(R.drawable.ic_down_arrow)
+            CoroutineScope(Dispatchers.Main).launch {
+                if(list.size == 0) binding.linearNoItem.visibility = VISIBLE
+                else binding.linearNoItem.visibility = GONE
             }
+
+            soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
+            registeredParcelAdapter.separateDeliveryListByStatus(list)
+
+            viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
+            viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
         })
-*/
 
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity(), Observer { list ->
-            SopoLog.d("Test 도대체 어디로 도망간걸까? ${list.size}")
+
+            binding.includeCompleteNoItem.visible = View.VISIBLE
 
             val isExistParcels = (completedParcelAdapter.getList() + list).isNotEmpty()
 
-            if(isExistParcels)
+            SopoLog.d("Test 도대체 어디로 도망간걸까? ${list.size} / ${completedParcelAdapter.getList().size}")
+
+           /* if(isExistParcels)
             {
                 binding.includeCompleteNoItem.visible = View.VISIBLE
             }
             else
             {
                 binding.includeCompleteNoItem.visible = View.GONE
-            }
+            }*/
 
             val mocks = list + list + list + list + list + list + list
 
@@ -288,21 +266,25 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
             CoroutineScope(Dispatchers.Main).launch {
 
-
-                if(reversedList.size == 0)
+  /*              if(reversedList.isEmpty())
                 {
-                    binding.includeCompleteNoItem.visible = View.VISIBLE
+
                 }
                 else
                 {
-                    binding.includeCompleteNoItem.visible = View.GONE
-                }
+
+                }*/
 
                 reversedList.forEach {
 
                     if(it.item.count > 0 && it.isSelect)
                     {
                         vm.selectedDate.postValue("${it.item.year}년 ${it.item.month}월")
+                        binding.includeCompleteNoItem.visible = View.GONE
+                    }
+                    else
+                    {
+                        binding.includeCompleteNoItem.visible = View.VISIBLE
                     }
 
                     val (clickable, textColor, font) = if(it.item.count > 0)
@@ -475,6 +457,31 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             val searchDate = date.replace("년 ", "").replace("월", "")
             vm.refreshCompleteParcelsByDate(searchDate)
         }
+
+        // '더 보기'로 아이템들을 숨기는 것을 해제하여 모든 아이템들을 화면에 노출시킨다.
+        /*vm.isMoreView.observe(requireActivity(), Observer {
+            if(it)
+            {
+                // '곧 도착' 리스트뷰는 2개 이상의 데이터는 '더 보기'로 숨겨져 있기 때문에 어덥터에 모든 데이터를 표출하라고 지시한다.
+                soonArrivalParcelAdapter.isFullListItem(true)
+
+                // 모든 아이템들을 노출 시켰을때 화면 세팅
+                binding.linearMoreView.visibility = VISIBLE
+                binding.tvMoreView.text = ""
+                binding.imageArrow.setBackgroundResource(R.drawable.ic_up_arrow)
+            }
+            else
+            {
+                // '곧 도착' 리스트뷰의 2개 이상의 데이터가 존재할떄 '더 보기'로 숨기라고 지시한다.
+                soonArrivalParcelAdapter.isFullListItem(false)
+
+                // 제한된 아이템들을 노출 시킬때의 화면 세팅
+                binding.linearMoreView.visibility = VISIBLE
+                binding.tvMoreView.text = "더 보기"
+                binding.imageArrow.setBackgroundResource(R.drawable.ic_down_arrow)
+            }
+        })
+*/
     }
 
     private fun getParcelClicked(): OnParcelClickListener
@@ -580,30 +587,30 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun drawCompletedParcelHistoryPopMenu(anchorView: View, histories: List<CompletedParcelHistory>)
     {
-        val historyPopUpView: PopupMenuViewBinding =
-            PopupMenuViewBinding.inflate(LayoutInflater.from(context)).also { v ->
+        val historyPopUpView: PopupMenuViewBinding = PopupMenuViewBinding.inflate(LayoutInflater.from(context)).also { v ->
 
-                val inquiryMenuItems =
-                    MenuMapper.completeParcelStatusDTOToMenuItem(histories) as MutableList<InquiryMenuItem>
+                val inquiryMenuItems = MenuMapper.completeParcelStatusDTOToMenuItem(histories) as MutableList<InquiryMenuItem>
 
                 val popupMenuListAdapter = PopupMenuListAdapter(inquiryMenuItems)
 
                 v.recyclerviewInquiryPopupMenu.also {
                     it.adapter = popupMenuListAdapter
-                    val dividerItemDecoration =
-                        DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                    val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
                     dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
                     it.addItemDecoration(dividerItemDecoration)
 
-                    popupMenuListAdapter.setHistoryPopUpItemOnclick(object: PopupMenuListAdapter.HistoryPopUpItemOnclick
-                                                                    {
-                                                                        override fun changeTimeCount(v: View, year: String)
-                                                                        {
-                                                                            vm.changeCompletedParcelHistoryDate(year = year)
+                    val historyPopUpItemOnClick = object: PopupMenuListAdapter.HistoryPopUpItemOnclick
+                    {
+                        override fun changeTimeCount(v: View, year: String)
+                        {
+                            SopoLog.d("이건가 시발 ")
+                            vm.changeCompletedParcelHistoryDate(year = year)
 
-                                                                            historyPopUpWindow?.dismiss()
-                                                                        }
-                                                                    })
+                            historyPopUpWindow?.dismiss()
+                        }
+                    }
+
+                    popupMenuListAdapter.setHistoryPopUpItemOnclick(historyPopUpItemOnClick)
 
                     it.scrollBarFadeDuration = 800
                 }
@@ -784,7 +791,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
     }
 */
-    fun setDefaultMonthSelector()
+    private fun setDefaultMonthSelector()
     {
         val (clickable, textColor, font) = Triple(first = false, second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300), third = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium))
 
@@ -894,26 +901,24 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         }
     }
 
-    override fun onResume()
-    {
-        super.onResume()
-
-//        SopoLog.d("뭐지 시발 진짜로 -> ${binding.nestedScrollView.visibility == View.VISIBLE}")
-    }
-
     private fun updateCompleteUI()
     {
         val onGlobalLayoutListener = object: ViewTreeObserver.OnGlobalLayoutListener
         {
             override fun onGlobalLayout()
             {
+                SopoLog.d("onGlobalLayout 호출")
                 val yearSpinnerHeight: Int = binding.linearOutYearSpinner.height
+
+                SopoLog.d("yearSpinnerHeight $yearSpinnerHeight")
 
                 (binding.linearMonthSelector.layoutParams as FrameLayout.LayoutParams).apply {
                     topMargin = yearSpinnerHeight
                 }
 
                 val monthSelectorHeight = binding.linearMonthSelector.height
+
+                SopoLog.d("monthSelectorHeight $monthSelectorHeight")
 
                 (binding.vEmpty2.layoutParams as LinearLayout.LayoutParams).apply {
                     this.topMargin = yearSpinnerHeight

@@ -14,6 +14,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterNicknameViewBinding
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
+import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
@@ -98,44 +99,27 @@ class RegisterNicknameView: BaseView<RegisterNicknameViewBinding, RegisterNickna
         })
 
 
-        vm.result.observe(this@RegisterNicknameView, Observer { result ->
+        vm.navigator.observe(this){
 
-            if (!result.result)
+            when(it)
             {
-                SopoLog.d("실패 닉네임 업데이트 여부 확인 ${result.result}, ${result.code}, ${result.message}")
-
-                when (result.displayType)
+                NavigatorEnum.MAIN ->
                 {
-                    DisplayEnum.TOAST_MESSAGE ->
+                    GeneralDialog(this@RegisterNicknameView, "성공", "정상적으로 닉네임을 등록했습니다.", null, Pair("네", object: OnAgreeClickListener
                     {
-                        Toast.makeText(this@RegisterNicknameView, "정보 입력을 완료해주세요.", Toast.LENGTH_LONG)
-                            .apply {
-                                setGravity(Gravity.TOP, 0, 180)
-                            }
-                            .show()
-                    }
-                    DisplayEnum.DIALOG ->
-                    {
-                        GeneralDialog(this@RegisterNicknameView, "오류", "닉네임 등록이 실패했습니다.\n다시 시도해주세요.", null, Pair("네", null)).show(supportFragmentManager, "DIALOG")
-                    }
+                        override fun invoke(agree: GeneralDialog)
+                        {
+                            val intent = Intent(this@RegisterNicknameView, MainView::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            startActivity(intent)
+                            finish()
+                        }
+                    })).show(supportFragmentManager, "DIALOG")
                 }
-
-                return@Observer
             }
 
-            SopoLog.d("성공 닉네임 업데이트 여부 확인 ${result.result}, ${result.code}, ${result.message}")
 
-            GeneralDialog(this@RegisterNicknameView, "성공", "정상적으로 닉네임을 등록했습니다.", null, Pair("네", object: OnAgreeClickListener
-            {
-                override fun invoke(agree: GeneralDialog)
-                {
-                    val intent = Intent(this@RegisterNicknameView, MainView::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    startActivity(intent)
-                    finish()
-                }
-            })).show(supportFragmentManager, "DIALOG")
-        })
+        }
     }
 
 

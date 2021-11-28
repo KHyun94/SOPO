@@ -36,7 +36,7 @@ interface ParcelAPI
 
     @GET("api/v1/sopo-parcel/delivery/parcels/months")
     @Headers("Accept: application/json")
-    suspend fun getMonths(): Response<APIResult<MutableList<CompletedParcelHistory>>>
+    suspend fun getCompletedMonths(): Response<APIResult<List<CompletedParcelHistory>>>
 
     // 배송중 & 곧 도착 리스트 가져오는 api
     @GET("api/v1/sopo-parcel/delivery/parcels/ongoing")

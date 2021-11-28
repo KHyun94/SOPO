@@ -39,7 +39,7 @@ object ParcelCall : BaseService(), KoinComponent
 
     suspend fun getCompleteParcelsMonth(): ResponseResult<List<CompletedParcelHistory>?>
     {
-        when(val result = apiCall { parcelAPI.getMonths() })
+        when(val result = apiCall { parcelAPI.getCompletedMonths() })
         {
             is NetworkResult.Success ->
             {

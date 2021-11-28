@@ -9,7 +9,7 @@ import kotlinx.coroutines.withContext
 
 class UpdateNicknameUseCase(private val userRemoteRepo: UserRemoteRepository, private val userLocalRepo: UserLocalRepository)
 {
-    operator fun invoke(nickname: String) = CoroutineScope(Dispatchers.IO).launch {
+    suspend operator fun invoke(nickname: String) = withContext(Dispatchers.Main) {
         userRemoteRepo.updateNickname(nickname = nickname)
         withContext(Dispatchers.Default) { userLocalRepo.setNickname(nickname = nickname) }
     }

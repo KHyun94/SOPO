@@ -30,20 +30,15 @@ import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*
 
-class InquiryViewModel(
-        private val getCompleteParcelUseCase: GetCompleteParcelUseCase,
-        private val refreshParcelsUseCase: RefreshParcelsUseCase,
-        private val syncParcelsUseCase: SyncParcelsUseCase,
-        private val parcelRepo: ParcelRepository,
-        private val parcelManagementRepo: ParcelManagementRepoImpl,
-        private val historyRepo: CompletedParcelHistoryRepoImpl):
+class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase, private val refreshParcelsUseCase: RefreshParcelsUseCase, private val syncParcelsUseCase: SyncParcelsUseCase, private val parcelRepo: ParcelRepository, private val parcelManagementRepo: ParcelManagementRepoImpl, private val historyRepo: CompletedParcelHistoryRepoImpl):
         BaseViewModel()
 {
     /**
      * 공용
      */
     // '배송 중' 또는 '배송완료' 화면 선택의 기준
-    private val _inquiryStatus = MutableLiveData<InquiryStatusEnum>().initialize(InquiryStatusEnum.ONGOING)
+    private val _inquiryStatus =
+        MutableLiveData<InquiryStatusEnum>().initialize(InquiryStatusEnum.ONGOING)
     val inquiryStatus: LiveData<InquiryStatusEnum>
         get() = _inquiryStatus
 
@@ -54,8 +49,8 @@ class InquiryViewModel(
 
 
     private val _isAvailableRefresh = MutableLiveData<Boolean>().initialize(true)
-    val isAvailableRefresh:LiveData<Boolean>
-    get() = _isAvailableRefresh
+    val isAvailableRefresh: LiveData<Boolean>
+        get() = _isAvailableRefresh
 
     private var isFirstLoading: Boolean = false
 
@@ -63,8 +58,10 @@ class InquiryViewModel(
      * 현재 진행 중인 택배 페이지
      */
 
-    private var _ongoingList = Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
-            val list: MutableList<InquiryListItem> = ParcelMapper.parcelListToInquiryItemList(parcelList)
+    private var _ongoingList =
+        Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
+            val list: MutableList<InquiryListItem> =
+                ParcelMapper.parcelListToInquiryItemList(parcelList)
             sortByDeliveryStatus(list).toMutableList()
         }
     val ongoingList: LiveData<MutableList<InquiryListItem>>
@@ -76,7 +73,7 @@ class InquiryViewModel(
         }
 
     // 화면에 전체 아이템의 노출 여부
-    private val _isMoreView = MutableLiveData<Boolean>().apply { value =  false }
+    private val _isMoreView = MutableLiveData<Boolean>().apply { value = false }
     val isMoreView: LiveData<Boolean>
         get() = _isMoreView
 
@@ -94,7 +91,7 @@ class InquiryViewModel(
 
     var isClickableMonths: Boolean = true
 
-    val yearOfCalendar = MutableLiveData<String>()
+    val yearOfCalendar = MutableLiveData<String>().apply { postValue("2021") }
     val monthsOfCalendar = MutableLiveData<List<SelectItem<CompletedParcelHistory>>>()
     val selectedDate = MutableLiveData<String>()
 
@@ -102,7 +99,6 @@ class InquiryViewModel(
 
     init
     {
-
         viewModelScope.launch(Dispatchers.Main) {
             syncParcelsByOngoing()
             requestCompletedParcelHistory()
@@ -143,38 +139,33 @@ class InquiryViewModel(
         updateMonthsSelector(year)
     }
 
-    fun refreshCompleteListByOnlyLocalData()
-    {
+    fun refreshCompleteListByOnlyLocalData() = scope.launch(Dispatchers.IO) {
         SopoLog.d("refreshCompleteListByOnlyLocalData() call")
 
-        viewModelScope.launch(Dispatchers.IO) {
+        //  monthList가 1개 있었을 경우 => 2개 있었을 경우 =>
+        historyRepo.getCurrentTimeCount()?.let {
+            it.visibility = 0
+            historyRepo.updateEntity(it)
+        }
+        historyRepo.getAll()?.let { list ->
+            if(list.filter { it.count > 0 }.isNotEmpty())
+            {
+                val nextVisibleEntity = list.first { it.count > 0 }
+                nextVisibleEntity.visibility = 1
+                historyRepo.updateEntity(nextVisibleEntity)
 
-            //            _isProgress.postValue(true)
-
-            //  monthList가 1개 있었을 경우 => 2개 있었을 경우 =>
-            historyRepo.getCurrentTimeCount()?.let {
-                it.visibility = 0
-                historyRepo.updateEntity(it)
+                getCompleteParcelsWithPaging(nextVisibleEntity.date.replace("-", ""))
             }
-            historyRepo.getAll()?.let { list ->
-                if(list.filter { it.count > 0 }.isNotEmpty())
-                {
-                    val nextVisibleEntity = list.first { it.count > 0 }
-                    nextVisibleEntity.visibility = 1
-                    historyRepo.updateEntity(nextVisibleEntity)
-
-                    getCompleteParcelsWithPaging(nextVisibleEntity.date.replace("-", ""))
-                }
-                // 전부 다 존재하긴 하지만 count가 0개일때는 TimeCount 자체가 쓸모가 없는 상태로 visibility를 -1로 세팅하여
-                // monthList(LiveData)에서 제외 (deleteAll로 삭제하면 '삭제취소'로 복구를 할 수가 없기 때문에 visibility를 -1로 세팅한다.
-                // ( status를 0으로 수정하면 UI에서 접부 삭제했을때 monthList가 남아있어서 EmptyView가 올라오지 않는다.)
-                else
-                {
-                    list.forEach { it.visibility = -1 }
-                    historyRepo.updateEntities(list)
-                }
+            // 전부 다 존재하긴 하지만 count가 0개일때는 TimeCount 자체가 쓸모가 없는 상태로 visibility를 -1로 세팅하여
+            // monthList(LiveData)에서 제외 (deleteAll로 삭제하면 '삭제취소'로 복구를 할 수가 없기 때문에 visibility를 -1로 세팅한다.
+            // ( status를 0으로 수정하면 UI에서 접부 삭제했을때 monthList가 남아있어서 EmptyView가 올라오지 않는다.)
+            else
+            {
+                list.forEach { it.visibility = -1 }
+                historyRepo.updateEntities(list)
             }
         }
+
     }
 
     // 배송완료 리스트의 년월 리스트를 가져온다.
@@ -187,6 +178,7 @@ class InquiryViewModel(
         SopoLog.d("Completed Parcel Date 리스트 사이즈 - ${histories.size}")
 
         withContext(Dispatchers.Default) {
+            historyRepo.deleteAll()
             val entities = histories.map(CompletedParcelHistoryMapper::dtoToEntity)
             historyRepo.insertEntities(entities)
         }
@@ -259,11 +251,12 @@ class InquiryViewModel(
         _isMoreView.postValue(!beforeStatus)
     }
 
-    fun onMoveToRegister(){
+    fun onMoveToRegister()
+    {
 
     }
 
-    fun onRefreshParcelsClicked() = scope.launch{
+    fun onRefreshParcelsClicked() = scope.launch {
         SopoLog.i("onRefreshParcelsClicked(...) 호출")
 
         _isAvailableRefresh.postValue(false)

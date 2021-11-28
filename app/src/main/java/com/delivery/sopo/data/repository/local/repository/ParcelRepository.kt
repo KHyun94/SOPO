@@ -251,14 +251,9 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
 
     override suspend fun getRemoteMonths(): List<CompletedParcelHistory>
     {
-        return try
-        {
-            ParcelCall.getCompleteParcelsMonth().data ?: emptyList<CompletedParcelHistory>()
-        }
-        catch(e: Exception)
-        {
-            emptyList<CompletedParcelHistory>()
-        }
+        val getRemoteMonths = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getCompletedMonths()
+        val result = apiCall { getRemoteMonths }
+        return result.data?.data?: emptyList<CompletedParcelHistory>()
     }
 
     override suspend fun getCompleteParcelsByRemote(page: Int, inquiryDate: String): List<ParcelResponse>

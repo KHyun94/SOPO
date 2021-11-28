@@ -9,6 +9,7 @@ import com.delivery.sopo.data.repository.local.repository.*
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.networks.repository.JoinRepositoryImpl
+import com.delivery.sopo.usecase.UpdateNicknameUseCase
 import com.delivery.sopo.usecase.parcel.remote.GetCompleteParcelUseCase
 import com.delivery.sopo.usecase.parcel.remote.RefreshParcelsUseCase
 import com.delivery.sopo.usecase.parcel.remote.SyncParcelsUseCase
@@ -51,6 +52,7 @@ val appModule = module {
     factory { SyncParcelsUseCase(get()) }
     factory { GetCompleteParcelUseCase(get()) }
     factory { RefreshParcelsUseCase(get()) }
+    factory { UpdateNicknameUseCase(get(), get()) }
 
     viewModel { SplashViewModel(get(), get(), get()) }
     viewModel { IntroViewModel() }

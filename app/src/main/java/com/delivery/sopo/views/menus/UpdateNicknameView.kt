@@ -29,7 +29,7 @@ class UpdateNicknameView: BaseView<UpdateNicknameViewBinding, UpdateNicknameView
     override val layoutRes: Int
         get() = R.layout.update_nickname_view
     override val vm: UpdateNicknameViewModel by viewModel()
-    override val mainLayout: View by lazy{ binding.layoutMainUpdateNickname}
+    override val mainLayout: View by lazy{ binding.constraintMainUpdateNickname}
     override fun onBeforeBinding()
     {
         super.onBeforeBinding()
