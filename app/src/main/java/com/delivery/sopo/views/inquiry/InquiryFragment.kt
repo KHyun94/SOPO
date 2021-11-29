@@ -214,8 +214,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         // 배송완료 화면에서 표출 가능한 년월 리스트
         vm.histories.observe(requireActivity()) { dates ->
 
-            val test = emptyList<>()
-
             CoroutineScope(Dispatchers.Main).launch {
                 if(dates.isEmpty())
                 {
