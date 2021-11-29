@@ -236,7 +236,6 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
 
     suspend fun getRemoteParcelById(parcelId: Int):ParcelResponse
     {
-        val oAuthToken = oAuthRepo.get(userId = userId)
         val getRemoteParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcel(parcelId = parcelId)
         val result = apiCall { getRemoteParcel }
         return result.data?.data?:throw NullPointerException()

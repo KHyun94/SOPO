@@ -11,6 +11,7 @@ import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.networks.repository.JoinRepositoryImpl
 import com.delivery.sopo.usecase.UpdateNicknameUseCase
 import com.delivery.sopo.usecase.parcel.remote.GetCompleteParcelUseCase
+import com.delivery.sopo.usecase.parcel.remote.GetCompletedMonthUseCase
 import com.delivery.sopo.usecase.parcel.remote.RefreshParcelsUseCase
 import com.delivery.sopo.usecase.parcel.remote.SyncParcelsUseCase
 import com.delivery.sopo.viewmodels.IntroViewModel
@@ -51,6 +52,7 @@ val appModule = module {
 
     factory { SyncParcelsUseCase(get()) }
     factory { GetCompleteParcelUseCase(get()) }
+    factory { GetCompletedMonthUseCase(get(), get())}
     factory { RefreshParcelsUseCase(get()) }
     factory { UpdateNicknameUseCase(get(), get()) }
 
@@ -70,7 +72,7 @@ val appModule = module {
     viewModel { FaqViewModel() }
     viewModel { AppInfoViewModel() }
     viewModel { NotDisturbTimeViewModel() }
-    viewModel { InquiryViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { InquiryViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { MenuViewModel(get()) }
     viewModel { AccountManagerViewModel() }
     viewModel { SignOutViewModel(get()) }

@@ -24,19 +24,26 @@ import com.delivery.sopo.models.mapper.CompletedParcelHistoryMapper
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.ParcelResponse
 import com.delivery.sopo.usecase.parcel.remote.GetCompleteParcelUseCase
+import com.delivery.sopo.usecase.parcel.remote.GetCompletedMonthUseCase
 import com.delivery.sopo.usecase.parcel.remote.RefreshParcelsUseCase
 import com.delivery.sopo.usecase.parcel.remote.SyncParcelsUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*
 
-class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase, private val refreshParcelsUseCase: RefreshParcelsUseCase, private val syncParcelsUseCase: SyncParcelsUseCase, private val parcelRepo: ParcelRepository, private val parcelManagementRepo: ParcelManagementRepoImpl, private val historyRepo: CompletedParcelHistoryRepoImpl):
+class InquiryViewModel(
+        private val getCompleteParcelUseCase: GetCompleteParcelUseCase,
+        private val refreshParcelsUseCase: RefreshParcelsUseCase,
+        private val syncParcelsUseCase: SyncParcelsUseCase,
+        private val getCompletedMonthUseCase: GetCompletedMonthUseCase,
+        private val parcelRepo: ParcelRepository,
+        private val parcelManagementRepo: ParcelManagementRepoImpl,
+        private val historyRepo: CompletedParcelHistoryRepoImpl):
         BaseViewModel()
 {
     /**
      * 공용
-     */
-    // '배송 중' 또는 '배송완료' 화면 선택의 기준
+     */ // '배송 중' 또는 '배송완료' 화면 선택의 기준
     private val _inquiryStatus =
         MutableLiveData<InquiryStatusEnum>().initialize(InquiryStatusEnum.ONGOING)
     val inquiryStatus: LiveData<InquiryStatusEnum>
@@ -101,7 +108,7 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
     {
         viewModelScope.launch(Dispatchers.Main) {
             syncParcelsByOngoing()
-            requestCompletedParcelHistory()
+            getCompletedMonthUseCase.invoke()
             pagingManagement = PagingManagement(0, "", true)
         }
     }
@@ -139,6 +146,17 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
         updateMonthsSelector(year)
     }
 
+    fun getRemoteCompletedMonth() = scope.launch {
+        try
+        {
+            getCompletedMonthUseCase.invoke()
+        }
+        catch(e: Exception)
+        {
+            exceptionHandler.handleException(coroutineContext, e)
+        }
+    }
+
     fun refreshCompleteListByOnlyLocalData() = scope.launch(Dispatchers.IO) {
         SopoLog.d("refreshCompleteListByOnlyLocalData() call")
 
@@ -155,8 +173,7 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
                 historyRepo.updateEntity(nextVisibleEntity)
 
                 getCompleteParcelsWithPaging(nextVisibleEntity.date.replace("-", ""))
-            }
-            // 전부 다 존재하긴 하지만 count가 0개일때는 TimeCount 자체가 쓸모가 없는 상태로 visibility를 -1로 세팅하여
+            } // 전부 다 존재하긴 하지만 count가 0개일때는 TimeCount 자체가 쓸모가 없는 상태로 visibility를 -1로 세팅하여
             // monthList(LiveData)에서 제외 (deleteAll로 삭제하면 '삭제취소'로 복구를 할 수가 없기 때문에 visibility를 -1로 세팅한다.
             // ( status를 0으로 수정하면 UI에서 접부 삭제했을때 monthList가 남아있어서 EmptyView가 올라오지 않는다.)
             else
@@ -267,7 +284,7 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
         }
         catch(e: Exception)
         {
-
+            exceptionHandler.handleException(coroutineContext, e)
         }
         finally
         {
@@ -279,19 +296,22 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
     }
 
     fun syncParcelsByOngoing() = scope.launch(Dispatchers.IO) {
-        syncParcelsUseCase.invoke().start()
+        try
+        {
+            syncParcelsUseCase.invoke()
+        }
+        catch(e: Exception)
+        {
+            exceptionHandler.handleException(coroutineContext, e)
+        }
     }
 
 
     // 배송완료 리스트의 전체 새로고침
-    fun refreshCompleteParcels()
-    {
-        viewModelScope.launch(Dispatchers.IO) {
-            clearDeliveredStatus().join()
-            //            sendRemovedData().join()
-            //            initCompleteList().join()
-        }
+    fun refreshCompleteParcels() = scope.launch(Dispatchers.IO) {
+        clearDeliveredStatus().join()
     }
+
 
     fun refreshCompleteParcelsByDate(inquiryDate: String) = CoroutineScope(Dispatchers.IO).launch {
         val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map {
@@ -350,7 +370,7 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
 
         val sortedList = mutableListOf<InquiryListItem>()
         val multiList =
-            listOf<MutableList<InquiryListItem>>(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
+            listOf<MutableList<InquiryListItem>>(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
 
         val elseList = list.asSequence().filter { item ->
 
@@ -390,15 +410,21 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
             item.parcelResponse.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
         }.filter { item ->
             if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.NOT_REGISTERED.CODE)
-            {
-                //                SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
+            { //                SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
                 multiList[5].add(item)
             }
 
             item.parcelResponse.deliveryStatus != DeliveryStatusEnum.NOT_REGISTERED.CODE
+        }.filter { item ->
+            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.ORPHANED.CODE)
+            { //                SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
+                multiList[6].add(item)
+            }
+
+            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE
         }.toList()
 
-        multiList[6].addAll(elseList)
+        multiList[7].addAll(elseList)
 
         multiList.forEach {
             Collections.sort(it, SortByDate())

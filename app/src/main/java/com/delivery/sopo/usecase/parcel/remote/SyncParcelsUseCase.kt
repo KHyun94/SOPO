@@ -5,10 +5,11 @@ import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SyncParcelsUseCase(private val parcelRepo: ParcelRepository)
 {
-    operator fun invoke() = CoroutineScope(Dispatchers.IO).launch {
+    suspend operator fun invoke() = withContext(Dispatchers.IO){
         SopoLog.i("SyncParcelsUseCase(...)")
         val remoteParcels = parcelRepo.getRemoteParcelByOngoing()
         parcelRepo.updateUnidentifiedStatus(remoteParcels)

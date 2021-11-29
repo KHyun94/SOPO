@@ -41,15 +41,14 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.internal.notify
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import java.util.function.Function
 import kotlin.system.exitProcess
 
-
 class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>()
 {
-
     override val layoutRes: Int = R.layout.fragment_inquiry_re
     override val vm: InquiryViewModel by viewModel()
     override val mainLayout: View by lazy { binding.constraintMainInquiry }
@@ -193,10 +192,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
             SopoLog.d("진행중인 택배 갯수 [size:${list.size}]")
 
-            CoroutineScope(Dispatchers.Main).launch {
                 if(list.size == 0) binding.linearNoItem.visibility = VISIBLE
                 else binding.linearNoItem.visibility = GONE
-            }
 
             soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
             registeredParcelAdapter.separateDeliveryListByStatus(list)
@@ -208,21 +205,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity(), Observer { list ->
 
-            binding.includeCompleteNoItem.visible = View.VISIBLE
-
-            val isExistParcels = (completedParcelAdapter.getList() + list).isNotEmpty()
-
-            SopoLog.d("Test 도대체 어디로 도망간걸까? ${list.size} / ${completedParcelAdapter.getList().size}")
-
-           /* if(isExistParcels)
-            {
-                binding.includeCompleteNoItem.visible = View.VISIBLE
-            }
-            else
-            {
-                binding.includeCompleteNoItem.visible = View.GONE
-            }*/
-
             val mocks = list + list + list + list + list + list + list
 
             completedParcelAdapter.notifyChanged(mocks.toMutableList())
@@ -232,32 +214,42 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         // 배송완료 화면에서 표출 가능한 년월 리스트
         vm.histories.observe(requireActivity()) { dates ->
 
-            if(dates.isEmpty())
-            {
-                SopoLog.d("완료 택배가 없습니다.")
-                return@observe
+            val test = emptyList<>()
+
+            CoroutineScope(Dispatchers.Main).launch {
+                if(dates.isEmpty())
+                {
+                    SopoLog.d("완료 택배가 없습니다.")
+
+                    binding.includeCompleteNoItem.visible = View.GONE
+
+                    return@launch
+                }
+
+                SopoLog.d("완료 택배가 있습니다. ${dates.size}")
+
+                binding.includeCompleteNoItem.visible =  View.GONE
+
+                val latestDate = try
+                {
+                    dates.first { date -> date.count > 0 }
+                }
+                catch(e: NoSuchElementException)
+                {
+                    dates.first()
+                }
+
+                vm.updateCompletedParcelCalendar(latestDate.year)
+
+                // TODO 다른 곳으로 빼야할듯
+                binding.constraintYearSpinner.setOnClickListener { v ->
+                    drawCompletedParcelHistoryPopMenu(v, dates)
+                }
             }
 
-            val latestDate = try
-            {
-                dates.first { date -> date.count > 0 }
-            }
-            catch(e: NoSuchElementException)
-            {
-                dates.first()
-            }
-
-            vm.updateCompletedParcelCalendar(latestDate.year)
-
-            // TODO 다른 곳으로 빼야할듯
-            binding.constraintYearSpinner.setOnClickListener { v ->
-                drawCompletedParcelHistoryPopMenu(v, dates)
-            }
         }
 
         vm.monthsOfCalendar.observe(requireActivity()) { list ->
-
-            SopoLog.d("currentCompleteParcelMonths Observing...")
 
             setDefaultMonthSelector()
             vm.selectedDate.postValue("")
@@ -266,25 +258,11 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
             CoroutineScope(Dispatchers.Main).launch {
 
-  /*              if(reversedList.isEmpty())
-                {
-
-                }
-                else
-                {
-
-                }*/
-
                 reversedList.forEach {
 
                     if(it.item.count > 0 && it.isSelect)
                     {
                         vm.selectedDate.postValue("${it.item.year}년 ${it.item.month}월")
-                        binding.includeCompleteNoItem.visible = View.GONE
-                    }
-                    else
-                    {
-                        binding.includeCompleteNoItem.visible = View.VISIBLE
                     }
 
                     val (clickable, textColor, font) = if(it.item.count > 0)
