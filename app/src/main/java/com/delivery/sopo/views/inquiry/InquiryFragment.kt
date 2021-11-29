@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
-import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.databinding.FragmentInquiryReBinding
@@ -41,7 +40,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.internal.notify
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import java.util.function.Function
@@ -105,8 +103,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         }
 
         binding.nestScrollViewComplete.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-            if(scrollY > 0 && oldScrollY == 0) vm.isClickableMonths = false
-            else if(scrollY == 0 && oldScrollY > 0) vm.isClickableMonths = true
+            if(scrollY > 0 && oldScrollY == 0) vm.isMonthClickable = false
+            else if(scrollY == 0 && oldScrollY > 0) vm.isMonthClickable = true
         }
 
         updateCompleteUI()
@@ -429,31 +427,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             val searchDate = date.replace("년 ", "").replace("월", "")
             vm.refreshCompleteParcelsByDate(searchDate)
         }
-
-        // '더 보기'로 아이템들을 숨기는 것을 해제하여 모든 아이템들을 화면에 노출시킨다.
-        /*vm.isMoreView.observe(requireActivity(), Observer {
-            if(it)
-            {
-                // '곧 도착' 리스트뷰는 2개 이상의 데이터는 '더 보기'로 숨겨져 있기 때문에 어덥터에 모든 데이터를 표출하라고 지시한다.
-                soonArrivalParcelAdapter.isFullListItem(true)
-
-                // 모든 아이템들을 노출 시켰을때 화면 세팅
-                binding.linearMoreView.visibility = VISIBLE
-                binding.tvMoreView.text = ""
-                binding.imageArrow.setBackgroundResource(R.drawable.ic_up_arrow)
-            }
-            else
-            {
-                // '곧 도착' 리스트뷰의 2개 이상의 데이터가 존재할떄 '더 보기'로 숨기라고 지시한다.
-                soonArrivalParcelAdapter.isFullListItem(false)
-
-                // 제한된 아이템들을 노출 시킬때의 화면 세팅
-                binding.linearMoreView.visibility = VISIBLE
-                binding.tvMoreView.text = "더 보기"
-                binding.imageArrow.setBackgroundResource(R.drawable.ic_down_arrow)
-            }
-        })
-*/
     }
 
     private fun getParcelClicked(): OnParcelClickListener

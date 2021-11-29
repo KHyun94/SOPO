@@ -67,8 +67,7 @@ class InquiryViewModel(
 
     private var _ongoingList =
         Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
-            val list: MutableList<InquiryListItem> =
-                ParcelMapper.parcelListToInquiryItemList(parcelList)
+            val list: MutableList<InquiryListItem> = ParcelMapper.parcelListToInquiryItemList(parcelList)
             sortByDeliveryStatus(list).toMutableList()
         }
     val ongoingList: LiveData<MutableList<InquiryListItem>>
@@ -78,11 +77,6 @@ class InquiryViewModel(
         Transformations.map(parcelRepo.getLocalOnGoingParcelCnt()) { cnt ->
             cnt
         }
-
-    // 화면에 전체 아이템의 노출 여부
-    private val _isMoreView = MutableLiveData<Boolean>().apply { value = false }
-    val isMoreView: LiveData<Boolean>
-        get() = _isMoreView
 
     /**
      * 완료된 택배 페이지
@@ -96,7 +90,7 @@ class InquiryViewModel(
     val histories: LiveData<List<CompletedParcelHistory>>
         get() = historyRepo.getAllAsLiveData()
 
-    var isClickableMonths: Boolean = true
+    var isMonthClickable: Boolean = true
 
     val yearOfCalendar = MutableLiveData<String>().apply { postValue("2021") }
     val monthsOfCalendar = MutableLiveData<List<SelectItem<CompletedParcelHistory>>>()
@@ -246,7 +240,7 @@ class InquiryViewModel(
 
     fun onMonthClicked(tv: TextView, month: Int)
     {
-        if(!isClickableMonths) return SopoLog.d("$month 비활성화")
+        if(!isMonthClickable) return SopoLog.d("$month 비활성화")
 
         SopoLog.d("$month 활성화")
 
@@ -259,13 +253,6 @@ class InquiryViewModel(
         } ?: return
 
         monthsOfCalendar.postValue(list)
-    }
-
-    //'더보기'를 눌렀다가 땠을때
-    fun onToggleChangedClicked()
-    {
-        val beforeStatus = _isMoreView.value ?: false
-        _isMoreView.postValue(!beforeStatus)
     }
 
     fun onMoveToRegister()
@@ -295,7 +282,7 @@ class InquiryViewModel(
         }
     }
 
-    fun syncParcelsByOngoing() = scope.launch(Dispatchers.IO) {
+    fun syncParcelsByOngoing() = scope.launch(exceptionHandler) {
         try
         {
             syncParcelsUseCase.invoke()

@@ -96,12 +96,12 @@ class LoginViewModel(private val userRemoteRepo: UserRemoteRepository): BaseView
         validity[InfoEnum.PASSWORD] = false
     }
 
-    fun onLoginClicked(v: View) =checkEventStatus(checkNetwork = true)
-    {
+    fun onLoginClicked(v: View) = checkEventStatus(checkNetwork = true) {
         requestLoginBySelf()
     }
 
-    private fun requestLoginBySelf() {
+    private fun requestLoginBySelf()
+    {
 
         SopoLog.i(msg = "requestLoginBySelf(...) 호출")
 
@@ -113,19 +113,15 @@ class LoginViewModel(private val userRemoteRepo: UserRemoteRepository): BaseView
             }
         }
 
-        scope.launch(Dispatchers.IO) {
-            try
-            {
+        scope.launch(exceptionHandler) {
 
-                userRemoteRepo.requestLogin(email = email.value.toString(), password = password.value.toString().toMD5())
-                userRemoteRepo.getUserInfo()
 
-                return@launch _navigator.postValue(NavigatorConst.TO_MAIN)
-            }
-            catch(e: Exception)
-            {
-                exceptionHandler.handleException(coroutineContext, e)
-            }
+            userRemoteRepo.requestLogin(email = email.value.toString(), password = password.value.toString()
+                .toMD5())
+            userRemoteRepo.getUserInfo()
+
+            return@launch _navigator.postValue(NavigatorConst.TO_MAIN)
+
         }
 
 
