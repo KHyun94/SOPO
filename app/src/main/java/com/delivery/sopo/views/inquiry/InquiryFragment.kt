@@ -210,7 +210,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             completedParcelAdapter.notifyChanged(mocks.toMutableList())
         })
 
-
         // 배송완료 화면에서 표출 가능한 년월 리스트
         vm.histories.observe(requireActivity()) { dates ->
 
