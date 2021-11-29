@@ -204,10 +204,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity(), Observer { list ->
-
-            val mocks = list + list + list + list + list + list + list
-
-            completedParcelAdapter.notifyChanged(mocks.toMutableList())
+            completedParcelAdapter.notifyChanged(list)
         })
 
         // 배송완료 화면에서 표출 가능한 년월 리스트
