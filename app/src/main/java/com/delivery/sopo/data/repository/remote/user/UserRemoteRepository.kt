@@ -2,7 +2,6 @@ package com.delivery.sopo.data.repository.remote.user
 
 import com.delivery.sopo.BuildConfig
 import com.delivery.sopo.consts.StatusConst
-import com.delivery.sopo.data.repository.local.o_auth.OAuthEntity
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.DisplayEnum
@@ -11,14 +10,12 @@ import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.models.EmailAuthDTO
 import com.delivery.sopo.models.PasswordResetDTO
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.ErrorResponse
 import com.delivery.sopo.models.dto.OAuthDTO
-import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.OAuthAPI
 import com.delivery.sopo.networks.api.UserAPI
@@ -45,7 +42,7 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
     {
         val requestOAuthToken = NetworkManager.retro(BuildConfig.CLIENT_ID, BuildConfig.CLIENT_PASSWORD).create(OAuthAPI::class.java).requestQAuthToken(grantType = "password", email = email, password = password)
 
-        val result = apiCall(call = { requestOAuthToken })
+        val result = apiCall { requestOAuthToken }
 
         val type = object: TypeToken<OAuthDTO>() {}.type
         val reader = gson.toJson(result.data)
@@ -70,7 +67,7 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
             NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, OAuthAPI::class.java)
                 .requestRefreshOAuthToken(grantType = "refresh_token", email = userLocalRepo.getUserId(), refreshToken = oAuthDTO.refreshToken)
 
-        val result = apiCall(call = { refreshOAuthToken })
+        val result = apiCall { refreshOAuthToken }
 
         val type = object: TypeToken<OAuthDTO>()
         {}.type
@@ -90,7 +87,7 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
             NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
                 .getUserDetailInfo()
 
-        val result = apiCall(call = { getUserInfo })
+        val result = apiCall { getUserInfo }
 
         val userInfo = result.data?.data
             ?: throw SOPOApiException(200, ErrorResponse(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))

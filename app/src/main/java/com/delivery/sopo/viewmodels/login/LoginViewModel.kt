@@ -113,14 +113,23 @@ class LoginViewModel(private val userRemoteRepo: UserRemoteRepository): BaseView
             }
         }
 
-        scope.launch(exceptionHandler) {
+        scope.launch(Dispatchers.IO) {
+
+            try
+            {
+                userRemoteRepo.requestLogin(email = email.value.toString(), password = password.value.toString()
+                    .toMD5())
+                userRemoteRepo.getUserInfo()
+
+                return@launch _navigator.postValue(NavigatorConst.TO_MAIN)
+
+            }
+            catch(e: Exception)
+            {
+                exceptionHandler.handleException(coroutineContext, e)
+            }
 
 
-            userRemoteRepo.requestLogin(email = email.value.toString(), password = password.value.toString()
-                .toMD5())
-            userRemoteRepo.getUserInfo()
-
-            return@launch _navigator.postValue(NavigatorConst.TO_MAIN)
 
         }
 

@@ -46,6 +46,16 @@ fun String.toMilliSeconds(): Long?
     }
 }
 
+fun String.toEllipsis(maxLength: Int = 13): String
+{
+    if(this.length > maxLength)
+    {
+        return this.substring(0, maxLength) + "…"
+    }
+
+    return this
+}
+
 // 파라미터 값보다 같거나 크면 true 이외 false
 fun String?.isGreaterThanOrEqual(minLength : Int) : Boolean
 {

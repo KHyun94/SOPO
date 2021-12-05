@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="com.delivery.sopo.extensions.StringExtensionKt"/>
         <import type="android.view.View" />
 
         <variable
@@ -149,7 +149,8 @@
                         android:layout_marginBottom="6dp"
                         android:letterSpacing="-0.01"
                         android:textSize="15.5dp"
-                        android:text="@{ongoingInquiryData.parcelResponse.alias}"
+                        android:maxLines="1"
+                        android:text='@{ongoingInquiryData.parcelResponse.alias}'
                         tools:text="갤럭시 버즈 플러스 화이트777갤1234ABCabc" />
 
                     <TextView

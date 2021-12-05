@@ -4,21 +4,22 @@ import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.view.Window
 import androidx.annotation.DrawableRes
 import androidx.fragment.app.DialogFragment
 import com.bumptech.glide.Glide
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ConfirmDeleteDialogBinding
 
-typealias OnDeleteClickListener = Pair<String,(agree: ConfirmDeleteDialog)-> Unit>
-
 class ConfirmDeleteDialog : DialogFragment {
 
     lateinit var binding: ConfirmDeleteDialogBinding
 
     private var parentActivity: Activity
-    private lateinit var layoutView: View
+
 
     @DrawableRes private var titleIcon: Int = 0
     private var title: String? = null
@@ -26,16 +27,11 @@ class ConfirmDeleteDialog : DialogFragment {
     private var content: String? = null
     private var handler: Pair<String,(agree: ConfirmDeleteDialog)-> Unit>
 
-    constructor(act: Activity, handler: Pair<String,(agree: ConfirmDeleteDialog)-> Unit>) : super() {
-        this.parentActivity = act
-        this.handler = handler
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = ConfirmDeleteDialogBinding.inflate(LayoutInflater.from(context))
         setSetting()
         setClickEvent()

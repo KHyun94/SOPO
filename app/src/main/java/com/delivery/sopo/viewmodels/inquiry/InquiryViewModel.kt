@@ -9,24 +9,20 @@ import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistor
 import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.data.repository.remote.parcel.ParcelUseCase
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.InquiryStatusEnum
 import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.SelectItem
-import com.delivery.sopo.models.UpdateAliasRequest
+import com.delivery.sopo.models.UpdateParcelAliasRequest
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.mapper.CompletedParcelHistoryMapper
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.ParcelResponse
-import com.delivery.sopo.usecase.parcel.remote.GetCompleteParcelUseCase
-import com.delivery.sopo.usecase.parcel.remote.GetCompletedMonthUseCase
-import com.delivery.sopo.usecase.parcel.remote.RefreshParcelsUseCase
-import com.delivery.sopo.usecase.parcel.remote.SyncParcelsUseCase
+import com.delivery.sopo.usecase.parcel.remote.*
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*
@@ -36,6 +32,7 @@ class InquiryViewModel(
         private val refreshParcelsUseCase: RefreshParcelsUseCase,
         private val syncParcelsUseCase: SyncParcelsUseCase,
         private val getCompletedMonthUseCase: GetCompletedMonthUseCase,
+        private val updateParcelAliasUseCase: UpdateParcelAliasUseCase,
         private val parcelRepo: ParcelRepository,
         private val parcelManagementRepo: ParcelManagementRepoImpl,
         private val historyRepo: CompletedParcelHistoryRepoImpl):
@@ -282,7 +279,7 @@ class InquiryViewModel(
         }
     }
 
-    fun syncParcelsByOngoing() = scope.launch(exceptionHandler) {
+    fun syncParcelsByOngoing() = scope.launch(Dispatchers.IO) {
         try
         {
             syncParcelsUseCase.invoke()
@@ -293,12 +290,10 @@ class InquiryViewModel(
         }
     }
 
-
     // 배송완료 리스트의 전체 새로고침
     fun refreshCompleteParcels() = scope.launch(Dispatchers.IO) {
         clearDeliveredStatus().join()
     }
-
 
     fun refreshCompleteParcelsByDate(inquiryDate: String) = CoroutineScope(Dispatchers.IO).launch {
         val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map {
@@ -345,10 +340,16 @@ class InquiryViewModel(
     }
 
 
-    fun onUpdateParcelAlias(updateAliasRequest: UpdateAliasRequest)
-    {
-        CoroutineScope(Dispatchers.Main).launch {
-            ParcelUseCase.updateParcelAlias(req = updateAliasRequest)
+    fun onUpdateParcelAlias(parcelId:Int, parcelAlias: String) = checkEventStatus(checkNetwork = true){
+        scope.launch {
+            try
+            {
+                updateParcelAliasUseCase.invoke(parcelId = parcelId, parcelAlias = parcelAlias)
+            }
+            catch(e:Exception)
+            {
+                exceptionHandler.handleException(coroutineContext, e)
+            }
         }
     }
 
@@ -430,8 +431,30 @@ class InquiryViewModel(
 
     private val onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
+        override fun onRegisterParcelError(error: ErrorEnum)
+        {
+            super.onRegisterParcelError(error)
+
+            postErrorSnackBar(error.message)
+        }
+
         override fun onFailure(error: ErrorEnum)
         {
+            postErrorSnackBar("알 수 없는 이유로 등록에 실패했습니다.[${error.toString()}]")
+        }
+
+        override fun onInternalServerError(error: ErrorEnum)
+        {
+            super.onInternalServerError(error)
+
+            postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
+        }
+
+        override fun onAuthError(error: ErrorEnum)
+        {
+            super.onAuthError(error)
+
+            postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
         }
     }
     override val exceptionHandler: CoroutineExceptionHandler by lazy {

@@ -1,3 +1,4 @@
+/*
 package com.delivery.sopo.views.adapter
 
 import android.view.LayoutInflater
@@ -127,7 +128,7 @@ class ReInquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveDa
                     {
                         if (mClickListener != null)
                         {
-                            mClickListener!!.onParcelClicked(
+                            mClickListener!!.onEnterParcelDetailClicked(
                                 view = it, type = 0, parcelId = inquiryListItem.parcelResponse.parcelId
                             )
                         }
@@ -137,7 +138,7 @@ class ReInquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveDa
                 holder.ongoingBinding.cvOngoingParent.setOnLongClickListener {
                     if (!isRemovable && mClickListener != null)
                     {
-                        mClickListener!!.onParcelLongClicked(
+                        mClickListener!!.onUpdateParcelAliasClicked(
                             view = it, type = 0, parcelId = inquiryListItem.parcelResponse.parcelId
                         )
                     }
@@ -179,7 +180,7 @@ class ReInquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveDa
                     {
                         if (mClickListener != null)
                         {
-                            mClickListener!!.onParcelClicked(
+                            mClickListener!!.onEnterParcelDetailClicked(
                                 view = it, type = 1, parcelId = inquiryListItem.parcelResponse.parcelId
                             )
                         }
@@ -189,7 +190,7 @@ class ReInquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveDa
                 holder.completeBinding.cvCompleteParent.setOnLongClickListener {
                     if (!isRemovable && mClickListener != null)
                     {
-                        mClickListener!!.onParcelLongClicked(
+                        mClickListener!!.onUpdateParcelAliasClicked(
                             view = it, type = 1, parcelId = inquiryListItem.parcelResponse.parcelId
                         )
                     }
@@ -390,4 +391,4 @@ class ReInquiryListAdapter(private val cntOfSelectedItemForDelete: MutableLiveDa
     {
         return list
     }
-}
+}*/

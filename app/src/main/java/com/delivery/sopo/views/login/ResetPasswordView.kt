@@ -229,8 +229,8 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
         binding.layoutEmail.visibility = View.GONE
         binding.layoutPassword.visibility = View.VISIBLE
 
-        binding.btnBack.visibility = View.GONE
-        binding.btnClear.visibility = View.VISIBLE
+/*        binding.btnBack.visibility = View.GONE
+        binding.btnClear.visibility = View.VISIBLE*/
 
         binding.tvSubTitle.visibility = View.GONE
         binding.btnNext.text = "변경하기"

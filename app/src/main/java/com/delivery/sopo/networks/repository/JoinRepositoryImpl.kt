@@ -14,10 +14,10 @@ class JoinRepositoryImpl: JoinRepository, BaseServiceBeta(), KoinComponent
     private val joinAPI: JoinAPI = NetworkManager.retro().create(JoinAPI::class.java)
 
     override suspend fun requestJoinBySelf(joinInfoDTO: JoinInfoDTO): NetworkResponse<Unit> = withContext(Dispatchers.IO) {
-        return@withContext apiCall(call = { joinAPI.requestJoinBySelf(joinInfoDTO) })
+        return@withContext apiCall { joinAPI.requestJoinBySelf(joinInfoDTO) }
     }
 
     override suspend fun requestJoinByKakao(joinInfoDTO: JoinInfoDTO): NetworkResponse<Unit> = withContext(Dispatchers.IO) {
-            return@withContext apiCall(call = { joinAPI.requestJoinByKakao(joinInfoDTO) })
+            return@withContext apiCall { joinAPI.requestJoinByKakao(joinInfoDTO) }
     }
 }

@@ -17,11 +17,10 @@ import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.models.ParcelRegister
+import com.delivery.sopo.models.UpdateParcelAliasRequest
 import com.delivery.sopo.models.parcel.ParcelStatus
-import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.services.network_handler.BaseServiceBeta
 import com.delivery.sopo.services.network_handler.NetworkResponse
-import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
@@ -30,12 +29,8 @@ import kotlinx.coroutines.withContext
 class ParcelRepository(private val userLocalRepo: UserLocalRepository,
                        private val oAuthRepo: OAuthLocalRepository,
                        private val parcelManagementRepo:ParcelManagementRepoImpl,
-                       private val appDatabase: AppDatabase):
-        ParcelDataSource, BaseServiceBeta()
+                       private val appDatabase: AppDatabase): ParcelDataSource, BaseServiceBeta()
 {
-
-    private val userId: String by lazy { userLocalRepo.getUserId() }
-
     suspend fun insertParcelsFromServer(parcels:List<ParcelResponse>){
 
         val insertParcels = parcels.filter { getLocalParcelById(it.parcelId) == null }
@@ -73,8 +68,6 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
                 if(unidentifiedStatus == 1) this.unidentifiedStatus = 0 else unidentifiedStatus = 1
                 auditDte = TimeUtil.getDateTime()
             }
-        }.apply {
-            SopoLog.d("!!!!!!!!!!! update2 size - ${this.size}")
         }
 
         updateLocalParcels(updateParcels)
@@ -262,6 +255,16 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         return result.data?.data?: emptyList<ParcelResponse>()
     }
 
+    /**
+     * 택배 Alias 업데이트
+     */
+    suspend fun updateParcelAlias(parcelId: Int, parcelAlias:String)
+    {
+        val wrapParcelAlias = mapOf<String, String>(Pair("alias", parcelAlias))
+
+        val updateParcelAlias =  NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).updateParcelAlias(parcelId, wrapParcelAlias)
+        apiCall { updateParcelAlias }
+    }
 
     /**
      * 택배 업데이트 관련

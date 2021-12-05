@@ -5,7 +5,7 @@ import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistor
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.data.repository.database.room.dto.DeleteParcelsDTO
 import com.delivery.sopo.models.ParcelRegister
-import com.delivery.sopo.models.UpdateAliasRequest
+import com.delivery.sopo.models.UpdateParcelAliasRequest
 import com.delivery.sopo.models.parcel.ParcelResponse
 import retrofit2.Response
 import retrofit2.http.*
@@ -53,9 +53,9 @@ interface ParcelAPI
     suspend fun deleteParcels(@Body parcelIds: DeleteParcelsDTO): APIResult<String?>
 
     // alias 변경
-    @PATCH("api/v1/sopo-parcel/delivery/parcel/alias")
+    @PATCH("api/v1/sopo-parcel/delivery/parcel/{parcelId}/alias")
     @Headers("Content-Type: application/json")
-    suspend fun updateParcelAlias(@Body req: UpdateAliasRequest): Response<APIResult<Unit?>>
+    suspend fun updateParcelAlias(@Path("parcelId") parcelId: Int, @Body parcelAlias:Map<String, String>): Response<Unit>
 
     /**
      * 택배 리스트 전체 업데이트 요청

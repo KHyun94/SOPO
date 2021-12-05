@@ -22,9 +22,8 @@ import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.enums.InquiryStatusEnum
 import com.delivery.sopo.enums.TabCode
-import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
-import com.delivery.sopo.models.UpdateAliasRequest
+import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.mapper.MenuMapper
@@ -35,6 +34,7 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
+import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
@@ -71,9 +71,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         {
             override fun onBackPressedInTime()
             {
-                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
-                    .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }
-                    .show()
+                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }.show()
             }
 
             override fun onBackPressedOutTime()
@@ -143,7 +141,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     private fun activateInquiryStatus(tv: TextView)
     {
         tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE))
-        tv.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_light_black)
+        tv.background =
+            ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_light_black)
         tv.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
     }
 
@@ -159,13 +158,12 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         super.setObserve()
 
         if(activity == null) return
-        parentView.currentPage.observe(requireActivity(), Observer {
-
+        parentView.currentPage.observe(requireActivity()) {
             if(it != null && it == TabCode.secondTab)
             {
                 requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), onBackPressedCallback)
             }
-        })
+        }
 
         vm.inquiryStatus.observe(requireActivity()) {
 
@@ -190,8 +188,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
             SopoLog.d("진행중인 택배 갯수 [size:${list.size}]")
 
-                if(list.size == 0) binding.linearNoItem.visibility = VISIBLE
-                else binding.linearNoItem.visibility = GONE
+            if(list.size == 0) binding.linearNoItem.visibility = VISIBLE
+            else binding.linearNoItem.visibility = GONE
 
             soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
             registeredParcelAdapter.separateDeliveryListByStatus(list)
@@ -220,7 +218,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
                 SopoLog.d("완료 택배가 있습니다. ${dates.size}")
 
-                binding.includeCompleteNoItem.visible =  View.GONE
+                binding.includeCompleteNoItem.visible = View.GONE
 
                 val latestDate = try
                 {
@@ -429,39 +427,73 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         }
     }
 
-    private fun getParcelClicked(): OnParcelClickListener
+    private fun getParcelClicked(): ParcelEventListener
     {
-        return object: OnParcelClickListener
+        return object: ParcelEventListener()
         {
-            override fun onParcelClicked(view: View, type: Int, parcelId: Int)
+            override fun onMaintainParcelClicked(view: View, type: InquiryStatusEnum, parcelId: Int)
             {
+                super.onMaintainParcelClicked(view, type, parcelId)
+
+                val dialog = ConfirmDeleteDialog(
+                    requireActivity(), 0, "이 아이템을 제거할까요?", "", """
+배송 상태가 2주간 확인되지 않고 있어요.
+등록된 송장번호가 유효하지 않을지도 몰라요.""".trimIndent(), Pair("탈퇴하기", object: ((ConfirmDeleteDialog) -> Unit)
+                    {
+                        override fun invoke(dialog: ConfirmDeleteDialog)
+                        {
+
+                            dialog.dismiss()
+                        }
+                    })
+                )
+
+                dialog.show(requireActivity().supportFragmentManager, "")
+
+                /*val dialog = ConfirmDeleteDialog(this@InquiryFragment.requireActivity(), 0, "이 아이템을 제거할까요?", "", """
+배송 상태가 2주간 확인되지 않고 있어요.
+등록된 송장번호가 유효하지 않을지도 몰라요.
+            """.trimIndent(), Pair("지울게요", object: ((ConfirmDeleteDialog) -> Unit)
+                    {
+                        override fun invoke(dialog: ConfirmDeleteDialog)
+                        {
+                            dialog.dismiss()
+                        }
+                    }))
+
+                dialog.show(requireActivity().supportFragmentManager, "")*/
+            }
+
+            override fun onEnterParcelDetailClicked(view: View, type: InquiryStatusEnum, parcelId: Int)
+            {
+                super.onEnterParcelDetailClicked(view, type, parcelId)
+
                 TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelId)
                 FragmentManager.add(requireActivity(), TabCode.INQUIRY_DETAIL, InquiryMainFragment.viewId)
             }
 
-            override fun onParcelLongClicked(view: View, type: Int, parcelId: Int)
+            override fun onUpdateParcelAliasClicked(view: View, type: InquiryStatusEnum, parcelId: Int)
             {
+                super.onUpdateParcelAliasClicked(view, type, parcelId)
+
                 val edit = MutableLiveData<String>()
 
                 AlertUtil.updateValueDialog(requireContext(), "물품명을 입력해주세요.", Pair("확인", View.OnClickListener {
-                    edit.observe(requireActivity(), Observer { alias ->
+                    edit.observe(requireActivity()) { parcelAlias ->
 
-                        val updateAliasRequest =
-                            UpdateAliasRequest(parcelId = parcelId, alias = alias)
-
-                        vm.onUpdateParcelAlias(updateAliasRequest)
+                        vm.onUpdateParcelAlias(parcelId, parcelAlias)
 
                         AlertUtil.onDismiss()
 
-                        if(type == 0)
+                        /*if(type == InquiryStatusEnum.ONGOING)
                         {
                             vm.syncParcelsByOngoing()
                         }
-                        else
+                        else if(type == InquiryStatusEnum.COMPLETE)
                         {
                             vm.refreshCompleteParcels()
-                        }
-                    })
+                        }*/
+                    }
                 }), Pair("취소", null), Function {
                     edit.value = it
                 })
@@ -532,28 +564,32 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun drawCompletedParcelHistoryPopMenu(anchorView: View, histories: List<CompletedParcelHistory>)
     {
-        val historyPopUpView: PopupMenuViewBinding = PopupMenuViewBinding.inflate(LayoutInflater.from(context)).also { v ->
+        val historyPopUpView: PopupMenuViewBinding =
+            PopupMenuViewBinding.inflate(LayoutInflater.from(context)).also { v ->
 
-                val inquiryMenuItems = MenuMapper.completeParcelStatusDTOToMenuItem(histories) as MutableList<InquiryMenuItem>
+                val inquiryMenuItems =
+                    MenuMapper.completeParcelStatusDTOToMenuItem(histories) as MutableList<InquiryMenuItem>
 
                 val popupMenuListAdapter = PopupMenuListAdapter(inquiryMenuItems)
 
                 v.recyclerviewInquiryPopupMenu.also {
                     it.adapter = popupMenuListAdapter
-                    val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                    val dividerItemDecoration =
+                        DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
                     dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
                     it.addItemDecoration(dividerItemDecoration)
 
-                    val historyPopUpItemOnClick = object: PopupMenuListAdapter.HistoryPopUpItemOnclick
-                    {
-                        override fun changeTimeCount(v: View, year: String)
+                    val historyPopUpItemOnClick =
+                        object: PopupMenuListAdapter.HistoryPopUpItemOnclick
                         {
-                            SopoLog.d("이건가 시발 ")
-                            vm.changeCompletedParcelHistoryDate(year = year)
+                            override fun changeTimeCount(v: View, year: String)
+                            {
+                                SopoLog.d("이건가 시발 ")
+                                vm.changeCompletedParcelHistoryDate(year = year)
 
-                            historyPopUpWindow?.dismiss()
+                                historyPopUpWindow?.dismiss()
+                            }
                         }
-                    }
 
                     popupMenuListAdapter.setHistoryPopUpItemOnclick(historyPopUpItemOnClick)
 
@@ -633,7 +669,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
                 if(!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) // 리스트뷰의 마지막
                 {
-                    val inquiryDate = vm.selectedDate.value?.replace("년 ", "")?.replace("월", "")?:return
+                    val inquiryDate =
+                        vm.selectedDate.value?.replace("년 ", "")?.replace("월", "") ?: return
 
                     SopoLog.d("완료 택배 RecyclerView $inquiryDate")
 
@@ -711,31 +748,31 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
     //팝업 메뉴에서 '삭제하기'가 선택되었을때 화면 세팅
     // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
-/*    private fun viewSettingForPopupMenuDelete()
-    {
-        binding.tvTitle.visibility = INVISIBLE
-        binding.linearStatusSelector.visibility = INVISIBLE
-        binding.ivPopMenu.visibility = INVISIBLE
-        binding.linearMoreViewParent.visibility = GONE
+    /*    private fun viewSettingForPopupMenuDelete()
+        {
+            binding.tvTitle.visibility = INVISIBLE
+            binding.linearStatusSelector.visibility = INVISIBLE
+            binding.ivPopMenu.visibility = INVISIBLE
+            binding.linearMoreViewParent.visibility = GONE
 
-        binding.vMoreView.visibility = INVISIBLE
+            binding.vMoreView.visibility = INVISIBLE
 
-    }*/
+        }*/
 
     // X 버튼으로 '삭제하기 취소'가 되었을때 화면 세팅
     // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
- /*   private fun viewSettingForPopupMenuDeleteCancel()
-    {
-        binding.tvTitle.visibility = VISIBLE
-        binding.linearStatusSelector.visibility = VISIBLE
-        binding.ivPopMenu.visibility = VISIBLE
+    /*   private fun viewSettingForPopupMenuDeleteCancel()
+       {
+           binding.tvTitle.visibility = VISIBLE
+           binding.linearStatusSelector.visibility = VISIBLE
+           binding.ivPopMenu.visibility = VISIBLE
 
 
-        // 삭제하기 취소가 되었을때 화면의 리스트들을 앱이 켜졌을때 처럼 초기화 시켜준다.( '더보기'가 눌렸었는지 아니면 내가 전에 리스트들의 스크롤을 얼마나 내렸는지를 일일이 알고 있기 힘들기 때문에)
-        viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
-        viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
-    }
-*/
+           // 삭제하기 취소가 되었을때 화면의 리스트들을 앱이 켜졌을때 처럼 초기화 시켜준다.( '더보기'가 눌렸었는지 아니면 내가 전에 리스트들의 스크롤을 얼마나 내렸는지를 일일이 알고 있기 힘들기 때문에)
+           viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
+           viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
+       }
+   */
     private fun setDefaultMonthSelector()
     {
         val (clickable, textColor, font) = Triple(first = false, second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300), third = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium))
