@@ -2,27 +2,22 @@ package com.delivery.sopo.views.menus
 
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.Gravity
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.databinding.SignOutViewBinding
 import com.delivery.sopo.enums.DisplayEnum
-import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.enums.OptionalTypeEnum
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.viewmodels.menus.SignOutViewModel
-import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
+import com.delivery.sopo.views.dialog.OptionalClickListener
+import com.delivery.sopo.views.dialog.OptionalDialog
 import com.delivery.sopo.views.login.LoginSelectView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -76,29 +71,38 @@ class SignOutView: AppCompatActivity()
                         finish()
                     }
 
-                    Toast.makeText(this,"지금까지 사용해주셔서 감사합니다.", Toast.LENGTH_LONG).apply {
+                    Toast.makeText(this, "지금까지 사용해주셔서 감사합니다.", Toast.LENGTH_LONG).apply {
                         setGravity(Gravity.TOP, 0, 180)
                     }.show()
                 }
                 DisplayEnum.DIALOG ->
                 {
-                    val dialog = ConfirmDeleteDialog(
-                        this, 0, "탈퇴 시 유의사항", "고객의 정보가 삭제되며 복구가 불가능합니다.", """
-* 계정 개인정보(이메일, 비밀번호)
-* 등록하신 모든 택배 추적 정보
-            """.trimIndent(), Pair("탈퇴하기", object: ((ConfirmDeleteDialog) -> Unit)
+                    OptionalDialog(
+                        optionalType = OptionalTypeEnum.RIGHT,
+                        titleIcon = 0,
+                        title = "탈퇴 시 유의사항",
+                        subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.",
+                        content = """
+                    * 계정 개인정보(이메일, 비밀번호)
+                    * 등록하신 모든 택배 추적 정보
+                                """.trimIndent(),
+                        leftHandler = Pair("삭제할게요", object: OptionalClickListener
                         {
-                            override fun invoke(dialog: ConfirmDeleteDialog)
+                            override fun invoke(dialog: OptionalDialog)
                             {
                                 CoroutineScope(Dispatchers.Main).launch {
                                     binding.vm!!.requestSignOut(res.data as String)
                                 }
                                 dialog.dismiss()
                             }
-                        })
-                    )
-
-                    dialog.show(supportFragmentManager, "")
+                        }),
+                        rightHandler = Pair("다시 생각할게요", object: OptionalClickListener
+                        {
+                            override fun invoke(dialog: OptionalDialog)
+                            {
+                                dialog.dismiss()
+                            }
+                        })).show(supportFragmentManager, "")
                 }
             }
 
@@ -118,7 +122,8 @@ class SignOutView: AppCompatActivity()
 
             binding.tvBtn.run {
                 setBackgroundResource(R.drawable.border_15dp_blue_rounder)
-                backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignOutView, R.color.COLOR_GRAY_200))
+                backgroundTintList =
+                    ColorStateList.valueOf(ContextCompat.getColor(this@SignOutView, R.color.COLOR_GRAY_200))
                 setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
             }
 

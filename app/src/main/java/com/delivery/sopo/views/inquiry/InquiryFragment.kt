@@ -21,6 +21,7 @@ import com.delivery.sopo.databinding.FragmentInquiryReBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.enums.InquiryStatusEnum
+import com.delivery.sopo.enums.OptionalTypeEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.interfaces.listener.ParcelEventListener
@@ -34,7 +35,8 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
-import com.delivery.sopo.views.dialog.ConfirmDeleteDialog
+import com.delivery.sopo.views.dialog.OptionalClickListener
+import com.delivery.sopo.views.dialog.OptionalDialog
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
@@ -435,33 +437,29 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             {
                 super.onMaintainParcelClicked(view, type, parcelId)
 
-                val dialog = ConfirmDeleteDialog(
-                    requireActivity(), 0, "이 아이템을 제거할까요?", "", """
-배송 상태가 2주간 확인되지 않고 있어요.
-등록된 송장번호가 유효하지 않을지도 몰라요.""".trimIndent(), Pair("탈퇴하기", object: ((ConfirmDeleteDialog) -> Unit)
+                OptionalDialog(
+                    optionalType = OptionalTypeEnum.LEFT,
+                    titleIcon = 0,
+                    title = "이 아이템을 제거할까요?",
+                    subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.",
+                    content = """
+                    배송 상태가 2주간 확인되지 않고 있어요.
+                    등록된 송장번호가 유효하지 않을지도 몰라요.
+                                """.trimIndent(),
+                    leftHandler = Pair("지울게요", object: OptionalClickListener
                     {
-                        override fun invoke(dialog: ConfirmDeleteDialog)
-                        {
-
-                            dialog.dismiss()
-                        }
-                    })
-                )
-
-                dialog.show(requireActivity().supportFragmentManager, "")
-
-                /*val dialog = ConfirmDeleteDialog(this@InquiryFragment.requireActivity(), 0, "이 아이템을 제거할까요?", "", """
-배송 상태가 2주간 확인되지 않고 있어요.
-등록된 송장번호가 유효하지 않을지도 몰라요.
-            """.trimIndent(), Pair("지울게요", object: ((ConfirmDeleteDialog) -> Unit)
-                    {
-                        override fun invoke(dialog: ConfirmDeleteDialog)
+                        override fun invoke(dialog: OptionalDialog)
                         {
                             dialog.dismiss()
                         }
-                    }))
-
-                dialog.show(requireActivity().supportFragmentManager, "")*/
+                    }),
+                    rightHandler = Pair("유지할게요", object: OptionalClickListener
+                    {
+                        override fun invoke(dialog: OptionalDialog)
+                        {
+                            dialog.dismiss()
+                        }
+                    })).show(requireActivity().supportFragmentManager, "")
             }
 
             override fun onEnterParcelDetailClicked(view: View, type: InquiryStatusEnum, parcelId: Int)
@@ -480,19 +478,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
                 AlertUtil.updateValueDialog(requireContext(), "물품명을 입력해주세요.", Pair("확인", View.OnClickListener {
                     edit.observe(requireActivity()) { parcelAlias ->
-
                         vm.onUpdateParcelAlias(parcelId, parcelAlias)
-
                         AlertUtil.onDismiss()
-
-                        /*if(type == InquiryStatusEnum.ONGOING)
-                        {
-                            vm.syncParcelsByOngoing()
-                        }
-                        else if(type == InquiryStatusEnum.COMPLETE)
-                        {
-                            vm.refreshCompleteParcels()
-                        }*/
                     }
                 }), Pair("취소", null), Function {
                     edit.value = it

@@ -3,6 +3,53 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <import type="com.delivery.sopo.enums.OptionalTypeEnum" />
+
+        <import type="com.delivery.sopo.R" />
+
+        <import type="android.view.View" />
+
+        <import type="androidx.core.content.ContextCompat" />
+
+        <variable
+            name="optionalType"
+            type="com.delivery.sopo.enums.OptionalTypeEnum" />
+
+        <variable
+            name="titleIcon"
+            type="int" />
+
+        <variable
+            name="title"
+            type="String" />
+
+        <variable
+            name="subTitle"
+            type="String" />
+
+        <variable
+            name="content"
+            type="String" />
+
+        <variable
+            name="leftBtnText"
+            type="String" />
+
+        <variable
+            name="leftBtnClickListener"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="rightBtnText"
+            type="String" />
+
+        <variable
+            name="rightBtnClickListener"
+            type="android.view.View.OnClickListener" />
+    </data>
+
     <LinearLayout
         android:id="@+id/linear_main_dialog"
         android:layout_width="match_parent"
@@ -25,7 +72,9 @@
                 android:id="@+id/iv_title_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone" />
+                android:visibility="@{(titleIcon == 0)?View.GONE:View.VISIBLE}"
+                app:setDefaultImage="@{0}"
+                app:setImage="@{titleIcon}" />
 
             <TextView
                 android:id="@+id/tv_dialog_title"
@@ -37,9 +86,10 @@
                 android:gravity="center"
                 android:includeFontPadding="false"
                 android:letterSpacing="-0.02"
-                android:text="정말로 삭제하시겠습니까?"
+                android:text="@{title}"
                 android:textColor="@color/MAIN_BLACK"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                tools:text="정말로 삭제하시겠습니까?" />
         </LinearLayout>
 
         <LinearLayout
@@ -53,11 +103,13 @@
             <TextView
                 android:id="@+id/tv_sub_title"
                 style="@style/kor_H4"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqa_han_sans_neo_bold"
-                android:text="고객님 정보가 삭제되며 복구가 불가능합니다."
-                android:textColor="@color/COLOR_MAIN_700" />
+                android:fontFamily="@font/pretendard_bold"
+                android:text="@{subTitle}"
+                android:textColor="@color/COLOR_MAIN_700"
+                android:visibility="@{(subTitle == null)?View.GONE:View.VISIBLE}"
+                tools:text="고객님 정보가 삭제되며 복구가 불가능합니다." />
 
         </LinearLayout>
 
@@ -83,9 +135,10 @@
                     android:layout_height="match_parent"
                     android:fontFamily="@font/pretendard_medium"
                     android:letterSpacing="0.04"
-                    android:text="* 배송이 완료된 내역은 [배송완료]탭에 보관 처리됩니다.\n* 삭제하신 내역은 복구되지 않습니다."
+                    android:text="@{content}"
                     android:textColor="@color/COLOR_GRAY_600"
-                    android:textSize="13sp" />
+                    android:textSize="13sp"
+                    tools:text="* 배송이 완료된 내역은 [배송완료]탭에 보관 처리됩니다.\n* 삭제하신 내역은 복구되지 않습니다." />
 
 
             </LinearLayout>
@@ -100,37 +153,39 @@
             android:weightSum="1">
 
             <TextView
-                android:id="@+id/tv_delete"
+                android:id="@+id/tv_left_btn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="10dp"
                 android:layout_weight="0.5"
-                android:background="@drawable/border_all_rounded_main_blue"
-                android:fontFamily="@font/spoqa_han_sans_neo_bold"
+                android:fontFamily="@font/pretendard_bold"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="삭제하기"
-                android:textColor="@color/MAIN_WHITE"
-                android:textSize="16sp"
-                android:textStyle="" />
+                android:text="@{leftBtnText}"
+                android:textSize="14dp"
+                android:textColor="@{(optionalType == OptionalTypeEnum.LEFT)? ContextCompat.getColor(context, R.color.MAIN_WHITE):ContextCompat.getColor(context, R.color.COLOR_MAIN_500)}"
+                android:background="@{(optionalType == OptionalTypeEnum.LEFT)?ContextCompat.getDrawable(context, R.drawable.border_all_rounded_main_blue):ContextCompat.getDrawable(context,R.drawable.border_15dp_blue_rounder)}"
+                tools:background="@drawable/border_all_rounded_main_blue"
+                tools:textColor="@color/MAIN_WHITE" />
 
             <TextView
-                android:id="@+id/tv_cancel"
+                android:id="@+id/tv_right_btn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="20dp"
                 android:layout_marginBottom="10dp"
                 android:layout_weight="0.5"
-                android:background="@drawable/border_15dp_blue_rounder"
-                android:fontFamily="@font/spoqa_han_sans_neo_bold"
+                android:fontFamily="@font/pretendard_bold"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="취소"
-                android:textColor="@color/COLOR_MAIN_500"
-                android:textSize="16sp"
-                android:textStyle="" />
+                android:text="@{rightBtnText}"
+                android:textSize="14dp"
+                android:textColor="@{(optionalType == OptionalTypeEnum.RIGHT)? ContextCompat.getColor(context, R.color.MAIN_WHITE):ContextCompat.getColor(context, R.color.COLOR_MAIN_500)}"
+                android:background="@{(optionalType == OptionalTypeEnum.RIGHT)?ContextCompat.getDrawable(context, R.drawable.border_all_rounded_main_blue):ContextCompat.getDrawable(context,R.drawable.border_15dp_blue_rounder)}"
+                tools:background="@drawable/border_15dp_blue_rounder"
+                tools:textColor="@color/COLOR_MAIN_500" />
 
 
         </LinearLayout>
