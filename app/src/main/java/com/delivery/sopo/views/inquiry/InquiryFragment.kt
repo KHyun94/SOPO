@@ -1,6 +1,8 @@
 package com.delivery.sopo.views.inquiry
 
 import android.annotation.SuppressLint
+import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
 import android.view.View.*
@@ -42,7 +44,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import java.util.function.Function
 import kotlin.system.exitProcess
@@ -73,7 +74,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         {
             override fun onBackPressedInTime()
             {
-                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }.show()
+                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
+                    .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }
+                    .show()
             }
 
             override fun onBackPressedOutTime()
@@ -152,7 +155,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     {
         tv.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium)
         tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
-        tv.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_color_gray_400)
+        tv.background =
+            ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_color_gray_400)
     }
 
     override fun setObserve()
@@ -271,148 +275,63 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                     {
                         "01" ->
                         {
-                            binding.tvJan.apply {
-                                setTextColor(textColor)
-                                typeface = font
-                                isClickable = clickable
-                                isFocusable = clickable
-                                background =
-                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                    else null
-                            }
+                            val background = if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
+                            setMonthIconUI(tv = binding.tvJan, font = font, textColor = textColor, clickable = clickable, background = background)
                         }
                         "02" ->
                         {
-                            binding.tvFeb.apply {
-                                setTextColor(textColor)
-                                typeface = font
-                                isClickable = clickable
-                                isFocusable = clickable
-                                background =
-                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                    else null
-                            }
+                            val background = if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
+                            setMonthIconUI(tv = binding.tvFeb, font = font, textColor = textColor, clickable = clickable, background = background)
                         }
                         "03" ->
                         {
-                            binding.tvMar.apply {
-                                setTextColor(textColor)
-                                typeface = font
-                                isClickable = clickable
-                                isFocusable = clickable
-                                isFocusable = clickable
-                                background =
-                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                    else null
-                            }
+                            val background = if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
+                            setMonthIconUI(tv = binding.tvMar, font = font, textColor = textColor, clickable = clickable, background = background)
                         }
                         "04" ->
                         {
-                            binding.tvApr.apply {
-                                setTextColor(textColor)
-                                typeface = font
-                                isClickable = clickable
-                                isFocusable = clickable
-                                background =
-                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                    else null
-                            }
+                            val background = if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
+                            setMonthIconUI(tv = binding.tvApr, font = font, textColor = textColor, clickable = clickable, background = background)
                         }
                         "05" ->
                         {
-                            binding.tvMay.apply {
-                                setTextColor(textColor)
-                                typeface = font
-                                isClickable = clickable
-                                isFocusable = clickable
-                                background =
-                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                    else null
-                            }
+                            val background = if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
+                            setMonthIconUI(tv = binding.tvMay, font = font, textColor = textColor, clickable = clickable, background = background)
                         }
                         "06" ->
                         {
-                            binding.tvJun.apply {
-                                setTextColor(textColor)
-                                typeface = font
-                                isClickable = clickable
-                                isFocusable = clickable
-                                background =
-                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                    else null
-                            }
+                            val background = if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
+                            setMonthIconUI(tv = binding.tvJun, font = font, textColor = textColor, clickable = clickable, background = background)
                         }
                         "07" ->
                         {
-                            binding.tvJul.apply {
-                                setTextColor(textColor)
-                                typeface = font
-                                isClickable = clickable
-                                isFocusable = clickable
-                                background =
-                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                    else null
-                            }
+                            val background = if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
+                            setMonthIconUI(tv = binding.tvJul, font = font, textColor = textColor, clickable = clickable, background = background)
                         }
                         "08" ->
                         {
-                            binding.tvAug.apply {
-                                setTextColor(textColor)
-                                typeface = font
-                                isClickable = clickable
-                                isFocusable = clickable
-                                background =
-                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                    else null
-                            }
+                            val background = if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
+                            setMonthIconUI(tv = binding.tvAug, font = font, textColor = textColor, clickable = clickable, background = background)
                         }
                         "09" ->
                         {
-                            binding.tvSep.apply {
-                                setTextColor(textColor)
-                                typeface = font
-                                isClickable = clickable
-                                isFocusable = clickable
-                                background =
-                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                    else null
-                            }
+                            val background = if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
+                            setMonthIconUI(tv = binding.tvSep, font = font, textColor = textColor, clickable = clickable, background = background)
                         }
                         "10" ->
                         {
-                            binding.tvOct.apply {
-                                setTextColor(textColor)
-                                typeface = font
-                                isClickable = clickable
-                                isFocusable = clickable
-                                background =
-                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                    else null
-                            }
+                            val background = if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
+                            setMonthIconUI(tv = binding.tvOct, font = font, textColor = textColor, clickable = clickable, background = background)
                         }
                         "11" ->
                         {
-                            binding.tvNov.apply {
-                                setTextColor(textColor)
-                                typeface = font
-                                isClickable = clickable
-                                isFocusable = clickable
-                                background =
-                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                    else null
-                            }
+                            val background = if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
+                            setMonthIconUI(tv = binding.tvNov, font = font, textColor = textColor, clickable = clickable, background = background)
                         }
                         "12" ->
                         {
-                            binding.tvDec.apply {
-                                setTextColor(textColor)
-                                typeface = font
-                                isClickable = clickable
-                                isFocusable = clickable
-                                background =
-                                    if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale)
-                                    else null
-                            }
+                            val background = if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
+                            setMonthIconUI(tv = binding.tvDec, font = font, textColor = textColor, clickable = clickable, background = background)
                         }
                     }
 
@@ -437,29 +356,23 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             {
                 super.onMaintainParcelClicked(view, type, parcelId)
 
-                OptionalDialog(
-                    optionalType = OptionalTypeEnum.LEFT,
-                    titleIcon = 0,
-                    title = "이 아이템을 제거할까요?",
-                    subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.",
-                    content = """
+                OptionalDialog(optionalType = OptionalTypeEnum.LEFT, titleIcon = 0, title = "이 아이템을 제거할까요?", subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.", content = """
                     배송 상태가 2주간 확인되지 않고 있어요.
                     등록된 송장번호가 유효하지 않을지도 몰라요.
-                                """.trimIndent(),
-                    leftHandler = Pair("지울게요", object: OptionalClickListener
+                                """.trimIndent(), leftHandler = Pair("지울게요", object:
+                        OptionalClickListener
+                {
+                    override fun invoke(dialog: OptionalDialog)
                     {
-                        override fun invoke(dialog: OptionalDialog)
-                        {
-                            dialog.dismiss()
-                        }
-                    }),
-                    rightHandler = Pair("유지할게요", object: OptionalClickListener
+                        dialog.dismiss()
+                    }
+                }), rightHandler = Pair("유지할게요", object: OptionalClickListener
+                {
+                    override fun invoke(dialog: OptionalDialog)
                     {
-                        override fun invoke(dialog: OptionalDialog)
-                        {
-                            dialog.dismiss()
-                        }
-                    })).show(requireActivity().supportFragmentManager, "")
+                        dialog.dismiss()
+                    }
+                })).show(requireActivity().supportFragmentManager, "")
             }
 
             override fun onEnterParcelDetailClicked(view: View, type: InquiryStatusEnum, parcelId: Int)
@@ -518,22 +431,19 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                     popupMenuListAdapter.setPopUpMenuOnclick(object: PopupMenuListAdapter.InquiryPopUpMenuItemOnclick
                                                              {
                                                                  override fun removeItem(v: View)
-                                                                 {
-                                                                     //삭제하기
+                                                                 { //삭제하기
                                                                      //                                                                     vm.onOpenDeleteView()
                                                                      menuPopUpWindow?.dismiss()
                                                                  }
 
                                                                  override fun refreshItems(v: View)
-                                                                 {
-                                                                     // 새로고침
+                                                                 { // 새로고침
                                                                      vm.syncParcelsByOngoing()
                                                                      menuPopUpWindow?.dismiss()
                                                                  }
 
                                                                  override fun help(v: View)
-                                                                 {
-                                                                     // 도움말
+                                                                 { // 도움말
                                                                      menuPopUpWindow?.dismiss()
                                                                  }
                                                              })
@@ -571,9 +481,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                         {
                             override fun changeTimeCount(v: View, year: String)
                             {
-                                SopoLog.d("이건가 시발 ")
                                 vm.changeCompletedParcelHistoryDate(year = year)
-
                                 historyPopUpWindow?.dismiss()
                             }
                         }
@@ -604,8 +512,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     }
 
     private fun setListener()
-    {
-        // 당겨서 새로고침 !
+    { // 당겨서 새로고침 !
         binding.swipeRefresh.setOnRefreshListener {
 
             if(!refreshDelay)
@@ -735,6 +642,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
     //팝업 메뉴에서 '삭제하기'가 선택되었을때 화면 세팅
     // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
+
     /*    private fun viewSettingForPopupMenuDelete()
         {
             binding.tvTitle.visibility = INVISIBLE
@@ -748,6 +656,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
     // X 버튼으로 '삭제하기 취소'가 되었을때 화면 세팅
     // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
+
     /*   private fun viewSettingForPopupMenuDeleteCancel()
        {
            binding.tvTitle.visibility = VISIBLE
@@ -764,109 +673,28 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     {
         val (clickable, textColor, font) = Triple(first = false, second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300), third = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium))
 
+        setMonthIconUI(tv = binding.tvJan, font = font, textColor = textColor, clickable = clickable)
+        setMonthIconUI(tv = binding.tvFeb, font = font, textColor = textColor, clickable = clickable)
+        setMonthIconUI(tv = binding.tvMar, font = font, textColor = textColor, clickable = clickable)
+        setMonthIconUI(tv = binding.tvApr, font = font, textColor = textColor, clickable = clickable)
+        setMonthIconUI(tv = binding.tvMay, font = font, textColor = textColor, clickable = clickable)
+        setMonthIconUI(tv = binding.tvJun, font = font, textColor = textColor, clickable = clickable)
+        setMonthIconUI(tv = binding.tvJul, font = font, textColor = textColor, clickable = clickable)
+        setMonthIconUI(tv = binding.tvAug, font = font, textColor = textColor, clickable = clickable)
+        setMonthIconUI(tv = binding.tvSep, font = font, textColor = textColor, clickable = clickable)
+        setMonthIconUI(tv = binding.tvOct, font = font, textColor = textColor, clickable = clickable)
+        setMonthIconUI(tv = binding.tvNov, font = font, textColor = textColor, clickable = clickable)
+        setMonthIconUI(tv = binding.tvDec, font = font, textColor = textColor, clickable = clickable)
+    }
 
-        binding.tvJan.apply {
+    private fun setMonthIconUI(tv: TextView, font: Typeface?, textColor: Int, clickable: Boolean, background: Drawable? = null)
+    {
+        tv.apply {
             setTextColor(textColor)
             typeface = font
             isClickable = clickable
             isFocusable = clickable
-            background = null
-
-
-            binding.tvFeb.apply {
-                setTextColor(textColor)
-                typeface = font
-                isClickable = clickable
-                isFocusable = clickable
-                background = null
-            }
-
-
-            binding.tvMar.apply {
-                setTextColor(textColor)
-                typeface = font
-                isClickable = clickable
-                isFocusable = clickable
-                isFocusable = clickable
-                background = null
-            }
-
-            binding.tvApr.apply {
-                setTextColor(textColor)
-                typeface = font
-                isClickable = clickable
-                isFocusable = clickable
-                background = null
-            }
-
-            binding.tvMay.apply {
-                setTextColor(textColor)
-                typeface = font
-                isClickable = clickable
-                isFocusable = clickable
-                background = null
-            }
-
-            binding.tvJun.apply {
-                setTextColor(textColor)
-                typeface = font
-                isClickable = clickable
-                isFocusable = clickable
-                background = null
-            }
-
-            binding.tvJul.apply {
-                setTextColor(textColor)
-                typeface = font
-                isClickable = clickable
-                isFocusable = clickable
-                background = null
-            }
-
-            binding.tvAug.apply {
-                setTextColor(textColor)
-                typeface = font
-                isClickable = clickable
-                isFocusable = clickable
-                background = null
-            }
-
-            binding.tvSep.apply {
-                setTextColor(textColor)
-                typeface = font
-                isClickable = clickable
-                isFocusable = clickable
-                background = null
-            }
-
-
-            binding.tvOct.apply {
-                setTextColor(textColor)
-                typeface = font
-                isClickable = clickable
-                isFocusable = clickable
-                background = null
-            }
-
-
-            binding.tvNov.apply {
-                setTextColor(textColor)
-                typeface = font
-                isClickable = clickable
-                isFocusable = clickable
-                background = null
-            }
-
-
-            binding.tvDec.apply {
-                setTextColor(textColor)
-                typeface = font
-                isClickable = clickable
-                isFocusable = clickable
-                background = null
-            }
-
-
+            this.background = background
         }
     }
 
