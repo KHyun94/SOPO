@@ -16,7 +16,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ConfirmDeleteDialogBinding
 import com.delivery.sopo.enums.OptionalTypeEnum
 
-typealias OptionalClickListener = (agree: OptionalDialog)-> Unit
+typealias OptionalClickListener = (dialog: OptionalDialog)-> Unit
 
 class OptionalDialog : DialogFragment
 {

@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
-import com.delivery.sopo.data.repository.database.room.dto.DeleteParcelsDTO
 import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.api.APIResult
@@ -16,12 +15,11 @@ import com.delivery.sopo.data.repository.local.datasource.ParcelDataSource
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.NetworkEnum
+import com.delivery.sopo.extensions.wrapBodyAliasToMap
 import com.delivery.sopo.models.ParcelRegister
-import com.delivery.sopo.models.UpdateParcelAliasRequest
 import com.delivery.sopo.models.parcel.ParcelStatus
 import com.delivery.sopo.services.network_handler.BaseServiceBeta
 import com.delivery.sopo.services.network_handler.NetworkResponse
-import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -35,8 +33,12 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
 
         val insertParcels = parcels.filter { getLocalParcelById(it.parcelId) == null }
         val insertParcelStatuses = insertParcels.map{
-            ParcelMapper.parcelToParcelStatus(it).apply {
+
+            val status = parcelManagementRepo.getParcelStatus(it.parcelId)?: ParcelMapper.parcelToParcelStatus(it)
+
+            status.apply {
                 unidentifiedStatus = 1
+                updatableStatus = 0
                 auditDte = TimeUtil.getDateTime()
             }
         }
@@ -66,6 +68,7 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
             parcelStatus.apply {
 
                 if(unidentifiedStatus == 1) this.unidentifiedStatus = 0 else unidentifiedStatus = 1
+                updatableStatus = 0
                 auditDte = TimeUtil.getDateTime()
             }
         }
@@ -177,38 +180,6 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         appDatabase.parcelDao().update(parcelResponseList.map(ParcelMapper::parcelToParcelEntity))
     }
 
-    override suspend fun deleteRemoteParcels(): APIResult<String?>?
-    {
-        val beDeletedData = appDatabase.parcelDao().getBeDeletedData()
-        return if(beDeletedData.isNotEmpty())
-        {
-
-            val userId = userLocalRepo.getUserId()
-            val oAuthToken = oAuthRepo.get(userId = userId)
-
-            NetworkManager.retro(oAuthToken.accessToken)
-                .create(ParcelAPI::class.java)
-                .deleteParcels(parcelIds = DeleteParcelsDTO(beDeletedData.map(ParcelMapper::parcelEntityToParcelId) as MutableList<Int>))
-        }
-        else
-        {
-            null
-        }
-    }
-
-    override suspend fun deleteLocalParcels(parcelIdList: List<Int>)
-    {
-        for(parcelId in parcelIdList)
-        {
-            appDatabase.parcelDao().getById(parcelId)?.let {
-                it.status = 0
-                it.auditDte = TimeUtil.getDateTime()
-
-                appDatabase.parcelDao().update(it)
-            }
-        }
-    }
-
     // 0922 kh 추가사항
     override suspend fun getSingleParcelWithWaybillNum(waybillNum: String): ParcelEntity?
     {
@@ -267,6 +238,41 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
     }
 
     /**
+     * 택배 삭제 관련
+     */
+
+    suspend fun getDeletableParcelIds():List<Int> = withContext(Dispatchers.Default){
+        return@withContext appDatabase.parcelDao().getBeDeletedData().map { parcelEntity -> parcelEntity.parcelId } ?: emptyList()
+    }
+
+    fun deleteLocalParcels(parcelIds: List<Int>)
+    {
+        val parcels = parcelIds.mapNotNull { parcelId -> appDatabase.parcelDao().getById(parcelId = parcelId) }
+        val parcelStatuses = parcelIds.mapNotNull { parcelId -> appDatabase.parcelManagementDao().getById(parcelId = parcelId) }
+        appDatabase.parcelManagementDao().delete(parcelStatuses)
+        appDatabase.parcelDao().delete(parcels)
+
+    }
+
+    suspend fun deleteRemoteParcels(parcelIds:List<Int>)
+    {
+        val wrapBody = parcelIds.wrapBodyAliasToMap("parcelIds")
+        val deleteParcels = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).deleteParcels(parcelIds = wrapBody)
+        apiCall { deleteParcels }
+    }
+
+    override suspend fun updateParcelsToDeletable(parcelIds: List<Int>) = withContext(Dispatchers.Default) {
+        val updateParcelsByDelete = parcelIds.mapNotNull { parcelId ->
+            getLocalParcelById(parcelId)?.apply {
+                status = 0
+                auditDte = TimeUtil.getDateTime()
+            }
+        }
+
+        updateLocalParcels(updateParcelsByDelete)
+    }
+
+    /**
      * 택배 업데이트 관련
      * 'Tracking Server'로 업데이트 요청
      */
@@ -275,5 +281,4 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         val result = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).requestParcelsForRefresh()
         return apiCall{ result }
     }
-
 }

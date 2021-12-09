@@ -44,6 +44,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import java.util.function.Function
 import kotlin.system.exitProcess
@@ -155,8 +156,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     {
         tv.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium)
         tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
-        tv.background =
-            ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_color_gray_400)
+        tv.background = ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_color_gray_400)
     }
 
     override fun setObserve()
@@ -356,23 +356,18 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             {
                 super.onMaintainParcelClicked(view, type, parcelId)
 
-                OptionalDialog(optionalType = OptionalTypeEnum.LEFT, titleIcon = 0, title = "이 아이템을 제거할까요?", subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.", content = """
-                    배송 상태가 2주간 확인되지 않고 있어요.
-                    등록된 송장번호가 유효하지 않을지도 몰라요.
-                                """.trimIndent(), leftHandler = Pair("지울게요", object:
-                        OptionalClickListener
-                {
-                    override fun invoke(dialog: OptionalDialog)
-                    {
-                        dialog.dismiss()
-                    }
-                }), rightHandler = Pair("유지할게요", object: OptionalClickListener
-                {
-                    override fun invoke(dialog: OptionalDialog)
-                    {
-                        dialog.dismiss()
-                    }
-                })).show(requireActivity().supportFragmentManager, "")
+                OptionalDialog(optionalType = OptionalTypeEnum.LEFT, titleIcon = 0, title = getString(R.string.DIALOG_ORPHANED_TITLE), subTitle = getString(R.string.DIALOG_ORPHANED_SUBTITLE), content = getString(R.string.DIALOG_ORPHANED_CONTENT),
+                               leftHandler = Pair(first = getString(R.string.DIALOG_ORPHANED_DELETE), second = object: OptionalClickListener {
+                                   override fun invoke(dialog: OptionalDialog)
+                                   {
+                                       dialog.dismiss()
+                                   }
+                               }), rightHandler = Pair(first = getString(R.string.DIALOG_ORPHANED_MAINTAIN), second = object: OptionalClickListener {
+                                    override fun invoke(dialog: OptionalDialog)
+                                    {
+                                        dialog.dismiss()
+                                    }
+                                })).show(requireActivity().supportFragmentManager, "")
             }
 
             override fun onEnterParcelDetailClicked(view: View, type: InquiryStatusEnum, parcelId: Int)

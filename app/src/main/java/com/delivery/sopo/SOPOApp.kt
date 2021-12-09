@@ -12,6 +12,8 @@ import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoIm
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.NetworkStatus
+import com.delivery.sopo.firebase.FirebaseRepository
+import com.delivery.sopo.services.FirebaseService
 import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.SopoLog
@@ -77,6 +79,10 @@ class SOPOApp: Application()
         CoroutineScope(Dispatchers.Main).launch {
             currentPage.postValue(getInitViewPagerNumber().apply { SopoLog.d("초기 페이지 번호 [data:$this]") })
         }
+
+        SopoLog.d("TESTTEST -> ${userLocalRepository.getTopic()}")
+
+        FirebaseRepository.subscribedToTopic(17, 0).start()
     }
 
     private suspend fun getInitViewPagerNumber(): Int = withContext(Dispatchers.Default) {

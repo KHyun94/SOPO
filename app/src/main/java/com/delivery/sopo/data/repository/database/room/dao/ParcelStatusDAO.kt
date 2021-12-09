@@ -60,6 +60,9 @@ interface ParcelStatusDAO
     @Delete
     fun delete(parcelStatusEntity: ParcelStatusEntity)
 
+    @Delete
+    fun delete(parcelStatusEntities: List<ParcelStatusEntity>)
+
     @Update
     fun update(parcelStatusEntity: ParcelStatusEntity)
 

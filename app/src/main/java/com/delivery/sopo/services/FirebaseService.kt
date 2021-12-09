@@ -2,6 +2,7 @@ package com.delivery.sopo.services
 
 import android.content.Intent
 import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.consts.DeliveryStatusConst
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
@@ -11,13 +12,17 @@ import com.delivery.sopo.networks.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.models.parcel.ParcelItem
 import com.delivery.sopo.models.parcel.ParcelResponse
+import com.delivery.sopo.models.parcel.ParcelStatus
 import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import com.delivery.sopo.views.splash.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,7 +46,7 @@ class FirebaseService: FirebaseMessagingService()
         val fcmPushDto = FcmPushDTO(notificationId, data)
 
         SopoLog.d("[notificationId:${notificationId}] / [data:$data]")
-        SopoLog.d("[FcmPushDTO:${fcmPushDto.toString()}")
+        //        SopoLog.d("[FcmPushDTO:${fcmPushDto.toString()}")
 
         when(fcmPushDto.notificationId)
         {
@@ -50,19 +55,17 @@ class FirebaseService: FirebaseMessagingService()
             {
                 SopoLog.i("Push 종류:택배 업데이트")
 
-                val updatedParcelInfo = fcmPushDto.getUpdateParcel()
+                val list = fcmPushDto.getUpdateParcel()
 
-                if(updatedParcelInfo.updatedParcelIds.isEmpty()) return
+                if(list.isEmpty()) return
 
                 SopoLog.d("""
                     업데이트 리스트
-                    [${updatedParcelInfo.updatedParcelIds.joinToString()}]
+                    [${list.joinToString()}]
                 """.trimIndent())
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    alertUpdateParcel(remoteMessage,
-                                      Intent(this@FirebaseService, SplashView::class.java),
-                                      updatedParcelInfo)
+                    alertUpdateParcel(remoteMessage, Intent(this@FirebaseService, SplashView::class.java), list)
                 }
 
             }
@@ -82,9 +85,7 @@ class FirebaseService: FirebaseMessagingService()
             {
                 SopoLog.i("Push 종류:앱 어웨이큰")
                 // TODO 테스트용 노티피케이션
-                NotificationImpl.awakenDeviceNoti(remoteMessage = remoteMessage,
-                                                  context = applicationContext,
-                                                  intent = Intent(this, SplashView::class.java))
+                NotificationImpl.awakenDeviceNoti(remoteMessage = remoteMessage, context = applicationContext, intent = Intent(this, SplashView::class.java))
                 SOPOWorkManager.updateWorkManager(applicationContext)
             }
         }
@@ -119,25 +120,71 @@ class FirebaseService: FirebaseMessagingService()
         SopoLog.d(msg = "sendTokenToServer: $token")
     }
 
-    private suspend fun alertUpdateParcel(remoteMessage: RemoteMessage, intent: Intent, info: UpdatedParcelInfo)
+    private suspend fun alertUpdateParcel(remoteMessage: RemoteMessage, intent: Intent, parcelIds: List<Int>)
     {
         SopoLog.d("alertUpdateParcel() 호출")
 
         val msgList = mutableListOf<String>()
 
-        val updateParcelIds = info.updatedParcelIds
+        val insertParcelIds = mutableListOf<Int>()
 
-        val parcels = info.updatedParcelIds.flatMap { parcelInfo ->
-            val parcelEntity = parcelRepository.getLocalParcelById(parcelInfo.parcelId)
+        val existLocalParcel = parcelIds.mapNotNull { parcelId ->
+            val localParcel = parcelRepository.getLocalParcelById(parcelId = parcelId)
+            if(localParcel == null) insertParcelIds.add(parcelId)
+            localParcel
+        }
+
+        // 새로운 택배
+        val insertParcels = insertParcelIds.map { parcelId -> parcelRepository.getRemoteParcelById(parcelId) }
+        val insertParcelStatuses = insertParcels.map {
+            msgList.add(getMessage(it))
+            ParcelMapper.parcelToParcelStatus(it).apply {
+                updatableStatus = 1
+                auditDte = TimeUtil.getDateTime()
+            }
+        }
+
+        val updateRemoteParcels = existLocalParcel.filter { local ->
+            val remote = parcelRepository.getRemoteParcelById(local.parcelId)
+            remote.inquiryHash != local.inquiryHash
+        }
+
+        val updateParcelStatuses = updateRemoteParcels.mapNotNull { parcel ->
+            val status = parcelManagementRepo.getParcelStatus(parcel.parcelId) ?: ParcelMapper.parcelToParcelStatus(parcel)
+            val isFirstTimeUpdate = status.updatableStatus != 1
+
+            if(parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
+            {
+                status.deliveredStatus = 1
+            }
+
+            if(isFirstTimeUpdate)
+            {
+                msgList.add(getMessage(parcel))
+                status.updatableStatus = 1
+                status.auditDte = TimeUtil.getDateTime()
+                return@mapNotNull status
+            }
+
+            return@mapNotNull null
+        }
+
+
+        parcelManagementRepo.insertParcelStatuses(insertParcelStatuses)
+        parcelManagementRepo.updateParcelStatuses(updateParcelStatuses)
+       /* parcelManagementRepo.updateParcelStatuses(updateParcelStatuses)
+        val parcels = list.flatMap { parcelId ->
+            val parcelEntity = parcelRepository.getLocalParcelById(parcelId)
 
             if(parcelEntity == null)
             {
-                SopoLog.e("로컬 내에 [parcelId:${parcelInfo.parcelId}]에 해당하는 데이터가 없습니다.")
+                SopoLog.e("로컬 내에 [parcelId:${parcelId}]에 해당하는 데이터가 없습니다.")
                 listOf(null)
             }
             else
             {
-                val parcelDTO = ParcelMapper.parcelEntityToParcel(parcelEntity = ParcelMapper.parcelObjectToEntity(parcelEntity))
+                val parcelDTO =
+                    ParcelMapper.parcelEntityToParcel(parcelEntity = ParcelMapper.parcelObjectToEntity(parcelEntity))
                 listOf(parcelDTO)
             }
         }
@@ -148,7 +195,8 @@ class FirebaseService: FirebaseMessagingService()
             if(parcels[index]?.status != StatusConst.ACTIVATE) continue
             if(parcels[index]?.deliveryStatus == updateParcelIds[index].deliveryStatus) continue
 
-            val parcelStatus = parcelManagementRepo.getParcelStatus(updateParcelIds[index].parcelId) ?: ParcelMapper.parcelToParcelStatus(parcels[index] ?: continue)
+            val parcelStatus = parcelManagementRepo.getParcelStatus(updateParcelIds[index].parcelId)
+                ?: ParcelMapper.parcelToParcelStatus(parcels[index] ?: continue)
 
             parcelStatus.apply {
                 // 업데이트 가능 상태, 앱을 켜면 자동 업데이트
@@ -156,13 +204,15 @@ class FirebaseService: FirebaseMessagingService()
                 auditDte = TimeUtil.getDateTime()
 
                 // 배송 상태가 완료로 변경되있을 시 완료 뱃지에 수를 표기하기 위한 상태값 변경
-                if(parcels[index]?.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE) deliveredStatus = 1
+                if(parcels[index]?.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE) deliveredStatus =
+                    1
             }
         }
 
         info.updatedParcelIds.forEach { updateParcelDao ->
 
-            val parcelResponse:ParcelResponse = parcelRepository.getLocalParcelById(updateParcelDao.parcelId) ?: return
+            val parcelResponse: ParcelResponse =
+                parcelRepository.getLocalParcelById(updateParcelDao.parcelId) ?: return
 
             // DeliveryStatus 변경됐을 시 True
 
@@ -201,15 +251,64 @@ class FirebaseService: FirebaseMessagingService()
                 SopoLog.d("Noti Msg >>> $this")
                 msgList.add(this)
             }
-        }
+        }*/
 
         msgList.forEach {
-            NotificationImpl.alertUpdateParcel(remoteMessage = remoteMessage,
-                                               context = applicationContext, intent = intent,
-                                               message = *arrayOf(it))
+            NotificationImpl.alertUpdateParcel(remoteMessage = remoteMessage, context = applicationContext, intent = intent, message = *arrayOf(it))
         }
+    }
 
-        SOPOApp.cntOfBeUpdate.postValue(info.updatedParcelIds.size)
+    private fun getMessage(parcel: ParcelResponse) : String
+    {
+        // ParcelEntity 중 inquiryResult(json의 String화)를 ParcelItem으로 객체화
+        val gson = Gson()
+
+        val type = object : TypeToken<ParcelItem?>()
+        {}.type
+
+        val reader = gson.toJson(parcel.inquiryResult)
+        val replaceStr = reader.replace("\\", "")
+        val subStr = replaceStr.substring(1, replaceStr.length - 1)
+
+        val parcelItem = gson.fromJson<ParcelItem?>(subStr, type)
+
+        return when(parcel.deliveryStatus)
+        {
+            DeliveryStatusConst.ORPHANED ->
+            {
+                ""
+            }
+            DeliveryStatusConst.NOT_REGISTERED ->
+            {
+                ""
+            }
+            DeliveryStatusConst.INFORMATION_RECEIVED ->
+            {
+                ""
+            }
+            DeliveryStatusConst.AT_PICKUP ->
+            {
+                "${parcelItem?.from?.name}님이 보내신 ${parcel.alias}가 배송을 위해 집하되었습니다."
+            }
+            DeliveryStatusConst.IN_TRANSIT->
+            {
+                val size = parcelItem?.progresses?.size?:0
+
+                "${parcelItem?.progresses?.get(size - 1)?.location?.name?:"위치불명"}에서 ${parcel.alias}가 출발했어요."
+            }
+            DeliveryStatusConst.OUT_FOR_DELIVERY ->
+            {
+                "${parcelItem?.from?.name}님이 보내신 ${parcel.alias}가 우리동네에 도착했습니다!"
+            }
+            DeliveryStatusConst.DELIVERED ->
+            {
+                "고객님의 택배가 도착했습니다."
+            }
+            else ->
+            {
+                "ERROR"
+            }
+        }
     }
 
 }

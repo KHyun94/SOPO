@@ -31,7 +31,10 @@ object FirebaseRepository: KoinComponent
                 val newTopic = makeTopicForSubscribe(hour = hour, minutes = minutes)
 
                 isSubscribedToTopic(topic = newTopic) { isSuccess ->
-                    if(!isSuccess) return@isSubscribedToTopic else userLocalRepo.setTopic(newTopic)
+                    if(!isSuccess)
+                    {
+                        return@isSubscribedToTopic
+                    } else userLocalRepo.setTopic(newTopic)
                 }
             }
         }
@@ -73,7 +76,7 @@ object FirebaseRepository: KoinComponent
 
         // 01:01 ~ => 01:00
         FirebaseMessaging.getInstance()
-            .unsubscribeFromTopic(topic)
+            .subscribeToTopic(topic)
             .addOnCompleteListener { subscribeTask ->
 
                 if(!subscribeTask.isSuccessful)

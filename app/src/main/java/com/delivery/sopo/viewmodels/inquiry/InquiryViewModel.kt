@@ -353,6 +353,7 @@ class InquiryViewModel(
         }
     }
 
+
     private fun sortByDeliveryStatus(list: List<InquiryListItem>): List<InquiryListItem>
     {
 

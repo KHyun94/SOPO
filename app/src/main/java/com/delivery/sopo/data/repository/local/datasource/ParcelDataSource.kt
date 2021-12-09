@@ -28,8 +28,7 @@ interface ParcelDataSource {
    suspend fun update(parcel: ParcelEntity): Int
     suspend fun updateLocalParcels(parcelResponseList: List<ParcelResponse>)
 
-   suspend fun deleteLocalParcels(parcelIdList: List<Int>)
-   suspend fun deleteRemoteParcels(): APIResult<String?>?
+   suspend fun updateParcelsToDeletable(parcelIdList: List<Int>)
 
    // 0922 kh 추가사항
    suspend fun getSingleParcelWithWaybillNum(waybillNum:String) : ParcelEntity?

@@ -50,7 +50,7 @@ interface ParcelAPI
 
     @HTTP(method = "DELETE", path = "api/v1/sopo-parcel/delivery/parcels", hasBody = true)
     @Headers("Accept: application/json")
-    suspend fun deleteParcels(@Body parcelIds: DeleteParcelsDTO): APIResult<String?>
+    suspend fun deleteParcels(@Body parcelIds: Map<String, List<Int>>): Response<Unit>
 
     // alias 변경
     @PATCH("api/v1/sopo-parcel/delivery/parcel/{parcelId}/alias")

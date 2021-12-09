@@ -18,22 +18,6 @@ import kotlinx.coroutines.launch
 object TextViewBindingAdapter
 {
     @JvmStatic
-    @BindingAdapter("setBackground")
-    fun bindSetterBackgroundByTextView(tv: TextView, res: Int)
-    {
-        tv.setBackgroundResource(res)
-    }
-
-    @JvmStatic
-    @BindingAdapter("setTextColor")
-    fun bindSetterTextColorByTextView(tv: TextView, textColor: Int)
-    {
-        CoroutineScope(Dispatchers.Main).launch { tv.setTextColor(textColor) }
-
-    }
-
-
-    @JvmStatic
     @BindingAdapter("setText", "setTextColor")
     fun bindPropertyByTextView(tv: TextView, content: String,@ColorRes colorRes: Int = R.color.MAIN_BLACK)
     {
