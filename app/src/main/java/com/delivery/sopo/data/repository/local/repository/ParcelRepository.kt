@@ -47,6 +47,40 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         parcelManagementRepo.insertParcelStatuses(insertParcelStatuses)
     }
 
+    suspend fun updateParcel(parcel:ParcelResponse){
+
+    /*    val updateParcel = getLocalParcelById(parcelId = parcel.parcelId)?:return
+
+        parcelManagementRepo.*/
+
+        val updateParcel = parcels.filter { remote ->
+            val local = getLocalParcelById(remote.parcelId)?:return@filter false
+
+            val unidentifiedStatus = getIsUnidentifiedAsLiveData(remote.parcelId).value?:0
+            if(unidentifiedStatus == 1)
+            {
+                parcelManagementRepo.updateUnidentifiedStatus(remote.parcelId, 0)
+            }
+
+            remote.inquiryHash != local.inquiryHash
+        }
+
+        val updateParcelStatuses = updateParcels.map{
+
+            val parcelStatus = parcelManagementRepo.getParcelStatus(it.parcelId) ?: ParcelStatus(parcelId = it.parcelId)
+
+            parcelStatus.apply {
+
+                if(unidentifiedStatus == 1) this.unidentifiedStatus = 0 else unidentifiedStatus = 1
+                updatableStatus = 0
+                auditDte = TimeUtil.getDateTime()
+            }
+        }
+
+        updateLocalParcels(updateParcels)
+        parcelManagementRepo.updateParcelStatuses(updateParcelStatuses)
+    }
+
     suspend fun updateParcelsFromServer(parcels:List<ParcelResponse>){
 
         val updateParcels = parcels.filter { remote ->
@@ -280,5 +314,12 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
     {
         val result = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).requestParcelsForRefresh()
         return apiCall{ result }
+    }
+
+    suspend fun requestParcelForRefresh(parcelId: Int) : ParcelResponse
+    {
+        val wrapBody = parcelId.wrapBodyAliasToMap("parcelId")
+        val result = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).requestParcelForRefresh(parcelId = wrapBody)
+        return apiCall{ result }.data?.data?:throw NullPointerException("택배 데이터가 조회되지 않습니다.")
     }
 }

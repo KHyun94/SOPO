@@ -77,7 +77,7 @@ interface ParcelAPI
      */
     @POST("/api/v1/sopo-parcel/delivery/parcel/refresh")
     @Headers("Accept: application/json")
-    suspend fun requestParcelForRefresh(@Body parcelId: Map<String, Int>): Response<APIResult<Unit>>
+    suspend fun requestParcelForRefresh(@Body parcelId: Map<String, Int>): Response<APIResult<ParcelResponse>>
 
 
 }

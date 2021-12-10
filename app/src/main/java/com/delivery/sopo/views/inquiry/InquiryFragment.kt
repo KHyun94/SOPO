@@ -356,16 +356,20 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             {
                 super.onMaintainParcelClicked(view, type, parcelId)
 
-                OptionalDialog(optionalType = OptionalTypeEnum.LEFT, titleIcon = 0, title = getString(R.string.DIALOG_ORPHANED_TITLE), subTitle = getString(R.string.DIALOG_ORPHANED_SUBTITLE), content = getString(R.string.DIALOG_ORPHANED_CONTENT),
-                               leftHandler = Pair(first = getString(R.string.DIALOG_ORPHANED_DELETE), second = object: OptionalClickListener {
+                OptionalDialog(optionalType = OptionalTypeEnum.LEFT, titleIcon = 0, title = "이 아이템을 제거할까요?", subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.", content = """
+                    배송 상태가 2주간 확인되지 않고 있어요.
+                    등록된 송장번호가 유효하지 않을지도 몰라요.
+                                """.trimIndent(), leftHandler = Pair("지울게요", second = object: OptionalClickListener {
                                    override fun invoke(dialog: OptionalDialog)
                                    {
                                        dialog.dismiss()
                                    }
-                               }), rightHandler = Pair(first = getString(R.string.DIALOG_ORPHANED_MAINTAIN), second = object: OptionalClickListener {
+                               }), rightHandler = Pair(first = "유지할게요", second = object: OptionalClickListener {
                                     override fun invoke(dialog: OptionalDialog)
                                     {
+
                                         dialog.dismiss()
+
                                     }
                                 })).show(requireActivity().supportFragmentManager, "")
             }
@@ -411,14 +415,11 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
         val popUpView: PopupMenuViewBinding =
             PopupMenuViewBinding.inflate(LayoutInflater.from(requireContext())).also { v ->
-                val popupMenuListAdapter =
-                    PopupMenuListAdapter(MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
-
+                val popupMenuListAdapter = PopupMenuListAdapter(MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
 
                 v.recyclerviewInquiryPopupMenu.also {
                     it.adapter = popupMenuListAdapter
-                    val dividerItemDecoration =
-                        DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                    val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
                     dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
                     it.addItemDecoration(dividerItemDecoration)
 

@@ -3,10 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/layout/confirm_delete_dialog.xml" value="0.3848958333333333" />
         <entry key="app/src/main/res/layout/fragment_inquiry_re.xml" value="0.18262411347517732" />
         <entry key="app/src/main/res/layout/include_no_item.xml" value="0.103125" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK" />
 </project>

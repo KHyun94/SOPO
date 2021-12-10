@@ -15,12 +15,13 @@ import com.bumptech.glide.Glide
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ConfirmDeleteDialogBinding
 import com.delivery.sopo.enums.OptionalTypeEnum
+import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ui_util.SopoLoadingBar
 
 typealias OptionalClickListener = (dialog: OptionalDialog)-> Unit
 
 class OptionalDialog : DialogFragment
 {
-
     lateinit var binding: ConfirmDeleteDialogBinding
 
     private val optionalType: OptionalTypeEnum
@@ -57,24 +58,16 @@ class OptionalDialog : DialogFragment
         binding.content = content
 
         binding.leftBtnText = leftHandler.first
-        binding.leftBtnClickListener = View.OnClickListener { leftHandler.second.invoke(this) }
+        binding.leftBtnClickListener = View.OnClickListener {
+
+            SopoLog.d("TEST 이사비라알마ㅏ")
+            leftHandler.second.invoke(this) }
 
         binding.rightBtnText = rightHandler.first
         binding.rightBtnClickListener = View.OnClickListener { rightHandler.second.invoke(this) }
 
-        /*setClickEvent()
-        setUI()*/
         return binding.root
     }
-
-    private fun setClickEvent(){
-        binding.leftBtnText = leftHandler.first
-        binding.leftBtnClickListener = View.OnClickListener { leftHandler.second.invoke(this) }
-
-        binding.rightBtnText = rightHandler.first
-        binding.rightBtnClickListener = View.OnClickListener { rightHandler.second.invoke(this) }
-    }
-
 
     private fun setWindowSetting() {
         isCancelable = true
