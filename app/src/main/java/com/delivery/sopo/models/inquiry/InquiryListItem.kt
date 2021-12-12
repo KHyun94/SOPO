@@ -14,7 +14,7 @@ import org.koin.core.inject
 import java.text.SimpleDateFormat
 import java.util.*
 
-class InquiryListItem(val parcelResponse: ParcelResponse, var isSelected: Boolean = false): KoinComponent, BaseObservable()
+class InquiryListItem(var parcelResponse: ParcelResponse, var isSelected: Boolean = false): KoinComponent, BaseObservable()
 {
     private val parcelRepository: ParcelRepository by inject()
 

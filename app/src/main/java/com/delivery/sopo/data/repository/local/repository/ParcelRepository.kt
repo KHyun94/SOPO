@@ -24,17 +24,17 @@ import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class ParcelRepository(private val userLocalRepo: UserLocalRepository,
-                       private val oAuthRepo: OAuthLocalRepository,
-                       private val parcelManagementRepo:ParcelManagementRepoImpl,
-                       private val appDatabase: AppDatabase): ParcelDataSource, BaseServiceBeta()
+class ParcelRepository(private val userLocalRepo: UserLocalRepository, private val oAuthRepo: OAuthLocalRepository, private val parcelManagementRepo: ParcelManagementRepoImpl, private val appDatabase: AppDatabase):
+        ParcelDataSource,
+        BaseServiceBeta()
 {
-    suspend fun insertParcelsFromServer(parcels:List<ParcelResponse>){
+    suspend fun insertParcelsFromServer(parcels: List<ParcelResponse>)
+    {
 
         val insertParcels = parcels.filter { getLocalParcelById(it.parcelId) == null }
-        val insertParcelStatuses = insertParcels.map{
+        val insertParcelStatuses = insertParcels.map {
 
-            val status = parcelManagementRepo.getParcelStatus(it.parcelId)?: ParcelMapper.parcelToParcelStatus(it)
+            val status = parcelManagementRepo.getParcelStatus(it.parcelId)
 
             status.apply {
                 unidentifiedStatus = 1
@@ -47,46 +47,34 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         parcelManagementRepo.insertParcelStatuses(insertParcelStatuses)
     }
 
-    suspend fun updateParcel(parcel:ParcelResponse){
+    suspend fun updateParcelFromServer(parcel: ParcelResponse)
+    {
+        val local = getLocalParcelById(parcel.parcelId) ?: return
 
-    /*    val updateParcel = getLocalParcelById(parcelId = parcel.parcelId)?:return
+        val unidentifiedStatus = getUnidentifiedStatus(parcelId = parcel.parcelId)
 
-        parcelManagementRepo.*/
-
-        val updateParcel = parcels.filter { remote ->
-            val local = getLocalParcelById(remote.parcelId)?:return@filter false
-
-            val unidentifiedStatus = getIsUnidentifiedAsLiveData(remote.parcelId).value?:0
-            if(unidentifiedStatus == 1)
-            {
-                parcelManagementRepo.updateUnidentifiedStatus(remote.parcelId, 0)
-            }
-
-            remote.inquiryHash != local.inquiryHash
+        if(unidentifiedStatus == 1)
+        {
+            parcelManagementRepo.updateUnidentifiedStatus(parcelId = parcel.parcelId, 0)
         }
 
-        val updateParcelStatuses = updateParcels.map{
+        if(parcel.inquiryHash == local.inquiryHash) return
 
-            val parcelStatus = parcelManagementRepo.getParcelStatus(it.parcelId) ?: ParcelStatus(parcelId = it.parcelId)
-
-            parcelStatus.apply {
-
-                if(unidentifiedStatus == 1) this.unidentifiedStatus = 0 else unidentifiedStatus = 1
-                updatableStatus = 0
-                auditDte = TimeUtil.getDateTime()
-            }
+        val parcelStatus = parcelManagementRepo.getParcelStatus(parcel.parcelId).apply {
+            auditDte = TimeUtil.getDateTime()
         }
 
-        updateLocalParcels(updateParcels)
-        parcelManagementRepo.updateParcelStatuses(updateParcelStatuses)
+        update(parcel = ParcelMapper.parcelObjectToEntity(parcel))
+        parcelManagementRepo.update(parcelStatus)
     }
 
-    suspend fun updateParcelsFromServer(parcels:List<ParcelResponse>){
+    suspend fun updateParcelsFromServer(parcels: List<ParcelResponse>)
+    {
 
         val updateParcels = parcels.filter { remote ->
-            val local = getLocalParcelById(remote.parcelId)?:return@filter false
+            val local = getLocalParcelById(remote.parcelId) ?: return@filter false
 
-            val unidentifiedStatus = getIsUnidentifiedAsLiveData(remote.parcelId).value?:0
+            val unidentifiedStatus = getIsUnidentifiedAsLiveData(remote.parcelId).value ?: 0
             if(unidentifiedStatus == 1)
             {
                 parcelManagementRepo.updateUnidentifiedStatus(remote.parcelId, 0)
@@ -95,9 +83,10 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
             remote.inquiryHash != local.inquiryHash
         }
 
-        val updateParcelStatuses = updateParcels.map{
+        val updateParcelStatuses = updateParcels.map {
 
-            val parcelStatus = parcelManagementRepo.getParcelStatus(it.parcelId) ?: ParcelStatus(parcelId = it.parcelId)
+            val parcelStatus = parcelManagementRepo.getParcelStatus(it.parcelId)
+                ?: ParcelStatus(parcelId = it.parcelId)
 
             parcelStatus.apply {
 
@@ -111,24 +100,30 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         parcelManagementRepo.updateParcelStatuses(updateParcelStatuses)
     }
 
-    suspend fun updateUnidentifiedStatus(parcels:List<ParcelResponse>){
-        val parcelStatuses = parcels.mapNotNull { parcelManagementRepo.getParcelStatus(it.parcelId) }
-            .filter { it.unidentifiedStatus == 1 }
+    suspend fun updateUnidentifiedStatus(parcels: List<ParcelResponse>)
+    {
+        val parcelStatuses =
+            parcels.mapNotNull { parcelManagementRepo.getParcelStatus(it.parcelId) }
+                .filter { it.unidentifiedStatus == 1 }
 
         parcelStatuses.forEach { it.unidentifiedStatus = 0 }
 
         parcelManagementRepo.updateParcelStatuses(parcelStatuses)
     }
 
-    suspend fun deleteParcelFromServer(parcels:List<ParcelResponse>){
+    suspend fun deleteParcelFromServer(parcels: List<ParcelResponse>)
+    {
         val insertList = parcels.filter { getLocalParcelById(it.parcelId) == null }
         insertParcels(insertList)
     }
 
 
-    override suspend fun getLocalParcelById(parcelId: Int): ParcelResponse? = withContext(Dispatchers.Default){
-        return@withContext appDatabase.parcelDao().getById(parcelId)?.let { ParcelMapper.parcelEntityToObject(it) }
-    }
+    override suspend fun getLocalParcelById(parcelId: Int): ParcelResponse? =
+        withContext(Dispatchers.Default) {
+            return@withContext appDatabase.parcelDao()
+                .getById(parcelId)
+                ?.let { ParcelMapper.parcelEntityToObject(it) }
+        }
 
     // 배송 중인 택배 리스트를 LiveData로 받기
     override fun getLocalOngoingParcelsAsLiveData(): LiveData<List<ParcelResponse>>
@@ -184,6 +179,9 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
     override suspend fun isBeingUpdateParcel(parcelId: Int): LiveData<Int?> =
         appDatabase.parcelDao().isBeingUpdateParcel(parcelId = parcelId)
 
+    fun getUnidentifiedStatus(parcelId: Int) =
+        appDatabase.parcelDao().getUnidentifiedStatus(parcelId = parcelId)
+
     override fun getIsUnidentifiedAsLiveData(parcelId: Int): LiveData<Int?>
     {
         return appDatabase.parcelDao().getIsUnidentifiedLiveData(parcelId)
@@ -225,49 +223,61 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
         return appDatabase.parcelDao().getOngoingDataCnt()
     }
 
-    suspend fun registerParcel(parcel: ParcelRegister):Int
+    suspend fun registerParcel(parcel: ParcelRegister): Int
     {
-        val registerParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).registerParcel(register = parcel)
-        val result = apiCall{ registerParcel }
-        return result.data?.data?:throw NullPointerException()
+        val registerParcel =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .registerParcel(register = parcel)
+        val result = apiCall { registerParcel }
+        return result.data?.data ?: throw NullPointerException()
     }
 
-    suspend fun getRemoteParcelById(parcelId: Int):ParcelResponse
+    suspend fun getRemoteParcelById(parcelId: Int): ParcelResponse
     {
-        val getRemoteParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcel(parcelId = parcelId)
+        val getRemoteParcel =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .getParcel(parcelId = parcelId)
         val result = apiCall { getRemoteParcel }
-        return result.data?.data?:throw NullPointerException()
+        return result.data?.data ?: throw NullPointerException()
     }
 
     override suspend fun getRemoteParcelByOngoing(): List<ParcelResponse>
     {
-        val getRemoteParcelByOngoing = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcelsOngoing()
+        val getRemoteParcelByOngoing =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .getParcelsOngoing()
         val result = apiCall { getRemoteParcelByOngoing }
-        return result.data?.data?: emptyList<ParcelResponse>()
+        return result.data?.data ?: emptyList<ParcelResponse>()
     }
 
     override suspend fun getRemoteMonths(): List<CompletedParcelHistory>
     {
-        val getRemoteMonths = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getCompletedMonths()
+        val getRemoteMonths =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .getCompletedMonths()
         val result = apiCall { getRemoteMonths }
-        return result.data?.data?: emptyList<CompletedParcelHistory>()
+        return result.data?.data ?: emptyList<CompletedParcelHistory>()
     }
 
     override suspend fun getCompleteParcelsByRemote(page: Int, inquiryDate: String): List<ParcelResponse>
     {
-        val getCompleteParcelsByRemote = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcelsComplete(page = page, inquiryDate = inquiryDate)
+        val getCompleteParcelsByRemote =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .getParcelsComplete(page = page, inquiryDate = inquiryDate)
         val result = apiCall { getCompleteParcelsByRemote }
-        return result.data?.data?: emptyList<ParcelResponse>()
+        return result.data?.data ?: emptyList<ParcelResponse>()
     }
 
     /**
      * 택배 Alias 업데이트
      */
-    suspend fun updateParcelAlias(parcelId: Int, parcelAlias:String)
+    suspend fun updateParcelAlias(parcelId: Int, parcelAlias: String)
     {
         val wrapParcelAlias = mapOf<String, String>(Pair("alias", parcelAlias))
 
-        val updateParcelAlias =  NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).updateParcelAlias(parcelId, wrapParcelAlias)
+        val updateParcelAlias =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .updateParcelAlias(parcelId, wrapParcelAlias)
         apiCall { updateParcelAlias }
     }
 
@@ -275,51 +285,64 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository,
      * 택배 삭제 관련
      */
 
-    suspend fun getDeletableParcelIds():List<Int> = withContext(Dispatchers.Default){
-        return@withContext appDatabase.parcelDao().getBeDeletedData().map { parcelEntity -> parcelEntity.parcelId } ?: emptyList()
+    suspend fun getDeletableParcelIds(): List<Int> = withContext(Dispatchers.Default) {
+        return@withContext appDatabase.parcelDao()
+            .getBeDeletedData()
+            .map { parcelEntity -> parcelEntity.parcelId } ?: emptyList()
     }
 
     fun deleteLocalParcels(parcelIds: List<Int>)
     {
-        val parcels = parcelIds.mapNotNull { parcelId -> appDatabase.parcelDao().getById(parcelId = parcelId) }
-        val parcelStatuses = parcelIds.mapNotNull { parcelId -> appDatabase.parcelManagementDao().getById(parcelId = parcelId) }
+        val parcels = parcelIds.mapNotNull { parcelId ->
+            appDatabase.parcelDao().getById(parcelId = parcelId)
+        }
+        val parcelStatuses = parcelIds.mapNotNull { parcelId ->
+            appDatabase.parcelManagementDao().getById(parcelId = parcelId)
+        }
         appDatabase.parcelManagementDao().delete(parcelStatuses)
         appDatabase.parcelDao().delete(parcels)
 
     }
 
-    suspend fun deleteRemoteParcels(parcelIds:List<Int>)
+    suspend fun deleteRemoteParcels(parcelIds: List<Int>)
     {
         val wrapBody = parcelIds.wrapBodyAliasToMap("parcelIds")
-        val deleteParcels = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).deleteParcels(parcelIds = wrapBody)
+        val deleteParcels =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .deleteParcels(parcelIds = wrapBody)
         apiCall { deleteParcels }
     }
 
-    override suspend fun updateParcelsToDeletable(parcelIds: List<Int>) = withContext(Dispatchers.Default) {
-        val updateParcelsByDelete = parcelIds.mapNotNull { parcelId ->
-            getLocalParcelById(parcelId)?.apply {
-                status = 0
-                auditDte = TimeUtil.getDateTime()
+    override suspend fun updateParcelsToDeletable(parcelIds: List<Int>) =
+        withContext(Dispatchers.Default) {
+            val updateParcelsByDelete = parcelIds.mapNotNull { parcelId ->
+                getLocalParcelById(parcelId)?.apply {
+                    status = 0
+                    auditDte = TimeUtil.getDateTime()
+                }
             }
-        }
 
-        updateLocalParcels(updateParcelsByDelete)
-    }
+            updateLocalParcels(updateParcelsByDelete)
+        }
 
     /**
      * 택배 업데이트 관련
      * 'Tracking Server'로 업데이트 요청
      */
-    suspend fun requestParcelsForRefresh() : NetworkResponse<APIResult<String>>
+    suspend fun requestParcelsForRefresh(): NetworkResponse<APIResult<String>>
     {
-        val result = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).requestParcelsForRefresh()
-        return apiCall{ result }
+        val result =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .requestParcelsForRefresh()
+        return apiCall { result }
     }
 
-    suspend fun requestParcelForRefresh(parcelId: Int) : ParcelResponse
+    suspend fun requestParcelForRefresh(parcelId: Int): ParcelResponse
     {
         val wrapBody = parcelId.wrapBodyAliasToMap("parcelId")
-        val result = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).requestParcelForRefresh(parcelId = wrapBody)
-        return apiCall{ result }.data?.data?:throw NullPointerException("택배 데이터가 조회되지 않습니다.")
+        val result =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .requestParcelForRefresh(parcelId = wrapBody)
+        return apiCall { result }.data?.data ?: throw NullPointerException("택배 데이터가 조회되지 않습니다.")
     }
 }

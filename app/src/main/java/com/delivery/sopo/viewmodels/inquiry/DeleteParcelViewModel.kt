@@ -1,5 +1,6 @@
 package com.delivery.sopo.viewmodels.inquiry
 
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.widget.TextView
@@ -27,7 +28,16 @@ import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*
 
-class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase, private val refreshParcelsUseCase: RefreshParcelsUseCase, private val refreshParcelUseCase: RefreshParcelUseCase, private val syncParcelsUseCase: SyncParcelsUseCase, private val getCompletedMonthUseCase: GetCompletedMonthUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val parcelRepo: ParcelRepository, private val parcelManagementRepo: ParcelManagementRepoImpl, private val historyRepo: CompletedParcelHistoryRepoImpl):
+class DeleteParcelViewModel(
+        private val getCompleteParcelUseCase: GetCompleteParcelUseCase,
+        private val refreshParcelsUseCase: RefreshParcelsUseCase,
+        private val refreshParcelUseCase: RefreshParcelUseCase,
+        private val syncParcelsUseCase: SyncParcelsUseCase,
+        private val getCompletedMonthUseCase: GetCompletedMonthUseCase,
+        private val updateParcelAliasUseCase: UpdateParcelAliasUseCase,
+        private val parcelRepo: ParcelRepository,
+        private val parcelManagementRepo: ParcelManagementRepoImpl,
+        private val historyRepo: CompletedParcelHistoryRepoImpl):
         BaseViewModel()
 {
     /**
@@ -49,6 +59,9 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
         get() = _isAvailableRefresh
 
     private var isFirstLoading: Boolean = false
+
+    // '삭제하기'에서 선택된 아이템의 개수
+    var cntOfSelectedItemForDelete = MutableLiveData<Int>()
 
     /**
      * 현재 진행 중인 택배 페이지
@@ -101,21 +114,9 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
      * 이벤트 리스너
      */
 
-    // 조회 - 배송 상태를 '배송 중'으로 변경
-    fun onChangedOngoingClicked()
+    fun setInquiryStatus(statusEnum: InquiryStatusEnum)
     {
-        _inquiryStatus.value = InquiryStatusEnum.ONGOING
-    }
-
-    // 화면을 배송중 ==> 배송완료로 전환시킨다.
-    fun onChangedCompleteClicked()
-    {
-        _inquiryStatus.value = InquiryStatusEnum.COMPLETE
-
-        if(isFirstLoading) return
-        isFirstLoading = !isFirstLoading
-
-        refreshCompleteParcels()
+        _inquiryStatus.value = statusEnum
     }
 
     fun getCurrentScreenStatus(): InquiryStatusEnum?
@@ -440,6 +441,11 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
         }
         return sortedList
     }
+
+    fun onSelectAllItemClicked(){
+
+    }
+
 
     class SortByDate: Comparator<InquiryListItem>
     {

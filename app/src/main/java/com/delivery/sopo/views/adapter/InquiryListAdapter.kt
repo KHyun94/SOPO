@@ -145,7 +145,7 @@ class InquiryListAdapter(private var list: MutableList<InquiryListItem> = mutabl
                             return@setOnClickListener parcelClickListener.onEnterParcelDetailClicked(view = v, type = InquiryStatusEnum.ONGOING, parcelId = item.parcelResponse.parcelId)
                         }
 
-                        parcelClickListener.onMaintainParcelClicked(view = v, type = InquiryStatusEnum.ONGOING, parcelId = item.parcelResponse.parcelId)
+                        parcelClickListener.onMaintainParcelClicked(view = v, pos = position, parcelId = item.parcelResponse.parcelId)
                     }
                 }
 
@@ -246,8 +246,7 @@ class InquiryListAdapter(private var list: MutableList<InquiryListItem> = mutabl
         binding.constraintDeliveryStatusBack.visibility = GONE
         binding.constraintDeliveryStatusFrontDelete.visibility = VISIBLE
         binding.constraintDeliveryStatusBackDelete.visibility = VISIBLE
-        binding.linearParentListItemRegister.background =
-            ContextCompat.getDrawable(binding.root.context, R.drawable.border_red)
+        binding.linearParentListItemRegister.background = ContextCompat.getDrawable(binding.root.context, R.drawable.border_all_rounded_11dp_blue)
     }
 
     private fun setOngoingParcelItemByDefault(binding: InquiryListOngoingItemBinding)
@@ -277,7 +276,7 @@ class InquiryListAdapter(private var list: MutableList<InquiryListItem> = mutabl
         binding.constraintDeliveryStatusFrontComplete.visibility = VISIBLE
         binding.constraintItemPartDeleteComplete.visibility = VISIBLE
         binding.linearItemComplete.background =
-            ContextCompat.getDrawable(binding.root.context, R.drawable.border_red)
+            ContextCompat.getDrawable(binding.root.context, R.drawable.border_all_rounded_11dp_blue)
     }
 
     fun changeParcelDeleteMode(flag: Boolean)

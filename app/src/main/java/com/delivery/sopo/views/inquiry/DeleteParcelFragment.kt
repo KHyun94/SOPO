@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator
 import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.databinding.FragmentDeleteParcelBinding
 import com.delivery.sopo.databinding.FragmentInquiryReBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.InquiryItemTypeEnum
@@ -29,19 +30,24 @@ import com.delivery.sopo.enums.OptionalTypeEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.interfaces.listener.ParcelEventListener
+import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.base.BaseFragment
+import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.mapper.MenuMapper
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.viewmodels.inquiry.DeleteParcelViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.views.dialog.OptionalClickListener
 import com.delivery.sopo.views.dialog.OptionalDialog
 import com.delivery.sopo.views.main.MainView
+import com.delivery.sopo.views.registers.InputParcelFragment
+import com.delivery.sopo.views.registers.RegisterMainFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,10 +59,10 @@ import java.util.*
 import java.util.function.Function
 import kotlin.system.exitProcess
 
-class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>()
+class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParcelViewModel>()
 {
-    override val layoutRes: Int = R.layout.fragment_inquiry_re
-    override val vm: InquiryViewModel by viewModel()
+    override val layoutRes: Int = R.layout.fragment_delete_parcel
+    override val vm: DeleteParcelViewModel by viewModel()
     override val mainLayout: View by lazy { binding.constraintMainInquiry }
 
     private val parentView: MainView by lazy { activity as MainView }
@@ -94,6 +100,14 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         }
     }
 
+    override fun receiveData(bundle: Bundle)
+    {
+        super.receiveData(bundle)
+
+        if(bundle.getString("INQUIRY_TYPE") ?: "ONGOING" == "ONGOING") vm.setInquiryStatus(InquiryStatusEnum.ONGOING)
+        else vm.setInquiryStatus(InquiryStatusEnum.COMPLETE)
+    }
+
     override fun setBeforeBinding()
     {
 
@@ -101,7 +115,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
     override fun setAfterBinding()
     {
-
         setAdapters()
         setListener()
 
@@ -121,50 +134,36 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         updateCompleteUI()
     }
 
-    private fun getAdapter(inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter
+    private fun getAdapter(cntOfSelectedForDelete: MutableLiveData<Int>, inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter
     {
-        return InquiryListAdapter(parcelType = inquiryItemTypeEnum).apply {
+        return InquiryListAdapter(cntOfSelectedItemForDelete = cntOfSelectedForDelete, parcelType = inquiryItemTypeEnum).apply {
             this.setOnParcelClickListener(getParcelClicked())
+            changeParcelDeleteMode(true)
         }
     }
 
     private fun setAdapters()
     {
-        getAdapter(InquiryItemTypeEnum.Soon).let { adapter ->
+        getAdapter(vm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Soon).let { adapter ->
             soonArrivalParcelAdapter = adapter
             binding.recyclerviewSoonArrival.adapter = soonArrivalParcelAdapter
             soonArrivalParcelAdapter.isFullListItem(true)
             val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
             animator.supportsChangeAnimations = false
         }
-        getAdapter(InquiryItemTypeEnum.Registered).let { adapter ->
+
+        getAdapter(vm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Registered).let { adapter ->
             registeredParcelAdapter = adapter
             binding.recyclerviewRegisteredParcel.adapter = registeredParcelAdapter
             val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
             animator.supportsChangeAnimations = false
         }
-        getAdapter(InquiryItemTypeEnum.Complete).let { adapter ->
+        getAdapter(vm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Complete).let { adapter ->
             completedParcelAdapter = adapter
             binding.recyclerviewCompleteParcel.adapter = completedParcelAdapter
             val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
             animator.supportsChangeAnimations = false
         }
-    }
-
-    private fun activateInquiryStatus(tv: TextView)
-    {
-        tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE))
-        tv.background =
-            ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_light_black)
-        tv.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
-    }
-
-    private fun inactivateInquiryStatus(tv: TextView)
-    {
-        tv.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium)
-        tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
-        tv.background =
-            ContextCompat.getDrawable(requireContext(), R.drawable.border_all_rounded_color_gray_400)
     }
 
     override fun setObserve()
@@ -176,24 +175,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             if(it != null && it == TabCode.secondTab)
             {
                 requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), onBackPressedCallback)
-            }
-        }
-
-        vm.inquiryStatus.observe(requireActivity()) {
-
-            when(it)
-            {
-                InquiryStatusEnum.ONGOING ->
-                { // '배송 중' 화면
-                    activateInquiryStatus(binding.tvOngoing)
-                    inactivateInquiryStatus(binding.tvComplete)
-                }
-
-                InquiryStatusEnum.COMPLETE ->
-                { // '배송 완료' 화면
-                    activateInquiryStatus(binding.tvComplete)
-                    inactivateInquiryStatus(binding.tvOngoing)
-                }
             }
         }
 
@@ -396,8 +377,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
                             withContext(Dispatchers.Default) {
                                 registeredParcelAdapter.getList()[pos].apply {
-                                    this.parcelResponse =
-                                        parcelRepo.getLocalParcelById(parcelId) ?: return@withContext
+                                    this.parcelResponse = parcelRepo.getLocalParcelById(parcelId)
+                                        ?: return@withContext
                                 }
                             }
 
@@ -468,8 +449,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                                                                  override fun removeItem(v: View)
                                                                  { //삭제하기
                                                                      //                                                                     vm.onOpenDeleteView()
-                                                                     TabCode.DELETE_PARCEL.FRAGMENT = DeleteParcelFragment.newInstance(vm.inquiryStatus.value?:InquiryStatusEnum.ONGOING)
-                                                                     FragmentManager.add(requireActivity(), TabCode.DELETE_PARCEL, InquiryMainFragment.viewId)
                                                                      menuPopUpWindow?.dismiss()
                                                                  }
 
@@ -764,5 +743,19 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         }
 
         binding.frameMainCompleteInquiry.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
+    }
+
+    companion object
+    {
+        fun newInstance(statusType: InquiryStatusEnum): DeleteParcelFragment
+        {
+            val args = Bundle().apply {
+                putString("INQUIRY_TYPE", statusType.name)
+            }
+
+            return DeleteParcelFragment().apply {
+                arguments = args
+            }
+        }
     }
 }

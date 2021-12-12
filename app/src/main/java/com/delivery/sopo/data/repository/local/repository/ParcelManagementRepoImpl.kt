@@ -62,6 +62,10 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
         appDatabase.parcelManagementDao().insert(entities)
     }
 
+    suspend fun update(parcelStatus: ParcelStatus)= withContext(Dispatchers.Default){
+        appDatabase.parcelManagementDao().update(ParcelMapper.parcelStatusObjectToEntity(parcelStatus))
+    }
+
     override suspend fun update(parcelStatusEntity: ParcelStatusEntity)= withContext(Dispatchers.Default){
         parcelStatusEntity.auditDte = TimeUtil.getDateTime()
         appDatabase.parcelManagementDao().update(parcelStatusEntity)
@@ -74,8 +78,8 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
 
     override suspend fun updateUpdatableStatus(parcelId:Int, status : Int) = appDatabase.parcelManagementDao().updateIsBeUpdate(parcelId, status)
 
-    override fun getParcelStatus(parcelId:Int): ParcelStatus? {
-        val entity = appDatabase.parcelManagementDao().getById(parcelId)?:return null
+    override fun getParcelStatus(parcelId:Int): ParcelStatus {
+        val entity = appDatabase.parcelManagementDao().getById(parcelId)?:ParcelMapper.parcelStatusObjectToEntity(ParcelStatus(parcelId = parcelId))
         return ParcelMapper.parcelStatusEntityToObject(entity)
     }
 

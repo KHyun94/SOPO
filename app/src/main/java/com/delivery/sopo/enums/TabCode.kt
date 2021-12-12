@@ -1,6 +1,7 @@
 package com.delivery.sopo.enums
 
 import androidx.fragment.app.Fragment
+import com.delivery.sopo.views.inquiry.DeleteParcelFragment
 import com.delivery.sopo.views.inquiry.ParcelDetailView
 import com.delivery.sopo.views.inquiry.InquiryFragment
 import com.delivery.sopo.views.menus.*
@@ -16,6 +17,7 @@ enum class TabCode(val TAB_NO: Int, val NAME: String, var FRAGMENT: Fragment, va
 
     INQUIRY(TabCode.secondTab, "INQUIRY", InquiryFragment()),
     INQUIRY_DETAIL(TabCode.secondTab, "INQUIRY_DETAIL", ParcelDetailView()),
+    DELETE_PARCEL(TabCode.secondTab, "INQUIRY_DELETE_PARCEL", DeleteParcelFragment()),
 
     MY_MENU_MAIN(TabCode.thirdTab, "MY_MENU_MAIN", MenuFragment()),
     MY_MENU_SUB(TabCode.thirdTab, "MY_MENU_SUB", MenuSubFragment()),
