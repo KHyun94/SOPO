@@ -61,20 +61,19 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
 
     suspend fun refreshOAuthToken(): OAuthDTO
     {
+        SopoLog.d("refreshOAuthToken() 호출 ")
         val oAuthDTO: OAuthDTO = oAuthLocalRepo.get(userLocalRepo.getUserId())
 
-        val refreshOAuthToken =
-            NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, OAuthAPI::class.java)
-                .requestRefreshOAuthToken(grantType = "refresh_token", email = userLocalRepo.getUserId(), refreshToken = oAuthDTO.refreshToken)
+        val refreshOAuthToken = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, OAuthAPI::class.java).requestRefreshOAuthToken(grantType = "refresh_token", email = userLocalRepo.getUserId(), refreshToken = oAuthDTO.refreshToken)
 
         val result = apiCall { refreshOAuthToken }
 
-        val type = object: TypeToken<OAuthDTO>()
-        {}.type
+        val type = object: TypeToken<OAuthDTO>() {}.type
         val reader = gson.toJson(result.data)
         val oAuthInfo = gson.fromJson<OAuthDTO>(reader, type)
 
         withContext(Dispatchers.Default) {
+            SopoLog.d("결과 ${oAuthInfo.toString()}")
             oAuthLocalRepo.insert(dto = oAuthInfo)
         }
 

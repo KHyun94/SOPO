@@ -128,7 +128,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:visibility="@{vm.inquiryStatus == InquiryStatusEnum.ONGOING ? View.VISIBLE : View.GONE}"
-                    tools:visibility="gone">
+                    tools:visibility="visible">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/linear_ongoing_parent"
@@ -170,70 +170,6 @@
                         </LinearLayout>
 
                         <LinearLayout
-                            android:id="@+id/layout_present_ongoing"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="39.5dp"
-                            android:orientation="horizontal"
-                            android:visibility="@{vm.cntOfPresentOngoingParcels > 0 ? View.VISIBLE : View.GONE}"
-                            android:weightSum="10"
-                            app:layout_constraintBottom_toTopOf="@+id/linear_ongoing_content_view"
-                            app:layout_constraintLeft_toLeftOf="parent"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toTopOf="parent">
-
-                            <!--                            android:visibility="@{vm.cntOfPresentOngoingParcels > 0 &amp;&amp; !vm.isRemovable() ? View.VISIBLE : View.GONE}"-->
-                            <LinearLayout
-                                android:id="@+id/layout_present_ongoing_text"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_weight="5"
-                                android:gravity="center"
-                                android:orientation="vertical"
-                                app:layout_constrainedWidth="true"
-                                app:layout_constraintBottom_toTopOf="parent"
-                                app:layout_constraintRight_toLeftOf="@+id/guide_1st"
-                                app:layout_constraintTop_toBottomOf="parent">
-
-                                <TextView
-                                    android:id="@+id/tv_present_parcel_cnt"
-                                    style="@style/kor_H2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text='@{"택배 "+vm.cntOfPresentOngoingParcels + "개"}'
-                                    android:textColor="@color/COLOR_GRAY_700"
-                                    tools:text="택배 2개" />
-
-                                <TextView
-                                    style="@style/kor_H4"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:text="현재 진행 중"
-                                    android:textColor="@color/COLOR_GRAY_700" />
-
-                            </LinearLayout>
-
-                            <ImageView
-                                android:id="@+id/iv_present_parcel"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="3.4"
-                                android:adjustViewBounds="true"
-                                app:layout_constrainedWidth="true"
-                                app:layout_constraintBottom_toTopOf="parent"
-                                app:layout_constraintLeft_toLeftOf="@+id/guide_1st"
-                                app:layout_constraintRight_toRightOf="parent"
-                                app:layout_constraintTop_toBottomOf="parent"
-                                app:layout_constraintWidth_percent="0.33"
-                                app:setDefaultImage="@{0}"
-                                app:setImage="@{R.drawable.ic_inquiry_top_section_present_parcel}"
-                                tools:src="@drawable/ic_inquiry_top_section_present_parcel" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
                             android:id="@+id/linear_ongoing_content_view"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -248,7 +184,8 @@
                                 android:id="@+id/constraint_soon_arrival"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginBottom="48dp">
+                                android:layout_marginTop="31dp"
+                                android:layout_marginBottom="12dp">
 
                                 <TextView
                                     android:id="@+id/tv_soon_arrival"
@@ -287,58 +224,11 @@
 
                             </androidx.constraintlayout.widget.ConstraintLayout>
 
-                            <!--<LinearLayout
-                                android:id="@+id/linear_more_view_parent"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
-                                android:layout_marginBottom="4dp"
-                                android:orientation="vertical"
-                                android:visibility="gone"
-                                tools:visibility="gone">
-
-                                <LinearLayout
-                                    android:id="@+id/linear_more_view"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
-                                    android:onClick="@{()->vm.onToggleChangedClicked()}"
-                                    android:orientation="vertical"
-                                    android:padding="10dp"
-                                    tools:visibility="invisible">
-
-                                    <ImageView
-                                        android:id="@+id/image_arrow"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_gravity="center"
-                                        android:background="@drawable/ic_down_arrow_default"
-                                        android:backgroundTint="@color/COLOR_GRAY_600" />
-
-                                    <TextView
-                                        android:id="@+id/tv_more_view"
-                                        style="@style/kor_H4"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_gravity="center"
-                                        android:text="@string/INQUIRY_VIEW_MORE_VIEW"
-                                        android:textColor="@color/COLOR_GRAY_600"
-                                        android:textSize="14sp" />
-                                </LinearLayout>
-                            </LinearLayout>
-
-                            <View
-                                android:id="@+id/v_more_view"
-                                android:layout_width="match_parent"
-                                android:layout_height="20dp"
-                                android:visibility="gone" />
--->
-
                             <androidx.constraintlayout.widget.ConstraintLayout
                                 android:id="@+id/constraint_registered_arrival"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="40dp">
+                                android:layout_marginTop="31dp">
 
                                 <TextView
                                     android:id="@+id/tv_registered_arrival"
@@ -385,7 +275,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="27dp"
                     android:visibility="@{vm.inquiryStatus == InquiryStatusEnum.COMPLETE ? View.VISIBLE : View.INVISIBLE}"
-                    tools:visibility="visible">
+                    tools:visibility="gone">
 
                     <!-- 월 spinner ! 촤하단 뷰 -->
                     <LinearLayout
