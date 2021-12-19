@@ -46,6 +46,10 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
         appDatabase.parcelManagementDao().getUnidentifiedStatusByParcelId(parcelId = parcelId)
     }
 
+    suspend fun getDeletableParcelStatuses():List<ParcelStatus> = withContext(Dispatchers.Default){
+        return@withContext appDatabase.parcelManagementDao().getDeletableParcelStatuses().map(ParcelMapper::parcelStatusEntityToObject)
+    }
+
 /*    override fun insertEntity(parcelStatusEntity: ParcelStatusEntity){
         appDatabase.parcelManagementDao().insert(parcelStatusEntity)
     }*/
@@ -101,4 +105,15 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
         return appDatabase.parcelManagementDao().getAll()
     }
 
+    suspend fun delete(parcelId: Int) = withContext(Dispatchers.Default){
+        val entity = ParcelMapper.parcelStatusObjectToEntity(getParcelStatus(parcelId))
+        appDatabase.parcelManagementDao().delete(entity)
+    }
+
+    suspend fun delete(parcelIds: List<Int>) = withContext(Dispatchers.Default){
+        val entities = parcelIds.map {
+            ParcelMapper.parcelStatusObjectToEntity(getParcelStatus(it))
+        }
+        appDatabase.parcelManagementDao().delete(entities)
+    }
 }

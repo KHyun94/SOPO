@@ -16,9 +16,8 @@ class SignOutViewModel(
         private val userRemoteRepo: UserRemoteRepository,
 ): ViewModel()
 {
-    var preCheckBox: AppCompatCheckBox? = null
-    var currentCheckBox: AppCompatCheckBox? = null
-
+    private var preCheckBox: AppCompatCheckBox? = null
+    private var currentCheckBox: AppCompatCheckBox? = null
 
     private var _result = MutableLiveData<ResponseResult<*>>()
     val result: LiveData<ResponseResult<*>>

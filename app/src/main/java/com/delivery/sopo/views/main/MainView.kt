@@ -2,16 +2,14 @@ package com.delivery.sopo.views.main
 
 import android.app.Activity
 import android.content.Intent
-import android.os.Build
 import android.view.View
+import android.view.ViewGroup
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.ViewPager2
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.IntentConst
@@ -24,11 +22,13 @@ import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.reduceSensitive
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.services.PowerManager
+import com.delivery.sopo.util.AnimationUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
+import com.delivery.sopo.views.inquiry.InquiryFragment
 import com.delivery.sopo.views.inquiry.InquiryMainFragment
 import com.delivery.sopo.views.menus.LockScreenView
 import com.delivery.sopo.views.menus.MenuFragment
@@ -78,7 +78,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
             SopoLog.d("MainView:CurrentPage [pos:$it]")
 
-            when(it?:return@Observer)
+            when(it ?: return@Observer)
             {
                 NavigatorConst.REGISTER_TAB -> binding.layoutViewPager.setCurrentItem(NavigatorConst.REGISTER_TAB, true)
                 NavigatorConst.INQUIRY_TAB -> binding.layoutViewPager.setCurrentItem(NavigatorConst.INQUIRY_TAB, true)
@@ -152,7 +152,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
             override fun onTabReselected(tab: TabLayout.Tab?)
             {
-                when(tab?.position?:return)
+                when(tab?.position ?: return)
                 {
                     NavigatorConst.REGISTER_TAB ->
                     {
@@ -164,6 +164,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
                     NavigatorConst.INQUIRY_TAB ->
                     {
                         FragmentManager.remove(activity = this@MainView)
+                        TabCode.INQUIRY.FRAGMENT = InquiryFragment.newInstance(returnType = 0)
                         FragmentManager.move(activity = this@MainView, code = TabCode.INQUIRY, viewId = InquiryMainFragment.viewId)
                     }
                     NavigatorConst.MY_MENU_TAB ->
@@ -191,17 +192,23 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
     private fun setTab(tab: TabLayout.Tab, pos: Int)
     {
         tab.setCustomView(R.layout.item_main_tab)
+
         when(pos)
         {
-            TabCode.firstTab -> tab1stBinding = setTabIcon(tab, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
-            TabCode.secondTab -> tab2ndBinding = setTabIcon(tab, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
-            TabCode.thirdTab -> tab3rdBinding = setTabIcon(tab, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
+            TabCode.firstTab -> tab1stBinding =
+                setTabIcon(tab, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
+            TabCode.secondTab -> tab2ndBinding =
+                setTabIcon(tab, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
+            TabCode.thirdTab -> tab3rdBinding =
+                setTabIcon(tab, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
         }
     }
 
-    private fun setTabIcon(tab: TabLayout.Tab, @DrawableRes iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
+    private fun setTabIcon(tab: TabLayout.Tab,
+                           @DrawableRes iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
     {
-        val tabBinding = ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
+        val tabBinding =
+            ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
 
         tabBinding.ivTab.setBackgroundResource(iconRes)
         tabBinding.tvTabName.text = tabName
@@ -209,4 +216,33 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
         return tabBinding
     }
+
+    fun showTab()
+    {
+//        AnimationUtil.slideUp(binding.layoutMainTab)
+
+        binding.layoutMainTab.visibility = View.VISIBLE
+
+        binding.layoutViewPager.isUserInputEnabled = true
+        binding.layoutMainTab.getTabAt(0)?.view?.visibility = View.VISIBLE
+        binding.layoutMainTab.getTabAt(1)?.view?.visibility = View.VISIBLE
+        binding.layoutMainTab.getTabAt(2)?.view?.visibility = View.VISIBLE
+    }
+
+    fun hideTab()
+    {
+//        AnimationUtil.slideDown(binding.layoutMainTab)
+
+        binding.layoutMainTab.visibility = View.GONE
+
+        binding.layoutViewPager.isUserInputEnabled = false
+
+        binding.layoutMainTab.getTabAt(0)?.view?.visibility = View.GONE
+        binding.layoutMainTab.getTabAt(1)?.view?.visibility = View.GONE
+        binding.layoutMainTab.getTabAt(2)?.view?.visibility = View.GONE
+
+
+    }
+
+
 }

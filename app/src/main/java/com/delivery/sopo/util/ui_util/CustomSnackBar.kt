@@ -20,11 +20,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class CustomSnackBar(private val view: View, private val content: String, private val duration: Int, private val type: SnackBarEnum? = null, private val clickListener: Pair<String, View.OnClickListener>? = null)
+typealias OnSnackBarClickListener = ()->Unit
+class CustomSnackBar(private val view: View, private val content: String, private val duration: Int, private val type: SnackBarEnum? = null, private val clickListener: Pair<String, OnSnackBarClickListener>? = null)
 {
     companion object
     {
-        fun make(view: View, content: String, duration: Int, type: SnackBarEnum? = null, clickListener: Pair<String, View.OnClickListener>? = null) =
+        fun make(view: View, content: String, duration: Int, type: SnackBarEnum? = null, clickListener: Pair<String, OnSnackBarClickListener>? = null) =
             CustomSnackBar(view = view, content = content, duration = duration, type = type, clickListener = clickListener)
     }
 
@@ -61,6 +62,13 @@ class CustomSnackBar(private val view: View, private val content: String, privat
                 binding.ivExclamationMark.background = ContextCompat.getDrawable(view.context, R.drawable.ic_exclamation_mark_blue)
                 binding.layoutSnackBar.setBackgroundColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_700))
             }
+            SnackBarEnum.CONFIRM_DELETE ->
+            {
+                binding.ivExclamationMark.background = ContextCompat.getDrawable(view.context, R.drawable.ic_checked_blue_300)
+                binding.layoutSnackBar.setBackgroundColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_100))
+                binding.tvCountOfDeleted.setTextColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_900))
+                binding.tvCancelDelete.setTextColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_700))
+            }
             SnackBarEnum.ERROR ->
             {
                 binding.ivExclamationMark.background = ContextCompat.getDrawable(view.context, R.drawable.ic_exclamation_mark_gray_scale)
@@ -75,13 +83,16 @@ class CustomSnackBar(private val view: View, private val content: String, privat
 
     }
 
-    private fun initData(content: String, btnContent: String? = null, clickListener: Pair<String, View.OnClickListener>? = null)
+    private fun initData(content: String, btnContent: String? = null, clickListener: Pair<String, OnSnackBarClickListener>? = null)
     {
         binding.content = content
 
         clickListener?.run {
             binding.btnContent = first
-            binding.clickListener = second
+            binding.tvCancelDelete.setOnClickListener {
+                second.invoke()
+                dismiss()
+            }
         }
     }
 

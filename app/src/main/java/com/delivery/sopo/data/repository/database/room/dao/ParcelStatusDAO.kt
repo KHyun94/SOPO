@@ -42,6 +42,10 @@ interface ParcelStatusDAO
     @Query("SELECT * FROM PARCEL_STATUS WHERE isBeDelete = 1 AND AUDIT_DTE >= DATETIME('now', 'localtime', '-10.0 seconds')")
     fun getCancelIsBeDelete() : List<ParcelStatusEntity>?
 
+    @Query("SELECT * FROM PARCEL_STATUS WHERE isBeDelete = 1")
+    fun getDeletableParcelStatuses(): List<ParcelStatusEntity>
+
+
     @Query("UPDATE PARCEL_STATUS SET deliveredStatus = 0")
     fun updateTotalIsBeDeliveredToZero()
 

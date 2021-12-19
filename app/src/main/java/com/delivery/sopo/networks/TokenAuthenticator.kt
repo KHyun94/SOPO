@@ -13,7 +13,7 @@ import okhttp3.Response
 import okhttp3.Route
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-
+// TODO 401 에러 발생 이슈 있음
 class TokenAuthenticator: Authenticator, KoinComponent
 {
     val userRemoteRepo: UserRemoteRepository by inject()

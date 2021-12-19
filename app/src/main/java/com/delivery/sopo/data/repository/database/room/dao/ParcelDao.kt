@@ -18,7 +18,7 @@ interface ParcelDao
     @Query("SELECT * FROM PARCEL as p LEFT JOIN PARCEL_STATUS as pm ON p.PARCEL_ID = pm.PARCEL_ID WHERE p.STATUS = 1 AND p.DELIVERY_STATUS = 'DELIVERED' AND pm.isNowVisible = 1")
     fun getComplete(): List<ParcelEntity>
 
-    @Query("SELECT * FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS <> 'DELIVERED'")
+    @Query("SELECT * FROM PARCEL as p LEFT JOIN PARCEL_STATUS as pm ON p.PARCEL_ID = pm.PARCEL_ID WHERE p.STATUS = 1 AND p.DELIVERY_STATUS <> 'DELIVERED' AND pm.isBeDelete =0")
     fun getOngoingLiveData(): LiveData<List<ParcelEntity>>
 
     @Query("SELECT * FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS <> 'DELIVERED'")
@@ -30,7 +30,7 @@ interface ParcelDao
     @Query("SELECT COUNT(*) FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS = 'OUT_FOR_DELIVERY'")
     fun getSoonDataCntLiveData(): LiveData<Int>
 
-    @Query("SELECT COUNT(*) FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS <> 'DELIVERED'")
+    @Query("SELECT COUNT(*) FROM PARCEL as p LEFT JOIN PARCEL_STATUS as pm ON p.PARCEL_ID = pm.PARCEL_ID WHERE p.STATUS = 1 AND pm.isBeDelete = 0 AND p.DELIVERY_STATUS <> 'DELIVERED'")
     fun getOngoingDataCntLiveData(): LiveData<Int>
 
     @Query("SELECT * FROM PARCEL as p LEFT JOIN PARCEL_STATUS as pm ON p.PARCEL_ID = pm.PARCEL_ID WHERE p.STATUS = 0 AND pm.isBeDelete = 1")

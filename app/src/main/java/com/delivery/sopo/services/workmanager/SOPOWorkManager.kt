@@ -53,4 +53,20 @@ object SOPOWorkManager: KoinComponent
         //work manager 등록
         workManager.enqueue(workRequest)
     }
+
+    fun deleteParcelWorkManager(context: Context)
+    {
+        SopoLog.i(msg = "deleteParcelWorkManager() 호출")
+
+        val workManager = WorkManager.getInstance(context)
+
+        // work 인스턴스화
+        val workRequest = OneTimeWorkRequestBuilder<DeleteParcelWorker>().build()
+
+        // work UUID
+        val workUUID = workRequest.id
+
+        //work manager 등록
+        workManager.enqueue(workRequest)
+    }
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorRes
+import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
@@ -21,8 +22,13 @@ object ImageBindingAdapter
     {
         when(enum)
         {
-            DeliveryStatusEnum.NOT_REGISTERED -> { }
-            DeliveryStatusEnum.INFORMATION_RECEIVED -> { }
+            DeliveryStatusEnum.NOT_REGISTERED -> {
+                view.background = ContextCompat.getDrawable(view.context, R.drawable.ic_inquiry_cardview_not_registered)
+            }
+            DeliveryStatusEnum.INFORMATION_RECEIVED -> {
+                view.background = ContextCompat.getDrawable(view.context, R.drawable.ic_inquiry_cardview_not_registered)
+
+            }
             DeliveryStatusEnum.AT_PICKUP ->
             {
                 view.setAnimation(R.raw.inquiry_2depth_at_pickup)

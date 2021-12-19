@@ -11,5 +11,9 @@ enum class NavigatorEnum
 
     UPDATE_NICKNAME,
 
+    INQUIRY_PARCEL,
+    DETAIL_PARCEL,
+    DELETE_PARCEL,
+
     MAIN
 }

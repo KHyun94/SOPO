@@ -15,6 +15,7 @@ import com.delivery.sopo.data.repository.local.datasource.ParcelDataSource
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.NetworkEnum
+import com.delivery.sopo.extensions.wrapBodyAliasToHashMap
 import com.delivery.sopo.extensions.wrapBodyAliasToMap
 import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.parcel.ParcelStatus
@@ -306,7 +307,7 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository, private v
 
     suspend fun deleteRemoteParcels(parcelIds: List<Int>)
     {
-        val wrapBody = parcelIds.wrapBodyAliasToMap("parcelIds")
+        val wrapBody = parcelIds.wrapBodyAliasToHashMap("parcelIds")
         val deleteParcels =
             NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
                 .deleteParcels(parcelIds = wrapBody)

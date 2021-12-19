@@ -28,7 +28,8 @@
             android:gravity="bottom"
             app:umanoDragView="@+id/layout_drawer"
             app:umanoOverlay="true"
-            app:umanoShadowHeight="0dp">
+            app:umanoShadowHeight="0dp"
+            app:umanoFadeColor="#00F9F9FB">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -133,8 +134,7 @@
                 android:id="@+id/layout_drawer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@drawable/border_rounded_30dp"
-                android:elevation="18dp"
+                android:background="@color/COLOR_GRAY_50"
                 android:orientation="vertical">
 
                 <include
@@ -142,7 +142,7 @@
                     layout="@layout/parcel_semi_detail_item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:item="@{vm.item}" />
+                    app:item="@{vm.item}"/>
 
                 <include
                     android:id="@+id/include_full"

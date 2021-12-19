@@ -4,24 +4,26 @@ import androidx.lifecycle.Transformations
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.mapper.ParcelMapper
-import com.delivery.sopo.models.parcel.ParcelResponse
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
 
-class GetLocalOngoingParcelUseCase(private val parcelRepo: ParcelRepository)
+class GetOngoingParcelByLocalUseCase(private val parcelRepo: ParcelRepository)
 {
     suspend operator fun invoke() = withContext(Dispatchers.Default) {
-            SopoLog.i("GetLocalOngoingParcelUseCase(...)")
+            SopoLog.i("GetOngoingParcelByLocalUseCase(...)")
+
+            parcelRepo.getLocalOngoingParcels().map {
+//                sortByDeliveryStatus(it).toMutableList()
+            }
 
             Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
                 val list: MutableList<InquiryListItem> =
                     ParcelMapper.parcelListToInquiryItemList(parcelList)
-                sortByDeliveryStatus(list).toMutableList()
+
             }
         }
 

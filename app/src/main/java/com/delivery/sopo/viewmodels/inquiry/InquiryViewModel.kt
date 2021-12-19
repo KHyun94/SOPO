@@ -22,12 +22,22 @@ import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.mapper.CompletedParcelHistoryMapper
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.ParcelResponse
+import com.delivery.sopo.models.parcel.ParcelStatus
 import com.delivery.sopo.usecase.parcel.remote.*
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*
 
-class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase, private val refreshParcelsUseCase: RefreshParcelsUseCase, private val refreshParcelUseCase: RefreshParcelUseCase, private val syncParcelsUseCase: SyncParcelsUseCase, private val getCompletedMonthUseCase: GetCompletedMonthUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val parcelRepo: ParcelRepository, private val parcelManagementRepo: ParcelManagementRepoImpl, private val historyRepo: CompletedParcelHistoryRepoImpl):
+class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase,
+                       private val refreshParcelsUseCase: RefreshParcelsUseCase,
+                       private val refreshParcelUseCase: RefreshParcelUseCase,
+                       private val syncParcelsUseCase: SyncParcelsUseCase,
+                       private val getCompletedMonthUseCase: GetCompletedMonthUseCase,
+                       private val updateParcelAliasUseCase: UpdateParcelAliasUseCase,
+                       private val deleteParcelsUseCase: DeleteParcelsUseCase,
+                       private val parcelRepo: ParcelRepository,
+                       private val parcelManagementRepo: ParcelManagementRepoImpl,
+                       private val historyRepo: CompletedParcelHistoryRepoImpl):
         BaseViewModel()
 {
     /**
@@ -56,8 +66,7 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
 
     private var _ongoingList =
         Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
-            val list: MutableList<InquiryListItem> =
-                ParcelMapper.parcelListToInquiryItemList(parcelList)
+            val list: MutableList<InquiryListItem> = ParcelMapper.parcelListToInquiryItemList(parcelList)
             sortByDeliveryStatus(list).toMutableList()
         }
     val ongoingList: LiveData<MutableList<InquiryListItem>>
@@ -359,11 +368,11 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
         }
 
 
-    fun onDeleteParcel(parcelId: Int) = checkEventStatus(checkNetwork = true) {
-        CoroutineScope(Dispatchers.IO).launch {
+    fun onDeleteParcel() = checkEventStatus(checkNetwork = true) {
+        scope.launch(Dispatchers.IO) {
             try
             {
-                refreshParcelUseCase.invoke(parcelId = parcelId)
+                deleteParcelsUseCase.invoke()
             }
             catch(e: Exception)
             {
@@ -439,6 +448,15 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
             sortedList.addAll(it)
         }
         return sortedList
+    }
+
+    suspend fun getDeletableParcelStatuses():List<ParcelStatus>{
+        return parcelManagementRepo.getDeletableParcelStatuses()
+    }
+
+    fun cancelToDelete(parcelStatuses:List<ParcelStatus>) = scope.launch(Dispatchers.Default){
+        val updateParcelStatuses = parcelStatuses.map { it.apply { isBeDelete = 0 } }
+        parcelManagementRepo.updateParcelStatuses(updateParcelStatuses)
     }
 
     class SortByDate: Comparator<InquiryListItem>

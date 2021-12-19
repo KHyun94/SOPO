@@ -55,6 +55,7 @@ val appModule = module {
     factory { RefreshParcelsUseCase(get()) }
     factory { UpdateNicknameUseCase(get(), get()) }
     factory { UpdateParcelAliasUseCase(get()) }
+    factory { DeleteParcelsUseCase(get(), get()) }
 
     viewModel { SplashViewModel(get(), get(), get()) }
     viewModel { IntroViewModel() }
@@ -72,8 +73,8 @@ val appModule = module {
     viewModel { FaqViewModel() }
     viewModel { AppInfoViewModel() }
     viewModel { NotDisturbTimeViewModel() }
-    viewModel { InquiryViewModel(get(), get(), get(), get(), get(), get(), get(), get(),get()) }
-    viewModel { DeleteParcelViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+    viewModel { InquiryViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(),get()) }
+    viewModel { DeleteParcelViewModel(get(), get(), get(), get(), get()) }
     viewModel { MenuViewModel(get()) }
     viewModel { AccountManagerViewModel() }
     viewModel { SignOutViewModel(get()) }

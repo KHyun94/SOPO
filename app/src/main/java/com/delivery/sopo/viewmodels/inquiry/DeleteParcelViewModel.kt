@@ -1,10 +1,11 @@
 package com.delivery.sopo.viewmodels.inquiry
 
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.widget.TextView
-import androidx.lifecycle.*
+import androidx.appcompat.widget.AppCompatCheckBox
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.UserExceptionHandler
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
@@ -13,10 +14,10 @@ import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.InquiryStatusEnum
+import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.SelectItem
-import com.delivery.sopo.models.UpdateParcelAliasRequest
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
@@ -28,40 +29,29 @@ import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*
 
-class DeleteParcelViewModel(
-        private val getCompleteParcelUseCase: GetCompleteParcelUseCase,
-        private val refreshParcelsUseCase: RefreshParcelsUseCase,
-        private val refreshParcelUseCase: RefreshParcelUseCase,
-        private val syncParcelsUseCase: SyncParcelsUseCase,
-        private val getCompletedMonthUseCase: GetCompletedMonthUseCase,
-        private val updateParcelAliasUseCase: UpdateParcelAliasUseCase,
-        private val parcelRepo: ParcelRepository,
-        private val parcelManagementRepo: ParcelManagementRepoImpl,
-        private val historyRepo: CompletedParcelHistoryRepoImpl):
-        BaseViewModel()
+class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase,
+                            private val getCompletedMonthUseCase: GetCompletedMonthUseCase,
+                            private val parcelRepo: ParcelRepository,
+                            private val parcelManagementRepo: ParcelManagementRepoImpl,
+                            private val historyRepo: CompletedParcelHistoryRepoImpl): BaseViewModel()
 {
     /**
      * 공용
      */ // '배송 중' 또는 '배송완료' 화면 선택의 기준
-    private val _inquiryStatus =
-        MutableLiveData<InquiryStatusEnum>().initialize(InquiryStatusEnum.ONGOING)
+    private val _inquiryStatus = MutableLiveData<InquiryStatusEnum>().initialize(InquiryStatusEnum.ONGOING)
     val inquiryStatus: LiveData<InquiryStatusEnum>
         get() = _inquiryStatus
 
-    // '배송중' => '배송완료' 개수
-    private val _cntOfBeDelivered = parcelManagementRepo.getIsDeliveredCntLiveData()
-    val cntOfBeDelivered: LiveData<Int>
-        get() = _cntOfBeDelivered
-
-
-    private val _isAvailableRefresh = MutableLiveData<Boolean>().initialize(true)
-    val isAvailableRefresh: LiveData<Boolean>
-        get() = _isAvailableRefresh
-
-    private var isFirstLoading: Boolean = false
-
     // '삭제하기'에서 선택된 아이템의 개수
     var cntOfSelectedItemForDelete = MutableLiveData<Int>()
+
+    private val _navigator = MutableLiveData<NavigatorEnum>()
+    val navigator: LiveData<NavigatorEnum>
+        get() = _navigator
+
+    private val _isSelectAllItems = MutableLiveData<Boolean>()
+    val isSelectAllItems: LiveData<Boolean>
+        get() = _isSelectAllItems
 
     /**
      * 현재 진행 중인 택배 페이지
@@ -75,11 +65,6 @@ class DeleteParcelViewModel(
         }
     val ongoingList: LiveData<MutableList<InquiryListItem>>
         get() = _ongoingList
-
-    val cntOfPresentOngoingParcels: LiveData<Int> =
-        Transformations.map(parcelRepo.getLocalOnGoingParcelCnt()) { cnt ->
-            cnt
-        }
 
     /**
      * 완료된 택배 페이지
@@ -103,16 +88,17 @@ class DeleteParcelViewModel(
 
     init
     {
-        viewModelScope.launch(Dispatchers.Main) {
-            syncParcelsByOngoing()
-            getCompletedMonthUseCase.invoke()
-            pagingManagement = PagingManagement(0, "", true)
-        }
+        pagingManagement = PagingManagement(0, "", true)
     }
 
     /**
      * 이벤트 리스너
      */
+
+    fun setIsSelectAllItems(value:Boolean)
+    {
+        _isSelectAllItems.postValue(value)
+    }
 
     fun setInquiryStatus(statusEnum: InquiryStatusEnum)
     {
@@ -124,14 +110,7 @@ class DeleteParcelViewModel(
         return inquiryStatus.value
     }
 
-    fun changeCompletedParcelHistoryDate(year: String)
-    {
-        pagingManagement = PagingManagement(0, "", true)
-        yearOfCalendar.postValue(year)
-        updateMonthsSelector(year)
-    }
-
-    fun getRemoteCompletedMonth() = scope.launch {
+    fun getCompleteParcelMonth() = scope.launch(Dispatchers.IO) {
         try
         {
             getCompletedMonthUseCase.invoke()
@@ -142,52 +121,11 @@ class DeleteParcelViewModel(
         }
     }
 
-    fun refreshCompleteListByOnlyLocalData() = scope.launch(Dispatchers.IO) {
-        SopoLog.d("refreshCompleteListByOnlyLocalData() call")
-
-        //  monthList가 1개 있었을 경우 => 2개 있었을 경우 =>
-        historyRepo.getCurrentTimeCount()?.let {
-            it.visibility = 0
-            historyRepo.updateEntity(it)
-        }
-        historyRepo.getAll()?.let { list ->
-            if(list.filter { it.count > 0 }.isNotEmpty())
-            {
-                val nextVisibleEntity = list.first { it.count > 0 }
-                nextVisibleEntity.visibility = 1
-                historyRepo.updateEntity(nextVisibleEntity)
-
-                getCompleteParcelsWithPaging(nextVisibleEntity.date.replace("-", ""))
-            } // 전부 다 존재하긴 하지만 count가 0개일때는 TimeCount 자체가 쓸모가 없는 상태로 visibility를 -1로 세팅하여
-            // monthList(LiveData)에서 제외 (deleteAll로 삭제하면 '삭제취소'로 복구를 할 수가 없기 때문에 visibility를 -1로 세팅한다.
-            // ( status를 0으로 수정하면 UI에서 접부 삭제했을때 monthList가 남아있어서 EmptyView가 올라오지 않는다.)
-            else
-            {
-                list.forEach { it.visibility = -1 }
-                historyRepo.updateEntities(list)
-            }
-        }
-
-    }
-
-    // 배송완료 리스트의 년월 리스트를 가져온다.
-    private suspend fun requestCompletedParcelHistory(): List<CompletedParcelHistory>
+    fun changeCompletedParcelHistoryDate(year: String)
     {
-        SopoLog.i("requestCompletedParcelHistory(...) 호출")
-
-        val histories = withContext(Dispatchers.IO) { parcelRepo.getRemoteMonths() }
-
-        SopoLog.d("Completed Parcel Date 리스트 사이즈 - ${histories.size}")
-
-        withContext(Dispatchers.Default) {
-            historyRepo.deleteAll()
-            val entities = histories.map(CompletedParcelHistoryMapper::dtoToEntity)
-            historyRepo.insertEntities(entities)
-        }
-
-        SopoLog.d("Completed Parcel Date insert")
-
-        return histories
+        pagingManagement = PagingManagement(0, "", true)
+        yearOfCalendar.postValue(year)
+        updateMonthsSelector(year)
     }
 
     fun updateCompletedParcelCalendar(year: String)
@@ -197,14 +135,14 @@ class DeleteParcelViewModel(
         _completeList.postValue(emptyList<InquiryListItem>().toMutableList())
     }
 
-    fun updateYearSpinner(year: String)
+    private fun updateYearSpinner(year: String)
     {
         SopoLog.i("updateYearSpinner(...) 호출 [data:$year]")
         yearOfCalendar.postValue(year)
     }
 
     // UI를 통해 사용자가 배송완료에서 조회하고 싶은 년월을 바꾼다.
-    fun updateMonthsSelector(year: String) = viewModelScope.launch(Dispatchers.Default) {
+    private fun updateMonthsSelector(year: String) = viewModelScope.launch(Dispatchers.Default) {
 
         SopoLog.i("updateMonthsSelector(...) 호출 [data:$year]")
 
@@ -246,49 +184,6 @@ class DeleteParcelViewModel(
         monthsOfCalendar.postValue(list)
     }
 
-    fun onMoveToRegister()
-    {
-
-    }
-
-    fun onRefreshParcelsClicked() = scope.launch {
-        SopoLog.i("onRefreshParcelsClicked(...) 호출")
-
-        _isAvailableRefresh.postValue(false)
-
-        try
-        {
-            refreshParcelsUseCase.invoke()
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
-        }
-        finally
-        {
-            Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                _isAvailableRefresh.postValue(true)
-            }, 3000)
-
-        }
-    }
-
-    fun syncParcelsByOngoing() = scope.launch(Dispatchers.IO) {
-        try
-        {
-            syncParcelsUseCase.invoke()
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
-        }
-    }
-
-    // 배송완료 리스트의 전체 새로고침
-    fun refreshCompleteParcels() = scope.launch(Dispatchers.IO) {
-        clearDeliveredStatus().join()
-    }
-
     fun refreshCompleteParcelsByDate(inquiryDate: String) = CoroutineScope(Dispatchers.IO).launch {
         val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map {
             InquiryListItem(it, false)
@@ -324,59 +219,13 @@ class DeleteParcelViewModel(
         return completeParcels
     }
 
-
-    // 전체 배송 완료로 표시된 상태를 1-> 0 으로 초기화시켜준다.
-    private fun clearDeliveredStatus(): Job
+    fun onClearClicked()
     {
-        return viewModelScope.launch(Dispatchers.IO) {
-            parcelManagementRepo.updateTotalIsBeDeliveredToZero()
-        }
-    }
-
-
-    fun onUpdateParcelAlias(parcelId: Int, parcelAlias: String) =
-        checkEventStatus(checkNetwork = true) {
-            scope.launch {
-                try
-                {
-                    updateParcelAliasUseCase.invoke(parcelId = parcelId, parcelAlias = parcelAlias)
-                }
-                catch(e: Exception)
-                {
-                    exceptionHandler.handleException(coroutineContext, e)
-                }
-            }
-        }
-
-    suspend fun onRefreshParcel(parcelId: Int)  = withContext(Dispatchers.IO){
-            try
-            {
-                refreshParcelUseCase.invoke(parcelId = parcelId)
-            }
-            catch(e: Exception)
-            {
-                exceptionHandler.handleException(coroutineContext, e)
-            }
-        }
-
-
-    fun onDeleteParcel(parcelId: Int) = checkEventStatus(checkNetwork = true) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try
-            {
-                refreshParcelUseCase.invoke(parcelId = parcelId)
-            }
-            catch(e: Exception)
-            {
-                exceptionHandler.handleException(coroutineContext, e)
-
-            }
-        }
+        _navigator.value = NavigatorEnum.INQUIRY_PARCEL
     }
 
     private fun sortByDeliveryStatus(list: List<InquiryListItem>): List<InquiryListItem>
     {
-
         val sortedList = mutableListOf<InquiryListItem>()
         val multiList =
             listOf<MutableList<InquiryListItem>>(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
@@ -442,10 +291,28 @@ class DeleteParcelViewModel(
         return sortedList
     }
 
-    fun onSelectAllItemClicked(){
-
+    fun onSelectAllItemClicked(cb: AppCompatCheckBox)
+    {
+        _isSelectAllItems.postValue(cb.isChecked.apply {
+            SopoLog.d("선택 여부 $this")
+        })
     }
 
+    fun onDeleteParcelsClicked() = checkEventStatus(checkNetwork = true) {
+        SopoLog.d("onDeleteParcelsClicked() 호출")
+        _navigator.postValue(NavigatorEnum.DELETE_PARCEL)
+    }
+
+    suspend fun updateParcelToDeleteParcels(deleteParcelIds: List<Int>) =
+        withContext(Dispatchers.Default) {
+            val parcelStatuses = deleteParcelIds.map { parcelId ->
+                parcelManagementRepo.getParcelStatus(parcelId = parcelId).apply {
+                    isBeDelete = 1
+                }
+            }
+
+            parcelManagementRepo.updateParcelStatuses(parcelStatuses)
+        }
 
     class SortByDate: Comparator<InquiryListItem>
     {

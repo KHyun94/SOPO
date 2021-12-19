@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
@@ -79,59 +80,70 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         super.setAfterBinding()
 
         vm.parcelId.postValue(parcelId)
-
-        setViewSetting()
         setListener()
 
         var _slideOffset: Float = 0.0f
 
-        binding.layoutMain.addPanelSlideListener(object: SlidingUpPanelLayout.PanelSlideListener {
-            override fun onPanelSlide(panel: View?, slideOffset: Float)
-            {
-                _slideOffset = slideOffset
-                CoroutineScope(Dispatchers.Main).launch {
-                    when
-                    {
-                        _slideOffset < 0.1 ->
-                        {
-                            // 테두리
-                            binding.layoutDrawer.setBackgroundResource(R.drawable.border_rounded_30dp)
-                            binding.includeSemi.root.visibility = View.VISIBLE
-                            binding.includeFull.root.visibility = View.GONE
-                            slideViewStatus = 0
-                        }
-                        _slideOffset < 0.7 ->
-                        {
-                            binding.layoutDrawer.setBackgroundResource(R.drawable.border_rounded_15dp)
-                            binding.includeFull.layoutHedaer.visibility = View.INVISIBLE
-                            binding.includeSemi.root.visibility = View.GONE
-                            binding.includeFull.root.visibility = View.VISIBLE
-                            slideViewStatus = 1
-                        }
-                        else ->
-                        {
-                            // 테두리
-                            binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
-                            binding.includeFull.layoutHedaer.visibility = View.VISIBLE
-                            binding.includeSemi.root.visibility = View.GONE
-                            binding.includeFull.root.visibility = View.VISIBLE
-                            slideViewStatus = 1
-                        }
-                    }
-                }
+        binding.layoutMain.addPanelSlideListener(object: SlidingUpPanelLayout.PanelSlideListener
+                                                 {
+                                                     override fun onPanelSlide(panel: View?, slideOffset: Float)
+                                                     {
+//                                                         panel?.alpha = 0xffffff.toFloat()
+                                                         _slideOffset = slideOffset
+                                                         CoroutineScope(Dispatchers.Main).launch {
+                                                             when
+                                                             {
+                                                                 _slideOffset < 0.3 ->
+                                                                 {
+                                                                     // 테두리
+                                                                     //                            binding.layoutDrawer.setBackgroundResource(R.drawable.border_rounded_30dp)
+                                                                     binding.layoutDrawer.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_50))
+                                                                     binding.includeSemi.root.visibility =
+                                                                         View.VISIBLE
+                                                                     binding.includeFull.root.visibility =
+                                                                         View.GONE
+                                                                     slideViewStatus = 0
+                                                                 }
+                                                                 _slideOffset < 0.7 ->
+                                                                 {
+                                                                     binding.layoutDrawer.setBackgroundResource(R.drawable.border_rounded_15dp)
+                                                                     binding.includeFull.layoutHedaer.visibility =
+                                                                         View.INVISIBLE
+                                                                     binding.includeSemi.root.visibility =
+                                                                         View.GONE
+                                                                     binding.includeFull.root.visibility =
+                                                                         View.VISIBLE
+                                                                     slideViewStatus = 1
+                                                                 }
+                                                                 else ->
+                                                                 {
+                                                                     // 테두리
+                                                                     binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
+                                                                     binding.includeFull.layoutHedaer.visibility =
+                                                                         View.VISIBLE
+                                                                     binding.includeSemi.root.visibility =
+                                                                         View.GONE
+                                                                     binding.includeFull.root.visibility =
+                                                                         View.VISIBLE
+                                                                     slideViewStatus = 1
+                                                                 }
+                                                             }
+                                                         }
 
-            }
+                                                     }
 
-            override fun onPanelStateChanged(panel: View?, previousState: PanelState?, newState: PanelState)
-            {
-                CoroutineScope(Dispatchers.Main).launch {
-                    if(_slideOffset < 0.1 && previousState == SlidingUpPanelLayout.PanelState.DRAGGING) binding.layoutMain.panelState = PanelState.COLLAPSED
-                    else if(_slideOffset == 1.0f && previousState == PanelState.DRAGGING) binding.layoutMain.panelState = PanelState.EXPANDED
+                                                     override fun onPanelStateChanged(panel: View?, previousState: PanelState?, newState: PanelState)
+                                                     {
+                                                         CoroutineScope(Dispatchers.Main).launch {
+                                                             if(_slideOffset < 0.1 && previousState == SlidingUpPanelLayout.PanelState.DRAGGING) binding.layoutMain.panelState =
+                                                                 PanelState.COLLAPSED
+                                                             else if(_slideOffset == 1.0f && previousState == PanelState.DRAGGING) binding.layoutMain.panelState =
+                                                                 PanelState.EXPANDED
 
-                }
+                                                         }
 
-            }
-        })
+                                                     }
+                                                 })
     }
 
     override fun onDestroyView()
@@ -145,15 +157,12 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     {
         val copyText = tv.text.toString()
         ClipboardUtil.copyTextToClipboard(requireContext(), copyText)
-        Toast.makeText(requireContext(), "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT)
+            .show()
     }
 
-    private fun setViewSetting(){
-//        binding.ivStatus.bringToFront()
-//        binding.tvSubtext.bringToFront()
-    }
-
-    private fun setListener(){
+    private fun setListener()
+    {
         binding.includeSemi.ivCopy.setOnClickListener {
             pasteWaybillNumIntoClipboard(binding.includeSemi.tvWaybillNum)
         }
@@ -162,6 +171,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             pasteWaybillNumIntoClipboard(binding.includeFull.tvWaybillNum)
         }
     }
+
     override fun setObserve()
     {
         super.setObserve()
@@ -191,7 +201,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             }
         })
 
-        vm.parcelId.observe(requireActivity(), Observer {parcelId ->
+        vm.parcelId.observe(requireActivity(), Observer { parcelId ->
             CoroutineScope(Dispatchers.Main).launch {
                 vm.updateUnidentifiedStatusToZero(parcelId = parcelId)
                 vm.requestParcelDetailData(parcelId = parcelId)
@@ -205,14 +215,17 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         vm.statusList.observe(requireActivity(), Observer { list ->
             if(list == null) return@Observer
 
-            setIndicatorView(topView = binding.includeSemi.vGuideline, bottomView = binding.includeSemi.linearBottomEmpty,
-                             baseLayout = binding.includeSemi.layoutDetailContent, list = list)
+            setIndicatorView(baseLayout = binding.includeSemi.layoutDetailContent,
+                             topView = binding.includeSemi.vGuideline,
+                             bottomView = null,
+                             list = list)
 
             updateDrawerLayoutSize(binding.includeSemi.root)
 
-            setIndicatorView(topView = binding.includeFull.tvTitle,
+            setIndicatorView(baseLayout = binding.includeFull.layoutDetailContent,
+                             topView = binding.includeFull.tvTitle,
                              bottomView = binding.includeFull.vEmpty,
-                             baseLayout = binding.includeFull.layoutDetailContent, list = list)
+                             list = list)
         })
 
         vm.updateType.observe(requireActivity(), Observer { type ->
@@ -223,9 +236,10 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                 {
                     Triple("업데이트 사항이 있습니다.", "업데이트", View.OnClickListener {
                         CoroutineScope(Dispatchers.Main).launch {
-                            val parcelId = vm.parcelId.value ?: throw Exception("Parcel id가 존재하지 않습니다.")
+                            val parcelId =
+                                vm.parcelId.value ?: throw Exception("Parcel id가 존재하지 않습니다.")
                             vm.getRemoteParcel(parcelId)
-//                            parentView.getAlertMessageBar().onDismiss()
+                            //                            parentView.getAlertMessageBar().onDismiss()
                         }
                     })
                 }
@@ -236,18 +250,18 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                             val parcelId =
                                 vm.parcelId.value ?: throw Exception("Parcel id가 존재하지 않습니다.")
                             vm.requestParcelForRefresh(parcelId)
-//                            parentView.getAlertMessageBar().onDismiss()
+                            //                            parentView.getAlertMessageBar().onDismiss()
                         }
                     })
                 }
                 else -> return@Observer SopoLog.e("올바른 업데이트 형식이 아닙니다. - type[${type}]")
             }
 
-//            parentView.getAlertMessageBar().run {
-//                setText(message)
-//                setOnCancelClicked(clickMessage, null, clickListener)
-//                onStart()
-//            }
+            //            parentView.getAlertMessageBar().run {
+            //                setText(message)
+            //                setOnCancelClicked(clickMessage, null, clickListener)
+            //                onStart()
+            //            }
 
         })
 
@@ -275,7 +289,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     }
 
     // 동적으로 indicator view 생성
-    private fun setIndicatorView(topView: View?, bottomView: View?, baseLayout: LinearLayout, list: List<SelectItem<String>>)
+    private fun setIndicatorView( baseLayout: LinearLayout, list: List<SelectItem<String>>, topView: View?, bottomView: View?)
     {
         val inflater = requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
@@ -301,8 +315,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             // 배송 상태 현재 step의 image view의 세팅을 변경
             if(item.isSelect)
             {
-                val ivParam = LinearLayout.LayoutParams(SizeUtil.changeDpToPx(requireActivity(), 30.0f),
-                                                        SizeUtil.changeDpToPx(requireActivity(), 30.0f))
+                val ivParam = LinearLayout.LayoutParams(SizeUtil.changeDpToPx(requireActivity(), 30.0f), SizeUtil.changeDpToPx(requireActivity(), 30.0f))
                 ivParam.bottomMargin = SizeUtil.changeDpToPx(requireActivity(), 3.0f)
                 itemBinding.ivIndicator.layoutParams = ivParam
 
@@ -315,8 +328,34 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             baseLayout.addView(itemBinding.root)
         }
 
+        val constraintParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
+
+        if(topView == null) constraintParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+        else constraintParams.topToBottom = topView.id
+
+        constraintParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID
+        constraintParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID
+        constraintParams.topMargin = SizeUtil.changeDpToPx(requireActivity(), 27.0f)
+
+        if(bottomView == null)
+        {
+            constraintParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID
+
+            constraintParams.bottomMargin = SizeUtil.changeDpToPx(requireActivity(), 30.0f)
+            baseLayout.layoutParams = constraintParams
+            return
+        }
+
+        val constraintParams2 =
+            ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, SizeUtil.changeDpToPx(requireActivity(), 8.0f))
+
+        constraintParams2.topToBottom = baseLayout.id
+        constraintParams2.topMargin = SizeUtil.changeDpToPx(requireActivity(), 40.0f)
+
+        bottomView.layoutParams = constraintParams2
+
         // todo 추후 param 받아서 처리하거나 callback 처리를 해서 빼도록 처리할 예정
-        if(topView != null)
+        /*if(topView != null)
         {
             if(topView is LinearLayout)
             {
@@ -330,8 +369,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                 baseLayout.layoutParams = constraintParams
 
                 val constraintParams2 =
-                    ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT,
-                                                  SizeUtil.changeDpToPx(requireActivity(), 8.0f))
+                    ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, SizeUtil.changeDpToPx(requireActivity(), 8.0f))
 
                 constraintParams2.topToBottom = baseLayout.id
                 constraintParams2.topMargin = SizeUtil.changeDpToPx(requireActivity(), 40.0f)
@@ -340,7 +378,8 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             }
             else
             {
-                val constraintParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
+                val constraintParams =
+                    ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
 
                 constraintParams.topToBottom = topView.id
                 constraintParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID
@@ -350,15 +389,14 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                 baseLayout.layoutParams = constraintParams
 
                 val constraintParams2 =
-                    ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT,
-                                                  SizeUtil.changeDpToPx(requireActivity(), 8.0f))
+                    ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, SizeUtil.changeDpToPx(requireActivity(), 8.0f))
 
                 constraintParams2.topToBottom = baseLayout.id
                 constraintParams2.topMargin = SizeUtil.changeDpToPx(requireActivity(), 40.0f)
 
                 bottomView!!.layoutParams = constraintParams2
             }
-        }
+        }*/
     }
 
     //    var bar = updateDrawerLayoutSize(layout)
