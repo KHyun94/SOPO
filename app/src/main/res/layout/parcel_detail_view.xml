@@ -134,7 +134,6 @@
                 android:id="@+id/layout_drawer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/COLOR_GRAY_50"
                 android:orientation="vertical">
 
                 <include

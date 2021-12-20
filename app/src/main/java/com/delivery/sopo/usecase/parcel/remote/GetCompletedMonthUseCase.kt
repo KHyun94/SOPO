@@ -18,6 +18,9 @@ class GetCompletedMonthUseCase(private val parcelRepo: ParcelRepository, private
             withContext(Dispatchers.Default) {
                 historyRepo.deleteAll()
                 val entities = histories.map(CompletedParcelHistoryMapper::dtoToEntity)
+                entities.map {
+                    it.status
+                }
                 historyRepo.insertEntities(entities)
             }
 

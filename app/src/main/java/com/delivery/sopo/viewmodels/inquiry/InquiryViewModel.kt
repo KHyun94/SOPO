@@ -64,8 +64,7 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
      * 현재 진행 중인 택배 페이지
      */
 
-    private var _ongoingList =
-        Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
+    private var _ongoingList = Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
             val list: MutableList<InquiryListItem> = ParcelMapper.parcelListToInquiryItemList(parcelList)
             sortByDeliveryStatus(list).toMutableList()
         }
@@ -99,11 +98,9 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
 
     init
     {
-        viewModelScope.launch(Dispatchers.Main) {
-            syncParcelsByOngoing()
-            getCompletedMonthUseCase.invoke()
-            pagingManagement = PagingManagement(0, "", true)
-        }
+        pagingManagement = PagingManagement(0, "", true)
+        syncParcelsByOngoing()
+        getRemoteCompletedMonth()
     }
 
     /**
@@ -176,26 +173,6 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
             }
         }
 
-    }
-
-    // 배송완료 리스트의 년월 리스트를 가져온다.
-    private suspend fun requestCompletedParcelHistory(): List<CompletedParcelHistory>
-    {
-        SopoLog.i("requestCompletedParcelHistory(...) 호출")
-
-        val histories = withContext(Dispatchers.IO) { parcelRepo.getRemoteMonths() }
-
-        SopoLog.d("Completed Parcel Date 리스트 사이즈 - ${histories.size}")
-
-        withContext(Dispatchers.Default) {
-            historyRepo.deleteAll()
-            val entities = histories.map(CompletedParcelHistoryMapper::dtoToEntity)
-            historyRepo.insertEntities(entities)
-        }
-
-        SopoLog.d("Completed Parcel Date insert")
-
-        return histories
     }
 
     fun updateCompletedParcelCalendar(year: String)
