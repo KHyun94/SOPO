@@ -132,8 +132,7 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         vm.isClickEvent.observe(this) {
             SopoLog.d("Base Click Event [data:$it]")
             if(!it) return@observe
-            val a = mainLayout.requestFocus()
-            OtherUtil.hideKeyboardSoft(this)
+            hideKeyboard()
         }
 
         vm.isLoading.observe(this){ isLoading ->
@@ -145,6 +144,11 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
             val snackBar = CustomSnackBar(mainLayout, it, 3000, SnackBarEnum.ERROR)
             snackBar.show()
         }
+    }
+
+    fun hideKeyboard(){
+        mainLayout.requestFocus()
+        OtherUtil.hideKeyboardSoft(this)
     }
 
     override fun onDestroy()

@@ -226,9 +226,7 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository, private v
 
     suspend fun registerParcel(parcel: ParcelRegister): Int
     {
-        val registerParcel =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
-                .registerParcel(register = parcel)
+        val registerParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).registerParcel(register = parcel)
         val result = apiCall { registerParcel }
         return result.data?.data ?: throw NullPointerException()
     }

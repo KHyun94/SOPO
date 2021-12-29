@@ -97,7 +97,7 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
         }
 
         val parcelDetailDTO = ParcelDetailInfo(regDt = parcelResponse.regDte, alias = parcelResponse.alias,
-                                               carrierDTO = carrierDTO,
+                                               carrier = carrierDTO,
                                                waybillNum = parcelResponse.waybillNum,
                                                deliverStatus = this.deliveryStatus.value?.TITLE,
                                                timeLineProgresses = progressList)

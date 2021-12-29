@@ -2,20 +2,19 @@ package com.delivery.sopo.models.mapper
 
 import com.delivery.sopo.data.repository.database.room.entity.CarrierEntity
 import com.delivery.sopo.enums.CarrierEnum
-import com.delivery.sopo.models.CarrierDTO
+import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.util.CarrierUtil
-import com.delivery.sopo.util.SopoLog
 
 object CarrierMapper
 {
-    fun entityToObject(carrierEntity: CarrierEntity): CarrierDTO{
+    fun entityToObject(carrierEntity: CarrierEntity): Carrier{
         val carrierEnum = CarrierEnum.getCarrierByCode(carrierEntity.carrierCode)
         val icons = CarrierUtil.getCarrierImages(carrierEnum)
-        return CarrierDTO(carrierEnum, icons)
+        return Carrier(carrierEnum, icons)
     }
 
-    fun enumToObject(carrierEnum: CarrierEnum): CarrierDTO {
+    fun enumToObject(carrierEnum: CarrierEnum): Carrier {
         val icons = CarrierUtil.getCarrierImages(carrierEnum)
-        return CarrierDTO(carrierEnum, icons)
+        return Carrier(carrierEnum, icons)
     }
 }

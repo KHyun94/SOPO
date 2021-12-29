@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.work.*
+import com.delivery.sopo.consts.BundleConst
 import com.delivery.sopo.data.repository.database.room.AppDatabase
 import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.util.SopoLog
@@ -41,14 +42,10 @@ object SOPOWorkManager: KoinComponent
 
         val jsonStr = Gson().toJson(registerParcelRegister)
 
-        val inputData = Data.Builder().putString("RECEIVED_STR", jsonStr).build()
+        val inputData: Data = Data.Builder().putString(BundleConst.PARCEL_REGISTER_INFO, jsonStr).build()
 
         // work 인스턴스화
-        val workRequest =
-            OneTimeWorkRequestBuilder<RegisterParcelWorker>().setInputData(inputData).build()
-
-        // work UUID
-        val workUUID = workRequest.id
+        val workRequest = OneTimeWorkRequestBuilder<RegisterParcelWorker>().setInputData(inputData).build()
 
         //work manager 등록
         workManager.enqueue(workRequest)

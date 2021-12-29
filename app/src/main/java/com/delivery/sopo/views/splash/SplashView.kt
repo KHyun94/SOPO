@@ -12,6 +12,7 @@ import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.databinding.SplashViewBinding
 import com.delivery.sopo.interfaces.listener.OnPermissionRequestListener
 import com.delivery.sopo.models.base.BaseView
+import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.viewmodels.splash.SplashViewModel
@@ -52,8 +53,9 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
 
         val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
         startActivity(intent)*/
-
         Handler(Looper.getMainLooper()).postDelayed(Runnable { moveToActivity() }, 1500)
+
+
     }
 
     private fun moveToActivity()

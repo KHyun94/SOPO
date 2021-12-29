@@ -66,7 +66,16 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         {
             override fun onBackPressedInTime()
             {
-                FragmentManager.remove(requireActivity())
+                SopoLog.d(msg = "ParcelDetailView:: BackPressListener")
+
+                if(slideViewStatus == 0)
+                {
+                    requireActivity().supportFragmentManager.popBackStack()
+                }
+                else
+                {
+                    binding.layoutMain.panelState = PanelState.COLLAPSED
+                }
             }
 
             override fun onBackPressedOutTime()

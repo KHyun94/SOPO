@@ -151,9 +151,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
 
             if(!it) return@observe
 
-            val a = mainLayout.requestFocus()
-            SopoLog.d("request Focus [${a}]")
-            OtherUtil.hideKeyboardSoft(requireActivity())
+            hideKeyboard()
         }
 
         vm.isLoading.observe(viewLifecycleOwner){ isLoading ->
@@ -165,5 +163,10 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
             val snackBar = CustomSnackBar(mainLayout, it, 3000, SnackBarEnum.ERROR)
             snackBar.show()
         }
+    }
+
+    fun hideKeyboard(){
+        mainLayout.requestFocus()
+        OtherUtil.hideKeyboardSoft(requireActivity())
     }
 }

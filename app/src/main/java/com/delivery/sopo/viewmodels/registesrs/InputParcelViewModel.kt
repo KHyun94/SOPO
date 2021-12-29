@@ -10,7 +10,7 @@ import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
-import com.delivery.sopo.models.CarrierDTO
+import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
@@ -19,7 +19,7 @@ import kotlinx.coroutines.*
 class InputParcelViewModel(private val carrierRepository: CarrierRepository): BaseViewModel()
 {
     val waybillNum = MutableLiveData<String>().apply { value = "" }
-    val carrier = MutableLiveData<CarrierDTO?>()
+    val carrier = MutableLiveData<Carrier?>()
 
     // 가져온 클립보드 문자열
     val clipboardText = MutableLiveData<String>().apply { value = "" }

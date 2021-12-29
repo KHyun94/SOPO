@@ -119,6 +119,14 @@
         </service>
 
         <receiver
+            android:name=".services.receivers.RefreshParcelBroadcastReceiver">
+            <intent-filter>
+                <action android:name="com.delivery.sopo.ACTION_COMPLETED_REGISTER_PARCEL" />
+            </intent-filter>
+
+        </receiver>
+
+        <receiver
             android:name=".services.receivers.MMSReceiver"
             android:permission="android.permission.BROADCAST_WAP_PUSH">
             <intent-filter>

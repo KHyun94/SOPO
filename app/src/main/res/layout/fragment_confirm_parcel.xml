@@ -10,7 +10,7 @@
 
         <import type="com.delivery.sopo.consts.InfoConst" />
 
-        <import type="com.delivery.sopo.models.CarrierDTO" />
+        <import type="com.delivery.sopo.models.Carrier" />
 
         <variable
             name="vm"

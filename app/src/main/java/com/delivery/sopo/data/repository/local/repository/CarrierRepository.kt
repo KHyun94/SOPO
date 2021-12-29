@@ -1,10 +1,9 @@
 package com.delivery.sopo.data.repository.local.repository
 
 import com.delivery.sopo.data.repository.database.room.AppDatabase
-import com.delivery.sopo.data.repository.database.room.RoomActivate
 import com.delivery.sopo.data.repository.database.room.entity.CarrierEntity
 import com.delivery.sopo.enums.CarrierEnum
-import com.delivery.sopo.models.CarrierDTO
+import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.Dispatchers
@@ -12,7 +11,7 @@ import kotlinx.coroutines.withContext
 
 class CarrierRepository(private val appDB: AppDatabase)
 {
-    suspend fun getAll(): List<CarrierDTO?> = withContext(Dispatchers.Default) {
+    suspend fun getAll(): List<Carrier?> = withContext(Dispatchers.Default) {
         return@withContext appDB.carrierDao().getAll().map(CarrierMapper::entityToObject).toList()
     }
 
@@ -20,7 +19,7 @@ class CarrierRepository(private val appDB: AppDatabase)
         return@withContext appDB.carrierDao().getAllCnt()
     }
 
-    suspend fun getWithLen(len: Int, cnt: Int): List<CarrierDTO> =
+    suspend fun getWithLen(len: Int, cnt: Int): List<Carrier> =
         withContext(Dispatchers.Default) {
             return@withContext appDB.carrierDao()
                 .getWithLen(len = len, cnt = cnt)
@@ -28,12 +27,12 @@ class CarrierRepository(private val appDB: AppDatabase)
                 .map(CarrierMapper::entityToObject)
         }
 
-    suspend fun getCarrierWithCode(code: String): CarrierDTO = withContext(Dispatchers.Default) {
+    suspend fun getCarrierWithCode(code: String): Carrier = withContext(Dispatchers.Default) {
         appDB.carrierDao().getWithCode(code = code)?.let { CarrierMapper.entityToObject(it) }
             ?: throw Exception("해당하는 택배사가 존재하지 않습니다.")
     }
 
-    suspend fun getWithoutLen(len: Int, cnt: Int): List<CarrierDTO> =
+    suspend fun getWithoutLen(len: Int, cnt: Int): List<Carrier> =
         withContext(Dispatchers.Default) {
             return@withContext appDB.carrierDao()
                 .getWithoutLen(len = len, cnt = cnt)
@@ -42,7 +41,7 @@ class CarrierRepository(private val appDB: AppDatabase)
         }
 
 
-    suspend fun getCarrierEntityWithCode(carrierCode: String): CarrierDTO = withContext(Dispatchers.Default)
+    suspend fun getCarrierEntityWithCode(carrierCode: String): Carrier = withContext(Dispatchers.Default)
     {
         return@withContext CarrierMapper.entityToObject(appDB.carrierDao().getCarrierEntityWithCode(carrierCode = carrierCode))
     }
@@ -127,7 +126,7 @@ class CarrierRepository(private val appDB: AppDatabase)
     {
         SopoLog.d("recommend carrier >>> $waybillNum / $cnt 개")
 
-        mutableListOf<CarrierDTO?>().apply {
+        mutableListOf<Carrier?>().apply {
             addAll(getWithLen(waybillNum.length, cnt))
             addAll(getWithoutLen(waybillNum.length, 27))
         }

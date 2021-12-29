@@ -1,6 +1,6 @@
 package com.delivery.sopo.data.repository.database.room
 
-import com.delivery.sopo.models.CarrierDTO
+import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.data.repository.database.room.entity.CarrierEntity
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.enums.CarrierEnum.*
@@ -69,7 +69,7 @@ object RoomActivate: KoinComponent
     {
         SopoLog.d("recommend carrier >>> $waybillNum / $cnt 개")
 
-        mutableListOf<CarrierDTO?>().apply {
+        mutableListOf<Carrier?>().apply {
             addAll(carrierRepo.getWithLen(waybillNum.length, cnt))
             addAll(carrierRepo.getWithoutLen(waybillNum.length, 27))
         }

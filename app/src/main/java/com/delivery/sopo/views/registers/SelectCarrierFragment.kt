@@ -11,7 +11,7 @@ import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
-import com.delivery.sopo.models.CarrierDTO
+import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseFragment
@@ -46,8 +46,6 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
         {
             override fun onBackPressedInTime()
             {
-//               FragmentManager.remove(activity = requireActivity())
-
                 val parcelRegister = ParcelRegister("", null, null)
 
                 TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
@@ -55,11 +53,7 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
                 FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
             }
 
-            override fun onBackPressedOutTime()
-            {
-//                requireActivity().supportFragmentManager.popBackStack()
-
-            }
+            override fun onBackPressedOutTime() { }
         }
     }
 
@@ -71,10 +65,17 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
         SopoLog.d("운송장 번호 $waybillNum")
     }
 
+    override fun setBeforeBinding()
+    {
+        super.setBeforeBinding()
+
+
+    }
+
     override fun setAfterBinding()
     {
         super.setAfterBinding()
-
+        hideKeyboard()
         setRecyclerViewAdapter()
         setRecyclerViewItem()
     }
@@ -152,9 +153,9 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
         adapter.setItems(vm.getCarriers(waybillNum = waybillNum))
 
         val listener =
-            object: GridTypedRecyclerViewAdapter.OnItemClickListener<List<SelectItem<CarrierDTO?>>>
+            object: GridTypedRecyclerViewAdapter.OnItemClickListener<List<SelectItem<Carrier?>>>
             {
-                override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<CarrierDTO?>>)
+                override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<Carrier?>>)
                 {
                     val item = items[pos]
 

@@ -64,4 +64,6 @@
     <color name="STATUS_PREPARING">#F9F9FB</color>
     <color name="STATUS_ING">#DDE9FA</color>
 
+    <color name="NOTIFICATION_TITLE_COLOR">#5D96FF</color>
+
 </resources>

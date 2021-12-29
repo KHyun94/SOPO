@@ -6,7 +6,7 @@
     <data>
         <import type="android.view.View"/>
         <import type="com.delivery.sopo.enums.InfoEnum" />
-        <import type="com.delivery.sopo.models.CarrierDTO" />
+        <import type="com.delivery.sopo.models.Carrier" />
 
         <variable
             name="vm"

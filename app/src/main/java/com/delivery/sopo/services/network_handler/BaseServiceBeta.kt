@@ -38,8 +38,7 @@ abstract class BaseServiceBeta
     // TODO Error Response 포멧 변경 예정
     private fun convertErrorBody(statusCode: Int, errorBody: ResponseBody?)
     {
-        errorBody
-            ?: throw SOPOApiException(statusCode, ErrorResponse(999, ErrorType.NO_RESOURCE, "'Data'가 존재하지 않음", ""))
+        errorBody ?: throw SOPOApiException(statusCode, ErrorResponse(999, ErrorType.NO_RESOURCE, "'Data'가 존재하지 않음", ""))
 
         val errorReader = errorBody.charStream()
 

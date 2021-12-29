@@ -1,7 +1,6 @@
 package com.delivery.sopo.models.parcel
 
-import com.delivery.sopo.models.CarrierDTO
-import java.text.SimpleDateFormat
+import com.delivery.sopo.models.Carrier
 
 data class ParcelDetailInfo(
     // 앱에서 택배 등록한 일자
@@ -9,7 +8,7 @@ data class ParcelDetailInfo(
     // 택배 별칭 "Default:default" -> if default {from_name}이 보내신 택배
         val alias: String,
     // 택배사
-        val carrierDTO: CarrierDTO,
+        val carrier: Carrier,
     // 운송장 번호
         val waybillNum: String,
     // 택배 상세 정보

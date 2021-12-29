@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.TextView
 import androidx.lifecycle.*
+import com.delivery.sopo.ParcelExceptionHandler
 import com.delivery.sopo.UserExceptionHandler
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
@@ -473,6 +474,6 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
         }
     }
     override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
+        ParcelExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 }

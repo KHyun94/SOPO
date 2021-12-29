@@ -15,17 +15,17 @@ import com.bumptech.glide.signature.ObjectKey
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ItemImgBinding
-import com.delivery.sopo.models.CarrierDTO
+import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.adapter.GridTypedRecyclerViewAdapter.GridRvViewHolder
 
-class GridTypedRecyclerViewAdapter(items: List<SelectItem<CarrierDTO?>>): RecyclerView.Adapter<GridRvViewHolder>()
+class GridTypedRecyclerViewAdapter(items: List<SelectItem<Carrier?>>): RecyclerView.Adapter<GridRvViewHolder>()
 {
-    private var carriers: List<SelectItem<CarrierDTO?>> = items
+    private var carriers: List<SelectItem<Carrier?>> = items
 
     var isClicked = MutableLiveData<Boolean>()
-    var paste: Pair<View, SelectItem<CarrierDTO?>>? = null
+    var paste: Pair<View, SelectItem<Carrier?>>? = null
 
     init
     {
@@ -37,9 +37,9 @@ class GridTypedRecyclerViewAdapter(items: List<SelectItem<CarrierDTO?>>): Recycl
         fun onItemClicked(v: View, pos: Int, item: T)
     }
 
-    var mListener: OnItemClickListener<List<SelectItem<CarrierDTO?>>>? = null
+    var mListener: OnItemClickListener<List<SelectItem<Carrier?>>>? = null
 
-    fun setOnItemClickListener(listener: OnItemClickListener<List<SelectItem<CarrierDTO?>>>)
+    fun setOnItemClickListener(listener: OnItemClickListener<List<SelectItem<Carrier?>>>)
     {
         this.mListener = listener
     }
@@ -79,7 +79,7 @@ class GridTypedRecyclerViewAdapter(items: List<SelectItem<CarrierDTO?>>): Recycl
         return carriers.size
     }
 
-    fun setItems(items:List<SelectItem<CarrierDTO?>>){
+    fun setItems(items:List<SelectItem<Carrier?>>){
         carriers = items
         notifyDataSetChanged()
     }
@@ -150,7 +150,7 @@ class GridTypedRecyclerViewAdapter(items: List<SelectItem<CarrierDTO?>>): Recycl
             }
         }
 
-        fun onBind(selectItem: SelectItem<CarrierDTO?>)
+        fun onBind(selectItem: SelectItem<Carrier?>)
         {
             if (selectItem.isSelect)
             {

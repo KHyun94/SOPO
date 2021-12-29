@@ -149,7 +149,7 @@
                             android:layout_marginEnd="8dp"
                             android:layout_toLeftOf="@+id/tv_waybill_num"
                             android:includeFontPadding="false"
-                            android:text="@{item.carrierDTO.carrier.NAME}"
+                            android:text="@{item.carrier.carrier.NAME}"
                             tools:text="한진택배" />
 
                         <TextView

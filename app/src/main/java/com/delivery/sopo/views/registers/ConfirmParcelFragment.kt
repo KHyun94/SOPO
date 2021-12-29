@@ -1,5 +1,7 @@
 package com.delivery.sopo.views.registers
 
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
@@ -12,6 +14,7 @@ import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.models.*
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.mapper.CarrierMapper
+import com.delivery.sopo.services.receivers.RefreshParcelBroadcastReceiver
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.registesrs.ConfirmParcelViewModel
@@ -136,6 +139,10 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
                 }
                 NavigatorEnum.REGISTER_INPUT_SUCCESS ->
                 {
+                    val intent  = Intent(RefreshParcelBroadcastReceiver.ACTION)
+                    intent.putExtra("TYPE", 3)
+                    parentView.sendBroadcast(intent)
+
                     val defer = FirebaseRepository.subscribedToTopic()
                     defer.start()
 
@@ -144,7 +151,7 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
                 else -> throw Exception("NOT SUPPORT REGISTER TYPE")
             }
 
-            FragmentManager.remove(requireActivity())
+//            FragmentManager.remove(requireActivity())
             FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
 
            /* FragmentManager.initFragment(activity = requireActivity(),

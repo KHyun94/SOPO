@@ -8,7 +8,7 @@ import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
-import com.delivery.sopo.models.CarrierDTO
+import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -42,7 +42,7 @@ class SelectCarrierViewModel(private val carrierRepo: CarrierRepository): BaseVi
         _navigator.postValue(nav)
     }
 
-    suspend fun getCarriers(waybillNum: String): List<SelectItem<CarrierDTO?>>
+    suspend fun getCarriers(waybillNum: String): List<SelectItem<Carrier?>>
     {
         val list = if(waybillNum.isEmpty()) carrierRepo.recommendAutoCarrier(waybillNum, 27)
         else carrierRepo.getAll().toMutableList()
