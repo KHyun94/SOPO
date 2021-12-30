@@ -23,6 +23,14 @@ object TimeUtil
     }
 
     @SuppressLint("SimpleDateFormat")
+    fun convertToFormat(milliseconds:Long): String
+    {
+        val date: Date = Date()
+        val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+        return sdf.format(date)
+    }
+
+    @SuppressLint("SimpleDateFormat")
     fun getDate(): String{
         val date: Date = Date()
         val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd")

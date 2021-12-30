@@ -6,7 +6,7 @@ import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.IntroViewBinding
 import com.delivery.sopo.interfaces.listener.OnIntroClickListener
-import com.delivery.sopo.interfaces.listener.OnPermissionRequestListener
+import com.delivery.sopo.interfaces.listener.OnPermissionResponseCallback
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.viewmodels.IntroViewModel
@@ -38,7 +38,7 @@ class IntroView(): BaseView<IntroViewBinding, IntroViewModel>()
         val introPageAdapter = IntroPageAdapter(this, object: OnIntroClickListener{
             override fun onIntroClicked()
             {
-                PermissionUtil.requestPermission(this@IntroView, object: OnPermissionRequestListener{
+                PermissionUtil.requestPermission(this@IntroView, object: OnPermissionResponseCallback{
                     override fun onPermissionGranted()
                     {
                         val intent = Intent(this@IntroView, LoginSelectView::class.java)

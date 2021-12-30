@@ -44,7 +44,7 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         CustomSnackBar(mainLayout, "네트워크에 다시 연결되었어요.", 3000, SnackBarEnum.COMMON)
     }
 
-    private val loadingBar: SopoLoadingBar by lazy {
+    val loadingBar: SopoLoadingBar by lazy {
         SopoLoadingBar(this)
     }
 

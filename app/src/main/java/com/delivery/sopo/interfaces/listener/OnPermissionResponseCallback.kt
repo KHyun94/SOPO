@@ -1,6 +1,6 @@
 package com.delivery.sopo.interfaces.listener
 
-interface OnPermissionRequestListener
+interface OnPermissionResponseCallback
 {
     fun onPermissionGranted()
     fun onPermissionDenied()

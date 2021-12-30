@@ -90,6 +90,17 @@ abstract class BaseViewModel: ViewModel()
         return false
     }
 
+    fun startLoading(){
+        if(_isLoading.value == true) return
+        _isLoading.postValue(true)
+    }
+
+    fun stopLoading(){
+        if(_isLoading.value == false) return
+        _isLoading.postValue(false)
+    }
+
+
     fun startToCheckNetworkStatus()
     {
         _isCheckNetwork.postValue(true)

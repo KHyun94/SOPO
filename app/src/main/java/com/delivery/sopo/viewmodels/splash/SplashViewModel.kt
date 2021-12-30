@@ -1,5 +1,7 @@
 package com.delivery.sopo.viewmodels.splash
 
+import android.os.Handler
+import android.os.Looper
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.UserExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
@@ -10,10 +12,10 @@ import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
+import java.text.SimpleDateFormat
 
 class SplashViewModel(
         private val userLocalRepo: UserLocalRepository,
@@ -21,7 +23,6 @@ class SplashViewModel(
         private val oAuthLocalRepo: OAuthLocalRepository): BaseViewModel()
 {
     var navigator = MutableLiveData<String>()
-    var errorMessage: String = ""
 
     private val onSOPOErrorCallback = object : OnSOPOErrorCallback{
 
@@ -60,7 +61,8 @@ class SplashViewModel(
 
     init
     {
-        checkUserStatus()
+        startLoading()
+        Handler(Looper.getMainLooper()).postDelayed(Runnable { checkUserStatus() }, 1500)
     }
 
     private fun checkUserStatus()
@@ -72,28 +74,35 @@ class SplashViewModel(
             return navigator.postValue(NavigatorConst.TO_PERMISSION)
         }
 
-        navigator.value = NavigatorConst.TO_INTRO
+        navigator.postValue(NavigatorConst.TO_INTRO)
     }
 
-    fun requestLoginStatusForKeeping() = scope.launch(Dispatchers.IO) {
+    fun requestUserInfo() = checkEventStatus(true) {
 
-        try
-        {
-            val isExpired = isExpiredTokenWithinWeek()
-
-            if(isExpired)
+        scope.launch {
+            try
             {
-                userRemoteRepo.requestLogin(userLocalRepo.getUserId(), userLocalRepo.getUserPassword())
-            }
+                val isExpired = isExpiredTokenWithinWeek()
 
-            val userInfo = userRemoteRepo.getUserInfo()
-            SopoLog.d("로그인 성공 - [UserInfo:${userInfo.toString()}]")
-            navigator.postValue(NavigatorConst.TO_MAIN)
+                if(isExpired)
+                {
+                    SopoLog.d("만료 직전 강제 로그인 요청")
+                    userRemoteRepo.requestLogin(userLocalRepo.getUserId(), userLocalRepo.getUserPassword())
+                }
+
+                val userInfo = userRemoteRepo.getUserInfo()
+                SopoLog.d("로그인 성공 [UserInfo:${userInfo.toString()}]")
+
+                if(userInfo.nickname == "") return@launch navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
+
+                navigator.postValue(NavigatorConst.TO_MAIN)
+            }
+            catch(e: Exception)
+            {
+                exceptionHandler.handleException(coroutineContext, e)
+            }
         }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
-        }
+
     }
 
     /**
@@ -104,13 +113,10 @@ class SplashViewModel(
      * false -갱신 필요 없음
      */
     private suspend fun isExpiredTokenWithinWeek(): Boolean = withContext(Dispatchers.Default) {
-        SopoLog.i("isRefreshTokenWithinWeek() 호출")
+        SopoLog.i("checkExpiredTokenWithinWeek() 호출")
 
         // 로컬 내 oAuth Token의 만료 기일을 로드
         val currentExpiredDate: String = oAuthLocalRepo.get(userLocalRepo.getUserId()).refreshTokenExpiredAt
-
-        SopoLog.d("O-Auth Token Expired Date(갱신 전) [data:$currentExpiredDate]")
-
         return@withContext DateUtil.isExpiredDateWithinAWeek(currentExpiredDate)
     }
 }

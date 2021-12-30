@@ -2,28 +2,20 @@ package com.delivery.sopo.views.splash
 
 import android.content.Intent
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.databinding.SplashViewBinding
-import com.delivery.sopo.interfaces.listener.OnPermissionRequestListener
+import com.delivery.sopo.extensions.moveToActivity
+import com.delivery.sopo.interfaces.listener.OnPermissionResponseCallback
 import com.delivery.sopo.models.base.BaseView
-import com.delivery.sopo.notification.NotificationImpl
-import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.viewmodels.splash.SplashViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.intro.IntroView
 import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.signup.RegisterNicknameView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
@@ -32,13 +24,32 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
     override val vm: SplashViewModel by viewModel()
     override val mainLayout by lazy { binding.constraintMainSplash }
 
-    private val userLocalRepo: UserLocalRepository by inject()
+    private val onPermissionResponseCallback = object: OnPermissionResponseCallback {
+        override fun onPermissionGranted()
+        {
+            vm.requestUserInfo()
+        }
+
+        override fun onPermissionDenied()
+        {
+            GeneralDialog(act = this@SplashView,
+                          title = getString(R.string.DIALOG_ALARM),
+                          msg = getString(R.string.DIALOG_PERMISSION_REQ_MSG),
+                          detailMsg = null,
+                          rHandler = Pair(first = getString(R.string.DIALOG_OK), second = { dialog ->
+                              dialog.dismiss()
+                              finish()
+                          })).show(supportFragmentManager, "permission")
+        }
+
+    }
 
     override fun onBeforeBinding()
     {
         super.onBeforeBinding()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
             window.statusBarColor = ContextCompat.getColor(this, R.color.COLOR_MAIN_700);
         }
     }
@@ -47,79 +58,36 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
     {
         super.setObserve()
 
-/*        NotificationManagerCompat.getEnabledListenerPackages(applicationContext).any {
-            it == packageName
-        }
-
-        val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-        startActivity(intent)*/
-        Handler(Looper.getMainLooper()).postDelayed(Runnable { moveToActivity() }, 1500)
-
-
-    }
-
-    private fun moveToActivity()
-    {
         vm.navigator.observe(this, Observer {
             when(it)
             {
-                NavigatorConst.TO_UPDATE_NICKNAME ->
+                NavigatorConst.TO_INTRO ->
                 {
-                    val clz = RegisterNicknameView::class.java
+                    vm.stopLoading()
 
-                    Intent(this@SplashView, clz).let { intent ->
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        startActivity(intent)
-                        finish()
-                    }
+                    moveToActivity(IntroView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    finish()
                 }
                 NavigatorConst.TO_PERMISSION ->
                 {
-                    PermissionUtil.requestPermission(this, object: OnPermissionRequestListener
-                    {
-                        override fun onPermissionGranted()
-                        {
-                            vm.requestLoginStatusForKeeping()
-                        }
-
-                        override fun onPermissionDenied()
-                        {
-                            // NOT PERMISSION GRANT
-                            GeneralDialog(act = this@SplashView, title = getString(R.string.DIALOG_ALARM), msg = getString(R.string.DIALOG_PERMISSION_REQ_MSG), detailMsg = null, rHandler = Pair(first = getString(R.string.DIALOG_OK), second = { it ->
-                                it.dismiss()
-                                finish()
-                            })).show(supportFragmentManager, "permission")
-                        }
-                    })
+                    PermissionUtil.requestPermission(this, onPermissionResponseCallback)
                 }
-                NavigatorConst.TO_INTRO ->
+                NavigatorConst.TO_UPDATE_NICKNAME ->
                 {
-                    startActivity(Intent(this, IntroView::class.java))
+                    vm.stopLoading()
+
+                    moveToActivity(RegisterNicknameView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     finish()
                 }
                 NavigatorConst.TO_MAIN ->
                 {
-                    goToMainOrNickname(userLocalRepo.getNickname())
-                }
-                NavigatorConst.TO_INIT ->
-                {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        AlertUtil.alertExpiredToken(this@SplashView, vm.errorMessage)
-                    }
+                    vm.stopLoading()
+
+                    moveToActivity(MainView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    finish()
                 }
             }
         })
-    }
 
-    // 정상적으로 로그인했을 때 닉네임의 여부에 따라 UpdateNicknameView or MainView로 이동
-    private fun goToMainOrNickname(nickname: String)
-    {
-        val clz = if(nickname == "") RegisterNicknameView::class.java else MainView::class.java
-
-        Intent(this@SplashView, clz).let { intent ->
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(intent)
-            finish()
-        }
     }
 }

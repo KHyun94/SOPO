@@ -9,6 +9,16 @@ fun Intent.launchActivity(context : Context){
     context.startActivity(this)
 }
 
+fun Activity.moveToActivity(clz: Class<*>, vararg flags:Int)
+{
+    val intent = Intent(this, clz).apply {
+        flags.forEach { flag -> addFlags(flag) }
+    }
+
+    this.startActivity(intent)
+    this.finish()
+}
+
 fun Intent.launchActivityWithAllClear(context: Context){
     this.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
     context.startActivity(this)
