@@ -5,6 +5,7 @@ import android.view.View
 import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.IntroViewBinding
+import com.delivery.sopo.extensions.moveToActivity
 import com.delivery.sopo.interfaces.listener.OnIntroClickListener
 import com.delivery.sopo.interfaces.listener.OnPermissionResponseCallback
 import com.delivery.sopo.models.base.BaseView
@@ -15,7 +16,7 @@ import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.login.LoginSelectView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class IntroView(): BaseView<IntroViewBinding, IntroViewModel>()
+class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
 {
     override val layoutRes: Int = R.layout.intro_view
     override val vm: IntroViewModel by viewModel()
@@ -23,6 +24,35 @@ class IntroView(): BaseView<IntroViewBinding, IntroViewModel>()
 
     var numOfPage = 0
     var lastIndexOfPage = 0
+
+    private val onPermissionResponseCallback = object: OnPermissionResponseCallback{
+        override fun onPermissionGranted()
+        {
+            moveToActivity(LoginSelectView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            finish()
+        }
+
+        override fun onPermissionDenied()
+        {
+            // NOT PERMISSION GRANT
+            GeneralDialog(act = this@IntroView,
+                          title = getString(R.string.DIALOG_ALARM),
+                          msg = getString(R.string.DIALOG_PERMISSION_REQ_MSG),
+                          detailMsg = null,
+                          rHandler = Pair(first = getString(R.string.DIALOG_OK), second = { dialog ->
+                              dialog.dismiss()
+                              finish()
+                          })).show(supportFragmentManager, "permission")
+        }
+    }
+
+    private val onIntroClickListener = object: OnIntroClickListener
+    {
+        override fun onIntroClicked()
+        {
+            PermissionUtil.requestPermission(this@IntroView, onPermissionResponseCallback)
+        }
+    }
 
     override fun onBeforeBinding()
     {
@@ -34,33 +64,7 @@ class IntroView(): BaseView<IntroViewBinding, IntroViewModel>()
 
     private fun setViewPager(){
 
-
-        val introPageAdapter = IntroPageAdapter(this, object: OnIntroClickListener{
-            override fun onIntroClicked()
-            {
-                PermissionUtil.requestPermission(this@IntroView, object: OnPermissionResponseCallback{
-                    override fun onPermissionGranted()
-                    {
-                        val intent = Intent(this@IntroView, LoginSelectView::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        startActivity(intent)
-                    }
-
-                    override fun onPermissionDenied()
-                    {
-                        // NOT PERMISSION GRANT
-                        GeneralDialog(act = this@IntroView,
-                                      title = getString(R.string.DIALOG_ALARM),
-                                      msg = getString(R.string.DIALOG_PERMISSION_REQ_MSG),
-                                      detailMsg = null,
-                                      rHandler = Pair(first = getString(R.string.DIALOG_OK), second = { it ->
-                                          it.dismiss()
-                                          finish()
-                                      })).show(supportFragmentManager, "permission")
-                    }
-                })
-            }
-        })
+        val introPageAdapter = IntroPageAdapter(this, onIntroClickListener)
 
         binding.viewPager.adapter = introPageAdapter
 

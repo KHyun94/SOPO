@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android">
-
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <import type="com.delivery.sopo.R"/>
+    </data>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,13 +18,14 @@
 
             <TextView
                 android:id="@+id/tv_title"
-                style="@style/kor_H2"
+                style="@style/kor_H3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqa_han_sans_neo_regular"
-                android:gravity="start"
+                android:fontFamily="@font/pretendard_bold"
+                android:gravity="center"
                 android:includeFontPadding="false"
-                android:text="쾌적한 앱 사용을 위해\n설정해주세요."
+                android:layout_gravity="center"
+                android:text="소포 앱이 일하기 위해\n권한이 필요합니다"
                 android:textColor="@color/COLOR_GRAY_800" />
 
         </LinearLayout>
@@ -31,14 +34,28 @@
             android:id="@+id/layout_permission_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24sp"
-            android:layout_marginVertical="32sp"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginVertical="26dp"
             android:orientation="vertical">
 
             <include
                 android:id="@+id/include_permission_1st"
                 layout="@layout/detail_permission_item"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:permissionIcon="@{R.drawable.ic_permission_save}"
+                app:title='@{"저장 권한"}'
+                app:content='@{"계정 정보 및 택배 데이터 보관"}'
+                android:layout_marginBottom="16dp"/>
+
+            <include
+                android:id="@+id/include_permission_2nd"
+                layout="@layout/detail_permission_item"
+                android:layout_width="match_parent"
+                app:permissionIcon="@{R.drawable.ic_permission_save}"
+                app:title='@{"SMS/MMS 읽기 권환"}'
+                app:content='@{"수신한 문자에서 택배 정보를\n자동으로 등록합니다."}'
+
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
