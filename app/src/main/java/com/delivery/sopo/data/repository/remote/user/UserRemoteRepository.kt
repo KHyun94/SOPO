@@ -15,15 +15,13 @@ import com.delivery.sopo.models.PasswordResetDTO
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.ErrorResponse
-import com.delivery.sopo.models.dto.OAuthDTO
+import com.delivery.sopo.models.dto.OAuthToken
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.OAuthAPI
 import com.delivery.sopo.networks.api.UserAPI
 import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.services.network_handler.BaseServiceBeta
-import com.delivery.sopo.services.network_handler.NetworkResponse
 import com.delivery.sopo.services.network_handler.NetworkResult
-import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -44,9 +42,9 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
 
         val result = apiCall { requestOAuthToken }
 
-        val type = object: TypeToken<OAuthDTO>() {}.type
+        val type = object: TypeToken<OAuthToken>() {}.type
         val reader = gson.toJson(result.data)
-        val oAuthInfo = gson.fromJson<OAuthDTO>(reader, type)
+        val oAuthInfo = gson.fromJson<OAuthToken>(reader, type)
 
         userLocalRepo.run {
             setUserId(email)
@@ -55,26 +53,26 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
         }
 
         withContext(Dispatchers.Default) {
-            oAuthLocalRepo.insert(dto = oAuthInfo)
+            oAuthLocalRepo.insert(token = oAuthInfo)
         }
     }
 
-    suspend fun refreshOAuthToken(): OAuthDTO
+    suspend fun refreshOAuthToken(): OAuthToken
     {
         SopoLog.d("refreshOAuthToken() 호출 ")
-        val oAuthDTO: OAuthDTO = oAuthLocalRepo.get(userLocalRepo.getUserId())
+        val oAuthToken: OAuthToken = oAuthLocalRepo.get(userLocalRepo.getUserId())
 
-        val refreshOAuthToken = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, OAuthAPI::class.java).requestRefreshOAuthToken(grantType = "refresh_token", email = userLocalRepo.getUserId(), refreshToken = oAuthDTO.refreshToken)
+        val refreshOAuthToken = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, OAuthAPI::class.java).requestRefreshOAuthToken(grantType = "refresh_token", email = userLocalRepo.getUserId(), refreshToken = oAuthToken.refreshToken)
 
         val result = apiCall { refreshOAuthToken }
 
-        val type = object: TypeToken<OAuthDTO>() {}.type
+        val type = object: TypeToken<OAuthToken>() {}.type
         val reader = gson.toJson(result.data)
-        val oAuthInfo = gson.fromJson<OAuthDTO>(reader, type)
+        val oAuthInfo = gson.fromJson<OAuthToken>(reader, type)
 
         withContext(Dispatchers.Default) {
             SopoLog.d("결과 ${oAuthInfo.toString()}")
-            oAuthLocalRepo.insert(dto = oAuthInfo)
+            oAuthLocalRepo.insert(token = oAuthInfo)
         }
 
         return oAuthInfo
@@ -82,14 +80,11 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
 
     suspend fun getUserInfo(): UserDetail
     {
-        val getUserInfo =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
-                .getUserDetailInfo()
+        val getUserInfo = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java).getUserDetailInfo()
 
         val result = apiCall { getUserInfo }
 
-        val userInfo = result.data?.data
-            ?: throw SOPOApiException(200, ErrorResponse(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
+        val userInfo = result.data?.data ?: throw SOPOApiException(200, ErrorResponse(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
 
         withContext(Dispatchers.Default) {
             userLocalRepo.run {
@@ -135,28 +130,13 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
         }
     }
 
-    suspend fun requestEmailForAuth(email: String): ResponseResult<EmailAuthDTO?>
+    suspend fun requestEmailForAuth(email: String): EmailAuthDTO
     {
-        when(val result = UserCall.requestEmailForAuth(email = email))
-        {
-            is NetworkResult.Success ->
-            {
-                val apiResult = result.data
+        val requestEmailForAuth = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, UserAPI::class.java).requestEmailForAuth(email = email)
 
-                SopoLog.d("Success to request email for auth")
+        val result = apiCall { requestEmailForAuth }
 
-                return ResponseResult(true, ResponseCode.SUCCESS, apiResult.data, ResponseCode.SUCCESS.MSG)
-            }
-            is NetworkResult.Error ->
-            {
-                SopoLog.d("Fail to request email for auth")
-
-                val exception = result.exception as APIException
-                val responseCode = exception.responseCode
-
-                return ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
-            }
-        }
+        return result.data?.data?: throw SOPOApiException(200, ErrorResponse(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
     }
 
     suspend fun requestPasswordForReset(passwordResetDTO: PasswordResetDTO): ResponseResult<Unit>

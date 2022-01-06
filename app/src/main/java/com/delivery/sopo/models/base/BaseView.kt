@@ -53,14 +53,16 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
+        receivedData(intent = intent)
+        onBeforeBinding()
+
         binding = bindView(this)
 
         networkStatusMonitor =  NetworkStatusMonitor(this)
         networkStatusMonitor.enable()
         networkStatusMonitor.initNetworkCheck()
 
-        receivedData(intent = intent)
-        onBeforeBinding()
+
         onAfterBinding()
         setObserve()
     }

@@ -61,24 +61,39 @@ class CarrierRepository(private val appDB: AppDatabase)
         if(getAllCnt() > 0) return@withContext
 
         val carrierList = listOf<CarrierEntity>(
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.EPOST.NAME, carrierCode = CarrierEnum.EPOST.CODE,
-                          min = 13, max =13, priority = 0.98),
+
+            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.CHUNILPS.NAME, carrierCode = CarrierEnum.CHUNILPS.CODE,
+                          min = 11, max =11, priority = 0.88),
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.CJ_LOGISTICS.NAME,
                           carrierCode = CarrierEnum.CJ_LOGISTICS.CODE, min = 13, max = 13, priority = 1.0),
+            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.CU_POST.NAME, carrierCode = CarrierEnum.CU_POST.CODE,
+                          min = 10, max =12, priority = 0.95),
+            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.CVSNET.NAME, carrierCode = CarrierEnum.CVSNET.CODE,
+                          min = 0, max = 0, priority = 0.90),
+            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.DAESIN.NAME, carrierCode = CarrierEnum.DAESIN.CODE,
+                          min = 13, max =13, priority = 0.92),
+            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.EPOST.NAME, carrierCode = CarrierEnum.EPOST.CODE,
+                          min = 13, max =13, priority = 0.98),
+
+            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.HDEXP.NAME, carrierCode = CarrierEnum.HDEXP.CODE,
+                          min = 9, max = 16, priority = 0.89),
+
+
+
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.LOGEN.NAME, carrierCode = CarrierEnum.LOGEN.CODE,
                           min = 11, max = 11, priority = 0.97),
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.HANJINS.NAME, carrierCode = CarrierEnum.HANJINS.CODE,
                           min = 10, max = 12, priority = 0.96),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.DHL.NAME, carrierCode = CarrierEnum.DHL.CODE,
+
+            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.LOTTE.NAME, carrierCode = CarrierEnum.LOTTE.CODE,
+                          min = 12, max = 12, priority = 0.99)
+
+            /*CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.DHL.NAME, carrierCode = CarrierEnum.DHL.CODE,
                           min = 10, max = 10, priority = 0.91),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.CHUNILPS.NAME, carrierCode = CarrierEnum.CHUNILPS.CODE,
-                          min = 11, max =11, priority = 0.88),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.CU_POST.NAME, carrierCode = CarrierEnum.CU_POST.CODE,
-                          min = 10, max =12, priority = 0.95),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.DAESIN.NAME, carrierCode = CarrierEnum.DAESIN.CODE,
-                          min = 13, max =13, priority = 0.92),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.HDEXP.NAME, carrierCode = CarrierEnum.HDEXP.CODE,
-                          min = 9, max = 16, priority = 0.89),
+
+
+
+
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.ILYANGLOGIS.NAME,
                           carrierCode = CarrierEnum.ILYANGLOGIS.CODE, min = 9, max = 11,
                           priority = 0.86),
@@ -86,8 +101,7 @@ class CarrierRepository(private val appDB: AppDatabase)
                           min = 9, max = 16, priority = 0.93),
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.KUNYOUNG.NAME, carrierCode = CarrierEnum.KUNYOUNG.CODE,
                           min = 10, max = 10, priority = 0.5),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.LOTTE.NAME, carrierCode = CarrierEnum.LOTTE.CODE,
-                          min = 12, max = 12, priority = 0.99),
+
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.EMS.NAME, carrierCode = CarrierEnum.EMS.CODE,
                           min = 13, max = 13, priority = 0.94),
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.TNT.NAME, carrierCode = CarrierEnum.TNT.CODE,
@@ -104,8 +118,7 @@ class CarrierRepository(private val appDB: AppDatabase)
                           min = 0, max = 0, priority = 0.0),
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.YUUBIN.NAME, carrierCode = CarrierEnum.YUUBIN.CODE,
                           min = 0, max = 0, priority = 0.0),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.CVSNET.NAME, carrierCode = CarrierEnum.CVSNET.CODE,
-                          min = 0, max = 0, priority = 0.90),
+
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.CWAY.NAME, carrierCode = CarrierEnum.CWAY.CODE,
                           min = 0, max = 0, priority = 0.0),
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.HOMEPICK.NAME, carrierCode = CarrierEnum.HOMEPICK.CODE,
@@ -118,7 +131,8 @@ class CarrierRepository(private val appDB: AppDatabase)
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.SWGEXP.NAME, carrierCode = CarrierEnum.SWGEXP.CODE,
                           min = 0, max = 0, priority = 0.0),
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.UPS.NAME, carrierCode = CarrierEnum.UPS.CODE,
-                          min = 0, max = 0, priority = 0.0))
+                          min = 0, max = 0, priority = 0.0)*/
+        )
         insert(carrierList)
     }
 
@@ -128,7 +142,7 @@ class CarrierRepository(private val appDB: AppDatabase)
 
         mutableListOf<Carrier?>().apply {
             addAll(getWithLen(waybillNum.length, cnt))
-            addAll(getWithoutLen(waybillNum.length, 27))
+            addAll(getWithoutLen(waybillNum.length, 10))
         }
     }
 }

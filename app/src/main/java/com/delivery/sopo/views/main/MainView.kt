@@ -87,7 +87,13 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
         setViewPager()
         setTabLayout()
 
-        NotificationImpl.notifyRegisterParcel(context = this@MainView)
+//        NotificationImpl.notifyRegisterParcel(context = this@MainView, R.drawable.ic_noti_big_at_pickup)
+        NotificationImpl.notifyRegisterParcel(context = this@MainView, 1)
+        NotificationImpl.notifyRegisterParcel(context = this@MainView, 2)
+        NotificationImpl.notifyRegisterParcel(context = this@MainView, 3)
+        NotificationImpl.notifyRegisterParcel(context = this@MainView, 4)
+//        NotificationImpl.notifyRegisterParcel(context = this@MainView, R.drawable.atpickup)
+
     }
 
     override fun setObserve()
@@ -235,6 +241,10 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
         tabBinding.tvTabName.setTextColor(ContextCompat.getColor(this@MainView, textColor))
 
         return tabBinding
+    }
+
+    fun getInquiryTabRes(){
+
     }
 
     fun showTab()

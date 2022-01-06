@@ -1,10 +1,8 @@
 package com.delivery.sopo.data.repository.local.o_auth
 
-import androidx.room.Transaction
 import com.delivery.sopo.data.repository.database.room.AppDatabase
-import com.delivery.sopo.models.dto.OAuthDTO
+import com.delivery.sopo.models.dto.OAuthToken
 import com.delivery.sopo.models.mapper.OAuthMapper
-import com.delivery.sopo.networks.call.ParcelCall
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -16,9 +14,9 @@ class OAuthLocalRepository(private val appDatabase: AppDatabase): OAuthLocalData
     }.run(OAuthMapper::entityToObject)
 
 
-    override fun insert(dto: OAuthDTO)
+    override fun insert(token: OAuthToken)
     {
-        val entity = OAuthMapper.objectToEntity(oAuth = dto)
+        val entity = OAuthMapper.objectToEntity(oAuth = token)
         appDatabase.oauthDao().insert(entity)
     }
 

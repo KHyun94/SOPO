@@ -1,7 +1,10 @@
 package com.delivery.sopo.views.login
 
+import android.app.Activity
 import android.content.Intent
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
@@ -22,28 +25,14 @@ class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
 {
     override val layoutRes: Int=R.layout.login_select_view
     override val vm : LoginSelectViewModel by viewModel()
-
-    override val mainLayout: View by lazy {
-        binding.constraintMainLoginSelect
-    }
+    override val mainLayout: View by lazy { binding.constraintMainLoginSelect }
 
     private var sessionCallback : ISessionCallback? = null
-
-    override fun receivedData(intent: Intent)
-    {
-    }
-
-    override fun onBeforeBinding()
-    {
-    }
-
-    override fun onAfterBinding()
-    {
-    }
 
     override fun setObserve()
     {
         super.setObserve()
+
         vm.navigator.observe(this, Observer { navigator ->
 
             when (navigator)
@@ -88,18 +77,17 @@ class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
         })
     }
 
+    // TODO KAKAO Session Return 처리
     override fun onActivityResult(requestCode : Int, resultCode : Int, data : Intent?)
     {
         if (Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data)) return
         super.onActivityResult(requestCode, resultCode, data)
     }
 
-
-
     override fun onDestroy()
     {
         super.onDestroy()
-        if (sessionCallback != null) Session.getCurrentSession().removeCallback(sessionCallback)
+        sessionCallback?.run { Session.getCurrentSession().removeCallback(this) }
     }
 
 

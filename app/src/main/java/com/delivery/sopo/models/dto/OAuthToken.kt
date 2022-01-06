@@ -2,7 +2,7 @@ package com.delivery.sopo.models.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class OAuthDTO(
+data class OAuthToken(
     @SerializedName("access_token")
     val accessToken : String,
     @SerializedName("token_type")

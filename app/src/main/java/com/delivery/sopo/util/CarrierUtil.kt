@@ -9,18 +9,6 @@ object CarrierUtil
     fun getCarrierImages(enum: CarrierEnum):  List<Int>{
 
         val list = when(enum){
-            SAGAWA ->
-            {
-                listOf(R.drawable.ic_logo_sagawa, R.drawable.ic_color_sagawa, R.drawable.ic_gray_sagawa)
-            }
-            YAMATO ->
-            {
-                listOf(R.drawable.ic_logo_yamato, R.drawable.ic_color_yamato, R.drawable.ic_gray_yamato)
-            }
-            YUUBIN ->
-            {
-                listOf(R.drawable.ic_logo_japan, R.drawable.ic_color_japan, R.drawable.ic_gray_japan)
-            }
             CHUNILPS ->
             {
                 listOf(R.drawable.ic_logo_chunil, R.drawable.ic_color_chunil, R.drawable.ic_gray_chunil)
@@ -36,10 +24,6 @@ object CarrierUtil
             CVSNET ->
             {
                 listOf(R.drawable.ic_logo_gs, R.drawable.ic_color_gs, R.drawable.ic_gray_gs)
-            }
-            CWAY ->
-            {
-                listOf(R.drawable.ic_logo_cway, R.drawable.ic_color_cway, R.drawable.ic_gray_cway)
             }
             DAESIN ->
             {
@@ -57,7 +41,34 @@ object CarrierUtil
             {
                 listOf(R.drawable.ic_logo_habdong, R.drawable.ic_color_habdong, R.drawable.ic_gray_habdong)
             }
-            HOMEPICK ->
+            LOGEN ->
+            {
+                listOf(R.drawable.ic_logo_logen, R.drawable.ic_color_logen, R.drawable.ic_gray_logen)
+            }
+            LOTTE ->
+            {
+                listOf(R.drawable.ic_logo_lotte, R.drawable.ic_color_lotte, R.drawable.ic_gray_lotte)
+            }
+
+            /*SAGAWA ->
+            {
+                listOf(R.drawable.ic_logo_sagawa, R.drawable.ic_color_sagawa, R.drawable.ic_gray_sagawa)
+            }
+            YAMATO ->
+            {
+                listOf(R.drawable.ic_logo_yamato, R.drawable.ic_color_yamato, R.drawable.ic_gray_yamato)
+            }
+            YUUBIN ->
+            {
+                listOf(R.drawable.ic_logo_japan, R.drawable.ic_color_japan, R.drawable.ic_gray_japan)
+            }*/
+
+            /*CWAY ->
+            {
+                listOf(R.drawable.ic_logo_cway, R.drawable.ic_color_cway, R.drawable.ic_gray_cway)
+            }*/
+
+            /*HOMEPICK ->
             {
                 listOf(R.drawable.ic_logo_homepick, R.drawable.ic_color_homepick, R.drawable.ic_gray_homepick)
             }
@@ -68,28 +79,23 @@ object CarrierUtil
             ILYANGLOGIS ->
             {
                 listOf(R.drawable.ic_logo_ilyang, R.drawable.ic_color_ilyang, R.drawable.ic_gray_ilyang)
-            }
-            KDEXP ->
-            {
-                listOf(R.drawable.ic_logo_kyungdong, R.drawable.ic_color_kyungdong, R.drawable.ic_gray_kyungdong)
-            }
-            KUNYOUNG ->
+            }*/
+//            KDEXP ->
+//            {
+//                listOf(R.drawable.ic_logo_kyungdong, R.drawable.ic_color_kyungdong, R.drawable.ic_gray_kyungdong)
+//            }
+            /*KUNYOUNG ->
             {
                 listOf(R.drawable.ic_logo_gunyoung, R.drawable.ic_color_gunyoung, R.drawable.ic_gray_gunyoung)
             }
-            LOGEN ->
-            {
-                listOf(R.drawable.ic_logo_logen, R.drawable.ic_color_slx, R.drawable.ic_gray_slx)
-            }
-            LOTTE ->
-            {
-                listOf(R.drawable.ic_logo_lotte, R.drawable.ic_color_lotte, R.drawable.ic_gray_lotte)
-            }
-            SLX ->
+
+             */
+
+            /*SLX ->
             {
                 listOf(R.drawable.ic_logo_slx, R.drawable.ic_color_slx, R.drawable.ic_gray_slx)
-            }
-            SWGEXP ->
+            }*/
+            /*SWGEXP ->
             {
                 listOf(R.drawable.ic_logo_sungone, R.drawable.ic_color_sungone, R.drawable.ic_gray_sungone)
             }
@@ -116,7 +122,7 @@ object CarrierUtil
             DHL ->
             {
                 listOf(R.drawable.ic_logo_dhl, R.drawable.ic_color_dhl, R.drawable.ic_gray_dhl)
-            }
+            }*/
             else -> emptyList()
         }
 

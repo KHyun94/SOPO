@@ -20,10 +20,6 @@ import kotlinx.coroutines.launch
 
 class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo: UserRemoteRepository): BaseViewModel()
 {
-    private val _error = MutableLiveData<Pair<Int, String>>()
-    val error: LiveData<Pair<Int, String>>
-        get() = _error
-
     val email = MutableLiveData<String>().also {
         it.postValue(userLocalRepo.getUserId())
     }
@@ -31,7 +27,6 @@ class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, pr
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
         get() = _navigator
-
 
     private val onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
@@ -53,7 +48,6 @@ class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, pr
                     postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.")
                 }
             }
-
         }
 
         override fun onLoginError(error: ErrorEnum)
@@ -82,7 +76,6 @@ class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, pr
     fun onCompleteClicked()
     {
         requestLogin(userLocalRepo.getUserId(), userLocalRepo.getUserPassword())
-
     }
 
     private fun requestLogin(email: String, password: String) = scope.launch(Dispatchers.IO) {

@@ -52,6 +52,7 @@ class SplashViewModel(
         override fun onAuthError(error: ErrorEnum)
         {
             super.onAuthError(error)
+            navigator.postValue(NavigatorConst.TO_INTRO)
         }
     }
 
@@ -61,7 +62,6 @@ class SplashViewModel(
 
     init
     {
-        startLoading()
         Handler(Looper.getMainLooper()).postDelayed(Runnable { checkUserStatus() }, 1500)
     }
 

@@ -6,9 +6,7 @@ import com.delivery.sopo.networks.interceptors.BasicAuthInterceptor
 import com.delivery.sopo.networks.interceptors.OAuthInterceptor
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.extensions.toMD5
-import com.delivery.sopo.models.dto.OAuthDTO
-import com.delivery.sopo.models.mapper.OAuthMapper
+import com.delivery.sopo.models.dto.OAuthToken
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -22,7 +20,6 @@ import org.koin.core.inject
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.NullPointerException
 import java.util.concurrent.TimeUnit
 
 object NetworkManager : KoinComponent
@@ -45,7 +42,7 @@ object NetworkManager : KoinComponent
         {
             NetworkEnum.O_AUTH_TOKEN_LOGIN ->
             {
-                val oAuth : OAuthDTO = runBlocking(Dispatchers.Default) {
+                val oAuth : OAuthToken = runBlocking(Dispatchers.Default) {
                     oAuthLocalRepo.get(userId = userLocalRepo.getUserId())
                 }
                 retro(oAuth.accessToken).create(clz)

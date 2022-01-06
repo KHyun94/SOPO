@@ -38,9 +38,14 @@ abstract class BaseViewModel: ViewModel()
             checkNetworkStatus().also { value ->
                 if(!value)
                 {
+                    _isClickEvent.postValue(false)
                     return
                 }
             }
+        }
+        else
+        {
+            _isClickEvent.postValue(false)
         }
 
         if(_isClickEvent.value == true) return

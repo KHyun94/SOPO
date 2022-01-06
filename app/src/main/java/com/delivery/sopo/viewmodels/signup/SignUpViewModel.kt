@@ -1,13 +1,9 @@
 package com.delivery.sopo.viewmodels.signup
 
-import android.os.Handler
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.UserExceptionHandler
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
@@ -15,18 +11,17 @@ import com.delivery.sopo.data.repository.JoinRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.exceptions.SOPOApiException
-import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.networks.dto.joins.JoinInfoDTO
+import com.delivery.sopo.networks.dto.joins.JoinInfo
 import com.delivery.sopo.networks.repository.JoinRepositoryImpl
-import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 
 
-class SignUpViewModel(private val userLocalRepo: UserLocalRepository, private val joinRepoImpl: JoinRepositoryImpl):
+class SignUpViewModel(
+        private val userLocalRepo: UserLocalRepository,
+        private val joinRepoImpl: JoinRepositoryImpl):
         BaseViewModel()
 {
     private val joinRepo: JoinRepository = joinRepoImpl
@@ -96,12 +91,14 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository, private va
         validity[InfoEnum.AGREEMENT] = checkBox.isChecked
     }
 
-    fun onSignUpClicked(v: View) = checkEventStatus(checkNetwork = true, delayMillisecond = 500)
+    fun onSignUpClicked(v: View) = checkEventStatus(checkNetwork = true)
     {
+        startLoading()
         // 입력값의 유효 처리 여부 확인
         validity.forEach { (k, v) ->
             if(!v)
             {
+                stopLoading()
                 return@checkEventStatus _invalidity.postValue(Pair(k, v))
             }
         }
@@ -109,29 +106,31 @@ class SignUpViewModel(private val userLocalRepo: UserLocalRepository, private va
         val email = email.value.toString().trim()
         val password = password.value.toString().trim()
 
-        val joinInfoDTO = JoinInfoDTO(email = email, password = password.toMD5())
+        val joinInfo = JoinInfo(email = email, password = password.toMD5())
 
-        requestSignUp(joinInfoDTO = joinInfoDTO)
-
+        requestSignUp(joinInfo = joinInfo)
     }
 
-    private fun requestSignUp(joinInfoDTO: JoinInfoDTO) = scope.launch(Dispatchers.IO) {
+    private fun requestSignUp(joinInfo: JoinInfo) = scope.launch(Dispatchers.IO) {
 
         try
         {
-            joinRepo.requestJoinBySelf(joinInfoDTO)
+            joinRepo.requestJoinBySelf(joinInfo)
+
+            withContext(Dispatchers.Default) {
+                userLocalRepo.setUserId(joinInfo.email)
+                userLocalRepo.setUserPassword(joinInfo.password)
+            }
+
+            _navigator.postValue(NavigatorConst.TO_COMPLETE)
         }
         catch(e: Exception)
         {
             return@launch exceptionHandler.handleException(coroutineContext, e)
         }
-
-
-        withContext(Dispatchers.Default) {
-            userLocalRepo.setUserId(joinInfoDTO.email)
-            userLocalRepo.setUserPassword(joinInfoDTO.password)
+        finally
+        {
+            stopLoading()
         }
-
-        _navigator.postValue(NavigatorConst.TO_COMPLETE)
     }
 }

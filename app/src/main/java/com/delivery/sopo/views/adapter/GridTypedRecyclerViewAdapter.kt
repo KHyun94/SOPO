@@ -5,6 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
@@ -14,6 +16,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.databinding.ItemImgBinding
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.SelectItem
@@ -55,7 +58,7 @@ class GridTypedRecyclerViewAdapter(items: List<SelectItem<Carrier?>>): RecyclerV
 
     override fun onBindViewHolder(holder: GridRvViewHolder, position: Int)
     {
-//        if (carriers == null || carriers?.get(position)?.item == null) return
+        //        if (carriers == null || carriers?.get(position)?.item == null) return
 
         val selectItem = carriers[position]
 
@@ -79,7 +82,8 @@ class GridTypedRecyclerViewAdapter(items: List<SelectItem<Carrier?>>): RecyclerV
         return carriers.size
     }
 
-    fun setItems(items:List<SelectItem<Carrier?>>){
+    fun setItems(items: List<SelectItem<Carrier?>>)
+    {
         carriers = items
         notifyDataSetChanged()
     }
@@ -95,7 +99,7 @@ class GridTypedRecyclerViewAdapter(items: List<SelectItem<Carrier?>>): RecyclerV
                 requestOptions.skipMemoryCache(false)
                 requestOptions.signature(ObjectKey(System.currentTimeMillis()))
 
-                if (paste != null)
+                if(paste != null)
                 {
                     val layout = paste!!.first as LinearLayout
 
@@ -113,38 +117,43 @@ class GridTypedRecyclerViewAdapter(items: List<SelectItem<Carrier?>>): RecyclerV
 
                 val item = carriers[pos]
 
-                if (pos != RecyclerView.NO_POSITION)
+                if(pos == RecyclerView.NO_POSITION) return@setOnClickListener
+
+
+                if(mListener == null) return@setOnClickListener
+
+                if(item.isSelect)
                 {
-                    if (mListener != null)
-                    {
-                        if (item.isSelect)
-                        {
-                            Glide.with(binding.ivImg.context)
-                                .load(item.item?.icons?.get(2))
-                                .apply(requestOptions)
-                                .into(binding.ivImg)
+                    Glide.with(binding.ivImg.context)
+                        .load(item.item?.icons?.get(2))
+                        .apply(requestOptions)
+                        .into(binding.ivImg)
 
-                            item.isSelect = false
-                        }
-                        else
-                        {
-                            Glide.with(binding.ivImg.context)
-                                .load(item.item?.icons?.get(1))
-                                .apply(requestOptions)
-                                .into(binding.ivImg)
+                    binding.tvName.setTextColor(ContextCompat.getColor(SOPOApp.INSTANCE, R.color.COLOR_GRAY_400))
 
-                            item.isSelect = true
-                        }
-
-                        binding.isClick = item.isSelect
-
-                        mListener!!.onItemClicked(it, pos, carriers)
-
-                        paste = Pair(binding.layoutItem, item)
-
-                        SopoLog.d(msg = "item ===> $item")
-                    }
+                    item.isSelect = false
                 }
+                else
+                {
+                    Glide.with(binding.ivImg.context)
+                        .load(item.item?.icons?.get(1))
+                        .apply(requestOptions)
+                        .into(binding.ivImg)
+
+                    binding.tvName.setTextColor(ContextCompat.getColor(SOPOApp.INSTANCE, R.color.COLOR_MAIN_700))
+
+                    item.isSelect = true
+                }
+
+
+
+                binding.isClick = item.isSelect
+
+                mListener!!.onItemClicked(it, pos, carriers)
+
+                paste = Pair(binding.layoutItem, item)
+
+                SopoLog.d(msg = "item ===> $item")
 
                 notifyDataSetChanged()
             }
@@ -152,15 +161,19 @@ class GridTypedRecyclerViewAdapter(items: List<SelectItem<Carrier?>>): RecyclerV
 
         fun onBind(selectItem: SelectItem<Carrier?>)
         {
-            if (selectItem.isSelect)
+            binding.setVariable(BR.text, selectItem.item?.carrier?.NAME)
+
+            if(selectItem.isSelect)
             {
                 binding.setVariable(BR.img, selectItem.item?.icons?.get(1))
                 binding.setVariable(BR.isClick, selectItem.isSelect)
+                binding.setVariable(BR.textColor, R.color.COLOR_MAIN_700)
             }
             else
             {
                 binding.setVariable(BR.img, selectItem.item?.icons?.get(2))
                 binding.setVariable(BR.isClick, selectItem.isSelect)
+                binding.setVariable(BR.textColor, R.color.COLOR_GRAY_400)
             }
         }
     }

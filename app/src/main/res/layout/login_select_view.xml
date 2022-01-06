@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="41dp"
                 android:layout_marginEnd="41dp"
-                android:text="카카오로 로그인"
+                android:text="kakao로 로그인"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:textColor="@color/COLOR_MAIN_700"

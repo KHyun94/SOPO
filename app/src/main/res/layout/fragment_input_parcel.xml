@@ -119,7 +119,7 @@
                 android:layout_marginBottom="11dp"
                 android:visibility="@{(vm.carrier.carrier.NAME.length() > 0)?View.VISIBLE:View.GONE}"
                 app:setDefaultImage="@{0}"
-                app:setImage="@{vm.carrier.icons[1]}"
+                app:setImage="@{vm.carrier.icons[0]}"
                 tools:visibility="visible"/>
 
             <TextView

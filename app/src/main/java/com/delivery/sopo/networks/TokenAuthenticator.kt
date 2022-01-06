@@ -1,9 +1,5 @@
 package com.delivery.sopo.networks
 
-import com.delivery.sopo.enums.ResponseCode.*
-import com.delivery.sopo.models.dto.OAuthDTO
-import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*

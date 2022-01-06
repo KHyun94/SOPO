@@ -49,7 +49,7 @@ interface UserAPI
      * 1. GET?
      * 2. parameter는 필요 없는지
      */
-    @GET("/api/v1/sopo-api/user/password/auth-info")
+    @GET("/api/v1/sopo-user/password/auth-info")
     @Headers("Accept: application/json")
     suspend fun requestEmailForAuth(
         @Query("email") email: String
@@ -60,7 +60,7 @@ interface UserAPI
      * @param PasswordResetDTO
      * @return Response<APIResult<String?>>
      */
-    @POST("/api/v1/sopo-api/user/password/reset")
+    @POST("/api/v1/sopo-user/password/reset")
     @Headers("Accept: application/json")
     suspend fun requestResetPassword(@Body passwordResetDTO: PasswordResetDTO) : Response<APIResult<String?>>
 
@@ -69,7 +69,7 @@ interface UserAPI
      * @param reason : String
      * @return Response<APIResult<String?>>
      */
-    @POST("/api/v1/sopo-api/user/signOut")
+    @POST("/api/v1/sopo-user/signOut")
     @Headers("Accept: application/json")
     suspend fun requestSignOut(@Query("reason") reason : String) : Response<APIResult<String?>>
 }

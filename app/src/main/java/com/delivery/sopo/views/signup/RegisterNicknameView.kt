@@ -31,21 +31,10 @@ class RegisterNicknameView: BaseView<RegisterNicknameViewBinding, RegisterNickna
     override val layoutRes: Int = R.layout.register_nickname_view
     override val mainLayout: View by lazy { binding.constraintMainUpdateNickname }
 
-
-    override fun onBeforeBinding()
-    {
-        super.onBeforeBinding()
-    }
-
-    override fun onAfterBinding()
-    {
-        super.onAfterBinding()
-
-    }
-
     override fun setObserve()
     {
         super.setObserve()
+
         binding.etNickname.addTextChangedListener { nickname ->
 
             val isValidate = ValidateUtil.isValidateNickname(nickname.toString())

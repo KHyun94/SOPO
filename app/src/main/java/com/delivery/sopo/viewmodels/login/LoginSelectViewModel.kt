@@ -9,7 +9,7 @@ import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.networks.dto.joins.JoinInfoDTO
+import com.delivery.sopo.networks.dto.joins.JoinInfo
 import com.delivery.sopo.networks.repository.JoinRepositoryImpl
 import com.delivery.sopo.util.SopoLog
 import com.kakao.usermgmt.UserManagement
@@ -19,8 +19,8 @@ import kotlinx.coroutines.*
 import java.util.*
 import com.kakao.network.ErrorResult as KakaoErrorResult
 
-class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository, private val joinRepoImpl: JoinRepositoryImpl):
-        BaseViewModel()
+class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
+                           private val joinRepoImpl: JoinRepositoryImpl): BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
@@ -98,9 +98,7 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository, pri
         _navigator.value = NavigatorConst.TO_SIGN_UP
     }
 
-    fun onKakaoLoginClicked()
-    {
-        checkNetworkStatus().also { value -> if(!value) return }
+    fun onKakaoLoginClicked() = checkEventStatus(checkNetwork = true, delayMillisecond = 0){
         _navigator.value = NavigatorConst.TO_KAKAO_LOGIN
     }
 
@@ -160,8 +158,8 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository, pri
                 SopoLog.i(msg = "requestJoinByKakao(...) 호출")
 
                 val joinInfo =
-                    JoinInfoDTO(email = email, password = uId.toMD5(), kakaoUid = uId, nickname = nickname)
-                joinRepoImpl.requestJoinByKakao(joinInfoDTO = joinInfo)
+                    JoinInfo(email = email, password = uId.toMD5(), kakaoUid = uId, nickname = nickname)
+                joinRepoImpl.requestJoinByKakao(joinInfo = joinInfo)
                 return@withContext true
             }
             catch(e: Exception)

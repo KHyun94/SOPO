@@ -1,8 +1,9 @@
 package com.delivery.sopo.models
 
-import androidx.annotation.DrawableRes
+import androidx.annotation.RawRes
 import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.enums.PersonalMessageEnum
 import com.delivery.sopo.util.TimeUtil
 import org.koin.core.KoinComponent
 import org.koin.core.inject
@@ -11,8 +12,10 @@ data class PersonalMessage(var message: String, val type: Int):KoinComponent
 {
     private val userLocalRepo: UserLocalRepository by inject()
 
-    @DrawableRes
+    @RawRes
     var emojiIconRes: Int = 0
+
+    lateinit var personalMessageEnum: PersonalMessageEnum
 
     init
     {
@@ -23,17 +26,41 @@ data class PersonalMessage(var message: String, val type: Int):KoinComponent
 
         emojiIconRes = if(currentTime in startTime..endTime){
             message = "쉿, \n" + "지금은 조용한 집중이 필요한 시간"
-            R.drawable.personal_status_7
+            personalMessageEnum = PersonalMessageEnum.BE_QUIET
+            R.raw.lottie_personal_status_7
         } else
         {
             when(type)
             {
-                1 -> R.drawable.personal_status_1
-                2 -> R.drawable.personal_status_2
-                3 -> R.drawable.personal_status_3
-                4 -> R.drawable.personal_status_4
-                5 -> R.drawable.personal_status_5
-                6 -> R.drawable.personal_status_6
+                1 ->
+                {
+                    personalMessageEnum = PersonalMessageEnum.NEW
+                    R.raw.lottie_personal_status_2
+                }
+                2 ->
+                {
+                    personalMessageEnum = PersonalMessageEnum.HELLO
+                    R.raw.lottie_personal_status_2
+                }
+                3 ->
+                {
+                    personalMessageEnum = PersonalMessageEnum.SHOPPING_DETOX
+                    R.raw.lottie_personal_status_3
+                }
+                4 ->
+                {
+                    personalMessageEnum = PersonalMessageEnum.PRO_UNBOXING
+                    R.raw.lottie_personal_status_4
+                }
+                5 ->
+                {personalMessageEnum = PersonalMessageEnum.SOPO_CNT
+                    R.raw.lottie_personal_status_4
+                }
+                6 ->
+                {
+                    personalMessageEnum = PersonalMessageEnum.WAITING
+                    R.raw.lottie_personal_status_4
+                }
                 else -> 0
             }
 

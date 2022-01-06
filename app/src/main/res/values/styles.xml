@@ -51,8 +51,8 @@
         <item name="android:gravity">center</item>
         <item name="android:paddingTop">15dp</item>
         <item name="android:paddingBottom">16dp</item>
-        <item name="android:fontFamily">@font/spoqa_han_sans_neo_regular</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/pretendard_medium</item>
+        <item name="android:textSize">14dp</item>
         <item name="android:letterSpacing">-0.04</item>
     </style>
 
@@ -65,8 +65,8 @@
         <item name="android:gravity">center</item>
         <item name="android:paddingTop">15dp</item>
         <item name="android:paddingBottom">16dp</item>
-        <item name="android:fontFamily">@font/spoqa_han_sans_neo_regular</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/pretendard_medium</item>
+        <item name="android:textSize">14dp</item>
         <item name="android:letterSpacing">-0.04</item>
     </style>
 
@@ -76,8 +76,8 @@
         <item name="android:textColor">@color/MAIN_WHITE</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:gravity">center</item>
-        <item name="android:fontFamily">@font/spoqa_han_sans_neo_regular</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:fontFamily">@font/pretendard_medium</item>
+        <item name="android:textSize">14dp</item>
         <item name="android:letterSpacing">-0.04</item>
     </style>
 

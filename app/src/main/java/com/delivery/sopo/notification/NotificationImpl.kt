@@ -6,10 +6,12 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
 import android.icu.util.Calendar
 import android.media.RingtoneManager
 import android.os.Build
 import android.widget.RemoteViews
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
@@ -37,7 +39,6 @@ object NotificationImpl: Notification
         intent.action = Intent.ACTION_MAIN
         intent.addCategory(Intent.CATEGORY_LAUNCHER)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        intent.putExtra("test", "팡효!!!")
 
         //        val pIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val contentIntent =
@@ -65,7 +66,7 @@ object NotificationImpl: Notification
     }
 
     //    fun notifyRegisterParcel(context: Context, parcel: ParcelResponse) {
-    fun notifyRegisterParcel(context: Context)
+    fun notifyRegisterParcel(context: Context, type: Int)
     {
         val channelId = "${context.packageName}SOPO"
 
@@ -75,7 +76,6 @@ object NotificationImpl: Notification
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
 
-/*
         val cDate = Date()
 
         val time = SimpleDateFormat("a hh:mm").format(cDate)
@@ -86,7 +86,7 @@ object NotificationImpl: Notification
         remoteViews.setTextViewText(R.id.tv_main_content, "테스트")
         remoteViews.setTextViewText(R.id.tv_sub_content, "테스트")
         remoteViews.setTextViewText(R.id.tv_noti_time, time)
-*/
+
         val color = ContextCompat.getColor(context, R.color.NOTIFICATION_TITLE_COLOR);
         val title = HtmlCompat.fromHtml("<font color=\"$color\">SOPO</font>", HtmlCompat.FROM_HTML_MODE_LEGACY)
 
@@ -94,14 +94,28 @@ object NotificationImpl: Notification
             PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
+        val drawable = getDrawable(context, R.drawable.ic_noti_at_pickup)
+        val bitmapDrawable = drawable as BitmapDrawable
+        val bitmap = bitmapDrawable.bitmap
+
+        val bigDrawable = getDrawable(context, R.drawable.notification_atpickup)
+        val bigBitmapDrawable = bigDrawable as BitmapDrawable
+        val bigBitmap = bigBitmapDrawable.bitmap
+
         val nBuilder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ic_icon_notification)
-            .setContentTitle("SOPO")
-            .setContentText("택배 []가 등록되었습니다.")
+            .setSmallIcon(R.drawable.ic_noti_logo)
+            .setContentTitle(title)
+            .setContentText("택배 []가 등록되었습니다.택배 []가 등록되었습니다.택배 []가 등록되었습니다.택배 []가 등록되었습니다.택배 []가 등록되었습니다.택배 []가 등록되었습니다.택배 []가 등록되었습니다.택배 []가 등록되었습니다.")
             .setColor(ContextCompat.getColor(context, R.color.NOTIFICATION_TITLE_COLOR))
-            
+//            .setLargeIcon(bitmap)
+            .setStyle(NotificationCompat.InboxStyle().setBigContentTitle("test"))
+            .setStyle(
+                NotificationCompat.BigPictureStyle().bigPicture(bigBitmap).bigLargeIcon(null)
+                    .setSummaryText("테스트입니다아 + $type")
+            )
 //            .setCustomContentView(remoteViews)
-//            .setCustomBigContentView(expandedRemoteViews)
+            /*            .setCustomContentView(remoteViews)
+//            .setCustomBigContentView(expandedRemoteViews)*/
             .setAutoCancel(true)
             .setSound(defaultSoundUri)
             .setVibrate(longArrayOf(1000, 1000))
@@ -112,10 +126,13 @@ object NotificationImpl: Notification
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
             val channel =
-                NotificationChannel(channelId, NotificationEnum.PUSH_UPDATE_PARCEL.channelName, NotificationManager.IMPORTANCE_DEFAULT)
+                NotificationChannel(channelId , NotificationEnum.PUSH_UPDATE_PARCEL.channelName, NotificationManager.IMPORTANCE_DEFAULT)
             nManager.createNotificationChannel(channel)
         }
-        nManager.notify(40001, nBuilder.build())
+
+
+
+        nManager.notify(40001 + type, nBuilder.build())
     }
 
     override fun alertUpdateParcel(remoteMessage: RemoteMessage, context: Context, intent: Intent, vararg message: String)

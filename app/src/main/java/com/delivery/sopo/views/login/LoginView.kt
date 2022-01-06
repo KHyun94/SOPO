@@ -9,8 +9,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.LoginViewBinding
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.extensions.launchActivity
-import com.delivery.sopo.extensions.launchActivityWithAllClear
+import com.delivery.sopo.extensions.moveToActivity
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.login.LoginViewModel
@@ -18,25 +17,23 @@ import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.signup.RegisterNicknameView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-
 class LoginView: BaseView<LoginViewBinding, LoginViewModel>()
 {
     override val layoutRes: Int = R.layout.login_view
     override val vm: LoginViewModel by viewModel()
-
-    override val mainLayout: View by lazy {
-        binding.constraintMainLogin
-    }
+    override val mainLayout: View by lazy { binding.constraintMainLogin }
 
     override fun setObserve()
     {
         super.setObserve()
-        vm.focus.observe(this, Observer { focus ->
+
+        vm.focus.observe(this) { focus ->
             val res = TextInputUtil.changeFocus(this@LoginView, focus)
             vm.validity[res.first] = res.second
-        })
+        }
 
         vm.invalidity.observe(this) { target ->
+
             val message = when(target.first)
             {
                 InfoEnum.EMAIL ->
@@ -52,31 +49,27 @@ class LoginView: BaseView<LoginViewBinding, LoginViewModel>()
                 else -> ""
             }
 
-            Toast.makeText(this@LoginView,message, Toast.LENGTH_SHORT).apply {
-                setGravity(Gravity.TOP, 0, 180)
-            }.show()
+            Toast.makeText(this@LoginView, message, Toast.LENGTH_SHORT).apply { setGravity(Gravity.TOP, 0, 180) }.show()
         }
 
-
         vm.navigator.observe(this@LoginView, Observer { navigator ->
-            when (navigator)
+            when(navigator)
             {
                 NavigatorConst.TO_RESET_PASSWORD ->
                 {
-                    Intent(this@LoginView, ResetPasswordView::class.java).launchActivity(this@LoginView)
+                    moveToActivity(ResetPasswordView::class.java)
                 }
                 NavigatorConst.TO_UPDATE_NICKNAME ->
                 {
-                    Intent(this@LoginView, RegisterNicknameView::class.java).launchActivityWithAllClear(this@LoginView)
+                    moveToActivity(RegisterNicknameView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    finish()
                 }
                 NavigatorConst.TO_MAIN ->
                 {
-                    Intent(this@LoginView, MainView::class.java).launchActivityWithAllClear(this@LoginView)
+                    moveToActivity(MainView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    finish()
                 }
             }
         })
     }
-
-
-
 }

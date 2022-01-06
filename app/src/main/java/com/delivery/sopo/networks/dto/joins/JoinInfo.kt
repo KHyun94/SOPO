@@ -2,7 +2,7 @@ package com.delivery.sopo.networks.dto.joins
 
 import com.google.gson.annotations.SerializedName
 
-data class JoinInfoDTO(
+data class JoinInfo(
     @SerializedName("email")
     val email: String,
     @SerializedName("password")

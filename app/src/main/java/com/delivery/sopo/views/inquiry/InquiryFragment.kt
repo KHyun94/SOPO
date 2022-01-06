@@ -27,11 +27,9 @@ import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.*
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.interfaces.listener.ParcelEventListener
-import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.mapper.MenuMapper
-import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
@@ -43,8 +41,6 @@ import com.delivery.sopo.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.views.dialog.OptionalClickListener
 import com.delivery.sopo.views.dialog.OptionalDialog
 import com.delivery.sopo.views.main.MainView
-import com.delivery.sopo.views.registers.InputParcelFragment
-import com.delivery.sopo.views.registers.RegisterMainFragment
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
@@ -139,13 +135,13 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
                         if(parcelStatuses.isEmpty()) return@launch
 
-                        CustomSnackBar.make(mainLayout, "${parcelStatuses.size}개 항목이 삭제되었습니다.", 3000, SnackBarEnum.CONFIRM_DELETE, Pair("실행취소", {
+                        CustomSnackBar.make(mainLayout, "${parcelStatuses.size}개 항목이 삭제되었습니다.", 5000, SnackBarEnum.CONFIRM_DELETE, Pair("실행취소", {
                             vm.cancelToDelete(parcelStatuses)
                         })).show()
 
                         delay(5000)
 
-                        Handler(Looper.myLooper()!!).postDelayed(Runnable { vm.onDeleteParcel() }, 5000)
+                        Handler(Looper.myLooper()!!).postDelayed(Runnable { vm.onDeleteParcels() }, 5000)
 
                     }
                 }
@@ -431,6 +427,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                 {
                     override fun invoke(dialog: OptionalDialog)
                     {
+
+                        vm.onDeleteParcel(parcelId = parcelId)
                         dialog.dismiss()
                     }
                 }), rightHandler = Pair(first = "유지할게요", second = object: OptionalClickListener

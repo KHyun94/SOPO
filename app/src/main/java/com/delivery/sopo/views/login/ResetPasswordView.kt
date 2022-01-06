@@ -1,9 +1,6 @@
 package com.delivery.sopo.views.login
 
-import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.Toast
@@ -11,13 +8,8 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
-import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.NavigatorConst
@@ -25,7 +17,6 @@ import com.delivery.sopo.databinding.ResetPasswordViewBinding
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.ResponseCode
-import com.delivery.sopo.extensions.launchActivityForResult
 import com.delivery.sopo.models.EmailAuthDTO
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.SopoLog
@@ -34,60 +25,50 @@ import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.login.ResetPasswordViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.menus.LockScreenView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewModel>()
 {
+    companion object{
+        const val JWT_TOKEN = "JWT_TOKEN"
+    }
+
     override val layoutRes: Int = R.layout.reset_password_view
     override val vm: ResetPasswordViewModel by viewModel()
     override val mainLayout: View by lazy { binding.layoutMainReset }
 
     private var activityResultLauncher: ActivityResultLauncher<Intent>? = null
 
-    val registerCallback = ActivityResultCallback<ActivityResult> { result ->
-        if(result.resultCode != RESULT_OK)
-        {
-            return@ActivityResultCallback
-        }
+    private val registerCallback = ActivityResultCallback<ActivityResult> { result ->
 
-        result.data?.getStringExtra("JWT_TOKEN")?.also {
+        if(result.resultCode != RESULT_OK) return@ActivityResultCallback
 
-            vm.jwtTokenForReset = it
-        }
+        result.data?.getStringExtra(JWT_TOKEN)?.also { token -> vm.jwtTokenForReset = token }
 
         vm.resetType.postValue(1)
     }
 
-    override fun receivedData(intent: Intent)
-    {
-    }
-
     override fun onBeforeBinding()
-    {
-    }
-
-    override fun onAfterBinding()
     {
         activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult(), registerCallback)
     }
 
     override fun setObserve()
     {
+        super.setObserve()
+
         vm.resetType.observe(this) {
-            vm.validates.clear()
+            vm.validity.clear()
 
             when(it)
             {
                 0 ->
                 {
-                    vm.validates[InfoEnum.EMAIL] = false
+                    vm.validity[InfoEnum.EMAIL] = false
                 }
                 1 ->
                 {
-                    vm.validates[InfoEnum.PASSWORD] = false
+                    vm.validity[InfoEnum.PASSWORD] = false
                     updateUIForInputPassword()
                 }
                 2 ->
@@ -96,16 +77,16 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
                 }
             }
 
-            SopoLog.d("validates type >>> ${vm.validates.toString()}")
+            SopoLog.d("validates type >>> ${vm.validity.toString()}")
 
         }
 
         vm.focus.observe(this, Observer { focus ->
             val res = TextInputUtil.changeFocus(this, focus)
-            vm.validates[res.first] = res.second
+            vm.validity[res.first] = res.second
         })
 
-        vm.validateError.observe(this, Observer { target ->
+        vm.invalidity.observe(this, Observer { target ->
 
             if(target.second)
             {
@@ -155,8 +136,6 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
                     }
 
                     activityResultLauncher?.launch(intent)
-
-//                    launchActivityResult(intent, registerCallback)
                 }
                 1 ->
                 {
@@ -185,7 +164,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
             binding.btnNext.backgroundTintList =
                 resources.getColorStateList(R.color.COLOR_GRAY_200, null)
-            binding.btnNext.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
+            binding.btnNext.setTextColor(ContextCompat.getColor(this, R.color.COLOR_GRAY_400))
         })
 
         vm.password.observe(this@ResetPasswordView, Observer { password ->
@@ -194,8 +173,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
             if(isValidate)
             {
-                binding.btnNext.backgroundTintList =
-                    resources.getColorStateList(R.color.COLOR_MAIN_700, null)
+                binding.btnNext.backgroundTintList = resources.getColorStateList(R.color.COLOR_MAIN_700, null)
                 binding.btnNext.setTextColor(ContextCompat.getColor(this, R.color.MAIN_WHITE))
                 binding.tvPasswordHint.visibility = View.GONE
                 return@Observer
@@ -209,32 +187,24 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
         })
 
-        vm.navigator.observe(this, Observer { navigator ->
+        vm.navigator.observe(this) { navigator ->
             when(navigator)
             {
-                NavigatorConst.TO_COMPLETE ->
-                {
-                    finish()
-                }
-                NavigatorConst.TO_BACK_SCREEN ->
+                NavigatorConst.TO_COMPLETE, NavigatorConst.TO_BACK_SCREEN ->
                 {
                     finish()
                 }
             }
-        })
+        }
     }
 
     private fun updateUIForInputPassword()
     {
-        binding.layoutEmail.visibility = View.GONE
-        binding.layoutPassword.visibility = View.VISIBLE
-
-/*        binding.btnBack.visibility = View.GONE
-        binding.btnClear.visibility = View.VISIBLE*/
-
-        binding.tvSubTitle.visibility = View.GONE
         binding.btnNext.text = "변경하기"
 
+        binding.layoutEmail.visibility = View.GONE
+        binding.layoutPassword.visibility = View.VISIBLE
+        binding.tvSubTitle.visibility = View.GONE
         binding.tvPasswordHint.visibility = View.VISIBLE
     }
 
@@ -243,7 +213,6 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
         binding.btnNext.text = "확인"
         binding.layoutPassword.visibility = View.GONE
         binding.tvCompleteContent.visibility = View.VISIBLE
-
         binding.tvPasswordHint.visibility = View.GONE
     }
 }

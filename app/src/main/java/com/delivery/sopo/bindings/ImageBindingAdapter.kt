@@ -11,11 +11,53 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.delivery.sopo.R
 import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.enums.PersonalMessageEnum
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 
 object ImageBindingAdapter
 {
+    @JvmStatic
+    @BindingAdapter("setLottieRawRes")
+    fun bindLottieSetter(view: LottieAnimationView, enum: PersonalMessageEnum?)
+    {
+        SopoLog.d("Test Lottie ${enum.toString()}")
+        when(enum)
+        {
+            PersonalMessageEnum.NEW ->
+            {
+                view.setAnimation(R.raw.lottie_personal_message_welcome)
+            }
+            PersonalMessageEnum.HELLO->
+            {
+                view.setAnimation(R.raw.lottie_personal_message_hello)
+            }
+            PersonalMessageEnum.SHOPPING_DETOX->
+            {
+                view.setAnimation(R.raw.lottie_personal_message_shopping_detox)
+            }
+            PersonalMessageEnum.PRO_UNBOXING->
+            {
+                view.setAnimation(R.raw.lottie_personal_message_pro_unboxing)
+            }
+            PersonalMessageEnum.SOPO_CNT->
+            {
+                view.setAnimation(R.raw.lottie_personal_message_sopo_cnt)
+            }
+            PersonalMessageEnum.WAITING->
+            {
+                view.setAnimation(R.raw.lottie_personal_message_waiting)
+            }
+            PersonalMessageEnum.BE_QUIET->
+            {
+                view.setAnimation(R.raw.lottie_personal_message_be_quiet)
+            }
+            else -> 0
+        }
+        view.playAnimation()
+    }
+
+
     @JvmStatic
     @BindingAdapter("setDeliveryStatusInLottie")
     fun bindLottieBackgroundSetter(view: LottieAnimationView, enum: DeliveryStatusEnum?)

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,7 +8,15 @@
     android:orientation="vertical"
     android:background="@color/MAIN_WHITE">
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/test"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/lottie_personal_status_2"/>
+
     <RelativeLayout
+        android:id="@+id/relative_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -25,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/ic_icon_notification" />
+            android:background="@drawable/ic_24_notice" />
 
         <TextView
             android:id="@+id/tv_noti_title"
@@ -64,23 +71,22 @@
     </RelativeLayout>
 
     <TextView
-        style="@style/kor_H3"
         android:id="@+id/tv_main_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/pretendard_medium"
-        android:textColor="#212121"
         android:layout_marginLeft="12dp"
-        tools:text="한진택배 / 123412341234"/>
+        android:text="한진택배 / 123412341234"
+        android:layout_below="@+id/relative_header"/>
 
     <TextView
-        style="@style/kor_H4"
         android:id="@+id/tv_sub_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/pretendard_medium"
         android:text="123123123123"
-        android:textColor="#4d4d4d"
-        android:layout_marginLeft="12dp"/>
+        android:layout_marginLeft="12dp"
+        android:layout_marginBottom="12dp"
+        android:layout_below="@+id/tv_main_content"/>
 
-</LinearLayout>
+</RelativeLayout>

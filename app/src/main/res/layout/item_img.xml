@@ -3,9 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="androidx.core.content.ContextCompat" />
+        <import type="android.view.View" />
+
+        <import type="com.delivery.sopo.R" />
+
         <variable
             name="isClick"
             type="Boolean" />
+
+        <variable
+            name="text"
+            type="String" />
+
+        <variable
+            name="textColor"
+            type="int" />
 
         <variable
             name="img"
@@ -15,7 +28,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/layout_item"
@@ -23,19 +37,30 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
+            android:orientation="vertical"
             android:background="@{isClick?@drawable/border_click_img:@drawable/border_non_click_img}">
 
             <ImageView
                 android:id="@+id/iv_img"
                 app:setImage="@{img}"
                 app:setDefaultImage="@{0}"
-                android:layout_width="88sp"
-                android:layout_height="88sp"
-                android:layout_margin="10sp"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
                 android:adjustViewBounds="true"
-                android:scaleType="fitCenter" />
+                android:scaleType="fitCenter"
+                android:layout_margin="2dp"/>
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_name"
+            style="@style/kor_H4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{text}"
+            android:textColor="@{ContextCompat.getColor(context, textColor)}"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="12dp"/>
 
     </LinearLayout>
 

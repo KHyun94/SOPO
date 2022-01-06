@@ -212,7 +212,7 @@ class LockScreenViewModel(
         CoroutineScope(Dispatchers.Main).launch {
 
 
-            val result:ResponseResult<EmailAuthDTO?> = withContext(Dispatchers.IO) {
+          /*  val result:ResponseResult<EmailAuthDTO?> = withContext(Dispatchers.IO) {
                 userRemoteRepo.requestEmailForAuth(userLocalRepo.getUserId())
             }
 
@@ -240,7 +240,7 @@ class LockScreenViewModel(
             jwtToken = result.data.token
 
             isActivateResendMail.postValue(false)
-            isButtonEnabled.postValue(true)
+            isButtonEnabled.postValue(true)*/
         }
     }
 }

@@ -1,21 +1,18 @@
 package com.delivery.sopo.viewmodels.login
 
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.InfoEnum
+import com.delivery.sopo.models.EmailAuthDTO
 import com.delivery.sopo.models.PasswordResetDTO
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
-import java.lang.Runnable
 
 class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): BaseViewModel()
 {
@@ -25,11 +22,11 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
     val resetType = MutableLiveData<Int>()
     // 0: 이메일 전송 1: 패스워드 입력 2: 완료
 
-   val validates = mutableMapOf<InfoEnum, Boolean>()
+    val validity = mutableMapOf<InfoEnum, Boolean>()
 
-    private var _validateError = MutableLiveData<Pair<InfoEnum, Boolean>>()
-    val validateError: LiveData<Pair<InfoEnum, Boolean>>
-        get() = _validateError
+    private var _invalidity = MutableLiveData<Pair<InfoEnum, Boolean>>()
+    val invalidity: LiveData<Pair<InfoEnum, Boolean>>
+        get() = _invalidity
 
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
@@ -41,11 +38,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
 
     val focusChangeCallback: FocusChangeCallback = FocusChangeCallback@{ v, hasFocus, type ->
         SopoLog.i("${type.NAME} >>> $hasFocus")
-        CoroutineScope(Dispatchers.Main).launch {
-            delay(50)
-            _focus.value = (Triple(v, hasFocus, type))
-        }
-//        Handler(Looper.getMainLooper()).postDelayed(Runnable { _focus.value = (Triple(v, hasFocus, type)) }, 50)
+        _focus.value = (Triple(v, hasFocus, type))
     }
 
     // 유효성 및 통신 등의 결과 객체
@@ -53,70 +46,91 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
     val result: LiveData<ResponseResult<*>>
         get() = _result
 
+    lateinit var emailAuthInfo: EmailAuthDTO
+
     var jwtTokenForReset: String? = null
 
     init
     {
+//        validity[InfoEnum.EMAIL] = false
+//        validity[InfoEnum.PASSWORD] = true
+
         resetType.value = 0
     }
 
-    fun onClearClicked(){
+    fun onClearClicked()
+    {
         _navigator.postValue(NavigatorConst.TO_BACK_SCREEN)
     }
 
-    fun onSendEmailClicked(v: View)
-    {
+    fun onSendEmailClicked(v: View) = checkEventStatus(checkNetwork = true) {
         SopoLog.i("onSendEmailClicked() 호출")
-        v.requestFocusFromTouch()
 
-        Handler().postDelayed(Runnable {
-
-            validates.forEach { (k, v) ->
-                if (!v)
-                {
-                    SopoLog.d("${k.NAME} validate is fail")
-                    _validateError.postValue(Pair(k, v))
-                    return@Runnable
-                }
+        validity.forEach { (k, v) ->
+            if(!v)
+            {
+                return@checkEventStatus _invalidity.postValue(Pair(k, v))
             }
+        }
 
-            SopoLog.d("유효성 통과")
+        CoroutineScope(Dispatchers.IO).launch {
 
-            CoroutineScope(Dispatchers.IO).launch {
-
-                val resetType = resetType.value
-
-                when(resetType)
+            try
+            {
+                when(resetType.value)
                 {
-                    0->
+                    0 ->
                     {
-                        val res = userRemoteRepo.requestEmailForAuth(email = email.value?:"")
-                        SopoLog.d("res >>> ${res.toString()} ${res.code} ${res.data} ${res.result} ${res.message}")
+                        emailAuthInfo = requestEmailForAuth(email = email.value?.toString() ?: "")
+                        SopoLog.d("Email Auth Info [data:${emailAuthInfo.toString()}]")
+                    }
+                    1 ->
+                    {
+                        val passwordResetDTO = PasswordResetDTO(jwtTokenForReset
+                                                                    ?: "", email.value.toString(), password.value.toString())
 
-                        if(res.result) jwtTokenForReset = res.data?.token
+                        val res =
+                            userRemoteRepo.requestPasswordForReset(passwordResetDTO = passwordResetDTO)
+
                         _result.postValue(res)
                     }
-                    1->
+                    2 ->
                     {
-                        val passwordResetDTO = PasswordResetDTO(jwtTokenForReset?:"", email.value.toString(), password.value.toString())
-
-                        val res = userRemoteRepo.requestPasswordForReset(passwordResetDTO = passwordResetDTO)
-
-                        _result.postValue(res)
-                    }
-                    2 -> {
                         _navigator.postValue(NavigatorConst.TO_COMPLETE)
                     }
                 }
             }
+            catch(e: Exception)
+            {
+                SopoLog.e("에러 ", e)
+                exceptionHandler.handleException(coroutineContext, e)
+            }
 
-        }, 100)
 
+        }
+    }
 
+    private suspend fun requestEmailForAuth(email: String): EmailAuthDTO
+    {
+        SopoLog.i("requestEmailForAuth(...) 호출")
+        return userRemoteRepo.requestEmailForAuth(email = email)
+    }
+
+    private suspend fun requestPasswordForReset(email: String) = withContext(Dispatchers.IO) {
+        try
+        {
+            val autoInfo = userRemoteRepo.requestEmailForAuth(email = email)
+            SopoLog.d("Email Auth Info [data:${autoInfo.toString()}]")
+            return@withContext autoInfo
+        }
+        catch(e: Exception)
+        {
+            exceptionHandler.handleException(coroutineContext, e)
+        }
     }
 
     override val exceptionHandler: CoroutineExceptionHandler
-        get() = CoroutineExceptionHandler { coroutineContext, throwable ->  }
+        get() = CoroutineExceptionHandler { coroutineContext, throwable -> }
 
 
 }

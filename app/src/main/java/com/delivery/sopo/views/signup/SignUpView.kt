@@ -7,6 +7,7 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.SignUpViewBinding
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.launchActivity
+import com.delivery.sopo.extensions.moveToActivity
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.TextInputUtil
@@ -68,11 +69,11 @@ class SignUpView: BaseView<SignUpViewBinding, SignUpViewModel>()
             {
                 NavigatorConst.TO_COMPLETE ->
                 {
-                    GeneralDialog(this, "알림", "정상적으로 회원가입 성공했습니다.", null, Pair("네", { it ->
-                        it.dismiss()
-                        Intent(this@SignUpView, SignUpCompleteView::class.java).launchActivity(this)
+                    GeneralDialog(this, "알림", "정상적으로 회원가입 성공했습니다.", null, Pair("네", { dialog ->
+                        dialog.dismiss()
+                        moveToActivity(SignUpCompleteView::class.java)
                         finish()
-                    })).show(supportFragmentManager.beginTransaction(), "TAG")
+                    })).show(supportFragmentManager.beginTransaction(), "dialog")
                 }
             }
         }

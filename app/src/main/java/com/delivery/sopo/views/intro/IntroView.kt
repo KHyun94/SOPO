@@ -54,9 +54,9 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
         }
     }
 
-    override fun onBeforeBinding()
+    override fun onAfterBinding()
     {
-        super.onBeforeBinding()
+        super.onAfterBinding()
 
         setViewPager()
         setListener()

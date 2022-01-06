@@ -3,9 +3,11 @@ package com.delivery.sopo.viewmodels.inquiry
 import android.os.Handler
 import android.os.Looper
 import android.widget.TextView
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.ParcelExceptionHandler
-import com.delivery.sopo.UserExceptionHandler
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
@@ -16,11 +18,9 @@ import com.delivery.sopo.enums.InquiryStatusEnum
 import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.SelectItem
-import com.delivery.sopo.models.UpdateParcelAliasRequest
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
-import com.delivery.sopo.models.mapper.CompletedParcelHistoryMapper
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.ParcelResponse
 import com.delivery.sopo.models.parcel.ParcelStatus
@@ -345,8 +345,21 @@ class InquiryViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUs
             }
         }
 
+    fun onDeleteParcel(parcelId: Int) = checkEventStatus(checkNetwork = true) {
+        scope.launch(Dispatchers.IO) {
+            try
+            {
+                withContext(Dispatchers.Default) { parcelManagementRepo.delete(parcelId) }
+                deleteParcelsUseCase.invoke()
+            }
+            catch(e: Exception)
+            {
+                exceptionHandler.handleException(coroutineContext, e)
+            }
+        }
+    }
 
-    fun onDeleteParcel() = checkEventStatus(checkNetwork = true) {
+    fun onDeleteParcels() = checkEventStatus(checkNetwork = true) {
         scope.launch(Dispatchers.IO) {
             try
             {

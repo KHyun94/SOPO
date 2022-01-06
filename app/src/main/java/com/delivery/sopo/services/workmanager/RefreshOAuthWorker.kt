@@ -5,10 +5,9 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.models.dto.OAuthDTO
+import com.delivery.sopo.models.dto.OAuthToken
 import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.networks.call.OAuthCall
-import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
@@ -37,9 +36,9 @@ import org.koin.core.inject
             is NetworkResult.Success ->
             {
                 val gson = Gson()
-                val type = object : TypeToken<OAuthDTO>() {}.type
+                val type = object : TypeToken<OAuthToken>() {}.type
                 val reader = gson.toJson(result.data)
-                val oauthResult = gson.fromJson<OAuthDTO>(reader, type)
+                val oauthResult = gson.fromJson<OAuthToken>(reader, type)
 
                 SopoLog.d("refresh OAuth 성공 [data:$oauthResult]")
 
