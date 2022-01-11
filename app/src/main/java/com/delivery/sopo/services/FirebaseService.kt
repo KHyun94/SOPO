@@ -64,7 +64,6 @@ class FirebaseService: FirebaseMessagingService()
                     [${list.joinToString()}]
                 """.trimIndent())
 
-
                 alertUpdateParcel(remoteMessage, Intent(this@FirebaseService, SplashView::class.java), list).start()
             }
             // 친구 추천
@@ -133,8 +132,7 @@ class FirebaseService: FirebaseMessagingService()
         }
 
         // 새로운 택배
-        val insertParcels =
-            insertParcelIds.map { parcelId -> parcelRepository.getRemoteParcelById(parcelId) }
+        val insertParcels = insertParcelIds.map { parcelId -> parcelRepository.getRemoteParcelById(parcelId) }
         val insertParcelStatuses = insertParcels.map {
             msgList.add(getMessage(it))
             ParcelMapper.parcelToParcelStatus(it).apply {
@@ -169,89 +167,14 @@ class FirebaseService: FirebaseMessagingService()
             return@mapNotNull null
         }
 
-
         parcelManagementRepo.insertParcelStatuses(insertParcelStatuses)
         parcelManagementRepo.updateParcelStatuses(updateParcelStatuses)
-        /* parcelManagementRepo.updateParcelStatuses(updateParcelStatuses)
-         val parcels = list.flatMap { parcelId ->
-             val parcelEntity = parcelRepository.getLocalParcelById(parcelId)
 
-             if(parcelEntity == null)
-             {
-                 SopoLog.e("로컬 내에 [parcelId:${parcelId}]에 해당하는 데이터가 없습니다.")
-                 listOf(null)
-             }
-             else
-             {
-                 val parcelDTO =
-                     ParcelMapper.parcelEntityToParcel(parcelEntity = ParcelMapper.parcelObjectToEntity(parcelEntity))
-                 listOf(parcelDTO)
-             }
-         }
+        val notiParcel = insertParcels + updateRemoteParcels
 
-         for(index in parcels.indices)
-         {
-             if(parcels[index] == null) continue
-             if(parcels[index]?.status != StatusConst.ACTIVATE) continue
-             if(parcels[index]?.deliveryStatus == updateParcelIds[index].deliveryStatus) continue
-
-             val parcelStatus = parcelManagementRepo.getParcelStatus(updateParcelIds[index].parcelId)
-                 ?: ParcelMapper.parcelToParcelStatus(parcels[index] ?: continue)
-
-             parcelStatus.apply {
-                 // 업데이트 가능 상태, 앱을 켜면 자동 업데이트
-                 updatableStatus = 1
-                 auditDte = TimeUtil.getDateTime()
-
-                 // 배송 상태가 완료로 변경되있을 시 완료 뱃지에 수를 표기하기 위한 상태값 변경
-                 if(parcels[index]?.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE) deliveredStatus =
-                     1
-             }
-         }
-
-         info.updatedParcelIds.forEach { updateParcelDao ->
-
-             val parcelResponse: ParcelResponse =
-                 parcelRepository.getLocalParcelById(updateParcelDao.parcelId) ?: return
-
-             // DeliveryStatus 변경됐을 시 True
-
-             if(!updateParcelDao.compareDeliveryStatus(parcelResponse)) return
-
-             val parcel = updateParcelDao.getParcel() ?: return
-
-             // 현재 해당 택배가 가지고 있는 배송 상태와 fcm으로 넘어온 배송상태가 다른 경우만 노티피케이션을 띄운다!
-             val parcelStatus = parcelManagementRepo.getParcelStatus(updateParcelDao.parcelId)
-                 ?: ParcelMapper.parcelToParcelStatus(parcel)
-
-             parcelStatus.run {
-
-                 SopoLog.d("parcelManagementEntity Update>>> ")
-
-                 updatableStatus = 1
-                 auditDte = TimeUtil.getDateTime()
-
-                 // 배송 중 -> 배송완료]가 됐다면 앱을 켰을때 몇개가 수정되었는지 보여줘야하기 때문에 save해서 저장함.
-                 if(updateParcelDao.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE) deliveredStatus =
-                     1
-
-                 SopoLog.d("""
-                         parcelManagement >>>
-                         isBeUpdate = ${updatableStatus}
-                         auditDte = ${auditDte}
-                         deliveredStatus = ${deliveredStatus}
-                     """.trimIndent())
-             }
-
-             withContext(Dispatchers.Default) {
-                 parcelManagementRepo.insertParcelStatus(parcelStatus)
-             }
-
-             with(updateParcelDao.getMessage(parcel)) {
-                 SopoLog.d("Noti Msg >>> $this")
-                 msgList.add(this)
-             }
-         }*/
+        notiParcel.forEach {
+            NotificationImpl.notifyRegisterParcel(applicationContext, it)
+        }
 
         msgList.forEach {
             NotificationImpl.alertUpdateParcel(remoteMessage = remoteMessage, context = applicationContext, intent = intent, message = *arrayOf(it))

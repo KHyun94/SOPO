@@ -95,16 +95,9 @@
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/KAKAO_API_KEY" />
 
-        <receiver
-            android:name=".services.receivers.SMSReceiver"
-            android:permission="android.permission.BROADCAST_SMS">
-            <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
 
         <service
-            android:name=".services.NotificationListener"
+            android:name=".services.SOPONotificationListenerService"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
@@ -112,10 +105,19 @@
 
             <meta-data
                 android:name="android.service.notification.default_filter_types"
-                android:value="conversations,alerting"></meta-data>
+                android:value="conversations|alerting">
+            </meta-data>
             <meta-data
                 android:name="android.service.notification.disabled_filter_types"
-                android:value="ongoing,silent"></meta-data>
+                android:value="ongoing|silent">
+            </meta-data>
+
+            <!--<meta-data
+                android:name="android.service.notification.default_filter_types"
+                android:value="conversations,alerting"/>
+            <meta-data
+                android:name="android.service.notification.disabled_filter_types"
+                android:value="ongoing,silent"/>-->
         </service>
 
         <receiver
@@ -126,21 +128,29 @@
 
         </receiver>
 
+        <!--<receiver
+            android:name=".services.receivers.SMSReceiver"
+            android:permission="android.permission.BROADCAST_SMS">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </receiver>
+
+
         <receiver
             android:name=".services.receivers.MMSReceiver"
             android:permission="android.permission.BROADCAST_WAP_PUSH">
             <intent-filter>
                 <action android:name="android.intent.action.DATA_SMS_RECEIVED" />
-
                 <data android:scheme="sms" />
                 <data android:host="localhost" />
             </intent-filter>
+
             <intent-filter>
                 <action android:name="android.provider.Telephony.WAP_PUSH_RECEIVED" />
-
                 <data android:mimeType="application/vnd.wap.mms-message" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
     </application>
 
 </manifest>

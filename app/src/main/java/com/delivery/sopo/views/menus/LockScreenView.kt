@@ -44,6 +44,11 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
 
     override fun onBeforeBinding()
     {
+
+    }
+
+    override fun onAfterBinding()
+    {
         SopoLog.i("initUI(...) 호출")
 
         noneOfNumberPadIsPressed()
@@ -68,10 +73,7 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
         binding.tvTitleLock.text = title
         binding.tvErrorComment.text = error
         binding.tvGuideComment.text = guide
-    }
 
-    override fun onAfterBinding()
-    {
     }
 
     override fun setObserve()

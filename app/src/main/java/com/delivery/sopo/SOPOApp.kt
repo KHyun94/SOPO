@@ -86,9 +86,9 @@ class SOPOApp: Application()
     }
 
     private suspend fun getInitViewPagerNumber(): Int = withContext(Dispatchers.Default) {
-        val clipboardText = ClipboardUtil.pasteClipboardText(context = this@SOPOApp)
-
-        if(clipboardText != null) return@withContext NavigatorConst.REGISTER_TAB
+        ClipboardUtil.pasteClipboardText(context = this@SOPOApp)?.let {
+            return@withContext NavigatorConst.REGISTER_TAB
+        }
 
         val cnt = parcelRepository.getOnGoingDataCnt()
 

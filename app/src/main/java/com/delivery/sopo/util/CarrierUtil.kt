@@ -49,7 +49,10 @@ object CarrierUtil
             {
                 listOf(R.drawable.ic_logo_lotte, R.drawable.ic_color_lotte, R.drawable.ic_gray_lotte)
             }
-
+            KDEXP ->
+            {
+                listOf(R.drawable.ic_logo_kyungdong, R.drawable.ic_color_kyungdong, R.drawable.ic_gray_kyungdong)
+            }
             /*SAGAWA ->
             {
                 listOf(R.drawable.ic_logo_sagawa, R.drawable.ic_color_sagawa, R.drawable.ic_gray_sagawa)
@@ -80,10 +83,7 @@ object CarrierUtil
             {
                 listOf(R.drawable.ic_logo_ilyang, R.drawable.ic_color_ilyang, R.drawable.ic_gray_ilyang)
             }*/
-//            KDEXP ->
-//            {
-//                listOf(R.drawable.ic_logo_kyungdong, R.drawable.ic_color_kyungdong, R.drawable.ic_gray_kyungdong)
-//            }
+
             /*KUNYOUNG ->
             {
                 listOf(R.drawable.ic_logo_gunyoung, R.drawable.ic_color_gunyoung, R.drawable.ic_gray_gunyoung)

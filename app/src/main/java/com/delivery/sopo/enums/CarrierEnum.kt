@@ -19,7 +19,8 @@ enum class CarrierEnum(
     HANJINS("HANJINS", "한진택배"),
     HDEXP("HDEXP", "합동택배"),
     LOGEN("LOGEN", "로젠택배"),
-    LOTTE("LOTTE", "롯데택배");
+    LOTTE("LOTTE", "롯데택배"),
+    KDEXP("KDEXP", "경동택배");
 
 /*
   SLX("SLX", "SLX")
@@ -33,7 +34,7 @@ enum class CarrierEnum(
     HOMEPICK("HOMEPICK", "홈픽"),
     HONAMLOGIS("HONAMLOGIS", "한서호남택배"),
     ILYANGLOGIS("ILYANGLOGIS", "일양로지스"),
-    KDEXP("KDEXP", "경동택배"),
+
     KUNYOUNG("KUNYOUNG", "건영택배"),
 
     SWGEXP("SWGEXP","성원글로벌카고"),

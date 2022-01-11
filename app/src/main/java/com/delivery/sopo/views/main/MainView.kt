@@ -3,11 +3,13 @@ package com.delivery.sopo.views.main
 import android.app.Activity
 import android.content.Intent
 import android.content.IntentFilter
+import android.provider.Settings
 import android.view.View
-import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.annotation.DrawableRes
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
@@ -22,10 +24,8 @@ import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.reduceSensitive
 import com.delivery.sopo.models.base.BaseView
-import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.services.PowerManager
 import com.delivery.sopo.services.receivers.RefreshParcelBroadcastReceiver
-import com.delivery.sopo.util.AnimationUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.main.MainViewModel
@@ -63,10 +63,22 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
     private val refreshParcelBroadcastReceiver = RefreshParcelBroadcastReceiver()
 
+    private fun permissionGrantred(): Boolean
+    {
+        val sets = NotificationManagerCompat.getEnabledListenerPackages(this)
+        return sets.contains(packageName)
+    }
+
     override fun onBeforeBinding()
     {
         PowerManager.checkWhiteList(this)
         checkAppPassword()
+
+        val isPer = permissionGrantred().apply {
+            Toast.makeText(applicationContext, "여ㅇ부 $this", Toast.LENGTH_SHORT).show()
+        }
+
+        startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS))
 
     }
 
@@ -86,14 +98,6 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
     {
         setViewPager()
         setTabLayout()
-
-//        NotificationImpl.notifyRegisterParcel(context = this@MainView, R.drawable.ic_noti_big_at_pickup)
-        NotificationImpl.notifyRegisterParcel(context = this@MainView, 1)
-        NotificationImpl.notifyRegisterParcel(context = this@MainView, 2)
-        NotificationImpl.notifyRegisterParcel(context = this@MainView, 3)
-        NotificationImpl.notifyRegisterParcel(context = this@MainView, 4)
-//        NotificationImpl.notifyRegisterParcel(context = this@MainView, R.drawable.atpickup)
-
     }
 
     override fun setObserve()

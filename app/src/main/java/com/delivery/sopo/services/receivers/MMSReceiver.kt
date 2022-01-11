@@ -28,6 +28,11 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
 {
     private val carrierRepo: CarrierRepository by inject()
 
+    init
+    {
+        SopoLog.i("MMSReceiver 호출")
+    }
+
     override fun onReceive(context: Context?, intent: Intent?)
     {
         SopoLog.i("MMSReceiver onReceiver() 호출")

@@ -59,7 +59,6 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
         vm.resetType.observe(this) {
             vm.validity.clear()
-
             when(it)
             {
                 0 ->
@@ -76,9 +75,6 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
                     updateUIForComplete()
                 }
             }
-
-            SopoLog.d("validates type >>> ${vm.validity.toString()}")
-
         }
 
         vm.focus.observe(this, Observer { focus ->
@@ -88,10 +84,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
         vm.invalidity.observe(this, Observer { target ->
 
-            if(target.second)
-            {
-                return@Observer
-            }
+            if(target.second) return@Observer
 
             val message = when(target.first)
             {

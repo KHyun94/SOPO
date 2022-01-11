@@ -38,16 +38,16 @@ object RoomActivate: KoinComponent
 
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.HDEXP.NAME, carrierCode = CarrierEnum.HDEXP.CODE,
                           min = 9, max = 16, priority = 0.89),
-
-
-
+            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.KDEXP.NAME, carrierCode = CarrierEnum.KDEXP.CODE,
+                          min = 9, max = 16, priority = 0.99),
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.LOGEN.NAME, carrierCode = CarrierEnum.LOGEN.CODE,
                           min = 11, max = 11, priority = 0.97),
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.HANJINS.NAME, carrierCode = CarrierEnum.HANJINS.CODE,
                           min = 10, max = 12, priority = 0.96),
 
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.LOTTE.NAME, carrierCode = CarrierEnum.LOTTE.CODE,
-                          min = 12, max = 12, priority = 0.99))
+                          min = 12, max = 12, priority = 0.99)
+        )
         carrierRepo.insert(carrierList)
     }
 

@@ -84,7 +84,8 @@ class CarrierRepository(private val appDB: AppDatabase)
                           min = 11, max = 11, priority = 0.97),
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.HANJINS.NAME, carrierCode = CarrierEnum.HANJINS.CODE,
                           min = 10, max = 12, priority = 0.96),
-
+            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.KDEXP.NAME, carrierCode = CarrierEnum.KDEXP.CODE,
+                          min = 9, max = 16, priority = 0.93),
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.LOTTE.NAME, carrierCode = CarrierEnum.LOTTE.CODE,
                           min = 12, max = 12, priority = 0.99)
 
@@ -97,8 +98,7 @@ class CarrierRepository(private val appDB: AppDatabase)
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.ILYANGLOGIS.NAME,
                           carrierCode = CarrierEnum.ILYANGLOGIS.CODE, min = 9, max = 11,
                           priority = 0.86),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.KDEXP.NAME, carrierCode = CarrierEnum.KDEXP.CODE,
-                          min = 9, max = 16, priority = 0.93),
+
             CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.KUNYOUNG.NAME, carrierCode = CarrierEnum.KUNYOUNG.CODE,
                           min = 10, max = 10, priority = 0.5),
 

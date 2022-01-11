@@ -5,7 +5,7 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import com.delivery.sopo.util.SopoLog
 
-class NotificationListener: NotificationListenerService()
+class SOPONotificationListenerService: NotificationListenerService()
 {
     override fun onNotificationPosted(sbn: StatusBarNotification?)
     {
@@ -13,7 +13,9 @@ class NotificationListener: NotificationListenerService()
 
         val notification: Notification = sbn?.notification?:return
 
-        if("com.kakao.talk" != sbn.packageName) return
+        SopoLog.d("PackageNAme :: ${sbn.packageName}")
+
+        if(("com.samsung.android.messaging" != sbn.packageName) || ("com.kakao.talk" != sbn.packageName)) return
 
         val extras = notification.extras
         val title = extras.getString(Notification.EXTRA_TITLE)
@@ -25,5 +27,14 @@ class NotificationListener: NotificationListenerService()
             text:$text
             subText:$subText
         """.trimIndent())
+    }
+
+
+    fun readKAKAONotificationListener(){
+
+    }
+
+    fun readMMSNotificationListener(){
+
     }
 }
