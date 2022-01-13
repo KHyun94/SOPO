@@ -16,6 +16,7 @@ import android.util.Log
 import android.view.View
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat.getSystemService
+import com.delivery.sopo.util.SopoLog
 
 object PowerManager
 {
@@ -31,7 +32,7 @@ object PowerManager
 
             if(!isWhiteList)
             {
-                Log.d("LOG.SOPO", "화이트리스트에 등록되지않음 => package:${context.packageName}")
+                SopoLog.d("화이트리스트에 등록되지않음 => package:${context.packageName}")
 
                 val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
                 intent.data = Uri.parse("package:${context.packageName}")
@@ -39,7 +40,7 @@ object PowerManager
             }
             else
             {
-                Log.d("LOG.SOPO", "화이트리스트에 등록되어있음")
+                SopoLog.d("화이트리스트에 등록되어있음")
             }
         }
     }

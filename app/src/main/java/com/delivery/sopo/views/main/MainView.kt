@@ -3,6 +3,7 @@ package com.delivery.sopo.views.main
 import android.app.Activity
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.provider.Settings
 import android.view.View
 import android.widget.Toast
@@ -27,6 +28,7 @@ import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.services.PowerManager
 import com.delivery.sopo.services.receivers.RefreshParcelBroadcastReceiver
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.viewmodels.menus.MenuMainFragment
@@ -63,22 +65,50 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
     private val refreshParcelBroadcastReceiver = RefreshParcelBroadcastReceiver()
 
-    private fun permissionGrantred(): Boolean
-    {
-        val sets = NotificationManagerCompat.getEnabledListenerPackages(this)
-        return sets.contains(packageName)
-    }
-
     override fun onBeforeBinding()
     {
         PowerManager.checkWhiteList(this)
         checkAppPassword()
 
-        val isPer = permissionGrantred().apply {
-            Toast.makeText(applicationContext, "여ㅇ부 $this", Toast.LENGTH_SHORT).show()
+        val isCheck = PermissionUtil.checkNotificationListenerPermission(this, this.packageName)
+
+        if(isCheck)
+        {
+            SopoLog.d("노티피케이션 활성화 상태")
+            return
         }
 
-        startActivity(Intent(Settings.ACTION_NOTIFICATION_LISTENER_DETAIL_SETTINGS))
+        SopoLog.d("노티피케이션 비활성화 상태")
+
+        val settingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+        {
+            Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+        }
+        else
+        {
+            Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+        }
+
+        launchActivityResult(settingIntent, ActivityResultCallback<ActivityResult> { result ->
+
+            val isConfirm = PermissionUtil.checkNotificationListenerPermission(this, packageName)
+
+            SopoLog.d("""
+                설정 결과값
+                resultCode: ${result.resultCode}
+                action: ${result.data?.action}
+                type: ${result.data?.type}
+                isConfirm: $isConfirm
+            """.trimIndent())
+
+
+
+            //            if(result.resultCode == Activity.RES)
+//            {
+//
+//                return@ActivityResultCallback
+//            }
+        })
 
     }
 
@@ -134,6 +164,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
             }
         })
     }
+
 
     fun activateTab(binding: ItemMainTabBinding, resId: Int)
     {
@@ -234,8 +265,8 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
         }
     }
 
-    private fun setTabIcon(tab: TabLayout.Tab,
-                           @DrawableRes iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
+    private fun setTabIcon(tab: TabLayout.Tab, @DrawableRes
+    iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
     {
         val tabBinding =
             ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
@@ -247,13 +278,13 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
         return tabBinding
     }
 
-    fun getInquiryTabRes(){
+    fun getInquiryTabRes()
+    {
 
     }
 
     fun showTab()
-    {
-//        AnimationUtil.slideUp(binding.layoutMainTab)
+    { //        AnimationUtil.slideUp(binding.layoutMainTab)
 
         binding.layoutMainTab.visibility = View.VISIBLE
 
@@ -264,8 +295,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
     }
 
     fun hideTab()
-    {
-//        AnimationUtil.slideDown(binding.layoutMainTab)
+    { //        AnimationUtil.slideDown(binding.layoutMainTab)
 
         binding.layoutMainTab.visibility = View.GONE
 

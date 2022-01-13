@@ -13,7 +13,7 @@ class SOPONotificationListenerService: NotificationListenerService()
 
         val notification: Notification = sbn?.notification?:return
 
-        SopoLog.d("PackageNAme :: ${sbn.packageName}")
+        SopoLog.d("PackageName :: ${sbn.packageName}")
 
         if(("com.samsung.android.messaging" != sbn.packageName) || ("com.kakao.talk" != sbn.packageName)) return
 

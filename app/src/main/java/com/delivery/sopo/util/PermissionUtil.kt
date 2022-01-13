@@ -2,6 +2,7 @@ package com.delivery.sopo.util
 
 import android.content.Context
 import android.content.pm.PackageManager
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.consts.PermissionConst
@@ -12,6 +13,13 @@ import com.gun0912.tedpermission.TedPermission
 
 object PermissionUtil
 {
+    fun checkNotificationListenerPermission(context: Context, packageName: String): Boolean
+    {
+        SopoLog.d("requestNotificationListenerPermission(...) 호출 [packageName:$packageName]")
+        val sets = NotificationManagerCompat.getEnabledListenerPackages(context)
+        return sets.contains(packageName)
+    }
+
     fun requestPermission(activity: FragmentActivity, onPermissionResponseCallback: OnPermissionResponseCallback){
         if(!isPermissionGranted(activity, *PermissionConst.PERMISSION_ARRAY))
         {
