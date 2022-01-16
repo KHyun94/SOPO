@@ -36,7 +36,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="0.2"
                 app:setBackgroundColor="@{ongoingInquiryData.backgroundColorResource}"
-                tools:visibility="gone"
+                tools:visibility="visible"
                 tools:src="@android:color/black">
 
                 <ImageView
@@ -92,7 +92,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.2"
-                tools:visibility="visible">
+                tools:visibility="gone">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -109,7 +109,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.8"
-                tools:visibility="gone">
+                tools:visibility="visible">
 
 
                 <TextView
@@ -140,7 +140,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:visibility="gone">
+                    tools:visibility="visible">
 
                     <TextView
                         android:id="@+id/tv_registered_parcel_name"
@@ -171,7 +171,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.8"
-                tools:visibility="visible">
+                tools:visibility="gone">
 
                 <LinearLayout
                     android:id="@+id/linear_sopo_item_delete"

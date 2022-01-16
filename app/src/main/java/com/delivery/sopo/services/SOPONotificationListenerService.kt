@@ -1,15 +1,36 @@
 package com.delivery.sopo.services
 
 import android.app.Notification
+import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import com.delivery.sopo.data.repository.local.repository.CarrierRepository
+import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.models.Carrier
+import com.delivery.sopo.models.ParcelRegister
+import com.delivery.sopo.notification.NotificationImpl
+import com.delivery.sopo.usecase.parcel.remote.RegisterParcelUseCase
 import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
-class SOPONotificationListenerService: NotificationListenerService()
+class SOPONotificationListenerService: NotificationListenerService(), KoinComponent
 {
+    private val userRepo: UserLocalRepository by inject()
+    private val parcelRepo: ParcelRepository by inject()
+    private val carrierRepo: CarrierRepository by inject()
+    private val registerParcelUseCase: RegisterParcelUseCase by inject()
+
     override fun onNotificationPosted(sbn: StatusBarNotification?)
     {
         super.onNotificationPosted(sbn)
+
+        if(userRepo.getStatus() != 1) return
 
         val notification: Notification = sbn?.notification?:return
 
@@ -17,24 +38,149 @@ class SOPONotificationListenerService: NotificationListenerService()
 
         if(("com.samsung.android.messaging" != sbn.packageName) || ("com.kakao.talk" != sbn.packageName)) return
 
-        val extras = notification.extras
+        val extras: Bundle = notification.extras
+
+        CoroutineScope(Dispatchers.IO).launch {
+            readKAKAONotificationListener(packageName, extras)
+            readMMSNotificationListener(packageName, extras)
+        }
+    }
+
+
+    suspend fun readKAKAONotificationListener(packageName: String, extras: Bundle){
+        if(packageName != "com.kakao.talk") return
+
         val title = extras.getString(Notification.EXTRA_TITLE)
         val text = extras.getCharSequence(Notification.EXTRA_TEXT)
         val subText = extras.getCharSequence(Notification.EXTRA_SUB_TEXT)
 
         SopoLog.d("""
+            KAKAO
             title:$title
             text:$text
             subText:$subText
         """.trimIndent())
+
+        registerParcelInNotification(subText.toString() ?: "")
     }
 
+    suspend fun readMMSNotificationListener(packageName: String, extras: Bundle){
+        if(packageName != "com.samsung.android.messaging") return
 
-    fun readKAKAONotificationListener(){
+        val title = extras.getString(Notification.EXTRA_TITLE)
+        val text = extras.getCharSequence(Notification.EXTRA_TEXT)
+        val subText = extras.getCharSequence(Notification.EXTRA_SUB_TEXT)
 
+        SopoLog.d("""
+            SMS/MMS
+            title:$title
+            text:$text
+            subText:$subText
+        """.trimIndent())
+
+        registerParcelInNotification(subText.toString() ?: "")
     }
 
-    fun readMMSNotificationListener(){
+    private suspend fun registerParcelInNotification(content: String){
+        try
+        {
+            val parcelRegister = getReceivedData(content)
+            val parcelId = registerParcelUseCase.invoke(parcelRegister)
+            val parcel = parcelRepo.getRemoteParcelById(parcelId = parcelId)
+            NotificationImpl.notifyRegisterParcel(context = applicationContext, parcelResponse = parcel)
+        }
+        catch(e:Exception)
+        {
+            e.printStackTrace()
+        }
+    }
 
+    /**
+     * 문자 내용 중 해당하는 택배사가 존재하는지 확인
+     * 없을 시 throw Exception
+     */
+    private suspend fun getReceivedCarrier(content: String) = withContext(Dispatchers.Default) {
+
+        val carriers = carrierRepo.getAll().filterNotNull()
+
+        var receivedCarrier: Carrier? = null
+
+        for(carrier in carriers)
+        {
+            if(content.contains(carrier.carrier.NAME))
+            {
+                receivedCarrier = carrier
+                break
+            }
+        }
+
+        return@withContext receivedCarrier ?: throw NullPointerException("일치하는 택배사가 존재하지 않습니다.")
+    }
+
+    private fun getReceivedWaybillNum(content: String): String
+    {
+        val rows = content.split("\n")
+
+        var matchRow: String? = null
+
+        for(row in rows)
+        {
+            if(!(row.contains("송장번호") || row.contains("운송장번호") || row.contains("운송장"))) continue
+            matchRow = row
+            break
+        }
+
+        matchRow ?: throw Exception("운송장번호가 존재하지 않습니다.")
+
+        val extractedWaybillNum = parse(matchRow)
+
+        return with(extractedWaybillNum) {
+            when
+            {
+                contains('_') -> replace("_", "")
+                contains('-') -> replace("-", "")
+                else -> this
+            }
+        }
+    }
+
+    private fun getReceivedAlias(content: String): String
+    {
+        val rows = content.split("\n")
+
+        var matchRow: String? = null
+
+        for(row in rows)
+        {
+            if(!row.contains("상품명")) continue
+            matchRow = row
+            break
+        }
+
+        matchRow ?: throw Exception("Alias가 존재하지 않습니다.")
+
+        return parse(matchRow)
+    }
+
+    private suspend fun getReceivedData(mms: String): ParcelRegister
+    {
+        try
+        {
+            val receivedAlias: String = getReceivedAlias(content = mms)
+            val receivedWaybillsNum: String = getReceivedWaybillNum(content = mms)
+            val receivedCarrier: Carrier = getReceivedCarrier(content = mms)
+
+            return ParcelRegister(receivedWaybillsNum, receivedCarrier.carrier, receivedAlias)
+        }
+        catch(e: Exception)
+        {
+            SopoLog.e("MMS 데이터 중 택배에 해당하는 데이터가 존재하지 않습니다. [message:${e.message}]")
+            throw e
+        }
+    }
+
+    private fun parse(msg: String) = with(msg) {
+        val index = indexOf(':')
+        substring(index + 1).trim()
     }
 }
