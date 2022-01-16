@@ -36,12 +36,18 @@ import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
+import com.delivery.sopo.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
+import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.dialog.OptionalClickListener
 import com.delivery.sopo.views.dialog.OptionalDialog
 import com.delivery.sopo.views.main.MainView
+import com.delivery.sopo.views.menus.FaqFragment
+import com.delivery.sopo.views.menus.NoticeFragment
+import com.delivery.sopo.views.registers.RegisterMainFragment
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -108,6 +114,26 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
     override fun setAfterBinding()
     {
+
+        val adapter = ViewPagerAdapter(requireActivity(), arrayListOf(NoticeFragment(), FaqFragment()))
+
+        binding.viewPagerInquiryType.adapter = adapter
+        binding.viewPagerInquiryType.offscreenPageLimit = 2
+
+        TabLayoutMediator(binding.tabLayoutInquiryType, binding.viewPagerInquiryType) { tab, pos ->
+
+            when(pos)
+            {
+                0 ->
+                {
+                    tab.text = "배송중"
+                }
+                1->
+                {
+                    tab.text = "배송완료"
+                }
+            }
+        }.attach()
 
         setAdapters()
         setListener()

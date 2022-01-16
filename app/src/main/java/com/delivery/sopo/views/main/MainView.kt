@@ -180,6 +180,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
 
     private fun setViewPager()
     {
+        binding.layoutViewPager.isUserInputEnabled = false
         val adapter = ViewPagerAdapter(this, baseFragments)
 
         binding.layoutViewPager.adapter = adapter
