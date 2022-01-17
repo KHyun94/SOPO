@@ -115,7 +115,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     override fun setAfterBinding()
     {
 
-        val adapter = ViewPagerAdapter(requireActivity(), arrayListOf(NoticeFragment(), FaqFragment()))
+        val adapter = ViewPagerAdapter(requireActivity(), arrayListOf(OngoingTypeFragment(), CompletedTypeFragment()))
 
         binding.viewPagerInquiryType.adapter = adapter
         binding.viewPagerInquiryType.offscreenPageLimit = 2
