@@ -4,10 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/layout/confirm_delete_dialog.xml" value="0.3848958333333333" />
-        <entry key="app/src/main/res/layout/fragment_completed_type.xml" value="0.19270833333333334" />
+        <entry key="app/src/main/res/layout/fragment_completed_type.xml" value="0.375" />
         <entry key="app/src/main/res/layout/fragment_inquiry_re.xml" value="0.18262411347517732" />
         <entry key="app/src/main/res/layout/fragment_ongoing_type.xml" value="0.335" />
         <entry key="app/src/main/res/layout/include_no_item.xml" value="0.103125" />
+        <entry key="app/src/main/res/layout/inquiry_list_ongoing_item.xml" value="0.37447916666666664" />
       </map>
     </option>
   </component>

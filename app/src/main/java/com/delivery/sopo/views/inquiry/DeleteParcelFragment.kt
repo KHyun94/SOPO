@@ -70,9 +70,7 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
                 FragmentManager.move(parentView, TabCode.INQUIRY, InquiryMainFragment.viewId)
             }
 
-            override fun onBackPressedOutTime()
-            {
-            }
+            override fun onBackPressedOutTime() { }
         }
     }
 
@@ -119,7 +117,6 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
         getAdapter(vm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Soon).let { adapter ->
             soonArrivalParcelAdapter = adapter
             binding.recyclerviewSoonArrival.adapter = soonArrivalParcelAdapter
-            soonArrivalParcelAdapter.isFullListItem(true)
             val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
             animator.supportsChangeAnimations = false
         }

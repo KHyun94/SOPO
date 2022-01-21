@@ -38,6 +38,7 @@ import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
+import com.delivery.sopo.views.dialog.OptionalClickListener
 import com.delivery.sopo.views.dialog.OptionalDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
@@ -67,8 +68,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewM
 
         setAdapters()
         setListener()
-
-        updateCompleteUI()
     }
 
     private fun getAdapter(inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter
@@ -83,7 +82,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewM
         getAdapter(InquiryItemTypeEnum.Soon).let { adapter ->
             soonArrivalParcelAdapter = adapter
             binding.recyclerviewSoonArrival.adapter = soonArrivalParcelAdapter
-            soonArrivalParcelAdapter.isFullListItem(true)
             val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
             animator.supportsChangeAnimations = false
         }
@@ -100,8 +98,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewM
         super.setObserve()
 
         // 배송중 , 등록된 택배 리스트
-        vm.ongoingList.observe(requireActivity(), Observer { list ->
-
+        vm.ongoingList.observe(requireActivity()) { list ->
             SopoLog.d("진행중인 택배 갯수 [size:${list.size}]")
 
             if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
@@ -112,161 +109,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewM
 
             viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
             viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
-        })
-
-        // 배송완료 리스트.
-        vm.completeList.observe(requireActivity(), Observer { list ->
-            completedParcelAdapter.notifyChanged(list)
-        })
-
-        // 배송완료 화면에서 표출 가능한 년월 리스트
-        vm.histories.observe(requireActivity()) { dates ->
-
-            CoroutineScope(Dispatchers.Main).launch {
-                if(dates.isEmpty())
-                {
-                    SopoLog.d("완료 택배가 없습니다.")
-
-                    binding.includeCompleteNoItem.visible = View.GONE
-
-                    return@launch
-                }
-
-                SopoLog.d("완료 택배가 있습니다. ${dates.size}")
-
-                binding.includeCompleteNoItem.visible = View.GONE
-
-                val latestDate = try
-                {
-                    dates.first { date -> date.count > 0 }
-                }
-                catch(e: NoSuchElementException)
-                {
-                    dates.first()
-                }
-
-                vm.updateCompletedParcelCalendar(latestDate.year)
-
-                // TODO 다른 곳으로 빼야할듯
-                binding.constraintYearSpinner.setOnClickListener { v ->
-                    drawCompletedParcelHistoryPopMenu(v, dates)
-                }
-            }
-
-        }
-
-        vm.monthsOfCalendar.observe(requireActivity()) { list ->
-
-            setDefaultMonthSelector()
-            vm.selectedDate.postValue("")
-
-            val reversedList = list.reversed()
-
-            CoroutineScope(Dispatchers.Main).launch {
-
-                reversedList.forEach {
-
-                    if(it.item.count > 0 && it.isSelect)
-                    {
-                        vm.selectedDate.postValue("${it.item.year}년 ${it.item.month}월")
-                    }
-
-                    val (clickable, textColor, font) = if(it.item.count > 0)
-                    {
-                        Triple(first = true, second = if(it.isSelect) ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE)
-                        else ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800), third = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold))
-                    }
-                    else
-                    {
-                        Triple(first = false, second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300), third = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium))
-                    }
-
-                    when(it.item.month)
-                    {
-                        "01" ->
-                        {
-                            val background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
-                            setMonthIconUI(tv = binding.tvJan, font = font, textColor = textColor, clickable = clickable, background = background)
-                        }
-                        "02" ->
-                        {
-                            val background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
-                            setMonthIconUI(tv = binding.tvFeb, font = font, textColor = textColor, clickable = clickable, background = background)
-                        }
-                        "03" ->
-                        {
-                            val background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
-                            setMonthIconUI(tv = binding.tvMar, font = font, textColor = textColor, clickable = clickable, background = background)
-                        }
-                        "04" ->
-                        {
-                            val background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
-                            setMonthIconUI(tv = binding.tvApr, font = font, textColor = textColor, clickable = clickable, background = background)
-                        }
-                        "05" ->
-                        {
-                            val background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
-                            setMonthIconUI(tv = binding.tvMay, font = font, textColor = textColor, clickable = clickable, background = background)
-                        }
-                        "06" ->
-                        {
-                            val background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
-                            setMonthIconUI(tv = binding.tvJun, font = font, textColor = textColor, clickable = clickable, background = background)
-                        }
-                        "07" ->
-                        {
-                            val background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
-                            setMonthIconUI(tv = binding.tvJul, font = font, textColor = textColor, clickable = clickable, background = background)
-                        }
-                        "08" ->
-                        {
-                            val background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
-                            setMonthIconUI(tv = binding.tvAug, font = font, textColor = textColor, clickable = clickable, background = background)
-                        }
-                        "09" ->
-                        {
-                            val background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
-                            setMonthIconUI(tv = binding.tvSep, font = font, textColor = textColor, clickable = clickable, background = background)
-                        }
-                        "10" ->
-                        {
-                            val background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
-                            setMonthIconUI(tv = binding.tvOct, font = font, textColor = textColor, clickable = clickable, background = background)
-                        }
-                        "11" ->
-                        {
-                            val background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
-                            setMonthIconUI(tv = binding.tvNov, font = font, textColor = textColor, clickable = clickable, background = background)
-                        }
-                        "12" ->
-                        {
-                            val background =
-                                if(it.isSelect) ContextCompat.getDrawable(requireContext(), R.drawable.oval_24dp_gray_scale) else null
-                            setMonthIconUI(tv = binding.tvDec, font = font, textColor = textColor, clickable = clickable, background = background)
-                        }
-                    }
-
-                }
-            }
-
-
-        }
-
-        vm.selectedDate.observe(requireActivity()) { date ->
-            if(date == "") return@observe
-            val searchDate = date.replace("년 ", "").replace("월", "")
-            vm.refreshCompleteParcelsByDate(searchDate)
         }
     }
 
@@ -281,8 +123,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewM
                 OptionalDialog(optionalType = OptionalTypeEnum.LEFT, titleIcon = 0, title = "이 아이템을 제거할까요?", subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.", content = """
                     배송 상태가 2주간 확인되지 않고 있어요.
                     등록된 송장번호가 유효하지 않을지도 몰라요.
-                                """.trimIndent(), leftHandler = Pair("지울게요", second = object:
-                        OptionalClickListener
+                                """.trimIndent(), leftHandler = Pair("지울게요", second = object: OptionalClickListener
                 {
                     override fun invoke(dialog: OptionalDialog)
                     {
@@ -334,145 +175,23 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewM
                         vm.onUpdateParcelAlias(parcelId, parcelAlias)
                         AlertUtil.onDismiss()
                     }
-                }), Pair("취소", null), Function {
+                }), Pair("취소", null)) {
                     edit.value = it
-                })
-            }
-
-        }
-    }
-
-    private fun openInquiryMenu(anchorView: View)
-    {
-        if(menuPopUpWindow != null)
-        {
-            menuPopUpWindow?.showAsDropDown(anchorView)
-            return
-        }
-
-        val menu = PopupMenu(requireActivity(), anchorView).menu
-
-        requireActivity().menuInflater.inflate(R.menu.inquiry_popup_menu, menu)
-
-        val popUpView: PopupMenuViewBinding =
-            PopupMenuViewBinding.inflate(LayoutInflater.from(requireContext())).also { v ->
-                val popupMenuListAdapter =
-                    PopupMenuListAdapter(MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
-
-                v.recyclerviewInquiryPopupMenu.also {
-                    it.adapter = popupMenuListAdapter
-                    val dividerItemDecoration =
-                        DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                    dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
-                    it.addItemDecoration(dividerItemDecoration)
-
-                    // 'Inquiry' 화면 우측 상단의 메뉴 아이템 이벤트
-                    popupMenuListAdapter.setPopUpMenuOnclick(object: PopupMenuListAdapter.InquiryPopUpMenuItemOnclick
-                                                             {
-                                                                 override fun removeItem(v: View)
-                                                                 { //삭제하기
-                                                                     //                                                                     vm.onOpenDeleteView()
-                                                                     TabCode.DELETE_PARCEL.FRAGMENT =
-                                                                         DeleteParcelFragment.newInstance(vm.inquiryStatus.value
-                                                                                                              ?: InquiryStatusEnum.ONGOING)
-                                                                     FragmentManager.move(requireActivity(), TabCode.DELETE_PARCEL, InquiryMainFragment.viewId)
-                                                                     menuPopUpWindow?.dismiss()
-                                                                 }
-
-                                                                 override fun refreshItems(v: View)
-                                                                 { // 새로고침
-                                                                     vm.syncParcelsByOngoing()
-                                                                     menuPopUpWindow?.dismiss()
-                                                                 }
-
-                                                                 override fun help(v: View)
-                                                                 { // 도움말
-                                                                     menuPopUpWindow?.dismiss()
-                                                                 }
-                                                             })
                 }
             }
 
-        menuPopUpWindow =
-            PopupWindow(popUpView.root, SizeUtil.changeDpToPx(binding.root.context, 175F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
-                showAsDropDown(anchorView)
-            }
-
-    }
-
-    // 배송완료 화면에서 년/월을 눌렀을 시 팝업 메뉴가 나온다.
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private fun drawCompletedParcelHistoryPopMenu(anchorView: View, histories: List<CompletedParcelHistory>)
-    {
-        val historyPopUpView: PopupMenuViewBinding =
-            PopupMenuViewBinding.inflate(LayoutInflater.from(context)).also { v ->
-
-                val inquiryMenuItems =
-                    MenuMapper.completeParcelStatusDTOToMenuItem(histories) as MutableList<InquiryMenuItem>
-
-                val popupMenuListAdapter = PopupMenuListAdapter(inquiryMenuItems)
-
-                v.recyclerviewInquiryPopupMenu.also {
-                    it.adapter = popupMenuListAdapter
-                    val dividerItemDecoration =
-                        DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                    dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
-                    it.addItemDecoration(dividerItemDecoration)
-
-                    val historyPopUpItemOnClick =
-                        object: PopupMenuListAdapter.HistoryPopUpItemOnclick
-                        {
-                            override fun changeTimeCount(v: View, year: String)
-                            {
-                                vm.changeCompletedParcelHistoryDate(year = year)
-                                historyPopUpWindow?.dismiss()
-                            }
-                        }
-
-                    popupMenuListAdapter.setHistoryPopUpItemOnclick(historyPopUpItemOnClick)
-
-                    it.scrollBarFadeDuration = 800
-                }
-            }
-        historyPopUpWindow = if(histories.size > 2)
-        {
-            PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F), SizeUtil.changeDpToPx(binding.root.context, 35 * 6F), true).apply {
-                CoroutineScope(Dispatchers.Main).launch {
-                    showAsDropDown(anchorView, -80, 0, Gravity.CENTER)
-                }
-            }
-        }
-        else
-        {
-            PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
-
-                CoroutineScope(Dispatchers.Main).launch {
-                    showAsDropDown(anchorView, -80, 0, Gravity.CENTER)
-                }
-
-            }
         }
     }
 
     private fun setListener()
     { // 당겨서 새로고침 !
-        binding.swipeRefresh.setOnRefreshListener {
+        binding.swipeLayoutMainOngoing.setOnRefreshListener {
 
             if(!refreshDelay)
             {
                 refreshDelay = true
 
-                when(vm.getCurrentScreenStatus())
-                {
-                    InquiryStatusEnum.COMPLETE ->
-                    {
-                        vm.refreshCompleteParcels()
-                    }
-                    InquiryStatusEnum.ONGOING ->
-                    {
-                        vm.syncParcelsByOngoing()
-                    }
-                }
+                vm.syncParcelsByOngoing()
 
                 //5초후에 실행
                 Timer().schedule(object: TimerTask()
@@ -485,41 +204,15 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewM
                                      }
                                  }, 5000)
 
-                binding.swipeRefresh.isRefreshing = false
+                binding.swipeLayoutMainOngoing.isRefreshing = false
 
                 return@setOnRefreshListener
             }
 
             Toast.makeText(requireContext(), "5초 후에 다시 새로고침을 시도해주세요.", Toast.LENGTH_LONG).show()
 
-            binding.swipeRefresh.isRefreshing = false
+            binding.swipeLayoutMainOngoing.isRefreshing = false
         }
-
-
-        // 배송완료 리스트의 마지막 행까지 내려갔다면 다음 데이터를 요청한다(페이징)
-
-        val onScrollListener = object: RecyclerView.OnScrollListener()
-        {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
-            {
-                super.onScrollStateChanged(recyclerView, newState)
-
-                if(!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) // 리스트뷰의 마지막
-                {
-                    val inquiryDate =
-                        vm.selectedDate.value?.replace("년 ", "")?.replace("월", "") ?: return
-
-                    SopoLog.d("완료 택배 RecyclerView $inquiryDate")
-
-                    CoroutineScope(Dispatchers.IO).launch {
-                        vm.getCompleteParcelsWithPaging(inquiryDate = inquiryDate)
-
-                    }
-                }
-            }
-        }
-
-        binding.recyclerviewCompleteParcel.addOnScrollListener(onScrollListener)
     }
 
     // '곧 도착' 리스트의 아이템의 개수에 따른 화면세팅
@@ -532,39 +225,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewM
         }
 
         binding.constraintSoonArrival.visibility = View.GONE
-
-        when(listSize)
-        {
-
-            /*// 아이템의 개수가 0개일때
-            0 ->
-            {
-                // '곧 도착' 텍스트부터 리스트뷰까지 잡혀있는 부모뷰를 GONE 처리
-                binding.constraintSoonArrival.visibility = GONE
-                // '더보기'를  선택할 수 있는 부모뷰 GONE 처리
-                binding.linearMoreViewParent.visibility = GONE
-                // '곧 도착'과 '등록된 택배'의 사이에 적절한 공백을 담당하는 뷰 GONE 처리
-                binding.vMoreView.visibility = GONE
-            }
-            1 ->
-            {
-                binding.constraintSoonArrival.visibility = VISIBLE
-                binding.linearMoreViewParent.visibility = GONE
-                binding.vMoreView.visibility = INVISIBLE
-            }
-            2 ->
-            {
-                binding.constraintSoonArrival.visibility = VISIBLE
-                binding.linearMoreViewParent.visibility = GONE
-                binding.vMoreView.visibility = INVISIBLE
-            }
-            else ->
-            {
-                binding.constraintSoonArrival.visibility = VISIBLE
-                binding.linearMoreViewParent.visibility = VISIBLE
-                binding.vMoreView.visibility = GONE
-            }*/
-        }
     }
 
     // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
@@ -581,95 +241,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewM
                 binding.constraintRegisteredArrival.visibility = View.VISIBLE
             }
         }
-    }
-
-    //팝업 메뉴에서 '삭제하기'가 선택되었을때 화면 세팅
-    // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
-
-    /*    private fun viewSettingForPopupMenuDelete()
-        {
-            binding.tvTitle.visibility = INVISIBLE
-            binding.linearStatusSelector.visibility = INVISIBLE
-            binding.ivPopMenu.visibility = INVISIBLE
-            binding.linearMoreViewParent.visibility = GONE
-
-            binding.vMoreView.visibility = INVISIBLE
-
-        }*/
-
-    // X 버튼으로 '삭제하기 취소'가 되었을때 화면 세팅
-    // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
-
-    /*   private fun viewSettingForPopupMenuDeleteCancel()
-       {
-           binding.tvTitle.visibility = VISIBLE
-           binding.linearStatusSelector.visibility = VISIBLE
-           binding.ivPopMenu.visibility = VISIBLE
-
-
-           // 삭제하기 취소가 되었을때 화면의 리스트들을 앱이 켜졌을때 처럼 초기화 시켜준다.( '더보기'가 눌렸었는지 아니면 내가 전에 리스트들의 스크롤을 얼마나 내렸는지를 일일이 알고 있기 힘들기 때문에)
-           viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
-           viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
-       }
-   */
-    private fun setDefaultMonthSelector()
-    {
-        val (clickable, textColor, font) = Triple(first = false, second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300), third = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium))
-
-        setMonthIconUI(tv = binding.tvJan, font = font, textColor = textColor, clickable = clickable)
-        setMonthIconUI(tv = binding.tvFeb, font = font, textColor = textColor, clickable = clickable)
-        setMonthIconUI(tv = binding.tvMar, font = font, textColor = textColor, clickable = clickable)
-        setMonthIconUI(tv = binding.tvApr, font = font, textColor = textColor, clickable = clickable)
-        setMonthIconUI(tv = binding.tvMay, font = font, textColor = textColor, clickable = clickable)
-        setMonthIconUI(tv = binding.tvJun, font = font, textColor = textColor, clickable = clickable)
-        setMonthIconUI(tv = binding.tvJul, font = font, textColor = textColor, clickable = clickable)
-        setMonthIconUI(tv = binding.tvAug, font = font, textColor = textColor, clickable = clickable)
-        setMonthIconUI(tv = binding.tvSep, font = font, textColor = textColor, clickable = clickable)
-        setMonthIconUI(tv = binding.tvOct, font = font, textColor = textColor, clickable = clickable)
-        setMonthIconUI(tv = binding.tvNov, font = font, textColor = textColor, clickable = clickable)
-        setMonthIconUI(tv = binding.tvDec, font = font, textColor = textColor, clickable = clickable)
-    }
-
-    private fun setMonthIconUI(tv: TextView, font: Typeface?, textColor: Int, clickable: Boolean, background: Drawable? = null)
-    {
-        tv.apply {
-            setTextColor(textColor)
-            typeface = font
-            isClickable = clickable
-            isFocusable = clickable
-            this.background = background
-        }
-    }
-
-    private fun updateCompleteUI()
-    {
-        val onGlobalLayoutListener = object: ViewTreeObserver.OnGlobalLayoutListener
-        {
-            override fun onGlobalLayout()
-            {
-                SopoLog.d("onGlobalLayout 호출")
-                val yearSpinnerHeight: Int = binding.linearOutYearSpinner.height
-
-                SopoLog.d("yearSpinnerHeight $yearSpinnerHeight")
-
-                (binding.linearMonthSelector.layoutParams as FrameLayout.LayoutParams).apply {
-                    topMargin = yearSpinnerHeight
-                }
-
-                val monthSelectorHeight = binding.linearMonthSelector.height
-
-                SopoLog.d("monthSelectorHeight $monthSelectorHeight")
-
-                (binding.vEmpty2.layoutParams as LinearLayout.LayoutParams).apply {
-                    this.topMargin = yearSpinnerHeight
-                    this.height = monthSelectorHeight
-                }
-
-                binding.frameMainCompleteInquiry.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
-        }
-
-        binding.frameMainCompleteInquiry.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
     }
 
 }
