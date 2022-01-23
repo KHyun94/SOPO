@@ -23,28 +23,44 @@ object PermissionUtil
     fun requestPermission(activity: FragmentActivity, onPermissionResponseCallback: OnPermissionResponseCallback){
         if(!isPermissionGranted(activity, *PermissionConst.PERMISSION_ARRAY))
         {
-            val permissionDialog = PermissionDialog(act = activity) { dialog ->
+            permissionCallback(activity, *PermissionConst.PERMISSION_ARRAY) { isGranted ->
 
-                permissionCallback(activity, *PermissionConst.PERMISSION_ARRAY) { isGranted ->
+                if(!isGranted)
+                {
+                    SopoLog.e("권한 비허가 상태")
 
-                    if(!isGranted)
-                    {
-                        SopoLog.e("권한 비허가 상태")
+                    onPermissionResponseCallback.onPermissionDenied()
 
-                        onPermissionResponseCallback.onPermissionDenied()
-
-                        return@permissionCallback
-                    }
-
-                    SopoLog.d("권한 허가 상태")
-
-                    onPermissionResponseCallback.onPermissionGranted()
+                    return@permissionCallback
                 }
 
-                dialog.dismiss()
+                SopoLog.d("권한 허가 상태")
+
+                onPermissionResponseCallback.onPermissionGranted()
             }
 
-            permissionDialog.show(activity.supportFragmentManager, "PermissionTag")
+//            val permissionDialog = PermissionDialog(act = activity) { dialog ->
+//
+//                permissionCallback(activity, *PermissionConst.PERMISSION_ARRAY) { isGranted ->
+//
+//                    if(!isGranted)
+//                    {
+//                        SopoLog.e("권한 비허가 상태")
+//
+//                        onPermissionResponseCallback.onPermissionDenied()
+//
+//                        return@permissionCallback
+//                    }
+//
+//                    SopoLog.d("권한 허가 상태")
+//
+//                    onPermissionResponseCallback.onPermissionGranted()
+//                }
+//
+//                dialog.dismiss()
+//            }
+//
+//            permissionDialog.show(activity.supportFragmentManager, "PermissionTag")
 
             return
         }
@@ -79,5 +95,9 @@ object PermissionUtil
             .setPermissionListener(permissionListener)
             .setPermissions(*permissions)
             .check()
+    }
+
+    public fun requestPermission(){
+
     }
 }

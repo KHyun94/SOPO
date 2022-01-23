@@ -1,62 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
+        <import type="com.delivery.sopo.R" />
+
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.IntroViewModel" />
     </data>
 
-    <LinearLayout
-        android:id="@+id/linear_intro"
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:id="@+id/layout_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/COLOR_GRAY_50"
-        android:orientation="vertical">
+        android:gravity="bottom"
+        app:umanoDragView="@+id/layout_drawer"
+        app:umanoOverlay="true"
+        app:umanoPanelHeight="0dp"
+        app:umanoShadowHeight="0dp">
 
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/linear_intro"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/COLOR_GRAY_50"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="11dp"
+                android:background="@color/COLOR_GRAY_50">
+
+                <ImageView
+                    android:id="@+id/iv_previous_page"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="30dp"
+                    android:padding="16dp"
+                    android:src="@drawable/ic_left_arrow_default"
+                    android:visibility="gone" />
+
+                <com.delivery.sopo.views.widget.IntroIndicator
+                    android:id="@+id/indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true" />
+
+                <ImageView
+                    android:id="@+id/iv_next_page"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="30dp"
+                    android:padding="16dp"
+                    android:src="@drawable/ic_right_arrow_default"
+                    android:visibility="visible" />
+
+            </RelativeLayout>
+
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_drawer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/COLOR_GRAY_50"
-            android:layout_marginTop="11dp">
+            android:background="@drawable/border_top_rounded"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/iv_previous_page"
-                android:layout_width="wrap_content"
+
+            <TextView
+                android:id="@+id/tv_title"
+                style="@style/kor_H3"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="30dp"
-                android:visibility="gone"
-                android:padding="16dp"
-                android:src="@drawable/ic_left_arrow_default" />
+                android:fontFamily="@font/pretendard_bold"
+                android:includeFontPadding="false"
+                android:layout_marginLeft="36dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="26.5dp"
+                android:text="소포 앱이 일하기 위해\n권한이 필요합니다"
+                android:textColor="@color/COLOR_GRAY_800" />
 
-            <com.delivery.sopo.views.widget.IntroIndicator
-                android:id="@+id/indicator"
-                android:layout_width="wrap_content"
+
+            <include
+                android:id="@+id/include_permission_save"
+                layout="@layout/detail_permission_item"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
+                android:layout_marginLeft="36dp"
+                android:layout_marginBottom="33dp"
+                app:content='@{"계정 정보 및 택배 데이터 보관"}'
+                app:permissionIcon="@{R.drawable.ic_permission_save}"
+                app:title='@{"저장 권한"}' />
 
-            <ImageView
-                android:id="@+id/iv_next_page"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="30dp"
-                android:visibility="visible"
-                android:padding="16dp"
-                android:src="@drawable/ic_right_arrow_default" />
 
-        </RelativeLayout>
 
-        <androidx.viewpager.widget.ViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+                <TextView
+                    style="@style/buttonHalfStyle"
+                    android:id="@+id/tv_permission_check"
+                    android:layout_width="135dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/border_all_round_15dp"
+                    android:backgroundTint="@color/COLOR_MAIN_700"
+                    android:gravity="center"
+                    android:paddingVertical="10sp"
+                    android:text="확인"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="25dp"
+                    android:textColor="@color/MAIN_WHITE"
+                    android:textSize="20dp"
+                    android:textStyle="bold"/>
 
-    </LinearLayout>
+        </LinearLayout>
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
+
 
 </layout>

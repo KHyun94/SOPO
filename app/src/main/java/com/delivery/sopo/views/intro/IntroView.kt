@@ -1,7 +1,12 @@
 package com.delivery.sopo.views.intro
 
 import android.content.Intent
+import android.os.Build
+import android.os.Bundle
+import android.provider.Settings
 import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultCallback
 import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.IntroViewBinding
@@ -10,10 +15,12 @@ import com.delivery.sopo.interfaces.listener.OnIntroClickListener
 import com.delivery.sopo.interfaces.listener.OnPermissionResponseCallback
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.PermissionUtil
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.IntroViewModel
 import com.delivery.sopo.views.adapter.IntroPageAdapter
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.login.LoginSelectView
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
@@ -25,11 +32,42 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
     var numOfPage = 0
     var lastIndexOfPage = 0
 
+    var isNotificationListener: Boolean = false
+
     private val onPermissionResponseCallback = object: OnPermissionResponseCallback{
         override fun onPermissionGranted()
         {
-            moveToActivity(LoginSelectView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            finish()
+            if(isNotificationListener)
+            {
+                vm.setNavigator("TEST")
+                val settingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+                {
+                    Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+                }
+                else
+                {
+                    Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+                }
+
+//                launchActivityResult(settingIntent, ActivityResultCallback<ActivityResult> { result ->
+//
+//                    val isConfirm = PermissionUtil.checkNotificationListenerPermission(this@IntroView, packageName)
+//
+//                    SopoLog.d("""
+//                                설정 결과값
+//                                resultCode: ${result.resultCode}
+//                                action: ${result.data?.action}
+//                                type: ${result.data?.type}
+//                                isConfirm: $isConfirm
+//                            """.trimIndent())
+//                })
+            }
+            else
+            {
+                moveToActivity(LoginSelectView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                finish()
+            }
+
         }
 
         override fun onPermissionDenied()
@@ -48,9 +86,55 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
 
     private val onIntroClickListener = object: OnIntroClickListener
     {
-        override fun onIntroClicked()
+        override fun onIntroSettingLater()
         {
-            PermissionUtil.requestPermission(this@IntroView, onPermissionResponseCallback)
+            isNotificationListener = false
+            binding.layoutMain.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
+        }
+
+        override fun onIntroSettingNow()
+        {
+            isNotificationListener = true
+            binding.layoutMain.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+
+        val settingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+        {
+            Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+        }
+        else
+        {
+            Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+        }
+
+        launchActivityResult(settingIntent, ActivityResultCallback<ActivityResult> { result ->
+
+            val isConfirm = PermissionUtil.checkNotificationListenerPermission(this@IntroView, packageName)
+
+            SopoLog.d("""
+                                설정 결과값
+                                resultCode: ${result.resultCode}
+                                action: ${result.data?.action}
+                                type: ${result.data?.type}
+                                isConfirm: $isConfirm
+                            """.trimIndent())
+        })
+    }
+
+    override fun setObserve()
+    {
+        super.setObserve()
+
+        vm.navigator.observe(this){
+            if(it == "TEST")
+            {
+
+            }
         }
     }
 
@@ -128,6 +212,12 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
             if(numOfPage == lastIndexOfPage) return@setOnClickListener
             binding.viewPager.currentItem = ++numOfPage
         }
+
+        binding.tvPermissionCheck.setOnClickListener {
+            PermissionUtil.requestPermission(this, onPermissionResponseCallback)
+            binding.layoutMain.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+        }
+
     }
 }
 

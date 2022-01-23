@@ -46,7 +46,7 @@
         <activity
             android:name=".views.signup.SignUpView"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".views.menus.UpdateNicknameView"></activity>
+        <activity android:name=".views.menus.UpdateNicknameView"/>
         <activity
             android:name=".views.login.ResetPasswordView"
             android:windowSoftInputMode="adjustResize" />

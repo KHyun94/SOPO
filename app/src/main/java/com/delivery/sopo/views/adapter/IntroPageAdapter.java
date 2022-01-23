@@ -47,14 +47,12 @@ public class IntroPageAdapter extends PagerAdapter {
                 case 2:
                     view = inflater.inflate(R.layout.intro_view_3, container, false);
 
-                    TextView btn = view.findViewById(R.id.tv_next);
+                    TextView tvSettingLater = view.findViewById(R.id.tv_setting_later);
+                    TextView tvSettingNow = view.findViewById(R.id.tv_setting_now);
 
-                    btn.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            introClickListener.onIntroClicked();
-                        }
-                    });
+                    tvSettingLater.setOnClickListener((View.OnClickListener) v -> introClickListener.onIntroSettingLater());
+                    tvSettingNow.setOnClickListener((View.OnClickListener) v -> introClickListener.onIntroSettingNow());
+
                     break;
             }
         }
