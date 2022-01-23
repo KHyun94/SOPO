@@ -70,45 +70,37 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
         PowerManager.checkWhiteList(this)
         checkAppPassword()
 
-        val isCheck = PermissionUtil.checkNotificationListenerPermission(this, this.packageName)
-
-        if(isCheck)
-        {
-            SopoLog.d("노티피케이션 활성화 상태")
-            return
-        }
-
-        SopoLog.d("노티피케이션 비활성화 상태")
-
-        val settingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
-        {
-            Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
-        }
-        else
-        {
-            Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-        }
-
-        launchActivityResult(settingIntent, ActivityResultCallback<ActivityResult> { result ->
-
-            val isConfirm = PermissionUtil.checkNotificationListenerPermission(this, packageName)
-
-            SopoLog.d("""
-                설정 결과값
-                resultCode: ${result.resultCode}
-                action: ${result.data?.action}
-                type: ${result.data?.type}
-                isConfirm: $isConfirm
-            """.trimIndent())
-
-
-
-            //            if(result.resultCode == Activity.RES)
-//            {
+//        val isCheck = PermissionUtil.checkNotificationListenerPermission(this, this.packageName)
 //
-//                return@ActivityResultCallback
-//            }
-        })
+//        if(isCheck)
+//        {
+//            SopoLog.d("노티피케이션 활성화 상태")
+//            return
+//        }
+//
+//        SopoLog.d("노티피케이션 비활성화 상태")
+//
+//        val settingIntent = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
+//        {
+//            Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+//        }
+//        else
+//        {
+//            Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+//        }
+//
+//        launchActivityResult(settingIntent, ActivityResultCallback<ActivityResult> { result ->
+//
+//            val isConfirm = PermissionUtil.checkNotificationListenerPermission(this, packageName)
+//
+//            SopoLog.d("""
+//                설정 결과값
+//                resultCode: ${result.resultCode}
+//                action: ${result.data?.action}
+//                type: ${result.data?.type}
+//                isConfirm: $isConfirm
+//            """.trimIndent())
+//        })
 
     }
 

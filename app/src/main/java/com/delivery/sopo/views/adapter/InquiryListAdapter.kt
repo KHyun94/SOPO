@@ -90,112 +90,107 @@ class InquiryListAdapter(
 
         when(holder)
         {
-            is OngoingViewHolder -> onBindOngoingParcels(holder, item, position)
-            is CompleteViewHolder -> onBindCompletedParcels(holder, item, position)
-        }
-    }
+            is OngoingViewHolder -> {
+                holder.bind(item)
+                holder.itemView.tag = item
 
-    private fun onBindOngoingParcels(holder: OngoingViewHolder, item: InquiryListItem, position: Int) = CoroutineScope(Dispatchers.Main).launch {
-
-            holder.bind(item)
-            holder.itemView.tag = item
-
-            CoroutineScope(Dispatchers.Main).launch {
-                holder.ongoingBinding.tvDeliveryStatus.bringToFront()
-                holder.ongoingBinding.tvRegisteredParcelName.text = item.parcelResponse.alias.toEllipsis()
-            }
-
-            if(item.isSelected)
-            {
-                setOngoingParcelItemByDelete(holder.ongoingBinding)
-            }
-            else
-            {
-                setOngoingParcelItemByDefault(holder.ongoingBinding)
-            }
-
-            holder.ongoingBinding.cvOngoingParent.setOnClickListener { v ->
-
-                // 삭제 모드 및 선택되지 않은 택배일 때
-                if(isRemoveMode && !item.isSelected)
-                {
-                    item.isSelected = true
-                    cntOfSelectedItemForDelete?.value = (cntOfSelectedItemForDelete?.value ?: 0) + 1
-                    setOngoingParcelItemByDelete(holder.ongoingBinding)
+                CoroutineScope(Dispatchers.Main).launch {
+                    holder.ongoingBinding.tvDeliveryStatus.bringToFront()
+                    holder.ongoingBinding.tvRegisteredParcelName.text = item.parcelResponse.alias.toEllipsis()
                 }
-                else if(isRemoveMode && item.isSelected)
+
+                if(item.isSelected)
                 {
-                    item.isSelected = false
-                    cntOfSelectedItemForDelete?.value = (cntOfSelectedItemForDelete?.value ?: 0) - 1
-                    setOngoingParcelItemByDefault(holder.ongoingBinding)
+                    setOngoingParcelItemByDelete(holder.ongoingBinding)
                 }
                 else
                 {
-                    if(item.parcelResponse.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE)
-                    {
-                        return@setOnClickListener parcelClickListener.onEnterParcelDetailClicked(view = v, type = InquiryStatusEnum.ONGOING, parcelId = item.parcelResponse.parcelId)
-                    }
+                    setOngoingParcelItemByDefault(holder.ongoingBinding)
+                }
 
-                    parcelClickListener.onMaintainParcelClicked(view = v, pos = position, parcelId = item.parcelResponse.parcelId)
+                holder.ongoingBinding.cvOngoingParent.setOnClickListener { v ->
+
+                    // 삭제 모드 및 선택되지 않은 택배일 때
+                    if(isRemoveMode && !item.isSelected)
+                    {
+                        item.isSelected = true
+                        cntOfSelectedItemForDelete?.value = (cntOfSelectedItemForDelete?.value ?: 0) + 1
+                        setOngoingParcelItemByDelete(holder.ongoingBinding)
+                    }
+                    else if(isRemoveMode && item.isSelected)
+                    {
+                        item.isSelected = false
+                        cntOfSelectedItemForDelete?.value = (cntOfSelectedItemForDelete?.value ?: 0) - 1
+                        setOngoingParcelItemByDefault(holder.ongoingBinding)
+                    }
+                    else
+                    {
+                        if(item.parcelResponse.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE)
+                        {
+                            return@setOnClickListener parcelClickListener.onEnterParcelDetailClicked(view = v, type = InquiryStatusEnum.ONGOING, parcelId = item.parcelResponse.parcelId)
+                        }
+
+                        parcelClickListener.onMaintainParcelClicked(view = v, pos = position, parcelId = item.parcelResponse.parcelId)
+                    }
+                }
+
+                holder.ongoingBinding.cvOngoingParent.setOnLongClickListener {
+                    if(isRemoveMode) return@setOnLongClickListener true
+
+                    parcelClickListener.onUpdateParcelAliasClicked(view = it, type = InquiryStatusEnum.ONGOING, parcelId = item.parcelResponse.parcelId)
+
+                    return@setOnLongClickListener true
                 }
             }
+            is CompleteViewHolder ->
+            {
+                holder.bind(item)
+                holder.itemView.tag = item
 
-            holder.ongoingBinding.cvOngoingParent.setOnLongClickListener {
-                if(isRemoveMode) return@setOnLongClickListener true
+                if(item.isSelected)
+                {
+                    setCompleteParcelItemByDelete(holder.completeBinding)
+                }
+                else
+                {
+                    setCompleteParcelItemByDefault(holder.completeBinding)
+                }
 
-                parcelClickListener.onUpdateParcelAliasClicked(view = it, type = InquiryStatusEnum.ONGOING, parcelId = item.parcelResponse.parcelId)
+                CoroutineScope(Dispatchers.Main).launch {
+                    holder.completeBinding.tvCompleteParcelName.text =item.parcelResponse.alias.toEllipsis()
+                }
 
-                return@setOnLongClickListener true
+                holder.completeBinding.cvCompleteParent.setOnClickListener { v ->
+
+                    if(isRemoveMode && !item.isSelected)
+                    {
+                        item.isSelected = true
+                        cntOfSelectedItemForDelete?.value =
+                            (cntOfSelectedItemForDelete?.value ?: 0) + 1
+                        setCompleteParcelItemByDelete(holder.completeBinding)
+                    }
+                    else if(isRemoveMode && item.isSelected)
+                    {
+                        item.isSelected = false
+                        cntOfSelectedItemForDelete?.value =
+                            (cntOfSelectedItemForDelete?.value ?: 0) - 1
+                        setCompleteParcelItemByDefault(holder.completeBinding)
+                    }
+                    else
+                    {
+                        parcelClickListener.onEnterParcelDetailClicked(view = v, type = InquiryStatusEnum.COMPLETE, parcelId = item.parcelResponse.parcelId)
+                    }
+                }
+
+                holder.completeBinding.cvCompleteParent.setOnLongClickListener {
+                    if(isRemoveMode) return@setOnLongClickListener true
+                    parcelClickListener.onUpdateParcelAliasClicked(view = it, type = InquiryStatusEnum.COMPLETE, parcelId = item.parcelResponse.parcelId)
+                    return@setOnLongClickListener true
+                }
             }
-
+        }
     }
-    private fun onBindCompletedParcels(holder: CompleteViewHolder, item: InquiryListItem, position: Int) = CoroutineScope(Dispatchers.Main).launch {
 
-        holder.bind(item)
-        holder.itemView.tag = item
-
-        if(item.isSelected)
-        {
-            setCompleteParcelItemByDelete(holder.completeBinding)
-        }
-        else
-        {
-            setCompleteParcelItemByDefault(holder.completeBinding)
-        }
-
-        CoroutineScope(Dispatchers.Main).launch {
-            holder.completeBinding.tvCompleteParcelName.text =item.parcelResponse.alias.toEllipsis()
-        }
-
-        holder.completeBinding.cvCompleteParent.setOnClickListener { v ->
-
-            if(isRemoveMode && !item.isSelected)
-            {
-                item.isSelected = true
-                cntOfSelectedItemForDelete?.value =
-                    (cntOfSelectedItemForDelete?.value ?: 0) + 1
-                setCompleteParcelItemByDelete(holder.completeBinding)
-            }
-            else if(isRemoveMode && item.isSelected)
-            {
-                item.isSelected = false
-                cntOfSelectedItemForDelete?.value =
-                    (cntOfSelectedItemForDelete?.value ?: 0) - 1
-                setCompleteParcelItemByDefault(holder.completeBinding)
-            }
-            else
-            {
-                parcelClickListener.onEnterParcelDetailClicked(view = v, type = InquiryStatusEnum.COMPLETE, parcelId = item.parcelResponse.parcelId)
-            }
-        }
-
-        holder.completeBinding.cvCompleteParent.setOnLongClickListener {
-            if(isRemoveMode) return@setOnLongClickListener true
-            parcelClickListener.onUpdateParcelAliasClicked(view = it, type = InquiryStatusEnum.COMPLETE, parcelId = item.parcelResponse.parcelId)
-            return@setOnLongClickListener true
-        }
-
-    }
 
     fun setSelectAll(flag: Boolean)
     {

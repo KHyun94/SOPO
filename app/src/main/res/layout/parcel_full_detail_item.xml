@@ -15,7 +15,7 @@
 
         <variable
             name="adapter"
-            type="com.delivery.sopo.views.adapter.TimeLineRvAdapter" />
+            type="com.delivery.sopo.views.adapter.TimeLineRecyclerViewAdapter" />
 
         <variable
             name="item"

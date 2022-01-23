@@ -13,6 +13,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -23,6 +24,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.databinding.FragmentInquiryReBinding
+import com.delivery.sopo.databinding.ItemInquiryTabBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.*
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
@@ -47,6 +49,7 @@ import com.delivery.sopo.views.menus.FaqFragment
 import com.delivery.sopo.views.menus.NoticeFragment
 import com.delivery.sopo.views.registers.RegisterMainFragment
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
@@ -73,7 +76,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         {
             override fun onBackPressedInTime()
             {
-                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
+                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다. 메인", 2000)
                     .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }
                     .show()
             }
@@ -99,6 +102,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
     override fun setBeforeBinding() { super.setBeforeBinding() }
 
+    lateinit var firstBinding: ItemInquiryTabBinding
+    lateinit var secondBinding: ItemInquiryTabBinding
+
     override fun setAfterBinding()
     {
         super.setAfterBinding()
@@ -108,20 +114,74 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         binding.viewPagerInquiryType.adapter = adapter
         binding.viewPagerInquiryType.offscreenPageLimit = 2
 
+
+
         TabLayoutMediator(binding.tabLayoutInquiryType, binding.viewPagerInquiryType) { tab, pos ->
+
+            val tabBinding = DataBindingUtil.bind<ItemInquiryTabBinding>(LayoutInflater.from(requireContext()).inflate(R.layout.item_inquiry_tab , null)) ?:throw NullPointerException("탭 오류")
 
             when(pos)
             {
                 0 ->
                 {
-                    tab.text = "배송중"
+                    firstBinding = tabBinding
+                    tabBinding.tvInquiryTabName.text = "배송중"
                 }
                 1 ->
                 {
-                    tab.text = "배송완료"
+                    secondBinding = tabBinding
+                    tabBinding.tvInquiryTabName.text = "배송완료"
+                    tabBinding.updateCount = 10
                 }
             }
+
+            tab.customView = tabBinding.root
         }.attach()
+
+        binding.tabLayoutInquiryType.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+            override fun onTabSelected(tab: TabLayout.Tab?)
+            {
+                val pos = tab?.position?:0
+
+                when(pos)
+                {
+                    0 ->
+                    {
+                        if(!::firstBinding.isInitialized) return
+                        firstBinding.tvInquiryTabName.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
+                    }
+                    1->
+                    {
+                        if(!::secondBinding.isInitialized) return
+                        secondBinding.tvInquiryTabName.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
+                    }
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?)
+            {
+                val pos = tab?.position?:0
+
+                when(pos)
+                {
+                    0 ->
+                    {
+                        if(!::firstBinding.isInitialized) return
+                        firstBinding.tvInquiryTabName.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium)
+                    }
+                    1->
+                    {
+                        if(!::secondBinding.isInitialized) return
+                        secondBinding.tvInquiryTabName.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium)
+                    }
+                }
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab?)
+            {
+            }
+
+        })
 
         returnType.apply {
             when(this)
@@ -172,6 +232,10 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             {
                 parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
             }
+        }
+
+        vm.cntOfBeDelivered.observe(this){ cnt ->
+            secondBinding.updateCount = cnt
         }
     }
 

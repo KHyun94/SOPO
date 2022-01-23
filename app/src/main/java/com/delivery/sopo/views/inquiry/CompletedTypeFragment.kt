@@ -55,8 +55,6 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, InquiryV
     override val vm: InquiryViewModel by viewModel()
     override val mainLayout: View by lazy { binding.swipeLayoutMainCompleted }
 
-    private val parentView: MainView by lazy { activity as MainView }
-
     private val parcelRepo: ParcelRepository by inject()
 
     private lateinit var completedParcelAdapter: InquiryListAdapter
@@ -65,9 +63,27 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, InquiryV
 
     private var refreshDelay: Boolean = false
 
+    private val parentView: MainView by lazy { activity as MainView }
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+
+        onSOPOBackPressedListener = object: OnSOPOBackPressListener
+        {
+            override fun onBackPressedInTime()
+            {
+                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다. 완료형", 2000)
+                    .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }
+                    .show()
+            }
+
+            override fun onBackPressedOutTime()
+            {
+                ActivityCompat.finishAffinity(parentView)
+                exitProcess(0)
+            }
+        }
     }
 
     var isRefresh = true
@@ -122,10 +138,23 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, InquiryV
             animator.supportsChangeAnimations = false
         }
     }
-
+    override fun onResume()
+    {
+        super.onResume()
+        SopoLog.d("@@@@@@@@@@@@@@@")
+        parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
+    }
     override fun setObserve()
     {
         super.setObserve()
+
+        if(activity == null) return
+        parentView.currentPage.observe(requireActivity()) {
+            if(it != null && it == TabCode.secondTab)
+            {
+                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
+            }
+        }
 
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity()) { list ->

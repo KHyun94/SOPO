@@ -19,7 +19,7 @@ import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
-import com.delivery.sopo.views.adapter.TimeLineRvAdapter
+import com.delivery.sopo.views.adapter.TimeLineRecyclerViewAdapter
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import java.lang.NullPointerException
@@ -32,7 +32,7 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
 
     // delivery status 리스트
     val statusList = MutableLiveData<MutableList<SelectItem<String>>?>()
-    var adapter = MutableLiveData<TimeLineRvAdapter?>()
+    var adapter = MutableLiveData<TimeLineRecyclerViewAdapter?>()
 
     // 상세 화면에서 사용할 데이터 객체
     var item = MutableLiveData<ParcelDetailInfo?>()
@@ -60,10 +60,10 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
         get() = _result
 
     // Full Detail View의 리사이클러뷰 어댑터 세팅
-    private fun getTimeLineRvAdapter(list: List<TimeLineProgress?>): TimeLineRvAdapter
+    private fun getTimeLineRvAdapter(list: List<TimeLineProgress?>): TimeLineRecyclerViewAdapter
     {
         SopoLog.d("getTimeLineRvAdapter() 호출 - list[${list.size}]")
-        return TimeLineRvAdapter().apply { setItemList(list.toMutableList()) }
+        return TimeLineRecyclerViewAdapter().apply { setItemList(list.toMutableList()) }
     }
 
     // 택배 상세 UI 세팅

@@ -49,6 +49,8 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
     {
         super.onCreate(savedInstanceState)
 
+        arguments?.let { bundle -> receiveData(bundle) }
+
         var pressedTime: Long = 0
 
         onBackPressedCallback = object: OnBackPressedCallback(true)
@@ -65,10 +67,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
                 onSOPOBackPressedListener.onBackPressedOutTime()
             }
         }
-
-        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-
-        arguments?.let { bundle -> receiveData(bundle) }
+        if(::onBackPressedCallback.isInitialized) requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
@@ -98,7 +97,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
     {
         super.onDetach()
 
-        onBackPressedCallback.remove()
+        if(::onBackPressedCallback.isInitialized) onBackPressedCallback.remove()
     }
 
     protected open fun receiveData(bundle: Bundle){

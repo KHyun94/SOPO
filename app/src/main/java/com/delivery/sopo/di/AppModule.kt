@@ -12,10 +12,7 @@ import com.delivery.sopo.networks.repository.JoinRepositoryImpl
 import com.delivery.sopo.usecase.UpdateNicknameUseCase
 import com.delivery.sopo.usecase.parcel.remote.*
 import com.delivery.sopo.viewmodels.IntroViewModel
-import com.delivery.sopo.viewmodels.inquiry.DeleteParcelViewModel
-import com.delivery.sopo.viewmodels.inquiry.InquiryMainViewModel
-import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
-import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
+import com.delivery.sopo.viewmodels.inquiry.*
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
 import com.delivery.sopo.viewmodels.login.LoginViewModel
 import com.delivery.sopo.viewmodels.login.ResetPasswordViewModel
@@ -81,6 +78,7 @@ val appModule = module {
     viewModel { UpdateNicknameViewModel(get(), get()) }
 
     viewModel { InquiryMainViewModel() }
+    viewModel { OngoingTypeViewModel(get(), get(),get(),get(),get(),get(),get()) }
     viewModel { MenuMainViewModel() }
     viewModel { ParcelDetailViewModel(get(), get(), get()) }
 

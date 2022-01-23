@@ -9,9 +9,9 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.TimeLineItemBinding
 import com.delivery.sopo.models.parcel.TimeLineProgress
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.views.adapter.TimeLineRvAdapter.TimeLineViewHolder
+import com.delivery.sopo.views.adapter.TimeLineRecyclerViewAdapter.TimeLineViewHolder
 
-class TimeLineRvAdapter : RecyclerView.Adapter<TimeLineViewHolder>()
+class TimeLineRecyclerViewAdapter : RecyclerView.Adapter<TimeLineViewHolder>()
 {
     var list: List<TimeLineProgress?> = listOf()
 

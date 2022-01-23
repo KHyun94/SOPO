@@ -35,11 +35,13 @@ import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
+import com.delivery.sopo.viewmodels.inquiry.OngoingTypeViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.dialog.OptionalClickListener
 import com.delivery.sopo.views.dialog.OptionalDialog
+import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.*
@@ -48,19 +50,40 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import kotlin.system.exitProcess
 
-class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewModel>()
+class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeViewModel>()
 {
     override val layoutRes: Int = R.layout.fragment_ongoing_type
-    override val vm: InquiryViewModel by viewModel()
+    override val vm: OngoingTypeViewModel by viewModel()
     override val mainLayout: View by lazy { binding.swipeLayoutMainOngoing }
 
-    private val parcelRepo: ParcelRepository by inject()
-
-    // 곧 도착 택배 리스트 adapter, 등록된 택배(진행 중) 리스트 adapter, 도착 완료된 택배 리스트 adapter
     private lateinit var soonArrivalParcelAdapter: InquiryListAdapter
     private lateinit var registeredParcelAdapter: InquiryListAdapter
 
     private var refreshDelay: Boolean = false
+
+    private val parentView: MainView by lazy { activity as MainView }
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+
+        onSOPOBackPressedListener = object: OnSOPOBackPressListener
+        {
+            override fun onBackPressedInTime()
+            {
+
+                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다. 온고잉", 2000)
+                    .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }
+                    .show()
+            }
+
+            override fun onBackPressedOutTime()
+            {
+                ActivityCompat.finishAffinity(parentView)
+                exitProcess(0)
+            }
+        }
+    }
 
     override fun setAfterBinding()
     {
@@ -77,6 +100,11 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewM
         }
     }
 
+    private fun setAdapterAnimation(recyclerView: RecyclerView){
+        val animator = recyclerView.itemAnimator as SimpleItemAnimator
+        animator.supportsChangeAnimations = false
+    }
+
     private fun setAdapters()
     {
         getAdapter(InquiryItemTypeEnum.Soon).let { adapter ->
@@ -85,6 +113,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewM
             val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
             animator.supportsChangeAnimations = false
         }
+
         getAdapter(InquiryItemTypeEnum.Registered).let { adapter ->
             registeredParcelAdapter = adapter
             binding.recyclerviewRegisteredParcel.adapter = registeredParcelAdapter
@@ -97,9 +126,15 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewM
     {
         super.setObserve()
 
-        // 배송중 , 등록된 택배 리스트
+        if(activity == null) return
+        parentView.currentPage.observe(requireActivity()) {
+            if(it != null && it == TabCode.secondTab)
+            {
+                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
+            }
+        }
+
         vm.ongoingList.observe(requireActivity()) { list ->
-            SopoLog.d("진행중인 택배 갯수 [size:${list.size}]")
 
             if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
             else binding.linearNoItem.visibility = View.GONE
@@ -110,6 +145,13 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewM
             viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
             viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
         }
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+        SopoLog.d("!!!!!!!!!!!!!!!!!")
+        parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
     }
 
     private fun getParcelClicked(): ParcelEventListener
@@ -139,12 +181,12 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, InquiryViewM
 
                             vm.onRefreshParcel(parcelId)
 
-                            withContext(Dispatchers.Default) {
-                                registeredParcelAdapter.getList()[pos].apply {
-                                    this.parcelResponse = parcelRepo.getLocalParcelById(parcelId)
-                                        ?: return@withContext
-                                }
-                            }
+//                            withContext(Dispatchers.Default) {
+//                                registeredParcelAdapter.getList()[pos].apply {
+//                                    this.parcelResponse = parcelRepo.getLocalParcelById(parcelId)
+//                                        ?: return@withContext
+//                                }
+//                            }
 
                             registeredParcelAdapter.notifyItemChanged(pos)
                         }
