@@ -7,11 +7,17 @@ import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.ActivityResultRegistry
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.delivery.sopo.BR
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.NetworkStatus
@@ -22,7 +28,12 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 
-abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity() {
+interface TestListener{
+    fun test(result:ActivityResult)
+}
+
+abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity()
+{
 
     lateinit var binding: T
     abstract val layoutRes: Int
@@ -30,9 +41,11 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
     abstract val mainLayout: View
 
-    private var activityResultLauncher: ActivityResultLauncher<Intent>? = null
+    private lateinit var callback: ActivityResultCallback<ActivityResult>
+    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
-    lateinit var networkStatusMonitor:NetworkStatusMonitor
+    lateinit var networkStatusMonitor: NetworkStatusMonitor
+
     /**
      * Network Status Check
      */
@@ -48,7 +61,8 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         SopoLoadingBar(this)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
         super.onCreate(savedInstanceState)
 
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -58,65 +72,81 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
         binding = bindView(this)
 
-        networkStatusMonitor =  NetworkStatusMonitor(this)
+        networkStatusMonitor = NetworkStatusMonitor(this)
         networkStatusMonitor.enable()
         networkStatusMonitor.initNetworkCheck()
 
 
+
         onAfterBinding()
         setObserve()
+
+        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)
     }
 
 
-    private fun bindView(activity: FragmentActivity) : T
+    private fun bindView(activity: FragmentActivity): T
     {
-        return DataBindingUtil.setContentView<T>(activity, layoutRes).apply{
+        return DataBindingUtil.setContentView<T>(activity, layoutRes).apply {
             this.lifecycleOwner = this@BaseView
             this.setVariable(BR.vm, vm)
             executePendingBindings()
         }
     }
 
-    private fun getActivityResultLauncher(callback: ActivityResultCallback<ActivityResult>):ActivityResultLauncher<Intent>{
+    private fun getActivityResultLauncher(callback: ActivityResultCallback<ActivityResult>): ActivityResultLauncher<Intent>
+    {
+
         return registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)
     }
 
-    fun launchActivityResult(intent: Intent, callback: ActivityResultCallback<ActivityResult>){
-        activityResultLauncher = getActivityResultLauncher(callback).apply { launch(intent) }
+    fun launchActivityResult(intent: Intent, callback: ActivityResultCallback<ActivityResult>)
+    {
+        this.callback = callback
+        activityResultLauncher.launch(intent)
     }
+
 
     /**
      * 데이터 전달
      */
-    protected open fun receivedData(intent: Intent){}
+    protected open fun receivedData(intent: Intent)
+    {
+    }
 
     /**
      * 초기 화면 세팅
      */
-    protected open fun onBeforeBinding(){
+    protected open fun onBeforeBinding()
+    {
     }
 
     /**
      * UI 세팅 이후
      */
-    protected open fun onAfterBinding(){}
+    protected open fun onAfterBinding()
+    {
+    }
 
     /**
      * Observe 로직
      */
-    protected open fun setObserve(){
+    protected open fun setObserve()
+    {
         setInnerObserve()
     }
 
-    private fun setInnerObserve(){
+    private fun setInnerObserve()
+    {
 
-        SOPOApp.networkStatus.observe(this){ status ->
+        SOPOApp.networkStatus.observe(this) { status ->
 
             SopoLog.d("status [status:$status]")
 
             if(vm.isCheckNetwork.value != true) return@observe
 
-            when(status){
+            when(status)
+            {
 
                 NetworkStatus.WIFI, NetworkStatus.CELLULAR ->
                 {
@@ -137,18 +167,19 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
             hideKeyboard()
         }
 
-        vm.isLoading.observe(this){ isLoading ->
+        vm.isLoading.observe(this) { isLoading ->
             if(isLoading) return@observe loadingBar.show()
             else loadingBar.dismiss()
         }
 
-        vm.errorSnackBar.observe(this){
+        vm.errorSnackBar.observe(this) {
             val snackBar = CustomSnackBar(mainLayout, it, 3000, SnackBarEnum.ERROR)
             snackBar.show()
         }
     }
 
-    fun hideKeyboard(){
+    fun hideKeyboard()
+    {
         mainLayout.requestFocus()
         OtherUtil.hideKeyboardSoft(this)
     }
@@ -159,8 +190,25 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
         networkStatusMonitor.disable()
 
-        activityResultLauncher?.unregister()
-        activityResultLauncher = null
+        activityResultLauncher.unregister()
+//        activityResultLauncher = null
 
     }
+
+    inner class TestLifeCycleObserver(private val registry: ActivityResultRegistry, private val m: Intent, private val callback: ActivityResultCallback<ActivityResult>):
+            DefaultLifecycleObserver
+    {
+        lateinit var launcher: ActivityResultLauncher<Intent>
+
+        override fun onCreate(owner: LifecycleOwner)
+        {
+
+            launcher =
+                registry.register("key", owner, ActivityResultContracts.StartActivityForResult(), callback)
+            launcher.launch(m)
+        }
+
+
+    }
+
 }

@@ -50,8 +50,8 @@ public class IntroPageAdapter extends PagerAdapter {
                     TextView tvSettingLater = view.findViewById(R.id.tv_setting_later);
                     TextView tvSettingNow = view.findViewById(R.id.tv_setting_now);
 
-                    tvSettingLater.setOnClickListener((View.OnClickListener) v -> introClickListener.onIntroSettingLater());
-                    tvSettingNow.setOnClickListener((View.OnClickListener) v -> introClickListener.onIntroSettingNow());
+                    tvSettingLater.setOnClickListener((View.OnClickListener) v -> introClickListener.onIntroSettingClicked(false));
+                    tvSettingNow.setOnClickListener((View.OnClickListener) v -> introClickListener.onIntroSettingClicked(true));
 
                     break;
             }

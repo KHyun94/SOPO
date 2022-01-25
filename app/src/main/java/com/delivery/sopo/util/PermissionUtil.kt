@@ -70,19 +70,23 @@ object PermissionUtil
     }
 
 
-    private fun isPermissionGranted(context: Context, vararg permissions: String):Boolean{
+    fun isPermissionGranted(context: Context, vararg permissions: String):Boolean{
         var value = false
 
         for (p in permissions)
         {
             value = ContextCompat.checkSelfPermission(context, p) != PackageManager.PERMISSION_DENIED
-            if(!value) return false
+            if(!value)
+            {
+                SopoLog.d("미허가 권한 ${p.toString()}")
+                return false
+            }
         }
 
         return value
     }
 
-    private fun permissionCallback(context: Context, vararg permissions: String, callback: (Boolean) -> Unit)
+    fun permissionCallback(context: Context, vararg permissions: String, callback: (Boolean) -> Unit)
     {
         val permissionListener = object : PermissionListener
         {

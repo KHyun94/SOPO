@@ -148,13 +148,13 @@ class MainView: BaseView<MainViewBinding, MainViewModel>()
             putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
         }
 
-        launchActivityResult(intent, ActivityResultCallback<ActivityResult> { result ->
-            if(result.resultCode == Activity.RESULT_CANCELED)
-            {
-                finishAffinity()
-                return@ActivityResultCallback
-            }
-        })
+//        launchActivityResult(intent, ActivityResultCallback<ActivityResult> { result ->
+//            if(result.resultCode == Activity.RESULT_CANCELED)
+//            {
+//                finishAffinity()
+//                return@ActivityResultCallback
+//            }
+//        })
     }
 
 
