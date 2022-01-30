@@ -38,6 +38,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/include_header">
 
+
             <ImageView
                 android:id="@+id/iv_carrier"
                 android:layout_width="55dp"
@@ -49,8 +50,8 @@
                 android:background="@drawable/border_round_2sp"
                 android:padding="5dp"
                 app:setDefaultImage="@{0}"
-                app:setImage="@{vm.carrier.icons[0]}"
-                tools:src="@drawable/ic_color_japan" />
+                app:setImage="@{vm.carrier.icons[1]}"
+                tools:src="@drawable/ic_color_hanjin" />
 
             <LinearLayout
                 android:layout_width="wrap_content"

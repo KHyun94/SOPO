@@ -1,5 +1,6 @@
 package com.delivery.sopo.views.registers
 
+import android.content.Context
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -13,6 +14,7 @@ import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.isGreaterThanOrEqual
+import com.delivery.sopo.interfaces.OnMainBridgeListener
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.base.BaseFragment
@@ -38,6 +40,13 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
     override val mainLayout: View by lazy { binding.constraintMainRegister }
 
     private val parentView: MainView by lazy { activity as MainView }
+
+    private lateinit var onMainBridgeListener: OnMainBridgeListener
+
+    private fun setOnMainBridgeListener(context: Context)
+    {
+        onMainBridgeListener = context as OnMainBridgeListener
+    }
 
     private lateinit var parcelRegister: ParcelRegister
     private var returnType: Int? = null
@@ -74,10 +83,19 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
             }
         }
 
+        setOnMainBridgeListener(requireContext())
+
         if(returnType == RegisterMainFragment.REGISTER_PROCESS_SUCCESS)
         {
-            SOPOApp.currentPage.postValue(NavigatorConst.INQUIRY_TAB)
+            onMainBridgeListener.onMoveToPage(1)
         }
+    }
+
+    override fun setBeforeBinding()
+    {
+        super.setBeforeBinding()
+
+
     }
 
     override fun setAfterBinding()
@@ -101,13 +119,13 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
     override fun setObserve()
     {
         super.setObserve()
-        parentView.currentPage.observe(this) {
-
-            it ?: return@observe
-            if(it != 0) return@observe
-
-            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-        }
+//        parentView.currentPage.observe(this) {
+//
+//            it ?: return@observe
+//            if(it != 0) return@observe
+//
+//            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+//        }
 
         vm.focus.observe(this) { focus ->
             val res = TextInputUtil.changeFocus(requireContext(), focus)
@@ -178,6 +196,8 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
 
         SopoLog.d(msg = "OnResume")
 
+        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+
         CoroutineScope(Dispatchers.Main).launch {
             val clipboardText = ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE) ?: return@launch
 
@@ -204,6 +224,7 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
             }
         }
     }
+
 
 
 }

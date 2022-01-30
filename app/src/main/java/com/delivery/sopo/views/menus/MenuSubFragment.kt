@@ -74,21 +74,34 @@ class MenuSubFragment: Fragment()
         return binding
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+        callback = object : OnBackPressedCallback(true)
+        {
+            override fun handleOnBackPressed()
+            {
+                moveToBack()
+            }
+        }
+        parentView.onBackPressedDispatcher.addCallback(parentView, callback)
+    }
+
     private fun setObserve()
     {
-        parentView.currentPage.observe(this, Observer {
-            if (it != null && it == TabCode.thirdTab)
-            {
-                callback = object : OnBackPressedCallback(true)
-                {
-                    override fun handleOnBackPressed()
-                    {
-                        moveToBack()
-                    }
-                }
-                requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-            }
-        })
+//        parentView.currentPage.observe(this, Observer {
+//            if (it != null && it == TabCode.thirdTab)
+//            {
+//                callback = object : OnBackPressedCallback(true)
+//                {
+//                    override fun handleOnBackPressed()
+//                    {
+//                        moveToBack()
+//                    }
+//                }
+//                requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+//            }
+//        })
 
 
         vm.navigator.observe(this, Observer { navigator ->

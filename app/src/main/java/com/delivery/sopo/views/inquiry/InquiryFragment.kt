@@ -1,8 +1,5 @@
 package com.delivery.sopo.views.inquiry
 
-import android.annotation.SuppressLint
-import android.graphics.Typeface
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,48 +11,32 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SimpleItemAnimator
+import androidx.viewpager2.widget.ViewPager2
 import com.delivery.sopo.R
-import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
-import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.databinding.FragmentInquiryReBinding
 import com.delivery.sopo.databinding.ItemInquiryTabBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.*
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
-import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.mapper.MenuMapper
-import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
-import com.delivery.sopo.viewmodels.menus.MenuMainFragment
-import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
-import com.delivery.sopo.views.dialog.OptionalClickListener
-import com.delivery.sopo.views.dialog.OptionalDialog
 import com.delivery.sopo.views.main.MainView
-import com.delivery.sopo.views.menus.FaqFragment
-import com.delivery.sopo.views.menus.NoticeFragment
-import com.delivery.sopo.views.registers.RegisterMainFragment
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.*
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
-import java.util.function.Function
 import kotlin.system.exitProcess
 
 class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>()
@@ -66,7 +47,13 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
     private val parentView: MainView by lazy { activity as MainView }
 
+    lateinit var firstBinding: ItemInquiryTabBinding
+    lateinit var secondBinding: ItemInquiryTabBinding
+
     private var menuPopUpWindow: PopupWindow? = null
+
+    var isRefresh = true
+    var returnType = 0
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -89,9 +76,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         }
     }
 
-    var isRefresh = true
-    var returnType = 0
-
     override fun receiveData(bundle: Bundle)
     {
         super.receiveData(bundle)
@@ -102,41 +86,12 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
     override fun setBeforeBinding() { super.setBeforeBinding() }
 
-    lateinit var firstBinding: ItemInquiryTabBinding
-    lateinit var secondBinding: ItemInquiryTabBinding
-
     override fun setAfterBinding()
     {
         super.setAfterBinding()
 
-        val adapter = ViewPagerAdapter(requireActivity(), arrayListOf(OngoingTypeFragment(), CompletedTypeFragment()))
-
-        binding.viewPagerInquiryType.adapter = adapter
-        binding.viewPagerInquiryType.offscreenPageLimit = 2
-
-
-
-        TabLayoutMediator(binding.tabLayoutInquiryType, binding.viewPagerInquiryType) { tab, pos ->
-
-            val tabBinding = DataBindingUtil.bind<ItemInquiryTabBinding>(LayoutInflater.from(requireContext()).inflate(R.layout.item_inquiry_tab , null)) ?:throw NullPointerException("탭 오류")
-
-            when(pos)
-            {
-                0 ->
-                {
-                    firstBinding = tabBinding
-                    tabBinding.tvInquiryTabName.text = "배송중"
-                }
-                1 ->
-                {
-                    secondBinding = tabBinding
-                    tabBinding.tvInquiryTabName.text = "배송완료"
-                    tabBinding.updateCount = 10
-                }
-            }
-
-            tab.customView = tabBinding.root
-        }.attach()
+        setViewPager(binding.viewPagerInquiryType)
+        connectTabAndViewPager(binding.viewPagerInquiryType, binding.tabLayoutInquiryType)
 
         binding.tabLayoutInquiryType.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
             override fun onTabSelected(tab: TabLayout.Tab?)
@@ -222,17 +177,23 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
         }
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+        parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
+    }
+
     override fun setObserve()
     {
         super.setObserve()
 
-        if(activity == null) return
-        parentView.currentPage.observe(requireActivity()) {
-            if(it != null && it == TabCode.secondTab)
-            {
-                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
-            }
-        }
+//        if(activity == null) return
+//        parentView.currentPage.observe(requireActivity()) {
+//            if(it != null && it == TabCode.secondTab)
+//            {
+//                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
+//            }
+//        }
 
         vm.cntOfBeDelivered.observe(this){ cnt ->
             secondBinding.updateCount = cnt
@@ -294,6 +255,39 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
             PopupWindow(popUpView.root, SizeUtil.changeDpToPx(binding.root.context, 175F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
                 showAsDropDown(anchorView)
             }
+    }
+
+    private fun setViewPager(viewPager: ViewPager2){
+        val adapter = ViewPagerAdapter(requireActivity(), arrayListOf(OngoingTypeFragment(), CompletedTypeFragment()))
+
+        viewPager.apply {
+            this.adapter = adapter
+            offscreenPageLimit = 2
+        }
+    }
+
+    private fun connectTabAndViewPager(viewPager: ViewPager2, tabLayout: TabLayout){
+        TabLayoutMediator(tabLayout, viewPager) { tab, pos ->
+
+            val tabBinding = DataBindingUtil.bind<ItemInquiryTabBinding>(LayoutInflater.from(requireContext()).inflate(R.layout.item_inquiry_tab , null)) ?:throw NullPointerException("탭 오류")
+
+            when(pos)
+            {
+                0 ->
+                {
+                    firstBinding = tabBinding
+                    tabBinding.tvInquiryTabName.text = "배송중"
+                }
+                1 ->
+                {
+                    secondBinding = tabBinding
+                    tabBinding.tvInquiryTabName.text = "배송완료"
+                    tabBinding.updateCount = 10
+                }
+            }
+
+            tab.customView = tabBinding.root
+        }.attach()
     }
 
     companion object

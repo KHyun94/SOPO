@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.ParcelExceptionHandler
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
@@ -43,11 +44,9 @@ class OngoingTypeViewModel(
     val isAvailableRefresh: LiveData<Boolean>
         get() = _isAvailableRefresh
 
-    private var isFirstLoading: Boolean = false
-
-    /**
-     * 현재 진행 중인 택배 페이지
-     */
+    private val _navigator = MutableLiveData<String>()
+    val navigator: LiveData<String>
+        get() = _navigator
 
     private var _ongoingList = Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
             val list: MutableList<InquiryListItem> = ParcelMapper.parcelListToInquiryItemList(parcelList)
@@ -249,7 +248,8 @@ class OngoingTypeViewModel(
 
     fun onMoveToRegister()
     {
-
+        SopoLog.d("onMoveToRegister(...) 호출")
+        _navigator.postValue(NavigatorConst.MAIN_BRIDGE_REGISTER)
     }
 
     class SortByDate: Comparator<InquiryListItem>

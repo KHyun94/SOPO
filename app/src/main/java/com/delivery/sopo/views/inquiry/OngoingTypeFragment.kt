@@ -1,57 +1,38 @@
 package com.delivery.sopo.views.inquiry
 
-import android.annotation.SuppressLint
-import android.graphics.Typeface
-import android.graphics.drawable.Drawable
+import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.*
 import android.widget.*
-import androidx.fragment.app.Fragment
-import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.delivery.sopo.R
-import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
-import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentOngoingTypeBinding
-import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.*
+import com.delivery.sopo.interfaces.OnMainBridgeListener
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
-import com.delivery.sopo.models.inquiry.InquiryMenuItem
-import com.delivery.sopo.models.mapper.MenuMapper
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.util.SizeUtil
-import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.CustomSnackBar
-import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.viewmodels.inquiry.OngoingTypeViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
-import com.delivery.sopo.views.adapter.PopupMenuListAdapter
-import com.delivery.sopo.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.views.dialog.OptionalClickListener
 import com.delivery.sopo.views.dialog.OptionalDialog
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.*
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import kotlin.system.exitProcess
 
 class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeViewModel>()
 {
+    private lateinit var onMainBridgeListener: OnMainBridgeListener
+
     override val layoutRes: Int = R.layout.fragment_ongoing_type
     override val vm: OngoingTypeViewModel by viewModel()
     override val mainLayout: View by lazy { binding.swipeLayoutMainOngoing }
@@ -71,8 +52,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         {
             override fun onBackPressedInTime()
             {
-
-                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다. 온고잉", 2000)
+                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
                     .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }
                     .show()
             }
@@ -83,6 +63,18 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                 exitProcess(0)
             }
         }
+    }
+
+    private fun setOnMainBridgeListener(context: Context)
+    {
+        onMainBridgeListener = context as OnMainBridgeListener
+    }
+
+    override fun setBeforeBinding()
+    {
+        super.setBeforeBinding()
+
+        setOnMainBridgeListener(context = requireContext())
     }
 
     override fun setAfterBinding()
@@ -100,7 +92,8 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         }
     }
 
-    private fun setAdapterAnimation(recyclerView: RecyclerView){
+    private fun setAdapterAnimation(recyclerView: RecyclerView)
+    {
         val animator = recyclerView.itemAnimator as SimpleItemAnimator
         animator.supportsChangeAnimations = false
     }
@@ -122,17 +115,19 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         }
     }
 
+
+
     override fun setObserve()
     {
         super.setObserve()
 
-        if(activity == null) return
-        parentView.currentPage.observe(requireActivity()) {
-            if(it != null && it == TabCode.secondTab)
-            {
-                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
-            }
-        }
+//        if(activity == null) return
+//        parentView.currentPage.observe(requireActivity()) {
+//            if(it != null && it == TabCode.secondTab)
+//            {
+//                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
+//            }
+//        }
 
         vm.ongoingList.observe(requireActivity()) { list ->
 
@@ -145,12 +140,24 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
             viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
         }
+
+        vm.navigator.observe(this) { navigator ->
+            when(navigator)
+            {
+                NavigatorConst.MAIN_BRIDGE_REGISTER ->
+                {
+                    onMainBridgeListener.onMoveToPage(0)
+                }
+
+            }
+
+        }
     }
 
     override fun onResume()
     {
         super.onResume()
-        SopoLog.d("!!!!!!!!!!!!!!!!!")
+
         parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
     }
 
@@ -165,7 +172,8 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                 OptionalDialog(optionalType = OptionalTypeEnum.LEFT, titleIcon = 0, title = "이 아이템을 제거할까요?", subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.", content = """
                     배송 상태가 2주간 확인되지 않고 있어요.
                     등록된 송장번호가 유효하지 않을지도 몰라요.
-                                """.trimIndent(), leftHandler = Pair("지울게요", second = object: OptionalClickListener
+                                """.trimIndent(), leftHandler = Pair("지울게요", second = object:
+                        OptionalClickListener
                 {
                     override fun invoke(dialog: OptionalDialog)
                     {
@@ -181,12 +189,12 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
 
                             vm.onRefreshParcel(parcelId)
 
-//                            withContext(Dispatchers.Default) {
-//                                registeredParcelAdapter.getList()[pos].apply {
-//                                    this.parcelResponse = parcelRepo.getLocalParcelById(parcelId)
-//                                        ?: return@withContext
-//                                }
-//                            }
+                            //                            withContext(Dispatchers.Default) {
+                            //                                registeredParcelAdapter.getList()[pos].apply {
+                            //                                    this.parcelResponse = parcelRepo.getLocalParcelById(parcelId)
+                            //                                        ?: return@withContext
+                            //                                }
+                            //                            }
 
                             registeredParcelAdapter.notifyItemChanged(pos)
                         }

@@ -46,9 +46,7 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
         {
             override fun onBackPressedInTime()
             {
-                val parcelRegister = ParcelRegister("", null, null)
-
-                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
+                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = null, returnType = 0)
 
                 FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
             }
@@ -80,17 +78,23 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
         setRecyclerViewItem()
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+    }
+
     override fun setObserve()
     {
         super.setObserve()
 
-        parentView.currentPage.observe(this) {
-
-            it ?: return@observe
-            if(it != 0) return@observe
-
-            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-        }
+//        parentView.currentPage.observe(this) {
+//
+//            it ?: return@observe
+//            if(it != 0) return@observe
+//
+//            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+//        }
 
         vm.navigator.observe(this) { nav ->
 

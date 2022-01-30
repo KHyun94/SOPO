@@ -114,16 +114,22 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
         })).show(requireFragmentManager(), "DIALOG")
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+    }
+
     override fun setObserve()
     {
         super.setObserve()
-        parentView.currentPage.observe(this) {
-
-            it ?: return@observe
-            if(it != 0) return@observe
-
-            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-        }
+//        parentView.currentPage.observe(this) {
+//
+//            it ?: return@observe
+//            if(it != 0) return@observe
+//
+//            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+//        }
 
         vm.navigator.observe(this, Observer { navigator ->
 

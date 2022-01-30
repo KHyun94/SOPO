@@ -195,34 +195,41 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         }
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+
+        parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
+    }
+
     override fun setObserve()
     {
         super.setObserve()
 
-        if(activity == null) return
-
-        parentView.currentPage.observe(requireActivity(), Observer {
-            if(it != null && it == TabCode.secondTab)
-            {
-                callback = object: OnBackPressedCallback(true)
-                {
-                    override fun handleOnBackPressed()
-                    {
-                        SopoLog.d(msg = "ParcelDetailView:: BackPressListener")
-
-                        if(slideViewStatus == 0)
-                        {
-                            requireActivity().supportFragmentManager.popBackStack()
-                        }
-                        else
-                        {
-                            binding.layoutMain.panelState = PanelState.COLLAPSED
-                        }
-                    }
-                }
-                activity?.onBackPressedDispatcher?.addCallback(requireActivity(), callback!!)
-            }
-        })
+//        if(activity == null) return
+//
+//        parentView.currentPage.observe(requireActivity(), Observer {
+//            if(it != null && it == TabCode.secondTab)
+//            {
+//                callback = object: OnBackPressedCallback(true)
+//                {
+//                    override fun handleOnBackPressed()
+//                    {
+//                        SopoLog.d(msg = "ParcelDetailView:: BackPressListener")
+//
+//                        if(slideViewStatus == 0)
+//                        {
+//                            requireActivity().supportFragmentManager.popBackStack()
+//                        }
+//                        else
+//                        {
+//                            binding.layoutMain.panelState = PanelState.COLLAPSED
+//                        }
+//                    }
+//                }
+//                activity?.onBackPressedDispatcher?.addCallback(requireActivity(), callback!!)
+//            }
+//        })
 
         vm.parcelId.observe(requireActivity(), Observer { parcelId ->
             CoroutineScope(Dispatchers.Main).launch {

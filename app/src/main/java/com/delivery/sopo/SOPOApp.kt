@@ -76,31 +76,12 @@ class SOPOApp: Application()
             RoomActivate.initializeCarrierInfoIntoDB()
         }
 
-        CoroutineScope(Dispatchers.Main).launch {
-            currentPage.postValue(getInitViewPagerNumber().apply { SopoLog.d("초기 페이지 번호 [data:$this]") })
-        }
-
         SopoLog.d("TESTTEST -> ${userLocalRepository.getTopic()}")
 
         FirebaseRepository.subscribedToTopic(17, 0).start()
     }
 
-    private suspend fun getInitViewPagerNumber(): Int = withContext(Dispatchers.Default) {
-        ClipboardUtil.pasteClipboardText(context = this@SOPOApp)?.let {
-            return@withContext NavigatorConst.REGISTER_TAB
-        }
 
-        val cnt = parcelRepository.getOnGoingDataCnt()
-
-        return@withContext if(cnt == 0)
-        {
-            NavigatorConst.REGISTER_TAB
-        }
-        else
-        {
-            NavigatorConst.INQUIRY_TAB
-        }
-    }
 
     companion object
     {
@@ -108,8 +89,6 @@ class SOPOApp: Application()
         lateinit var firebaseAuth: FirebaseAuth
 
         val networkStatus: MutableLiveData<NetworkStatus> by lazy {  MutableLiveData<NetworkStatus>()  }
-
-        var currentPage = SingleLiveEvent<Int?>()
 
         var cntOfBeUpdate: MutableLiveData<Int> = MutableLiveData<Int>()
     }

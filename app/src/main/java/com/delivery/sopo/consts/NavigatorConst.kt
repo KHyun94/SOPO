@@ -13,15 +13,10 @@ object NavigatorConst {
     const val TO_PERMISSION = "TO_PERMISSION"
     const val TO_INTRO = "TO_INTRO"
     const val TO_MAIN = "TO_MAIN"
-    const val TO_INIT = "TO_INIT"
 
     const val REGISTER_TAB = 0
     const val INQUIRY_TAB = 1
     const val MY_MENU_TAB = 2
-
-    const val TO_REGISTER_REVISE = "TO_REGISTER_REVISE"
-    const val TO_REGISTER_INIT = "TO_REGISTER_INIT"
-    const val TO_REGISTER_SUCCESS = "TO_REGISTER_SUCCESS"
 
     const val TO_NOT_DISTURB = "TO_NOT_DISTURB"
     const val TO_SET_NOTIFY_OPTION = "TO_SET_NOTIFY_OPTION"
@@ -33,4 +28,7 @@ object NavigatorConst {
     const val TO_BACK_SCREEN = "TO_BACK_SCREEN"
 
     const val TO_COMPLETE = "TO_COMPLETE"
+
+    const val MAIN_BRIDGE_REGISTER = "MAIN_BRIDGE_REGISTER"
+
 }

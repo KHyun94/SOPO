@@ -55,8 +55,6 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, InquiryV
     override val vm: InquiryViewModel by viewModel()
     override val mainLayout: View by lazy { binding.swipeLayoutMainCompleted }
 
-    private val parcelRepo: ParcelRepository by inject()
-
     private lateinit var completedParcelAdapter: InquiryListAdapter
 
     private var historyPopUpWindow: PopupWindow? = null
@@ -104,7 +102,6 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, InquiryV
 
     override fun setAfterBinding()
     {
-
         setAdapters()
         setListener()
 
@@ -141,7 +138,6 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, InquiryV
     override fun onResume()
     {
         super.onResume()
-        SopoLog.d("@@@@@@@@@@@@@@@")
         parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
     }
     override fun setObserve()
@@ -149,12 +145,13 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, InquiryV
         super.setObserve()
 
         if(activity == null) return
-        parentView.currentPage.observe(requireActivity()) {
-            if(it != null && it == TabCode.secondTab)
-            {
-                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
-            }
-        }
+
+//        parentView.currentPage.observe(requireActivity()) {
+//            if(it != null && it == TabCode.secondTab)
+//            {
+//                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
+//            }
+//        }
 
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity()) { list ->
@@ -165,11 +162,12 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, InquiryV
         vm.histories.observe(requireActivity()) { dates ->
 
             CoroutineScope(Dispatchers.Main).launch {
+
                 if(dates.isEmpty())
                 {
                     SopoLog.d("완료 택배가 없습니다.")
 
-                    binding.includeCompleteNoItem.visible = View.GONE
+                    binding.includeCompleteNoItem.visible = View.VISIBLE
 
                     return@launch
                 }

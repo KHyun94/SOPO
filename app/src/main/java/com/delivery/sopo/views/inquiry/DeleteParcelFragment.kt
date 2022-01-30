@@ -135,18 +135,25 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
         }
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+
+        parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
+    }
+
     override fun setObserve()
     {
         super.setObserve()
 
-        if(activity == null) return
-
-        parentView.currentPage.observe(parentView) {
-            if(it != null && it == TabCode.secondTab)
-            {
-                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
-            }
-        }
+//        if(activity == null) return
+//
+//        parentView.currentPage.observe(parentView) {
+//            if(it != null && it == TabCode.secondTab)
+//            {
+//                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
+//            }
+//        }
 
         vm.inquiryStatus.observe(parentView) {
             if(it == InquiryStatusEnum.COMPLETE) vm.getCompleteParcelMonth()

@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.LayoutRes
 import androidx.core.app.ActivityCompat
@@ -51,7 +50,8 @@ class MenuFragment: Fragment(), KoinComponent
                 if(System.currentTimeMillis() - pressedTime > 2000)
                 {
                     pressedTime = System.currentTimeMillis()
-                    Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).let { bar ->
+                    Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
+                        .let { bar ->
                             bar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
                         }
                 }
@@ -77,43 +77,75 @@ class MenuFragment: Fragment(), KoinComponent
         return binding.root
     }
 
-    private fun<T: ViewDataBinding> bindView(inflater: LayoutInflater, @LayoutRes layoutRes:Int, container: ViewGroup?):T{
-        val binding = DataBindingUtil.inflate<T>(inflater, layoutRes, container,false)
+    private fun <T: ViewDataBinding> bindView(inflater: LayoutInflater,
+                                              @LayoutRes layoutRes: Int, container: ViewGroup?): T
+    {
+        val binding = DataBindingUtil.inflate<T>(inflater, layoutRes, container, false)
         binding.setVariable(BR.vm, vm)
         binding.lifecycleOwner = this
         return binding
     }
 
-    fun setObserver()
+    override fun onResume()
     {
+        super.onResume()
+
         var pressedTime: Long = 0
 
-        parentView.currentPage.observe(this, Observer { page ->
-            if(page != null && page == TabCode.thirdTab)
+        callback = object: OnBackPressedCallback(true)
+        {
+            override fun handleOnBackPressed()
             {
-                callback = object: OnBackPressedCallback(true)
+                if(System.currentTimeMillis() - pressedTime > 2000)
                 {
-                    override fun handleOnBackPressed()
-                    {
-                        if(System.currentTimeMillis() - pressedTime > 2000)
-                        {
-                            pressedTime = System.currentTimeMillis()
+                    pressedTime = System.currentTimeMillis()
 
-                            Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply {
-                                animationMode = Snackbar.ANIMATION_MODE_SLIDE
-                            }.show()
-
-                            return
+                    Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
+                        .apply {
+                            animationMode = Snackbar.ANIMATION_MODE_SLIDE
                         }
+                        .show()
 
-                        ActivityCompat.finishAffinity(requireActivity())
-                        exitProcess(0)
-                    }
+                    return
                 }
 
-                requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+                ActivityCompat.finishAffinity(requireActivity())
+                exitProcess(0)
             }
-        })
+        }
+        parentView.onBackPressedDispatcher.addCallback(parentView, callback)
+    }
+
+    fun setObserver()
+    {
+        //        var pressedTime: Long = 0
+
+        //        parentView.currentPage.observe(this, Observer { page ->
+        //            if(page != null && page == TabCode.thirdTab)
+        //            {
+        //                callback = object: OnBackPressedCallback(true)
+        //                {
+        //                    override fun handleOnBackPressed()
+        //                    {
+        //                        if(System.currentTimeMillis() - pressedTime > 2000)
+        //                        {
+        //                            pressedTime = System.currentTimeMillis()
+        //
+        //                            Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply {
+        //                                animationMode = Snackbar.ANIMATION_MODE_SLIDE
+        //                            }.show()
+        //
+        //                            return
+        //                        }
+        //
+        //                        ActivityCompat.finishAffinity(requireActivity())
+        //                        exitProcess(0)
+        //                    }
+        //                }
+        //
+        //                requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+        //            }
+        //        })
 
         vm.menu.observe(this, Observer { code ->
             SopoLog.d("move to code[${code}]")
@@ -121,15 +153,18 @@ class MenuFragment: Fragment(), KoinComponent
             {
                 TabCode.MENU_NOTICE ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_NOTICE.NAME)
+                    TabCode.MY_MENU_SUB.FRAGMENT =
+                        MenuSubFragment.newInstance(TabCode.MENU_NOTICE.NAME)
                 }
                 TabCode.MENU_SETTING ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_SETTING.NAME)
+                    TabCode.MY_MENU_SUB.FRAGMENT =
+                        MenuSubFragment.newInstance(TabCode.MENU_SETTING.NAME)
                 }
                 TabCode.MENU_FAQ ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_FAQ.NAME)
+                    TabCode.MY_MENU_SUB.FRAGMENT =
+                        MenuSubFragment.newInstance(TabCode.MENU_FAQ.NAME)
                 }
                 TabCode.MENU_USE_TERMS ->
                 {
@@ -137,11 +172,13 @@ class MenuFragment: Fragment(), KoinComponent
                 }
                 TabCode.MENU_APP_INFO ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_APP_INFO.NAME)
+                    TabCode.MY_MENU_SUB.FRAGMENT =
+                        MenuSubFragment.newInstance(TabCode.MENU_APP_INFO.NAME)
                 }
                 TabCode.MENU_ACCOUNT_MANAGEMENT ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_ACCOUNT_MANAGEMENT.NAME)
+                    TabCode.MY_MENU_SUB.FRAGMENT =
+                        MenuSubFragment.newInstance(TabCode.MENU_ACCOUNT_MANAGEMENT.NAME)
                 }
                 else -> throw Exception("Menu is null")
             }

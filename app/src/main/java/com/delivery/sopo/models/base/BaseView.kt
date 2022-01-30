@@ -8,15 +8,12 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.ActivityResultRegistry
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityOptionsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.delivery.sopo.BR
 import com.delivery.sopo.SOPOApp
@@ -25,11 +22,11 @@ import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.util.NetworkStatusMonitor
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.util.ui_util.CustomSnackBar
+import com.delivery.sopo.util.ui_util.SopoLoadingBar
 
-interface TestListener{
-    fun test(result:ActivityResult)
+interface OnActivityResultCallbackListener{
+    fun callback(activityResult: ActivityResult)
 }
 
 abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity()
@@ -41,10 +38,13 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
     abstract val mainLayout: View
 
-    private lateinit var callback: ActivityResultCallback<ActivityResult>
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
-
+    private lateinit var onActivityResultCallbackListener: OnActivityResultCallbackListener
     lateinit var networkStatusMonitor: NetworkStatusMonitor
+
+    fun setOnActivityResultCallbackListener(listener: OnActivityResultCallbackListener){
+        this.onActivityResultCallbackListener = listener
+    }
 
     /**
      * Network Status Check
@@ -76,12 +76,10 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         networkStatusMonitor.enable()
         networkStatusMonitor.initNetworkCheck()
 
-
-
         onAfterBinding()
         setObserve()
 
-        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)
+        activityResultLauncher = getActivityResultLauncher { onActivityResultCallbackListener.callback(it) }
     }
 
 
@@ -96,13 +94,11 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
     private fun getActivityResultLauncher(callback: ActivityResultCallback<ActivityResult>): ActivityResultLauncher<Intent>
     {
-
         return registerForActivityResult(ActivityResultContracts.StartActivityForResult(), callback)
     }
 
-    fun launchActivityResult(intent: Intent, callback: ActivityResultCallback<ActivityResult>)
+    fun launchActivityResult(intent: Intent)
     {
-        this.callback = callback
         activityResultLauncher.launch(intent)
     }
 
@@ -191,24 +187,7 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         networkStatusMonitor.disable()
 
         activityResultLauncher.unregister()
-//        activityResultLauncher = null
+        //        activityResultLauncher = null
 
     }
-
-    inner class TestLifeCycleObserver(private val registry: ActivityResultRegistry, private val m: Intent, private val callback: ActivityResultCallback<ActivityResult>):
-            DefaultLifecycleObserver
-    {
-        lateinit var launcher: ActivityResultLauncher<Intent>
-
-        override fun onCreate(owner: LifecycleOwner)
-        {
-
-            launcher =
-                registry.register("key", owner, ActivityResultContracts.StartActivityForResult(), callback)
-            launcher.launch(m)
-        }
-
-
-    }
-
 }
