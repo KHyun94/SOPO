@@ -55,6 +55,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     var isRefresh = true
     var returnType = 0
 
+    var inquiryStatus: InquiryStatusEnum = InquiryStatusEnum.ONGOING
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -103,11 +105,17 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                     0 ->
                     {
                         if(!::firstBinding.isInitialized) return
+                        inquiryStatus = InquiryStatusEnum.ONGOING
                         firstBinding.tvInquiryTabName.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
                     }
                     1->
                     {
                         if(!::secondBinding.isInitialized) return
+                        inquiryStatus = InquiryStatusEnum.COMPLETE
+
+
+                        vm.clearDeliveredBadge()
+
                         secondBinding.tvInquiryTabName.typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
                     }
                 }
@@ -187,14 +195,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
     {
         super.setObserve()
 
-//        if(activity == null) return
-//        parentView.currentPage.observe(requireActivity()) {
-//            if(it != null && it == TabCode.secondTab)
-//            {
-//                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
-//            }
-//        }
-
         vm.cntOfBeDelivered.observe(this){ cnt ->
             secondBinding.updateCount = cnt
         }
@@ -231,7 +231,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
                                                                  { //삭제하기
                                                                      //                                                                     vm.onOpenDeleteView()
                                                                      TabCode.DELETE_PARCEL.FRAGMENT =
-                                                                         DeleteParcelFragment.newInstance(vm.inquiryStatus.value
+                                                                         DeleteParcelFragment.newInstance(inquiryStatus
                                                                                                               ?: InquiryStatusEnum.ONGOING)
                                                                      FragmentManager.move(requireActivity(), TabCode.DELETE_PARCEL, InquiryMainFragment.viewId)
                                                                      menuPopUpWindow?.dismiss()
@@ -239,7 +239,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryReBinding, InquiryViewModel>(
 
                                                                  override fun refreshItems(v: View)
                                                                  { // 새로고침
-                                                                     vm.syncParcelsByOngoing()
+//                                                                     vm.syncParcelsByOngoing()
                                                                      menuPopUpWindow?.dismiss()
                                                                  }
 

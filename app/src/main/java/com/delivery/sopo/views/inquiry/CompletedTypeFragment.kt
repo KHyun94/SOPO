@@ -35,6 +35,7 @@ import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomSnackBar
+import com.delivery.sopo.viewmodels.inquiry.CompletedTypeViewModel
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
@@ -49,10 +50,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import kotlin.system.exitProcess
 
-class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, InquiryViewModel>()
+class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, CompletedTypeViewModel>()
 {
     override val layoutRes: Int = R.layout.fragment_completed_type
-    override val vm: InquiryViewModel by viewModel()
+    override val vm: CompletedTypeViewModel by viewModel()
     override val mainLayout: View by lazy { binding.swipeLayoutMainCompleted }
 
     private lateinit var completedParcelAdapter: InquiryListAdapter
@@ -138,20 +139,23 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, InquiryV
     override fun onResume()
     {
         super.onResume()
+        SopoLog.d("onResume Complete")
+        Toast.makeText(requireContext(), "TestTest Complete", Toast.LENGTH_SHORT).show()
+
+        SopoLog.d("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+
         parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
     }
     override fun setObserve()
     {
         super.setObserve()
 
-        if(activity == null) return
+        activity ?: return
 
-//        parentView.currentPage.observe(requireActivity()) {
-//            if(it != null && it == TabCode.secondTab)
-//            {
-//                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
-//            }
-//        }
+        parentView.currentPage.observe(this) {
+            if(it != 1) return@observe
+            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        }
 
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity()) { list ->

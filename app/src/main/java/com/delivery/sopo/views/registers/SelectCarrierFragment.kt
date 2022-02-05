@@ -78,23 +78,15 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
         setRecyclerViewItem()
     }
 
-    override fun onResume()
-    {
-        super.onResume()
-        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-    }
-
     override fun setObserve()
     {
         super.setObserve()
 
-//        parentView.currentPage.observe(this) {
-//
-//            it ?: return@observe
-//            if(it != 0) return@observe
-//
-//            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-//        }
+        activity ?: return
+        parentView.currentPage.observe(this) {
+            if(it != 0) return@observe
+            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        }
 
         vm.navigator.observe(this) { nav ->
 

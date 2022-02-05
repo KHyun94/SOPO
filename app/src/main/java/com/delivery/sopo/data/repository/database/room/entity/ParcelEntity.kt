@@ -17,8 +17,8 @@ data class ParcelEntity(
     var parcelId: Int,
         @ColumnInfo(
         name = "USER_ID",
-        typeAffinity = ColumnInfo.TEXT
-    ) var userId: String,
+        typeAffinity = ColumnInfo.INTEGER
+    ) var userId: Int,
         @ColumnInfo(
         name = "WAYBILL_NUM",
         typeAffinity = ColumnInfo.TEXT

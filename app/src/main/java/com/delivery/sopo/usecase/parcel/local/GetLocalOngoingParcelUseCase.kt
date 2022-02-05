@@ -83,7 +83,7 @@ class GetOngoingParcelByLocalUseCase(private val parcelRepo: ParcelRepository)
         multiList[6].addAll(elseList)
 
         multiList.forEach {
-            Collections.sort(it, InquiryViewModel.SortByDate())
+            Collections.sort(it, SortByDate())
             sortedList.addAll(it)
         }
         return sortedList

@@ -19,13 +19,17 @@ import com.delivery.sopo.extensions.wrapBodyAliasToHashMap
 import com.delivery.sopo.extensions.wrapBodyAliasToMap
 import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.parcel.ParcelStatus
+import com.delivery.sopo.models.parcel.UpdatableParcel
 import com.delivery.sopo.services.network_handler.BaseServiceBeta
 import com.delivery.sopo.services.network_handler.NetworkResponse
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class ParcelRepository(private val userLocalRepo: UserLocalRepository, private val oAuthRepo: OAuthLocalRepository, private val parcelManagementRepo: ParcelManagementRepoImpl, private val appDatabase: AppDatabase):
+class ParcelRepository(
+        private val parcelManagementRepo: ParcelManagementRepoImpl,
+        private val appDatabase: AppDatabase):
         ParcelDataSource,
         BaseServiceBeta()
 {
@@ -203,6 +207,17 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository, private v
         appDatabase.parcelDao().insert(parcel)
     }
 
+    suspend fun update(parcel: ParcelResponse): Int = withContext(Dispatchers.Default) {
+
+        SopoLog.d("TEST::이전 데이터=>${parcel.toString()}")
+
+        parcel.auditDte = TimeUtil.getDateTime()
+        val entity = ParcelMapper.parcelObjectToEntity(req = parcel)
+
+        SopoLog.d("TEST::이후 데이터=>${entity.toString()}")
+        return@withContext appDatabase.parcelDao().update(entity)
+    }
+
     override suspend fun update(parcel: ParcelEntity): Int = withContext(Dispatchers.Default) {
         parcel.auditDte = TimeUtil.getDateTime()
         return@withContext appDatabase.parcelDao().update(parcel)
@@ -219,9 +234,8 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository, private v
         return appDatabase.parcelDao().getSingleParcelWithwaybillNum(waybillNum = waybillNum)
     }
 
-    override suspend fun getOnGoingDataCnt(): Int
-    {
-        return appDatabase.parcelDao().getOngoingDataCnt()
+    override suspend fun getOnGoingDataCnt(): Int = withContext(Dispatchers.Default) {
+        return@withContext appDatabase.parcelDao().getOngoingDataCnt()
     }
 
     suspend fun registerParcel(parcel: ParcelRegister): Int
@@ -336,7 +350,7 @@ class ParcelRepository(private val userLocalRepo: UserLocalRepository, private v
         return apiCall { result }
     }
 
-    suspend fun requestParcelForRefresh(parcelId: Int): ParcelResponse
+    suspend fun requestParcelForRefresh(parcelId: Int): UpdatableParcel
     {
         val wrapBody = parcelId.wrapBodyAliasToMap("parcelId")
         val result =

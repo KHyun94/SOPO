@@ -35,21 +35,42 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
         override fun onSignUpError(error: ErrorEnum)
         {
             super.onSignUpError(error)
+
             if(error == ErrorEnum.ALREADY_REGISTERED_USER) {
                 requestLoginByKakao(email = email, uId = kakaoUserId, nickname = kakaoNickname)
                 return
             }
+
+            stopLoading()
         }
 
         override fun onLoginError(error: ErrorEnum)
         {
             super.onLoginError(error)
 
+            stopLoading()
+
             postErrorSnackBar("유효한 이메일 또는 비밀번호가 아닙니다.")
+        }
+
+        override fun onInternalServerError(error: ErrorEnum)
+        {
+            super.onInternalServerError(error)
+            stopLoading()
+            postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.[${error.toString()}]")
+        }
+
+        override fun onAuthError(error: ErrorEnum)
+        {
+            super.onAuthError(error)
+            stopLoading()
+            postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
         }
 
         override fun onFailure(error: ErrorEnum)
         {
+            stopLoading()
+
             when(error)
             {
                 ErrorEnum.NICK_NAME_NOT_FOUND ->
@@ -61,20 +82,6 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
                     postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
                 }
             }
-        }
-
-        override fun onInternalServerError(error: ErrorEnum)
-        {
-            super.onInternalServerError(error)
-
-            postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.[${error.toString()}]")
-        }
-
-        override fun onAuthError(error: ErrorEnum)
-        {
-            super.onAuthError(error)
-
-            postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
         }
     }
 
@@ -106,6 +113,8 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
     fun requestKakaoLogin() = checkEventStatus(true, 0) {
         SopoLog.i(msg = "requestKakaoLogin(...) 호출")
 
+        onStartLoading()
+
         val keys: MutableList<String> = ArrayList()
         keys.add("kakao_account.email")
         keys.add("properties.nickname")
@@ -115,12 +124,14 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
             override fun onFailureForUiThread(errorResult: KakaoErrorResult)
             {
                 super.onFailureForUiThread(errorResult)
+                onStopLoading()
                 SopoLog.e(msg = "onFailureForUiThread message : " + errorResult.errorMessage, e = null)
                 postErrorSnackBar("카카오 로그인에 실패했습니다. 다시 시도해주세요.")
             }
 
             override fun onSessionClosed(errorResult: KakaoErrorResult)
             {
+                onStopLoading()
                 SopoLog.e(msg = "onSessionClosed message : " + errorResult.errorMessage, e = errorResult.exception)
                 postErrorSnackBar("세션 종료로 인해, 카카오 로그인에 실패했습니다.")
             }
@@ -128,6 +139,7 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
             override fun onFailure(errorResult: KakaoErrorResult)
             {
                 super.onFailure(errorResult)
+                onStopLoading()
                 SopoLog.e(msg = "onFailure message : " + errorResult.errorMessage, e = errorResult.exception)
                 postErrorSnackBar("카카오 로그인에 실패했습니다.")
             }
@@ -151,14 +163,12 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
         })
     }
 
-    private suspend fun requestJoinByKakao(email: String, uId: String, nickname: String): Boolean =
-        withContext(Dispatchers.IO) {
+    private suspend fun requestJoinByKakao(email: String, uId: String, nickname: String): Boolean = withContext(Dispatchers.IO) {
             try
             {
                 SopoLog.i(msg = "requestJoinByKakao(...) 호출")
 
-                val joinInfo =
-                    JoinInfo(email = email, password = uId.toMD5(), kakaoUid = uId, nickname = nickname)
+                val joinInfo = JoinInfo(email = email, password = uId.toMD5(), kakaoUid = uId, nickname = nickname)
                 joinRepoImpl.requestJoinByKakao(joinInfo = joinInfo)
                 return@withContext true
             }
@@ -177,6 +187,8 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
                 userRemoteRepo.requestLogin(email, uId.toMD5())
 
                 userRemoteRepo.getUserInfo()
+
+                stopLoading()
 
                 return@launch _navigator.postValue(NavigatorConst.TO_MAIN)
             }

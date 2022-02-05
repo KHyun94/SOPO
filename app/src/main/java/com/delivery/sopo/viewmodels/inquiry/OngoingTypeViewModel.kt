@@ -2,28 +2,21 @@ package com.delivery.sopo.viewmodels.inquiry
 
 import android.os.Handler
 import android.os.Looper
-import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.ParcelExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
-import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.ErrorEnum
-import com.delivery.sopo.enums.InquiryStatusEnum
 import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
-import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.mapper.ParcelMapper
-import com.delivery.sopo.models.parcel.ParcelResponse
 import com.delivery.sopo.models.parcel.ParcelStatus
 import com.delivery.sopo.usecase.parcel.remote.*
 import com.delivery.sopo.util.SopoLog
@@ -31,7 +24,6 @@ import kotlinx.coroutines.*
 import java.util.*
 
 class OngoingTypeViewModel(
-                           private val refreshParcelsUseCase: RefreshParcelsUseCase,
                            private val refreshParcelUseCase: RefreshParcelUseCase,
                            private val syncParcelsUseCase: SyncParcelsUseCase,
                            private val updateParcelAliasUseCase: UpdateParcelAliasUseCase,
@@ -40,10 +32,6 @@ class OngoingTypeViewModel(
                            private val parcelManagementRepo: ParcelManagementRepoImpl):
         BaseViewModel()
 {
-    private val _isAvailableRefresh = MutableLiveData<Boolean>().initialize(true)
-    val isAvailableRefresh: LiveData<Boolean>
-        get() = _isAvailableRefresh
-
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
         get() = _navigator
@@ -55,10 +43,7 @@ class OngoingTypeViewModel(
     val ongoingList: LiveData<MutableList<InquiryListItem>>
         get() = _ongoingList
 
-    val cntOfPresentOngoingParcels: LiveData<Int> =
-        Transformations.map(parcelRepo.getLocalOnGoingParcelCnt()) { cnt ->
-            cnt
-        }
+    val cntOfPresentOngoingParcels: LiveData<Int> = Transformations.map(parcelRepo.getLocalOnGoingParcelCnt()) { cnt -> cnt }
 
     init
     {
@@ -69,28 +54,7 @@ class OngoingTypeViewModel(
      * 이벤트 리스너
      */
 
-    fun onRefreshParcelsClicked() = scope.launch {
-        SopoLog.i("onRefreshParcelsClicked(...) 호출")
-
-        _isAvailableRefresh.postValue(false)
-
-        try
-        {
-            refreshParcelsUseCase.invoke()
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
-        }
-        finally
-        {
-            Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                _isAvailableRefresh.postValue(true)
-            }, 3000)
-
-        }
-    }
-
+    // 서버에서 DB 내 택배 정보를 가져와서 로컬 내 디비 정보를 갱신
     fun syncParcelsByOngoing() = scope.launch(Dispatchers.IO) {
         try
         {
@@ -102,35 +66,21 @@ class OngoingTypeViewModel(
         }
     }
 
-    // 배송완료 리스트의 전체 새로고침
-    fun refreshCompleteParcels() = scope.launch(Dispatchers.IO) {
-        clearDeliveredStatus().join()
-    }
 
-    // 전체 배송 완료로 표시된 상태를 1-> 0 으로 초기화시켜준다.
-    private fun clearDeliveredStatus(): Job
-    {
-        return viewModelScope.launch(Dispatchers.IO) {
-            parcelManagementRepo.updateTotalIsBeDeliveredToZero()
-        }
-    }
-
-
-    fun onUpdateParcelAlias(parcelId: Int, parcelAlias: String) =
-        checkEventStatus(checkNetwork = true) {
-            scope.launch {
-                try
-                {
-                    updateParcelAliasUseCase.invoke(parcelId = parcelId, parcelAlias = parcelAlias)
-                }
-                catch(e: Exception)
-                {
-                    exceptionHandler.handleException(coroutineContext, e)
-                }
+    fun updateParcelAlias(parcelId: Int, parcelAlias: String) = checkEventStatus(checkNetwork = true) {
+        scope.launch {
+            try
+            {
+                updateParcelAliasUseCase.invoke(parcelId = parcelId, parcelAlias = parcelAlias)
+            }
+            catch(e: Exception)
+            {
+                exceptionHandler.handleException(coroutineContext, e)
             }
         }
+    }
 
-    suspend fun onRefreshParcel(parcelId: Int)  = withContext(Dispatchers.IO){
+    suspend fun refreshParcel(parcelId: Int)  = withContext(Dispatchers.IO){
             try
             {
                 refreshParcelUseCase.invoke(parcelId = parcelId)
@@ -151,20 +101,6 @@ class OngoingTypeViewModel(
             catch(e: Exception)
             {
                 exceptionHandler.handleException(coroutineContext, e)
-            }
-        }
-    }
-
-    fun onDeleteParcels() = checkEventStatus(checkNetwork = true) {
-        scope.launch(Dispatchers.IO) {
-            try
-            {
-                deleteParcelsUseCase.invoke()
-            }
-            catch(e: Exception)
-            {
-                exceptionHandler.handleException(coroutineContext, e)
-
             }
         }
     }
@@ -235,15 +171,6 @@ class OngoingTypeViewModel(
             sortedList.addAll(it)
         }
         return sortedList
-    }
-
-    suspend fun getDeletableParcelStatuses():List<ParcelStatus>{
-        return parcelManagementRepo.getDeletableParcelStatuses()
-    }
-
-    fun cancelToDelete(parcelStatuses:List<ParcelStatus>) = scope.launch(Dispatchers.Default){
-        val updateParcelStatuses = parcelStatuses.map { it.apply { isBeDelete = 0 } }
-        parcelManagementRepo.updateParcelStatuses(updateParcelStatuses)
     }
 
     fun onMoveToRegister()

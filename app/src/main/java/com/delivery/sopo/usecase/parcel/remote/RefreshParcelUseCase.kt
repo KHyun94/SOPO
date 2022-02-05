@@ -9,7 +9,7 @@ class RefreshParcelUseCase(private val parcelRepo: ParcelRepository)
 {
     suspend operator fun invoke(parcelId: Int) = withContext(Dispatchers.IO) {
         SopoLog.i("RefreshParcelUseCase(...)")
-        val parcel = parcelRepo.requestParcelForRefresh(parcelId = parcelId)
-        parcelRepo.updateParcelFromServer(parcel)
+        val updatableParcel = parcelRepo.requestParcelForRefresh(parcelId = parcelId)
+        parcelRepo.update(updatableParcel.parcelResponse)
     }
 }

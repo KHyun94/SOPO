@@ -195,16 +195,15 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         }
     }
 
-    override fun onResume()
-    {
-        super.onResume()
-
-        parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
-    }
-
     override fun setObserve()
     {
         super.setObserve()
+
+        activity ?: return
+        parentView.currentPage.observe(this) {
+            if(it != 1) return@observe
+            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        }
 
 //        if(activity == null) return
 //

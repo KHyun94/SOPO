@@ -54,6 +54,10 @@ class MainViewModel(private val userRepo: UserLocalRepository,
         updateFCMToken()
     }
 
+    suspend fun checkIsExistParcels(): Boolean {
+        return parcelRepo.getOnGoingDataCnt() > 0
+    }
+
 /*
     // TODO Parcel tab으로 이동해야 함
     // 업데이트 가능한 택배가 있는지 체크 [ParcelStatusEntity - updatableStatus

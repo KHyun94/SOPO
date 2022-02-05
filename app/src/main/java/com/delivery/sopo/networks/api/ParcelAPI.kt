@@ -7,6 +7,7 @@ import com.delivery.sopo.data.repository.database.room.dto.DeleteParcelsDTO
 import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.UpdateParcelAliasRequest
 import com.delivery.sopo.models.parcel.ParcelResponse
+import com.delivery.sopo.models.parcel.UpdatableParcel
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -77,7 +78,7 @@ interface ParcelAPI
      */
     @POST("/api/v1/sopo-parcel/delivery/parcel/refresh")
     @Headers("Accept: application/json")
-    suspend fun requestParcelForRefresh(@Body parcelId: Map<String, Int>): Response<APIResult<ParcelResponse>>
+    suspend fun requestParcelForRefresh(@Body parcelId: Map<String, Int>): Response<APIResult<UpdatableParcel>>
 
 
 }

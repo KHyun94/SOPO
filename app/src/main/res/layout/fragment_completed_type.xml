@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.inquiry.InquiryViewModel" />
+            type="com.delivery.sopo.viewmodels.inquiry.CompletedTypeViewModel" />
     </data>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

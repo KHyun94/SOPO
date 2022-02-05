@@ -31,7 +31,6 @@ interface OnActivityResultCallbackListener{
 
 abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity()
 {
-
     lateinit var binding: T
     abstract val layoutRes: Int
     abstract val vm: R

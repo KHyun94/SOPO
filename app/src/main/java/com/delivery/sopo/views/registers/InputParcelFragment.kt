@@ -119,13 +119,13 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
     override fun setObserve()
     {
         super.setObserve()
-//        parentView.currentPage.observe(this) {
-//
-//            it ?: return@observe
-//            if(it != 0) return@observe
-//
-//            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-//        }
+
+        activity?:return
+
+        parentView.currentPage.observe(this) {
+            if(it != 0) return@observe
+            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        }
 
         vm.focus.observe(this) { focus ->
             val res = TextInputUtil.changeFocus(requireContext(), focus)
@@ -187,26 +187,6 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
                 }
             }
 
-        }
-    }
-
-    override fun onResume()
-    {
-        super.onResume()
-
-        SopoLog.d(msg = "OnResume")
-
-        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-
-        CoroutineScope(Dispatchers.Main).launch {
-            val clipboardText = ClipboardUtil.pasteClipboardText(SOPOApp.INSTANCE) ?: return@launch
-
-            val isWrite = vm.waybillNum.value.isNullOrEmpty()
-
-            if((clipboardText.isEmpty() || !isWrite).not())
-            {
-                vm.clipboardText.postValue(clipboardText)
-            }
         }
     }
 

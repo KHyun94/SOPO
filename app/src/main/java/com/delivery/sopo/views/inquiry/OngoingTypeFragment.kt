@@ -29,6 +29,11 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import kotlin.system.exitProcess
 
+/**
+ * 1. 택배가 없을 때, '등록하시겠습니까?' 버튼 활성화
+ * 1-1. '등록하시겠습니까?' 버튼 클릭 시 0번째(등록) 페이지로 이동
+ * 2.
+ */
 class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeViewModel>()
 {
     private lateinit var onMainBridgeListener: OnMainBridgeListener
@@ -68,6 +73,12 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
     private fun setOnMainBridgeListener(context: Context)
     {
         onMainBridgeListener = context as OnMainBridgeListener
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+        parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
     }
 
     override fun setBeforeBinding()
@@ -121,13 +132,11 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
     {
         super.setObserve()
 
-//        if(activity == null) return
-//        parentView.currentPage.observe(requireActivity()) {
-//            if(it != null && it == TabCode.secondTab)
-//            {
-//                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
-//            }
-//        }
+        activity ?: return
+        parentView.currentPage.observe(this) {
+            if(it != 1) return@observe
+            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        }
 
         vm.ongoingList.observe(requireActivity()) { list ->
 
@@ -154,13 +163,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         }
     }
 
-    override fun onResume()
-    {
-        super.onResume()
-
-        parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
-    }
-
     private fun getParcelClicked(): ParcelEventListener
     {
         return object: ParcelEventListener()
@@ -177,7 +179,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                 {
                     override fun invoke(dialog: OptionalDialog)
                     {
-
                         vm.onDeleteParcel(parcelId = parcelId)
                         dialog.dismiss()
                     }
@@ -186,20 +187,9 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                     override fun invoke(dialog: OptionalDialog)
                     {
                         CoroutineScope(Dispatchers.Main).launch {
-
-                            vm.onRefreshParcel(parcelId)
-
-                            //                            withContext(Dispatchers.Default) {
-                            //                                registeredParcelAdapter.getList()[pos].apply {
-                            //                                    this.parcelResponse = parcelRepo.getLocalParcelById(parcelId)
-                            //                                        ?: return@withContext
-                            //                                }
-                            //                            }
-
+                            vm.refreshParcel(parcelId)
                             registeredParcelAdapter.notifyItemChanged(pos)
                         }
-
-
 
                         dialog.dismiss()
                     }
@@ -222,7 +212,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
 
                 AlertUtil.updateValueDialog(requireContext(), "물품명을 입력해주세요.", Pair("확인", View.OnClickListener {
                     edit.observe(requireActivity()) { parcelAlias ->
-                        vm.onUpdateParcelAlias(parcelId, parcelAlias)
+                        vm.updateParcelAlias(parcelId, parcelAlias)
                         AlertUtil.onDismiss()
                     }
                 }), Pair("취소", null)) {

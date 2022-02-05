@@ -9,7 +9,7 @@ data class ParcelResponse(
         /**
          * 삭제되도 됨
          */
-        @SerializedName("userId") var userId: String,
+        @SerializedName("userId") var userId: Int,
         @SerializedName("waybillNum") var waybillNum: String,
         @SerializedName("carrier") var carrier: String,
         @SerializedName("alias") var alias: String,

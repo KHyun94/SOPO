@@ -1,21 +1,17 @@
 package com.delivery.sopo.views.main
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
-import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
 import androidx.annotation.DrawableRes
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
@@ -31,8 +27,6 @@ import com.delivery.sopo.services.PowerManager
 import com.delivery.sopo.services.receivers.RefreshParcelBroadcastReceiver
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.util.PermissionUtil
-import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
@@ -59,11 +53,17 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnMainBridgeListener
     lateinit var tab2ndBinding: ItemMainTabBinding
     lateinit var tab3rdBinding: ItemMainTabBinding
 
-    private val baseFragments = arrayListOf(RegisterMainFragment(), InquiryMainFragment(), MenuMainFragment())
+    private val baseFragments =
+        arrayListOf(RegisterMainFragment(), InquiryMainFragment(), MenuMainFragment())
 
     private val appPasswordRepo: AppPasswordRepository by inject()
 
     private val refreshParcelBroadcastReceiver = RefreshParcelBroadcastReceiver()
+
+
+    private val _currentPage = MutableLiveData<Int>()
+    val currentPage: LiveData<Int>
+    get() = _currentPage
 
     override fun onBeforeBinding()
     {
@@ -82,24 +82,26 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnMainBridgeListener
     {
         super.setObserve()
 
-//        SOPOApp.currentPage.observe(this, Observer {
-//
-//            SopoLog.d("MainView:CurrentPage [pos:$it]")
-//
-//            when(it ?: return@Observer)
-//            {
-//                NavigatorConst.REGISTER_TAB -> binding.layoutViewPager.setCurrentItem(NavigatorConst.REGISTER_TAB, true)
-//                NavigatorConst.INQUIRY_TAB -> binding.layoutViewPager.setCurrentItem(NavigatorConst.INQUIRY_TAB, true)
-//                NavigatorConst.MY_MENU_TAB -> binding.layoutViewPager.setCurrentItem(NavigatorConst.MY_MENU_TAB, true)
-//                else -> throw Exception("NO TAB")
-//            }
-//        })
     }
 
     private fun checkInitializedTab() = CoroutineScope(Dispatchers.Default).launch {
         val clipBoardData = ClipboardUtil.pasteClipboardText(context = this@MainView)
-        if(clipBoardData.isNullOrBlank()) binding.layoutViewPager.currentItem = 0
-        else binding.layoutViewPager.currentItem = 1
+
+        clipBoardData?.let {
+            binding.layoutViewPager.currentItem = 0
+            return@launch
+        }
+
+        val isExistParcel = vm.checkIsExistParcels()
+
+        if(isExistParcel)
+        {
+            binding.layoutViewPager.currentItem = 1
+        }
+        else
+        {
+            binding.layoutViewPager.currentItem = 0
+        }
     }
 
     override fun onResume()
@@ -118,17 +120,18 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnMainBridgeListener
     {
         runBlocking(Dispatchers.Default) { appPasswordRepo.get() } ?: return
 
-        setOnActivityResultCallbackListener(object: OnActivityResultCallbackListener{
-            override fun callback(activityResult: ActivityResult)
-            {
-                if(activityResult.resultCode == Activity.RESULT_CANCELED)
-                {
-                    finishAffinity()
-                    return
-                }
-            }
+        setOnActivityResultCallbackListener(object: OnActivityResultCallbackListener
+                                            {
+                                                override fun callback(activityResult: ActivityResult)
+                                                {
+                                                    if(activityResult.resultCode == Activity.RESULT_CANCELED)
+                                                    {
+                                                        finishAffinity()
+                                                        return
+                                                    }
+                                                }
 
-        })
+                                            })
 
         val intent = Intent(this@MainView, LockScreenView::class.java).apply {
             putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
@@ -163,6 +166,8 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnMainBridgeListener
         {
             override fun onTabSelected(tab: TabLayout.Tab?)
             {
+                _currentPage.postValue(tab?.position?:0)
+
                 when(tab?.position)
                 {
                     NavigatorConst.REGISTER_TAB -> activateTab(tab1stBinding, R.drawable.ic_activate_register)
@@ -236,8 +241,8 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnMainBridgeListener
         }
     }
 
-    private fun setTabIcon(tab: TabLayout.Tab, @DrawableRes
-    iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
+    private fun setTabIcon(tab: TabLayout.Tab,
+                           @DrawableRes iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
     {
         val tabBinding =
             ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
@@ -249,14 +254,8 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnMainBridgeListener
         return tabBinding
     }
 
-    fun getInquiryTabRes()
-    {
-
-    }
-
     fun showTab()
-    { //        AnimationUtil.slideUp(binding.layoutMainTab)
-
+    {
         binding.layoutMainTab.visibility = View.VISIBLE
 
         binding.layoutViewPager.isUserInputEnabled = true
@@ -266,8 +265,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnMainBridgeListener
     }
 
     fun hideTab()
-    { //        AnimationUtil.slideDown(binding.layoutMainTab)
-
+    {
         binding.layoutMainTab.visibility = View.GONE
 
         binding.layoutViewPager.isUserInputEnabled = false
@@ -283,7 +281,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnMainBridgeListener
     {
         Toast.makeText(this, "테스트 $page", Toast.LENGTH_SHORT).show()
 
-        binding.layoutViewPager.currentItem = page
+        binding.layoutViewPager.setCurrentItem(page, true)
     }
 
 

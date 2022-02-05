@@ -37,7 +37,7 @@ val appModule = module {
     single { UserLocalRepository(get()) }
     single { UserRemoteRepository() }
     single { JoinRepositoryImpl() }
-    single { ParcelRepository(get(), get(),get(), get()) }
+    single { ParcelRepository(get(), get()) }
     single { AppDatabase.getInstance(get()) }
     single { CarrierRepository(get()) }
     single { ParcelManagementRepoImpl(get()) }
@@ -70,7 +70,7 @@ val appModule = module {
     viewModel { FaqViewModel() }
     viewModel { AppInfoViewModel() }
     viewModel { NotDisturbTimeViewModel() }
-    viewModel { InquiryViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get(),get()) }
+    viewModel { InquiryViewModel(get(), get(), get()) }
     viewModel { DeleteParcelViewModel(get(), get(), get(), get(), get()) }
     viewModel { MenuViewModel(get()) }
     viewModel { AccountManagerViewModel() }
@@ -78,7 +78,8 @@ val appModule = module {
     viewModel { UpdateNicknameViewModel(get(), get()) }
 
     viewModel { InquiryMainViewModel() }
-    viewModel { OngoingTypeViewModel(get(), get(),get(),get(),get(),get(),get()) }
+    viewModel { OngoingTypeViewModel(get(), get(),get(),get(),get(),get()) }
+    viewModel { CompletedTypeViewModel(get(), get(), get(), get(), get(),get(), get()) }
     viewModel { MenuMainViewModel() }
     viewModel { ParcelDetailViewModel(get(), get(), get()) }
 
