@@ -11,16 +11,14 @@ import kotlinx.coroutines.withContext
 class GetCompletedMonthUseCase(private val parcelRepo: ParcelRepository, private val historyRepo: CompletedParcelHistoryRepoImpl)
 {
     suspend operator fun invoke(): List<CompletedParcelHistory> = withContext(Dispatchers.IO) {
-            SopoLog.i("GetCompletedMonthUseCase(...)")
+            SopoLog.i("호출")
 
             val histories = parcelRepo.getRemoteMonths()
 
             withContext(Dispatchers.Default) {
                 historyRepo.deleteAll()
                 val entities = histories.map(CompletedParcelHistoryMapper::dtoToEntity)
-                entities.map {
-                    it.status
-                }
+                entities.map { it.status }
                 historyRepo.insertEntities(entities)
             }
 

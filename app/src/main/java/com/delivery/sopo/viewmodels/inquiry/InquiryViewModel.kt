@@ -25,18 +25,18 @@ class InquiryViewModel(private val refreshParcelsUseCase: RefreshParcelsUseCase,
                        private val parcelManagementRepo: ParcelManagementRepoImpl):
         BaseViewModel()
 {
-
-
-
     // '배송중' => '배송완료' 개수
     private val _cntOfBeDelivered = parcelManagementRepo.getIsDeliveredCntLiveData()
     val cntOfBeDelivered: LiveData<Int>
         get() = _cntOfBeDelivered
 
-
     private val _isAvailableRefresh = MutableLiveData<Boolean>().initialize(true)
     val isAvailableRefresh: LiveData<Boolean>
         get() = _isAvailableRefresh
+
+    private val _isConfirmDelete: MutableLiveData<Boolean> = MutableLiveData()
+    val isConfirmDelete: LiveData<Boolean>
+    get() = _isConfirmDelete
 
     fun onRefreshParcelsClicked() = scope.launch {
         SopoLog.i("onRefreshParcelsClicked(...) 호출")
@@ -60,14 +60,26 @@ class InquiryViewModel(private val refreshParcelsUseCase: RefreshParcelsUseCase,
         }
     }
 
+    fun startDeleteCount(){
+        _isConfirmDelete.postValue(true)
+    }
+
+    fun stopDeleteCount(){
+        _isConfirmDelete.postValue(false)
+    }
+
     fun clearDeliveredBadge() = scope.launch(Dispatchers.Default) {
         parcelManagementRepo.updateTotalIsBeDeliveredToZero()
     }
 
-    fun onDeleteParcels() = checkEventStatus(checkNetwork = true) {
+    fun confirmDeleteParcels() = checkEventStatus(checkNetwork = true) {
         scope.launch(Dispatchers.IO) {
             try
             {
+                val parcelStatuses = getDeletableParcelStatuses().apply {
+                    if(isEmpty()) return@launch
+                }
+
                 deleteParcelsUseCase.invoke()
             }
             catch(e: Exception)
@@ -82,9 +94,9 @@ class InquiryViewModel(private val refreshParcelsUseCase: RefreshParcelsUseCase,
         return parcelManagementRepo.getDeletableParcelStatuses()
     }
 
-    fun cancelToDelete(parcelStatuses:List<ParcelStatus>) = scope.launch(Dispatchers.Default){
-        val updateParcelStatuses = parcelStatuses.map { it.apply { isBeDelete = 0 } }
-        parcelManagementRepo.updateParcelStatuses(updateParcelStatuses)
+    fun recoverDeleteParcels() = scope.launch(Dispatchers.Default){
+        val parcelStatuses = getDeletableParcelStatuses().map { it.apply { isBeDelete = 0 } }
+        parcelManagementRepo.updateParcelStatuses(parcelStatuses)
     }
 
     private val onSOPOErrorCallback = object: OnSOPOErrorCallback

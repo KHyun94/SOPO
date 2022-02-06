@@ -5,17 +5,14 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import com.delivery.sopo.R
-import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentInputParcelBinding
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.isGreaterThanOrEqual
-import com.delivery.sopo.interfaces.OnMainBridgeListener
-import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
+import com.delivery.sopo.interfaces.OnPageSelectListener
+import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.mapper.CarrierMapper
@@ -24,11 +21,7 @@ import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.registesrs.InputParcelViewModel
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.system.exitProcess
 
 /**
  * 택배 등록 1단
@@ -41,11 +34,11 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
 
     private val parentView: MainView by lazy { activity as MainView }
 
-    private lateinit var onMainBridgeListener: OnMainBridgeListener
+    private lateinit var onPageSelectListener: OnPageSelectListener
 
     private fun setOnMainBridgeListener(context: Context)
     {
-        onMainBridgeListener = context as OnMainBridgeListener
+        onPageSelectListener = context as OnPageSelectListener
     }
 
     private lateinit var parcelRegister: ParcelRegister
@@ -63,23 +56,20 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         returnType = bundle.getInt(RegisterMainFragment.RETURN_TYPE)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?)
+    override fun setBeforeBinding()
     {
-        super.onCreate(savedInstanceState)
+        super.setBeforeBinding()
 
-        onSOPOBackPressedListener = object: OnSOPOBackPressListener
+        onSOPOBackPressedListener = object: OnSOPOBackPressEvent()
         {
             override fun onBackPressedInTime()
             {
-                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply {
-                    animationMode = Snackbar.ANIMATION_MODE_SLIDE
-                }.show()
+                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }.show()
             }
 
             override fun onBackPressedOutTime()
             {
-                ActivityCompat.finishAffinity(requireActivity())
-                exitProcess(0)
+                exit()
             }
         }
 
@@ -87,15 +77,8 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
 
         if(returnType == RegisterMainFragment.REGISTER_PROCESS_SUCCESS)
         {
-            onMainBridgeListener.onMoveToPage(1)
+            onPageSelectListener.onMoveToPage(1)
         }
-    }
-
-    override fun setBeforeBinding()
-    {
-        super.setBeforeBinding()
-
-
     }
 
     override fun setAfterBinding()

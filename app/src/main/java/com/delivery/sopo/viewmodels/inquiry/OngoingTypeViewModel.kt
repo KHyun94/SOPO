@@ -1,26 +1,27 @@
 package com.delivery.sopo.viewmodels.inquiry
 
-import android.os.Handler
-import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.ParcelExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.ErrorEnum
-import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.mapper.ParcelMapper
-import com.delivery.sopo.models.parcel.ParcelStatus
-import com.delivery.sopo.usecase.parcel.remote.*
+import com.delivery.sopo.usecase.parcel.remote.DeleteParcelsUseCase
+import com.delivery.sopo.usecase.parcel.remote.RefreshParcelUseCase
+import com.delivery.sopo.usecase.parcel.remote.SyncParcelsUseCase
+import com.delivery.sopo.usecase.parcel.remote.UpdateParcelAliasUseCase
 import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 class OngoingTypeViewModel(
@@ -91,7 +92,7 @@ class OngoingTypeViewModel(
             }
         }
 
-    fun onDeleteParcel(parcelId: Int) = checkEventStatus(checkNetwork = true) {
+    fun deleteParcel(parcelId: Int) = checkEventStatus(checkNetwork = true) {
         scope.launch(Dispatchers.IO) {
             try
             {

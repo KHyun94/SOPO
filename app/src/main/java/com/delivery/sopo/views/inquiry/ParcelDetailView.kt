@@ -21,6 +21,7 @@ import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
 import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseFragment
@@ -28,6 +29,8 @@ import com.delivery.sopo.util.*
 import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.views.main.MainView
+import com.delivery.sopo.views.registers.InputParcelFragment
+import com.delivery.sopo.views.registers.RegisterMainFragment
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
 import kotlinx.coroutines.CoroutineScope
@@ -58,14 +61,18 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         parcelId = bundle.getInt(PARCEL_ID)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?)
+    override fun setBeforeBinding()
     {
-        super.onCreate(savedInstanceState)
+        super.setBeforeBinding()
 
-        onSOPOBackPressedListener = object: OnSOPOBackPressListener
+        useCommonBackPressListener(isUseCommon = true)
+
+        onSOPOBackPressedListener = object: OnSOPOBackPressEvent(isUseCommon = true)
         {
-            override fun onBackPressedInTime()
+            override fun onBackPressed()
             {
+                super.onBackPressed()
+
                 SopoLog.d(msg = "ParcelDetailView:: BackPressListener")
 
                 if(slideViewStatus == 0)
@@ -77,13 +84,8 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                     binding.layoutMain.panelState = PanelState.COLLAPSED
                 }
             }
-
-            override fun onBackPressedOutTime()
-            {
-            }
         }
     }
-
 
     override fun setAfterBinding()
     {
@@ -204,31 +206,6 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             if(it != 1) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
-
-//        if(activity == null) return
-//
-//        parentView.currentPage.observe(requireActivity(), Observer {
-//            if(it != null && it == TabCode.secondTab)
-//            {
-//                callback = object: OnBackPressedCallback(true)
-//                {
-//                    override fun handleOnBackPressed()
-//                    {
-//                        SopoLog.d(msg = "ParcelDetailView:: BackPressListener")
-//
-//                        if(slideViewStatus == 0)
-//                        {
-//                            requireActivity().supportFragmentManager.popBackStack()
-//                        }
-//                        else
-//                        {
-//                            binding.layoutMain.panelState = PanelState.COLLAPSED
-//                        }
-//                    }
-//                }
-//                activity?.onBackPressedDispatcher?.addCallback(requireActivity(), callback!!)
-//            }
-//        })
 
         vm.parcelId.observe(requireActivity(), Observer { parcelId ->
             CoroutineScope(Dispatchers.Main).launch {

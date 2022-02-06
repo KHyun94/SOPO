@@ -17,31 +17,24 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
-import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.databinding.FragmentDeleteParcelBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.*
-import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
+import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.mapper.MenuMapper
-import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.util.*
 import com.delivery.sopo.viewmodels.inquiry.DeleteParcelViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
-import com.delivery.sopo.views.dialog.OptionalClickListener
-import com.delivery.sopo.views.dialog.OptionalDialog
 import com.delivery.sopo.views.main.MainView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
-import java.util.function.Function
 
 class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParcelViewModel>()
 {
@@ -58,22 +51,6 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
 
     private lateinit var historyPopUpWindow: PopupWindow
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-
-        onSOPOBackPressedListener = object: OnSOPOBackPressListener
-        {
-            override fun onBackPressedInTime()
-            {
-                TabCode.INQUIRY.FRAGMENT = InquiryFragment.newInstance(returnType = 1)
-                FragmentManager.move(parentView, TabCode.INQUIRY, InquiryMainFragment.viewId)
-            }
-
-            override fun onBackPressedOutTime() { }
-        }
-    }
-
     override fun receiveData(bundle: Bundle)
     {
         super.receiveData(bundle)
@@ -85,6 +62,19 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
     override fun setBeforeBinding()
     {
         parentView.hideTab()
+
+        useCommonBackPressListener(isUseCommon = true)
+
+        onSOPOBackPressedListener = object: OnSOPOBackPressEvent(isUseCommon = true)
+        {
+            override fun onBackPressed()
+            {
+                super.onBackPressed()
+
+                TabCode.INQUIRY.FRAGMENT = InquiryFragment.newInstance(returnType = 1)
+                FragmentManager.move(parentView, TabCode.INQUIRY, InquiryMainFragment.viewId)
+            }
+        }
     }
 
     override fun setAfterBinding()
@@ -92,16 +82,16 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
         setAdapters()
         setListener()
 
-        binding.vEmpty2.setOnTouchListener { v, event ->
-            return@setOnTouchListener binding.linearMonthSelector.dispatchTouchEvent(event)
+        binding.vInnerCompletedSpace.setOnTouchListener { v, event ->
+            return@setOnTouchListener binding.linearMainMonthSelector.dispatchTouchEvent(event)
         }
 
-        binding.nestScrollViewComplete.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+        binding.nestSvMainCompleted.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
             if(scrollY > 0 && oldScrollY == 0) vm.isMonthClickable = false
             else if(scrollY == 0 && oldScrollY > 0) vm.isMonthClickable = true
         }
 
-        updateCompleteUI()
+        updateCompletedDateSector()
     }
 
     private fun getAdapter(cntOfSelectedForDelete: MutableLiveData<Int>, inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter
@@ -133,13 +123,6 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
             val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
             animator.supportsChangeAnimations = false
         }
-    }
-
-    override fun onResume()
-    {
-        super.onResume()
-
-        parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
     }
 
     override fun setObserve()
@@ -251,7 +234,7 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
                 vm.updateCompletedParcelCalendar(latestDate.year)
 
                 // TODO 다른 곳으로 빼야할듯
-                binding.constraintYearSpinner.setOnClickListener { v ->
+                binding.constraintInnerYearSpinner.setOnClickListener { v ->
                     drawCompletedParcelHistoryPopMenu(v, dates)
                 }
             }
@@ -533,35 +516,6 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
         }
     }
 
-    //팝업 메뉴에서 '삭제하기'가 선택되었을때 화면 세팅
-    // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
-
-    /*    private fun viewSettingForPopupMenuDelete()
-        {
-            binding.tvTitle.visibility = INVISIBLE
-            binding.linearStatusSelector.visibility = INVISIBLE
-            binding.ivPopMenu.visibility = INVISIBLE
-            binding.linearMoreViewParent.visibility = GONE
-
-            binding.vMoreView.visibility = INVISIBLE
-
-        }*/
-
-    // X 버튼으로 '삭제하기 취소'가 되었을때 화면 세팅
-    // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
-
-    /*   private fun viewSettingForPopupMenuDeleteCancel()
-       {
-           binding.tvTitle.visibility = VISIBLE
-           binding.linearStatusSelector.visibility = VISIBLE
-           binding.ivPopMenu.visibility = VISIBLE
-
-
-           // 삭제하기 취소가 되었을때 화면의 리스트들을 앱이 켜졌을때 처럼 초기화 시켜준다.( '더보기'가 눌렸었는지 아니면 내가 전에 리스트들의 스크롤을 얼마나 내렸는지를 일일이 알고 있기 힘들기 때문에)
-           viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
-           viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
-       }
-   */
     private fun setDefaultMonthSelector()
     {
         val (clickable, textColor, font) = Triple(first = false, second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300), third = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium))
@@ -591,30 +545,31 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
         }
     }
 
-    private fun updateCompleteUI()
+    private fun updateCompletedDateSector()
     {
+        SopoLog.i("호출")
+
         val onGlobalLayoutListener = object: ViewTreeObserver.OnGlobalLayoutListener
         {
             override fun onGlobalLayout()
             {
-                SopoLog.d("onGlobalLayout 호출")
-                val yearSpinnerHeight: Int = binding.linearOutYearSpinner.height
+                // 'year spinner'높이 수치만큼 'month sector'의 상단 공백을 생성
+                val yearSpinnerHeight: Int = binding.linearMainYearSpinner.height
 
-                SopoLog.d("yearSpinnerHeight $yearSpinnerHeight")
-
-                (binding.linearMonthSelector.layoutParams as FrameLayout.LayoutParams).apply {
+                (binding.linearMainMonthSelector.layoutParams as FrameLayout.LayoutParams).apply {
                     topMargin = yearSpinnerHeight
                 }
 
-                val monthSelectorHeight = binding.linearMonthSelector.height
+                // 'year spinner'높이 수치만큼 'completed space'의 상단 공백을 생성
+                // 'month sector'높이 수치만큼 'completed space'의 높이변경
+                val monthSelectorHeight = binding.linearMainMonthSelector.height
 
-                SopoLog.d("monthSelectorHeight $monthSelectorHeight")
-
-                (binding.vEmpty2.layoutParams as LinearLayout.LayoutParams).apply {
+                (binding.vInnerCompletedSpace.layoutParams as LinearLayout.LayoutParams).apply {
                     this.topMargin = yearSpinnerHeight
                     this.height = monthSelectorHeight
                 }
 
+                // 뷰 조절 후 옵저빙 리스너 제거
                 binding.frameMainCompleteInquiry.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         }

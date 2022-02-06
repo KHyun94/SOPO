@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.inquiry.CompletedTypeViewModel" />
@@ -18,12 +19,11 @@
         <FrameLayout
             android:id="@+id/frame_main_complete_inquiry"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content">
 
             <!-- 월 spinner ! 촤하단 뷰 -->
             <LinearLayout
-                android:id="@+id/linear_month_selector"
+                android:id="@+id/linear_main_month_selector"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
@@ -31,7 +31,7 @@
                 android:paddingBottom="20dp">
 
                 <LinearLayout
-                    android:id="@+id/linear_first_half"
+                    android:id="@+id/linear_inner_first_half"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -46,8 +46,9 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginRight="22dp"
+                        android:background="@drawable/selector_month"
                         android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(tvJan, 1)}"
+                        android:onClick="@{()->vm.onMonthClicked(1)}"
                         android:text="1"
                         android:textColor="@color/COLOR_GRAY_300" />
 
@@ -57,8 +58,9 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginHorizontal="16dp"
+                        android:background="@drawable/selector_month"
                         android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(tvFeb, 2)}"
+                        android:onClick="@{()->vm.onMonthClicked(2)}"
                         android:text="2"
                         android:textColor="@color/COLOR_GRAY_300" />
 
@@ -68,8 +70,9 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginHorizontal="16dp"
+                        android:background="@drawable/selector_month"
                         android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(tvMar, 3)}"
+                        android:onClick="@{()->vm.onMonthClicked(3)}"
                         android:text="3"
                         android:textColor="@color/COLOR_GRAY_300" />
 
@@ -79,8 +82,9 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginHorizontal="16dp"
+                        android:background="@drawable/selector_month"
                         android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(tvApr, 4)}"
+                        android:onClick="@{()->vm.onMonthClicked(4)}"
                         android:text="4"
                         android:textColor="@color/COLOR_GRAY_300" />
 
@@ -90,8 +94,9 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginHorizontal="16dp"
+                        android:background="@drawable/selector_month"
                         android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(tvMay, 5)}"
+                        android:onClick="@{()->vm.onMonthClicked(5)}"
                         android:text="5"
                         android:textColor="@color/COLOR_GRAY_300" />
 
@@ -101,14 +106,15 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginLeft="22dp"
+                        android:background="@drawable/selector_month"
                         android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(tvJun, 6)}"
+                        android:onClick="@{()->vm.onMonthClicked(6)}"
                         android:text="6"
                         android:textColor="@color/COLOR_GRAY_300" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/linear_second_half"
+                    android:id="@+id/linear_inner_second_half"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -124,8 +130,9 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginRight="22dp"
+                        android:background="@drawable/selector_month"
                         android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(tvJul, 7)}"
+                        android:onClick="@{()->vm.onMonthClicked(7)}"
                         android:text="7"
                         android:textColor="@color/COLOR_GRAY_300" />
 
@@ -135,8 +142,9 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginHorizontal="16dp"
+                        android:background="@drawable/selector_month"
                         android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(tvAug, 8)}"
+                        android:onClick="@{()->vm.onMonthClicked(8)}"
                         android:text="8"
                         android:textColor="@color/COLOR_GRAY_300" />
 
@@ -146,8 +154,9 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginHorizontal="16dp"
+                        android:background="@drawable/selector_month"
                         android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(tvSep, 9)}"
+                        android:onClick="@{()->vm.onMonthClicked(9)}"
                         android:text="9"
                         android:textColor="@color/COLOR_GRAY_300" />
 
@@ -157,8 +166,9 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginHorizontal="16dp"
+                        android:background="@drawable/selector_month"
                         android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(tvOct, 10)}"
+                        android:onClick="@{()->vm.onMonthClicked(10)}"
                         android:text="10"
                         android:textColor="@color/COLOR_GRAY_300" />
 
@@ -168,8 +178,9 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginHorizontal="16dp"
+                        android:background="@drawable/selector_month"
                         android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(tvNov, 11)}"
+                        android:onClick="@{()->vm.onMonthClicked(11)}"
                         android:text="11"
                         android:textColor="@color/COLOR_GRAY_300" />
 
@@ -179,8 +190,9 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginLeft="22dp"
+                        android:background="@drawable/selector_month"
                         android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(tvDec, 12)}"
+                        android:onClick="@{()->vm.onMonthClicked(12)}"
                         android:text="12"
                         android:textColor="@color/COLOR_GRAY_300" />
 
@@ -190,7 +202,7 @@
 
             <!-- 택배 완료 recycler view -->
             <androidx.core.widget.NestedScrollView
-                android:id="@+id/nest_scroll_view_complete"
+                android:id="@+id/nest_sv_main_completed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -202,7 +214,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <View
-                        android:id="@+id/v_empty_2"
+                        android:id="@+id/v_inner_completed_space"
                         android:layout_width="match_parent"
                         android:layout_height="120dp" />
 
@@ -211,8 +223,8 @@
                         layout="@layout/include_no_item"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
                         android:layout_marginTop="100dp"
+                        android:visibility="gone"
                         app:content='@{"배송 완료된 택배가 없습니다."}'
                         app:layout_constraintTop_toTopOf="parent"
                         tools:visibility="visible" />
@@ -250,15 +262,15 @@
             </androidx.core.widget.NestedScrollView>
 
             <LinearLayout
-                android:id="@+id/linear_out_year_spinner"
+                android:id="@+id/linear_main_year_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:background="@drawable/bg_rounded_border_bottom_45dp"
                 android:backgroundTint="@color/COLOR_GRAY_50"
                 android:gravity="center_horizontal"
-                android:paddingTop="24dp"
                 android:paddingHorizontal="10dp"
+                android:paddingTop="24dp"
                 android:paddingBottom="29dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
@@ -266,7 +278,7 @@
 
                 <!-- 연도 spinner ! 최상단 뷰 -->
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraint_year_spinner"
+                    android:id="@+id/constraint_inner_year_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -274,7 +286,7 @@
                     android:focusable="true">
 
                     <TextView
-                        android:id="@+id/tv_spinner_year"
+                        android:id="@+id/tv_year_spinner"
                         style="@style/kor_H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -286,17 +298,17 @@
                         tools:text="2021년" />
 
                     <ImageView
-                        android:id="@+id/iv_arrow_down"
+                        android:id="@+id/iv_drop_down"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_arrow_down_gray_scale"
-                        app:layout_constraintBottom_toBottomOf="@+id/tv_spinner_year"
-                        app:layout_constraintLeft_toRightOf="@+id/tv_spinner_year"
-                        app:layout_constraintTop_toTopOf="@+id/tv_spinner_year" />
+                        app:layout_constraintBottom_toBottomOf="@+id/tv_year_spinner"
+                        app:layout_constraintLeft_toRightOf="@+id/tv_year_spinner"
+                        app:layout_constraintTop_toTopOf="@+id/tv_year_spinner" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </LinearLayout>
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    
+
 </layout>

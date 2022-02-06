@@ -6,10 +6,18 @@ import org.jetbrains.annotations.TestOnly
 import java.lang.Exception
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.*
 
 object DateUtil
 {
+
+    fun getCurrentYear(): String
+    {
+        val calendar: Calendar = Calendar.getInstance()
+        return calendar.get(Calendar.YEAR).toString()
+    }
+
     fun getIntToMilliSeconds(seconds : Int) : Long
     {
         val currentTimeMilliSeconds = System.currentTimeMillis()

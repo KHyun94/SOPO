@@ -260,16 +260,14 @@ class ParcelRepository(
             NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
                 .getParcelsOngoing()
         val result = apiCall { getRemoteParcelByOngoing }
-        return result.data?.data ?: emptyList<ParcelResponse>()
+        return result.data?.data ?: emptyList()
     }
 
     override suspend fun getRemoteMonths(): List<CompletedParcelHistory>
     {
-        val getRemoteMonths =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
-                .getCompletedMonths()
+        val getRemoteMonths = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getCompletedMonths()
         val result = apiCall { getRemoteMonths }
-        return result.data?.data ?: emptyList<CompletedParcelHistory>()
+        return result.data?.data ?: emptyList()
     }
 
     override suspend fun getCompleteParcelsByRemote(page: Int, inquiryDate: String): List<ParcelResponse>
@@ -278,7 +276,7 @@ class ParcelRepository(
             NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
                 .getParcelsComplete(page = page, inquiryDate = inquiryDate)
         val result = apiCall { getCompleteParcelsByRemote }
-        return result.data?.data ?: emptyList<ParcelResponse>()
+        return result.data?.data ?: emptyList()
     }
 
     /**

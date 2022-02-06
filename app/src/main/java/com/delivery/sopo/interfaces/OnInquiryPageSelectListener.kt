@@ -1,6 +1,6 @@
 package com.delivery.sopo.interfaces
 
-interface OnMainBridgeListener
+interface OnInquiryPageSelectListener
 {
     fun onMoveToPage(page: Int)
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true"
+        android:drawable="@drawable/oval_24dp_gray_scale" tools:ignore="StateListReachable" />
+    <item android:state_selected="false"
+        android:drawable="@color/COLOR_GRAY_50"/>
+</selector>

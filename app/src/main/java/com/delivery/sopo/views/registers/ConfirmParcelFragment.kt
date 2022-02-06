@@ -1,7 +1,6 @@
 package com.delivery.sopo.views.registers
 
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.Observer
@@ -10,7 +9,7 @@ import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.databinding.FragmentConfirmParcelBinding
 import com.delivery.sopo.enums.NavigatorEnum
-import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
+import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.*
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.mapper.CarrierMapper
@@ -20,6 +19,7 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.registesrs.ConfirmParcelViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.OnAgreeClickListener
+import com.delivery.sopo.views.inquiry.InquiryFragment
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -67,14 +67,18 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
 
     }
 
-    override fun onCreate(savedInstanceState: Bundle?)
+    override fun setBeforeBinding()
     {
-        super.onCreate(savedInstanceState)
+        super.setBeforeBinding()
 
-        onSOPOBackPressedListener = object: OnSOPOBackPressListener
+        useCommonBackPressListener(isUseCommon = true)
+
+        onSOPOBackPressedListener = object: OnSOPOBackPressEvent(isUseCommon = true)
         {
-            override fun onBackPressedInTime()
+            override fun onBackPressed()
             {
+                super.onBackPressed()
+
                 when(beforeStep)
                 {
                     0->
@@ -88,15 +92,9 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
                         FragmentManager.move(requireActivity(), TabCode.REGISTER_SELECT, RegisterMainFragment.viewId)
                     }
                 }
-
             }
-
-            override fun onBackPressedOutTime() {}
         }
     }
-
-
-
 
     private fun alertErrorMessage(){
         GeneralDialog(requireActivity(), "등록 오류", "시스템 오류로 다시 입력을 부탁드립니다. ㅠㅡㅜ", null, Pair("이동", object: OnAgreeClickListener
@@ -111,7 +109,7 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
                                              nextFragment = TabCode.REGISTER_INPUT.FRAGMENT,
                                              nextFragmentTag = TabCode.REGISTER_INPUT.NAME)
             }
-        })).show(requireFragmentManager(), "DIALOG")
+        })).show(parentFragmentManager, "DIALOG")
     }
 
 

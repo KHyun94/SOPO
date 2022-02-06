@@ -1,10 +1,8 @@
 package com.delivery.sopo.views.inquiry
 
 import android.content.Context
-import android.os.Bundle
 import android.view.*
 import android.widget.*
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -12,8 +10,8 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentOngoingTypeBinding
 import com.delivery.sopo.enums.*
-import com.delivery.sopo.interfaces.OnMainBridgeListener
-import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
+import com.delivery.sopo.interfaces.OnPageSelectListener
+import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.util.AlertUtil
@@ -27,7 +25,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
-import kotlin.system.exitProcess
 
 /**
  * 1. 택배가 없을 때, '등록하시겠습니까?' 버튼 활성화
@@ -36,7 +33,7 @@ import kotlin.system.exitProcess
  */
 class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeViewModel>()
 {
-    private lateinit var onMainBridgeListener: OnMainBridgeListener
+    private lateinit var onPageSelectListener: OnPageSelectListener
 
     override val layoutRes: Int = R.layout.fragment_ongoing_type
     override val vm: OngoingTypeViewModel by viewModel()
@@ -49,41 +46,27 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
 
     private val parentView: MainView by lazy { activity as MainView }
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-
-        onSOPOBackPressedListener = object: OnSOPOBackPressListener
-        {
-            override fun onBackPressedInTime()
-            {
-                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
-                    .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }
-                    .show()
-            }
-
-            override fun onBackPressedOutTime()
-            {
-                ActivityCompat.finishAffinity(parentView)
-                exitProcess(0)
-            }
-        }
-    }
-
     private fun setOnMainBridgeListener(context: Context)
     {
-        onMainBridgeListener = context as OnMainBridgeListener
-    }
-
-    override fun onResume()
-    {
-        super.onResume()
-        parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
+        onPageSelectListener = context as OnPageSelectListener
     }
 
     override fun setBeforeBinding()
     {
         super.setBeforeBinding()
+
+        onSOPOBackPressedListener = object: OnSOPOBackPressEvent()
+        {
+            override fun onBackPressedInTime()
+            {
+                Snackbar.make(parentView.binding.layoutMain, "온고잉 진행 한번 더 누르시면 앱이 종료됩니다.", 2000).apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }.show()
+            }
+
+            override fun onBackPressedOutTime()
+            {
+                exit()
+            }
+        }
 
         setOnMainBridgeListener(context = requireContext())
     }
@@ -99,7 +82,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
     private fun getAdapter(inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter
     {
         return InquiryListAdapter(parcelType = inquiryItemTypeEnum).apply {
-            this.setOnParcelClickListener(getParcelClicked())
+            this.setOnParcelClickListener(setOnParcelClickListener())
         }
     }
 
@@ -155,7 +138,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             {
                 NavigatorConst.MAIN_BRIDGE_REGISTER ->
                 {
-                    onMainBridgeListener.onMoveToPage(0)
+                    onPageSelectListener.onMoveToPage(0)
                 }
 
             }
@@ -163,7 +146,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         }
     }
 
-    private fun getParcelClicked(): ParcelEventListener
+    private fun setOnParcelClickListener(): ParcelEventListener
     {
         return object: ParcelEventListener()
         {
@@ -171,18 +154,15 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             {
                 super.onMaintainParcelClicked(view, pos, parcelId)
 
-                OptionalDialog(optionalType = OptionalTypeEnum.LEFT, titleIcon = 0, title = "이 아이템을 제거할까요?", subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.", content = """
-                    배송 상태가 2주간 확인되지 않고 있어요.
-                    등록된 송장번호가 유효하지 않을지도 몰라요.
-                                """.trimIndent(), leftHandler = Pair("지울게요", second = object:
-                        OptionalClickListener
-                {
+                val leftOptionalClickListener = object: OptionalClickListener {
                     override fun invoke(dialog: OptionalDialog)
                     {
-                        vm.onDeleteParcel(parcelId = parcelId)
+                        vm.deleteParcel(parcelId = parcelId)
                         dialog.dismiss()
                     }
-                }), rightHandler = Pair(first = "유지할게요", second = object: OptionalClickListener
+                }
+
+                val rightOptionalClickListener = object: OptionalClickListener
                 {
                     override fun invoke(dialog: OptionalDialog)
                     {
@@ -193,7 +173,15 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
 
                         dialog.dismiss()
                     }
-                })).show(requireActivity().supportFragmentManager, "")
+                }
+                val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.LEFT, titleIcon = 0, title = "이 아이템을 제거할까요?", subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.", content = """
+                    배송 상태가 2주간 확인되지 않고 있어요.
+                    등록된 송장번호가 유효하지 않을지도 몰라요.
+                                """.trimIndent(),
+                               leftHandler = Pair("지울게요", second = leftOptionalClickListener),
+                               rightHandler = Pair(first = "유지할게요", second = rightOptionalClickListener))
+
+                optionalDialog.show(requireActivity().supportFragmentManager, "")
             }
 
             override fun onEnterParcelDetailClicked(view: View, type: InquiryStatusEnum, parcelId: Int)
@@ -282,5 +270,4 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             }
         }
     }
-
 }

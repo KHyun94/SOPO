@@ -57,7 +57,6 @@ object ImageBindingAdapter
         view.playAnimation()
     }
 
-
     @JvmStatic
     @BindingAdapter("setDeliveryStatusInLottie")
     fun bindLottieBackgroundSetter(view: LottieAnimationView, enum: DeliveryStatusEnum?)

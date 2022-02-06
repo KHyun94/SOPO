@@ -51,9 +51,8 @@ class MenuFragment: Fragment(), KoinComponent
                 {
                     pressedTime = System.currentTimeMillis()
                     Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
-                        .let { bar ->
-                            bar.setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE).show()
-                        }
+                        .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
+                        .show()
                 }
                 else
                 {

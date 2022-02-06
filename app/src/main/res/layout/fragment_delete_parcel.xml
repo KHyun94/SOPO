@@ -241,7 +241,7 @@
 
                 <!-- 월 spinner ! 촤하단 뷰 -->
                 <LinearLayout
-                    android:id="@+id/linear_month_selector"
+                    android:id="@+id/linear_main_month_selector"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
@@ -249,7 +249,7 @@
                     android:paddingBottom="20dp">
 
                     <LinearLayout
-                        android:id="@+id/linear_first_half"
+                        android:id="@+id/linear_inner_first_half"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -326,7 +326,7 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/linear_second_half"
+                        android:id="@+id/linear_inner_second_half"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -408,7 +408,7 @@
 
                 <!-- 택배 완료 recycler view -->
                 <androidx.core.widget.NestedScrollView
-                    android:id="@+id/nest_scroll_view_complete"
+                    android:id="@+id/nest_sv_main_completed"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -420,7 +420,7 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <View
-                            android:id="@+id/v_empty_2"
+                            android:id="@+id/v_inner_completed_space"
                             android:layout_width="match_parent"
                             android:layout_height="120dp" />
 
@@ -457,7 +457,7 @@
                 </androidx.core.widget.NestedScrollView>
 
                 <LinearLayout
-                    android:id="@+id/linear_out_year_spinner"
+                    android:id="@+id/linear_main_year_spinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -472,7 +472,7 @@
 
                     <!-- 연도 spinner ! 최상단 뷰 -->
                     <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/constraint_year_spinner"
+                        android:id="@+id/constraint_inner_year_spinner"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
@@ -480,7 +480,7 @@
                         android:focusable="true">
 
                         <TextView
-                            android:id="@+id/tv_spinner_year"
+                            android:id="@+id/tv_year_spinner"
                             style="@style/kor_H3"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -492,13 +492,13 @@
                             tools:text="2021년" />
 
                         <ImageView
-                            android:id="@+id/iv_arrow_down"
+                            android:id="@+id/iv_drop_down"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:src="@drawable/ic_arrow_down_gray_scale"
-                            app:layout_constraintBottom_toBottomOf="@+id/tv_spinner_year"
-                            app:layout_constraintLeft_toRightOf="@+id/tv_spinner_year"
-                            app:layout_constraintTop_toTopOf="@+id/tv_spinner_year" />
+                            app:layout_constraintBottom_toBottomOf="@+id/tv_year_spinner"
+                            app:layout_constraintLeft_toRightOf="@+id/tv_year_spinner"
+                            app:layout_constraintTop_toTopOf="@+id/tv_year_spinner" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 

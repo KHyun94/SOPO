@@ -1,7 +1,6 @@
 package com.delivery.sopo.views.main
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.view.View
@@ -20,7 +19,7 @@ import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.reduceSensitive
-import com.delivery.sopo.interfaces.OnMainBridgeListener
+import com.delivery.sopo.interfaces.OnPageSelectListener
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.models.base.OnActivityResultCallbackListener
 import com.delivery.sopo.services.PowerManager
@@ -43,7 +42,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class MainView: BaseView<MainViewBinding, MainViewModel>(), OnMainBridgeListener
+class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
 {
     override val layoutRes: Int = R.layout.main_view
     override val vm: MainViewModel by viewModel()

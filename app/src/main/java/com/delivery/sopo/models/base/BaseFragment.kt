@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
 import com.delivery.sopo.BR
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.NetworkStatus
@@ -17,6 +19,7 @@ import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.util.ui_util.CustomSnackBar
+import kotlin.system.exitProcess
 
 abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
 {
@@ -27,7 +30,6 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
     abstract val mainLayout: View
 
     lateinit var onBackPressedCallback: OnBackPressedCallback
-
     lateinit var onSOPOBackPressedListener: OnSOPOBackPressListener
 
     /**
@@ -45,18 +47,62 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
         SopoLoadingBar(this.requireActivity())
     }
 
+    private var isUseCommonBackPress: Boolean = false
+
+    fun useCommonBackPressListener(isUseCommon: Boolean){
+        isUseCommonBackPress = isUseCommon
+    }
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
 
         arguments?.let { bundle -> receiveData(bundle) }
+    }
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
+    {
+        setBeforeBinding()
+        binding = bindView(inflater, container)
+        return binding.root
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
+    {
+        super.onViewCreated(view, savedInstanceState)
+
+        setAfterBinding()
+        setOnBackPressedListener(owner = this)
+        setObserve()
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+    }
+
+    override fun onDetach()
+    {
+        super.onDetach()
+
+        onBackPressedCallback.remove()
+    }
+
+    private fun setOnBackPressedListener(owner: LifecycleOwner){
         var pressedTime: Long = 0
 
         onBackPressedCallback = object: OnBackPressedCallback(true)
         {
             override fun handleOnBackPressed()
             {
+                if(isUseCommonBackPress)
+                {
+                    onSOPOBackPressedListener.onBackPressed()
+                    return
+                }
+
                 if(System.currentTimeMillis() - pressedTime > 2000)
                 {
                     pressedTime = System.currentTimeMillis()
@@ -68,22 +114,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
-    {
-        setBeforeBinding()
-        binding = bindView(inflater, container)
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
-    {
-        super.onViewCreated(view, savedInstanceState)
-
-        setAfterBinding()
-        setObserve()
+        requireActivity().onBackPressedDispatcher.addCallback(owner, onBackPressedCallback)
     }
 
     private fun bindView(inflater: LayoutInflater, container: ViewGroup?): T
@@ -94,25 +125,17 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
         }
     }
 
-    override fun onDetach()
-    {
-        super.onDetach()
-
-        onBackPressedCallback.remove()
-    }
-
-    protected open fun receiveData(bundle: Bundle){
-    }
+    protected open fun receiveData(bundle: Bundle){ }
 
     /**
      * 초기 화면 세팅
      */
-    protected open fun setBeforeBinding() {}
+    protected open fun setBeforeBinding() { }
 
     /**
      * UI 세팅 이후
      */
-    protected open fun setAfterBinding() {}
+    protected open fun setAfterBinding() { }
 
     /*    */
     /**
@@ -163,6 +186,11 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
             val snackBar = CustomSnackBar(mainLayout, it, 3000, SnackBarEnum.ERROR)
             snackBar.show()
         }
+    }
+
+    fun exit(){
+        ActivityCompat.finishAffinity(requireActivity())
+        exitProcess(0)
     }
 
     fun hideKeyboard(){

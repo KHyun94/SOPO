@@ -10,7 +10,7 @@ import com.delivery.sopo.databinding.FragmentSelectCarrierBinding
 import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.enums.TabCode
-import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
+import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.SelectItem
@@ -38,23 +38,6 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
     lateinit var waybillNum: String
     var carrier: CarrierEnum? = null
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-
-        onSOPOBackPressedListener = object: OnSOPOBackPressListener
-        {
-            override fun onBackPressedInTime()
-            {
-                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = null, returnType = 0)
-
-                FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
-            }
-
-            override fun onBackPressedOutTime() { }
-        }
-    }
-
     override fun receiveData(bundle: Bundle)
     {
         super.receiveData(bundle)
@@ -67,7 +50,19 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
     {
         super.setBeforeBinding()
 
+        useCommonBackPressListener(isUseCommon = true)
 
+        onSOPOBackPressedListener = object: OnSOPOBackPressEvent(isUseCommon = true)
+        {
+            override fun onBackPressed()
+            {
+                super.onBackPressed()
+
+                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = null, returnType = 0)
+
+                FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
+            }
+        }
     }
 
     override fun setAfterBinding()
