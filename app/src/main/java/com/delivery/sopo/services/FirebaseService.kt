@@ -38,49 +38,43 @@ class FirebaseService: FirebaseMessagingService()
     override fun onMessageReceived(remoteMessage: RemoteMessage)
     {
         SopoLog.i("onMessageReceived() 호출")
-        if(remoteMessage.data.isEmpty()) return SopoLog.e("omMessageReceived [data:null]")
+        if(remoteMessage.data.isEmpty()) return SopoLog.e("onMessageReceived [data:null]")
 
-        val notificationId = remoteMessage.data.getValue("notificationId")
-        val data = remoteMessage.data.getValue("data")
+        val notificationId = remoteMessage.data.getValue(NOTIFICATION_ID)
+        val data = remoteMessage.data.getValue(DATA)
 
         val fcmPushDto = FcmPushDTO(notificationId, data)
 
-        SopoLog.d("[notificationId:${notificationId}] / [data:$data]")
-        //        SopoLog.d("[FcmPushDTO:${fcmPushDto.toString()}")
+        SopoLog.d("[notificationId:${notificationId}] | [data:$data]")
 
         when(fcmPushDto.notificationId)
         {
             // 사용자에게 택배 상태가 업데이트되었다고 알려줌
             NotificationEnum.PUSH_UPDATE_PARCEL.notificationId ->
             {
-                SopoLog.i("Push 종류:택배 업데이트")
+                SopoLog.d("Push 종류:택배 업데이트")
 
-                val list = fcmPushDto.getUpdateParcel()
+                val parcelIds = fcmPushDto.getUpdateParcel().apply { if(isEmpty()) return }
 
-                if(list.isEmpty()) return
+                SopoLog.d("업데이트 리스트 [${parcelIds.joinToString()}]")
 
-                SopoLog.d("""
-                    업데이트 리스트
-                    [${list.joinToString()}]
-                """.trimIndent())
-
-                alertUpdateParcel(remoteMessage, Intent(this@FirebaseService, SplashView::class.java), list).start()
+                alertUpdateParcel(remoteMessage = remoteMessage, intent = Intent(this@FirebaseService, SplashView::class.java), parcelIds = parcelIds).start()
             }
             // 친구 추천
             NotificationEnum.PUSH_FRIEND_RECOMMEND.notificationId ->
             {
-                SopoLog.i("Push 종류:친구 추천")
+                SopoLog.d("Push 종류:친구 추천")
                 // Nothing to do yet..
             }
             // 전체 공지사항
             NotificationEnum.PUSH_FRIEND_RECOMMEND.notificationId ->
             {
-                SopoLog.i("Push 종류:전체 공지사항")
+                SopoLog.d("Push 종류:전체 공지사항")
                 // Nothing to do yet..
             }
             NotificationEnum.PUSH_AWAKEN_DEVICE.notificationId ->
             {
-                SopoLog.i("Push 종류:앱 어웨이큰")
+                SopoLog.d("Push 종류:앱 어웨이큰")
                 // TODO 테스트용 노티피케이션
                 NotificationImpl.awakenDeviceNoti(remoteMessage = remoteMessage, context = applicationContext, intent = Intent(this, SplashView::class.java))
                 SOPOWorkManager.updateWorkManager(applicationContext)
@@ -119,7 +113,7 @@ class FirebaseService: FirebaseMessagingService()
 
     private fun alertUpdateParcel(remoteMessage: RemoteMessage, intent: Intent, parcelIds: List<Int>) = CoroutineScope(Dispatchers.IO).launch {
 
-        SopoLog.d("alertUpdateParcel() 호출")
+        SopoLog.d("호출")
 
         val msgList = mutableListOf<String>()
 
@@ -133,6 +127,7 @@ class FirebaseService: FirebaseMessagingService()
 
         // 새로운 택배
         val insertParcels = insertParcelIds.map { parcelId -> parcelRepository.getRemoteParcelById(parcelId) }
+
         val insertParcelStatuses = insertParcels.map {
             msgList.add(getMessage(it))
             ParcelMapper.parcelToParcelStatus(it).apply {
@@ -148,7 +143,6 @@ class FirebaseService: FirebaseMessagingService()
 
         val updateParcelStatuses = updateRemoteParcels.mapNotNull { parcel ->
             val status = parcelManagementRepo.getParcelStatus(parcel.parcelId)
-                ?: ParcelMapper.parcelToParcelStatus(parcel)
             val isFirstTimeUpdate = status.updatableStatus != 1
 
             if(parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
@@ -232,6 +226,11 @@ class FirebaseService: FirebaseMessagingService()
                 "ERROR"
             }
         }
+    }
+
+    companion object{
+        const val NOTIFICATION_ID = "notificationId"
+        const val DATA = "data"
     }
 
 }
