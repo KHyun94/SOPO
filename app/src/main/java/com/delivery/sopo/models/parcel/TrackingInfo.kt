@@ -2,7 +2,7 @@ package com.delivery.sopo.models.parcel
 
 import com.google.gson.annotations.SerializedName
 
-data class ParcelItem(
+data class TrackingInfo(
     @SerializedName("from")
     val from: From?,
     @SerializedName("to")

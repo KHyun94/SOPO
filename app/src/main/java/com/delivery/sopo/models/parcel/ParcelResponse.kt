@@ -18,11 +18,5 @@ data class ParcelResponse(
         @SerializedName("deliveryStatus") var deliveryStatus: String,
         @SerializedName("regDte") var regDte: String,
         @SerializedName("arrivalDte") var arrivalDte: String?,
-        /**
-         * 삭제되도 됨
-         */
         @SerializedName("auditDte") var auditDte: String,
-        /**
-         * 삭제되도 됨
-         */
         @SerializedName("status") var status: Int?): Serializable

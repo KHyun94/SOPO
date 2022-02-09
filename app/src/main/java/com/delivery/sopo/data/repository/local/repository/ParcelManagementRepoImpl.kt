@@ -60,7 +60,6 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
 
     override fun insertParcelStatuses(parcelStatusList: List<ParcelStatus>){
         val entities = parcelStatusList.map{
-            it.auditDte =TimeUtil.getDateTime()
             ParcelMapper.parcelStatusObjectToEntity(it)
         }
         appDatabase.parcelManagementDao().insert(entities)

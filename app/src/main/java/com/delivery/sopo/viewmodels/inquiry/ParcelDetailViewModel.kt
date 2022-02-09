@@ -85,9 +85,9 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
 
         if(parcelResponse.inquiryResult != null && parcelResponse.inquiryResult != "")
         {
-            val parcelItem: ParcelItem = Gson().fromJson<ParcelItem>(parcelResponse.inquiryResult, ParcelItem::class.java)
+            val trackingInfo: TrackingInfo = Gson().fromJson<TrackingInfo>(parcelResponse.inquiryResult, TrackingInfo::class.java)
 
-            parcelItem.progresses.forEach { progressess ->
+            trackingInfo.progresses.forEach { progressess ->
                 val date = progressess?.getDate()
                 val progress = TimeLineProgress(date = date, location = progressess?.location?.name,
                                                 description = progressess?.description,
