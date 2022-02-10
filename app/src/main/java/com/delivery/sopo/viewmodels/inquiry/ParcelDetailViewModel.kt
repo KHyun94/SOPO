@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.DeliveryStatusConst
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.consts.StatusConst
-import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
+import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.SelectItem
@@ -17,6 +17,7 @@ import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoIm
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.base.BaseViewModel
+import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.views.adapter.TimeLineRecyclerViewAdapter

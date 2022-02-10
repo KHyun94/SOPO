@@ -1,7 +1,7 @@
 package com.delivery.sopo.models.mapper
 
-import com.delivery.sopo.data.repository.database.room.dto.AppPasswordDTO
-import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
+import com.delivery.sopo.data.database.room.dto.AppPasswordDTO
+import com.delivery.sopo.data.database.room.entity.AppPasswordEntity
 
 object AppPasswordMapper: MapperInterface<AppPasswordEntity, AppPasswordDTO>
 {

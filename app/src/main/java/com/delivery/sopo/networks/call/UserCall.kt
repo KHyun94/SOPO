@@ -21,37 +21,10 @@ object UserCall: BaseService(), KoinComponent
 {
     private lateinit var userAPI: UserAPI
 
-    suspend fun getUserDetailInfo(): NetworkResult<APIResult<UserDetail>>
-    {
-        userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
-        val result = userAPI.getUserDetailInfo()
-        return apiCall(call = { result })
-    }
-
-/*    suspend fun updateFCMToken(fcmToken: Map<String, String>): NetworkResult<APIResult<String?>>
-    {
-        userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
-        return apiCall(call = { userAPI.updateFCMToken(fcmToken = fcmToken) })
-    }*/
-
-    suspend fun updateNickname(nickname: String): NetworkResult<Unit>
-    {
-        userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
-        return apiCall(call = {
-            userAPI.updateUserNickname(nickname = mapOf<String, String>(Pair("nickname", nickname)))
-        })
-    }
-
     suspend fun requestSignOut(reason: String): NetworkResult<APIResult<String?>>
     {
         userAPI = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java)
         return apiCall(call = { userAPI.requestSignOut(reason) })
-    }
-
-    suspend fun requestEmailForAuth(email: String): NetworkResult<APIResult<EmailAuthDTO?>>
-    {
-        userAPI = NetworkManager.setLoginMethod(NetworkEnum.EMPTY_LOGIN, UserAPI::class.java)
-        return apiCall(call = { userAPI.requestEmailForAuth(email = email) })
     }
 
     suspend fun requestResetPassword(passwordResetDTO: PasswordResetDTO): NetworkResult<APIResult<String?>>

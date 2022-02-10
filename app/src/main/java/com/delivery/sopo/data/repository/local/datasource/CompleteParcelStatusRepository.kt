@@ -1,8 +1,8 @@
 package com.delivery.sopo.data.repository.local.datasource
 
 import androidx.lifecycle.LiveData
-import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
-import com.delivery.sopo.data.repository.database.room.entity.CompletedParcelHistoryEntity
+import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.entity.CompletedParcelHistoryEntity
 
 interface CompleteParcelStatusRepository {
    fun findById(year: String): List<CompletedParcelHistory>

@@ -1,14 +1,12 @@
 package com.delivery.sopo.models.mapper
 
-import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
-import com.delivery.sopo.data.repository.database.room.entity.CompletedParcelHistoryEntity
-import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
-import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
+import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.entity.CompletedParcelHistoryEntity
+import com.delivery.sopo.data.database.room.entity.ParcelEntity
+import com.delivery.sopo.data.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.ParcelResponse
 import com.delivery.sopo.models.parcel.ParcelStatus
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 object ParcelMapper
 {

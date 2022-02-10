@@ -1,8 +1,7 @@
 package com.delivery.sopo.data.repository.local.app_password
 
 import androidx.lifecycle.LiveData
-import com.delivery.sopo.data.repository.database.room.dto.AppPasswordDTO
-import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
+import com.delivery.sopo.data.database.room.dto.AppPasswordDTO
 
 interface AppPasswordDataSource {
    fun get(): AppPasswordDTO?

@@ -2,9 +2,9 @@ package com.delivery.sopo.data.repository.local.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import com.delivery.sopo.data.repository.database.room.AppDatabase
-import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
-import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
+import com.delivery.sopo.data.database.room.AppDatabase
+import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.ParcelResponse
@@ -12,8 +12,6 @@ import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.ParcelAPI
 
 import com.delivery.sopo.data.repository.local.datasource.ParcelDataSource
-import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.extensions.wrapBodyAliasToHashMap
 import com.delivery.sopo.extensions.wrapBodyAliasToMap

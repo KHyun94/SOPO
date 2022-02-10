@@ -1,9 +1,6 @@
 package com.delivery.sopo.exceptions
 
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.models.ValidateResult
-import java.io.PrintStream
-import java.io.PrintWriter
 
 class ValidateException() : Exception()
 {

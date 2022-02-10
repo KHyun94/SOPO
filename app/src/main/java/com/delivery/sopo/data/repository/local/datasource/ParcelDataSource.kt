@@ -1,10 +1,9 @@
 package com.delivery.sopo.data.repository.local.datasource
 
 import androidx.lifecycle.LiveData
-import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 
-import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
+import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.parcel.ParcelResponse
 
 interface ParcelDataSource {

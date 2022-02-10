@@ -17,7 +17,7 @@ import kotlinx.coroutines.runBlocking
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
-object ParcelCall : BaseService(), KoinComponent
+object  ParcelCall : BaseService(), KoinComponent
 {
     private val userLocalRepo : UserLocalRepository by inject()
     private val oAuthLocalRepo : OAuthLocalRepository by inject()

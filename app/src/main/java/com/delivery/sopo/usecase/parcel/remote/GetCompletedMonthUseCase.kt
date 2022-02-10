@@ -1,6 +1,6 @@
 package com.delivery.sopo.usecase.parcel.remote
 
-import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.models.mapper.CompletedParcelHistoryMapper

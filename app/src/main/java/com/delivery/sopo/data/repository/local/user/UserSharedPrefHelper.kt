@@ -2,7 +2,7 @@ package com.delivery.sopo.data.repository.local.user
 
 import android.content.Context
 import com.delivery.sopo.consts.InfoConst
-import com.delivery.sopo.data.repository.database.shared.SharedPref
+import com.delivery.sopo.data.database.shared.SharedPref
 
 class UserSharedPrefHelper(private val sharedPref: SharedPref, private val context: Context)
 {

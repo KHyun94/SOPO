@@ -1,7 +1,7 @@
 package com.delivery.sopo.data.repository.local.repository
 
-import com.delivery.sopo.data.repository.database.room.AppDatabase
-import com.delivery.sopo.data.repository.database.room.entity.CarrierEntity
+import com.delivery.sopo.data.database.room.AppDatabase
+import com.delivery.sopo.data.database.room.entity.CarrierEntity
 import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.mapper.CarrierMapper

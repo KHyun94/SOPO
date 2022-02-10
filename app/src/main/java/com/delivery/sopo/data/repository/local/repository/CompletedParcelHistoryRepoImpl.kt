@@ -2,9 +2,9 @@ package com.delivery.sopo.data.repository.local.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import com.delivery.sopo.data.repository.database.room.AppDatabase
-import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
-import com.delivery.sopo.data.repository.database.room.entity.CompletedParcelHistoryEntity
+import com.delivery.sopo.data.database.room.AppDatabase
+import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.entity.CompletedParcelHistoryEntity
 import com.delivery.sopo.data.repository.local.datasource.CompleteParcelStatusRepository
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.util.TimeUtil

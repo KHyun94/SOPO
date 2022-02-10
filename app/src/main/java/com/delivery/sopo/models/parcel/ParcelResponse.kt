@@ -1,6 +1,5 @@
 package com.delivery.sopo.models.parcel
 
-import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 

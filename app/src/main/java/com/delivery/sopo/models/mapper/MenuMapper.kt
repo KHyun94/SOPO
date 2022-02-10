@@ -2,7 +2,7 @@ package com.delivery.sopo.models.mapper
 
 import android.view.Menu
 import androidx.core.view.iterator
-import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.util.SopoLog
 

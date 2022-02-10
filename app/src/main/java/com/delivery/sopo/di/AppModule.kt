@@ -1,7 +1,7 @@
 package com.delivery.sopo.di
 
-import com.delivery.sopo.data.repository.database.room.AppDatabase
-import com.delivery.sopo.data.repository.database.shared.SharedPref
+import com.delivery.sopo.data.database.room.AppDatabase
+import com.delivery.sopo.data.database.shared.SharedPref
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserSharedPrefHelper

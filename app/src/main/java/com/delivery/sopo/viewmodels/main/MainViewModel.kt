@@ -2,15 +2,11 @@ package com.delivery.sopo.viewmodels.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.consts.StatusConst
-import com.delivery.sopo.data.repository.database.room.entity.ParcelEntity
-import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 

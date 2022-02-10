@@ -1,7 +1,7 @@
 package com.delivery.sopo.data.repository.local.datasource
 
 import androidx.lifecycle.LiveData
-import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
+import com.delivery.sopo.data.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.models.parcel.ParcelStatus
 
 interface ParcelManagementRepository {

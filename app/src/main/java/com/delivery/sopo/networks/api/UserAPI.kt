@@ -1,16 +1,9 @@
 package com.delivery.sopo.networks.api
 
-import com.delivery.sopo.BuildConfig
 import com.delivery.sopo.models.EmailAuthDTO
 import com.delivery.sopo.models.PasswordResetDTO
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.dto.JsonPatchDto
-import com.delivery.sopo.services.network_handler.BaseService
-import com.delivery.sopo.services.network_handler.NetworkResult
-import com.google.gson.annotations.SerializedName
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
-import android.view.ViewGroup
 import android.view.Window
 import android.widget.EditText
 import android.widget.TextView
@@ -14,8 +13,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.R
-import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.data.repository.database.room.AppDatabase
+import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.views.dialog.GeneralDialog

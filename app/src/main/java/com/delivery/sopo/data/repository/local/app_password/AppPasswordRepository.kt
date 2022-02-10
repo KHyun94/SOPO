@@ -1,10 +1,8 @@
 package com.delivery.sopo.data.repository.local.app_password
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
-import com.delivery.sopo.data.repository.database.room.AppDatabase
-import com.delivery.sopo.data.repository.database.room.dto.AppPasswordDTO
-import com.delivery.sopo.data.repository.database.room.entity.AppPasswordEntity
+import com.delivery.sopo.data.database.room.AppDatabase
+import com.delivery.sopo.data.database.room.dto.AppPasswordDTO
 import com.delivery.sopo.models.mapper.AppPasswordMapper
 import com.delivery.sopo.util.TimeUtil
 

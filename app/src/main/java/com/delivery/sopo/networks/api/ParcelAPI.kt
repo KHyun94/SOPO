@@ -1,11 +1,9 @@
 package com.delivery.sopo.networks.api
 
-import com.delivery.sopo.data.repository.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 
 import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.data.repository.database.room.dto.DeleteParcelsDTO
 import com.delivery.sopo.models.ParcelRegister
-import com.delivery.sopo.models.UpdateParcelAliasRequest
 import com.delivery.sopo.models.parcel.ParcelResponse
 import com.delivery.sopo.models.parcel.UpdatableParcel
 import retrofit2.Response

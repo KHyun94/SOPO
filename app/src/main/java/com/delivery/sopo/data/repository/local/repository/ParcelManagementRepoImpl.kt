@@ -1,8 +1,8 @@
 package com.delivery.sopo.data.repository.local.repository
 
 import androidx.lifecycle.LiveData
-import com.delivery.sopo.data.repository.database.room.AppDatabase
-import com.delivery.sopo.data.repository.database.room.entity.ParcelStatusEntity
+import com.delivery.sopo.data.database.room.AppDatabase
+import com.delivery.sopo.data.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.data.repository.local.datasource.ParcelManagementRepository
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.ParcelStatus

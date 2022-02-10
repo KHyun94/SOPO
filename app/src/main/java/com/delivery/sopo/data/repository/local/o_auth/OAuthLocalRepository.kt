@@ -1,6 +1,6 @@
 package com.delivery.sopo.data.repository.local.o_auth
 
-import com.delivery.sopo.data.repository.database.room.AppDatabase
+import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.models.dto.OAuthToken
 import com.delivery.sopo.models.mapper.OAuthMapper
 import kotlinx.coroutines.Dispatchers
