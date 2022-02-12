@@ -36,7 +36,7 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
     var adapter = MutableLiveData<TimeLineRecyclerViewAdapter?>()
 
     // 상세 화면에서 사용할 데이터 객체
-    var item = MutableLiveData<ParcelDetailInfo?>()
+    var item = MutableLiveData<Parcel.Detail?>()
 
     // 상세 페이지 택배 상태(백그라운드 이미지, 텍스트)
     var deliveryStatus = MutableLiveData<DeliveryStatusEnum?>()
@@ -97,11 +97,11 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
             }
         }
 
-        val parcelDetailDTO = ParcelDetailInfo(regDt = parcelResponse.regDte, alias = parcelResponse.alias,
-                                               carrier = carrierDTO,
-                                               waybillNum = parcelResponse.waybillNum,
-                                               deliverStatus = this.deliveryStatus.value?.TITLE,
-                                               timeLineProgresses = progressList)
+        val parcelDetailDTO = Parcel.Detail(regDt = parcelResponse.regDte, alias = parcelResponse.alias,
+                                     carrier = carrierDTO,
+                                     waybillNum = parcelResponse.waybillNum,
+                                     deliverStatus = this.deliveryStatus.value?.TITLE,
+                                     timeLineProgresses = progressList)
 
         item.postValue(parcelDetailDTO)
         adapter.postValue(getTimeLineRvAdapter(progressList))

@@ -7,7 +7,7 @@
 
         <variable
             name="item"
-            type="com.delivery.sopo.models.parcel.ParcelDetailInfo" />
+            type="com.delivery.sopo.models.parcel.Parcel.Detail" />
     </data>
 
     <LinearLayout
