@@ -7,27 +7,22 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import android.icu.util.Calendar
 import android.media.RingtoneManager
 import android.os.Build
-import android.widget.RemoteViews
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
-import androidx.databinding.DataBindingUtil
-import androidx.room.util.StringUtil
 import com.delivery.sopo.R
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.interfaces.notification.Notification
-import com.delivery.sopo.models.parcel.ParcelResponse
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.TimeUtil
 import com.delivery.sopo.views.splash.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import java.text.SimpleDateFormat
 import java.util.*
 
 object NotificationImpl: Notification
@@ -67,7 +62,7 @@ object NotificationImpl: Notification
     }
 
     //    fun notifyRegisterParcel(context: Context, parcel: ParcelResponse) {
-    fun notifyRegisterParcel(context: Context, parcelResponse: ParcelResponse)
+    fun notifyRegisterParcel(context: Context, parcelResponse: Parcel.Common)
     {
         when(parcelResponse.deliveryStatus)
         {

@@ -11,7 +11,7 @@ import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
-import com.delivery.sopo.models.parcel.ParcelResponse
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.usecase.parcel.remote.GetCompleteParcelUseCase
 import com.delivery.sopo.usecase.parcel.remote.GetCompletedMonthUseCase
 import com.delivery.sopo.usecase.parcel.remote.UpdateParcelAliasUseCase
@@ -117,7 +117,7 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
 
 
     // 배송완료 리스트를 가져온다.(페이징 포함)
-    suspend fun getCompleteParcelsWithPaging(inquiryDate: String): List<ParcelResponse>
+    suspend fun getCompleteParcelsWithPaging(inquiryDate: String): List<Parcel.Common>
     {
         SopoLog.i("호출 [date:$inquiryDate]")
 

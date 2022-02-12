@@ -4,7 +4,7 @@ import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.ParcelRegister
-import com.delivery.sopo.models.parcel.ParcelResponse
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.UpdatableParcel
 import retrofit2.Response
 import retrofit2.http.*
@@ -30,7 +30,7 @@ interface ParcelAPI
 
     @GET("/api/v1/sopo-parcel/delivery/parcel/{parcelId}")
     @Headers("Accept: application/json")
-    suspend fun getParcel(@Path("parcelId") parcelId: Int): Response<APIResult<ParcelResponse>>
+    suspend fun getParcel(@Path("parcelId") parcelId: Int): Response<APIResult<Parcel.Common>>
 
 
     @GET("api/v1/sopo-parcel/delivery/parcels/months")
@@ -40,12 +40,12 @@ interface ParcelAPI
     // 배송중 & 곧 도착 리스트 가져오는 api
     @GET("api/v1/sopo-parcel/delivery/parcels/ongoing")
     @Headers("Accept: application/json")
-    suspend fun getParcelsOngoing(): Response<APIResult<List<ParcelResponse>>>
+    suspend fun getParcelsOngoing(): Response<APIResult<List<Parcel.Common>>>
 
     // '배송완료' 리스트 가져오는 api
     @GET("api/v1/sopo-parcel/delivery/parcels/complete")
     @Headers("Accept: application/json")
-    suspend fun getParcelsComplete(@Query("page") page: Int, @Query("inquiryDate") inquiryDate: String): Response<APIResult<List<ParcelResponse>>>
+    suspend fun getParcelsComplete(@Query("page") page: Int, @Query("inquiryDate") inquiryDate: String): Response<APIResult<List<Parcel.Common>>>
 
     @HTTP(method = "DELETE", path = "api/v1/sopo-parcel/delivery/parcels", hasBody = true)
     @Headers("Accept: application/json")

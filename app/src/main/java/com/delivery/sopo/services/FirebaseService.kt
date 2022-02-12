@@ -7,7 +7,7 @@ import com.delivery.sopo.networks.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.models.parcel.ParcelResponse
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
@@ -117,7 +117,7 @@ class FirebaseService: FirebaseMessagingService()
      *
      */
 
-    private suspend fun makeRefreshParcelStatus(updatableParcels: List<ParcelResponse>) = withContext(Dispatchers.Default) {
+    private suspend fun makeRefreshParcelStatus(updatableParcels: List<Parcel.Common>) = withContext(Dispatchers.Default) {
 
         return@withContext updatableParcels.map { parcel ->
             val status = parcelManagementRepo.getParcelStatus(parcel.parcelId)

@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.R
 import com.delivery.sopo.enums.DeliveryStatusEnum
-import com.delivery.sopo.models.parcel.ParcelResponse
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
@@ -14,7 +14,7 @@ import org.koin.core.inject
 import java.text.SimpleDateFormat
 import java.util.*
 
-class InquiryListItem(var parcelResponse: ParcelResponse, var isSelected: Boolean = false): KoinComponent, BaseObservable()
+class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean = false): KoinComponent, BaseObservable()
 {
     private val parcelRepository: ParcelRepository by inject()
 

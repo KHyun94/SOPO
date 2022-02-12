@@ -68,7 +68,7 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
     }
 
     // 택배 상세 UI 세팅
-    private suspend fun updateParcelToUI(parcelResponse: ParcelResponse)
+    private suspend fun updateParcelToUI(parcelResponse: Parcel.Common)
     {
         SopoLog.d("updateParcelToUI() 호출")
 

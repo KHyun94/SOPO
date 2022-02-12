@@ -4,28 +4,28 @@ import androidx.lifecycle.LiveData
 import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
-import com.delivery.sopo.models.parcel.ParcelResponse
+import com.delivery.sopo.models.parcel.Parcel
 
 interface ParcelDataSource {
-   suspend fun getRemoteParcelByOngoing(): List<ParcelResponse>
+   suspend fun getRemoteParcelByOngoing(): List<Parcel.Common>
    suspend fun getRemoteMonths(): List<CompletedParcelHistory>?
 
-   suspend fun getCompleteParcelsByRemote(page: Int, inquiryDate: String): List<ParcelResponse>
+   suspend fun getCompleteParcelsByRemote(page: Int, inquiryDate: String): List<Parcel.Common>
 
-   suspend fun getLocalParcelById(parcelId: Int): ParcelResponse?
+   suspend fun getLocalParcelById(parcelId: Int): Parcel.Common?
 
-   fun getLocalCompleteParcelsLiveData(): LiveData<List<ParcelResponse>>
-   fun getLocalCompleteParcels(): List<ParcelResponse>
-   suspend fun getLocalOngoingParcels(): List<ParcelResponse>?
+   fun getLocalCompleteParcelsLiveData(): LiveData<List<Parcel.Common>>
+   fun getLocalCompleteParcels(): List<Parcel.Common>
+   suspend fun getLocalOngoingParcels(): List<Parcel.Common>?
 
    fun getSoonDataCntLiveData(): LiveData<Int>
    fun getOngoingDataCntLiveData(): LiveData<Int>
 
    suspend fun insetEntity(parcel: ParcelEntity)
-   suspend fun insertParcels(parcelResponseList: List<ParcelResponse>)
+   suspend fun insertParcels(parcelResponseList: List<Parcel.Common>)
 
    suspend fun update(parcel: ParcelEntity): Int
-    suspend fun updateLocalParcels(parcelResponseList: List<ParcelResponse>)
+    suspend fun updateLocalParcels(parcelResponseList: List<Parcel.Common>)
 
    suspend fun updateParcelsToDeletable(parcelIdList: List<Int>)
 
@@ -40,5 +40,5 @@ interface ParcelDataSource {
    fun getLocalOnGoingParcelCnt() : LiveData<Int>
 
    // 배송 중인 택배 리스트를 LiveData로 받기
-   fun getLocalOngoingParcelsAsLiveData(): LiveData<List<ParcelResponse>>
+   fun getLocalOngoingParcelsAsLiveData(): LiveData<List<Parcel.Common>>
 }

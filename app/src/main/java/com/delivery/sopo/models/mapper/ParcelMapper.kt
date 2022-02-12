@@ -5,16 +5,16 @@ import com.delivery.sopo.data.database.room.entity.CompletedParcelHistoryEntity
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.models.parcel.ParcelResponse
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.ParcelStatus
 
 object ParcelMapper
 {
-    fun parcelEntityToObject(req:ParcelEntity): ParcelResponse {
-        return with(req){ ParcelResponse(parcelId = parcelId, userId = userId, waybillNum = waybillNum, carrier = carrier, alias = alias, inquiryResult = inquiryResult, inquiryHash = inquiryHash, deliveryStatus = deliveryStatus, regDte = regDte, arrivalDte = arrivalDte, auditDte = auditDte, status = status)}
+    fun parcelEntityToObject(req:ParcelEntity): Parcel.Common {
+        return with(req){ Parcel.Common(parcelId = parcelId, userId = userId, waybillNum = waybillNum, carrier = carrier, alias = alias, inquiryResult = inquiryResult, inquiryHash = inquiryHash, deliveryStatus = deliveryStatus, regDte = regDte, arrivalDte = arrivalDte, auditDte = auditDte, status = status)}
     }
 
-    fun parcelObjectToEntity(req:ParcelResponse):ParcelEntity {
+    fun parcelObjectToEntity(req:Parcel.Common):ParcelEntity {
         return with(req) { ParcelEntity(parcelId, userId, waybillNum, carrier, alias, inquiryResult, inquiryHash, deliveryStatus, arrivalDte?:"", regDte, auditDte, status?:0)}
     }
 
@@ -26,7 +26,7 @@ object ParcelMapper
         return with(req) { ParcelStatusEntity(parcelId = parcelId, isBeDelete = isBeDelete, updatableStatus = updatableStatus, unidentifiedStatus = unidentifiedStatus, deliveredStatus = deliveredStatus, isNowVisible = isNowVisible, auditDte = auditDte) }
     }
 
-    fun parcelToParcelStatus(parcel:ParcelResponse):ParcelStatus{
+    fun parcelToParcelStatus(parcel:Parcel.Common):ParcelStatus{
         return with(parcel) { ParcelStatus(parcelId = parcelId) }
     }
 
@@ -41,7 +41,7 @@ object ParcelMapper
         return with(dto){ CompletedParcelHistoryEntity("${parseYear()}-${parseMonth()}", count, visibility, status, auditDte) }
     }
 
-    fun parcelToParcelManagementEntity(parcelResponse: ParcelResponse): ParcelStatusEntity
+    fun parcelToParcelManagementEntity(parcelResponse: Parcel.Common): ParcelStatusEntity
     {
         return ParcelStatusEntity(
             parcelId = parcelResponse.parcelId
@@ -55,8 +55,8 @@ object ParcelMapper
         )
     }
 
-    fun parcelEntityToParcel(parcelEntity: ParcelEntity): ParcelResponse{
-        return ParcelResponse(parcelId = parcelEntity.parcelId,
+    fun parcelEntityToParcel(parcelEntity: ParcelEntity): Parcel.Common{
+        return Parcel.Common(parcelId = parcelEntity.parcelId,
                               userId = parcelEntity.userId,
                               waybillNum = parcelEntity.waybillNum,
                               carrier = parcelEntity.carrier,
@@ -71,7 +71,7 @@ object ParcelMapper
         )
     }
 
-    fun parcelToParcelEntity(parcelResponse: ParcelResponse): ParcelEntity
+    fun parcelToParcelEntity(parcelResponse: Parcel.Common): ParcelEntity
     {
         return ParcelEntity(
             parcelId = parcelResponse.parcelId,
@@ -93,7 +93,7 @@ object ParcelMapper
         return parcelEntity.parcelId
     }
 
-    fun parcelListToInquiryItemList(list: List<ParcelResponse>): MutableList<InquiryListItem>{
+    fun parcelListToInquiryItemList(list: List<Parcel.Common>): MutableList<InquiryListItem>{
         return list.map { InquiryListItem(parcelResponse = it) }.toMutableList()
     }
 }

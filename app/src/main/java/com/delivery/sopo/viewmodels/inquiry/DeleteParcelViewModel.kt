@@ -22,7 +22,7 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.mapper.ParcelMapper
-import com.delivery.sopo.models.parcel.ParcelResponse
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.usecase.parcel.remote.*
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
@@ -193,7 +193,7 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
 
 
     // 배송완료 리스트를 가져온다.(페이징 포함)
-    suspend fun getCompleteParcelsWithPaging(inquiryDate: String): List<ParcelResponse>
+    suspend fun getCompleteParcelsWithPaging(inquiryDate: String): List<Parcel.Common>
     {
         SopoLog.i("getCompleteListWithPaging(...) 호출 [date:$inquiryDate]")
 
