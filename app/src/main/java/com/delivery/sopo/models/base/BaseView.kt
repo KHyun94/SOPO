@@ -63,7 +63,7 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-
+// e-pay
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         receivedData(intent = intent)
@@ -133,7 +133,6 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
     private fun setInnerObserve()
     {
-
         SOPOApp.networkStatus.observe(this) { status ->
 
             SopoLog.d("status [status:$status]")

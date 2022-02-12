@@ -1,22 +1,17 @@
 package com.delivery.sopo.networks.call
 
-import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.NetworkEnum
-import com.delivery.sopo.models.EmailAuthDTO
 import com.delivery.sopo.models.PasswordResetDTO
-import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.models.mapper.OAuthMapper
 import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.api.OAuthAPI
 import com.delivery.sopo.networks.api.UserAPI
 import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResult
 import org.koin.core.KoinComponent
-import org.koin.core.inject
 
+/**
+ * TODO Repository로 이전 필수
+ */
 object UserCall: BaseService(), KoinComponent
 {
     private lateinit var userAPI: UserAPI

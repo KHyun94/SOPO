@@ -17,6 +17,9 @@ import kotlinx.coroutines.runBlocking
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
+/**
+ * TODO Repository로 이전 필수
+ */
 object  ParcelCall : BaseService(), KoinComponent
 {
     private val userLocalRepo : UserLocalRepository by inject()
