@@ -42,5 +42,15 @@ class Parcel{
                         return with(yyMMdd) { "${get(0)}년 ${get(1)}월 ${get(2)}일 등록" }
                 }
         }
+
+        data class Status(
+                var parcelId: Int,
+                var isBeDelete: Int = 0,
+                var updatableStatus: Int = 0,
+                var unidentifiedStatus: Int = 0,
+                var deliveredStatus: Int = 0,
+                var isNowVisible: Int = 0,
+                var auditDte: String = ""
+        )
 }
 

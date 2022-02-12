@@ -6,7 +6,6 @@ import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.models.parcel.ParcelStatus
 
 object ParcelMapper
 {
@@ -18,16 +17,18 @@ object ParcelMapper
         return with(req) { ParcelEntity(parcelId, userId, waybillNum, carrier, alias, inquiryResult, inquiryHash, deliveryStatus, arrivalDte?:"", regDte, auditDte, status?:0)}
     }
 
-    fun parcelStatusEntityToObject(req:ParcelStatusEntity):ParcelStatus{
-        return with(req) { ParcelStatus(parcelId = parcelId, isBeDelete = isBeDelete, updatableStatus = updatableStatus, unidentifiedStatus = unidentifiedStatus, deliveredStatus = deliveredStatus, isNowVisible = isNowVisible, auditDte = auditDte) }
+    fun parcelStatusEntityToObject(req:ParcelStatusEntity): Parcel.Status
+    {
+        return with(req) { Parcel.Status(parcelId = parcelId, isBeDelete = isBeDelete, updatableStatus = updatableStatus, unidentifiedStatus = unidentifiedStatus, deliveredStatus = deliveredStatus, isNowVisible = isNowVisible, auditDte = auditDte) }
     }
 
-    fun parcelStatusObjectToEntity(req:ParcelStatus):ParcelStatusEntity{
+    fun parcelStatusObjectToEntity(req: Parcel.Status):ParcelStatusEntity{
         return with(req) { ParcelStatusEntity(parcelId = parcelId, isBeDelete = isBeDelete, updatableStatus = updatableStatus, unidentifiedStatus = unidentifiedStatus, deliveredStatus = deliveredStatus, isNowVisible = isNowVisible, auditDte = auditDte) }
     }
 
-    fun parcelToParcelStatus(parcel:Parcel.Common):ParcelStatus{
-        return with(parcel) { ParcelStatus(parcelId = parcelId) }
+    fun parcelToParcelStatus(parcel:Parcel.Common): Parcel.Status
+    {
+        return with(parcel) { Parcel.Status(parcelId = parcelId) }
     }
 
     fun completeParcelStatusEntityToDTO(entity: CompletedParcelHistoryEntity): CompletedParcelHistory

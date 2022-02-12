@@ -10,11 +10,10 @@ import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.models.parcel.ParcelStatus
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.usecase.parcel.remote.DeleteParcelsUseCase
 import com.delivery.sopo.usecase.parcel.remote.RefreshParcelsUseCase
 import com.delivery.sopo.util.SopoLog
-import com.kakao.auth.StringSet.scope
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
@@ -90,7 +89,7 @@ class InquiryViewModel(private val refreshParcelsUseCase: RefreshParcelsUseCase,
         }
     }
 
-    suspend fun getDeletableParcelStatuses():List<ParcelStatus>{
+    suspend fun getDeletableParcelStatuses():List<Parcel.Status>{
         return parcelManagementRepo.getDeletableParcelStatuses()
     }
 

@@ -16,7 +16,6 @@ import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.extensions.wrapBodyAliasToHashMap
 import com.delivery.sopo.extensions.wrapBodyAliasToMap
 import com.delivery.sopo.models.ParcelRegister
-import com.delivery.sopo.models.parcel.ParcelStatus
 import com.delivery.sopo.models.parcel.UpdatableParcel
 import com.delivery.sopo.services.network_handler.BaseServiceBeta
 import com.delivery.sopo.services.network_handler.NetworkResponse
@@ -89,7 +88,6 @@ class ParcelRepository(
         val updateParcelStatuses = updateParcels.map {
 
             val parcelStatus = parcelManagementRepo.getParcelStatus(it.parcelId)
-                ?: ParcelStatus(parcelId = it.parcelId)
 
             parcelStatus.apply {
 
