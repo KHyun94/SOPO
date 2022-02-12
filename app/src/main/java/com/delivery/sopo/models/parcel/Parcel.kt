@@ -52,5 +52,13 @@ class Parcel{
                 var isNowVisible: Int = 0,
                 var auditDte: String = ""
         )
+
+        data class Updatable(
+                @SerializedName("parcel")
+                val parcelResponse: Parcel.Common,
+                @SerializedName("updated")
+                val updated: Boolean
+        )
+
 }
 

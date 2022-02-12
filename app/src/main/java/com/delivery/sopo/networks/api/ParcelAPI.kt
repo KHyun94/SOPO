@@ -5,7 +5,6 @@ import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.models.parcel.UpdatableParcel
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -76,7 +75,7 @@ interface ParcelAPI
      */
     @POST("/api/v1/sopo-parcel/delivery/parcel/refresh")
     @Headers("Accept: application/json")
-    suspend fun requestParcelForRefresh(@Body parcelId: Map<String, Int>): Response<APIResult<UpdatableParcel>>
+    suspend fun requestParcelForRefresh(@Body parcelId: Map<String, Int>): Response<APIResult<Parcel.Updatable>>
 
 
 }
