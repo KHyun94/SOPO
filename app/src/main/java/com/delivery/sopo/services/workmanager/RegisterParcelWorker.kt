@@ -7,8 +7,7 @@ import androidx.work.WorkerParameters
 import com.delivery.sopo.consts.BundleConst
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.exceptions.SOPOApiException
-import com.delivery.sopo.models.ParcelRegister
-import com.delivery.sopo.notification.NotificationImpl
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.usecase.parcel.remote.GetParcelUseCase
 import com.delivery.sopo.usecase.parcel.remote.RegisterParcelUseCase
 import com.delivery.sopo.util.SopoLog
@@ -28,7 +27,7 @@ class RegisterParcelWorker(val context: Context, private val params: WorkerParam
         SopoLog.i("RegisterParcelWorker 실행")
     }
 
-    private fun changeJsonToObj(json:String):ParcelRegister = Gson().fromJson(json, ParcelRegister::class.java)
+    private fun changeJsonToObj(json:String): Parcel.Register = Gson().fromJson(json, Parcel.Register::class.java)
 
     override suspend fun doWork(): Result = coroutineScope {
 
@@ -37,7 +36,7 @@ class RegisterParcelWorker(val context: Context, private val params: WorkerParam
         SopoLog.d("requestParcelRegister(...) 호출")
 
         val parcelRegister = inputData.getString(BundleConst.PARCEL_REGISTER_INFO)?.let { json ->
-            Gson().fromJson(json, ParcelRegister::class.java)
+            Gson().fromJson(json, Parcel.Register::class.java)
         } ?: return@coroutineScope Result.failure()
 
         try

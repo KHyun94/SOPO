@@ -3,7 +3,7 @@ package com.delivery.sopo.services.workmanager
 import android.content.Context
 import androidx.work.*
 import com.delivery.sopo.consts.BundleConst
-import com.delivery.sopo.models.ParcelRegister
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import org.koin.core.KoinComponent
@@ -16,7 +16,6 @@ object SOPOWorkManager: KoinComponent
         SopoLog.d(msg = "updateWorkManager() 호출")
 
         val workManager = WorkManager.getInstance(context)
-
         val workRequest = OneTimeWorkRequestBuilder<UpdateParcelWorker>().build()
 
         SopoLog.d(msg = "Register New Worker Start!!!")
@@ -25,13 +24,13 @@ object SOPOWorkManager: KoinComponent
         workManager.enqueue(workRequest)
     }
 
-    suspend fun registerParcelWorkManager(context: Context, registerParcelRegister: ParcelRegister)
+    suspend fun registerParcelWorkManager(context: Context, parcelRegister: Parcel.Register)
     {
-        SopoLog.i(msg = "registerParcelWorkManager() 호출 [data:${registerParcelRegister.toString()}]")
+        SopoLog.i(msg = "registerParcelWorkManager() 호출 [data:${parcelRegister.toString()}]")
 
         val workManager = WorkManager.getInstance(context)
 
-        val jsonStr = Gson().toJson(registerParcelRegister)
+        val jsonStr = Gson().toJson(parcelRegister)
 
         val inputData: Data = Data.Builder().putString(BundleConst.PARCEL_REGISTER_INFO, jsonStr).build()
 

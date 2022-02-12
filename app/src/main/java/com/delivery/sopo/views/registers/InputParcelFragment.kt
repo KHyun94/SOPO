@@ -13,9 +13,9 @@ import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.isGreaterThanOrEqual
 import com.delivery.sopo.interfaces.OnPageSelectListener
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
-import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.mapper.CarrierMapper
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.*
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.registesrs.InputParcelViewModel
@@ -41,7 +41,7 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         onPageSelectListener = context as OnPageSelectListener
     }
 
-    private lateinit var parcelRegister: ParcelRegister
+    private lateinit var parcelRegister: Parcel.Register
     private var returnType: Int? = null
 
     override fun receiveData(bundle: Bundle)
@@ -49,7 +49,7 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         super.receiveData(bundle)
 
         bundle.getSerializable(RegisterMainFragment.REGISTER_INFO).let { data ->
-            if(data !is ParcelRegister) return@let
+            if(data !is Parcel.Register) return@let
             parcelRegister = data
         }
 
@@ -154,7 +154,7 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
 
             vm.setNavigator(null)
 
-            val registerDTO = ParcelRegister(vm.waybillNum.value, vm.carrier.value?.carrier, null)
+            val registerDTO = Parcel.Register(vm.waybillNum.value, vm.carrier.value?.carrier, null)
 
             when(nav)
             {
@@ -175,7 +175,7 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
 
     companion object
     {
-        fun newInstance(parcelRegister: ParcelRegister?, returnType: Int?): InputParcelFragment
+        fun newInstance(parcelRegister: Parcel.Register?, returnType: Int?): InputParcelFragment
         {
             val args = Bundle().apply {
                 putSerializable(RegisterMainFragment.REGISTER_INFO, parcelRegister)

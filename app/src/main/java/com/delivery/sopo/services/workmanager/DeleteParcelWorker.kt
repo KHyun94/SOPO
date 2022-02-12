@@ -3,12 +3,8 @@ package com.delivery.sopo.services.workmanager
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.models.ParcelRegister
-import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.usecase.parcel.remote.DeleteParcelsUseCase
 import com.delivery.sopo.util.SopoLog
-import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject

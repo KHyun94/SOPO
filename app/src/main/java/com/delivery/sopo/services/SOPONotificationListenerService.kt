@@ -8,7 +8,7 @@ import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.models.Carrier
-import com.delivery.sopo.models.ParcelRegister
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.usecase.parcel.remote.RegisterParcelUseCase
 import com.delivery.sopo.util.SopoLog
@@ -162,7 +162,7 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
         return parse(matchRow)
     }
 
-    private suspend fun getReceivedData(mms: String): ParcelRegister
+    private suspend fun getReceivedData(mms: String): Parcel.Register
     {
         try
         {
@@ -170,7 +170,7 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
             val receivedWaybillsNum: String = getReceivedWaybillNum(content = mms)
             val receivedCarrier: Carrier = getReceivedCarrier(content = mms)
 
-            return ParcelRegister(receivedWaybillsNum, receivedCarrier.carrier, receivedAlias)
+            return Parcel.Register(receivedWaybillsNum, receivedCarrier.carrier, receivedAlias)
         }
         catch(e: Exception)
         {

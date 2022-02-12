@@ -13,13 +13,13 @@ import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.*
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.mapper.CarrierMapper
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.services.receivers.RefreshParcelBroadcastReceiver
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.registesrs.ConfirmParcelViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.OnAgreeClickListener
-import com.delivery.sopo.views.inquiry.InquiryFragment
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -31,7 +31,7 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
 
     private val parentView: MainView by lazy { activity as MainView }
 
-    private lateinit var parcelRegister: ParcelRegister
+    private lateinit var parcelRegister: Parcel.Register
     private var beforeStep: Int = 0
 
     override fun receiveData(bundle: Bundle)
@@ -42,7 +42,7 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
         {
             val parcelSerializable = bundle.getSerializable(RegisterMainFragment.REGISTER_INFO) ?: throw NullPointerException("등록 데이터가 정상적으로 오지 않았습니다.")
 
-            if(parcelSerializable !is ParcelRegister) throw IllegalArgumentException("등록 데이터가 정상적으로 오지 않았습니다.")
+            if(parcelSerializable !is Parcel.Register) throw IllegalArgumentException("등록 데이터가 정상적으로 오지 않았습니다.")
 
             parcelRegister = parcelSerializable
             beforeStep = bundle.getInt("beforeStep")
@@ -164,7 +164,7 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
 
     companion object
     {
-        fun newInstance(register: ParcelRegister?, beforeStep:Int): ConfirmParcelFragment
+        fun newInstance(register: Parcel.Register?, beforeStep:Int): ConfirmParcelFragment
         {
             val args = Bundle().apply {
                 putSerializable(RegisterMainFragment.REGISTER_INFO, register)

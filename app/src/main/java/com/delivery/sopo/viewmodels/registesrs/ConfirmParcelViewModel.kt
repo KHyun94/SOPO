@@ -11,6 +11,7 @@ import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.*
 import com.delivery.sopo.models.base.BaseViewModel
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -41,7 +42,7 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
             {
                 if(alias.value.toString() == "null") alias.value = ""
 
-                val registerDTO = ParcelRegister(carrier = carrier.value?.carrier
+                val registerDTO = Parcel.Register(carrier = carrier.value?.carrier
                     ?: throw Exception("Carrier must be not null"), waybillNum = waybillNum.value.toString(), alias = alias.value.toString())
 
                 requestParcelRegister(register = registerDTO)
@@ -50,7 +51,7 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
     }
 
     // '등록하기' Button Click event
-    private fun requestParcelRegister(register: ParcelRegister) = scope.launch(Dispatchers.IO) {
+    private fun requestParcelRegister(register: Parcel.Register) = scope.launch(Dispatchers.IO) {
         SopoLog.i("requestParcelRegister(...) 호출[${register.toString()}]")
 
         try

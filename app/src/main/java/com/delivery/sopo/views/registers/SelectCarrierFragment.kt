@@ -12,9 +12,9 @@ import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.Carrier
-import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseFragment
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.setting.GridSpacingItemDecoration
@@ -87,7 +87,7 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
 
             vm.setNavigator(null)
 
-            val parcelRegister = ParcelRegister(waybillNum, carrier, null)
+            val parcelRegister = Parcel.Register(waybillNum, carrier, null)
 
             SopoLog.d("Nav [data:${parcelRegister.toString()}] [nav:$nav]")
 

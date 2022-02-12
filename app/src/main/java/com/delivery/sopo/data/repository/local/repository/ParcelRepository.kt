@@ -15,7 +15,6 @@ import com.delivery.sopo.data.repository.local.datasource.ParcelDataSource
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.extensions.wrapBodyAliasToHashMap
 import com.delivery.sopo.extensions.wrapBodyAliasToMap
-import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.services.network_handler.BaseServiceBeta
 import com.delivery.sopo.services.network_handler.NetworkResponse
 import com.delivery.sopo.util.SopoLog
@@ -233,7 +232,7 @@ class ParcelRepository(
         return@withContext appDatabase.parcelDao().getOngoingDataCnt()
     }
 
-    suspend fun registerParcel(parcel: ParcelRegister): Int
+    suspend fun registerParcel(parcel: Parcel.Register): Int
     {
         val registerParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).registerParcel(register = parcel)
         val result = apiCall { registerParcel }

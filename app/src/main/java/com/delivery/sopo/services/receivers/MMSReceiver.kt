@@ -11,7 +11,7 @@ import android.os.Looper
 import android.text.TextUtils
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.models.Carrier
-import com.delivery.sopo.models.ParcelRegister
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
@@ -74,7 +74,7 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
         CoroutineScope(Dispatchers.IO).launch {
             val receivedData = getReceivedData(mms)
 
-            SOPOWorkManager.registerParcelWorkManager(context = context, registerParcelRegister = receivedData)
+            SOPOWorkManager.registerParcelWorkManager(context = context, parcelRegister = receivedData)
         }
     }
 
@@ -229,7 +229,7 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
         return parse(matchRow)
     }
 
-    private suspend fun getReceivedData(mms: String): ParcelRegister
+    private suspend fun getReceivedData(mms: String): Parcel.Register
     {
         try
         {
@@ -237,7 +237,7 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
             val receivedWaybillsNum: String = getReceivedWaybillNum(content = mms)
             val receivedCarrier: Carrier = getReceivedCarrier(content = mms)
 
-            return ParcelRegister(receivedWaybillsNum, receivedCarrier.carrier, receivedAlias)
+            return Parcel.Register(receivedWaybillsNum, receivedCarrier.carrier, receivedAlias)
         }
         catch(e: Exception)
         {

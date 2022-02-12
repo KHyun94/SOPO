@@ -3,7 +3,6 @@ package com.delivery.sopo.networks.api
 import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 
 import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.models.ParcelRegister
 import com.delivery.sopo.models.parcel.Parcel
 import retrofit2.Response
 import retrofit2.http.*
@@ -19,7 +18,7 @@ interface ParcelAPI
      */
     @POST("api/v1/sopo-parcel/delivery/parcel")
     @Headers("Accept: application/json")
-    suspend fun registerParcel(@Body register: ParcelRegister): Response<APIResult<Int>>
+    suspend fun registerParcel(@Body register: Parcel.Register): Response<APIResult<Int>>
 
     /**
      * 단일 택배 정보 요청
