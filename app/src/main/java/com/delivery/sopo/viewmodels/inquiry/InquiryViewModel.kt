@@ -4,7 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.ParcelExceptionHandler
+import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize
@@ -13,16 +13,17 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.usecase.parcel.remote.DeleteParcelsUseCase
 import com.delivery.sopo.usecase.parcel.remote.RefreshParcelsUseCase
+import com.delivery.sopo.usecase.parcel.remote.SyncParcelsUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
 
-class InquiryViewModel(private val refreshParcelsUseCase: RefreshParcelsUseCase,
+class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
+                       private val refreshParcelsUseCase: RefreshParcelsUseCase,
                        private val deleteParcelsUseCase: DeleteParcelsUseCase,
-                       private val parcelManagementRepo: ParcelManagementRepoImpl):
-        BaseViewModel()
+                       private val parcelManagementRepo: ParcelManagementRepoImpl): BaseViewModel()
 {
     // '배송중' => '배송완료' 개수
     private val _cntOfBeDelivered = parcelManagementRepo.getIsDeliveredCntLiveData()
@@ -35,7 +36,21 @@ class InquiryViewModel(private val refreshParcelsUseCase: RefreshParcelsUseCase,
 
     private val _isConfirmDelete: MutableLiveData<Boolean> = MutableLiveData()
     val isConfirmDelete: LiveData<Boolean>
-    get() = _isConfirmDelete
+        get() = _isConfirmDelete
+
+    val updatableParcelIds: LiveData<List<Int>>
+        get() = parcelManagementRepo.getUpdatableParcelIds()
+
+    fun onSyncParcels()= scope.launch{
+        try
+        {
+            syncParcelsUseCase.invoke()
+        }
+        catch(e: Exception)
+        {
+            exceptionHandler.handleException(coroutineContext, e)
+        }
+    }
 
     fun onRefreshParcelsClicked() = scope.launch {
         SopoLog.i("onRefreshParcelsClicked(...) 호출")
@@ -59,11 +74,13 @@ class InquiryViewModel(private val refreshParcelsUseCase: RefreshParcelsUseCase,
         }
     }
 
-    fun startDeleteCount(){
+    fun startDeleteCount()
+    {
         _isConfirmDelete.postValue(true)
     }
 
-    fun stopDeleteCount(){
+    fun stopDeleteCount()
+    {
         _isConfirmDelete.postValue(false)
     }
 
@@ -89,11 +106,12 @@ class InquiryViewModel(private val refreshParcelsUseCase: RefreshParcelsUseCase,
         }
     }
 
-    suspend fun getDeletableParcelStatuses():List<Parcel.Status>{
+    suspend fun getDeletableParcelStatuses(): List<Parcel.Status>
+    {
         return parcelManagementRepo.getDeletableParcelStatuses()
     }
 
-    fun recoverDeleteParcels() = scope.launch(Dispatchers.Default){
+    fun recoverDeleteParcels() = scope.launch(Dispatchers.Default) {
         val parcelStatuses = getDeletableParcelStatuses().map { it.apply { isBeDelete = 0 } }
         parcelManagementRepo.updateParcelStatuses(parcelStatuses)
     }

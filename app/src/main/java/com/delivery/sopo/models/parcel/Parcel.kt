@@ -48,7 +48,7 @@ class Parcel{
 
         data class Updatable(
                 @SerializedName("parcel")
-                val parcelResponse: Parcel.Common,
+                val parcel: Parcel.Common,
                 @SerializedName("updated")
                 val updated: Boolean
         )

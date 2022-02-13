@@ -3,7 +3,7 @@ package com.delivery.sopo.viewmodels.registesrs
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.ParcelExceptionHandler
+import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.enums.ErrorEnum

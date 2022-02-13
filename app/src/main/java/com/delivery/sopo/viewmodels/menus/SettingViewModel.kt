@@ -1,13 +1,17 @@
 package com.delivery.sopo.viewmodels.menus
 
-import android.view.View
 import androidx.lifecycle.*
+import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
+import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
+import com.delivery.sopo.models.base.BaseViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SettingViewModel(private val appPasswordRepo: AppPasswordRepository) : ViewModel()
+class SettingViewModel(private val appPasswordRepo: AppPasswordRepository) : BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
@@ -53,4 +57,12 @@ class SettingViewModel(private val appPasswordRepo: AppPasswordRepository) : Vie
         _navigator.postValue("")
     }
 
+    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    {
+        override fun onFailure(error: ErrorEnum) { }
+    }
+
+    override val exceptionHandler: CoroutineExceptionHandler by lazy {
+        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
+    }
 }

@@ -11,6 +11,6 @@ class UpdateNicknameUseCase(private val userRemoteRepo: UserRemoteRepository, pr
 {
     suspend operator fun invoke(nickname: String) = withContext(Dispatchers.Main) {
         userRemoteRepo.updateNickname(nickname = nickname)
-        withContext(Dispatchers.Default) { userLocalRepo.setNickname(nickname = nickname) }
+        userRemoteRepo.getUserInfo()
     }
 }

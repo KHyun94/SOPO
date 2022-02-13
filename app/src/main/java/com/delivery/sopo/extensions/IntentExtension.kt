@@ -16,6 +16,15 @@ fun Activity.moveToActivity(clz: Class<*>, vararg flags:Int)
     }
 
     this.startActivity(intent)
+}
+
+fun Activity.moveToActivityWithFinish(clz: Class<*>, vararg flags:Int)
+{
+    val intent = Intent(this, clz).apply {
+        flags.forEach { flag -> addFlags(flag) }
+    }
+
+    this.startActivity(intent)
     this.finish()
 }
 

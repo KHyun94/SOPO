@@ -1,19 +1,25 @@
 package com.delivery.sopo.services
 
 import android.content.Intent
+import com.delivery.sopo.R
+import com.delivery.sopo.consts.EmojiConst
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.networks.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.extensions.asEmoji
 import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
+import com.delivery.sopo.models.push.NotificationMessage
 import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import com.delivery.sopo.views.splash.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,16 +52,13 @@ class FirebaseService: FirebaseMessagingService()
             {
                 SopoLog.i("Push 종류:택배 업데이트")
 
-                val list = fcmPushDto.getUpdateParcel()
+                val parcelIds = fcmPushDto.getUpdateParcel()
 
-                if(list.isEmpty()) return
+                if(parcelIds.isEmpty()) return
 
-                SopoLog.d("""
-                    업데이트 리스트
-                    [${list.joinToString()}]
-                """.trimIndent())
+                SopoLog.d("업데이트 리스트 [${parcelIds.joinToString()}]")
 
-                alertUpdateParcel(list).start()
+                alertUpdateParcel(parcelIds).start()
             }
             // 친구 추천
             NotificationEnum.PUSH_FRIEND_RECOMMEND.notificationId ->
@@ -72,8 +75,6 @@ class FirebaseService: FirebaseMessagingService()
             NotificationEnum.PUSH_AWAKEN_DEVICE.notificationId ->
             {
                 SopoLog.i("Push 종류:앱 어웨이큰")
-                // TODO 테스트용 노티피케이션
-                NotificationImpl.awakenDeviceNoti(remoteMessage = remoteMessage, context = applicationContext, intent = Intent(this, SplashView::class.java))
                 SOPOWorkManager.updateWorkManager(applicationContext)
             }
         }
@@ -142,18 +143,25 @@ class FirebaseService: FirebaseMessagingService()
         // 1단계 업데이트 가능한 택배가 로컬 내 존재하는지 및 신규 택배 구분
         val updatableLocalParcels = parcelIds.mapNotNull { parcelId ->
             val localParcel = parcelRepository.getLocalParcelById(parcelId = parcelId)
-            if(localParcel == null) newInsertParcelIds.add(parcelId)
+            if(localParcel == null)
+            {
+                SopoLog.d("이게 왜 찍히는거지? $parcelId")
+                newInsertParcelIds.add(parcelId)
+            }
             localParcel
         }
 
         // 3단계 기존 택배 중 inquiryHash에 변동있는 택배를 필터링
-        val updatableRemoteParcels = updatableLocalParcels.filter { local ->
+        val updatableRemoteParcels = updatableLocalParcels.mapNotNull { local ->
             val remote = parcelRepository.getRemoteParcelById(local.parcelId)
-            remote.inquiryHash != local.inquiryHash
+            return@mapNotNull if(remote.inquiryHash != local.inquiryHash) remote else null
         }
 
         // 2단계 신규 택배를 서버로부터 받아오는 작업 - 택배, 상태
         val newInsertParcels = newInsertParcelIds.map { parcelId -> parcelRepository.getRemoteParcelById(parcelId) }
+
+        SopoLog.d("업데이트 가능 택배 리스트 [data:${updatableRemoteParcels.joinToString()}]")
+        SopoLog.d("신규 택배 리스트 [data:${newInsertParcels.joinToString()}]")
 
         val updatableParcelStatuses = makeRefreshParcelStatus(updatableRemoteParcels)
         val newParcelStatuses = makeRefreshParcelStatus(newInsertParcels)
@@ -163,13 +171,24 @@ class FirebaseService: FirebaseMessagingService()
 
         val notifyParcel = updatableRemoteParcels.filter { parcel ->
             val local = parcelRepository.getLocalParcelById(parcel.parcelId)
+            SopoLog.d("서버 택배 상태 ${local?.deliveryStatus} >>> ${parcel.deliveryStatus}")
             parcel.deliveryStatus != local?.deliveryStatus
         } + newInsertParcels
 
-        notifyParcel.forEach { parcel ->
-            NotificationImpl.notifyRegisterParcel(context = applicationContext, parcel)
+        SopoLog.d("Notification 예정 택배 [data:${notifyParcel.joinToString()}]")
+
+        notifyParcel.flatMap {
+            listOf(NotificationMessage.getUpdatePusMessage(it))
+        }
+
+        val messages = notifyParcel.map { NotificationMessage.getUpdatePusMessage(it) }
+
+        messages.forEach { message ->
+            NotificationImpl.notifyRegisterParcel(context = applicationContext, notificationMessage = message)
         }
     }
+
+
 
     /*private fun alertUpdateParcel(remoteMessage: RemoteMessage, intent: Intent, parcelIds: List<Int>) = CoroutineScope(Dispatchers.IO).launch {
 

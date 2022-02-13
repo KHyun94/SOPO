@@ -9,6 +9,7 @@ import com.delivery.sopo.data.repository.local.repository.*
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.networks.repository.JoinRepositoryImpl
+import com.delivery.sopo.usecase.LogoutUseCase
 import com.delivery.sopo.usecase.UpdateNicknameUseCase
 import com.delivery.sopo.usecase.parcel.remote.*
 import com.delivery.sopo.viewmodels.IntroViewModel
@@ -53,6 +54,7 @@ val appModule = module {
     factory { UpdateNicknameUseCase(get(), get()) }
     factory { UpdateParcelAliasUseCase(get()) }
     factory { DeleteParcelsUseCase(get(), get()) }
+    factory { LogoutUseCase(get(), get()) }
 
     viewModel { SplashViewModel(get(), get(), get()) }
     viewModel { IntroViewModel() }
@@ -70,12 +72,12 @@ val appModule = module {
     viewModel { FaqViewModel() }
     viewModel { AppInfoViewModel() }
     viewModel { NotDisturbTimeViewModel() }
-    viewModel { InquiryViewModel(get(), get(), get()) }
+    viewModel { InquiryViewModel(get(), get(), get(), get()) }
     viewModel { DeleteParcelViewModel(get(), get(), get(), get(), get()) }
     viewModel { MenuViewModel(get()) }
-    viewModel { AccountManagerViewModel() }
+    viewModel { AccountManagerViewModel(get()) }
     viewModel { SignOutViewModel(get()) }
-    viewModel { UpdateNicknameViewModel(get(), get()) }
+    viewModel { UpdateNicknameViewModel(get(), get(), get()) }
 
     viewModel { InquiryMainViewModel() }
     viewModel { OngoingTypeViewModel(get(), get(),get(),get(),get(),get()) }

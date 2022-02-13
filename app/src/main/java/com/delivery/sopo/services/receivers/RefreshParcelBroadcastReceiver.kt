@@ -3,8 +3,7 @@ package com.delivery.sopo.services.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.delivery.sopo.ParcelExceptionHandler
-import com.delivery.sopo.UserExceptionHandler
+import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.usecase.parcel.remote.GetCompletedMonthUseCase

@@ -3,7 +3,7 @@ package com.delivery.sopo.viewmodels.splash
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.UserExceptionHandler
+import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
@@ -15,7 +15,6 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
-import java.text.SimpleDateFormat
 
 class SplashViewModel(
         private val userLocalRepo: UserLocalRepository,

@@ -12,21 +12,23 @@ import android.os.Build
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import androidx.core.text.HtmlCompat
 import com.delivery.sopo.R
-import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.interfaces.notification.Notification
-import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.push.NotificationMessage
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.TimeUtil
 import com.delivery.sopo.views.splash.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import java.util.*
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
-object NotificationImpl: Notification
+object NotificationImpl: Notification, KoinComponent
 {
+    val userRepo: UserLocalRepository by inject()
+
     fun awakenDeviceNoti(remoteMessage: RemoteMessage, context: Context, intent: Intent)
     {
         val channelId = "${context.packageName}SOPO"
@@ -62,44 +64,8 @@ object NotificationImpl: Notification
     }
 
     //    fun notifyRegisterParcel(context: Context, parcel: ParcelResponse) {
-    fun notifyRegisterParcel(context: Context, parcelResponse: Parcel.Common)
+    fun notifyRegisterParcel(context: Context, notificationMessage: NotificationMessage)
     {
-        when(parcelResponse.deliveryStatus)
-        {
-            DeliveryStatusEnum.NOT_REGISTERED.CODE ->
-            {
-
-            }
-            DeliveryStatusEnum.ORPHANED.CODE ->
-            {
-
-            }
-            DeliveryStatusEnum.INFORMATION_RECEIVED.CODE ->
-            {
-
-            }
-            DeliveryStatusEnum.AT_PICKUP.CODE ->
-            {
-
-            }
-            DeliveryStatusEnum.IN_TRANSIT.CODE ->
-            {
-
-            }
-            DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE ->
-            {
-
-            }
-            DeliveryStatusEnum.DELIVERED.CODE ->
-            {
-
-            }
-            else ->
-            {
-
-            }
-        }
-
         val channelId = "${context.packageName}SOPO"
 
         val intent = Intent(context, SplashView::class.java)
@@ -107,41 +73,57 @@ object NotificationImpl: Notification
         intent.addCategory(Intent.CATEGORY_LAUNCHER)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
-        val color = ContextCompat.getColor(context, R.color.NOTIFICATION_TITLE_COLOR);
-        val title = HtmlCompat.fromHtml("<font color=\"$color\">SOPO</font>", HtmlCompat.FROM_HTML_MODE_LEGACY)
-
-        val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val contentIntent =
+            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
-        val bigDrawable = getDrawable(context, R.drawable.notification_atpickup)
-        val bigBitmapDrawable = bigDrawable as BitmapDrawable
-        val bigBitmap = bigBitmapDrawable.bitmap
+        val mNotificationBuilder = if(notificationMessage.summaryText == null && notificationMessage.bigPicture == 0)
+        {
+            NotificationCompat.Builder(context, channelId)
+                .setSmallIcon(R.drawable.ic_noti_logo)
+                .setContentTitle(notificationMessage.title)
+                .setContentText(notificationMessage.content)
+                .setColor(ContextCompat.getColor(context, R.color.NOTIFICATION_TITLE_COLOR))
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setVibrate(longArrayOf(1000, 1000))
+                .setLights(Color.WHITE, 1500, 1500)
+                .setContentIntent(contentIntent)
+        }
+        else
+        {
+            val bigDrawable = notificationMessage.bigPicture?.let { getDrawable(context, it) }
+            val bigBitmapDrawable = bigDrawable as BitmapDrawable
+            val bigBitmap = bigBitmapDrawable.bitmap
 
-        val nBuilder = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(R.drawable.ic_noti_logo)
-            .setContentTitle(title)
-            .setContentText("택배 []가 등록되었습니다.택배 []가 등록되었습니다.택배 []가 등록되었습니다.택배 []가 등록되었습니다.택배 []가 등록되었습니다.택배 []가 등록되었습니다.택배 []가 등록되었습니다.택배 []가 등록되었습니다.")
-            .setColor(ContextCompat.getColor(context, R.color.NOTIFICATION_TITLE_COLOR))
-            .setStyle(NotificationCompat.InboxStyle().setBigContentTitle("test"))
-            .setStyle(
-                NotificationCompat.BigPictureStyle().bigPicture(bigBitmap).bigLargeIcon(null)
-                    .setSummaryText("테스트입니다아.")
-            )
-            .setAutoCancel(true)
-            .setSound(defaultSoundUri)
-            .setVibrate(longArrayOf(1000, 1000))
-            .setLights(Color.WHITE, 1500, 1500)
-            .setContentIntent(contentIntent)
+             NotificationCompat.Builder(context, channelId)
+                .setSmallIcon(R.drawable.ic_noti_logo)
+                .setContentTitle(notificationMessage.title)
+                .setContentText(notificationMessage.content)
+                .setColor(ContextCompat.getColor(context, R.color.NOTIFICATION_TITLE_COLOR))
+                .setStyle(NotificationCompat.InboxStyle()
+                              .setBigContentTitle(notificationMessage.title))
+                .setStyle(NotificationCompat.BigPictureStyle()
+                              .bigPicture(bigBitmap)
+                              .bigLargeIcon(null)
+                              .setSummaryText(notificationMessage.summaryText))
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setVibrate(longArrayOf(1000, 1000))
+                .setLights(Color.WHITE, 1500, 1500)
+                .setContentIntent(contentIntent)
+        }
 
-        val nManager = context.getSystemService(FirebaseMessagingService.NOTIFICATION_SERVICE) as NotificationManager
+        val mNotificationManager =
+            context.getSystemService(FirebaseMessagingService.NOTIFICATION_SERVICE) as NotificationManager
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
             val channel =
-                NotificationChannel(channelId , NotificationEnum.PUSH_UPDATE_PARCEL.channelName, NotificationManager.IMPORTANCE_DEFAULT)
-            nManager.createNotificationChannel(channel)
+                NotificationChannel(channelId, NotificationEnum.PUSH_UPDATE_PARCEL.channelName, NotificationManager.IMPORTANCE_DEFAULT)
+            mNotificationManager.createNotificationChannel(channel)
         }
 
-        nManager.notify(40001, nBuilder.build())
+        mNotificationManager.notify(40001 + OtherUtil.getRandomInteger(1), mNotificationBuilder.build())
     }
 
     override fun alertUpdateParcel(remoteMessage: RemoteMessage, context: Context, intent: Intent, vararg message: String)

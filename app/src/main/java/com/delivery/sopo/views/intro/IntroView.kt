@@ -2,18 +2,16 @@ package com.delivery.sopo.views.intro
 
 import android.content.Intent
 import android.os.Build
-import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
 import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.PermissionConst
 import com.delivery.sopo.databinding.IntroViewBinding
-import com.delivery.sopo.extensions.moveToActivity
+import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.interfaces.listener.OnIntroClickListener
 import com.delivery.sopo.interfaces.listener.OnPermissionResponseCallback
 import com.delivery.sopo.models.base.BaseView
@@ -77,7 +75,7 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
             }
             else
             {
-                moveToActivity(LoginSelectView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                moveToActivityWithFinish(LoginSelectView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 finish()
             }
 
@@ -132,7 +130,7 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
             {
                 NavigatorConst.TO_LOGIN_SELECT ->
                 {
-                    moveToActivity(LoginSelectView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    moveToActivityWithFinish(LoginSelectView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     finish()
                 }
             }

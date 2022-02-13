@@ -9,7 +9,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.LoginViewBinding
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.extensions.moveToActivity
+import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.login.LoginViewModel
@@ -57,16 +57,16 @@ class LoginView: BaseView<LoginViewBinding, LoginViewModel>()
             {
                 NavigatorConst.TO_RESET_PASSWORD ->
                 {
-                    moveToActivity(ResetPasswordView::class.java)
+                    moveToActivityWithFinish(ResetPasswordView::class.java)
                 }
                 NavigatorConst.TO_UPDATE_NICKNAME ->
                 {
-                    moveToActivity(RegisterNicknameView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    moveToActivityWithFinish(RegisterNicknameView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     finish()
                 }
                 NavigatorConst.TO_MAIN ->
                 {
-                    moveToActivity(MainView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    moveToActivityWithFinish(MainView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     finish()
                 }
             }

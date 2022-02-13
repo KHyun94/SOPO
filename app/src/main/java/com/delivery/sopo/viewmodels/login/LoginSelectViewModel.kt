@@ -2,7 +2,7 @@ package com.delivery.sopo.viewmodels.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.UserExceptionHandler
+import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.ErrorEnum
@@ -110,7 +110,7 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
     }
 
     // 카카오톡 로그인을 통해 사용자에 대한 정보를 가져온다
-    fun requestKakaoLogin() = checkEventStatus(true, 0) {
+    fun requestKakaoLogin() {
         SopoLog.i(msg = "requestKakaoLogin(...) 호출")
 
         onStartLoading()

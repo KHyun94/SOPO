@@ -27,6 +27,9 @@ interface ParcelStatusDAO
     @Query("SELECT COUNT(*) FROM PARCEL_STATUS WHERE updatableStatus = ${StatusConst.ACTIVATE}")
     fun getCountForUpdatableParcel(): Int
 
+    @Query("SELECT PARCEL_STATUS.PARCEL_ID FROM PARCEL_STATUS WHERE updatableStatus = ${StatusConst.ACTIVATE}")
+    fun getUpdatableParcelIds(): LiveData<List<Int>>
+
     @Query("SELECT unidentifiedStatus FROM PARCEL_STATUS WHERE PARCEL_ID = :parcelId")
     fun getUnidentifiedStatusByParcelId(parcelId: Int) : Int
 

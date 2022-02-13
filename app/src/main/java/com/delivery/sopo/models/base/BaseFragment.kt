@@ -121,7 +121,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
     {
         return DataBindingUtil.inflate<T>(inflater, layoutRes, container, false).apply {
             setVariable(BR.vm, vm)
-            lifecycleOwner = this@BaseFragment
+            lifecycleOwner = viewLifecycleOwner
         }
     }
 

@@ -1,20 +1,16 @@
 package com.delivery.sopo.views.splash
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Build
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.SplashViewBinding
-import com.delivery.sopo.extensions.moveToActivity
+import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.interfaces.listener.OnPermissionResponseCallback
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.PermissionUtil
-import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.splash.SplashViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.intro.IntroView
@@ -67,7 +63,7 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
             {
                 NavigatorConst.TO_INTRO ->
                 {
-                    moveToActivity(IntroView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    moveToActivityWithFinish(IntroView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     finish()
                 }
                 NavigatorConst.TO_PERMISSION ->
@@ -76,12 +72,12 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
                 }
                 NavigatorConst.TO_UPDATE_NICKNAME ->
                 {
-                    moveToActivity(RegisterNicknameView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    moveToActivityWithFinish(RegisterNicknameView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     finish()
                 }
                 NavigatorConst.TO_MAIN ->
                 {
-                    moveToActivity(MainView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    moveToActivityWithFinish(MainView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     finish()
                 }
             }

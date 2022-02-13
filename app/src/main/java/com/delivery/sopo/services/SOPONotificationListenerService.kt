@@ -9,8 +9,10 @@ import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.push.NotificationMessage
 import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.usecase.parcel.remote.RegisterParcelUseCase
+import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +33,7 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
         super.onNotificationPosted(sbn)
 
         if(userRepo.getStatus() != 1) return
+        if(!PermissionUtil.checkNotificationListenerPermission(context = applicationContext, packageName)) return
 
         val notification: Notification = sbn?.notification?:return
 
@@ -87,7 +90,8 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
             val parcelRegister = getReceivedData(content)
             val parcelId = registerParcelUseCase.invoke(parcelRegister)
             val parcel = parcelRepo.getRemoteParcelById(parcelId = parcelId)
-            NotificationImpl.notifyRegisterParcel(context = applicationContext, parcelResponse = parcel)
+            val notificationMessage = NotificationMessage.getUpdatePusMessage(parcel)
+            NotificationImpl.notifyRegisterParcel(context = applicationContext, notificationMessage = notificationMessage)
         }
         catch(e:Exception)
         {

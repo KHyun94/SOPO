@@ -20,7 +20,9 @@
         android:id="@+id/constraint_main_update_nickname"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/COLOR_GRAY_50">
+        android:background="@color/COLOR_GRAY_50"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
 
         <include
             android:id="@+id/include_header"
@@ -155,7 +157,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="116dp"
             android:layout_marginTop="8dp"
-            android:onClick="@{()->vm.onCompleteSignUpClicked(btnSndEmail)}"
+            android:onClick="@{()->vm.onUpdateNicknameClicked(btnSndEmail)}"
             android:text="변경하기"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

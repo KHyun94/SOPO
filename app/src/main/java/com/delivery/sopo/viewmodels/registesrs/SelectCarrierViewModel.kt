@@ -2,7 +2,7 @@ package com.delivery.sopo.viewmodels.registesrs
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.UserExceptionHandler
+import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.ErrorEnum

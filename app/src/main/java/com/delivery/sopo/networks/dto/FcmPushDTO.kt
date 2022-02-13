@@ -11,8 +11,6 @@ data class FcmPushDTO(
 {
     fun getUpdateParcel(): List<Int>
     {
-        SopoLog.d("getUpdateParcel() 호출 [data:$data]")
-//        return Gson().fromJson(data, UpdatedParcelInfo::class.java)
         return Gson().fromJson(data, object: TypeToken<List<Int>>() {}.type)
     }
 }

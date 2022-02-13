@@ -8,6 +8,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject
@@ -223,4 +224,7 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
 
     }
 
+    fun toParcelString(){
+        SopoLog.d("parcel:${parcelResponse.toString()}")
+    }
 }

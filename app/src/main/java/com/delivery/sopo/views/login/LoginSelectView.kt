@@ -35,6 +35,8 @@ class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
 
         vm.navigator.observe(this, Observer { navigator ->
 
+            SopoLog.d("navigator:$navigator")
+
             when (navigator)
             {
                 NavigatorConst.TO_LOGIN ->
@@ -55,6 +57,7 @@ class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
                 }
                 NavigatorConst.TO_KAKAO_LOGIN ->
                 {
+                    SopoLog.d("카카오 로그인 시작")
                     binding.btnKakaoLogin.performClick()
 
                     if (Session.getCurrentSession() != null) Session.getCurrentSession().removeCallback(sessionCallback)
@@ -63,6 +66,7 @@ class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
                     {
                         override fun onSessionOpened()
                         {
+                            SopoLog.d("카카오 로그인 세젼 오픈")
                             vm.requestKakaoLogin()
                         }
 

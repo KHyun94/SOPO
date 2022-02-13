@@ -2,7 +2,7 @@ package com.delivery.sopo.viewmodels.inquiry
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.ParcelExceptionHandler
+import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.enums.ErrorEnum

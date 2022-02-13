@@ -1,4 +1,4 @@
-package com.delivery.sopo
+package com.delivery.sopo.exceptions
 
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.exceptions.InternalServerException

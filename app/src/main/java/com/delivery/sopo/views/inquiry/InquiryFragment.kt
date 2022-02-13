@@ -23,6 +23,7 @@ import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.mapper.MenuMapper
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
@@ -69,7 +70,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
         setOnTabSelectedListener()
         processReturnType()
 
-
         binding.includeHeader.onRightClickListener = View.OnClickListener {
             openInquiryMenu(it)
         }
@@ -78,6 +78,13 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
     override fun setObserve()
     {
         super.setObserve()
+
+        vm.updatableParcelIds.observe(this) { parcelIds ->
+            if(parcelIds.isEmpty()) return@observe
+            // TODO 다중 택배 가져오기
+            SopoLog.d("업데이트 강제 하기 ${parcelIds.joinToString()}")
+            vm.onSyncParcels()
+        }
 
         vm.cntOfBeDelivered.observe(this) { cnt ->
             completedTabBinding.updateCount = cnt
@@ -266,9 +273,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
 
                     vm.startDeleteCount()
 
-                    CustomSnackBar.make(mainLayout, "${parcelStatuses.size}개 항목이 삭제되었습니다.", 5000, SnackBarEnum.CONFIRM_DELETE, Pair("실행취소", {
+                    CustomSnackBar.make(mainLayout, "${parcelStatuses.size}개 항목이 삭제되었습니다.", 5000, SnackBarEnum.CONFIRM_DELETE, Pair("실행취소") {
                         vm.stopDeleteCount()
-                    })).show()
+                    }).show()
                 }
             }
 

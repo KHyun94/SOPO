@@ -25,17 +25,15 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class UpdateNicknameView: BaseView<UpdateNicknameViewBinding, UpdateNicknameViewModel>()
 {
-
-    override val layoutRes: Int
-        get() = R.layout.update_nickname_view
+    override val layoutRes: Int = R.layout.update_nickname_view
     override val vm: UpdateNicknameViewModel by viewModel()
     override val mainLayout: View by lazy{ binding.constraintMainUpdateNickname}
-    override fun onBeforeBinding()
-    {
-        super.onBeforeBinding()
 
-        binding.btnSndEmail.backgroundTintList =
-            resources.getColorStateList(R.color.COLOR_GRAY_200, null)
+    override fun onAfterBinding()
+    {
+        super.onAfterBinding()
+
+        binding.btnSndEmail.backgroundTintList = resources.getColorStateList(R.color.COLOR_GRAY_200, null)
         binding.btnSndEmail.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
 
         binding.etNickname.addTextChangedListener { nickname ->

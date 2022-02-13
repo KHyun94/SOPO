@@ -31,6 +31,8 @@ abstract class BaseViewModel: ViewModel()
 
     fun checkEventStatus(checkNetwork: Boolean = false, delayMillisecond: Long = 100, event: () -> Unit)
     {
+        if(_isClickEvent.value == true) return
+
         _isClickEvent.postValue(true)
 
         if(checkNetwork)
@@ -38,6 +40,7 @@ abstract class BaseViewModel: ViewModel()
             checkNetworkStatus().also { value ->
                 if(!value)
                 {
+                    SopoLog.e("인터넷 오류")
                     _isClickEvent.postValue(false)
                     return
                 }
@@ -48,15 +51,21 @@ abstract class BaseViewModel: ViewModel()
             _isClickEvent.postValue(false)
         }
 
-        if(_isClickEvent.value == true) return
+        SopoLog.d("인터넷 체크 후")
+
+        //        if(_isClickEvent.value == true) return
+
+        SopoLog.d("이벤트 시작 전")
 
         Handler(Looper.getMainLooper()).postDelayed(Runnable {
             try
             {
+                SopoLog.d("이벤트 시작")
                 event.invoke()
             }
             finally
             {
+                SopoLog.d("이벤트 종료")
                 _isClickEvent.postValue(false)
             }
         }, delayMillisecond)
@@ -95,12 +104,14 @@ abstract class BaseViewModel: ViewModel()
         return false
     }
 
-    fun startLoading(){
+    fun startLoading()
+    {
         if(_isLoading.value == true) return
         _isLoading.postValue(true)
     }
 
-    fun stopLoading(){
+    fun stopLoading()
+    {
         if(_isLoading.value == false) return
         _isLoading.postValue(false)
     }
@@ -138,13 +149,11 @@ abstract class BaseViewModel: ViewModel()
     }
 
     fun getConnectivityStatus(context: Context): NetworkStatus
-    {
-        // 네트워크 연결 상태 확인하기 위한 ConnectivityManager 객체 생성
+    { // 네트워크 연결 상태 확인하기 위한 ConnectivityManager 객체 생성
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        {
-            // 활성화된 네트워크의 상태를 표현하는 객체
+        { // 활성화된 네트워크의 상태를 표현하는 객체
             val nc = cm.getNetworkCapabilities(cm.activeNetwork) ?: return NetworkStatus.NOT_CONNECT
 
             return when

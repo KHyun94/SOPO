@@ -1,22 +1,12 @@
 package com.delivery.sopo.views.menus
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
-import androidx.annotation.LayoutRes
-import androidx.core.app.ActivityCompat
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentMenuBinding
 import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
+import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.MenuMainFragment
@@ -24,127 +14,42 @@ import com.delivery.sopo.viewmodels.menus.MenuViewModel
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.KoinComponent
-import kotlin.system.exitProcess
 
-class MenuFragment: Fragment(), KoinComponent
+class MenuFragment: BaseFragment<FragmentMenuBinding, MenuViewModel>()
 {
-    private lateinit var parentView: MainView
-    private lateinit var binding: FragmentMenuBinding
+    override val vm: MenuViewModel by viewModel()
+    override val layoutRes: Int = R.layout.fragment_menu
+    override val mainLayout: View by lazy { binding.constraintMainMenu }
 
-    private val vm: MenuViewModel by viewModel()
+    private  val parentView: MainView by lazy { (requireActivity() as MainView) }
 
-    lateinit var callback: OnBackPressedCallback
-
-    override fun onAttach(context: Context)
+    override fun setBeforeBinding()
     {
-        super.onAttach(context)
+        super.setBeforeBinding()
 
-        var pressedTime: Long = 0
-
-        callback = object: OnBackPressedCallback(true)
+        onSOPOBackPressedListener = object: OnSOPOBackPressEvent()
         {
-            override fun handleOnBackPressed()
+            override fun onBackPressedInTime()
             {
-                FragmentManager.remove(parentView)
-                if(System.currentTimeMillis() - pressedTime > 2000)
-                {
-                    pressedTime = System.currentTimeMillis()
-                    Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
-                        .setAnimationMode(Snackbar.ANIMATION_MODE_SLIDE)
-                        .show()
-                }
-                else
-                {
-                    ActivityCompat.finishAffinity(requireActivity())
-                    exitProcess(0)
-                }
+                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }.show()
+            }
+
+            override fun onBackPressedOutTime()
+            {
+                exit()
             }
         }
-
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
     }
 
-    @SuppressLint("SourceLockedOrientationActivity")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View
+    override fun setObserve()
     {
-        binding = bindView(inflater, R.layout.fragment_menu, container)
-        parentView = activity as MainView
+        super.setObserve()
 
-        setObserver()
-
-        return binding.root
-    }
-
-    private fun <T: ViewDataBinding> bindView(inflater: LayoutInflater,
-                                              @LayoutRes layoutRes: Int, container: ViewGroup?): T
-    {
-        val binding = DataBindingUtil.inflate<T>(inflater, layoutRes, container, false)
-        binding.setVariable(BR.vm, vm)
-        binding.lifecycleOwner = this
-        return binding
-    }
-
-    override fun onResume()
-    {
-        super.onResume()
-
-        var pressedTime: Long = 0
-
-        callback = object: OnBackPressedCallback(true)
-        {
-            override fun handleOnBackPressed()
-            {
-                if(System.currentTimeMillis() - pressedTime > 2000)
-                {
-                    pressedTime = System.currentTimeMillis()
-
-                    Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
-                        .apply {
-                            animationMode = Snackbar.ANIMATION_MODE_SLIDE
-                        }
-                        .show()
-
-                    return
-                }
-
-                ActivityCompat.finishAffinity(requireActivity())
-                exitProcess(0)
-            }
+        activity ?: return
+        parentView.currentPage.observe(this) {
+            if(it != 2) return@observe
+            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
-        parentView.onBackPressedDispatcher.addCallback(parentView, callback)
-    }
-
-    fun setObserver()
-    {
-        //        var pressedTime: Long = 0
-
-        //        parentView.currentPage.observe(this, Observer { page ->
-        //            if(page != null && page == TabCode.thirdTab)
-        //            {
-        //                callback = object: OnBackPressedCallback(true)
-        //                {
-        //                    override fun handleOnBackPressed()
-        //                    {
-        //                        if(System.currentTimeMillis() - pressedTime > 2000)
-        //                        {
-        //                            pressedTime = System.currentTimeMillis()
-        //
-        //                            Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply {
-        //                                animationMode = Snackbar.ANIMATION_MODE_SLIDE
-        //                            }.show()
-        //
-        //                            return
-        //                        }
-        //
-        //                        ActivityCompat.finishAffinity(requireActivity())
-        //                        exitProcess(0)
-        //                    }
-        //                }
-        //
-        //                requireActivity().onBackPressedDispatcher.addCallback(this, callback)
-        //            }
-        //        })
 
         vm.menu.observe(this, Observer { code ->
             SopoLog.d("move to code[${code}]")
@@ -186,12 +91,6 @@ class MenuFragment: Fragment(), KoinComponent
         })
     }
 
-    override fun onDetach()
-    {
-        super.onDetach()
-        callback.remove()
-    }
-
     companion object
     {
         fun newInstance(): MenuFragment
@@ -199,4 +98,6 @@ class MenuFragment: Fragment(), KoinComponent
             return MenuFragment()
         }
     }
+
+
 }

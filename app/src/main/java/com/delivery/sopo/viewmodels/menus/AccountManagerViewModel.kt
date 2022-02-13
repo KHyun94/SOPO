@@ -3,15 +3,27 @@ package com.delivery.sopo.viewmodels.menus
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
+import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
+import com.delivery.sopo.models.base.BaseViewModel
+import com.delivery.sopo.usecase.LogoutUseCase
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 
-class AccountManagerViewModel: ViewModel()
+class AccountManagerViewModel(
+        private val logoutUseCase: LogoutUseCase
+): BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
     val navigator : LiveData<String>
     get() = _navigator
+
+    fun onLogout(){
+        logoutUseCase.invoke()
+    }
 
     fun onMoveClicked(v: View){
         when(v.id)
@@ -21,5 +33,14 @@ class AccountManagerViewModel: ViewModel()
             R.id.layout_logout -> _navigator.value = NavigatorConst.TO_LOGOUT
             R.id.layout_sign_out -> _navigator.value = NavigatorConst.TO_SIGN_OUT
         }
+    }
+
+    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    {
+        override fun onFailure(error: ErrorEnum) { }
+    }
+
+    override val exceptionHandler: CoroutineExceptionHandler by lazy {
+        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 }

@@ -1,11 +1,9 @@
 package com.delivery.sopo.viewmodels.menus
 
-import android.os.Handler
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.delivery.sopo.UserExceptionHandler
+import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.InfoEnum
@@ -15,13 +13,13 @@ import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
+import com.delivery.sopo.usecase.UpdateNicknameUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo: UserRemoteRepository):
+class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo: UserRemoteRepository, private val updateNicknameUseCase: UpdateNicknameUseCase):
         BaseViewModel()
 {
     val currentNickname = MutableLiveData<String>().apply {
@@ -56,8 +54,7 @@ class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository, pr
     private val onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum)
-        {
-            // TODO 발생하는 에러가 있을까?
+        { // TODO 발생하는 에러가 있을까?
             //            postErrorSnackBar("로그인에 실패했습니다.")
         }
 
@@ -87,34 +84,30 @@ class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository, pr
         _navigator.postValue(NavigatorConst.TO_BACK_SCREEN)
     }
 
-    fun onCompleteSignUpClicked(v: View)
-    {
-        v.requestFocusFromTouch()
+    fun onUpdateNicknameClicked(v: View) = checkEventStatus(true, 100) {
         SopoLog.d("onCompleteSignUpClicked()")
         validates.forEach { (k, v) ->
             if(!v)
             {
                 SopoLog.d("${k.NAME} validate is fail")
-                return _validateError.postValue(Pair(k, v))
+                return@checkEventStatus _validateError.postValue(Pair(k, v))
             }
         }
 
+        updateNickname(nickname.value ?: "")
+    }
+
+    private fun updateNickname(nickname: String) = scope.launch(Dispatchers.IO) {
+
         try
         {
-            updateNickname(nickname = nickname.value ?: "")
-            requestLogin()
+            updateNicknameUseCase.invoke(nickname = nickname)
+            _navigator.postValue(NavigatorConst.TO_MAIN)
         }
         catch(e: Exception)
         {
             exceptionHandler.handleException(scope.coroutineContext, e)
         }
-    }
-
-    private fun updateNickname(nickname: String) = scope.launch(Dispatchers.IO) {
-
-        userRemoteRepo.updateNickname(nickname = nickname)
-        _navigator.postValue(NavigatorConst.TO_MAIN)
-
     }
 
     private fun requestLogin() = scope.launch(Dispatchers.IO) {

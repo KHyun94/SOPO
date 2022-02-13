@@ -54,4 +54,5 @@ interface CarrierDao
 
     @Delete
     fun delete(carrierEntity: CarrierEntity)
+
 }

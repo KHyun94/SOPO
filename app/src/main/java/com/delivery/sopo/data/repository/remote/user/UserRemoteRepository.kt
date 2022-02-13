@@ -86,6 +86,9 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
 
         val userInfo = result.data?.data ?: throw SOPOApiException(200, ErrorResponse(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
 
+        SopoLog.d("유저 데이터 ${userInfo.toString()}")
+        SopoLog.d("유저 데이터 ${userInfo.nickname}")
+
         withContext(Dispatchers.Default) {
             userLocalRepo.run {
                 setNickname(userInfo.nickname ?: "")

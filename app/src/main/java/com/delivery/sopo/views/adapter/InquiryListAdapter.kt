@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
@@ -21,6 +22,7 @@ import com.delivery.sopo.extensions.toEllipsis
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.setting.DiffCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -320,7 +322,7 @@ class InquiryListAdapter(
     {
         if(list == null) return
 
-        this.parcels = when(parcelType)
+        val newParcels = when(parcelType)
         {
             InquiryItemTypeEnum.Soon ->
             {
@@ -342,7 +344,36 @@ class InquiryListAdapter(
             }
         }
 
-        notifyDataSetChanged()
+        val diffCallback = DiffCallback(parcels, newParcels)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+        parcels.clear()
+        parcels.addAll(newParcels)
+
+        diffResult.dispatchUpdatesTo(this)
+//        this.parcels = when(parcelType)
+//        {
+//            InquiryItemTypeEnum.Soon ->
+//            {
+//                list.filter {
+//                    it.parcelResponse.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
+//                }.toMutableList()
+//            }
+//            InquiryItemTypeEnum.Registered ->
+//            {
+//                list.filter {
+//                    it.parcelResponse.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE && it.parcelResponse.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
+//                }.toMutableList()
+//            }
+//            InquiryItemTypeEnum.Complete ->
+//            {
+//                list.filter {
+//                    it.parcelResponse.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
+//                }.toMutableList()
+//            }
+//        }
+//
+//        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int =  parcels.size

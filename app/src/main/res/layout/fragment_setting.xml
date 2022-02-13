@@ -9,7 +9,7 @@
             type="com.delivery.sopo.viewmodels.menus.SettingViewModel" />
     </data>
 <androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/constraint_setting"
+    android:id="@+id/constraint_main_setting"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/COLOR_GRAY_50">

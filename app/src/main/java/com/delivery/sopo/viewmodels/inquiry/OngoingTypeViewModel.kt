@@ -3,7 +3,7 @@ package com.delivery.sopo.viewmodels.inquiry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import com.delivery.sopo.ParcelExceptionHandler
+import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
@@ -37,12 +37,12 @@ class OngoingTypeViewModel(
     val navigator: LiveData<String>
         get() = _navigator
 
-    private var _ongoingList = Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
-            val list: MutableList<InquiryListItem> = ParcelMapper.parcelListToInquiryItemList(parcelList)
-            sortByDeliveryStatus(list).toMutableList()
-        }
-    val ongoingList: LiveData<MutableList<InquiryListItem>>
-        get() = _ongoingList
+    private val _ongoingParcels = Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
+        val list: MutableList<InquiryListItem> = ParcelMapper.parcelListToInquiryItemList(parcelList)
+        sortByDeliveryStatus(list).toMutableList()
+    }
+    val ongoingParcels: LiveData<MutableList<InquiryListItem>>
+        get() = _ongoingParcels
 
     val cntOfPresentOngoingParcels: LiveData<Int> = Transformations.map(parcelRepo.getLocalOnGoingParcelCnt()) { cnt -> cnt }
 

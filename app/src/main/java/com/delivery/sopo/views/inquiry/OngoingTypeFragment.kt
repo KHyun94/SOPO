@@ -16,6 +16,7 @@ import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.OngoingTypeViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.dialog.OptionalClickListener
@@ -97,15 +98,15 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         getAdapter(InquiryItemTypeEnum.Soon).let { adapter ->
             soonArrivalParcelAdapter = adapter
             binding.recyclerviewSoonArrival.adapter = soonArrivalParcelAdapter
-            val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
-            animator.supportsChangeAnimations = false
+//            val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
+//            animator.supportsChangeAnimations = false
         }
 
         getAdapter(InquiryItemTypeEnum.Registered).let { adapter ->
             registeredParcelAdapter = adapter
             binding.recyclerviewRegisteredParcel.adapter = registeredParcelAdapter
-            val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
-            animator.supportsChangeAnimations = false
+//            val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
+//            animator.supportsChangeAnimations = false
         }
     }
 
@@ -121,10 +122,18 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
-        vm.ongoingList.observe(requireActivity()) { list ->
+        vm.ongoingParcels.observe(requireActivity()) { list ->
 
             if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
             else binding.linearNoItem.visibility = View.GONE
+
+            SopoLog.d("+++++++++++++++++++++++++++++++++")
+
+            list.forEach{
+                SopoLog.d("택배 : ${it.parcelResponse.toString()}")
+            }
+
+            SopoLog.d("+++++++++++++++++++++++++++++++++")
 
             soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
             registeredParcelAdapter.separateDeliveryListByStatus(list)
@@ -244,7 +253,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
     }
 
     // '곧 도착' 리스트의 아이템의 개수에 따른 화면세팅
-    private fun viewSettingForSoonArrivalList(listSize: Int)
+    private fun  viewSettingForSoonArrivalList(listSize: Int)
     {
         if(listSize > 0)
         {

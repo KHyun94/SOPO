@@ -1,27 +1,18 @@
 package com.delivery.sopo.viewmodels.signup
 
-import android.os.Handler
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.delivery.sopo.UserExceptionHandler
+import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.bindings.FocusChangeCallback
-import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.models.ResponseResult
-import com.delivery.sopo.networks.call.UserCall
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.usecase.UpdateNicknameUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

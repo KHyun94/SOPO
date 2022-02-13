@@ -8,7 +8,7 @@
             type="com.delivery.sopo.viewmodels.menus.FaqViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linear_faq"
+        android:id="@+id/linear_main_faq"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
