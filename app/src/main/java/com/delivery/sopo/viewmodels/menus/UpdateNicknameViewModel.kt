@@ -19,7 +19,9 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo: UserRemoteRepository, private val updateNicknameUseCase: UpdateNicknameUseCase):
+class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository,
+                              private val userRemoteRepo: UserRemoteRepository,
+                              private val updateNicknameUseCase: UpdateNicknameUseCase):
         BaseViewModel()
 {
     val currentNickname = MutableLiveData<String>().apply {

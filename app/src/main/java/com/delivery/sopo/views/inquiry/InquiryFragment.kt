@@ -82,6 +82,10 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
         vm.updatableParcelIds.observe(this) { parcelIds ->
             if(parcelIds.isEmpty()) return@observe
             // TODO 다중 택배 가져오기
+
+            val snackBar = CustomSnackBar(mainLayout, "방금 ${parcelIds.size}개의 배송정보가 업데이트 되었습니다.", 3000, SnackBarEnum.COMMON)
+            snackBar.show()
+
             SopoLog.d("업데이트 강제 하기 ${parcelIds.joinToString()}")
             vm.onSyncParcels()
         }

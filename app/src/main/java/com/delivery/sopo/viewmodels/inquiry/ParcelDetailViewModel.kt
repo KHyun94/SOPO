@@ -84,11 +84,11 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
         // ParcelEntity의 택배사 코드를 이용하여 택배사 정보를 로컬 DB에서 읽어온다.
         val carrierDTO = carrierRepository.getCarrierWithCode(parcelResponse.carrier)
 
-        if(parcelResponse.inquiryResult != null && parcelResponse.inquiryResult != "")
+        if(parcelResponse.trackingInfo != null)
         {
-            val trackingInfo: TrackingInfo = Gson().fromJson<TrackingInfo>(parcelResponse.inquiryResult, TrackingInfo::class.java)
+//            val trackingInfo: TrackingInfo = Gson().fromJson<TrackingInfo>(parcelResponse.inquiryResult, TrackingInfo::class.java)
 
-            trackingInfo.progresses.forEach { progressess ->
+            parcelResponse.trackingInfo?.progresses?.forEach { progressess ->
                 val date = progressess?.getDate()
                 val progress = TimeLineProgress(date = date, location = progressess?.location?.name,
                                                 description = progressess?.description,

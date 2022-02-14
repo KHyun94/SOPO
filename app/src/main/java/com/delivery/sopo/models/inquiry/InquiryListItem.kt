@@ -19,27 +19,24 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
 {
     private val parcelRepository: ParcelRepository by inject()
 
-    val iconResource = MutableLiveData<Int>().apply {
-        postValue(getStatusBackgroundResource())
-    }
-
-    val backgroundColorResource = MutableLiveData<Int>().apply {
-        postValue(getStatusBackgroundColorResource())
-    }
-
-    val statusText = MutableLiveData<String>().apply {
-        postValue(getStatusText())
-    }
-
-    val statusTextColorResource = MutableLiveData<Int>().apply {
-        postValue(getStatusTextColorResource())
-    }
+    val iconResource = MutableLiveData<Int>()
+    val backgroundColorResource = MutableLiveData<Int>()
+    val statusText = MutableLiveData<String>()
+    val statusTextColorResource = MutableLiveData<Int>()
 
     val isUnidentified = ObservableField<Boolean>().apply {
         checkIsUnidentified {
             set(it)
             notifyChange()
         }
+    }
+
+    init
+    {
+        iconResource.postValue(getStatusBackgroundResource())
+        backgroundColorResource.postValue(getStatusBackgroundColorResource())
+        statusText.postValue(getStatusText())
+        statusTextColorResource.postValue(getStatusTextColorResource())
     }
 
     private val completeTimeDate: Calendar by lazy {
@@ -55,13 +52,6 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
                 this.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(
                     parcelResponse.auditDte.replace("T", " "))
             }
-    }
-
-    private fun getParseString(): String
-    {
-        return parcelResponse.arrivalDte?.let {
-            it.substring(0, it.indexOf("T"))
-        } ?: " "
     }
 
     fun getCompleteYearMonth(): String

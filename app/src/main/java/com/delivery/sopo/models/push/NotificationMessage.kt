@@ -15,9 +15,9 @@ data class NotificationMessage(val title: String, val content: String, val summa
     {
         fun getUpdatePusMessage(parcel: Parcel.Common): NotificationMessage
         {
-            val trackingInfo: TrackingInfo? = Gson().fromJson<TrackingInfo>(parcel.inquiryResult, TrackingInfo::class.java)
+//            val trackingInfo: TrackingInfo? = Gson().fromJson<TrackingInfo>(parcel.inquiryResult, TrackingInfo::class.java)
 
-            val from = trackingInfo?.from?.name ?: "노네임"
+            val from = parcel.trackingInfo?.from?.name ?: "노네임"
 
             when(parcel.deliveryStatus)
             {
@@ -45,7 +45,7 @@ data class NotificationMessage(val title: String, val content: String, val summa
                 }
                 DeliveryStatusEnum.IN_TRANSIT.CODE ->
                 {
-                    val currentLocation = trackingInfo?.progresses?.get(trackingInfo.progresses.lastIndex)?.location?.name ?: "불명"
+                    val currentLocation = parcel.trackingInfo?.progresses?.get(parcel.trackingInfo?.progresses?.lastIndex?:0)?.location?.name ?: "불명"
 
                     val title = "${parcel.carrier} / ${parcel.waybillNum}"
                     val content = "${EmojiConst.EMOJI_SPEECH_BALLOON.asEmoji()} ${from}님이 보낸 택배가 이동 중이에요."

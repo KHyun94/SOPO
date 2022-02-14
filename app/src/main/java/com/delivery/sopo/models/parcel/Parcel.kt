@@ -2,6 +2,7 @@ package com.delivery.sopo.models.parcel
 
 import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.models.Carrier
+import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
@@ -12,7 +13,8 @@ class Parcel{
                 @SerializedName("waybillNum") var waybillNum: String,
                 @SerializedName("carrier") var carrier: String,
                 @SerializedName("alias") var alias: String,
-                @SerializedName("inquiryResult") var inquiryResult: String?,
+//                @SerializedName("inquiryResult") var inquiryResult: String?,
+                @SerializedName("inquiryResult") var trackingInfo: TrackingInfo?,
                 @SerializedName("inquiryHash") var inquiryHash: String?,
                 @SerializedName("deliveryStatus") var deliveryStatus: String,
                 @SerializedName("regDte") var regDte: String,

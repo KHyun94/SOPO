@@ -4,17 +4,24 @@ import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.database.room.entity.CompletedParcelHistoryEntity
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.database.room.entity.ParcelStatusEntity
+import com.delivery.sopo.extensions.fromJson
+import com.delivery.sopo.extensions.toJson
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
 
 object ParcelMapper
 {
     fun parcelEntityToObject(req:ParcelEntity): Parcel.Common {
-        return with(req){ Parcel.Common(parcelId = parcelId, userId = userId, waybillNum = waybillNum, carrier = carrier, alias = alias, inquiryResult = inquiryResult, inquiryHash = inquiryHash, deliveryStatus = deliveryStatus, regDte = regDte, arrivalDte = arrivalDte, auditDte = auditDte, status = status)}
+        val fromJson = req.inquiryResult?.fromJson<TrackingInfo?>()
+        return with(req){ Parcel.Common(parcelId = parcelId, userId = userId, waybillNum = waybillNum, carrier = carrier, alias = alias, trackingInfo = fromJson, inquiryHash = inquiryHash, deliveryStatus = deliveryStatus, regDte = regDte, arrivalDte = arrivalDte, auditDte = auditDte, status = status)}
     }
 
     fun parcelObjectToEntity(req:Parcel.Common):ParcelEntity {
-        return with(req) { ParcelEntity(parcelId, userId, waybillNum, carrier, alias, inquiryResult, inquiryHash, deliveryStatus, arrivalDte?:"", regDte, auditDte, status?:0)}
+
+        val toJson = req.trackingInfo?.toJson()
+
+        return with(req) { ParcelEntity(parcelId, userId, waybillNum, carrier, alias, toJson, inquiryHash, deliveryStatus, arrivalDte?:"", regDte, auditDte, status?:0)}
     }
 
     fun parcelStatusEntityToObject(req:ParcelStatusEntity): Parcel.Status
@@ -57,12 +64,15 @@ object ParcelMapper
     }
 
     fun parcelEntityToParcel(parcelEntity: ParcelEntity): Parcel.Common{
+
+        val fromJson = parcelEntity.inquiryResult?.fromJson<TrackingInfo?>()
+
         return Parcel.Common(parcelId = parcelEntity.parcelId,
                               userId = parcelEntity.userId,
                               waybillNum = parcelEntity.waybillNum,
                               carrier = parcelEntity.carrier,
                               alias = parcelEntity.alias,
-                              inquiryResult = parcelEntity.inquiryResult,
+                              trackingInfo = fromJson,
                               inquiryHash = parcelEntity.inquiryHash,
                               deliveryStatus = parcelEntity.deliveryStatus,
                               arrivalDte = parcelEntity.arrivalDte,
@@ -72,21 +82,23 @@ object ParcelMapper
         )
     }
 
-    fun parcelToParcelEntity(parcelResponse: Parcel.Common): ParcelEntity
+    fun parcelToParcelEntity(parcel: Parcel.Common): ParcelEntity
     {
+        val toJson = parcel.trackingInfo?.toJson()
+
         return ParcelEntity(
-            parcelId = parcelResponse.parcelId,
-            userId = parcelResponse.userId,
-            waybillNum = parcelResponse.waybillNum,
-            carrier = parcelResponse.carrier,
-            alias = parcelResponse.alias,
-            inquiryResult = parcelResponse.inquiryResult,
-            inquiryHash = parcelResponse.inquiryHash,
-            deliveryStatus = parcelResponse.deliveryStatus,
-            arrivalDte = parcelResponse.arrivalDte.toString(),
-            auditDte = parcelResponse.auditDte,
-            regDte = parcelResponse.regDte,
-            status = parcelResponse.status ?: 0
+            parcelId = parcel.parcelId,
+            userId = parcel.userId,
+            waybillNum = parcel.waybillNum,
+            carrier = parcel.carrier,
+            alias = parcel.alias,
+            inquiryResult = toJson,
+            inquiryHash = parcel.inquiryHash,
+            deliveryStatus = parcel.deliveryStatus,
+            arrivalDte = parcel.arrivalDte.toString(),
+            auditDte = parcel.auditDte,
+            regDte = parcel.regDte,
+            status = parcel.status ?: 0
         )
     }
 

@@ -47,6 +47,7 @@ val appModule = module {
     single { OAuthLocalRepository(get()) }
 
     factory { SyncParcelsUseCase(get()) }
+    factory { RegisterParcelUseCase(get()) }
     factory { GetCompleteParcelUseCase(get()) }
     factory { GetCompletedMonthUseCase(get(), get())}
     factory { RefreshParcelUseCase(get()) }

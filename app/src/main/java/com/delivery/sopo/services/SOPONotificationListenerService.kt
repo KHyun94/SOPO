@@ -39,13 +39,11 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
 
         SopoLog.d("PackageName :: ${sbn.packageName}")
 
-        if(("com.samsung.android.messaging" != sbn.packageName) || ("com.kakao.talk" != sbn.packageName)) return
-
         val extras: Bundle = notification.extras
 
         CoroutineScope(Dispatchers.IO).launch {
-            readKAKAONotificationListener(packageName, extras)
-            readMMSNotificationListener(packageName, extras)
+            readKAKAONotificationListener(sbn.packageName, extras)
+            readMMSNotificationListener(sbn.packageName, extras)
         }
     }
 
@@ -64,7 +62,7 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
             subText:$subText
         """.trimIndent())
 
-        registerParcelInNotification(subText.toString() ?: "")
+        registerParcelInNotification(text.toString() ?: "")
     }
 
     suspend fun readMMSNotificationListener(packageName: String, extras: Bundle){
@@ -81,7 +79,7 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
             subText:$subText
         """.trimIndent())
 
-        registerParcelInNotification(subText.toString() ?: "")
+        registerParcelInNotification(text.toString() ?: "")
     }
 
     private suspend fun registerParcelInNotification(content: String){
@@ -148,7 +146,7 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
         }
     }
 
-    private fun getReceivedAlias(content: String): String
+    private fun getReceivedAlias(content: String): String?
     {
         val rows = content.split("\n")
 
@@ -156,21 +154,19 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
 
         for(row in rows)
         {
-            if(!row.contains("상품명")) continue
+            if(!row.contains("상품명") || !row.contains("물품명")) continue
             matchRow = row
             break
         }
-
-        matchRow ?: throw Exception("Alias가 존재하지 않습니다.")
-
-        return parse(matchRow)
+        if(matchRow != null) return parse(matchRow)
+        return null
     }
 
     private suspend fun getReceivedData(mms: String): Parcel.Register
     {
         try
         {
-            val receivedAlias: String = getReceivedAlias(content = mms)
+            val receivedAlias: String? = getReceivedAlias(content = mms)
             val receivedWaybillsNum: String = getReceivedWaybillNum(content = mms)
             val receivedCarrier: Carrier = getReceivedCarrier(content = mms)
 

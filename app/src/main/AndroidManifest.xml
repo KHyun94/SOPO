@@ -17,7 +17,7 @@
 
     <application
         android:name=".SOPOApp"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_app_icon_ver_dark"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_app_icon_ver_dark_round"
@@ -127,7 +127,8 @@
         </service>
 
         <receiver
-            android:name=".services.receivers.RefreshParcelBroadcastReceiver">
+            android:name=".services.receivers.RefreshParcelBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.delivery.sopo.ACTION_COMPLETED_REGISTER_PARCEL" />
             </intent-filter>
