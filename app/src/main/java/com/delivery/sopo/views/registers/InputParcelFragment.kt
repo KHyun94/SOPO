@@ -21,6 +21,9 @@ import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.registesrs.InputParcelViewModel
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -132,7 +135,6 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
             vm.recommendCarrierByWaybill(waybillNum)
         }
 
-
         vm.invalidity.observe(this) { target ->
             val message = when(target.first)
             {
@@ -170,6 +172,16 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
                 }
             }
 
+        }
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+
+        CoroutineScope(Dispatchers.Default).launch {
+            val clipBoardData = ClipboardUtil.pasteClipboardText(context = requireContext())
+            vm.clipboardText.postValue(clipBoardData)
         }
     }
 

@@ -44,12 +44,15 @@ class SelectCarrierViewModel(private val carrierRepo: CarrierRepository): BaseVi
 
     suspend fun getCarriers(waybillNum: String): List<SelectItem<Carrier?>>
     {
-        val list = if(waybillNum.isEmpty()) carrierRepo.recommendAutoCarrier(waybillNum, 27)
-        else carrierRepo.getAll().toMutableList()
+//        val list = if(waybillNum.isEmpty()) carrierRepo.recommendAutoCarrier(waybillNum, 27)
+//        else carrierRepo.getAll().toMutableList()
+//
+//        return list.map {
+//            SelectItem(it, false)
+//        }
 
-        return list.map {
-            SelectItem(it, false)
-        }
+
+        return carrierRepo.getAll().map { carrier -> SelectItem(carrier, false) }
     }
 
     fun onClearClicked()

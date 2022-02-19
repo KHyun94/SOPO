@@ -9,33 +9,20 @@ import androidx.room.PrimaryKey
     inheritSuperIndices = true
 )
 data class CarrierEntity(
-    @PrimaryKey(autoGenerate = true)
+        @PrimaryKey(autoGenerate = true)
     @ColumnInfo(
         name = "carrierNo",
         typeAffinity = ColumnInfo.INTEGER
     )
     val carrierNo: Int = 1,
-    @ColumnInfo(
-        name = "carrierName",
+        @ColumnInfo(
+        name = "name",
         typeAffinity = ColumnInfo.TEXT
     )
-    val carrierName: String,
-    @ColumnInfo(
-        name = "carrierCode",
+    val name: String,
+        @ColumnInfo(
+        name = "code",
         typeAffinity = ColumnInfo.TEXT
     )
-    val carrierCode: String,
-    @ColumnInfo(
-        name = "min",
-        typeAffinity = ColumnInfo.INTEGER
-    ) val min: Int,
-    @ColumnInfo(
-        name = "max",
-        typeAffinity = ColumnInfo.INTEGER
-    ) val max: Int,
-    @ColumnInfo(
-        name = "priority",
-        typeAffinity = ColumnInfo.REAL
-    )
-    val priority: Double? = 1.0
+    val code: String
 )

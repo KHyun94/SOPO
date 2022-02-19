@@ -22,33 +22,23 @@ object RoomActivate: KoinComponent
 
         if(rowCnt > 0) return@withContext
 
-        val carrierList = listOf<CarrierEntity>(
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.CHUNILPS.NAME, carrierCode = CarrierEnum.CHUNILPS.CODE,
-                          min = 11, max =11, priority = 0.88),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.CJ_LOGISTICS.NAME,
-                          carrierCode = CarrierEnum.CJ_LOGISTICS.CODE, min = 13, max = 13, priority = 1.0),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.CU_POST.NAME, carrierCode = CarrierEnum.CU_POST.CODE,
-                          min = 10, max =12, priority = 0.95),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.CVSNET.NAME, carrierCode = CarrierEnum.CVSNET.CODE,
-                          min = 0, max = 0, priority = 0.90),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.DAESIN.NAME, carrierCode = CarrierEnum.DAESIN.CODE,
-                          min = 13, max =13, priority = 0.92),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.EPOST.NAME, carrierCode = CarrierEnum.EPOST.CODE,
-                          min = 13, max =13, priority = 0.98),
-
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.HDEXP.NAME, carrierCode = CarrierEnum.HDEXP.CODE,
-                          min = 9, max = 16, priority = 0.89),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.KDEXP.NAME, carrierCode = CarrierEnum.KDEXP.CODE,
-                          min = 9, max = 16, priority = 0.99),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.LOGEN.NAME, carrierCode = CarrierEnum.LOGEN.CODE,
-                          min = 11, max = 11, priority = 0.97),
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.HANJINS.NAME, carrierCode = CarrierEnum.HANJINS.CODE,
-                          min = 10, max = 12, priority = 0.96),
-
-            CarrierEntity(carrierNo = 0, carrierName = CarrierEnum.LOTTE.NAME, carrierCode = CarrierEnum.LOTTE.CODE,
-                          min = 12, max = 12, priority = 0.99)
-        )
-        carrierRepo.insert(carrierList)
+        val list = CarrierEnum.values().map { carrier ->
+            CarrierEntity(carrierNo = 0, name = carrier.NAME, code = carrier.CODE)
+        }
+//        val carrierList = listOf(
+//            CarrierEntity(carrierNo = 0, name = CHUNILPS.NAME, code = CHUNILPS.CODE),
+//            CarrierEntity(carrierNo = 0, name = CJ_LOGISTICS.NAME, code = CJ_LOGISTICS.CODE),
+//            CarrierEntity(carrierNo = 0, name = CU_POST.NAME, code = CU_POST.CODE),
+//            CarrierEntity(carrierNo = 0, name = CVSNET.NAME, code = CVSNET.CODE),
+//            CarrierEntity(carrierNo = 0, name = DAESIN.NAME, code = DAESIN.CODE),
+//            CarrierEntity(carrierNo = 0, name = EPOST.NAME, code = EPOST.CODE),
+//            CarrierEntity(carrierNo = 0, name = HDEXP.NAME, code = HDEXP.CODE),
+//            CarrierEntity(carrierNo = 0, name = KDEXP.NAME, code = KDEXP.CODE),
+//            CarrierEntity(carrierNo = 0, name = LOGEN.NAME, code = LOGEN.CODE),
+//            CarrierEntity(carrierNo = 0, name = HANJINS.NAME, code = HANJINS.CODE),
+//            CarrierEntity(carrierNo = 0, name = LOTTE.NAME, code = LOTTE.CODE)
+//        )
+        carrierRepo.insert(list)
     }
 
     suspend fun recommendAutoCarrier(waybillNum: String, cnt: Int) = withContext(Dispatchers.Default)
@@ -56,8 +46,8 @@ object RoomActivate: KoinComponent
         SopoLog.d("recommend carrier >>> $waybillNum / $cnt 개")
 
         mutableListOf<Carrier?>().apply {
-            addAll(carrierRepo.getWithLen(waybillNum.length, cnt))
-            addAll(carrierRepo.getWithoutLen(waybillNum.length, 27))
+//            addAll(carrierRepo.getWithLen(waybillNum.length, cnt))
+//            addAll(carrierRepo.getWithoutLen(waybillNum.length, 27))
         }
     }
 }

@@ -4,110 +4,176 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.delivery.sopo.R"/>
+
+        <import type="com.delivery.sopo.R" />
+
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.login.LoginSelectViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint_main_login_select"
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:id="@+id/slide_main_login_select"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/COLOR_GRAY_50">
+        android:background="@color/COLOR_GRAY_50"
+        android:gravity="bottom"
+        app:umanoDragView="@+id/layout_drawer"
+        app:umanoOverlay="true"
+        app:umanoPanelHeight="0dp"
+        app:umanoShadowHeight="0dp">
 
-        <!-- TODO 사이즈 강제로 변경 진행 -->
-        <ImageView
-            android:layout_width="401dp"
-            android:layout_height="397dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:setImage="@{R.drawable.login_select_view_image}"
-            app:layout_constraintTop_toTopOf="parent"
-            setDefaultImage="@{0}"
-            android:adjustViewBounds="true"
-            tools:background="@drawable/login_select_view_image"
-            app:layout_constraintBottom_toTopOf="@+id/linear_btn_part"/>
-
-        <LinearLayout
-            android:id="@+id/linear_btn_part"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_main_login_select"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
-            android:background="@color/COLOR_GRAY_50"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toBottomOf="parent">
+            android:layout_height="match_parent"
+            android:background="@color/COLOR_GRAY_50">
 
-            <TextView
-                style="@style/buttonTranStyle"
-                android:id="@+id/relative_email_login"
+            <!-- TODO 사이즈 강제로 변경 진행 -->
+            <ImageView
+                setDefaultImage="@{0}"
+                android:layout_width="401dp"
+                android:layout_height="397dp"
+                android:adjustViewBounds="true"
+                app:layout_constraintBottom_toTopOf="@+id/linear_btn_part"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:setImage="@{R.drawable.login_select_view_image}"
+                tools:background="@drawable/login_select_view_image" />
+
+            <LinearLayout
+                android:id="@+id/linear_btn_part"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="41dp"
-                android:layout_marginEnd="41dp"
-                android:text="이메일로 로그인"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textColor="@color/COLOR_MAIN_700"
-                android:onClick="@{()->vm.onLoginClicked()}"/>
-
-            <TextView
-                style="@style/buttonTranStyle"
-                android:id="@+id/layout_kakao_login"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="41dp"
-                android:layout_marginEnd="41dp"
-                android:text="kakao로 로그인"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:textColor="@color/COLOR_MAIN_700"
-                android:layout_marginTop="8dp"
-                android:onClick="@{()->vm.onKakaoLoginClicked()}"/>
-
-
-            <com.kakao.usermgmt.LoginButton
-                android:id="@+id/btn_kakao_login"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
-
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1sp"
-                    android:layout_centerInParent="true"
-                    android:layout_marginStart="41dp"
-                    android:layout_marginEnd="41dp"
-                    android:background="@color/COLOR_GRAY_200" />
+                android:layout_marginBottom="40dp"
+                android:background="@color/COLOR_GRAY_50"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent">
 
                 <TextView
+                    android:id="@+id/relative_email_login"
+                    style="@style/buttonTranStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="41dp"
+                    android:layout_marginEnd="41dp"
+                    android:gravity="center"
+                    android:onClick="@{()->vm.onLoginClicked()}"
+                    android:text="이메일로 로그인"
+                    android:textColor="@color/COLOR_MAIN_700" />
+
+                <TextView
+                    android:id="@+id/layout_kakao_login"
+                    style="@style/buttonTranStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="41dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="41dp"
+                    android:gravity="center"
+                    android:onClick="@{()->vm.onKakaoLoginClicked()}"
+                    android:text="kakao로 로그인"
+                    android:textColor="@color/COLOR_MAIN_700" />
+
+
+                <com.kakao.usermgmt.LoginButton
+                    android:id="@+id/btn_kakao_login"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:background="@color/COLOR_GRAY_50"
-                    android:padding="5sp"
-                    android:text="@string/LOGIN_SELECT_OR_COMMENT"
-                    android:textColor="@color/COLOR_GRAY_400"
-                    android:textSize="12sp" />
-            </RelativeLayout>
+                    android:visibility="gone" />
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1sp"
+                        android:layout_centerInParent="true"
+                        android:layout_marginStart="41dp"
+                        android:layout_marginEnd="41dp"
+                        android:background="@color/COLOR_GRAY_200" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:background="@color/COLOR_GRAY_50"
+                        android:padding="5sp"
+                        android:text="@string/LOGIN_SELECT_OR_COMMENT"
+                        android:textColor="@color/COLOR_GRAY_400"
+                        android:textSize="12sp" />
+                </RelativeLayout>
+
+
+                <TextView
+                    android:id="@+id/btn_next"
+                    style="@style/buttonBasicStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="41dp"
+                    android:layout_marginEnd="41dp"
+                    android:onClick="@{()->vm.onSignUpClicked()}"
+                    android:text="@string/LOGIN_SELECT_JOIN_COMMENT" />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_drawer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/border_top_rounded"
+            android:orientation="vertical">
 
 
             <TextView
-                android:id="@+id/btn_next"
-                style="@style/buttonBasicStyle"
+                android:id="@+id/tv_title"
+                style="@style/kor_H3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="41dp"
-                android:layout_marginEnd="41dp"
-                android:onClick="@{()->vm.onSignUpClicked()}"
-                android:text="@string/LOGIN_SELECT_JOIN_COMMENT" />
+                android:layout_marginLeft="36dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="26.5dp"
+                android:fontFamily="@font/pretendard_bold"
+                android:includeFontPadding="false"
+                android:text="소포 앱이 일하기 위해\n권한이 필요합니다"
+                android:textColor="@color/COLOR_GRAY_800" />
+
+
+            <include
+                android:id="@+id/include_permission_save"
+                layout="@layout/detail_permission_item"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="36dp"
+                android:layout_marginBottom="33dp"
+                app:content='@{"계정 정보 및 택배 데이터 보관"}'
+                app:permissionIcon="@{R.drawable.ic_permission_save}"
+                app:title='@{"저장 권한"}' />
+
+
+            <TextView
+                android:id="@+id/tv_permission_check"
+                style="@style/buttonHalfStyle"
+                android:layout_width="135dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="25dp"
+                android:background="@drawable/border_all_round_15dp"
+                android:backgroundTint="@color/COLOR_MAIN_700"
+                android:gravity="center"
+                android:paddingVertical="10sp"
+                android:text="확인"
+                android:textColor="@color/MAIN_WHITE"
+                android:textSize="20dp"
+                android:textStyle="bold" />
+
         </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 </layout>

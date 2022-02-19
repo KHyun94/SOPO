@@ -79,11 +79,11 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository): Ba
 
 
     fun recommendCarrierByWaybill(waybillNum: String) = scope.launch(Dispatchers.Default) {
-        val carrier = carrierRepository.recommendAutoCarrier(waybillNum, 1).apply {
-            if(size == 0) return@launch
-        }.first()
+//        val carrier = carrierRepository.recommendAutoCarrier(waybillNum, 1).apply {
+//            if(size == 0) return@launch
+//        }.first()
 
-        this@InputParcelViewModel.carrier.postValue(carrier)
+//        this@InputParcelViewModel.carrier.postValue(carrier)
     }
 
     fun onPasteClicked()

@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName
 import java.lang.NullPointerException
 
 enum class CarrierEnum(
-    @SerializedName("carrierCode")
+    @SerializedName("code")
     val CODE: String,
-    @SerializedName("carrierName")
+    @SerializedName("name")
     val NAME: String) {
 
     CHUNILPS("CHUNILPS", "천일택배"),

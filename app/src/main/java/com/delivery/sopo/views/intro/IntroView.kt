@@ -42,57 +42,17 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
         {
             SopoLog.d("onIntroSettingClicked(...) 호출")
 
-            isNotificationListener = isNow
-
-            val isPermissionGranted = PermissionUtil.isPermissionGranted(this@IntroView, *PermissionConst.PERMISSION_ARRAY)
-
-            if(!isPermissionGranted)
+            if(!isNow)
             {
-                SopoLog.d("기본 권한 체크 X")
-                binding.layoutMain.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
-                return
-            }
-
-            SopoLog.d("기본 권한 체크 O")
-
-            if(!isNotificationListener)
-            {
-                vm.setNavigator(NavigatorConst.TO_LOGIN_SELECT)
-                return
+                return vm.setNavigator(NavigatorConst.TO_LOGIN_SELECT)
             }
 
             launchNotificationSetting()
         }
     }
 
-    private val onPermissionResponseCallback = object: OnPermissionResponseCallback
+    fun launchNotificationSetting()
     {
-        override fun onPermissionGranted()
-        {
-            if(isNotificationListener)
-            {
-                launchNotificationSetting()
-            }
-            else
-            {
-                moveToActivityWithFinish(LoginSelectView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                finish()
-            }
-
-        }
-
-        override fun onPermissionDenied()
-        {
-            // NOT PERMISSION GRANT
-            GeneralDialog(act = this@IntroView, title = getString(R.string.DIALOG_ALARM), msg = getString(R.string.DIALOG_PERMISSION_REQ_MSG), detailMsg = null, rHandler = Pair(first = getString(R.string.DIALOG_OK), second = { dialog ->
-                dialog.dismiss()
-                finish()
-            })).show(supportFragmentManager, "permission")
-        }
-    }
-
-    fun launchNotificationSetting(){
-
         setOnActivityResultCallbackListener(object: OnActivityResultCallbackListener{
             override fun callback(activityResult: ActivityResult) {
                 val isNotificationSetting = PermissionUtil.checkNotificationListenerPermission(this@IntroView, packageName)
@@ -154,8 +114,7 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
 
         binding.viewPager.adapter = introPageAdapter
 
-        binding.indicator.createDotPanel(cnt = binding.viewPager.adapter?.count
-            ?: 0, defaultCircle = R.drawable.indicator_default_dot, selectCircle = R.drawable.indicator_select_dot, pos = 0)
+        binding.indicator.createDotPanel(cnt = binding.viewPager.adapter?.count ?: 0, defaultCircle = R.drawable.indicator_default_dot, selectCircle = R.drawable.indicator_select_dot, pos = 0)
 
         lastIndexOfPage = introPageAdapter.count - 1
     }
@@ -220,12 +179,6 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
             if(numOfPage == lastIndexOfPage) return@setOnClickListener
             binding.viewPager.currentItem = ++numOfPage
         }
-
-        binding.tvPermissionCheck.setOnClickListener {
-            binding.layoutMain.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
-            PermissionUtil.requestPermission(this, onPermissionResponseCallback)
-        }
-
     }
 }
 

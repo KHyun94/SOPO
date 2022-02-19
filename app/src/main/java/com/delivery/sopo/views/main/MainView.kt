@@ -26,6 +26,7 @@ import com.delivery.sopo.services.PowerManager
 import com.delivery.sopo.services.receivers.RefreshParcelBroadcastReceiver
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.main.MainViewModel
 import com.delivery.sopo.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
@@ -87,6 +88,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         val clipBoardData = ClipboardUtil.pasteClipboardText(context = this@MainView)
 
         clipBoardData?.let {
+            SopoLog.d("클립보드가 있습니다. [data:$it]")
             binding.layoutViewPager.currentItem = 0
             return@launch
         }

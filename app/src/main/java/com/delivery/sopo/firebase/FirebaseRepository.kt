@@ -4,7 +4,6 @@ import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
-import com.google.firebase.iid.FirebaseInstanceId
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
@@ -185,16 +184,18 @@ object FirebaseRepository: KoinComponent
     fun updateFCMToken()
     {
         SopoLog.i(msg = "updateFCMToken(...) 호출")
-        FirebaseInstanceId.getInstance().instanceId.addOnCompleteListener { task ->
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
             if(!task.isSuccessful)
             {
                 SopoLog.e("updateFCMToken(...) 실패", task.exception)
                 return@addOnCompleteListener
             }
 
+
             SopoLog.d("updateFCMToken(...) 성공")
             CoroutineScope(Dispatchers.IO).launch {
-                userRemoteRepo.updateFCMToken(task.result.token)
+                userRemoteRepo.updateFCMToken(task.result)
             }
         }
     }

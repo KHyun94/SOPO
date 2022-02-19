@@ -8,7 +8,7 @@ import com.delivery.sopo.util.CarrierUtil
 object CarrierMapper
 {
     fun entityToObject(carrierEntity: CarrierEntity): Carrier{
-        val carrierEnum = CarrierEnum.getCarrierByCode(carrierEntity.carrierCode)
+        val carrierEnum = CarrierEnum.getCarrierByCode(carrierEntity.code)
         val icons = CarrierUtil.getCarrierImages(carrierEnum)
         return Carrier(carrierEnum, icons)
     }

@@ -13,34 +13,16 @@ interface CarrierDao
     @Query("SELECT COUNT(*) FROM CARRIER")
     fun getAllCnt() : Int
 
-    @Query("SELECT * FROM CARRIER WHERE carrierName = :name")
+    @Query("SELECT * FROM CARRIER WHERE name = :name")
     fun getWithName(name : String) : List<CarrierEntity>
 
-    @Query("SELECT * FROM CARRIER WHERE carrierCode = :code")
+    @Query("SELECT * FROM CARRIER WHERE code = :code")
     fun getWithCode(code : String) : CarrierEntity?
 
-    @Query("SELECT * FROM CARRIER WHERE min <= :len AND max >= :len ORDER BY priority DESC LIMIT :cnt")
-    fun getWithLen(len:Int, cnt : Int) : List<CarrierEntity?>
+    @Query("SELECT * FROM CARRIER WHERE code = :code")
+    fun getCarrierEntityWithCode(code: String) : CarrierEntity
 
-    @Query("SELECT * FROM CARRIER WHERE min <= :len AND max >= :len AND carrierName != :param1 ORDER BY priority DESC LIMIT :cnt")
-    fun getWithLenAndCondition1(len:Int, param1:String, cnt : Int) : List<CarrierEntity?>
-
-    @Query("SELECT * FROM CARRIER WHERE min <= :len AND max >= :len AND carrierName != :param1 AND carrierName != :param2 ORDER BY priority DESC LIMIT :cnt")
-    fun getWithLenAndCondition2(len:Int, param1:String, param2:String, cnt : Int) : List<CarrierEntity?>
-
-    @Query("SELECT * FROM CARRIER WHERE NOT( min <= :len AND max >= :len) ORDER BY priority DESC LIMIT :cnt")
-    fun getWithoutLen(len:Int, cnt : Int) : List<CarrierEntity?>
-
-    @Query("SELECT * FROM CARRIER WHERE NOT( min <= :len AND max >= :len) AND carrierName != :param1 ORDER BY priority DESC LIMIT :cnt")
-    fun getWithoutLenAndCondition1(len:Int, param1:String, cnt : Int) : List<CarrierEntity?>
-
-    @Query("SELECT * FROM CARRIER WHERE NOT( min <= :len AND max >= :len) AND carrierName != :param1 AND carrierName != :param2 ORDER BY priority DESC LIMIT :cnt")
-    fun getWithoutLenAndCondition2(len:Int, param1:String, param2:String, cnt : Int) : List<CarrierEntity?>
-
-    @Query("SELECT * FROM CARRIER WHERE carrierCode = :carrierCode")
-    fun getCarrierEntityWithCode(carrierCode: String) : CarrierEntity
-
-    @Query("SELECT * FROM CARRIER WHERE carrierName LIKE :name")
+    @Query("SELECT * FROM CARRIER WHERE name LIKE :name")
     fun getWithPartName(name : String) : List<CarrierEntity>
 
     @Insert(onConflict = REPLACE)
