@@ -1,5 +1,6 @@
 package com.delivery.sopo.views.login
 
+import android.app.Activity
 import android.content.Intent
 import android.view.Gravity
 import android.view.View
@@ -19,6 +20,8 @@ import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.models.EmailAuthDTO
 import com.delivery.sopo.models.base.BaseView
+import com.delivery.sopo.models.base.OnActivityResultCallbackListener
+import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.util.ui_util.TextInputUtil
@@ -100,48 +103,84 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
             }.show()
         })
 
-        vm.result.observe(this@ResetPasswordView, Observer { result ->
-
-            if(!result.result)
-            {
-                GeneralDialog(this, "오류", ResponseCode.UNKNOWN_ERROR.MSG,
-                              ResponseCode.UNKNOWN_ERROR.CODE, Pair("네", null)).show(
-                    supportFragmentManager, "DIALOG")
-                return@Observer
-            }
-
-            when(vm.resetType.value)
+        vm.resetType.observe(this){
+            when(it)
             {
                 0 ->
                 {
-                    if(result.data !is EmailAuthDTO)
-                    {
-                        GeneralDialog(this, "오류", "", result.code?.CODE, Pair("네", null)).show(
-                            supportFragmentManager, "DIALOG")
-                        return@Observer
-                    }
 
-                    val data: EmailAuthDTO = result.data
-
-                    val intent = Intent(this@ResetPasswordView, LockScreenView::class.java).apply {
-                        putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD)
-                        putExtra("PIN_NUM", data.code)
-                    }
-
-                    activityResultLauncher?.launch(intent)
                 }
                 1 ->
                 {
-                    vm.resetType.postValue(2)
+                    setOnActivityResultCallbackListener(object: OnActivityResultCallbackListener
+                                                        {
+                        override fun callback(activityResult: ActivityResult) {
+                            if(activityResult.resultCode == Activity.RESULT_CANCELED)
+                            {
+                                SopoLog.d("캔슬")
+                                return
+                            }
+
+                            SopoLog.d("완료 ")
+                            return
+                        }
+                    })
+
+                    val intent = Intent(this@ResetPasswordView, LockScreenView::class.java).apply {
+                        putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD)
+                    }
+
+                    activityResultLauncher?.launch(intent)
                 }
                 2 ->
                 {
                     updateUIForComplete()
                 }
             }
+        }
 
-
-        })
+//        vm.result.observe(this@ResetPasswordView, Observer { result ->
+//
+//            if(!result.result)
+//            {
+//                GeneralDialog(this, "오류", ResponseCode.UNKNOWN_ERROR.MSG,
+//                              ResponseCode.UNKNOWN_ERROR.CODE, Pair("네", null)).show(
+//                    supportFragmentManager, "DIALOG")
+//                return@Observer
+//            }
+//
+//            when(vm.resetType.value)
+//            {
+//                0 ->
+//                {
+//                    if(result.data !is EmailAuthDTO)
+//                    {
+//                        GeneralDialog(this, "오류", "", result.code?.CODE, Pair("네", null)).show(
+//                            supportFragmentManager, "DIALOG")
+//                        return@Observer
+//                    }
+//
+//                    val data: EmailAuthDTO = result.data
+//
+//                    val intent = Intent(this@ResetPasswordView, LockScreenView::class.java).apply {
+//                        putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD)
+//                        putExtra("PIN_NUM", data.code)
+//                    }
+//
+//                    activityResultLauncher?.launch(intent)
+//                }
+//                1 ->
+//                {
+//                    vm.resetType.postValue(2)
+//                }
+//                2 ->
+//                {
+//                    updateUIForComplete()
+//                }
+//            }
+//
+//
+//        })
 
         vm.email.observe(this@ResetPasswordView, Observer { email ->
 

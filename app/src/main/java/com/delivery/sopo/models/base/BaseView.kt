@@ -75,12 +75,13 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         networkStatusMonitor.enable()
         networkStatusMonitor.initNetworkCheck()
 
+        activityResultLauncher = getActivityResultLauncher { onActivityResultCallbackListener.callback(it) }
+
         onAfterBinding()
         setObserve()
 
-        activityResultLauncher = getActivityResultLauncher { onActivityResultCallbackListener.callback(it) }
-    }
 
+    }
 
     private fun bindView(activity: FragmentActivity): T
     {

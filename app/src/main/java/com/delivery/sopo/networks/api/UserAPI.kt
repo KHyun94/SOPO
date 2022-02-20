@@ -46,7 +46,7 @@ interface UserAPI
     @Headers("Accept: application/json")
     suspend fun requestEmailForAuth(
         @Query("email") email: String
-    ) : Response<APIResult<EmailAuthDTO?>>
+    ) : Response<APIResult<String>>
 
     /**
      * 비밀번호 리셋

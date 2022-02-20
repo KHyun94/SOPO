@@ -46,7 +46,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
     val result: LiveData<ResponseResult<*>>
         get() = _result
 
-    lateinit var emailAuthInfo: EmailAuthDTO
+    lateinit var token: String
 
     var jwtTokenForReset: String? = null
 
@@ -66,9 +66,12 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
     fun onSendEmailClicked(v: View) = checkEventStatus(checkNetwork = true) {
         SopoLog.i("onSendEmailClicked() 호출")
 
+        startLoading()
+
         validity.forEach { (k, v) ->
             if(!v)
             {
+                stopLoading()
                 return@checkEventStatus _invalidity.postValue(Pair(k, v))
             }
         }
@@ -81,16 +84,18 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
                 {
                     0 ->
                     {
-                        emailAuthInfo = requestEmailForAuth(email = email.value?.toString() ?: "")
-                        SopoLog.d("Email Auth Info [data:${emailAuthInfo.toString()}]")
+                        token = requestEmailForAuth(email = email.value?.toString() ?: "")
+                        SopoLog.d("Auth JWT Token [data:${token.toString()}]")
+                        resetType.postValue(1)
+                        stopLoading()
                     }
                     1 ->
                     {
-                        val passwordResetDTO = PasswordResetDTO(jwtTokenForReset
-                                                                    ?: "", email.value.toString(), password.value.toString())
+                        val passwordResetDTO = PasswordResetDTO(token, email.value.toString(), password.value.toString())
 
                         val res = userRemoteRepo.requestPasswordForReset(passwordResetDTO = passwordResetDTO)
 
+                        resetType.postValue(2)
 //                        _result.postValue(res)
                     }
                     2 ->
@@ -109,7 +114,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         }
     }
 
-    private suspend fun requestEmailForAuth(email: String): EmailAuthDTO
+    private suspend fun requestEmailForAuth(email: String): String
     {
         SopoLog.i("requestEmailForAuth(...) 호출")
         return userRemoteRepo.requestEmailForAuth(email = email)
@@ -118,9 +123,9 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
     private suspend fun requestPasswordForReset(email: String) = withContext(Dispatchers.IO) {
         try
         {
-            val autoInfo = userRemoteRepo.requestEmailForAuth(email = email)
-            SopoLog.d("Email Auth Info [data:${autoInfo.toString()}]")
-            return@withContext autoInfo
+            val token = userRemoteRepo.requestEmailForAuth(email = email)
+            SopoLog.d("Email Auth Info [data:${token}]")
+            return@withContext token
         }
         catch(e: Exception)
         {

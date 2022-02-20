@@ -133,7 +133,7 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
         }
     }
 
-    suspend fun requestEmailForAuth(email: String): EmailAuthDTO
+    suspend fun requestEmailForAuth(email: String): String
     {
         val requestEmailForAuth = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, UserAPI::class.java).requestEmailForAuth(email = email)
 

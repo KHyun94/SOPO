@@ -63,12 +63,12 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
 
     private val _currentPage = MutableLiveData<Int>()
     val currentPage: LiveData<Int>
-    get() = _currentPage
+        get() = _currentPage
 
     override fun onBeforeBinding()
     {
         PowerManager.checkWhiteList(this)
-        checkAppPassword()
+
     }
 
     override fun onAfterBinding()
@@ -76,6 +76,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         setViewPager()
         setTabLayout()
         checkInitializedTab()
+        checkAppPassword()
     }
 
     override fun setObserve()
@@ -122,17 +123,17 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         runBlocking(Dispatchers.Default) { appPasswordRepo.get() } ?: return
 
         setOnActivityResultCallbackListener(object: OnActivityResultCallbackListener
-                                            {
-                                                override fun callback(activityResult: ActivityResult)
-                                                {
-                                                    if(activityResult.resultCode == Activity.RESULT_CANCELED)
-                                                    {
-                                                        finishAffinity()
-                                                        return
-                                                    }
-                                                }
+        {
+            override fun callback(activityResult: ActivityResult)
+            {
+                if(activityResult.resultCode == Activity.RESULT_CANCELED)
+                {
+                    finishAffinity()
+                    return
+                }
+            }
 
-                                            })
+        })
 
         val intent = Intent(this@MainView, LockScreenView::class.java).apply {
             putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.VERIFY)
@@ -167,7 +168,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         {
             override fun onTabSelected(tab: TabLayout.Tab?)
             {
-                _currentPage.postValue(tab?.position?:0)
+                _currentPage.postValue(tab?.position ?: 0)
 
                 when(tab?.position)
                 {
@@ -242,8 +243,8 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         }
     }
 
-    private fun setTabIcon(tab: TabLayout.Tab,
-                           @DrawableRes iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
+    private fun setTabIcon(tab: TabLayout.Tab, @DrawableRes
+    iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
     {
         val tabBinding =
             ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))

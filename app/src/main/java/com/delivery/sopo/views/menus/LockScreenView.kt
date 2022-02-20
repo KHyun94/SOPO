@@ -83,7 +83,7 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
             else binding.tvResendMail.visibility = View.GONE
         }
 
-        vm.lockNum.observe(this@LockScreenView, Observer { lockNum ->
+        vm.lockNum.observe(this@LockScreenView) { lockNum ->
             val scope = CoroutineScope(Dispatchers.Main)
 
             when(lockNum.length)
@@ -135,7 +135,7 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
                     }
                 }
             }
-        })
+        }
 
         vm.verifyType.observe(this@LockScreenView, Observer {
             SopoLog.d("Verify Type Observe [data:$it]")
@@ -169,7 +169,9 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
                 }
                 LockStatusConst.AUTH.CONFIRM_STATUS ->
                 {
-                    val intent = Intent().apply { putExtra("JWT_TOKEN", vm.jwtToken) }
+                    val intent = Intent().apply {
+                        putExtra("JWT_TOKEN", vm.jwtToken)
+                    }
                     setResult(Activity.RESULT_OK, intent)
                     finish()
                 }

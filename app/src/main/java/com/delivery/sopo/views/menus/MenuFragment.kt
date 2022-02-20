@@ -51,7 +51,7 @@ class MenuFragment: BaseFragment<FragmentMenuBinding, MenuViewModel>()
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
-        vm.menu.observe(this, Observer { code ->
+        vm.menu.observe(this) { code ->
             SopoLog.d("move to code[${code}]")
             when(code)
             {
@@ -88,7 +88,7 @@ class MenuFragment: BaseFragment<FragmentMenuBinding, MenuViewModel>()
             }
 
             FragmentManager.move(parentView, TabCode.MY_MENU_SUB, MenuMainFragment.viewId)
-        })
+        }
     }
 
     companion object

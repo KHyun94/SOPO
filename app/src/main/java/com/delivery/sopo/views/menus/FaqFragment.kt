@@ -28,6 +28,8 @@ class FaqFragment: BaseFragment<FragmentFaqBinding, FaqViewModel>(){
     {
         super.setBeforeBinding()
 
+        SopoLog.d("FAQFAQ")
+
         useCommonBackPressListener(isUseCommon = true)
 
         onSOPOBackPressedListener = object: OnSOPOBackPressEvent(true)
@@ -35,7 +37,6 @@ class FaqFragment: BaseFragment<FragmentFaqBinding, FaqViewModel>(){
             override fun onBackPressed()
             {
                 super.onBackPressed()
-                SopoLog.d("TEST Back")
                 TabCode.MY_MENU_MAIN.FRAGMENT = MenuFragment.newInstance()
                 FragmentManager.move(requireActivity(), TabCode.MY_MENU_MAIN, MenuMainFragment.viewId)
             }
@@ -49,7 +50,6 @@ class FaqFragment: BaseFragment<FragmentFaqBinding, FaqViewModel>(){
         activity ?: return
         parentView.currentPage.observe(this) {
             if(it != 2) return@observe
-            SopoLog.d("TEST Back re")
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
     }
@@ -82,6 +82,6 @@ class FaqFragment: BaseFragment<FragmentFaqBinding, FaqViewModel>(){
     }
 
     companion object{
-        fun newInstance() = AppInfoFragment()
+        fun newInstance() = FaqFragment()
     }
 }
