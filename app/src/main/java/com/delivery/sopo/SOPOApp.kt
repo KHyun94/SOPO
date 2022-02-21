@@ -71,8 +71,6 @@ class SOPOApp: Application()
             RoomActivate.initializeCarrierInfoIntoDB()
         }
 
-        SopoLog.d("TESTTEST -> ${userLocalRepository.getTopic()}")
-
         FirebaseRepository.subscribedToTopic(17, 0).start()
     }
 

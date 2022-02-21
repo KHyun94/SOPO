@@ -48,7 +48,7 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
     init
     {
         pagingManagement = PagingManagement(0, "", true)
-        getRemoteCompletedMonth()
+        getRemoteCompletedMonth().start()
     }
 
     fun changeCompletedParcelHistoryDate(year: String)
@@ -58,7 +58,7 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
         updateMonthsSelector(year)
     }
 
-    fun getRemoteCompletedMonth() = scope.launch {
+    fun getRemoteCompletedMonth() = scope.async {
         try
         {
             getCompletedMonthUseCase.invoke()

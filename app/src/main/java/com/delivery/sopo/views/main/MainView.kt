@@ -8,9 +8,11 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.R
+import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
@@ -53,6 +55,8 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     lateinit var tab2ndBinding: ItemMainTabBinding
     lateinit var tab3rdBinding: ItemMainTabBinding
 
+    private var inquiryTabIcon: Pair<Int, Int> = Pair(R.drawable.ic_activate_inquiry, R.drawable.ic_inactivate_inquiry)
+
     private val baseFragments =
         arrayListOf(RegisterMainFragment(), InquiryMainFragment(), MenuMainFragment())
 
@@ -77,6 +81,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         setTabLayout()
         checkInitializedTab()
         checkAppPassword()
+
     }
 
     override fun setObserve()
@@ -173,7 +178,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
                 when(tab?.position)
                 {
                     NavigatorConst.REGISTER_TAB -> activateTab(tab1stBinding, R.drawable.ic_activate_register)
-                    NavigatorConst.INQUIRY_TAB -> activateTab(tab2ndBinding, R.drawable.ic_activate_inquiry)
+                    NavigatorConst.INQUIRY_TAB -> activateTab(tab2ndBinding, inquiryTabIcon.first)
                     NavigatorConst.MY_MENU_TAB -> activateTab(tab3rdBinding, R.drawable.ic_activate_menu)
                 }
 
@@ -184,7 +189,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
                 when(tab?.position)
                 {
                     NavigatorConst.REGISTER_TAB -> inactivateTab(tab1stBinding, R.drawable.ic_inactivate_register)
-                    NavigatorConst.INQUIRY_TAB -> inactivateTab(tab2ndBinding, R.drawable.ic_inactivate_inquiry)
+                    NavigatorConst.INQUIRY_TAB -> inactivateTab(tab2ndBinding, inquiryTabIcon.second)
                     NavigatorConst.MY_MENU_TAB -> inactivateTab(tab3rdBinding, R.drawable.ic_inactivate_menu)
                 }
             }
@@ -275,8 +280,27 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         binding.layoutMainTab.getTabAt(0)?.view?.visibility = View.GONE
         binding.layoutMainTab.getTabAt(1)?.view?.visibility = View.GONE
         binding.layoutMainTab.getTabAt(2)?.view?.visibility = View.GONE
+    }
 
+    override fun onChangeTab(tab: TabCode?)
+    {
+        inquiryTabIcon = if(tab == TabCode.INQUIRY_ONGOING || tab == TabCode.INQUIRY_COMPLETE)
+        {
+            Pair(R.drawable.ic_bttn_arrow_up, R.drawable.ic_bttn_arrow_up_inactive)
+        }
+        else
+        {
+            Pair(R.drawable.ic_activate_inquiry, R.drawable.ic_inactivate_inquiry)
+        }
 
+        if(currentPage.value == TabCode.secondTab)
+        {
+            tab2ndBinding.ivTab.background = ContextCompat.getDrawable(this,inquiryTabIcon.first)
+        }
+        else
+        {
+            tab2ndBinding.ivTab.background = ContextCompat.getDrawable(this,inquiryTabIcon.second)
+        }
     }
 
     override fun onMoveToPage(page: Int)

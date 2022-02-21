@@ -25,6 +25,7 @@ import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomSnackBar
+import com.delivery.sopo.util.ui_util.ZoomOutPageTransformer
 import com.delivery.sopo.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.views.adapter.ViewPagerAdapter
@@ -171,6 +172,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
 
         viewPager.apply {
             this.adapter = adapter
+            setPageTransformer(ZoomOutPageTransformer())
             offscreenPageLimit = 2
         }
     }

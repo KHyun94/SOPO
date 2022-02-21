@@ -91,7 +91,6 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
                 NavigatorConst.TO_LOGIN_SELECT ->
                 {
                     moveToActivityWithFinish(LoginSelectView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    finish()
                 }
             }
 

@@ -127,14 +127,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
             else binding.linearNoItem.visibility = View.GONE
 
-            SopoLog.d("+++++++++++++++++++++++++++++++++")
-
-            list.forEach{
-                SopoLog.d("택배 : ${it.parcelResponse.toString()}")
-            }
-
-            SopoLog.d("+++++++++++++++++++++++++++++++++")
-
             soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
             registeredParcelAdapter.separateDeliveryListByStatus(list)
 
@@ -249,6 +241,18 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             Toast.makeText(requireContext(), "5초 후에 다시 새로고침을 시도해주세요.", Toast.LENGTH_LONG).show()
 
             binding.swipeLayoutMainOngoing.isRefreshing = false
+        }
+
+        binding.nestedSvMainOngoingInquiry.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+
+            if(scrollY > 0)
+            {
+                onPageSelectListener.onChangeTab(TabCode.INQUIRY_ONGOING)
+            }
+            else
+            {
+                onPageSelectListener.onChangeTab(null)
+            }
         }
     }
 

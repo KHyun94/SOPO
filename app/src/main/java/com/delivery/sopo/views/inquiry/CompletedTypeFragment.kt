@@ -1,6 +1,7 @@
 package com.delivery.sopo.views.inquiry
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Typeface
 import android.view.*
 import android.widget.*
@@ -16,6 +17,7 @@ import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.databinding.FragmentCompletedTypeBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.*
+import com.delivery.sopo.interfaces.OnPageSelectListener
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
@@ -48,6 +50,15 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
 
     private val parentView: MainView by lazy { activity as MainView }
 
+    private lateinit var onPageSelectListener: OnPageSelectListener
+
+    private var scrollStatus: ScrollStatusEnum = ScrollStatusEnum.TOP
+
+    private fun setOnMainBridgeListener(context: Context)
+    {
+        onPageSelectListener = context as OnPageSelectListener
+    }
+
     override fun setBeforeBinding()
     {
         super.setBeforeBinding()
@@ -66,6 +77,8 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
                 exit()
             }
         }
+
+        setOnMainBridgeListener(context = requireContext())
     }
 
     override fun setAfterBinding()
@@ -101,7 +114,9 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
 
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity()) { list ->
-            completedParcelAdapter.notifyChanged(list)
+
+            val mock = list + list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list
+            completedParcelAdapter.notifyChanged(mock.toMutableList())
         }
 
         // 배송완료 화면에서 표출 가능한 년월 리스트
@@ -255,8 +270,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         val onGlobalLayoutListener = object: ViewTreeObserver.OnGlobalLayoutListener
         {
             override fun onGlobalLayout()
-            {
-                // 'year spinner'높이 수치만큼 'month sector'의 상단 공백을 생성
+            { // 'year spinner'높이 수치만큼 'month sector'의 상단 공백을 생성
                 val yearSpinnerHeight: Int = binding.linearMainYearSpinner.height
 
                 (binding.linearMainMonthSelector.layoutParams as FrameLayout.LayoutParams).apply {
@@ -397,20 +411,51 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
 
         // 배송완료 리스트의 마지막 행까지 내려갔다면 다음 데이터를 요청한다(페이징)
 
+        binding.nestSvMainCompleted.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+
+            SopoLog.d("nestScroll")
+
+            if(scrollY > 0)
+            {
+                onPageSelectListener.onChangeTab(TabCode.INQUIRY_COMPLETE)
+            }
+            else
+            {
+                onPageSelectListener.onChangeTab(null)
+            }
+        }
+
         val onScrollListener = object: RecyclerView.OnScrollListener()
         {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val lastVisibleItemPosition =
+                    (recyclerView.layoutManager as LinearLayoutManager)
+                        .findLastCompletelyVisibleItemPosition()
+                val itemTotalCount = recyclerView.adapter?.itemCount?.minus(1)
+
+                if (lastVisibleItemPosition != itemTotalCount) {
+                    // 이벤트 발생!!
+                    SopoLog.d("마지막 아이템 ")
+                }
+            }
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
             {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                val isEndOfList = !recyclerView.canScrollVertically(1)
+                val scrollY = binding.recyclerviewCompleteParcel.scrollY
 
-                if(!isEndOfList) return
+                SopoLog.d("recyclerview Scroll [newState:$newState | scrollY:$scrollY | computer:${binding.recyclerviewCompleteParcel.computeVerticalScrollOffset()}]")
 
-                val searchDate =
-                    vm.selectedDate.value?.replace("년 ", "")?.replace("월", "") ?: return
 
-                vm.refreshCompleteParcelsByDate(inquiryDate = searchDate)
+//                val isEndOfList = !recyclerView.canScrollVertically(1)
+//
+//                if(!isEndOfList) return
+//
+//                val searchDate =
+//                    vm.selectedDate.value?.replace("년 ", "")?.replace("월", "") ?: return
+//
+//                vm.refreshCompleteParcelsByDate(inquiryDate = searchDate)
             }
         }
 

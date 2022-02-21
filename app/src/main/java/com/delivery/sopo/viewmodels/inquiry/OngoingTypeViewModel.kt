@@ -18,10 +18,7 @@ import com.delivery.sopo.usecase.parcel.remote.RefreshParcelUseCase
 import com.delivery.sopo.usecase.parcel.remote.SyncParcelsUseCase
 import com.delivery.sopo.usecase.parcel.remote.UpdateParcelAliasUseCase
 import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.util.*
 
 class OngoingTypeViewModel(
@@ -48,7 +45,7 @@ class OngoingTypeViewModel(
 
     init
     {
-        syncParcelsByOngoing()
+        syncParcelsByOngoing().start()
     }
 
     /**
@@ -56,7 +53,7 @@ class OngoingTypeViewModel(
      */
 
     // 서버에서 DB 내 택배 정보를 가져와서 로컬 내 디비 정보를 갱신
-    fun syncParcelsByOngoing() = scope.launch(Dispatchers.IO) {
+    fun syncParcelsByOngoing() = scope.async(Dispatchers.IO) {
         try
         {
             syncParcelsUseCase.invoke()

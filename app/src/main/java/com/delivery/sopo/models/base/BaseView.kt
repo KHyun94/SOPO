@@ -79,8 +79,6 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
         onAfterBinding()
         setObserve()
-
-
     }
 
     private fun bindView(activity: FragmentActivity): T

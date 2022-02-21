@@ -68,24 +68,11 @@
             android:name=".views.menus.SignOutView"
             android:windowSoftInputMode="adjustPan" />
 
-<!--        <activity-->
-<!--            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.VIEW" />-->
-<!--                <category android:name="android.intent.category.DEFAULT" />-->
-<!--                <category android:name="android.intent.category.BROWSABLE" />-->
-
-<!--                &lt;!&ndash; Redirect URI: "kakao{NATIVE_APP_KEY}://oauth" &ndash;&gt;-->
-<!--                <data android:host="oauth"-->
-<!--                    android:scheme="kakao{NATIVE_APP_KEY}" />-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
-
         <service
             android:name=".services.FirebaseService"
             android:enabled="true"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
@@ -132,7 +119,6 @@
             <intent-filter>
                 <action android:name="com.delivery.sopo.ACTION_COMPLETED_REGISTER_PARCEL" />
             </intent-filter>
-
         </receiver>
 
     </application>
