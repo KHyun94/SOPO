@@ -12,8 +12,12 @@ import kotlinx.coroutines.withContext
 
 class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelManagementRepository
 {
-    fun getUpdatableParcelIds(): LiveData<List<Int>>{
+    fun getUpdatableParcelIds(): List<Int>{
         return appDatabase.parcelManagementDao().getUpdatableParcelIds()
+    }
+
+    fun getUpdatableParcelIdsAsLiveData(): LiveData<List<Int>>{
+        return appDatabase.parcelManagementDao().getUpdatableParcelIdsAsLiveData()
     }
 
     override fun getIsDeleteCntLiveData(): LiveData<Int> {

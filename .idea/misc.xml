@@ -21,6 +21,7 @@
         <entry key="app/src/main/res/layout/fragment_setting.xml" value="0.11977438619774386" />
         <entry key="app/src/main/res/layout/general_dialog.xml" value="0.17725409836065573" />
         <entry key="app/src/main/res/layout/include_no_item.xml" value="0.103125" />
+        <entry key="app/src/main/res/layout/inquiry_list_complete_item.xml" value="0.1" />
         <entry key="app/src/main/res/layout/inquiry_list_ongoing_item.xml" value="0.1" />
         <entry key="app/src/main/res/layout/intro_view.xml" value="0.17725409836065573" />
         <entry key="app/src/main/res/layout/lock_screen_view.xml" value="0.30245666503906254" />

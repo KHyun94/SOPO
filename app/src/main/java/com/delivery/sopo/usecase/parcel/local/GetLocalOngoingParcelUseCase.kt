@@ -20,11 +20,11 @@ class GetOngoingParcelByLocalUseCase(private val parcelRepo: ParcelRepository)
 //                sortByDeliveryStatus(it).toMutableList()
             }
 
-            Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
-                val list: MutableList<InquiryListItem> =
-                    ParcelMapper.parcelListToInquiryItemList(parcelList)
-
-            }
+//            Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
+//                val list: MutableList<InquiryListItem> =
+//                    ParcelMapper.parcelListToInquiryItemList(parcelList)
+//
+//            }
         }
 
     private fun sortByDeliveryStatus(list: List<InquiryListItem>): List<InquiryListItem>

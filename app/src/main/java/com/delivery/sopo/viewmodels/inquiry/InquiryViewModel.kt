@@ -11,9 +11,7 @@ import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.usecase.parcel.remote.DeleteParcelsUseCase
-import com.delivery.sopo.usecase.parcel.remote.RefreshParcelsUseCase
-import com.delivery.sopo.usecase.parcel.remote.SyncParcelsUseCase
+import com.delivery.sopo.usecase.parcel.remote.*
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +19,8 @@ import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
 
 class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
+                       private val updateParcelsUseCase: UpdateParcelsUseCase,
+                       private val getCompletedMonthUseCase: GetCompletedMonthUseCase,
                        private val refreshParcelsUseCase: RefreshParcelsUseCase,
                        private val deleteParcelsUseCase: DeleteParcelsUseCase,
                        private val parcelManagementRepo: ParcelManagementRepoImpl): BaseViewModel()
@@ -39,7 +39,21 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
         get() = _isConfirmDelete
 
     val updatableParcelIds: LiveData<List<Int>>
-        get() = parcelManagementRepo.getUpdatableParcelIds()
+        get() = parcelManagementRepo.getUpdatableParcelIdsAsLiveData()
+
+    fun onUpdateParcels(parcelIds: List<Int>)=scope.launch{
+        try
+        {
+            updateParcelsUseCase.invoke(parcelIds)
+            getCompletedMonthUseCase.invoke()
+        }
+        catch(e: Exception)
+        {
+            exceptionHandler.handleException(coroutineContext, e)
+        }
+
+
+    }
 
     fun onSyncParcels()= scope.launch{
         try

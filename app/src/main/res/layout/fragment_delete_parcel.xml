@@ -80,7 +80,7 @@
                 android:id="@+id/tv_selected_items_num"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/spoqa_han_sans_neo_bold"
+                android:fontFamily="@font/pretendard_bold"
                 android:letterSpacing="-0.04"
                 android:text="@{vm.cntOfSelectedItemForDelete + `` ?? ``}"
                 android:textColor="@color/MAIN_RED"

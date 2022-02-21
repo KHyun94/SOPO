@@ -115,12 +115,17 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity()) { list ->
 
-            val mock = list + list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list
-            completedParcelAdapter.notifyChanged(mock.toMutableList())
+
+
+            completedParcelAdapter.separateDeliveryListByStatus((list).toMutableList())
+//            val mock = list + list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list
+//            completedParcelAdapter.notifyChanged(list.toMutableList())
         }
 
         // 배송완료 화면에서 표출 가능한 년월 리스트
         vm.histories.observe(requireActivity()) { dates ->
+
+            vm.initPage()
 
             if(dates.isEmpty())
             {

@@ -248,6 +248,15 @@ class ParcelRepository(
         return result.data?.data ?: throw NullPointerException()
     }
 
+    suspend fun getRemoteParcelById(parcelIds: List<Int>): List<Parcel.Common>
+    {
+        val getRemoteParcel =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .getParcels(parcelId = parcelIds.joinToString(", "))
+        val result = apiCall { getRemoteParcel }
+        return result.data?.data ?: throw NullPointerException()
+    }
+
     override suspend fun getRemoteParcelByOngoing(): List<Parcel.Common>
     {
         val getRemoteParcelByOngoing =

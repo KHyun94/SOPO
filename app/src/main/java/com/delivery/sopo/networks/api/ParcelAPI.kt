@@ -30,6 +30,9 @@ interface ParcelAPI
     @Headers("Accept: application/json")
     suspend fun getParcel(@Path("parcelId") parcelId: Int): Response<APIResult<Parcel.Common>>
 
+    @GET("/api/v1/sopo-parcel/delivery/parcels")
+    @Headers("Accept: application/json")
+    suspend fun getParcels(@Query("parcel") parcelId: String): Response<APIResult<List<Parcel.Common>>>
 
     @GET("api/v1/sopo-parcel/delivery/parcels/months")
     @Headers("Accept: application/json")

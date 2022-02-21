@@ -2,10 +2,7 @@ package com.delivery.sopo.viewmodels.inquiry
 
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatCheckBox
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
@@ -58,8 +55,10 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
 
     private var _ongoingList =
         Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
-            val list: MutableList<InquiryListItem> =
-                ParcelMapper.parcelListToInquiryItemList(parcelList)
+            val list = parcelList.map {  parcel ->
+                InquiryListItem(parcel, false)
+            }
+
             sortByDeliveryStatus(list).toMutableList()
         }
     val ongoingList: LiveData<MutableList<InquiryListItem>>
@@ -184,8 +183,8 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
     }
 
     fun refreshCompleteParcelsByDate(inquiryDate: String) = CoroutineScope(Dispatchers.IO).launch {
-        val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map {
-            InquiryListItem(it, false)
+        val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map { parcel ->
+            InquiryListItem(parcel, false)
         }.toMutableList()
 
         _completeList.postValue(list)

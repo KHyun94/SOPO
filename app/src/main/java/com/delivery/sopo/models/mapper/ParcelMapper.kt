@@ -106,7 +106,7 @@ object ParcelMapper
         return parcelEntity.parcelId
     }
 
-    fun parcelListToInquiryItemList(list: List<Parcel.Common>): MutableList<InquiryListItem>{
-        return list.map { InquiryListItem(parcelResponse = it) }.toMutableList()
-    }
+//    fun parcelListToInquiryItemList(list: List<Parcel.Common>): MutableList<InquiryListItem>{
+//        return list.map { InquiryListItem(parcelResponse = it) }.toMutableList()
+//    }
 }

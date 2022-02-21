@@ -323,7 +323,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                 itemBinding.ivIndicator.layoutParams = ivParam
 
                 val typeface =
-                    ResourcesCompat.getFont(requireContext(), R.font.spoqa_han_sans_neo_bold)
+                    ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
 
                 itemBinding.tvStatus.typeface = typeface
             }

@@ -25,7 +25,7 @@ object OtherUtil
         SopoLog.d("Text >>> ${text}")
         val builder = SpannableStringBuilder(v.text, 0, text.length-1)
         builder.setSpan(StyleSpan(R.font.roboto_bold), 0, 3, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        builder.setSpan(StyleSpan(R.font.spoqa_han_sans_neo_bold), 3, 6, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        builder.setSpan(StyleSpan(R.font.pretendard_bold), 3, 6, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         builder.setSpan(StyleSpan(R.font.spoqa_han_sans_neo_light), 6, text.length-1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         v.text = builder
     }

@@ -3,7 +3,6 @@ package com.delivery.sopo.models.inquiry
 import androidx.databinding.BaseObservable
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.R
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.parcel.Parcel
@@ -19,24 +18,16 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
 {
     private val parcelRepository: ParcelRepository by inject()
 
-    val iconResource = MutableLiveData<Int>()
-    val backgroundColorResource = MutableLiveData<Int>()
-    val statusText = MutableLiveData<String>()
-    val statusTextColorResource = MutableLiveData<Int>()
+    val iconResource: Int by lazy { getParcelStatusIcon() }
+    val backgroundColorResource: Int by lazy { getParcelStatusBackgroundColor() }
+    val statusText: String by lazy { getParcelStatus() }
+    val statusTextColorResource: Int by lazy { getParcelStatusColor() }
 
     val isUnidentified = ObservableField<Boolean>().apply {
         checkIsUnidentified {
             set(it)
             notifyChange()
         }
-    }
-
-    init
-    {
-        iconResource.postValue(getStatusBackgroundResource())
-        backgroundColorResource.postValue(getStatusBackgroundColorResource())
-        statusText.postValue(getStatusText())
-        statusTextColorResource.postValue(getStatusTextColorResource())
     }
 
     private val completeTimeDate: Calendar by lazy {
@@ -139,7 +130,7 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
         }
     }
 
-    private fun getStatusText(): String
+    private fun getParcelStatus(): String
     {
         return when(parcelResponse.deliveryStatus)
         {
@@ -157,7 +148,7 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
         }
     }
 
-    private fun getStatusTextColorResource(): Int
+    private fun getParcelStatusColor(): Int
     {
         return when(parcelResponse.deliveryStatus)
         {
@@ -175,7 +166,7 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
         }
     }
 
-    private fun getStatusBackgroundColorResource(): Int
+    private fun getParcelStatusBackgroundColor(): Int
     {
         return when(parcelResponse.deliveryStatus)
         {
@@ -193,7 +184,7 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
         }
     }
 
-    private fun getStatusBackgroundResource(): Int
+    private fun getParcelStatusIcon(): Int
     {
         return when(parcelResponse.deliveryStatus)
         {

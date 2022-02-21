@@ -2,9 +2,11 @@ package com.delivery.sopo.viewmodels.inquiry
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
+import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.SelectItem
@@ -44,6 +46,10 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
     val selectedDate = MutableLiveData<String>()
 
     private var pagingManagement: PagingManagement
+
+    fun initPage(){
+        pagingManagement = PagingManagement(0, "", true)
+    }
 
     init
     {
@@ -108,8 +114,8 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
     }
 
     fun refreshCompleteParcelsByDate(inquiryDate: String) = CoroutineScope(Dispatchers.IO).launch {
-        val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map {
-            InquiryListItem(it, false)
+        val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map { parcel ->
+            InquiryListItem(parcel, false)
         }.toMutableList()
 
         _completeList.postValue(list)

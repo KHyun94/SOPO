@@ -16,7 +16,7 @@
         android:text="기다리는 택배가 있나요?"
         android:textSize="23.66dp"
         android:textColor="@color/COLOR_GRAY_900"
-        android:fontFamily="@font/spoqa_han_sans_neo_bold"
+        android:fontFamily="@font/pretendard_bold"
         android:layout_marginBottom="16dp"
         />
 

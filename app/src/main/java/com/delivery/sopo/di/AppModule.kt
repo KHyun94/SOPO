@@ -47,6 +47,7 @@ val appModule = module {
     single { OAuthLocalRepository(get()) }
 
     factory { SyncParcelsUseCase(get()) }
+    factory { UpdateParcelsUseCase(get()) }
     factory { RegisterParcelUseCase(get()) }
     factory { GetCompleteParcelUseCase(get()) }
     factory { GetCompletedMonthUseCase(get(), get())}
@@ -73,7 +74,7 @@ val appModule = module {
     viewModel { FaqViewModel() }
     viewModel { AppInfoViewModel() }
     viewModel { NotDisturbTimeViewModel() }
-    viewModel { InquiryViewModel(get(), get(), get(), get()) }
+    viewModel { InquiryViewModel(get(), get(), get(), get(),get(), get()) }
     viewModel { DeleteParcelViewModel(get(), get(), get(), get(), get()) }
     viewModel { MenuViewModel(get()) }
     viewModel { AccountManagerViewModel(get()) }
