@@ -167,7 +167,6 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
 
         binding.layoutViewPager.adapter = adapter
         binding.layoutViewPager.offscreenPageLimit = 2
-        binding.layoutViewPager.reduceSensitive()
 
         val onTabSelectedListener = object: TabLayout.OnTabSelectedListener
         {

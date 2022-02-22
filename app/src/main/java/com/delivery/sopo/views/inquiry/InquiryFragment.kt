@@ -18,6 +18,7 @@ import com.delivery.sopo.databinding.FragmentInquiryBinding
 import com.delivery.sopo.databinding.ItemInquiryTabBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.*
+import com.delivery.sopo.extensions.reduceSensitive
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.mapper.MenuMapper
@@ -174,6 +175,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
             setPageTransformer(ZoomOutPageTransformer())
             offscreenPageLimit = 2
         }
+
+        viewPager.reduceSensitive()
     }
 
     private fun connectTabAndViewPager(viewPager: ViewPager2, tabLayout: TabLayout)

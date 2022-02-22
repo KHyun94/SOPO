@@ -76,6 +76,7 @@ class FirebaseService: FirebaseMessagingService()
             {
                 SopoLog.i("Push 종류:앱 어웨이큰")
                 SOPOWorkManager.updateWorkManager(applicationContext)
+                NotificationImpl.awakenDeviceNoti(remoteMessage, this, Intent())
             }
         }
 

@@ -115,11 +115,9 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity()) { list ->
 
-
-
             completedParcelAdapter.separateDeliveryListByStatus((list).toMutableList())
 //            val mock = list + list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list
-//            completedParcelAdapter.notifyChanged(list.toMutableList())
+//            completedParcelAdapter.notifyChanged(mock.toMutableList())
         }
 
         // 배송완료 화면에서 표출 가능한 년월 리스트
@@ -432,31 +430,18 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
 
         val onScrollListener = object: RecyclerView.OnScrollListener()
         {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val lastVisibleItemPosition =
-                    (recyclerView.layoutManager as LinearLayoutManager)
-                        .findLastCompletelyVisibleItemPosition()
-                val itemTotalCount = recyclerView.adapter?.itemCount?.minus(1)
-
-                if (lastVisibleItemPosition != itemTotalCount) {
-                    // 이벤트 발생!!
-                    SopoLog.d("마지막 아이템 ")
-                }
-            }
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
             {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                val scrollY = binding.recyclerviewCompleteParcel.scrollY
+                if (!binding.recyclerviewCompleteParcel.canScrollVertically(-1)) {
+                    SopoLog.d("TESTTAG Top of list");
+                } else if (!binding.recyclerviewCompleteParcel.canScrollVertically(1)) {
+                    SopoLog.d("TESTTAG End of list");
+                } else {
+                    SopoLog.d("TESTTAG idle");
+                }
 
-                SopoLog.d("recyclerview Scroll [newState:$newState | scrollY:$scrollY | computer:${binding.recyclerviewCompleteParcel.computeVerticalScrollOffset()}]")
-
-
-//                val isEndOfList = !recyclerView.canScrollVertically(1)
-//
-//                if(!isEndOfList) return
-//
 //                val searchDate =
 //                    vm.selectedDate.value?.replace("년 ", "")?.replace("월", "") ?: return
 //
@@ -465,6 +450,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         }
 
         binding.recyclerviewCompleteParcel.addOnScrollListener(onScrollListener)
+
     }
 
     private fun setDefaultMonthSelector()
