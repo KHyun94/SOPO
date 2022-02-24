@@ -179,10 +179,19 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
     {
         super.onResume()
 
-        CoroutineScope(Dispatchers.Default).launch {
-            val clipBoardData = ClipboardUtil.pasteClipboardText(context = requireContext())
-            vm.clipboardText.postValue(clipBoardData)
+        try
+        {
+            CoroutineScope(Dispatchers.Default).launch {
+                ClipboardUtil.pasteClipboardText(context = requireContext())?.let {
+                    SopoLog.d("클립보드 데이터 $it")
+                    vm.clipboardText.postValue(it)
+                }
+            }
+        }catch(e: Exception){
+            e.printStackTrace()
         }
+
+
     }
 
     companion object

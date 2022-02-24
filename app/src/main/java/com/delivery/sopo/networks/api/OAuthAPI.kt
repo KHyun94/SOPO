@@ -31,27 +31,11 @@ interface OAuthAPI
     @FormUrlEncoded
     @POST("api/v1/sopo-auth/oauth/token")
     @Headers("Accept: application/json")
-    suspend fun requestRefreshTokenInOAuth(
-            @Field("grant_type") grantType: String,
-            @Field("user_id") email: String,
-            @Field("refresh_token") refreshToken : String
-    ): Response<Any>
-
-    /**
-     * 기간이 만료된 OAuth Access Token을 갱신
-     * @param grantType
-     * @param email
-     * @param refreshToken
-     * @param deviceInfo
-     * @return OAuthResult
-     * @throws APIResult<String>
-     * */
-    @FormUrlEncoded
-    @POST("api/v1/sopo-auth/oauth/token")
-    @Headers("Accept: application/json")
-    fun requestRefreshOAuthToken(
+    suspend fun requestRefreshOAuthToken(
         @Field("grant_type") grantType: String,
         @Field("user_id") email: String,
         @Field("refresh_token") refreshToken : String
     ): Response<Any>
+
+
 }

@@ -26,6 +26,7 @@ import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
@@ -61,14 +62,20 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
     {
         SopoLog.d("refreshOAuthToken() 호출 ")
         val oAuthToken: OAuthToken = oAuthLocalRepo.get(userLocalRepo.getUserId())
+        SopoLog.d("base o-auth token [email:${userLocalRepo.getUserId()}] [data:${oAuthToken.toString()}] ")
+        val refreshOAuthToken = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, OAuthAPI::class.java).requestRefreshOAuthToken(grantType = "refresh_token", email = userLocalRepo.getUserId(), refreshToken = oAuthToken.refreshToken)
 
-        val refreshOAuthToken = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, OAuthAPI::class.java).requestRefreshOAuthToken(grantType = "refresh_token", email = userLocalRepo.getUserId(), refreshToken = oAuthToken.refreshToken)
+        SopoLog.d("o-auth refresh 요청 전 ${refreshOAuthToken.errorBody()?.toString()}")
 
         val result = apiCall { refreshOAuthToken }
+
+        SopoLog.d("before deserialize o-auth token [data:${result.data?.toString()}] ")
 
         val type = object: TypeToken<OAuthToken>() {}.type
         val reader = gson.toJson(result.data)
         val oAuthInfo = gson.fromJson<OAuthToken>(reader, type)
+
+        SopoLog.d("after deserialize o-auth token [data:${oAuthInfo.toString()}] ")
 
         withContext(Dispatchers.Default) {
             SopoLog.d("결과 ${oAuthInfo.toString()}")

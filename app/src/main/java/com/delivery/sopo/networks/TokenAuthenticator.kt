@@ -9,6 +9,7 @@ import okhttp3.Response
 import okhttp3.Route
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+
 // TODO 401 에러 발생 이슈 있음
 class TokenAuthenticator: Authenticator, KoinComponent
 {
@@ -24,17 +25,22 @@ class TokenAuthenticator: Authenticator, KoinComponent
             return null
         }
 
-        SopoLog.d(msg = "authenticate call() - 401")
+        SopoLog.d(msg = "authenticate call() - 401 ${response.message}")
 
-        return runBlocking {
-            try
-            {
-                with(userRemoteRepo.refreshOAuthToken()){ getRetrofitWithoutAuthenticator(response, accessToken) }
+
+
+        return try
+        {
+            val refreshOAuthToken = runBlocking(Dispatchers.IO) {
+                userRemoteRepo.refreshOAuthToken()
             }
-            catch(e:Exception)
-            {
-                null
-            }
+
+            getRetrofitWithoutAuthenticator(response, refreshOAuthToken.accessToken)
+        }
+        catch(e: Exception)
+        {
+            SopoLog.e("2차 오류 / ${e.toString()}", e)
+            null
         }
     }
 
