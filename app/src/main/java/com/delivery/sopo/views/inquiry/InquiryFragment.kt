@@ -72,7 +72,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
         setOnTabSelectedListener()
         processReturnType()
 
-        binding.includeHeader.onRightClickListener = View.OnClickListener {
+        binding.includeHeader.onRightClickListener = OnClickListener {
             openInquiryMenu(it)
         }
     }
