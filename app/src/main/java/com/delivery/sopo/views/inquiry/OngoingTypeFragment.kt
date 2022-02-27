@@ -2,12 +2,15 @@ package com.delivery.sopo.views.inquiry
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ScrollView
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.delivery.sopo.R
@@ -27,10 +30,7 @@ import com.delivery.sopo.views.dialog.OptionalClickListener
 import com.delivery.sopo.views.dialog.OptionalDialog
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
@@ -57,7 +57,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
 
         if(scrollStatus != ScrollStatusEnum.TOP)
         {
-            Toast.makeText(requireContext(), "no Top", Toast.LENGTH_SHORT).show()
             onPageSelectListener.onChangeTab(TabCode.INQUIRY_ONGOING)
         }
         else
@@ -65,7 +64,8 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             onPageSelectListener.onChangeTab(null)
         }
 
-        parentView.tabReselectListener = object : () -> Unit {
+        parentView.tabReselectListener = object: () -> Unit
+        {
             override fun invoke()
             {
                 if(scrollStatus == ScrollStatusEnum.TOP) return
@@ -88,7 +88,9 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         {
             override fun onBackPressedInTime()
             {
-                Snackbar.make(parentView.binding.layoutMain, "온고잉 진행 한번 더 누르시면 앱이 종료됩니다.", 2000).apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }.show()
+                Snackbar.make(parentView.binding.layoutMain, "온고잉 진행 한번 더 누르시면 앱이 종료됩니다.", 2000)
+                    .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }
+                    .show()
             }
 
             override fun onBackPressedOutTime()
@@ -125,37 +127,29 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
     {
         getAdapter(InquiryItemTypeEnum.Soon).let { adapter ->
             soonArrivalParcelAdapter = adapter
-            binding.recyclerviewSoonArrival.adapter = soonArrivalParcelAdapter
-//            val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
-//            animator.supportsChangeAnimations = false
+            binding.recyclerviewSoonArrival.adapter =
+                soonArrivalParcelAdapter //            val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
+            //            animator.supportsChangeAnimations = false
         }
 
         getAdapter(InquiryItemTypeEnum.Registered).let { adapter ->
             registeredParcelAdapter = adapter
-            binding.recyclerviewRegisteredParcel.adapter = registeredParcelAdapter
-//            val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
-//            animator.supportsChangeAnimations = false
+            binding.recyclerviewRegisteredParcel.adapter =
+                registeredParcelAdapter //            val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
+            //            animator.supportsChangeAnimations = false
         }
     }
-
 
 
     override fun setObserve()
     {
         super.setObserve()
 
-        parentView.supportFragmentManager.removeOnBackStackChangedListener {
-            SopoLog.d("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            Toast.makeText(requireContext(), "프래그먼트 제거", Toast.LENGTH_SHORT).show()
-        }
-
         activity ?: return
         parentView.currentPage.observe(this) {
             if(it != 1) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
-
-
 
         vm.ongoingParcels.observe(requireActivity()) { list ->
 
@@ -190,7 +184,8 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             {
                 super.onMaintainParcelClicked(view, pos, parcelId)
 
-                val leftOptionalClickListener = object: OptionalClickListener {
+                val leftOptionalClickListener = object: OptionalClickListener
+                {
                     override fun invoke(dialog: OptionalDialog)
                     {
                         vm.deleteParcel(parcelId = parcelId)
@@ -202,20 +197,33 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                 {
                     override fun invoke(dialog: OptionalDialog)
                     {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            vm.refreshParcel(parcelId)
-                            registeredParcelAdapter.notifyItemChanged(pos)
-                        }
+                        CoroutineScope(Dispatchers.Main).async {
+                            withContext(Dispatchers.IO) { vm.refreshParcel(parcelId) }
+
+                            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+
+                                val updatedPos = registeredParcelAdapter.getList()
+                                    .indexOfFirst { it.parcelResponse.parcelId == parcelId }
+
+//                                binding.recyclerviewRegisteredParcel.adapter?.
+//                                SopoLog.d("range : ${binding.recyclerviewRegisteredParcel.computeVerticalScrollRange()}")
+//                                SopoLog.d("offset : ${binding.recyclerviewRegisteredParcel.computeVerticalScrollOffset()}")
+
+                                binding.nestedSvMainOngoingInquiry.smoothScrollTo(0, updatedPos) //
+
+                            }, 300)
+
+
+                        }.start()
 
                         dialog.dismiss()
                     }
                 }
-                val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.LEFT, titleIcon = 0, title = "이 아이템을 제거할까요?", subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.", content = """
+                val optionalDialog =
+                    OptionalDialog(optionalType = OptionalTypeEnum.LEFT, titleIcon = 0, title = "이 아이템을 제거할까요?", subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.", content = """
                     배송 상태가 2주간 확인되지 않고 있어요.
                     등록된 송장번호가 유효하지 않을지도 몰라요.
-                                """.trimIndent(),
-                               leftHandler = Pair("지울게요", second = leftOptionalClickListener),
-                               rightHandler = Pair(first = "유지할게요", second = rightOptionalClickListener))
+                                """.trimIndent(), leftHandler = Pair("지울게요", second = leftOptionalClickListener), rightHandler = Pair(first = "유지할게요", second = rightOptionalClickListener))
 
                 optionalDialog.show(requireActivity().supportFragmentManager, "")
             }
@@ -296,7 +304,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
     }
 
     // '곧 도착' 리스트의 아이템의 개수에 따른 화면세팅
-    private fun  viewSettingForSoonArrivalList(listSize: Int)
+    private fun viewSettingForSoonArrivalList(listSize: Int)
     {
         if(listSize > 0)
         {

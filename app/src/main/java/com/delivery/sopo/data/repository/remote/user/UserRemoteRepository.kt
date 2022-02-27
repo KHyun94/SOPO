@@ -10,12 +10,12 @@ import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.exceptions.APIException
-import com.delivery.sopo.models.EmailAuthDTO
-import com.delivery.sopo.models.PasswordResetDTO
+import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.ErrorResponse
 import com.delivery.sopo.models.dto.OAuthToken
+import com.delivery.sopo.models.user.ResetAuthCode
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.OAuthAPI
 import com.delivery.sopo.networks.api.UserAPI
@@ -26,7 +26,6 @@ import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
@@ -140,37 +139,23 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
         }
     }
 
-    suspend fun requestEmailForAuth(email: String): String
+    suspend fun requestSendTokenToEmail(email: String): String
     {
-        val requestEmailForAuth = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, UserAPI::class.java).requestEmailForAuth(email = email)
-
+        val requestEmailForAuth = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, UserAPI::class.java).requestSendTokenToEmail(email = email)
         val result = apiCall { requestEmailForAuth }
-
-        return result.data?.data?: throw SOPOApiException(200, ErrorResponse(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
+        return result.data?.data?: throw SOPOApiException(404, ErrorResponse(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
     }
 
-    suspend fun requestPasswordForReset(passwordResetDTO: PasswordResetDTO): ResponseResult<Unit>
+    suspend fun requestVerifyAuthToken(resetAuthCode: ResetAuthCode)
     {
-        when(val result = UserCall.requestResetPassword(passwordResetDTO = passwordResetDTO))
-        {
-            is NetworkResult.Success ->
-            {
-                val apiResult = result.data
+        val requestEmailForAuth = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, UserAPI::class.java).requestVerifyAuthToken(resetAuthCode = resetAuthCode)
+        apiCall { requestEmailForAuth }
+    }
 
-                SopoLog.d("Success to request reset password")
-
-                return ResponseResult(true, ResponseCode.SUCCESS, Unit, ResponseCode.SUCCESS.MSG)
-            }
-            is NetworkResult.Error ->
-            {
-                SopoLog.d("Fail to request reset password")
-
-                val exception = result.exception as APIException
-                val responseCode = exception.responseCode
-
-                return ResponseResult(false, responseCode, Unit, responseCode.MSG, DisplayEnum.DIALOG)
-            }
-        }
+    suspend fun requestResetPassword(resetPassword: ResetPassword)
+    {
+        val requestEmailForAuth = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, UserAPI::class.java).requestResetPassword(resetPassword = resetPassword)
+        apiCall { requestEmailForAuth }
     }
 
     suspend fun updateFCMToken(fcmToken: String)

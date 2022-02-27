@@ -114,26 +114,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         setAdapters()
         setListener()
 
-        binding.vInnerCompletedSpace.setOnTouchListener { v, event ->
-            return@setOnTouchListener binding.linearMainMonthSelector.dispatchTouchEvent(event)
-        }
 
-        binding.nestSvMainCompleted.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-
-            if(scrollY > 0)
-            {
-                scrollStatus = ScrollStatusEnum.MIDDLE
-                onPageSelectListener.onChangeTab(TabCode.INQUIRY_COMPLETE)
-            }
-            else
-            {
-                scrollStatus = ScrollStatusEnum.TOP
-                onPageSelectListener.onChangeTab(null)
-            }
-
-            if(scrollY > 0 && oldScrollY == 0) vm.isMonthClickable = false
-            else if(scrollY == 0 && oldScrollY > 0) vm.isMonthClickable = true
-        }
     }
 
 
@@ -151,9 +132,9 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity()) { list ->
 
-//            completedParcelAdapter.separateDeliveryListByStatus((list).toMutableList())
-            val mock = list + list
-            completedParcelAdapter.notifyChanged(mock.toMutableList())
+            completedParcelAdapter.separateDeliveryListByStatus((list).toMutableList())
+//            val mock = list + list+ list+ list+ list+ list+ list+ list+ list+ list+ list+ list+ list+ list
+//            completedParcelAdapter.notifyChanged(mock.toMutableList().subList(0, 10))
         }
 
         // 배송완료 화면에서 표출 가능한 년월 리스트
@@ -453,17 +434,46 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
 
         val onScrollListener = object: RecyclerView.OnScrollListener()
         {
+//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int)
+//            {
+//                super.onScrolled(recyclerView, dx, dy)
+//
+//                val lastVisibleItemPosition =  (recyclerView.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
+//
+//                val itemTotalCount = (recyclerView.adapter?.itemCount?:1) - 1
+//
+//                SopoLog.d("토탈 갯수 $itemTotalCount | $lastVisibleItemPosition")
+//
+//                if(lastVisibleItemPosition == itemTotalCount)
+//                {
+//                    SopoLog.d("마지막처럼");
+//                }
+//                else
+//                {
+//                    SopoLog.d("붐바야");
+//                }
+//
+//                if (!recyclerView.canScrollVertically(-1)) {
+//                    SopoLog.d("TESTTAG Top of list");
+//                } else
+//                    if (!recyclerView.canScrollVertically(1)) {
+//                        SopoLog.d("TESTTAG End of list");
+//                    } else {
+//                        SopoLog.d("TESTTAG idle");
+//                    }
+//            }
+
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
             {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                if (!recyclerView.canScrollVertically(-1)) {
-                    SopoLog.d("TESTTAG Top of list");
-                } else
-                    if (!recyclerView.canScrollVertically(1)) {
-                    SopoLog.d("TESTTAG End of list");
-                } else {
-                    SopoLog.d("TESTTAG idle");
+                val storedParcels = completedParcelAdapter.getListSize()
+                val hasNextPage = storedParcels > 0 && storedParcels % 10 == 0
+                val isEndOfList = !recyclerView.canScrollVertically(1)
+
+                if(isEndOfList && hasNextPage)
+                {
+                    SopoLog.d("마지막 단위 1 ")
                 }
 
 //                val searchDate =
@@ -474,6 +484,27 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         }
 
         binding.recyclerviewCompleteParcel.addOnScrollListener(onScrollListener)
+
+        binding.vInnerCompletedSpace.setOnTouchListener { v, event ->
+            return@setOnTouchListener binding.linearMainMonthSelector.dispatchTouchEvent(event)
+        }
+
+        binding.nestSvMainCompleted.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+
+            if(scrollY > 0)
+            {
+                scrollStatus = ScrollStatusEnum.MIDDLE
+                onPageSelectListener.onChangeTab(TabCode.INQUIRY_COMPLETE)
+            }
+            else
+            {
+                scrollStatus = ScrollStatusEnum.TOP
+                onPageSelectListener.onChangeTab(null)
+            }
+
+            if(scrollY > 0 && oldScrollY == 0) vm.isMonthClickable = false
+            else if(scrollY == 0 && oldScrollY > 0) vm.isMonthClickable = true
+        }
 
     }
 

@@ -36,7 +36,8 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/linear_ongoing_parent"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:descendantFocusability="blocksDescendants">
 
                 <LinearLayout
                     android:id="@+id/linear_no_item"

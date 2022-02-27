@@ -46,9 +46,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
         if(result.resultCode != RESULT_OK) return@ActivityResultCallback
 
-        result.data?.getStringExtra(JWT_TOKEN)?.also { token -> vm.jwtTokenForReset = token }
-
-        vm.resetType.postValue(1)
+//        result.data?.getStringExtra(JWT_TOKEN)?.also { token -> vm.jwtTokenForReset = token }
     }
 
     override fun onBeforeBinding()
@@ -59,26 +57,6 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
     override fun setObserve()
     {
         super.setObserve()
-
-        vm.resetType.observe(this) {
-            vm.validity.clear()
-            when(it)
-            {
-                0 ->
-                {
-                    vm.validity[InfoEnum.EMAIL] = false
-                }
-                1 ->
-                {
-                    vm.validity[InfoEnum.PASSWORD] = false
-                    updateUIForInputPassword()
-                }
-                2 ->
-                {
-                    updateUIForComplete()
-                }
-            }
-        }
 
         vm.focus.observe(this, Observer { focus ->
             val res = TextInputUtil.changeFocus(this, focus)
@@ -104,33 +82,42 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
         })
 
         vm.resetType.observe(this){
+
+            vm.validity.clear()
+
             when(it)
             {
                 0 ->
                 {
+                    setOnActivityResultCallbackListener(object: OnActivityResultCallbackListener
+                                                        {
+                                                            override fun callback(activityResult: ActivityResult) {
+                                                                if(activityResult.resultCode == Activity.RESULT_CANCELED)
+                                                                {
+                                                                    SopoLog.d("캔슬")
+                                                                    return
+                                                                }
+
+                                                                vm.resetType.postValue(1)
+                                                                SopoLog.d("완료 ")
+                                                                return
+                                                            }
+                                                        })
+
+                    val intent = Intent(this@ResetPasswordView, LockScreenView::class.java).apply {
+                        putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD)
+                        putExtra("JWT_TOKEN", vm.jwtToken)
+                        putExtra("EMAIL", vm.email.value)
+                    }
+
+                    activityResultLauncher?.launch(intent)
+
 
                 }
                 1 ->
                 {
-                    setOnActivityResultCallbackListener(object: OnActivityResultCallbackListener
-                                                        {
-                        override fun callback(activityResult: ActivityResult) {
-                            if(activityResult.resultCode == Activity.RESULT_CANCELED)
-                            {
-                                SopoLog.d("캔슬")
-                                return
-                            }
-
-                            SopoLog.d("완료 ")
-                            return
-                        }
-                    })
-
-                    val intent = Intent(this@ResetPasswordView, LockScreenView::class.java).apply {
-                        putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD)
-                    }
-
-                    activityResultLauncher?.launch(intent)
+                    vm.validity[InfoEnum.PASSWORD] = false
+                    updateUIForInputPassword()
                 }
                 2 ->
                 {

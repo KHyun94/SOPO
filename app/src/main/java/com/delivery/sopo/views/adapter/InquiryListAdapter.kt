@@ -50,6 +50,7 @@ class InquiryListAdapter(
         fun bind(item: InquiryListItem)
         {
             ongoingBinding.setVariable(BR.ongoingInquiryData, item)
+            ongoingBinding.executePendingBindings()
         }
     }
 
@@ -60,6 +61,7 @@ class InquiryListAdapter(
         fun bind(item: InquiryListItem)
         {
             completeBinding.completeInquiryData = item
+            completeBinding.executePendingBindings()
         }
     }
 

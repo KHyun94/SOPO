@@ -27,8 +27,6 @@ class TokenAuthenticator: Authenticator, KoinComponent
 
         SopoLog.d(msg = "authenticate call() - 401 ${response.message}")
 
-
-
         return try
         {
             val refreshOAuthToken = runBlocking(Dispatchers.IO) {

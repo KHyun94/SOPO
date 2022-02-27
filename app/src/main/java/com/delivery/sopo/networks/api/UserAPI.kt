@@ -1,9 +1,9 @@
 package com.delivery.sopo.networks.api
 
-import com.delivery.sopo.models.EmailAuthDTO
-import com.delivery.sopo.models.PasswordResetDTO
+import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.APIResult
+import com.delivery.sopo.models.user.ResetAuthCode
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -37,16 +37,19 @@ interface UserAPI
      * Send Email For request PIN CODE
      * @param nickname : String
      * @return Response<APIResult<String?>>
-     *
-     * 의문
-     * 1. GET?
-     * 2. parameter는 필요 없는지
      */
     @GET("/api/v1/sopo-user/password/auth-info")
     @Headers("Accept: application/json")
-    suspend fun requestEmailForAuth(
+    suspend fun requestSendTokenToEmail(
         @Query("email") email: String
     ) : Response<APIResult<String>>
+
+
+    @POST("/api/v1/sopo-user/password/auth-info/verify")
+    @Headers("Accept: application/json")
+    suspend fun requestVerifyAuthToken(
+            @Body resetAuthCode: ResetAuthCode
+    ) : Response<Unit>
 
     /**
      * 비밀번호 리셋
@@ -55,7 +58,7 @@ interface UserAPI
      */
     @POST("/api/v1/sopo-user/password/reset")
     @Headers("Accept: application/json")
-    suspend fun requestResetPassword(@Body passwordResetDTO: PasswordResetDTO) : Response<APIResult<String?>>
+    suspend fun requestResetPassword(@Body resetPassword: ResetPassword) : Response<APIResult<String?>>
 
     /**
      * 탈퇴

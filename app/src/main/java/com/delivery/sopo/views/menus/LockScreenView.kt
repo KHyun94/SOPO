@@ -24,21 +24,22 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
     override val layoutRes: Int = R.layout.lock_screen_view
     override val vm: LockScreenViewModel by viewModel()
     override val mainLayout: View by lazy { binding.constraintMainLockScreen }
-    // 정체를 몰라 건드리지를 못하겠다.
+
     private var firstCheck = false
     private var firstPassword = ""
 
     override fun receivedData(intent: Intent)
     {
-        SopoLog.i("receivedData(...) 호출")
-
-        // TODO 에러 처리
         val lockScreenStatus = intent.getSerializableExtra(IntentConst.LOCK_SCREEN) as LockScreenStatusEnum? ?: throw NullPointerException("'STATUS'가 존재하지 않습니다.")
-        val pinCode = intent.getStringExtra("PIN_NUM") ?: ""
 
-        SopoLog.d("[status:$lockScreenStatus][pinCode:$pinCode]")
+        intent.getStringExtra("EMAIL")?.run {
+            vm.email = this
+        }
 
-        vm.pinCode = pinCode
+        intent.getStringExtra("JWT_TOKEN")?.run {
+            vm.jwtToken = this
+        }
+
         vm.setLockScreenStatus(lockScreenStatus)
     }
 
@@ -49,7 +50,7 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
 
     override fun onAfterBinding()
     {
-        SopoLog.i("initUI(...) 호출")
+        super.onAfterBinding()
 
         noneOfNumberPadIsPressed()
 
@@ -78,6 +79,8 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
 
     override fun setObserve()
     {
+        super.setObserve()
+
         vm.isActivateResendMail.observe(this){ isActivityResendMail ->
             if(isActivityResendMail) binding.tvResendMail.visibility = View.VISIBLE
             else binding.tvResendMail.visibility = View.GONE
@@ -190,6 +193,19 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
         vm.error.observe(this, Observer { error ->
             Toast.makeText(this, error, Toast.LENGTH_LONG).show()
         })
+
+        vm.navigator.observe(this) {
+
+            when(it)
+            {
+                "CANCEL" ->
+                {
+
+                    setResult(Activity.RESULT_CANCELED)
+                }
+            }
+
+        }
     }
 
     private fun noneOfNumberPadIsPressed()

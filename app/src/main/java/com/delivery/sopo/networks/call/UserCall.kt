@@ -1,7 +1,7 @@
 package com.delivery.sopo.networks.call
 
 import com.delivery.sopo.enums.NetworkEnum
-import com.delivery.sopo.models.PasswordResetDTO
+import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.UserAPI
@@ -22,9 +22,9 @@ object UserCall: BaseService(), KoinComponent
         return apiCall(call = { userAPI.requestSignOut(reason) })
     }
 
-    suspend fun requestResetPassword(passwordResetDTO: PasswordResetDTO): NetworkResult<APIResult<String?>>
+    suspend fun requestResetPassword(resetPassword: ResetPassword): NetworkResult<APIResult<String?>>
     {
         userAPI = NetworkManager.setLoginMethod(NetworkEnum.EMPTY_LOGIN, UserAPI::class.java)
-        return apiCall(call = { userAPI.requestResetPassword(passwordResetDTO = passwordResetDTO) })
+        return apiCall(call = { userAPI.requestResetPassword(resetPassword = resetPassword) })
     }
 }

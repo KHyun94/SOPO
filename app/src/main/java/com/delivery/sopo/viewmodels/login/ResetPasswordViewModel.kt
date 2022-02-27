@@ -7,9 +7,7 @@ import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.models.EmailAuthDTO
-import com.delivery.sopo.models.PasswordResetDTO
-import com.delivery.sopo.models.ResponseResult
+import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
@@ -37,25 +35,19 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         get() = _focus
 
     val focusChangeCallback: FocusChangeCallback = FocusChangeCallback@{ v, hasFocus, type ->
-        SopoLog.i("${type.NAME} >>> $hasFocus")
         _focus.value = (Triple(v, hasFocus, type))
     }
 
-    // 유효성 및 통신 등의 결과 객체
-    private var _result = MutableLiveData<ResponseResult<*>>()
-    val result: LiveData<ResponseResult<*>>
-        get() = _result
+    var authToken: String = ""
 
-    lateinit var token: String
-
-    var jwtTokenForReset: String? = null
+    var jwtToken: String = ""
 
     init
     {
-//        validity[InfoEnum.EMAIL] = false
+        validity[InfoEnum.EMAIL] = false
 //        validity[InfoEnum.PASSWORD] = true
 
-        resetType.value = 0
+//        resetType.value = 0
     }
 
     fun onClearClicked()
@@ -76,54 +68,49 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
             }
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
-
-            try
+        when(resetType.value)
+        {
+            1 ->
             {
-                when(resetType.value)
-                {
-                    0 ->
-                    {
-                        token = requestEmailForAuth(email = email.value?.toString() ?: "")
-                        SopoLog.d("Auth JWT Token [data:${token.toString()}]")
-                        resetType.postValue(1)
-                        stopLoading()
-                    }
-                    1 ->
-                    {
-                        val passwordResetDTO = PasswordResetDTO(token, email.value.toString(), password.value.toString())
+                //                        val passwordResetDTO = ResetPassword(token, email.value.toString(), password.value.toString())
 
-                        val res = userRemoteRepo.requestPasswordForReset(passwordResetDTO = passwordResetDTO)
+                //                        val res = userRemoteRepo.requestResetPassword(resetPassword = passwordResetDTO)
 
-                        resetType.postValue(2)
-//                        _result.postValue(res)
-                    }
-                    2 ->
-                    {
-                        _navigator.postValue(NavigatorConst.TO_COMPLETE)
-                    }
-                }
+                resetType.postValue(2)
+                //                        _result.postValue(res)
             }
-            catch(e: Exception)
+            2 ->
             {
-                SopoLog.e("에러 ", e)
-                exceptionHandler.handleException(coroutineContext, e)
+                _navigator.postValue(NavigatorConst.TO_COMPLETE)
             }
+            else ->
+            {
+                requestSendTokenToEmail(email = email.value?.toString() ?: "")
 
-
+            }
         }
     }
 
-    private suspend fun requestEmailForAuth(email: String): String
-    {
+    private fun requestSendTokenToEmail(email: String) = scope.launch(Dispatchers.IO) {
         SopoLog.i("requestEmailForAuth(...) 호출")
-        return userRemoteRepo.requestEmailForAuth(email = email)
+        try
+        {
+            jwtToken = userRemoteRepo.requestSendTokenToEmail(email = email)
+            resetType.postValue(0)
+            stopLoading()
+        }
+        catch(e: Exception)
+        {
+            SopoLog.e("에러 ", e)
+            exceptionHandler.handleException(coroutineContext, e)
+        }
+
     }
 
     private suspend fun requestPasswordForReset(email: String) = withContext(Dispatchers.IO) {
         try
         {
-            val token = userRemoteRepo.requestEmailForAuth(email = email)
+            val token = userRemoteRepo.requestSendTokenToEmail(email = email)
             SopoLog.d("Email Auth Info [data:${token}]")
             return@withContext token
         }

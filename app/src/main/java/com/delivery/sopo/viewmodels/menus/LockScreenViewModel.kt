@@ -4,13 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.consts.LockStatusConst
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.database.room.dto.AppPasswordDTO
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.asSHA256
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
+import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.exceptions.UserExceptionHandler
+import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
+import com.delivery.sopo.models.user.ResetAuthCode
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.*
@@ -21,6 +26,10 @@ class LockScreenViewModel(
         private val appPasswordRepo: AppPasswordRepository
         ): BaseViewModel()
 {
+    private val _navigator = MutableLiveData<String>()
+    val navigator: LiveData<String>
+        get() = _navigator
+
     // SET,VERIFY,RESET: 현재 입력 받고 있는 비밀번호
     var lockNum = MutableLiveData<String>()
 
@@ -34,16 +43,50 @@ class LockScreenViewModel(
     val error: LiveData<String>
         get() = _error
 
-    override val exceptionHandler: CoroutineExceptionHandler
-        get() = CoroutineExceptionHandler { coroutineContext, throwable ->  }
+    private val onSOPOErrorCallback = object : OnSOPOErrorCallback
+    {
+
+        override fun onFailure(error: ErrorEnum)
+        {
+            stopLoading()
+            cntOfAuthError++
+            verifyType.postValue(LockStatusConst.AUTH.FAILURE_STATUS)
+//            when(error)
+//            {
+//                ErrorEnum.VALIDATION ->
+//                {
+//                }
+//                else ->
+//                {
+//                }
+//            }
+        }
+
+        override fun onInternalServerError(error: ErrorEnum)
+        {
+            super.onInternalServerError(error)
+            stopLoading()
+            postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+        }
+
+        override fun onAuthError(error: ErrorEnum)
+        {
+            super.onAuthError(error)
+            stopLoading()
+            postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+        }
+    }
+
+    override val exceptionHandler: CoroutineExceptionHandler by lazy {
+        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
+    }
 
     // 1차 인증 번호 저장
     private var primaryAuthNumber = ""
 
     // AUTH:
-    // 비밀번호 재설정 상태에서만 사용하는 프로퍼티
-    var pinCode: String
-    var jwtToken: String
+    var email: String = ""
+    var jwtToken: String = ""
     var isActivateResendMail = MutableLiveData<Boolean>()
 
     var isButtonEnabled = MutableLiveData<Boolean>()
@@ -53,11 +96,7 @@ class LockScreenViewModel(
 
     init
     {
-        pinCode = ""
-        jwtToken = ""
-
         lockNum.value = ""
-
         verifyType.value = ""
     }
 
@@ -85,10 +124,15 @@ class LockScreenViewModel(
         }
 
     // AUTH: 생성된 'PIN CODE'와 입력받은 'PIN CODE'를 비교
-    private fun verifyPasswordByEmail(inputPassword: String): Boolean
-    {
-        if(pinCode == "") return false
-        return pinCode == inputPassword
+    private fun verifyPasswordByEmail(authCode: String) = scope.launch(Dispatchers.IO) {
+        try
+        {
+            userRemoteRepo.requestVerifyAuthToken(ResetAuthCode(jwtToken, authCode, email))
+        }
+        catch(e: Exception)
+        {
+            exceptionHandler.handleException(coroutineContext, e)
+        }
     }
 
     // 버튼 누르기 이벤트
@@ -165,13 +209,16 @@ class LockScreenViewModel(
     {
         SopoLog.i("verifyAuthPinNumber(...) 호출 [data:$lockNum]")
 
+        startLoading()
+
         // 입력 데이터 초기화
         this.lockNum.postValue("")
 
-        viewModelScope.launch(Dispatchers.IO) {
-            val isVerify = verifyPasswordByEmail(lockNum)
+        verifyPasswordByEmail(lockNum)
 
-            if(!isVerify) cntOfAuthError++
+        stopLoading()
+
+        viewModelScope.launch(Dispatchers.IO) {
 
             SopoLog.d("틀린 횟수:$cntOfAuthError")
 
@@ -179,11 +226,12 @@ class LockScreenViewModel(
             {
                 SopoLog.d("틀린 횟수가 2회임")
                 isActivateResendMail.postValue(true)
+                return@launch
             }
 
-            if(!isVerify) return@launch verifyType.postValue(LockStatusConst.AUTH.FAILURE_STATUS)
+//            if(!isVerify) return@launch
 
-            verifyType.postValue(LockStatusConst.AUTH.CONFIRM_STATUS)
+//            verifyType.postValue(LockStatusConst.AUTH.CONFIRM_STATUS)
         }
     }
 
@@ -206,38 +254,6 @@ class LockScreenViewModel(
 
         isButtonEnabled.postValue(false)
 
-        CoroutineScope(Dispatchers.Main).launch {
-
-
-          /*  val result:ResponseResult<EmailAuthDTO?> = withContext(Dispatchers.IO) {
-                userRemoteRepo.requestEmailForAuth(userLocalRepo.getUserId())
-            }
-
-            // 인증 메일 보내기 실패했을 때, UI 상 재시도 요청
-            if(!result.result)
-            {
-                isButtonEnabled.postValue(true)
-
-                _error.postValue("인증 메일을 다시 보내는데 실패했습니다.")
-                return@launch
-            }
-
-
-            if(result.data == null)
-            {
-                isButtonEnabled.postValue(true)
-
-                _error.postValue("인증 메일을 다시 보내는데 실패했습니다.")
-                return@launch
-            }
-
-            cntOfAuthError = 0
-
-            pinCode = result.data.code
-            jwtToken = result.data.token
-
-            isActivateResendMail.postValue(false)
-            isButtonEnabled.postValue(true)*/
-        }
+        _navigator.postValue("CANCEL")
     }
 }
