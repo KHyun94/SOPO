@@ -13,6 +13,4 @@ data class CarrierPatternEntity(@PrimaryKey(autoGenerate = true)
                                 @ColumnInfo(name = "length", typeAffinity = ColumnInfo.INTEGER)
                                 val length: Int,
                                 @ColumnInfo(name = "header", typeAffinity = ColumnInfo.TEXT)
-                                val header: String,
-                                @ColumnInfo(name="priority", typeAffinity = ColumnInfo.REAL)
-                                val priority: Float)
+                                val header: String)

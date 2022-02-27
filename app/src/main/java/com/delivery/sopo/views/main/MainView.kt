@@ -22,6 +22,7 @@ import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.reduceSensitive
 import com.delivery.sopo.interfaces.OnPageSelectListener
+import com.delivery.sopo.interfaces.OnTapReselectListener
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.models.base.OnActivityResultCallbackListener
 import com.delivery.sopo.services.PowerManager
@@ -64,15 +65,15 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
 
     private val refreshParcelBroadcastReceiver = RefreshParcelBroadcastReceiver()
 
-
     private val _currentPage = MutableLiveData<Int>()
     val currentPage: LiveData<Int>
         get() = _currentPage
 
+    lateinit var tabReselectListener: () -> Unit
+
     override fun onBeforeBinding()
     {
         PowerManager.checkWhiteList(this)
-
     }
 
     override fun onAfterBinding()
@@ -81,7 +82,6 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         setTabLayout()
         checkInitializedTab()
         checkAppPassword()
-
     }
 
     override fun setObserve()
@@ -195,26 +195,29 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
 
             override fun onTabReselected(tab: TabLayout.Tab?)
             {
+
+
                 when(tab?.position ?: return)
                 {
                     NavigatorConst.REGISTER_TAB ->
                     {
-                        FragmentManager.remove(activity = this@MainView)
-                        TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(null, 0)
-
-                        FragmentManager.move(activity = this@MainView, code = TabCode.REGISTER_INPUT, viewId = RegisterMainFragment.viewId)
+//                        FragmentManager.remove(activity = this@MainView)
+//                        TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(null, 0)
+//
+//                        FragmentManager.move(activity = this@MainView, code = TabCode.REGISTER_INPUT, viewId = RegisterMainFragment.viewId)
                     }
                     NavigatorConst.INQUIRY_TAB ->
                     {
-                        FragmentManager.remove(activity = this@MainView)
-                        TabCode.INQUIRY.FRAGMENT = InquiryFragment.newInstance(returnType = 0)
-                        FragmentManager.move(activity = this@MainView, code = TabCode.INQUIRY, viewId = InquiryMainFragment.viewId)
+                        tabReselectListener.invoke()
+//                        FragmentManager.remove(activity = this@MainView)
+//                        TabCode.INQUIRY.FRAGMENT = InquiryFragment.newInstance(returnType = 0)
+//                        FragmentManager.move(activity = this@MainView, code = TabCode.INQUIRY, viewId = InquiryMainFragment.viewId)
                     }
                     NavigatorConst.MY_MENU_TAB ->
                     {
-                        FragmentManager.move(activity = this@MainView, code = TabCode.MY_MENU_MAIN.apply {
-                            FRAGMENT = MenuFragment.newInstance()
-                        }, viewId = MenuMainFragment.viewId)
+//                        FragmentManager.move(activity = this@MainView, code = TabCode.MY_MENU_MAIN.apply {
+//                            FRAGMENT = MenuFragment.newInstance()
+//                        }, viewId = MenuMainFragment.viewId)
                     }
                 }
             }

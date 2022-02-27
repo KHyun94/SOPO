@@ -3,16 +3,15 @@ package com.delivery.sopo
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.data.database.room.RoomActivate
 import com.delivery.sopo.di.appModule
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
-import com.delivery.sopo.util.SopoLog
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.kakao.auth.KakaoSDK
@@ -22,13 +21,13 @@ import kotlinx.coroutines.*
 import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
-import java.util.*
 
 class SOPOApp: Application()
 {
     val userLocalRepository: UserLocalRepository by inject()
     val parcelStatusRepo: ParcelManagementRepoImpl by inject()
     val parcelRepository: ParcelRepository by inject()
+    val carrierRepository: CarrierRepository by inject()
     val OAuthLocalRepository: OAuthLocalRepository by inject()
 
     var kakaoSDKAdapter: KakaoSDKAdapter? = null
@@ -68,7 +67,7 @@ class SOPOApp: Application()
         }
 
         CoroutineScope(Dispatchers.Default).launch {
-            RoomActivate.initializeCarrierInfoIntoDB()
+            carrierRepository.initCarrierDB()
         }
 
         FirebaseRepository.subscribedToTopic(17, 0).start()

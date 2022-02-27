@@ -1,8 +1,12 @@
 package com.delivery.sopo.views.inquiry
 
 import android.content.Context
-import android.view.*
-import android.widget.*
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ScrollView
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -23,15 +27,13 @@ import com.delivery.sopo.views.dialog.OptionalClickListener
 import com.delivery.sopo.views.dialog.OptionalDialog
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
-/**
- * 1. 택배가 없을 때, '등록하시겠습니까?' 버튼 활성화
- * 1-1. '등록하시겠습니까?' 버튼 클릭 시 0번째(등록) 페이지로 이동
- * 2.
- */
 class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeViewModel>()
 {
     private lateinit var onPageSelectListener: OnPageSelectListener
@@ -46,6 +48,32 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
     private var refreshDelay: Boolean = false
 
     private val parentView: MainView by lazy { activity as MainView }
+
+    private var scrollStatus: ScrollStatusEnum = ScrollStatusEnum.TOP
+
+    override fun onResume()
+    {
+        super.onResume()
+
+        if(scrollStatus != ScrollStatusEnum.TOP)
+        {
+            Toast.makeText(requireContext(), "no Top", Toast.LENGTH_SHORT).show()
+            onPageSelectListener.onChangeTab(TabCode.INQUIRY_ONGOING)
+        }
+        else
+        {
+            onPageSelectListener.onChangeTab(null)
+        }
+
+        parentView.tabReselectListener = object : () -> Unit {
+            override fun invoke()
+            {
+                if(scrollStatus == ScrollStatusEnum.TOP) return
+                binding.nestedSvMainOngoingInquiry.scrollTo(0, 0)
+            }
+        }
+
+    }
 
     private fun setOnMainBridgeListener(context: Context)
     {
@@ -116,11 +144,18 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
     {
         super.setObserve()
 
+        parentView.supportFragmentManager.removeOnBackStackChangedListener {
+            SopoLog.d("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            Toast.makeText(requireContext(), "프래그먼트 제거", Toast.LENGTH_SHORT).show()
+        }
+
         activity ?: return
         parentView.currentPage.observe(this) {
             if(it != 1) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
+
+
 
         vm.ongoingParcels.observe(requireActivity()) { list ->
 
@@ -191,6 +226,8 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
 
                 TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelId)
                 FragmentManager.add(requireActivity(), TabCode.INQUIRY_DETAIL, InquiryMainFragment.viewId)
+
+                onPageSelectListener.onChangeTab(null)
             }
 
             override fun onUpdateParcelAliasClicked(view: View, type: InquiryStatusEnum, parcelId: Int)
@@ -247,10 +284,12 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
 
             if(scrollY > 0)
             {
+                scrollStatus = ScrollStatusEnum.MIDDLE
                 onPageSelectListener.onChangeTab(TabCode.INQUIRY_ONGOING)
             }
             else
             {
+                scrollStatus = ScrollStatusEnum.TOP
                 onPageSelectListener.onChangeTab(null)
             }
         }

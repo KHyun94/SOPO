@@ -1,69 +1,87 @@
 package com.delivery.sopo.data.repository.local.repository
 
 import com.delivery.sopo.data.database.room.AppDatabase
+import com.delivery.sopo.data.database.room.dto.CarrierPattern
 import com.delivery.sopo.data.database.room.entity.CarrierEntity
+import com.delivery.sopo.data.database.room.entity.CarrierPatternEntity
 import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.mapper.CarrierMapper
+import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class CarrierRepository(private val appDB: AppDatabase)
 {
-    fun recommendCarrier(waybillNum: String){
+    suspend fun initCarrierDB() = withContext(Dispatchers.Default) {
+
+        if(getAllCnt() > 0) return@withContext
+
+        val list = CarrierEnum.values().map { carrier ->
+            CarrierEntity(carrierNo = carrier.NO, name = carrier.NAME, code = carrier.CODE)
+        }
+
+        insert(list)
+
+        initCarrierPatternDB()
+    }
+
+    suspend fun initCarrierPatternDB() = withContext(Dispatchers.Default) {
+
+        val list = arrayOf (
+            CarrierPatternEntity(0, CarrierEnum.CHUNILPS.NO, 11, "1"),
+            CarrierPatternEntity(0, CarrierEnum.LOGEN.NO, 11, "3"),
+            CarrierPatternEntity(0, CarrierEnum.LOGEN.NO, 11, "9"),
+
+            CarrierPatternEntity(0, CarrierEnum.LOTTE.NO, 12, "2"),
+            CarrierPatternEntity(0, CarrierEnum.LOTTE.NO, 12, "40"),
+            CarrierPatternEntity(0, CarrierEnum.CJ_LOGISTICS.NO, 12, "35"),
+            CarrierPatternEntity(0, CarrierEnum.CJ_LOGISTICS.NO, 12, "36"),
+            CarrierPatternEntity(0, CarrierEnum.CJ_LOGISTICS.NO, 12, "38"),
+            CarrierPatternEntity(0, CarrierEnum.CJ_LOGISTICS.NO, 12, "55"),
+            CarrierPatternEntity(0, CarrierEnum.CJ_LOGISTICS.NO, 12, "6"),
+            CarrierPatternEntity(0, CarrierEnum.CVSNET.NO, 12, "363"),
+            CarrierPatternEntity(0, CarrierEnum.HANJINS.NO, 12, "42"),
+            CarrierPatternEntity(0, CarrierEnum.HANJINS.NO, 12, "51"),
+            CarrierPatternEntity(0, CarrierEnum.KDEXP.NO, 12, "9"),
+
+            CarrierPatternEntity(0, CarrierEnum.EPOST.NO, 13, "6"),
+            CarrierPatternEntity(0, CarrierEnum.KDEXP.NO, 13, "31"),
+            CarrierPatternEntity(0, CarrierEnum.KDEXP.NO, 13, "4"))
+
+        appDB.carrierPatternDao().insert(*list)
+    }
+
+    suspend fun recommendCarrier(waybillNum: String):CarrierEnum?{
 
         val len: Int = waybillNum.length
         val header: String = waybillNum.substring(0, 4)
 
-        val compareHeaders = when(len)
+        val carriers = withContext(Dispatchers.Default){
+            appDB.carrierPatternDao().getByLength(length = len)
+        }.sortedByDescending { it.header }
+
+        if(carriers.isEmpty())
         {
-            11 ->
-            {
-                listOf(
-                    Pair(CarrierEnum.CHUNILPS, "1"),
-                    Pair(CarrierEnum.LOGEN, "3"),
-                    Pair(CarrierEnum.LOGEN, "9")
-                )
-            }
-            12 ->
-            {
-                listOf(
-                    Pair(CarrierEnum.LOTTE, "2"),
-                    Pair(CarrierEnum.LOTTE, "40"),
-                    Pair(CarrierEnum.CJ_LOGISTICS, "35"),
-                    Pair(CarrierEnum.CJ_LOGISTICS, "36"),
-                    Pair(CarrierEnum.CJ_LOGISTICS, "38"),
-                    Pair(CarrierEnum.CJ_LOGISTICS, "55"),
-                    Pair(CarrierEnum.CJ_LOGISTICS, "6"),
-                    Pair(CarrierEnum.CVSNET, "363"),
-                    Pair(CarrierEnum.HANJINS, "42"),
-                    Pair(CarrierEnum.HANJINS, "51"),
-                    Pair(CarrierEnum.KDEXP, "9"),
-                )
-            }
-            13 ->
-            {
-                listOf(
-                    Pair(CarrierEnum.EPOST, "6"),
-                    Pair(CarrierEnum.KDEXP, "4"),
-                    Pair(CarrierEnum.KDEXP, "31")
-                )
-            }
-            else ->
-            {
-                throw NullPointerException()
-            }
+            return null
         }
 
-        val recommendCarrier = selectSpecificCarrier(header, compareHeaders)
+        val recommendCarrier = selectSpecificCarrier(header, carriers) ?: CarrierEnum.getCarrierByCode(carriers.first().code)
+
+        SopoLog.d("추천 택배사 ${recommendCarrier.toString()}")
+
+        return recommendCarrier
+    }
+
+    suspend fun getCarriersByLength(){
 
     }
 
-    fun selectSpecificCarrier(inputHeader: String, compareHeader: List<Pair<CarrierEnum, String>>): CarrierEnum?
+    fun selectSpecificCarrier(inputHeader: String, compareHeader: List<CarrierPattern>): CarrierEnum?
     {
         compareHeader.forEach {
-            val isInclude = inputHeader.startsWith(it.second)
-            if(isInclude) return it.first
+            val isInclude = inputHeader.startsWith(it.header)
+            if(isInclude) return CarrierEnum.getCarrierByCode(it.code)
         }
 
         return null

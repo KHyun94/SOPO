@@ -2,18 +2,13 @@ package com.delivery.sopo.data.database.room.dto
 
 import com.delivery.sopo.enums.CarrierEnum
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class CarrierPattern(
-        @SerializedName("carrier")
+        @SerializedName("code")
         val code: String,
         @SerializedName("length")
         val length: Int,
         @SerializedName("header")
-        val header: String,
-        @SerializedName("priority")
-        val priority: Float
-){
-        val carrierEnum: CarrierEnum by lazy {
-                CarrierEnum.getCarrierByCode(code)
-        }
-}
+        val header: String
+):Serializable

@@ -12,6 +12,7 @@ import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.base.BaseViewModel
+import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 
@@ -77,8 +78,16 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository): Ba
         _navigator.postValue(NavigatorEnum.REGISTER_CONFIRM)
     }
 
-
     fun recommendCarrierByWaybill(waybillNum: String) = scope.launch(Dispatchers.Default) {
+        val carrier = carrierRepository.recommendCarrier(waybillNum)
+
+        if(carrier == null)
+        {
+            this@InputParcelViewModel.carrier.postValue(null)
+            return@launch
+        }
+
+        this@InputParcelViewModel.carrier.postValue(CarrierMapper.enumToObject(carrier))
 //        val carrier = carrierRepository.recommendAutoCarrier(waybillNum, 1).apply {
 //            if(size == 0) return@launch
 //        }.first()

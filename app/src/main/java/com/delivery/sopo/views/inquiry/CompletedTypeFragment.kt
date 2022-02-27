@@ -7,6 +7,7 @@ import android.view.*
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +19,7 @@ import com.delivery.sopo.databinding.FragmentCompletedTypeBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.*
 import com.delivery.sopo.interfaces.OnPageSelectListener
+import com.delivery.sopo.interfaces.OnTapReselectListener
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
@@ -36,7 +38,7 @@ import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
-class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, CompletedTypeViewModel>()
+class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, CompletedTypeViewModel>(), OnTapReselectListener
 {
     override val layoutRes: Int = R.layout.fragment_completed_type
     override val vm: CompletedTypeViewModel by viewModel()
@@ -53,6 +55,30 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
     private lateinit var onPageSelectListener: OnPageSelectListener
 
     private var scrollStatus: ScrollStatusEnum = ScrollStatusEnum.TOP
+
+    override fun onResume()
+    {
+        super.onResume()
+
+        if(scrollStatus != ScrollStatusEnum.TOP)
+        {
+            onPageSelectListener.onChangeTab(TabCode.INQUIRY_COMPLETE)
+        }
+        else
+        {
+            onPageSelectListener.onChangeTab(null)
+        }
+
+        parentView.tabReselectListener = object : () -> Unit {
+            override fun invoke()
+            {
+                if(scrollStatus == ScrollStatusEnum.TOP) return
+                binding.nestSvMainCompleted.scrollTo(0, 0)
+            }
+        }
+
+
+    }
 
     private fun setOnMainBridgeListener(context: Context)
     {
@@ -93,11 +119,21 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         }
 
         binding.nestSvMainCompleted.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+
+            if(scrollY > 0)
+            {
+                scrollStatus = ScrollStatusEnum.MIDDLE
+                onPageSelectListener.onChangeTab(TabCode.INQUIRY_COMPLETE)
+            }
+            else
+            {
+                scrollStatus = ScrollStatusEnum.TOP
+                onPageSelectListener.onChangeTab(null)
+            }
+
             if(scrollY > 0 && oldScrollY == 0) vm.isMonthClickable = false
             else if(scrollY == 0 && oldScrollY > 0) vm.isMonthClickable = true
         }
-
-
     }
 
 
@@ -115,9 +151,9 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity()) { list ->
 
-            completedParcelAdapter.separateDeliveryListByStatus((list).toMutableList())
-//            val mock = list + list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list+ list + list
-//            completedParcelAdapter.notifyChanged(mock.toMutableList())
+//            completedParcelAdapter.separateDeliveryListByStatus((list).toMutableList())
+            val mock = list + list
+            completedParcelAdapter.notifyChanged(mock.toMutableList())
         }
 
         // 배송완료 화면에서 표출 가능한 년월 리스트
@@ -264,6 +300,8 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
             val animator = binding.recyclerviewCompleteParcel.itemAnimator as SimpleItemAnimator
             animator.supportsChangeAnimations = false
         }
+
+        ViewCompat.setNestedScrollingEnabled(binding.recyclerviewCompleteParcel, false)
     }
 
     private fun updateCompletedDateSector()
@@ -412,21 +450,6 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         }
 
 
-        // 배송완료 리스트의 마지막 행까지 내려갔다면 다음 데이터를 요청한다(페이징)
-
-        binding.nestSvMainCompleted.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-
-            SopoLog.d("nestScroll")
-
-            if(scrollY > 0)
-            {
-                onPageSelectListener.onChangeTab(TabCode.INQUIRY_COMPLETE)
-            }
-            else
-            {
-                onPageSelectListener.onChangeTab(null)
-            }
-        }
 
         val onScrollListener = object: RecyclerView.OnScrollListener()
         {
@@ -434,9 +457,10 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
             {
                 super.onScrollStateChanged(recyclerView, newState)
 
-                if (!binding.recyclerviewCompleteParcel.canScrollVertically(-1)) {
+                if (!recyclerView.canScrollVertically(-1)) {
                     SopoLog.d("TESTTAG Top of list");
-                } else if (!binding.recyclerviewCompleteParcel.canScrollVertically(1)) {
+                } else
+                    if (!recyclerView.canScrollVertically(1)) {
                     SopoLog.d("TESTTAG End of list");
                 } else {
                     SopoLog.d("TESTTAG idle");
@@ -481,4 +505,9 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
                 this.isSelected = isSelected
             }
         }
+
+    override fun onReselect()
+    {
+        Toast.makeText(requireContext(), "테스트 !!", Toast.LENGTH_LONG).show()
+    }
 }

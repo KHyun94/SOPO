@@ -63,7 +63,7 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
         SopoLog.d("refreshOAuthToken() 호출 ")
         val oAuthToken: OAuthToken = oAuthLocalRepo.get(userLocalRepo.getUserId())
         SopoLog.d("base o-auth token [email:${userLocalRepo.getUserId()}] [data:${oAuthToken.toString()}] ")
-        val refreshOAuthToken = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, OAuthAPI::class.java).requestRefreshOAuthToken(grantType = "refresh_token", email = userLocalRepo.getUserId(), refreshToken = oAuthToken.refreshToken)
+        val refreshOAuthToken = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, OAuthAPI::class.java).requestRefreshOAuthToken(grantType = "refresh_token", email = userLocalRepo.getUserId(), refreshToken = oAuthToken.refreshToken)
 
         SopoLog.d("o-auth refresh 요청 전 ${refreshOAuthToken.errorBody()?.toString()}")
 

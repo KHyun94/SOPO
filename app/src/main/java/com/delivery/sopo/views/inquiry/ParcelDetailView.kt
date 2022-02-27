@@ -73,8 +73,6 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             {
                 super.onBackPressed()
 
-                SopoLog.d(msg = "ParcelDetailView:: BackPressListener")
-
                 if(slideViewStatus == 0)
                 {
                     requireActivity().supportFragmentManager.popBackStack()

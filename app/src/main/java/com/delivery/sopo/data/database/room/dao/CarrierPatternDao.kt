@@ -2,6 +2,7 @@ package com.delivery.sopo.data.database.room.dao
 
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
+import com.delivery.sopo.data.database.room.dto.CarrierPattern
 import com.delivery.sopo.data.database.room.entity.CarrierEntity
 import com.delivery.sopo.data.database.room.entity.CarrierPatternEntity
 
@@ -20,24 +21,9 @@ interface CarrierPatternDao
     @Delete
     fun delete(carrierPatternEntity: CarrierPatternEntity)
 
-    @Query("SELECT c.code, cp.length, cp.header, cp.priority FROM CARRIER as c LEFT JOIN CARRIER_PATTERN as cp ON c.carrierNo = cp.carrierNo WHERE cp.length = :length")
-    fun getByLength(length: Int) : Int
+    @Query("SELECT c.code, cp.length, cp.header FROM CARRIER as c LEFT JOIN CARRIER_PATTERN as cp ON c.carrierNo = cp.carrierNo WHERE cp.length = :length")
+    fun getByLength(length: Int) : List<CarrierPattern>
 
-    @Query("SELECT * FROM CARRIER WHERE name = :name")
-    fun getWithName(name : String) : List<CarrierEntity>
-
-    @Query("SELECT * FROM CARRIER WHERE code = :code")
-    fun getWithCode(code : String) : CarrierEntity?
-
-    @Query("SELECT * FROM CARRIER WHERE code = :code")
-    fun getCarrierEntityWithCode(code: String) : CarrierEntity
-
-    @Query("SELECT * FROM CARRIER WHERE name LIKE :name")
-    fun getWithPartName(name : String) : List<CarrierEntity>
-
-    @Insert(onConflict = REPLACE)
-    fun insert(carrierList: List<CarrierEntity>)
-
-
-
+//    @Query("SELECT c.code, cp.length, cp.header, cp.priority FROM CARRIER as c LEFT JOIN CARRIER_PATTERN as cp ON c.carrierNo = cp.carrierNo order by cp.priority DESC LIMIT :cnt")
+//    fun getOrderByPriority(cnt: Int) : List<CarrierPattern>
 }
