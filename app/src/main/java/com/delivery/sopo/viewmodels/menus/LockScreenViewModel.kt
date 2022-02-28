@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.consts.LockStatusConst
 import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.consts.ResetPasswordConst
 import com.delivery.sopo.data.database.room.dto.AppPasswordDTO
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.asSHA256
@@ -47,16 +48,31 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
         override fun onFailure(error: ErrorEnum)
         {
             SopoLog.e("인증 오류 ${error.toString()}")
-            cntOfAuthError++
 
-            verifyType.postValue(LockStatusConst.AUTH.FAILURE_STATUS)
+            when(error){
+                ErrorEnum.INVALID_AUTH_CODE ->
+                {
+                    cntOfAuthError++
 
-            if(cntOfAuthError == 2)
-            {
-                SopoLog.d("틀린 횟수가 2회임")
-                isActivateResendMail.postValue(true)
-                return
+                    verifyType.postValue(LockStatusConst.AUTH.FAILURE_STATUS)
+
+                    if(cntOfAuthError == 2)
+                    {
+                        SopoLog.d("틀린 횟수가 2회임")
+                        isActivateResendMail.postValue(true)
+                        return
+                    }
+                }
+                ErrorEnum.INVALID_JWT_TOKEN ->
+                {
+                    postErrorSnackBar("일정시간이 지났기 때문에 다시 시도해주세요.")
+                    //TODO JWT_TOKEN 만료 시 안내와 동시에 처음부터 시작
+                    setNavigator(ResetPasswordConst.CANCEL)
+                    jwtToken = ""
+                }
             }
+
+
         }
 
         override fun onInternalServerError(error: ErrorEnum)
@@ -68,7 +84,7 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
         override fun onAuthError(error: ErrorEnum)
         {
             super.onAuthError(error)
-            postErrorSnackBar("서버 오류₩₩로 인해 정상적인 처리가 되지 않았습니다.")
+            postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
         }
     }
 
@@ -78,6 +94,11 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
 
     // 1차 인증 번호 저장
     private var primaryAuthNumber = ""
+
+    fun setNavigator(navigator: String)
+    {
+        _navigator.postValue(navigator)
+    }
 
     // AUTH:
     var email: String = ""

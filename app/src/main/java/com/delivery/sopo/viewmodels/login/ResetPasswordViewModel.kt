@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.LockStatusConst
 import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.consts.ResetPasswordConst
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.InfoEnum
@@ -14,14 +15,13 @@ import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
+import com.kakao.util.KakaoParameterException
 import kotlinx.coroutines.*
 
 class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): BaseViewModel()
 {
     val email = MutableLiveData<String>()
     val password = MutableLiveData<String>()
-
-    val resetType = MutableLiveData<Int>() // 0: 이메일 전송 1: 패스워드 입력 2: 완료
 
     val validity = mutableMapOf<InfoEnum, Boolean>()
 
@@ -32,6 +32,11 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
         get() = _navigator
+
+    fun setNavigator(navigator: String)
+    {
+        _navigator.postValue(navigator)
+    }
 
     private val _focus = MutableLiveData<Triple<View, Boolean, InfoEnum>>()
     val focus: MutableLiveData<Triple<View, Boolean, InfoEnum>>
@@ -45,12 +50,22 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
     {
         override fun onFailure(error: ErrorEnum)
         {
+            stopLoading()
+
             when(error)
             {
                 ErrorEnum.INVALID_USER ->
                 {
                     _invalidity.postValue(Pair(InfoEnum.EMAIL, false))
                     postErrorSnackBar(error.message)
+                }
+                ErrorEnum.INVALID_JWT_TOKEN ->
+                {
+                    postErrorSnackBar("일정시간이 지났기 때문에 다시 시도해주세요.")
+                    //TODO JWT_TOKEN 만료 시 안내와 동시에 처음부터 시작
+                    setNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_SEND)
+                    jwtToken = ""
+                    authToken = ""
                 }
                 else ->
                 {
@@ -76,15 +91,16 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
     init
     {
         validity[InfoEnum.EMAIL] = false
+        setNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_SEND)
     }
 
     fun onClearClicked()
     {
-        _navigator.postValue(NavigatorConst.TO_BACK_SCREEN)
+        setNavigator(NavigatorConst.TO_BACK_SCREEN)
     }
 
     fun onSendEmailClicked(v: View) = checkEventStatus(checkNetwork = true) {
-        SopoLog.i("onSendEmailClicked() 호출")
+        SopoLog.i("onSendEmailClicked() 호출 [data:${navigator.value}]")
 
         startLoading()
 
@@ -96,20 +112,9 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
             }
         }
 
-        when(resetType.value)
+        when(navigator.value)
         {
-            1 ->
-            {
-                val resetPassword = ResetPassword(jwtToken, authToken, email.value.toString(), password.value.toString())
-                requestResetPassword(resetPassword = resetPassword)
-                stopLoading()
-            }
-            2 ->
-            {
-                _navigator.postValue(NavigatorConst.TO_COMPLETE)
-                stopLoading()
-            }
-            else ->
+            ResetPasswordConst.INPUT_EMAIL_FOR_SEND ->
             {
                 val email = email.value?.toString()
 
@@ -122,8 +127,29 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
                 }
 
                 requestSendTokenToEmail(email = email)
+            }
+            ResetPasswordConst.INPUT_PASSWORD_FOR_RESET ->
+            {
+                val password = password.value?.toString()
+
+                if(password == null)
+                {
+                    postErrorSnackBar("이메일을 다시 입력해주세요.")
+                    _invalidity.postValue(Pair(InfoEnum.PASSWORD, false))
+                    stopLoading()
+                    return@checkEventStatus
+                }
+
+                val resetPassword = ResetPassword(jwtToken, authToken, email.value.toString(), password)
+                requestResetPassword(resetPassword = resetPassword)
                 stopLoading()
             }
+            ResetPasswordConst.COMPLETED_RESET_PASSWORD ->
+            {
+                _navigator.postValue(NavigatorConst.TO_COMPLETE)
+                stopLoading()
+            }
+
         }
     }
 
@@ -131,7 +157,8 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         try
         {
             jwtToken = userRemoteRepo.requestSendTokenToEmail(email = email)
-            resetType.postValue(0)
+            stopLoading()
+            setNavigator(ResetPasswordConst.SEND_AUTH_EMAIL)
         }
         catch(e: Exception)
         {
@@ -143,7 +170,8 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         try
         {
             userRemoteRepo.requestResetPassword(resetPassword = resetPassword)
-            resetType.postValue(2)
+            stopLoading()
+            setNavigator(ResetPasswordConst.COMPLETED_RESET_PASSWORD)
         }
         catch(e: Exception)
         {

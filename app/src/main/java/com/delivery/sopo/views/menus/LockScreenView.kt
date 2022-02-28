@@ -2,6 +2,8 @@ package com.delivery.sopo.views.menus
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
@@ -99,7 +101,7 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
                             if(firstCheck)
                             {
                                 isNumPadEnable(false)
-                                delay(500)
+                                delay(200)
                                 isNumPadEnable(true)
                             }
                         }
@@ -173,9 +175,14 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
                 }
                 LockStatusConst.AUTH.CONFIRM_STATUS ->
                 {
-                    val intent = Intent().apply { putExtra("AUTH_TOKEN", vm.authCode) }
-                    setResult(Activity.RESULT_OK, intent)
-                    finish()
+                    binding.tvGuideComment.text = "인증 완료되었습니다."
+
+                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                        val intent = Intent().apply { putExtra("AUTH_TOKEN", vm.authCode) }
+                        setResult(Activity.RESULT_OK, intent)
+                        finish()
+                    }, 300)
+
                 }
                 LockStatusConst.AUTH.FAILURE_STATUS ->
                 {

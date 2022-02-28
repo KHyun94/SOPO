@@ -9,6 +9,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.LoginViewBinding
 import com.delivery.sopo.enums.InfoEnum
+import com.delivery.sopo.extensions.moveToActivity
 import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.ui_util.TextInputUtil
@@ -57,7 +58,7 @@ class LoginView: BaseView<LoginViewBinding, LoginViewModel>()
             {
                 NavigatorConst.TO_RESET_PASSWORD ->
                 {
-                    moveToActivityWithFinish(ResetPasswordView::class.java)
+                    moveToActivity(ResetPasswordView::class.java)
                 }
                 NavigatorConst.TO_UPDATE_NICKNAME ->
                 {

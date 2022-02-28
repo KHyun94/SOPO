@@ -14,6 +14,7 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.consts.ResetPasswordConst
 import com.delivery.sopo.databinding.ResetPasswordViewBinding
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.LockScreenStatusEnum
@@ -44,14 +45,15 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
         if(result.resultCode == Activity.RESULT_CANCELED)
         {
+            vm.setNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_SEND)
             binding.etEmail.setText("")
             binding.etEmail.requestFocus()
 
             return@ActivityResultCallback
         }
 
-        vm.authToken = result.data?.getStringExtra("AUTH_TOKEN")?:""
-        vm.resetType.postValue(1)
+        vm.authToken = result.data?.getStringExtra("AUTH_TOKEN") ?: ""
+        vm.setNavigator(ResetPasswordConst.INPUT_PASSWORD_FOR_RESET)
 
         return@ActivityResultCallback
     }
@@ -95,46 +97,20 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
             }.show()
         })
 
-        vm.resetType.observe(this) {
-
-            vm.validity.clear()
-
-            when(it)
-            {
-                0 ->
-                {
-                    val intent = Intent(this@ResetPasswordView, LockScreenView::class.java).apply {
-                        putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD)
-                        putExtra("JWT_TOKEN", vm.jwtToken)
-                        putExtra("EMAIL", vm.email.value)
-                    }
-
-                    activityResultLauncher?.launch(intent)
-                }
-                1 ->
-                {
-                    vm.validity[InfoEnum.PASSWORD] = false
-                    updateUIForInputPassword()
-                }
-                2 ->
-                {
-                    updateUIForComplete()
-                }
-            }
-        }
-
         vm.email.observe(this@ResetPasswordView, Observer { email ->
 
             val isValidate = ValidateUtil.isValidateEmail(email.toString())
 
             if(isValidate)
             {
-                binding.btnNext.backgroundTintList = resources.getColorStateList(R.color.COLOR_MAIN_700, null)
+                binding.btnNext.backgroundTintList =
+                    resources.getColorStateList(R.color.COLOR_MAIN_700, null)
                 binding.btnNext.setTextColor(ContextCompat.getColor(this, R.color.MAIN_WHITE))
                 return@Observer
             }
 
-            binding.btnNext.backgroundTintList = resources.getColorStateList(R.color.COLOR_GRAY_200, null)
+            binding.btnNext.backgroundTintList =
+                resources.getColorStateList(R.color.COLOR_GRAY_200, null)
             binding.btnNext.setTextColor(ContextCompat.getColor(this, R.color.COLOR_GRAY_400))
         })
 
@@ -160,33 +136,71 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
         })
 
         vm.navigator.observe(this) { navigator ->
+
+            SopoLog.i("navigator Observe [data:${navigator}]")
+
             when(navigator)
             {
+
+                ResetPasswordConst.INPUT_EMAIL_FOR_SEND ->
+                {
+                    updateUIForInputEmail()
+                }
+                ResetPasswordConst.SEND_AUTH_EMAIL ->
+                {
+                    val intent = Intent(this@ResetPasswordView, LockScreenView::class.java).apply {
+                        putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD)
+                        putExtra("JWT_TOKEN", vm.jwtToken)
+                        putExtra("EMAIL", vm.email.value)
+                    }
+
+                    activityResultLauncher?.launch(intent)
+                }
+                ResetPasswordConst.INPUT_PASSWORD_FOR_RESET ->
+                {
+                    updateUIForInputPassword()
+                }
+                ResetPasswordConst.COMPLETED_RESET_PASSWORD ->
+                {
+                    updateUIForComplete()
+                }
                 NavigatorConst.TO_COMPLETE, NavigatorConst.TO_BACK_SCREEN ->
                 {
                     finish()
                 }
+
+
             }
         }
+    }
+
+    private fun updateUIForInputEmail()
+    {
+        binding.btnNext.text = "재설정코드발송"
+
+//        binding.layoutEmail.visibility = View.VISIBLE
+//        binding.layoutPassword.visibility = View.GONE
+//        binding.tvSubTitle.visibility = View.GONE
+//        binding.tvPasswordHint.visibility = View.GONE
     }
 
     private fun updateUIForInputPassword()
     {
         binding.btnNext.text = "변경하기"
 
-        binding.layoutEmail.visibility = View.GONE
-        binding.layoutPassword.visibility = View.VISIBLE
-        binding.tvSubTitle.visibility = View.GONE
-        binding.tvPasswordHint.visibility = View.VISIBLE
+//        binding.layoutEmail.visibility = View.GONE
+//        binding.layoutPassword.visibility = View.VISIBLE
+
+//        binding.tvSubTitle.visibility = View.GONE
+//        binding.tvPasswordHint.visibility = View.VISIBLE
     }
 
     private fun updateUIForComplete()
     {
         binding.btnNext.text = "확인"
 
-        binding.linearCompleteReset.visibility = View.VISIBLE
-
-        binding.layoutPassword.visibility = View.GONE
-        binding.tvPasswordHint.visibility = View.GONE
+//        binding.linearCompleteReset.visibility = View.VISIBLE
+//        binding.layoutPassword.visibility = View.GONE
+//        binding.tvPasswordHint.visibility = View.GONE
     }
 }
