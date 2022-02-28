@@ -20,11 +20,8 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.*
 
-class LockScreenViewModel(
-        private val userLocalRepo: UserLocalRepository,
-        private val userRemoteRepo: UserRemoteRepository,
-        private val appPasswordRepo: AppPasswordRepository
-        ): BaseViewModel()
+class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo: UserRemoteRepository, private val appPasswordRepo: AppPasswordRepository):
+        BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
@@ -43,37 +40,35 @@ class LockScreenViewModel(
     val error: LiveData<String>
         get() = _error
 
-    private val onSOPOErrorCallback = object : OnSOPOErrorCallback
-    {
+    var authCode: String = ""
 
+    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    {
         override fun onFailure(error: ErrorEnum)
         {
-            stopLoading()
+            SopoLog.e("인증 오류 ${error.toString()}")
             cntOfAuthError++
+
             verifyType.postValue(LockStatusConst.AUTH.FAILURE_STATUS)
-//            when(error)
-//            {
-//                ErrorEnum.VALIDATION ->
-//                {
-//                }
-//                else ->
-//                {
-//                }
-//            }
+
+            if(cntOfAuthError == 2)
+            {
+                SopoLog.d("틀린 횟수가 2회임")
+                isActivateResendMail.postValue(true)
+                return
+            }
         }
 
         override fun onInternalServerError(error: ErrorEnum)
         {
             super.onInternalServerError(error)
-            stopLoading()
-            postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+             postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
         }
 
         override fun onAuthError(error: ErrorEnum)
         {
             super.onAuthError(error)
-            stopLoading()
-            postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+            postErrorSnackBar("서버 오류₩₩로 인해 정상적인 처리가 되지 않았습니다.")
         }
     }
 
@@ -117,7 +112,8 @@ class LockScreenViewModel(
     }
 
     // VERIFY: 내부 DB에 저장된 '앱 잠금 번호'와 비교(SHA-256 암호화)
-    private suspend fun verifyPassword(inputPassword: String): Boolean = withContext(Dispatchers.Default) {
+    private suspend fun verifyPassword(inputPassword: String): Boolean =
+        withContext(Dispatchers.Default) {
             return@withContext appPasswordRepo.get()?.let {
                 it.appPassword == inputPassword.asSHA256
             } ?: false
@@ -128,6 +124,8 @@ class LockScreenViewModel(
         try
         {
             userRemoteRepo.requestVerifyAuthToken(ResetAuthCode(jwtToken, authCode, email))
+            this@LockScreenViewModel.authCode = authCode
+            verifyType.postValue(LockStatusConst.AUTH.CONFIRM_STATUS)
         }
         catch(e: Exception)
         {
@@ -137,8 +135,7 @@ class LockScreenViewModel(
 
     // 버튼 누르기 이벤트
     fun onPressLockKeyPadClicked(num: Int)
-    {
-        // 완성된 입력 데이터가 4글자를 넘지 않으면 반환
+    { // 완성된 입력 데이터가 4글자를 넘지 않으면 반환
         val currentLockNum = updateInputLockNum(num).apply {
             if(length != 4) return
         }
@@ -182,9 +179,8 @@ class LockScreenViewModel(
         verifyType.value = LockStatusConst.SET.CONFIRM_STATUS
 
         viewModelScope.launch(Dispatchers.Default) {
-            val dto = AppPasswordDTO(userId = userLocalRepo.getUserId(),
-                                     appPassword = lockNum.asSHA256,
-                                     auditDte = TimeUtil.getDateTime())
+            val dto =
+                AppPasswordDTO(userId = userLocalRepo.getUserId(), appPassword = lockNum.asSHA256, auditDte = TimeUtil.getDateTime())
             appPasswordRepo.insert(dto)
         }
     }
@@ -209,30 +205,12 @@ class LockScreenViewModel(
     {
         SopoLog.i("verifyAuthPinNumber(...) 호출 [data:$lockNum]")
 
-        startLoading()
-
         // 입력 데이터 초기화
         this.lockNum.postValue("")
 
         verifyPasswordByEmail(lockNum)
 
-        stopLoading()
-
-        viewModelScope.launch(Dispatchers.IO) {
-
-            SopoLog.d("틀린 횟수:$cntOfAuthError")
-
-            if(cntOfAuthError == 2)
-            {
-                SopoLog.d("틀린 횟수가 2회임")
-                isActivateResendMail.postValue(true)
-                return@launch
-            }
-
-//            if(!isVerify) return@launch
-
-//            verifyType.postValue(LockStatusConst.AUTH.CONFIRM_STATUS)
-        }
+        SopoLog.d("틀린 횟수:$cntOfAuthError")
     }
 
     fun eraseLockPassword()

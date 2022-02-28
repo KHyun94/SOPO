@@ -7,6 +7,7 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.IntentConst
@@ -172,16 +173,15 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
                 }
                 LockStatusConst.AUTH.CONFIRM_STATUS ->
                 {
-                    val intent = Intent().apply {
-                        putExtra("JWT_TOKEN", vm.jwtToken)
-                    }
+                    val intent = Intent().apply { putExtra("AUTH_TOKEN", vm.authCode) }
                     setResult(Activity.RESULT_OK, intent)
                     finish()
                 }
                 LockStatusConst.AUTH.FAILURE_STATUS ->
                 {
-                    binding.tvErrorComment.visibility = VISIBLE
-                    binding.tvGuideComment.text = "다시 입력해 주세요."
+//                    binding.tvErrorComment.visibility = VISIBLE
+                    binding.tvGuideComment.text = "코드가 일치하지 않습니다."
+                    binding.tvGuideComment.setTextColor(ContextCompat.getColor(this, R.color.COLOR_MAIN_700))
                 }
             }
         })
@@ -200,8 +200,8 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
             {
                 "CANCEL" ->
                 {
-
                     setResult(Activity.RESULT_CANCELED)
+                    finish()
                 }
             }
 

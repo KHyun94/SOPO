@@ -42,9 +42,7 @@ object NetworkManager : KoinComponent
         {
             NetworkEnum.O_AUTH_TOKEN_LOGIN ->
             {
-                val oAuth : OAuthToken = runBlocking(Dispatchers.Default) {
-                    oAuthLocalRepo.get(userId = userLocalRepo.getUserId())
-                }
+                val oAuth : OAuthToken = runBlocking(Dispatchers.Default) { oAuthLocalRepo.get(userId = userLocalRepo.getUserId()) }
                 retro(oAuth.accessToken).create(clz)
             }
             NetworkEnum.PUBLIC_LOGIN ->
@@ -79,7 +77,6 @@ object NetworkManager : KoinComponent
             {
                 SopoLog.api(message)
             }
-
         })
 
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -91,7 +88,6 @@ object NetworkManager : KoinComponent
             followRedirects(false)
             writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
             readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-            authenticator(TokenAuthenticator())
             if(INTERCEPTOR_TYPE == 1 && isAuthenticator) authenticator(TokenAuthenticator())
         }.build()
 

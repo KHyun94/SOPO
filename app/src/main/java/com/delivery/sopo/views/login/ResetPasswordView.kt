@@ -32,10 +32,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewModel>()
 {
-    companion object{
-        const val JWT_TOKEN = "JWT_TOKEN"
-    }
-
     override val layoutRes: Int = R.layout.reset_password_view
     override val vm: ResetPasswordViewModel by viewModel()
     override val mainLayout: View by lazy { binding.layoutMainReset }
@@ -44,24 +40,36 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
     private val registerCallback = ActivityResultCallback<ActivityResult> { result ->
 
-        if(result.resultCode != RESULT_OK) return@ActivityResultCallback
+        SopoLog.d("activityResult => ${result.resultCode}")
 
-//        result.data?.getStringExtra(JWT_TOKEN)?.also { token -> vm.jwtTokenForReset = token }
+        if(result.resultCode == Activity.RESULT_CANCELED)
+        {
+            binding.etEmail.setText("")
+            binding.etEmail.requestFocus()
+
+            return@ActivityResultCallback
+        }
+
+        vm.authToken = result.data?.getStringExtra("AUTH_TOKEN")?:""
+        vm.resetType.postValue(1)
+
+        return@ActivityResultCallback
     }
 
     override fun onBeforeBinding()
     {
-        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult(), registerCallback)
+        activityResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult(), registerCallback)
     }
 
     override fun setObserve()
     {
         super.setObserve()
 
-        vm.focus.observe(this, Observer { focus ->
+        vm.focus.observe(this) { focus ->
             val res = TextInputUtil.changeFocus(this, focus)
             vm.validity[res.first] = res.second
-        })
+        }
 
         vm.invalidity.observe(this, Observer { target ->
 
@@ -71,7 +79,13 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
             {
                 InfoEnum.EMAIL ->
                 {
+                    binding.etEmail.requestFocus()
                     "이메일 양식을 확인해주세요."
+                }
+                InfoEnum.PASSWORD ->
+                {
+                    binding.etPassword.requestFocus()
+                    "비밀번호 확인해주세요."
                 }
                 else -> ""
             }
@@ -81,7 +95,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
             }.show()
         })
 
-        vm.resetType.observe(this){
+        vm.resetType.observe(this) {
 
             vm.validity.clear()
 
@@ -89,21 +103,6 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
             {
                 0 ->
                 {
-                    setOnActivityResultCallbackListener(object: OnActivityResultCallbackListener
-                                                        {
-                                                            override fun callback(activityResult: ActivityResult) {
-                                                                if(activityResult.resultCode == Activity.RESULT_CANCELED)
-                                                                {
-                                                                    SopoLog.d("캔슬")
-                                                                    return
-                                                                }
-
-                                                                vm.resetType.postValue(1)
-                                                                SopoLog.d("완료 ")
-                                                                return
-                                                            }
-                                                        })
-
                     val intent = Intent(this@ResetPasswordView, LockScreenView::class.java).apply {
                         putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD)
                         putExtra("JWT_TOKEN", vm.jwtToken)
@@ -111,8 +110,6 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
                     }
 
                     activityResultLauncher?.launch(intent)
-
-
                 }
                 1 ->
                 {
@@ -126,63 +123,18 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
             }
         }
 
-//        vm.result.observe(this@ResetPasswordView, Observer { result ->
-//
-//            if(!result.result)
-//            {
-//                GeneralDialog(this, "오류", ResponseCode.UNKNOWN_ERROR.MSG,
-//                              ResponseCode.UNKNOWN_ERROR.CODE, Pair("네", null)).show(
-//                    supportFragmentManager, "DIALOG")
-//                return@Observer
-//            }
-//
-//            when(vm.resetType.value)
-//            {
-//                0 ->
-//                {
-//                    if(result.data !is EmailAuthDTO)
-//                    {
-//                        GeneralDialog(this, "오류", "", result.code?.CODE, Pair("네", null)).show(
-//                            supportFragmentManager, "DIALOG")
-//                        return@Observer
-//                    }
-//
-//                    val data: EmailAuthDTO = result.data
-//
-//                    val intent = Intent(this@ResetPasswordView, LockScreenView::class.java).apply {
-//                        putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD)
-//                        putExtra("PIN_NUM", data.code)
-//                    }
-//
-//                    activityResultLauncher?.launch(intent)
-//                }
-//                1 ->
-//                {
-//                    vm.resetType.postValue(2)
-//                }
-//                2 ->
-//                {
-//                    updateUIForComplete()
-//                }
-//            }
-//
-//
-//        })
-
         vm.email.observe(this@ResetPasswordView, Observer { email ->
 
             val isValidate = ValidateUtil.isValidateEmail(email.toString())
 
             if(isValidate)
             {
-                binding.btnNext.backgroundTintList =
-                    resources.getColorStateList(R.color.COLOR_MAIN_700, null)
-                binding.btnNext.setTextColor(resources.getColor(R.color.MAIN_WHITE))
+                binding.btnNext.backgroundTintList = resources.getColorStateList(R.color.COLOR_MAIN_700, null)
+                binding.btnNext.setTextColor(ContextCompat.getColor(this, R.color.MAIN_WHITE))
                 return@Observer
             }
 
-            binding.btnNext.backgroundTintList =
-                resources.getColorStateList(R.color.COLOR_GRAY_200, null)
+            binding.btnNext.backgroundTintList = resources.getColorStateList(R.color.COLOR_GRAY_200, null)
             binding.btnNext.setTextColor(ContextCompat.getColor(this, R.color.COLOR_GRAY_400))
         })
 
@@ -192,7 +144,8 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
             if(isValidate)
             {
-                binding.btnNext.backgroundTintList = resources.getColorStateList(R.color.COLOR_MAIN_700, null)
+                binding.btnNext.backgroundTintList =
+                    resources.getColorStateList(R.color.COLOR_MAIN_700, null)
                 binding.btnNext.setTextColor(ContextCompat.getColor(this, R.color.MAIN_WHITE))
                 binding.tvPasswordHint.visibility = View.GONE
                 return@Observer
@@ -230,8 +183,10 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
     private fun updateUIForComplete()
     {
         binding.btnNext.text = "확인"
+
+        binding.linearCompleteReset.visibility = View.VISIBLE
+
         binding.layoutPassword.visibility = View.GONE
-        binding.tvCompleteContent.visibility = View.VISIBLE
         binding.tvPasswordHint.visibility = View.GONE
     }
 }

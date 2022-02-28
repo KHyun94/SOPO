@@ -4,9 +4,13 @@ import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.bindings.FocusChangeCallback
+import com.delivery.sopo.consts.LockStatusConst
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
+import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.InfoEnum
+import com.delivery.sopo.exceptions.UserExceptionHandler
+import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
@@ -17,8 +21,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
     val email = MutableLiveData<String>()
     val password = MutableLiveData<String>()
 
-    val resetType = MutableLiveData<Int>()
-    // 0: 이메일 전송 1: 패스워드 입력 2: 완료
+    val resetType = MutableLiveData<Int>() // 0: 이메일 전송 1: 패스워드 입력 2: 완료
 
     val validity = mutableMapOf<InfoEnum, Boolean>()
 
@@ -38,16 +41,41 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         _focus.value = (Triple(v, hasFocus, type))
     }
 
-    var authToken: String = ""
+    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    {
+        override fun onFailure(error: ErrorEnum)
+        {
+            when(error)
+            {
+                ErrorEnum.INVALID_USER ->
+                {
+                    _invalidity.postValue(Pair(InfoEnum.EMAIL, false))
+                    postErrorSnackBar(error.message)
+                }
+                else ->
+                {
+                    postErrorSnackBar(error.message)
+                }
+            }
+        }
+
+        override fun onInternalServerError(error: ErrorEnum)
+        {
+            super.onInternalServerError(error)
+            postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+        }
+    }
+
+    override val exceptionHandler: CoroutineExceptionHandler by lazy {
+        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
+    }
 
     var jwtToken: String = ""
+    var authToken: String = ""
 
     init
     {
         validity[InfoEnum.EMAIL] = false
-//        validity[InfoEnum.PASSWORD] = true
-
-//        resetType.value = 0
     }
 
     fun onClearClicked()
@@ -72,47 +100,50 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         {
             1 ->
             {
-                //                        val passwordResetDTO = ResetPassword(token, email.value.toString(), password.value.toString())
-
-                //                        val res = userRemoteRepo.requestResetPassword(resetPassword = passwordResetDTO)
-
-                resetType.postValue(2)
-                //                        _result.postValue(res)
+                val resetPassword = ResetPassword(jwtToken, authToken, email.value.toString(), password.value.toString())
+                requestResetPassword(resetPassword = resetPassword)
+                stopLoading()
             }
             2 ->
             {
                 _navigator.postValue(NavigatorConst.TO_COMPLETE)
+                stopLoading()
             }
             else ->
             {
-                requestSendTokenToEmail(email = email.value?.toString() ?: "")
+                val email = email.value?.toString()
 
+                if(email == null)
+                {
+                    postErrorSnackBar("이메일을 다시 입력해주세요.")
+                    _invalidity.postValue(Pair(InfoEnum.EMAIL, false))
+                    stopLoading()
+                    return@checkEventStatus
+                }
+
+                requestSendTokenToEmail(email = email)
+                stopLoading()
             }
         }
     }
 
     private fun requestSendTokenToEmail(email: String) = scope.launch(Dispatchers.IO) {
-        SopoLog.i("requestEmailForAuth(...) 호출")
         try
         {
             jwtToken = userRemoteRepo.requestSendTokenToEmail(email = email)
             resetType.postValue(0)
-            stopLoading()
         }
         catch(e: Exception)
         {
-            SopoLog.e("에러 ", e)
             exceptionHandler.handleException(coroutineContext, e)
         }
-
     }
 
-    private suspend fun requestPasswordForReset(email: String) = withContext(Dispatchers.IO) {
+    private fun requestResetPassword(resetPassword: ResetPassword) = scope.launch (Dispatchers.IO) {
         try
         {
-            val token = userRemoteRepo.requestSendTokenToEmail(email = email)
-            SopoLog.d("Email Auth Info [data:${token}]")
-            return@withContext token
+            userRemoteRepo.requestResetPassword(resetPassword = resetPassword)
+            resetType.postValue(2)
         }
         catch(e: Exception)
         {
@@ -120,8 +151,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         }
     }
 
-    override val exceptionHandler: CoroutineExceptionHandler
-        get() = CoroutineExceptionHandler { coroutineContext, throwable -> }
+
 
 
 }

@@ -2,8 +2,11 @@ package com.delivery.sopo.util.ui_util
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import com.delivery.sopo.R
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.util.SizeUtil
@@ -28,6 +31,44 @@ object TextInputUtil
         return focusIn(context, focus)
     }
 
+    private fun setTextInputLayoutTextWatcher(textInputEditText: TextInputEditText, infoEnum: InfoEnum): TextWatcher
+    {
+        val textInputLayout = textInputEditText.parent.parent as TextInputLayout
+
+        return object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun afterTextChanged(p0: Editable?)
+            {
+                textInputLayout.helperText = when (infoEnum)
+                {
+                    InfoEnum.EMAIL ->
+                    {
+                        if(ValidateUtil.isValidateEmail(p0.toString())) ""
+                        else "이메일 양식을 확인해주세요."
+                    }
+                    InfoEnum.PASSWORD ->
+                    {
+                        if(ValidateUtil.isValidatePassword(p0.toString())) ""
+                        else "영문, 숫자 조합 8자리 이상 설정해주세요."
+                    }
+                    InfoEnum.RE_PASSWORD ->
+                    {
+                        if(ValidateUtil.isValidatePassword(p0.toString())) ""
+                        else "영문, 숫자 조합 8자리 이상 설정해주세요."
+                    }
+                    InfoEnum.NICKNAME ->
+                    {
+                        if(ValidateUtil.isValidateNickname(p0.toString())) ""
+                        else "닉네임 형식을 확인해주세요."
+                    }
+                    else -> ""
+                }
+            }
+
+        }
+    }
+
     private fun focusIn(context: Context, focus: Triple<View, Boolean, InfoEnum>): Pair<InfoEnum, Boolean>
     {
         SopoLog.d("${focus.third.NAME}::focus in")
@@ -44,32 +85,41 @@ object TextInputUtil
             hint = focus.third.NAME
 
             // 내부 이너 박스 컬러 >>> GRAY_50
-            boxBackgroundColor = resources.getColor(R.color.COLOR_GRAY_50)
+            boxBackgroundColor = ContextCompat.getColor(context, R.color.COLOR_GRAY_50)
             // endIcon >>> Visible, clear img
 
             error = null
             errorIconDrawable = null
 
+            val inputText: String = textInputEditText.text.toString()
+
             helperText = when (infoEnum)
             {
                 InfoEnum.EMAIL ->
                 {
-                    "이메일 양식을 확인해주세요."
+                    if(ValidateUtil.isValidateEmail(inputText)) ""
+                    else "이메일 양식을 확인해주세요."
                 }
                 InfoEnum.PASSWORD ->
                 {
-                    "영문, 숫자 조합 8자리 이상 설정해주세요."
+                    if(ValidateUtil.isValidatePassword(inputText)) ""
+                    else "영문, 숫자 조합 8자리 이상 설정해주세요."
                 }
                 InfoEnum.RE_PASSWORD ->
                 {
-                    "영문, 숫자 조합 8자리 이상 설정해주세요."
+                    if(ValidateUtil.isValidatePassword(inputText)) ""
+                    else "영문, 숫자 조합 8자리 이상 설정해주세요."
                 }
                 InfoEnum.NICKNAME ->
                 {
-                    "닉네임 형식을 확인해주세요."
+                    if(ValidateUtil.isValidateNickname(inputText)) ""
+                    else "닉네임 형식을 확인해주세요."
                 }
                 else -> ""
             }
+
+            textInputEditText.addTextChangedListener(setTextInputLayoutTextWatcher(textInputEditText, infoEnum))
+
             setHelperTextColor(ContextCompat.getColorStateList(context, R.color.COLOR_MAIN_700))
 
             isEndIconVisible = true
@@ -95,6 +145,9 @@ object TextInputUtil
         val infoEnum = focus.third
 
         textInputLayout.setEndIconOnClickListener(null)
+
+        textInputEditText.removeTextChangedListener(setTextInputLayoutTextWatcher(textInputEditText, infoEnum))
+
         textInputLayout.helperText = null
 
         var isValidate: Boolean

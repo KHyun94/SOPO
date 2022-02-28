@@ -35,8 +35,6 @@ enum class ErrorEnum(val httpStatusCode: Int, val code: Int, val errorType: Erro
     OVER_REGISTERED_PARCEL(409, 702, ErrorType.CONFLICT, "등록할 수 있는 택배의 개수를 초과하였습니다.", "등록할 수 있는 택배의 개수를 초과하였습니다."),
     PARCEL_NOT_FOUND(404, 703, ErrorType.NO_RESOURCE, "해당하는 id에 부합하는 택배를 찾을 수 없습니다.", "해당하는 id에 부합하는 택배를 찾을 수 없습니다.");
 
-
-
     companion object{
         fun getErrorCode(code: Int): ErrorEnum
         {

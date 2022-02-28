@@ -24,14 +24,18 @@ class UserExceptionHandler(
         {
             is SOPOApiException ->
             {
-                val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code)
+                val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
+                    message = exception.getErrorResponse().message
+                }
                 SopoLog.e("SOPO API Error $errorCode", exception)
                 if(errorCode == ErrorEnum.ALREADY_REGISTERED_USER) return callback.onSignUpError(errorCode)
                 callback.onFailure(errorCode)
             }
             is OAuthException ->
             {
-                val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code)
+                val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
+                    message = exception.getErrorResponse().message
+                }
                 SopoLog.e("OAuthException API Error $errorCode", exception)
                 if(errorCode == ErrorEnum.OAUTH2_INVALID_GRANT || errorCode == ErrorEnum.OAUTH2_INVALID_TOKEN)
                 {
@@ -41,13 +45,15 @@ class UserExceptionHandler(
             }
             is InternalServerException ->
             {
-                val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code)
+                val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
+                    message = exception.getErrorResponse().message
+                }
                 SopoLog.e("InternalServerException API Error $errorCode", exception)
                 callback.onInternalServerError(errorCode)
             }
             else ->
             {
-
+                callback.onFailure(ErrorEnum.UNKNOWN_ERROR)
             }
         }
     }
