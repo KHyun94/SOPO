@@ -9,7 +9,7 @@
     <item>
         <inset android:insetBottom="3dp">
             <shape android:shape="rectangle">
-                <solid android:color="@color/COLOR_GRAY_50" />
+                <solid android:color="@color/MAIN_WHITE" />
             </shape>
         </inset>
     </item>

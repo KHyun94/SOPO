@@ -28,6 +28,7 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
         get() = _navigator
 
     fun onMoveToNav(v: View) = checkEventStatus(checkNetwork = true) {
+
         when(v.id)
         {
             R.id.tv_revise ->
@@ -40,6 +41,8 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
             }
             R.id.tv_register ->
             {
+                startLoading()
+
                 if(alias.value.toString() == "null") alias.value = ""
 
                 val registerDTO = Parcel.Register(carrier = carrier.value?.carrier
@@ -60,10 +63,13 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
                 SopoLog.d("택배 등록 성공 [번호:$this]")
             }
 
+            stopLoading()
+
             _navigator.postValue(NavigatorEnum.REGISTER_INPUT_SUCCESS)
         }
         catch(e: Exception)
         {
+            stopLoading()
             exceptionHandler.handleException(coroutineContext, e)
         }
     }

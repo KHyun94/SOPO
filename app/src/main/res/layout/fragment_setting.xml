@@ -4,198 +4,300 @@
     xmlns:tools="http://schemas.android.com/tools">
     <data>
         <import type="android.view.View" />
+        <import type="com.delivery.sopo.R" />
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.menus.SettingViewModel" />
     </data>
-<androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/constraint_main_setting"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/COLOR_GRAY_50">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_set_notify_option"
+    <com.sothree.slidinguppanel.SlidingUpPanelLayout
+        android:id="@+id/slide_main_setting"
         android:layout_width="match_parent"
-        android:layout_height="71dp"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
-        android:onClick="@{()->vm.onSetNotifyOptionClicked()}">
+        android:layout_height="match_parent"
+        android:background="@color/COLOR_GRAY_50"
+        android:gravity="bottom"
+        app:umanoDragView="@+id/layout_drawer"
+        app:umanoOverlay="true"
+        app:umanoPanelHeight="0dp"
+        app:umanoShadowHeight="0dp">
 
-        <TextView
-            style="@style/kor_H4"
-            android:id="@+id/textView4"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_main_setting"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/COLOR_GRAY_50">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_set_notify_option"
+                android:layout_width="match_parent"
+                android:layout_height="71dp"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toTopOf="parent"
+                android:onClick="@{()->vm.onSetNotifyOptionClicked()}">
+
+                <TextView
+                    style="@style/kor_H4"
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="38dp"
+                    android:layout_gravity="center_vertical"
+                    android:text="@string/SETTING_VIEW_KIND_OF_NOTIFY"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="26dp"
+                    android:background="@drawable/ic_black_arrow_right"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:id="@+id/v_dividerLine2"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/COLOR_GRAY_100"
+                app:layout_constraintTop_toBottomOf="@+id/layout_set_notify_option"
+                />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_set_time"
+                android:layout_width="match_parent"
+                android:layout_height="71dp"
+                android:orientation="horizontal"
+                android:onClick="@{()->vm.onMoveToSetTimeClicked()}"
+                app:layout_constraintTop_toBottomOf="@+id/v_dividerLine2">
+
+                <TextView
+                    style="@style/kor_H4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="38dp"
+                    android:text="@string/SETTING_VIEW_SETTING_OF_NO_DISTURB"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="26dp"
+                    android:background="@drawable/ic_black_arrow_right"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <View
+                android:id="@+id/v_dividerLine3"
+                android:layout_width="match_parent"
+                android:layout_height="9dp"
+                android:background="@color/COLOR_GRAY_100"
+                app:layout_constraintTop_toBottomOf="@+id/layout_set_time"
+                />
+
+            <LinearLayout
+                android:id="@+id/linear_setSecurity"
+                android:layout_width="match_parent"
+                android:layout_height="71dp"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@+id/v_dividerLine3"
+                >
+
+                <TextView
+                    style="@style/kor_H3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="38dp"
+                    android:text="@string/SETTING_VIEW_SETTING_OF_SECURITY"
+                    android:textColor="@color/COLOR_GRAY_800"
+                    />
+            </LinearLayout>
+
+
+            <TextView
+                style="@style/kor_H4"
+                android:id="@+id/tv_securityComment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="38dp"
+                android:layout_marginEnd="38dp"
+                android:text="@string/SETTING_VIEW_ALWAYS_CHECK_YOUR_SECURITY"
+                android:textColor="@color/COLOR_GRAY_600"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linear_setSecurity" />
+
+            <ToggleButton
+                android:id="@+id/toggleBtn"
+                android:layout_width="55dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="28dp"
+                android:background="@{vm.isSetOfSecurity > 0 ? @drawable/ic_toggle_on:@drawable/ic_toggle_off}"
+                android:textOn=""
+                android:textOff=""
+                android:onClick="@{()->vm.setAppPassword()}"
+                app:layout_constraintStart_toStartOf="@+id/tv_securityComment"
+                app:layout_constraintTop_toBottomOf="@+id/tv_securityComment"
+                tools:background="@drawable/ic_toggle_off"/>
+
+            <TextView
+                style="@style/kor_H4"
+                android:id="@+id/tv_lockStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_gravity="center_vertical"
+                android:text="@{vm.isSetOfSecurity > 0 ? @string/SETTING_VIEW_SET_THE_SECURITY : @string/SETTING_VIEW_NOT_SET_THE_SECURITY}"
+                android:textColor="@{vm.isSetOfSecurity > 0 ? @color/COLOR_MAIN_700 : @color/COLOR_GRAY_600}"
+                app:layout_constraintBottom_toBottomOf="@+id/toggleBtn"
+                app:layout_constraintStart_toEndOf="@+id/toggleBtn"
+                app:layout_constraintTop_toTopOf="@+id/toggleBtn"
+                tools:text="설정 켜기"/>
+
+            <TextView
+                style="@style/kor_H4"
+                android:id="@+id/tv_change_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="26dp"
+                android:fontFamily="@font/spoqa_han_sans_neo_regular"
+                android:textStyle="bold"
+                android:letterSpacing="-0.08"
+                android:text="@string/SETTING_VIEW_CHANGE_OF_PASSWORD"
+                android:textColor="@color/COLOR_MAIN_700"
+                android:visibility="@{vm.isSetOfSecurity > 0 ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="@+id/toggleBtn"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/toggleBtn"
+                android:onClick="@{()->vm.onUpdateAppPassword()}" />
+
+            <LinearLayout
+                android:id="@+id/linear_guideWord"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="38dp"
+                android:layout_marginRight="38dp"
+                android:layout_marginTop="25dp"
+                android:orientation="horizontal"
+                android:visibility="@{vm.isSetOfSecurity > 0 ? View.VISIBLE : View.GONE}"
+                app:layout_constraintTop_toBottomOf="@+id/tv_lockStatus">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/ic_16_exclamation_mark"/>
+
+                <TextView
+                    style="@style/kor_H6"
+                    android:id="@+id/tv_settingPasswordExtraInfoComment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/SETTING_VIEW_PASSWORD_COMMENT"
+                    android:textColor="@color/COLOR_GRAY_600"
+                    />
+            </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_drawer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="38dp"
-            android:layout_gravity="center_vertical"
-            android:text="@string/SETTING_VIEW_KIND_OF_NOTIFY"
-            android:textColor="@color/COLOR_GRAY_800"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:background="@drawable/border_top_rounded"
+            android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="26dp"
-            android:background="@drawable/ic_black_arrow_right"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                style="@style/kor_H3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="설정한 시간동안은\n모든 알림이 가지 않아요."
+                android:layout_margin="24dp"/>
 
-    <View
-        android:id="@+id/v_dividerLine2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/COLOR_GRAY_100"
-        app:layout_constraintTop_toBottomOf="@+id/layout_set_notify_option"
-        />
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/MAIN_WHITE"
+                app:tabBackground="@drawable/selector_tab_indicator"
+                app:tabIndicatorColor="@color/COLOR_GRAY_700"
+                app:tabIndicatorHeight="3dp"
+                app:tabTextColor="@color/COLOR_GRAY_700"
+                app:tabRippleColor="@null"
+                android:layout_marginHorizontal="60dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_set_time"
-        android:layout_width="match_parent"
-        android:layout_height="71dp"
-        android:orientation="horizontal"
-        android:onClick="@{()->vm.onMoveToSetTimeClicked()}"
-        app:layout_constraintTop_toBottomOf="@+id/v_dividerLine2">
+            </com.google.android.material.tabs.TabLayout>
 
-        <TextView
-            style="@style/kor_H4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="38dp"
-            android:text="@string/SETTING_VIEW_SETTING_OF_NO_DISTURB"
-            android:textColor="@color/COLOR_GRAY_800"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <FrameLayout
+                android:id="@+id/frame_main_inquiry"
+                android:layout_width="match_parent"
+                android:layout_height="0sp"
+                android:layout_weight="1">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="26dp"
-            android:background="@drawable/ic_black_arrow_right"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraint_start"
+                    android:visibility="visible"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-    <View
-        android:id="@+id/v_dividerLine3"
-        android:layout_width="match_parent"
-        android:layout_height="9dp"
-        android:background="@color/COLOR_GRAY_100"
-        app:layout_constraintTop_toBottomOf="@+id/layout_set_time"
-        />
+                    <com.delivery.sopo.util.ui_util.NotDisturbTimePicker
+                        android:id="@+id/datePicker_start"
+                        android:theme="@style/AppTheme.NumberPicker"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:timePickerMode="spinner"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/linear_setSecurity"
-        android:layout_width="match_parent"
-        android:layout_height="71dp"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/v_dividerLine3"
-        >
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            style="@style/kor_H3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="38dp"
-            android:text="@string/SETTING_VIEW_SETTING_OF_SECURITY"
-            android:textColor="@color/COLOR_GRAY_800"
-            />
-    </LinearLayout>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraint_end"
+                    android:visibility="invisible"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.delivery.sopo.util.ui_util.NotDisturbTimePicker
+                        android:id="@+id/datePicker_end"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:timePickerMode="spinner"
+                        android:theme="@style/AppTheme.NumberPicker"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </FrameLayout>
+
+            <TextView
+                style="@style/buttonHalfStyle"
+                android:id="@+id/tv_okBtn"
+                android:layout_width="135dp"
+                android:layout_height="43dp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="25dp"
+                android:text="확인" />
+
+        </LinearLayout>
 
 
-    <TextView
-        style="@style/kor_H4"
-        android:id="@+id/tv_securityComment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="38dp"
-        android:layout_marginEnd="38dp"
-        android:text="@string/SETTING_VIEW_ALWAYS_CHECK_YOUR_SECURITY"
-        android:textColor="@color/COLOR_GRAY_600"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linear_setSecurity" />
+    </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
-    <ToggleButton
-        android:id="@+id/toggleBtn"
-        android:layout_width="55dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="28dp"
-        android:background="@{vm.isSetOfSecurity > 0 ? @drawable/ic_toggle_on:@drawable/ic_toggle_off}"
-        android:textOn=""
-        android:textOff=""
-        android:onClick="@{()->vm.setAppPassword()}"
-        app:layout_constraintStart_toStartOf="@+id/tv_securityComment"
-        app:layout_constraintTop_toBottomOf="@+id/tv_securityComment"
-        tools:background="@drawable/ic_toggle_off"/>
-
-    <TextView
-        style="@style/kor_H4"
-        android:id="@+id/tv_lockStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_gravity="center_vertical"
-        android:text="@{vm.isSetOfSecurity > 0 ? @string/SETTING_VIEW_SET_THE_SECURITY : @string/SETTING_VIEW_NOT_SET_THE_SECURITY}"
-        android:textColor="@{vm.isSetOfSecurity > 0 ? @color/COLOR_MAIN_700 : @color/COLOR_GRAY_600}"
-        app:layout_constraintBottom_toBottomOf="@+id/toggleBtn"
-        app:layout_constraintStart_toEndOf="@+id/toggleBtn"
-        app:layout_constraintTop_toTopOf="@+id/toggleBtn"
-        tools:text="설정 켜기"/>
-
-    <TextView
-        style="@style/kor_H4"
-        android:id="@+id/tv_change_password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginEnd="26dp"
-        android:fontFamily="@font/spoqa_han_sans_neo_regular"
-        android:textStyle="bold"
-        android:letterSpacing="-0.08"
-        android:text="@string/SETTING_VIEW_CHANGE_OF_PASSWORD"
-        android:textColor="@color/COLOR_MAIN_700"
-        android:visibility="@{vm.isSetOfSecurity > 0 ? View.VISIBLE : View.GONE}"
-        app:layout_constraintBottom_toBottomOf="@+id/toggleBtn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/toggleBtn"
-        android:onClick="@{()->vm.onUpdateAppPassword()}" />
-
-    <LinearLayout
-        android:id="@+id/linear_guideWord"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="38dp"
-        android:layout_marginRight="38dp"
-        android:layout_marginTop="25dp"
-        android:orientation="horizontal"
-        android:visibility="@{vm.isSetOfSecurity > 0 ? View.VISIBLE : View.GONE}"
-        app:layout_constraintTop_toBottomOf="@+id/tv_lockStatus">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:background="@drawable/ic_16_exclamation_mark"/>
-
-        <TextView
-            style="@style/kor_H6"
-            android:id="@+id/tv_settingPasswordExtraInfoComment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:text="@string/SETTING_VIEW_PASSWORD_COMMENT"
-            android:textColor="@color/COLOR_GRAY_600"
-            />
-    </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

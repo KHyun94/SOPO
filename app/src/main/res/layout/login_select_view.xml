@@ -7,6 +7,8 @@
 
         <import type="com.delivery.sopo.R" />
 
+        <import type="androidx.core.content.ContextCompat" />
+
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.login.LoginSelectViewModel" />
@@ -31,7 +33,6 @@
 
             <!-- TODO 사이즈 강제로 변경 진행 -->
             <ImageView
-                setDefaultImage="@{0}"
                 android:layout_width="401dp"
                 android:layout_height="397dp"
                 android:adjustViewBounds="true"
@@ -39,7 +40,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:setImage="@{R.drawable.login_select_view_image}"
+                android:background="@{ContextCompat.getDrawable(context, R.drawable.login_select_view_image)}"
                 tools:background="@drawable/login_select_view_image" />
 
             <LinearLayout

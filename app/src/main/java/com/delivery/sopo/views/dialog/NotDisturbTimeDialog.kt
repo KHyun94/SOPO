@@ -6,6 +6,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.*
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
 import com.delivery.sopo.SOPOApp
@@ -41,7 +42,7 @@ class NotDisturbTimeDialog : DialogFragment {
         setSetting()
 
         val tabs = binding.tabs
-        tabs.addTab(tabs.newTab().setText("시작"))
+        tabs.addTab(tabs.newTab().setText("시작\n11:00"))
         tabs.addTab(tabs.newTab().setText("종료"))
 
         tabs.addOnTabSelectedListener(object: OnTabSelectedListener
@@ -72,6 +73,8 @@ class NotDisturbTimeDialog : DialogFragment {
             }
 
         })
+
+        binding.datePickerStart.setIs24HourView(true)
 
         binding.datePickerStart.hour = startTimeList[0].toInt()
         binding.datePickerStart.minute = startTimeList[1].toInt()

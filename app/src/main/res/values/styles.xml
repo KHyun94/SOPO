@@ -91,8 +91,6 @@
         <item name="android:textSize">16dp</item>
     </style>
 
-
-
     <style name="InquiryTypeLabel" parent="Widget.AppCompat.TextView">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -105,5 +103,13 @@
         <item name="android:paddingLeft">10dp</item>
         <item name="android:paddingRight">9dp</item>
         <item name="android:letterSpacing">-0.05</item>
+    </style>
+
+    <style name="AppTheme.NumberPicker" parent="ThemeOverlay.MaterialComponents.TimePicker">
+        <item name="android:textSize">18dp</item>
+        <item name="colorAccent">@color/COLOR_MAIN_700</item>
+        <item name="android:fontFamily">@font/pretendard_bold</item>
+        <item name="android:textStyle">bold</item>
+        <item name="colorControlNormal">@android:color/transparent</item>
     </style>
 </resources>

@@ -46,7 +46,7 @@ interface ParcelAPI
     // '배송완료' 리스트 가져오는 api
     @GET("api/v1/sopo-parcel/delivery/parcels/complete")
     @Headers("Accept: application/json")
-    suspend fun getParcelsComplete(@Query("page") page: Int, @Query("inquiryDate") inquiryDate: String): Response<APIResult<List<Parcel.Common>>>
+    suspend fun getParcelsComplete(@Query("page") page: Int, @Query("itemCnt") itemCnt: Int = 10, @Query("inquiryDate") inquiryDate: String): Response<APIResult<List<Parcel.Common>>>
 
     @HTTP(method = "DELETE", path = "api/v1/sopo-parcel/delivery/parcels", hasBody = true)
     @Headers("Accept: application/json")
