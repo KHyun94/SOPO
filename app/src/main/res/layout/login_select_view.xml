@@ -40,7 +40,8 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:background="@{ContextCompat.getDrawable(context, R.drawable.login_select_view_image)}"
+                app:setImage="@{R.drawable.login_select_view_image}"
+                app:setDefaultImage="@{0}"
                 tools:background="@drawable/login_select_view_image" />
 
             <LinearLayout

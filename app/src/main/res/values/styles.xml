@@ -105,7 +105,7 @@
         <item name="android:letterSpacing">-0.05</item>
     </style>
 
-    <style name="AppTheme.NumberPicker" parent="ThemeOverlay.MaterialComponents.TimePicker">
+    <style name="AppTheme.NotDisturbTimePicker" parent="ThemeOverlay.MaterialComponents.TimePicker">
         <item name="android:textSize">18dp</item>
         <item name="colorAccent">@color/COLOR_MAIN_700</item>
         <item name="android:fontFamily">@font/pretendard_bold</item>

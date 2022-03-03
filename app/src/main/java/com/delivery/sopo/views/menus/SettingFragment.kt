@@ -1,8 +1,11 @@
 package com.delivery.sopo.views.menus
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.Looper
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -44,9 +47,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
     fun setTab()
     {
         startTabBinding = DataBindingUtil.setContentView(requireActivity(), R.layout.item_time_tab)
-        startTabBinding.tvTitle.text = "시작"
         endTabBinding = DataBindingUtil.setContentView(requireActivity(), R.layout.item_time_tab)
-        endTabBinding.tvTitle.text = "끝"
     }
 
     override fun setBeforeBinding()
@@ -73,12 +74,11 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
         test()
 
         parentView.hideTab()
+
         Handler(Looper.getMainLooper()).postDelayed(Runnable {
 
             binding.slideMainSetting.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
         }, 300)
-
-
     }
 
     override fun setObserve()
@@ -129,22 +129,26 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
     var startTimeList : List<String> = "00:00".split(":")
     var endTimeList : List<String> = "00:00".split(":")
 
+    @SuppressLint("SetTextI18n")
     fun test()
     {
+        val tabLayout = binding.includeNotDisturbTime.tabLayoutTime
+        tabLayout.addTab(tabLayout.newTab().setCustomView(R.layout.item_time_tab))
+        tabLayout.addTab(tabLayout.newTab().setCustomView(R.layout.item_time_tab))
 
-//        setTab()
-        val tabs = binding.tabs
-        tabs.addTab(tabs.newTab().setCustomView(R.layout.item_time_tab))
-        tabs.addTab(tabs.newTab().setCustomView(R.layout.item_time_tab))
+        startTabBinding = ItemTimeTabBinding.bind(tabLayout.getTabAt(0)?.customView ?: return)
+        endTabBinding = ItemTimeTabBinding.bind(tabLayout.getTabAt(1)?.customView ?: return)
 
-        startTabBinding = ItemTimeTabBinding.bind(tabs.getTabAt(0)?.customView ?: return)
         startTabBinding.tvTitle.text = "시작"
-        endTabBinding = ItemTimeTabBinding.bind(tabs.getTabAt(1)?.customView ?: return)
         endTabBinding.tvTitle.text = "종료"
-//        tabs.addTab(tabs.newTab().setText("시작\n11:00"))
-//        tabs.addTab(tabs.newTab().setText("종료"))
 
-        tabs.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener
+        startTabBinding.tvTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800))
+        startTabBinding.tvTime.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800))
+
+        startTabBinding.tvTime.text = "00:00"
+        endTabBinding.tvTime.text = "00:00"
+
+        tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener
                                       {
                                           override fun onTabSelected(tab: TabLayout.Tab?)
                                           {
@@ -154,7 +158,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                                                       startTabBinding.tvTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800))
                                                       startTabBinding.tvTime.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800))
 
-                                                      binding.constraintStart.visibility = TabLayout.VISIBLE
+                                                      binding.includeNotDisturbTime.timePickerStart.visibility = View.VISIBLE
 
                                                   }
                                                   1 ->
@@ -162,7 +166,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                                                       endTabBinding.tvTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800))
                                                       endTabBinding.tvTime.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800))
 
-                                                      binding.constraintEnd.visibility = TabLayout.VISIBLE
+                                                      binding.includeNotDisturbTime.timePickerEnd.visibility = View.VISIBLE
                                                   }
                                               }
 
@@ -176,54 +180,48 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                                                       startTabBinding.tvTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
                                                       startTabBinding.tvTime.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_200))
 
-                                                      binding.constraintEnd.visibility = TabLayout.INVISIBLE
+                                                      binding.includeNotDisturbTime.timePickerStart.visibility = View.GONE
                                                   }
                                                   1 ->
                                                   {
                                                       endTabBinding.tvTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
                                                       endTabBinding.tvTime.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_200))
 
-                                                      binding.constraintStart.visibility = TabLayout.INVISIBLE
+                                                      binding.includeNotDisturbTime.timePickerEnd.visibility = View.GONE
                                                   }
                                               }
 
                                           }
 
-                                          override fun onTabReselected(tab: TabLayout.Tab?)
-                                          {
-                                          }
+                                          override fun onTabReselected(tab: TabLayout.Tab?) {}
 
                                       })
 
-        binding.datePickerStart.setIs24HourView(true)
-        binding.datePickerEnd.setIs24HourView(true)
+        binding.includeNotDisturbTime.timePickerStart.setIs24HourView(true)
+        binding.includeNotDisturbTime.timePickerEnd.setIs24HourView(true)
 
-        binding.datePickerStart.setOnTimeChangedListener { view, hourOfDay, minute ->
-            startTabBinding.tvTime.text = "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
+        binding.includeNotDisturbTime.timePickerStart.setOnTimeChangedListener { view, hourOfDay, minute ->
+            SopoLog.d("Start TimePicker [$hourOfDay:$minute]")
+            startTabBinding.tvTime.text = "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padEnd(2, '0')}"
         }
 
-        binding.datePickerEnd.setOnTimeChangedListener { view, hourOfDay, minute ->
-            endTabBinding.tvTime.text = "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
+        binding.includeNotDisturbTime.timePickerEnd.setOnTimeChangedListener { view, hourOfDay, minute ->
+            SopoLog.d("End TimePicker [$hourOfDay:$minute]")
+            endTabBinding.tvTime.text = "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padEnd(2, '0')}"
         }
-
-        binding.datePickerStart.hour = startTimeList[0].toInt()
-        binding.datePickerStart.minute = startTimeList[1].toInt()
-
-        binding.datePickerEnd.hour = endTimeList[0].toInt()
-        binding.datePickerEnd.minute = endTimeList[1].toInt()
 
         setClickEvent()
     }
 
     private fun setClickEvent(){
 
-        binding.tvOkBtn.setOnClickListener {
+       /* binding.includeNotDisturbTime.tvOk.setOnClickListener {
             SopoLog.d( msg = "Ok button")
 
-            val startHour = binding.datePickerStart.hour
-            val startMin = binding.datePickerStart.minute
-            val endHour = binding.datePickerEnd.hour
-            val endMin = binding.datePickerEnd.minute
+            val startHour = binding.includeNotDisturbTime.timePickerStart.hour
+            val startMin = binding.includeNotDisturbTime.timePickerStart.minute
+            val endHour = binding.includeNotDisturbTime.timePickerEnd.hour
+            val endMin = binding.includeNotDisturbTime.timePickerEnd.minute
 
             val toStartTotalMin = startHour * 60 + startMin
             val toEndTotalMin = endHour * 60 + endMin
@@ -244,7 +242,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                 startTime = "${startHour.toString().padStart(2, '0')}:${startMin.toString().padStart(2, '0')}"
                 endTime = "${endHour.toString().padStart(2, '0')}:${endMin.toString().padStart(2, '0')}"
             }
-        }
+        }*/
     }
 
     companion object

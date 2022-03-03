@@ -38,7 +38,7 @@
 
                 <com.delivery.sopo.util.ui_util.NotDisturbTimePicker
                     android:id="@+id/datePicker_start"
-                    android:theme="@style/AppTheme.NumberPicker"
+                    android:theme="@style/AppTheme.NotDisturbTimePicker"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:timePickerMode="spinner"

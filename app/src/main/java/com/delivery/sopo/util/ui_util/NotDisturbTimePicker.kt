@@ -6,6 +6,8 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.view.marginLeft
+import androidx.core.view.updateLayoutParams
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
@@ -18,8 +20,6 @@ class NotDisturbTimePicker(context: Context, attrs: AttributeSet? = null): TimeP
     {
         val linearLayout: LinearLayout = getChildAt(0) as LinearLayout
 
-        SopoLog.d("ChildCount ${linearLayout.childCount}")
-
         for(index in 0..linearLayout.childCount)
         {
             val childLinearLayout = linearLayout.getChildAt(index) as LinearLayout? ?: continue
@@ -27,9 +27,9 @@ class NotDisturbTimePicker(context: Context, attrs: AttributeSet? = null): TimeP
             for(childIndex in 0..childLinearLayout.childCount)
             {
                 val view = childLinearLayout.getChildAt(childIndex)
+
                 if(view is NumberPicker)
                 {
-                    SopoLog.d("ChildIndex num $childIndex")
 
                     val numberPicker = view as NumberPicker
 
@@ -48,7 +48,6 @@ class NotDisturbTimePicker(context: Context, attrs: AttributeSet? = null): TimeP
                 }
                 else if(view is TextView)
                 {
-                    SopoLog.d("ChildIndex tv $childIndex")
                     val originTextView = view as TextView
 
                     val tvParam = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -64,21 +63,10 @@ class NotDisturbTimePicker(context: Context, attrs: AttributeSet? = null): TimeP
 
     fun setHourFormat(numberPicker: NumberPicker, timeInterval: Int = DEFAULT_INTERVAL){
         try {
-
             numberPicker.apply {
                 descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
                 displayedValues = getDisplayedValueWithHour(timeInterval)
             }
-
-//            val minPicker= this.findViewById<NumberPicker>(Resources.getSystem().getIdentifier("minute", "id", "android"))
-//
-//            minPicker.apply {
-//                descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
-//
-//                minValue = MINUTES_MIN
-//                maxValue = MINUTES_MAX / timeInterval - 1
-//                displayedValues = getDisplayedValueWithMinute()
-//            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -89,7 +77,6 @@ class NotDisturbTimePicker(context: Context, attrs: AttributeSet? = null): TimeP
         {
             numberPicker.apply {
                 descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
-
                 minValue = MINUTES_MIN
                 maxValue = MINUTES_MAX / timeInterval - 1
                 displayedValues = getDisplayedValueWithMinute()
@@ -100,35 +87,6 @@ class NotDisturbTimePicker(context: Context, attrs: AttributeSet? = null): TimeP
             e.printStackTrace()
         }
     }
-
-/*
-    fun TimePicker.setTimeInterval(
-            timeInterval: Int = DEFAULT_INTERVAL
-    ) {
-        try {
-
-            val hourPicker= this.findViewById<NumberPicker>(Resources.getSystem().getIdentifier("hour", "id", "android"))
-
-            hourPicker.apply {
-                descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
-                displayedValues = getDisplayedValueWithHour(timeInterval)
-            }
-
-            val minPicker= this.findViewById<NumberPicker>(Resources.getSystem().getIdentifier("minute", "id", "android"))
-
-            minPicker.apply {
-                descendantFocusability = NumberPicker.FOCUS_BLOCK_DESCENDANTS
-
-                minValue = MINUTES_MIN
-                maxValue = MINUTES_MAX / timeInterval - 1
-                displayedValues = getDisplayedValueWithMinute()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-*/
-
 
     private fun getDisplayedValueWithHour(timeInterval: Int = DEFAULT_INTERVAL): Array<String>
     {
