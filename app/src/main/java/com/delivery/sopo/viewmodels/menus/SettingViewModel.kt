@@ -39,15 +39,16 @@ class SettingViewModel(private val appPasswordRepo: AppPasswordRepository) : Bas
         }
     }
 
-    fun onMoveToSetTimeClicked(){
-        _navigator.postValue(NavigatorConst.TO_NOT_DISTURB)
-    }
-
-    fun onSetNotifyOptionClicked(){
+    fun onSetPushAlarmListener()
+    {
         _navigator.postValue(NavigatorConst.TO_SET_NOTIFY_OPTION)
     }
 
-    fun onUpdateAppPassword(){
+    fun onSetNotDisturbTime(){
+        _navigator.postValue(NavigatorConst.TO_NOT_DISTURB)
+    }
+
+    fun  onSetLockPassword(){
         _navigator.postValue(NavigatorConst.TO_UPDATE_APP_PASSWORD)
     }
 
