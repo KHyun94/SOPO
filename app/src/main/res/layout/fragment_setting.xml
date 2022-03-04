@@ -35,10 +35,10 @@
                 android:id="@+id/constraint_main_push_alarm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
                 android:clickable="true"
                 android:focusable="true"
-                android:onClick="@{()->vm.onSetPushAlarmListener()}">
+                android:onClick="@{()->vm.onSetPushAlarmListener()}"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
                     android:id="@+id/tv_sub_title_push_alarm"
@@ -96,9 +96,11 @@
                 android:id="@+id/constraint_main_not_disturb_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="@{()->vm.onSetNotDisturbTime()}"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/v_divider_line1"
-                android:onClick="@{()->vm.onSetNotDisturbTime()}">
+                android:clickable="true"
+                android:focusable="true"
+                app:layout_constraintTop_toBottomOf="@+id/v_divider_line1">
 
                 <TextView
                     android:id="@+id/tv_sub_title_not_disturb_time"
@@ -187,9 +189,11 @@
                 android:id="@+id/constraint_main_lock_app"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="@{()->vm.onSetLockPassword()}"
+                android:clickable="true"
+                android:focusable="true"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/v_divider_line2"
-                android:onClick="@{()->vm.onSetLockPassword()}">
+                app:layout_constraintTop_toBottomOf="@id/v_divider_line2">
 
                 <TextView
                     android:id="@+id/tv_sub_title_lock_app"
@@ -245,15 +249,24 @@
 
             <include
                 android:id="@+id/include_not_disturb_time"
-                layout="@layout/include_not_disturb_time" />
+                layout="@layout/include_not_disturb_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
 
             <include
                 android:id="@+id/include_push_alarm"
-                layout="@layout/include_push_alarm" />
+                layout="@layout/include_push_alarm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
 
             <include
                 android:id="@+id/include_lock_app"
-                layout="@layout/include_lock_app" />
+                layout="@layout/include_lock_app"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
 
         </LinearLayout>
 

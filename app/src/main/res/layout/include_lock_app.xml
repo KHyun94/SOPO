@@ -4,6 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="onItemClickListener"
+            type="android.view.View.OnClickListener" />
+    </data>
+
     <LinearLayout
         android:id="@+id/layout_drawer"
         android:layout_width="match_parent"
@@ -19,14 +25,18 @@
             android:layout_marginTop="24dp"
             android:layout_marginLeft="24dp"
             android:layout_marginBottom="9dp"
-            android:text="푸시 알림을 언제 보내드릴까요?" />
+            android:text="앱을 켤 때마다 잠금번호를 입력합니다." />
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_main_push_always"
+            android:id="@+id/constraint_main_set_on"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="@{onItemClickListener}">
 
             <TextView
+                android:id="@+id/tv_set_on"
                 style="@style/kor_H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -36,15 +46,18 @@
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
                 android:layout_marginLeft="24dp"
-                android:text="변경이 있을 때마다 알림 받을게요."/>
+                android:textColor="@color/COLOR_GRAY_500"
+                android:text="설정 켜기"/>
 
             <ImageView
+                android:id="@+id/iv_set_on"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/ic_checked_blue_scale"
                 app:layout_constraintRight_toRightOf="parent"
+                android:visibility="gone"
                 android:layout_marginRight="24dp"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -56,12 +69,16 @@
             android:background="@color/COLOR_GRAY_200"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraint_main_push_arrive"
+            android:id="@+id/constraint_main_set_off"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:onClick="@{onItemClickListener}">
 
             <TextView
                 style="@style/kor_H4"
+                android:id="@+id/tv_set_off"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
@@ -73,6 +90,7 @@
                 android:text="도착했을 때만 알림 받을게요."/>
 
             <ImageView
+                android:id="@+id/iv_set_off"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
