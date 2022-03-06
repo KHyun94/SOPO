@@ -131,8 +131,8 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
 
     private fun viewSettingForSelected(binding: InquiryListCompleteItemBinding){
         SopoLog.d( msg = "viewSettingForSelected")
-        binding.root.constraint_item_part_complete.visibility = View.GONE
-        binding.root.constraint_date_complete.visibility = View.GONE
+        binding.root.constraint_item_part_complete.makeVisible
+        binding.root.constraint_date_complete.makeVisible
         binding.root.constraint_item_part_delete_complete.visibility = View.VISIBLE
         binding.root.constraint_delivery_status_front_complete.visibility = View.VISIBLE
     }
@@ -141,8 +141,8 @@ class CompleteListAdapter(private val cntOfSelectedItem: MutableLiveData<Int>, l
         SopoLog.d( msg = "viewInitialize")
         binding.root.constraint_item_part_complete.visibility = View.VISIBLE
         binding.root.constraint_date_complete.visibility = View.VISIBLE
-        binding.root.constraint_item_part_delete_complete.visibility = View.GONE
-        binding.root.constraint_delivery_status_front_complete.visibility = View.GONE
+        binding.root.constraint_item_part_delete_complete.makeVisible
+        binding.root.constraint_delivery_status_front_complete.makeVisible
     }
 
     fun setRemovable(flag: Boolean){

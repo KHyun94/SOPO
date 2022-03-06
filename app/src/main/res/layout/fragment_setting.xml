@@ -8,6 +8,7 @@
         <import type="android.view.View" />
 
         <import type="com.delivery.sopo.R" />
+        <import type="com.delivery.sopo.enums.SettingEnum.PushAlarmType" />
 
         <variable
             name="vm"
@@ -70,7 +71,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="11dp"
-                        android:text="푸시 알림 설정"
+                        android:text="@{vm.pushAlarmType.MESSAGE}"
+                        tools:text="푸시 알림 설정"
                         android:textColor="@color/COLOR_GRAY_400" />
 
                     <ImageView
@@ -100,6 +102,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 android:clickable="true"
                 android:focusable="true"
+                android:visibility="@{vm.pushAlarmType != PushAlarmType.REJECT ? View.VISIBLE : View.GONE}"
                 app:layout_constraintTop_toBottomOf="@+id/v_divider_line1">
 
                 <TextView
@@ -131,7 +134,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="11dp"
-                        android:text="잠금번호 없음"
+                        tools:text="설정 꺼짐"
+                        android:text="@{vm.notDisturbTime}"
                         android:textColor="@color/COLOR_GRAY_400"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintRight_toLeftOf="@+id/constraint_setting_not_disturb_time"
@@ -155,6 +159,7 @@
                             android:onClick="@{()->vm.setAppPassword()}"
                             android:textOff=""
                             android:textOn=""
+                            android:visibility="@{vm.isSetOfSecurity > 0 ?  View.VISIBLE : View.GONE}"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintRight_toRightOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
@@ -166,6 +171,7 @@
                             android:layout_height="wrap_content"
                             android:layout_alignParentRight="true"
                             android:layout_centerVertical="true"
+                            android:visibility="@{vm.isSetOfSecurity > 0 ?  View.GONE : View.VISIBLE}"
                             android:background="@drawable/ic_black_arrow_right"
                             android:backgroundTint="@color/COLOR_GRAY_800"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -224,7 +230,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="11dp"
-                        android:text="잠금 설정"
+                        android:text='@{vm.isSetOfSecurity() > 0 ? "잠금번호 있음" : "잠금번호 없음"}'
+                        tools:text="잠금 설정"
                         android:textColor="@color/COLOR_GRAY_400" />
 
                     <ImageView

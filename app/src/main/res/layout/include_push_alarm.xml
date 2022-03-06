@@ -9,6 +9,10 @@
         <variable
             name="onItemClickListener"
             type="android.view.View.OnClickListener" />
+        
+        <variable
+            name="onConfirmClickListener"
+            type="android.view.View.OnClickListener" />
     </data>
 
     <LinearLayout
@@ -154,6 +158,7 @@
             android:layout_gravity="center"
             android:layout_marginBottom="25dp"
             android:gravity="center"
+            android:onClick="@{onConfirmClickListener}"
             android:text="확인" />
 
 

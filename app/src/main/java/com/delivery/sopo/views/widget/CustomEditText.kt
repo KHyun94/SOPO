@@ -258,7 +258,7 @@ class CustomEditText : LinearLayout
                     {
                         if (editable.toString().isNotEmpty()) iv_right_mark.visibility =
                             View.VISIBLE
-                        else iv_right_mark.visibility = View.GONE
+                        else iv_right_mark.makeGone()
                     }
                 }
             )

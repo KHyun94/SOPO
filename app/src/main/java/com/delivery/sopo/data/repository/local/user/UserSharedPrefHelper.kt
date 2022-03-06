@@ -3,9 +3,12 @@ package com.delivery.sopo.data.repository.local.user
 import android.content.Context
 import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.data.database.shared.SharedPref
+import com.delivery.sopo.enums.SettingEnum
+import com.delivery.sopo.util.CodeUtil
 
 class UserSharedPrefHelper(private val sharedPref: SharedPref, private val context: Context)
 {
+
     fun getNickname(): String?
     {
         return sharedPref.getString(InfoConst.USER_NICKNAME, "")
@@ -114,14 +117,14 @@ class UserSharedPrefHelper(private val sharedPref: SharedPref, private val conte
         sharedPref.setString(InfoConst.FCM_TOPIC, topic)
     }
 
-    fun getDisturbStartTime() = sharedPref.getString(InfoConst.DISTURB_START_TIME, "00:00")
+    fun getDisturbStartTime() = sharedPref.getString(InfoConst.DISTURB_START_TIME, "")
 
     fun setDisturbStartTime(startTime: String)
     {
         sharedPref.setString(InfoConst.DISTURB_START_TIME, startTime)
     }
 
-    fun getDisturbEndTime() = sharedPref.getString(InfoConst.DISTURB_END_TIME, "00:00")
+    fun getDisturbEndTime() = sharedPref.getString(InfoConst.DISTURB_END_TIME, "")
 
     fun setDisturbEndTime(endTime: String)
     {
@@ -136,5 +139,18 @@ class UserSharedPrefHelper(private val sharedPref: SharedPref, private val conte
     fun setAppPassword(password: String)
     {
         sharedPref.setString(InfoConst.APP_PASSWORD, password)
+    }
+
+    fun getPushAlarmType(): SettingEnum.PushAlarmType
+    {
+        val pushAlarmType = sharedPref.getString(InfoConst.PUSH_ALARM_TYPE, SettingEnum.PushAlarmType.ALWAYS.name)
+            ?: return SettingEnum.PushAlarmType.ALWAYS
+
+        return CodeUtil.getEnumValueOfName<SettingEnum.PushAlarmType>(pushAlarmType)
+    }
+
+    fun setPushAlarmType(pushAlarmType: SettingEnum.PushAlarmType)
+    {
+        sharedPref.setString(InfoConst.PUSH_ALARM_TYPE, pushAlarmType.name)
     }
 }

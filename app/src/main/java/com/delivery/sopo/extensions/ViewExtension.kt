@@ -81,8 +81,8 @@ fun View.makeGone(){
 }
 
 fun View.enabledClick(){
-    isFocusable = false
-    isClickable = false
+    isFocusable = true
+    isClickable = true
 }
 
 fun View.disabledClick(){

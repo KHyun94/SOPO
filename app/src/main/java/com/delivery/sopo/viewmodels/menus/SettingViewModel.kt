@@ -6,15 +6,20 @@ import com.delivery.sopo.R
 import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
+import com.delivery.sopo.data.repository.local.user.UserSharedPrefHelper
 import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.SettingEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
+import com.delivery.sopo.util.SopoLog
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SettingViewModel(private val appPasswordRepo: AppPasswordRepository) : BaseViewModel()
+class SettingViewModel(
+        private val sharedPref: UserSharedPrefHelper,
+        private val appPasswordRepo: AppPasswordRepository) : BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
@@ -29,13 +34,41 @@ class SettingViewModel(private val appPasswordRepo: AppPasswordRepository) : Bas
         get() = _showSetPassword
 
 
-    private val _panelState = MutableLiveData<SlidingUpPanelLayout.PanelState>()
-    val panelState: LiveData<SlidingUpPanelLayout.PanelState>
-        get() = _panelState
+    private val _pushAlarmType = MutableLiveData<SettingEnum.PushAlarmType>()
+    val pushAlarmType: LiveData<SettingEnum.PushAlarmType>
+        get() = _pushAlarmType
 
-    fun setPanelState(panelState: SlidingUpPanelLayout.PanelState)
+    private val _notDisturbTime = MutableLiveData<String>()
+    val notDisturbTime: LiveData<String>
+    get() = _notDisturbTime
+
+    init
     {
-        _panelState.postValue(panelState)
+        setPushAlarmType(sharedPref.getPushAlarmType())
+
+        if(sharedPref.getDisturbStartTime() != "" && sharedPref.getDisturbEndTime() != "")
+        {
+            setNotDisturbTime("${sharedPref.getDisturbStartTime()} ~ ${sharedPref.getDisturbEndTime()}" )
+        }
+        else
+        {
+            setNotDisturbTime("설정 꺼짐")
+        }
+    }
+
+    fun setNavigator(navigator: String){
+        _navigator.postValue(navigator)
+    }
+
+    fun setNotDisturbTime(notDisturbTime: String)
+    {
+        _notDisturbTime.postValue(notDisturbTime)
+    }
+
+    fun setPushAlarmType(pushAlarmType: SettingEnum.PushAlarmType)
+    {
+        _pushAlarmType.postValue(pushAlarmType)
+        sharedPref.setPushAlarmType(pushAlarmType)
     }
 
     fun setAppPassword(){
@@ -52,19 +85,25 @@ class SettingViewModel(private val appPasswordRepo: AppPasswordRepository) : Bas
         }
     }
 
+    fun deleteAppPassword(){
+        viewModelScope.launch(Dispatchers.IO){
+            appPasswordRepo.deleteAll()
+        }
+    }
+
     fun onSetPushAlarmListener()
     {
-        setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED)
+        SopoLog.d("호출")
         _navigator.postValue(NavigatorConst.TO_SET_NOTIFY_OPTION)
     }
 
     fun onSetNotDisturbTime(){
-        setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED)
+        SopoLog.d("호출")
         _navigator.postValue(NavigatorConst.TO_NOT_DISTURB)
     }
 
     fun  onSetLockPassword(){
-        setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED)
+        SopoLog.d("호출")
         _navigator.postValue(NavigatorConst.TO_UPDATE_APP_PASSWORD)
     }
 

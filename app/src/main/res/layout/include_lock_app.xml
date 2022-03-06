@@ -8,6 +8,14 @@
         <variable
             name="onItemClickListener"
             type="android.view.View.OnClickListener" />
+
+        <variable
+            name="onChangeClickListener"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="onConfirmClickListener"
+            type="android.view.View.OnClickListener" />
     </data>
 
     <LinearLayout
@@ -87,13 +95,15 @@
                 android:layout_marginLeft="24dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
-                android:text="도착했을 때만 알림 받을게요."/>
+                android:textColor="@color/COLOR_GRAY_500"
+                android:text="설정 끄기."/>
 
             <ImageView
                 android:id="@+id/iv_set_off"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:background="@drawable/ic_checked_blue_scale"
                 app:layout_constraintRight_toRightOf="parent"
@@ -104,13 +114,13 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="9dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="25dp">
 
             <TextView
                 android:id="@+id/tv_lock_password_change"
                 style="@style/buttonHalfStyle"
-                android:layout_width="188dp"
+                android:layout_width="136dp"
                 android:layout_height="43dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -118,13 +128,16 @@
                 android:gravity="center"
                 app:layout_constraintRight_toLeftOf="@id/tv_ok"
                 android:text="잠금번호변경"
+                android:layout_marginLeft="35dp"
+                android:layout_marginRight="8dp"
+                android:onClick="@{onChangeClickListener}"
                 tools:backgroundTint="@color/COLOR_GRAY_200"
                 tools:textColor="@color/COLOR_GRAY_400"/>
 
             <TextView
                 android:id="@+id/tv_ok"
                 style="@style/buttonHalfStyle"
-                android:layout_width="188dp"
+                android:layout_width="136dp"
                 android:layout_height="43dp"
                 android:layout_gravity="center"
                 android:gravity="center"
@@ -132,6 +145,9 @@
                 app:layout_constraintLeft_toRightOf="@id/tv_lock_password_change"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                android:onClick="@{onConfirmClickListener}"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="35dp"
                 android:text="확인" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

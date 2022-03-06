@@ -1,25 +1,21 @@
 package com.delivery.sopo.views.menus
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
 import android.os.Handler
 import android.os.Looper
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentSettingBinding
 import com.delivery.sopo.databinding.ItemTimeTabBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
+import com.delivery.sopo.enums.SettingEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.*
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
@@ -28,12 +24,10 @@ import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.viewmodels.menus.SettingViewModel
-import com.delivery.sopo.views.dialog.SelectNotifyKindDialog
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.tabs.TabLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.math.abs
 
 
 class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
@@ -85,183 +79,10 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
         }
     }
 
-    override fun setAfterBinding()
-    {
-        super.setAfterBinding()
-
-        test()
-
-        binding.includePushAlarm.setOnItemClickListener {
-            when(it.id)
-            {
-                R.id.constraint_main_push_always ->
-                {
-                    SopoLog.d("Always")
-                    setSelectItemView(Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways))
-                    setUnselectItemView(Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive),
-                                        Pair(binding.includePushAlarm.tvReject, binding.includePushAlarm.ivReject))
-                }
-                R.id.constraint_main_push_arrive ->
-                {
-                    SopoLog.d("Arrive")
-                    setSelectItemView(Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive))
-                    setUnselectItemView(Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways),
-                                        Pair(binding.includePushAlarm.tvReject, binding.includePushAlarm.ivReject))
-                }
-                R.id.constraint_main_push_reject ->
-                {
-                    SopoLog.d("Reject")
-                    setSelectItemView(Pair(binding.includePushAlarm.tvReject, binding.includePushAlarm.ivReject))
-                    setUnselectItemView(
-                        Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive),
-                        Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways))
-                }
-            }
-        }
-
-        binding.includeLockApp.setOnItemClickListener {
-            when(it.id)
-            {
-                R.id.constraint_main_set_on ->
-                {
-                    SopoLog.d("Always")
-                    setSelectItemView(Pair(binding.includeLockApp.tvSetOn, binding.includeLockApp.ivSetOn))
-                    setUnselectItemView(Pair(binding.includeLockApp.tvSetOff, binding.includeLockApp.ivSetOff))
-                }
-                R.id.constraint_main_set_off ->
-                {
-                    SopoLog.d("Arrive")
-                    setSelectItemView(Pair(binding.includeLockApp.tvSetOff, binding.includeLockApp.ivSetOff))
-                    setUnselectItemView(Pair(binding.includeLockApp.tvSetOn, binding.includeLockApp.ivSetOn))
-                }
-
-            }
-        }
-
-    }
-
-    private fun setDisableView()
-    {
-        binding.constraintSettingNotDisturbTime.disabledClick()
-        binding.constraintMainNotDisturbTime.disabledClick()
-        binding.constraintMainLockApp.disabledClick()
-    }
-
-    fun setEnableView()
-    {
-        binding.constraintSettingNotDisturbTime.enabledClick()
-        binding.constraintMainNotDisturbTime.enabledClick()
-        binding.constraintMainLockApp.enabledClick()
-    }
-
-    override fun setObserve()
-    {
-        super.setObserve()
-
-        activity ?: return
-        parentView.currentPage.observe(this) {
-            if(it != 2) return@observe
-            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-        }
-
-        binding.slideMainSetting.addPanelSlideListener(object: SlidingUpPanelLayout.PanelSlideListener
-                                                       {
-                                                           override fun onPanelSlide(panel: View?, slideOffset: Float)
-                                                           {
-                                                           }
-
-                                                           override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?)
-                                                           {
-                                                               newState ?: return
-
-                                                               when(newState)
-                                                               {
-                                                                   SlidingUpPanelLayout.PanelState.EXPANDED ->
-                                                                   {
-                                                                       setDisableView()
-                                                                   }
-                                                                   SlidingUpPanelLayout.PanelState.COLLAPSED ->
-                                                                   {
-                                                                       parentView.showTab()
-
-                                                                       SopoLog.d("상태 -> $newState")
-                                                                       setEnableView()
-                                                                   }
-                                                               }
-                                                           }
-
-                                                       })
-
-        vm.navigator.observe(requireActivity()) { navigator ->
-            SopoLog.d("navigator[$navigator]")
-
-            when(navigator)
-            {
-                NavigatorConst.TO_NOT_DISTURB ->
-                {
-                    parentView.hideTab()
-
-                    binding.includeLockApp.root.visibility = View.GONE
-                    binding.includePushAlarm.root.visibility = View.GONE
-                    binding.includeNotDisturbTime.root.visibility = View.VISIBLE
-
-                    Handler(Looper.getMainLooper()).postDelayed({
-                                                                    binding.slideMainSetting.panelState =
-                                                                        SlidingUpPanelLayout.PanelState.EXPANDED
-                                                                }, 200)
-                }
-                NavigatorConst.TO_SET_NOTIFY_OPTION ->
-                {
-                    parentView.hideTab()
-
-                    binding.includeNotDisturbTime.root.visibility = View.GONE
-                    binding.includeLockApp.root.visibility = View.GONE
-                    binding.includePushAlarm.root.visibility = View.VISIBLE
-
-                    Handler(Looper.getMainLooper()).postDelayed({
-                                                                    binding.slideMainSetting.panelState =
-                                                                        SlidingUpPanelLayout.PanelState.EXPANDED
-                                                                }, 200)
-                }
-                NavigatorConst.TO_UPDATE_APP_PASSWORD ->
-                {
-                    parentView.hideTab()
-
-                    binding.includeNotDisturbTime.root.visibility = View.GONE
-                    binding.includeLockApp.root.visibility = View.GONE
-                    binding.includePushAlarm.root.visibility = View.VISIBLE
-
-                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                        binding.slideMainSetting.panelState =
-                            SlidingUpPanelLayout.PanelState.EXPANDED
-                    }, 200)
-
-                    //                    activity?.launchActivitiy<LockScreenView> {
-                    //                        putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET)
-                    //                    }
-                }
-            }
-        }
-
-        vm.showSetPassword.observe(requireActivity(), Observer {
-            if(it)
-            {
-                activity?.launchActivitiy<LockScreenView> {
-                    putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET)
-                }
-            }
-            else
-            {
-            }
-        })
-    }
-
-    var startTimeList: List<String> = "00:00".split(":")
-    var endTimeList: List<String> = "00:00".split(":")
-
     @SuppressLint("SetTextI18n")
-    fun test()
+    fun setNotDisturbTime()
     {
+
         val tabLayout = binding.includeNotDisturbTime.tabLayoutTime
         tabLayout.addTab(tabLayout.newTab().setCustomView(R.layout.item_time_tab))
         tabLayout.addTab(tabLayout.newTab().setCustomView(R.layout.item_time_tab))
@@ -314,16 +135,14 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                                                            startTabBinding.tvTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
                                                            startTabBinding.tvTime.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_200))
 
-                                                           binding.includeNotDisturbTime.timePickerStart.visibility =
-                                                               View.GONE
+                                                           binding.includeNotDisturbTime.timePickerStart.makeGone()
                                                        }
                                                        1 ->
                                                        {
                                                            endTabBinding.tvTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
                                                            endTabBinding.tvTime.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_200))
 
-                                                           binding.includeNotDisturbTime.timePickerEnd.visibility =
-                                                               View.GONE
+                                                           binding.includeNotDisturbTime.timePickerEnd.makeGone()
                                                        }
                                                    }
 
@@ -352,6 +171,248 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
 
         setClickEvent()
     }
+
+    fun setLockPasswordListener(){
+
+        var isSetOn: Boolean = false
+
+        binding.includeLockApp.setOnItemClickListener {
+            when(it.id)
+            {
+                R.id.constraint_main_set_on ->
+                {
+                    SopoLog.d("Always")
+                    isSetOn = true
+                    setSelectItemView(Pair(binding.includeLockApp.tvSetOn, binding.includeLockApp.ivSetOn))
+                    setUnselectItemView(Pair(binding.includeLockApp.tvSetOff, binding.includeLockApp.ivSetOff))
+                }
+                R.id.constraint_main_set_off ->
+                {
+                    SopoLog.d("Arrive")
+                    isSetOn = false
+                    setSelectItemView(Pair(binding.includeLockApp.tvSetOff, binding.includeLockApp.ivSetOff))
+                    setUnselectItemView(Pair(binding.includeLockApp.tvSetOn, binding.includeLockApp.ivSetOn))
+                }
+            }
+        }
+
+        binding.includeLockApp.setOnChangeClickListener {
+            binding.slideMainSetting.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+
+            activity?.launchActivitiy<LockScreenView> {
+                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET)
+            }
+        }
+
+        binding.includeLockApp.setOnConfirmClickListener {
+
+            binding.slideMainSetting.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+
+            if(!isSetOn)
+            {
+                return@setOnConfirmClickListener vm.deleteAppPassword()
+            }
+
+            activity?.launchActivitiy<LockScreenView> {
+                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET)
+            }
+        }
+    }
+
+    fun setPushAlarmListener()
+    {
+        var selectedPushAlarmType: SettingEnum.PushAlarmType = vm.pushAlarmType.value?:SettingEnum.PushAlarmType.ALWAYS
+
+        binding.includePushAlarm.setOnItemClickListener {
+            when(it.id)
+            {
+                R.id.constraint_main_push_always ->
+                {
+                    selectedPushAlarmType = SettingEnum.PushAlarmType.ALWAYS
+                    setSelectItemView(Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways))
+                    setUnselectItemView(Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive),
+                                        Pair(binding.includePushAlarm.tvReject, binding.includePushAlarm.ivReject))
+                }
+                R.id.constraint_main_push_arrive ->
+                {
+                    selectedPushAlarmType = SettingEnum.PushAlarmType.ARRIVE
+                    setSelectItemView(Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive))
+                    setUnselectItemView(Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways),
+                                        Pair(binding.includePushAlarm.tvReject, binding.includePushAlarm.ivReject))
+                }
+                R.id.constraint_main_push_reject ->
+                {
+                    selectedPushAlarmType = SettingEnum.PushAlarmType.REJECT
+                    setSelectItemView(Pair(binding.includePushAlarm.tvReject, binding.includePushAlarm.ivReject))
+                    setUnselectItemView(
+                        Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive),
+                        Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways))
+                }
+            }
+        }
+
+        binding.includePushAlarm.setOnConfirmClickListener {
+            binding.slideMainSetting.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+            vm.setPushAlarmType(selectedPushAlarmType)
+        }
+    }
+
+
+    override fun setAfterBinding()
+    {
+        super.setAfterBinding()
+
+        setNotDisturbTime()
+        setPushAlarmListener()
+        setLockPasswordListener()
+
+
+
+    }
+
+    private fun setDisableView()
+    {
+        binding.constraintMainNotDisturbTime.disabledClick()
+        binding.constraintMainPushAlarm.disabledClick()
+        binding.constraintMainLockApp.disabledClick()
+    }
+
+    fun setEnableView()
+    {
+        binding.constraintMainNotDisturbTime.enabledClick()
+        binding.constraintMainPushAlarm.enabledClick()
+        binding.constraintMainLockApp.enabledClick()
+    }
+
+    override fun setObserve()
+    {
+        super.setObserve()
+
+        activity ?: return
+        parentView.currentPage.observe(this) {
+            if(it != 2) return@observe
+            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        }
+
+        binding.slideMainSetting.addPanelSlideListener(object: SlidingUpPanelLayout.PanelSlideListener
+                                                       {
+                                                           override fun onPanelSlide(panel: View?, slideOffset: Float)
+                                                           {
+                                                           }
+
+                                                           override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?)
+                                                           {
+                                                               newState ?: return
+
+                                                               when(newState)
+                                                               {
+                                                                   SlidingUpPanelLayout.PanelState.EXPANDED ->
+                                                                   {
+                                                                       setDisableView()
+                                                                   }
+                                                                   SlidingUpPanelLayout.PanelState.COLLAPSED ->
+                                                                   {
+                                                                       parentView.showTab()
+
+                                                                       SopoLog.d("상태 -> $newState")
+                                                                       setEnableView()
+                                                                   }
+                                                               }
+                                                           }
+
+                                                       })
+
+        vm.navigator.observe(requireActivity()) { navigator ->
+            SopoLog.d("navigator[$navigator]")
+
+            when(navigator)
+            {
+                NavigatorConst.TO_NOT_DISTURB ->
+                {
+                    parentView.hideTab()
+
+                    binding.includeLockApp.root.makeGone()
+                    binding.includePushAlarm.root.makeGone()
+                    binding.includeNotDisturbTime.root.makeVisible()
+
+                    Handler(Looper.getMainLooper()).postDelayed({
+                                                                    binding.slideMainSetting.panelState =
+                                                                        SlidingUpPanelLayout.PanelState.EXPANDED
+                                                                }, 200)
+                }
+                NavigatorConst.TO_SET_NOTIFY_OPTION ->
+                {
+                    parentView.hideTab()
+
+                    binding.includeNotDisturbTime.root.makeGone()
+                    binding.includeLockApp.root.makeGone()
+                    binding.includePushAlarm.root.makeVisible()
+
+                    setUnselectItemView(
+                        Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways),
+                        Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive),
+                        Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways))
+
+                    when(vm.pushAlarmType.value)
+                    {
+                        SettingEnum.PushAlarmType.ALWAYS -> setSelectItemView(Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways))
+                        SettingEnum.PushAlarmType.ARRIVE -> setSelectItemView(Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive))
+                        SettingEnum.PushAlarmType.REJECT -> setSelectItemView(Pair(binding.includePushAlarm.tvReject, binding.includePushAlarm.ivReject))
+                    }
+
+                    Handler(Looper.getMainLooper()).postDelayed({
+                                                                    binding.slideMainSetting.panelState =
+                                                                        SlidingUpPanelLayout.PanelState.EXPANDED
+                                                                }, 200)
+                }
+                NavigatorConst.TO_UPDATE_APP_PASSWORD ->
+                {
+                    parentView.hideTab()
+
+                    binding.includeLockApp.root.makeVisible()
+                    binding.includeNotDisturbTime.root.makeGone()
+                    binding.includePushAlarm.root.makeGone()
+
+                    setUnselectItemView(
+                        Pair(binding.includeLockApp.tvSetOn, binding.includeLockApp.ivSetOn),
+                        Pair(binding.includeLockApp.tvSetOff, binding.includeLockApp.ivSetOff))
+
+                    if(vm.isSetOfSecurity.value?:0 > 0)
+                    {
+                        setSelectItemView(Pair(binding.includeLockApp.tvSetOn, binding.includeLockApp.ivSetOn))
+                        binding.includeLockApp.tvLockPasswordChange.enabledClick()
+                        binding.includeLockApp.tvLockPasswordChange.backgroundTintList = resources.getColorStateList(R.color.COLOR_MAIN_700, null)
+                        binding.includeLockApp.tvLockPasswordChange.convertTextColor(R.color.MAIN_WHITE)
+                    }
+                    else
+                    {
+                        setSelectItemView(Pair(binding.includeLockApp.tvSetOff, binding.includeLockApp.ivSetOff))
+                        binding.includeLockApp.tvLockPasswordChange.disabledClick()
+                        binding.includeLockApp.tvLockPasswordChange.backgroundTintList = resources.getColorStateList(R.color.COLOR_GRAY_200, null)
+                        binding.includeLockApp.tvLockPasswordChange.convertTextColor(R.color.COLOR_GRAY_400)
+                    }
+
+                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                        binding.slideMainSetting.panelState =
+                            SlidingUpPanelLayout.PanelState.EXPANDED
+                    }, 200)
+                }
+            }
+        }
+
+        vm.showSetPassword.observe(requireActivity(), Observer {
+            if(it)
+            {
+                vm.setNavigator(NavigatorConst.TO_NOT_DISTURB)
+            }
+            else
+            {
+            }
+        })
+    }
+
+    var startTimeList: List<String> = "00:00".split(":")
+    var endTimeList: List<String> = "00:00".split(":")
 
     private fun setClickEvent()
     {

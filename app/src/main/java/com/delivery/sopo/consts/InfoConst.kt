@@ -13,6 +13,7 @@ object InfoConst
     const val REGISTER_DATE = "REGISTER_DATE"
     const val STATUS = "STATUS"
     const val SNS_UID = "SNS_UID"
+    const val PUSH_ALARM_TYPE = "PUSH_ALARM_TYPE"
     const val APP_PASSWORD = "APP_PASSWORD"
     const val FCM_TOPIC = "FCM_TOPIC"
     const val DISTURB_START_TIME = "DISTURB_START_TIME"
