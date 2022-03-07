@@ -20,6 +20,7 @@ enum class ErrorEnum(val httpStatusCode: Int, val code: Int, val errorType: Erro
     OAUTH2_UNSUPPORTED_RESPONSE_TYPE(400, 809, ErrorType.OAUTH2, "지원하지 않는 응답 타입입니다.", "인증에 실패했습니다. 다시 시도해주세요."),
     OAUTH2_ACCOUNT_NOT_FOUND(403, 810, ErrorType.OAUTH2, "사용자의 계정을 찾을 수 없습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
     OAUTH2_UNKNOWN(401, 811, ErrorType.OAUTH2, "이 외 정의된 사유로 에러가 발생했습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
+    OAUTH2_DELETE_TOKEN(400, 812, ErrorType.OAUTH2, "존재하지 않는 토큰입니다.(중복 로그인)", "다른 기기에 로그인되어있습니다. 다시 확인해주세요."),
 
     INVALID_AUTH_CODE(401, 615, ErrorType.AUTHENTICATION, "입력한 인증코드가 일치하지 않습니다.", "입력한 인증코드가 일치하지 않습니다."),
     INVALID_JWT_TOKEN(401, 601, ErrorType.AUTHENTICATION, "비밀번호 초기화 API에서 JWT 토큰 검증에 실패했습니다.", ""),

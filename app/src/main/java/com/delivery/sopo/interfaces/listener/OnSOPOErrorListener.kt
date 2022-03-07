@@ -8,6 +8,7 @@ interface OnSOPOErrorCallback
     fun onLoginError(error:ErrorEnum) {}
     fun onSignUpError(error:ErrorEnum) {}
     fun onAuthError(error:ErrorEnum){}
+    fun onDuplicateError(error: ErrorEnum) {}
     fun onRegisterParcelError(error:ErrorEnum){}
     fun onInquiryParcelError(error:ErrorEnum){}
     fun onFailure(error:ErrorEnum)

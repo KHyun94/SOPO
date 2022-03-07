@@ -42,6 +42,12 @@ class ParcelExceptionHandler(private val dispatcher: CoroutineDispatcher, privat
             {
                 val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code)
                 SopoLog.e("OAuthException API Error $errorCode", exception)
+
+                if(errorCode == ErrorEnum.OAUTH2_DELETE_TOKEN)
+                {
+                    return callback.onDuplicateError(errorCode)
+                }
+
                 callback.onAuthError(errorCode)
             }
             is InternalServerException ->

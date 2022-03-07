@@ -1,11 +1,13 @@
 package com.delivery.sopo.exceptions
 
+import android.content.Intent
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.OAuthException
 import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.views.intro.IntroView
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlin.coroutines.CoroutineContext
@@ -40,6 +42,10 @@ class UserExceptionHandler(
                 if(errorCode == ErrorEnum.OAUTH2_INVALID_GRANT || errorCode == ErrorEnum.OAUTH2_INVALID_TOKEN)
                 {
                     return callback.onLoginError(errorCode)
+                }
+                else if(errorCode == ErrorEnum.OAUTH2_DELETE_TOKEN)
+                {
+                    return callback.onDuplicateError(errorCode)
                 }
                 callback.onAuthError(errorCode)
             }
