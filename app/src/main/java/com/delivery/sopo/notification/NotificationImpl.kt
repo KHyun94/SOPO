@@ -29,6 +29,40 @@ object NotificationImpl: Notification, KoinComponent
 {
     val userRepo: UserLocalRepository by inject()
 
+    fun notifyLogout(remoteMessage: RemoteMessage, context: Context, intent: Intent)
+    {
+        val channelId = "${context.packageName}SOPO"
+
+        val intent = Intent(context, SplashView::class.java)
+        intent.action = Intent.ACTION_MAIN
+        intent.addCategory(Intent.CATEGORY_LAUNCHER)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+        //        val pIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val contentIntent =
+            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+        val nBuilder = NotificationCompat.Builder(context, channelId)
+            .setSmallIcon(R.drawable.ic_icon_notification)
+            .setContentTitle("SOPO")
+            .setContentText("디바이스 어웨이큰 상태가 변경되었습니다. ${TimeUtil.getDateTime()}")
+            .setAutoCancel(true)
+            .setSound(defaultSoundUri)
+            .setVibrate(longArrayOf(1000, 1000))
+            .setLights(Color.WHITE, 1500, 1500)
+            .setContentIntent(contentIntent)
+        val nManager =
+            context.getSystemService(FirebaseMessagingService.NOTIFICATION_SERVICE) as NotificationManager
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            val channel =
+                NotificationChannel(channelId, NotificationEnum.PUSH_UPDATE_PARCEL.channelName, NotificationManager.IMPORTANCE_DEFAULT)
+            nManager.createNotificationChannel(channel)
+        }
+        nManager.notify(30001, nBuilder.build())
+    }
+
     fun awakenDeviceNoti(remoteMessage: RemoteMessage, context: Context, intent: Intent)
     {
         val channelId = "${context.packageName}SOPO"

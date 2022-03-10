@@ -65,6 +65,7 @@ class RefreshParcelBroadcastReceiver: BroadcastReceiver(), KoinComponent
     {
         context ?: return
         intent ?: return
+
         SopoLog.d("BroadCastReceiver Type:")
         if(intent.action != ACTION) return
 

@@ -6,16 +6,17 @@ import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.OAuthException
 import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
+import com.delivery.sopo.services.receivers.LogOutBroadcastReceiver
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.intro.IntroView
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
-class UserExceptionHandler(
-        private val dispatcher: CoroutineDispatcher,
-        private val callback: OnSOPOErrorCallback): CoroutineExceptionHandler
+class UserExceptionHandler(private val dispatcher: CoroutineDispatcher, private val callback: OnSOPOErrorCallback):
+        CoroutineExceptionHandler
 {
+    private val logOutBroadcastReceiver: LogOutBroadcastReceiver by lazy { LogOutBroadcastReceiver() }
+
     override val key: CoroutineContext.Key<*> = dispatcher.key
 
     override fun handleException(context: CoroutineContext, exception: Throwable)
@@ -45,8 +46,9 @@ class UserExceptionHandler(
                 }
                 else if(errorCode == ErrorEnum.OAUTH2_DELETE_TOKEN)
                 {
-                    return callback.onDuplicateError(errorCode)
+
                 }
+
                 callback.onAuthError(errorCode)
             }
             is InternalServerException ->

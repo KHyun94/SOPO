@@ -7,14 +7,11 @@ import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.ActivityResultRegistry
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import com.delivery.sopo.BR
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.NetworkStatus
@@ -63,7 +60,7 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-// e-pay
+
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         receivedData(intent = intent)
@@ -140,7 +137,6 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
             when(status)
             {
-
                 NetworkStatus.WIFI, NetworkStatus.CELLULAR ->
                 {
                     disconnectNetworkSnackBar.dismiss()
