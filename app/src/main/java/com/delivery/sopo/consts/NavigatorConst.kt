@@ -2,6 +2,7 @@ package com.delivery.sopo.consts
 
 object NavigatorConst {
 
+    const val DUPLICATE_LOGIN: String = "DUPLICATE_LOGIN"
     const val TO_SIGN_OUT = "TO_SIGN_OUT"
     const val TO_LOGIN = "TO_LOGIN"
     const val TO_LOGIN_SELECT = "TO_LOGIN_SELECT"

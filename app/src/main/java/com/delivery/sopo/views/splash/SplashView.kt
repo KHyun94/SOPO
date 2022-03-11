@@ -80,6 +80,10 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
                     moveToActivityWithFinish(MainView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     finish()
                 }
+                NavigatorConst.DUPLICATE_LOGIN ->
+                {
+
+                }
             }
         })
 

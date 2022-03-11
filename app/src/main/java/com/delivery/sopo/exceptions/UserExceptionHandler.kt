@@ -1,23 +1,21 @@
 package com.delivery.sopo.exceptions
 
-import android.content.Intent
 import com.delivery.sopo.enums.ErrorEnum
-import com.delivery.sopo.exceptions.InternalServerException
-import com.delivery.sopo.exceptions.OAuthException
-import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
-import com.delivery.sopo.services.receivers.LogOutBroadcastReceiver
+import com.delivery.sopo.usecase.LogoutUseCase
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.views.intro.IntroView
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineExceptionHandler
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import kotlin.coroutines.CoroutineContext
 
 class UserExceptionHandler(private val dispatcher: CoroutineDispatcher, private val callback: OnSOPOErrorCallback):
-        CoroutineExceptionHandler
+        CoroutineExceptionHandler, KoinComponent
 {
-    private val logOutBroadcastReceiver: LogOutBroadcastReceiver by lazy { LogOutBroadcastReceiver() }
-
     override val key: CoroutineContext.Key<*> = dispatcher.key
+
+    private val logoutUseCase: LogoutUseCase by inject()
 
     override fun handleException(context: CoroutineContext, exception: Throwable)
     {
@@ -46,7 +44,8 @@ class UserExceptionHandler(private val dispatcher: CoroutineDispatcher, private 
                 }
                 else if(errorCode == ErrorEnum.OAUTH2_DELETE_TOKEN)
                 {
-
+                    logoutUseCase.invoke()
+                    return callback.onDuplicateError(errorCode)
                 }
 
                 callback.onAuthError(errorCode)

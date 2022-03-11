@@ -2,6 +2,7 @@ package com.delivery.sopo.viewmodels.splash
 
 import android.os.Handler
 import android.os.Looper
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
@@ -21,7 +22,13 @@ class SplashViewModel(
         private val userRemoteRepo: UserRemoteRepository,
         private val oAuthLocalRepo: OAuthLocalRepository): BaseViewModel()
 {
-    var navigator = MutableLiveData<String>()
+    private var _navigator = MutableLiveData<String>()
+    val navigator : LiveData<String>
+    get() = _navigator
+
+    fun setNavigator(navigator: String){
+        _navigator.postValue(navigator)
+    }
 
     private val onSOPOErrorCallback = object : OnSOPOErrorCallback{
 
@@ -31,11 +38,11 @@ class SplashViewModel(
             {
                 ErrorEnum.NICK_NAME_NOT_FOUND ->
                 {
-                    navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
+                    setNavigator(NavigatorConst.TO_UPDATE_NICKNAME)
                 }
                 else ->
                 {
-                    navigator.postValue(NavigatorConst.TO_INTRO)
+                    setNavigator(NavigatorConst.TO_INTRO)
                 }
             }
         }
@@ -45,13 +52,20 @@ class SplashViewModel(
             super.onInternalServerError(error)
 
             postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
-            navigator.postValue(NavigatorConst.TO_INTRO)
+            setNavigator(NavigatorConst.TO_INTRO)
         }
 
         override fun onAuthError(error: ErrorEnum)
         {
             super.onAuthError(error)
-            navigator.postValue(NavigatorConst.TO_INTRO)
+            setNavigator(NavigatorConst.TO_INTRO)
+        }
+
+        override fun onDuplicateError(error: ErrorEnum)
+        {
+            super.onDuplicateError(error)
+
+            setNavigator(NavigatorConst.DUPLICATE_LOGIN)
         }
     }
 
@@ -70,10 +84,10 @@ class SplashViewModel(
 
         if(userLocalRepo.getStatus() == StatusConst.ACTIVATE)
         {
-            return navigator.postValue(NavigatorConst.TO_PERMISSION)
+            return setNavigator(NavigatorConst.TO_PERMISSION)
         }
 
-        navigator.postValue(NavigatorConst.TO_INTRO)
+        setNavigator(NavigatorConst.TO_INTRO)
     }
 
     fun requestUserInfo() = checkEventStatus(true) {
@@ -92,9 +106,9 @@ class SplashViewModel(
                 val userInfo = userRemoteRepo.getUserInfo()
                 SopoLog.d("로그인 성공 [UserInfo:${userInfo.toString()}]")
 
-                if(userInfo.nickname == "") return@launch navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
+                if(userInfo.nickname == "") return@launch setNavigator(NavigatorConst.TO_UPDATE_NICKNAME)
 
-                navigator.postValue(NavigatorConst.TO_MAIN)
+                setNavigator(NavigatorConst.TO_MAIN)
             }
             catch(e: Exception)
             {
