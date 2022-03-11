@@ -153,6 +153,60 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         }
     }
 
+//    fun onSendEmailClicked(v: View) = checkEventStatus(checkNetwork = true) {
+//        SopoLog.i("onSendEmailClicked() 호출 [data:${navigator.value}]")
+//
+//        startLoading()
+//
+//        validity.forEach { (k, v) ->
+//            if(!v)
+//            {
+//                stopLoading()
+//                return@checkEventStatus _invalidity.postValue(Pair(k, v))
+//            }
+//        }
+//
+//        when(navigator.value)
+//        {
+//            ResetPasswordConst.INPUT_EMAIL_FOR_SEND ->
+//            {
+//                val email = email.value?.toString()
+//
+//                if(email == null)
+//                {
+//                    postErrorSnackBar("이메일을 다시 입력해주세요.")
+//                    _invalidity.postValue(Pair(InfoEnum.EMAIL, false))
+//                    stopLoading()
+//                    return@checkEventStatus
+//                }
+//
+//                requestSendTokenToEmail(email = email)
+//            }
+//            ResetPasswordConst.INPUT_PASSWORD_FOR_RESET ->
+//            {
+//                val password = password.value?.toString()
+//
+//                if(password == null)
+//                {
+//                    postErrorSnackBar("이메일을 다시 입력해주세요.")
+//                    _invalidity.postValue(Pair(InfoEnum.PASSWORD, false))
+//                    stopLoading()
+//                    return@checkEventStatus
+//                }
+//
+//                val resetPassword = ResetPassword(jwtToken, authToken, email.value.toString(), password)
+//                requestResetPassword(resetPassword = resetPassword)
+//                stopLoading()
+//            }
+//            ResetPasswordConst.COMPLETED_RESET_PASSWORD ->
+//            {
+//                _navigator.postValue(NavigatorConst.TO_COMPLETE)
+//                stopLoading()
+//            }
+//
+//        }
+//    }
+
     private fun requestSendTokenToEmail(email: String) = scope.launch(Dispatchers.IO) {
         try
         {
