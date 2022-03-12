@@ -6,6 +6,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ui_util.OnSnackBarClickListener
 import io.reactivex.Flowable.just
 import io.reactivex.Observable
 import io.reactivex.Observable.just
@@ -25,6 +27,8 @@ import java.util.*
 
 abstract class BaseViewModel: ViewModel()
 {
+    var onSnackClickListener: Pair<CharSequence, OnSnackBarClickListener>? = null
+
     private val _isClickEvent = MutableLiveData<Boolean>()
     val isClickEvent: LiveData<Boolean>
         get() = _isClickEvent
@@ -57,7 +61,7 @@ abstract class BaseViewModel: ViewModel()
 
         SopoLog.d("이벤트 시작 전")
 
-        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+        Handler(Looper.getMainLooper()).postDelayed({
             try
             {
                 SopoLog.d("이벤트 시작")
@@ -127,10 +131,11 @@ abstract class BaseViewModel: ViewModel()
         _isCheckNetwork.postValue(false)
     }
 
-    fun postErrorSnackBar(msg: String)
+    fun postErrorSnackBar(msg: String, onSnackBarClickListener: Pair<CharSequence, OnSnackBarClickListener>? = null)
     {
         SopoLog.d("MSG : $msg")
         _errorSnackBar.postValue(msg)
+        this.onSnackClickListener = onSnackClickListener
     }
 
     fun onStartLoading()

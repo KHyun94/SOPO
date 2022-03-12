@@ -13,7 +13,7 @@
 
         <variable
             name="btnContent"
-            type="String" />
+            type="CharSequence" />
 
     </data>
 
@@ -58,9 +58,11 @@
             android:layout_marginEnd="23dp"
             android:fontFamily="@font/pretendard_bold"
             android:padding="12dp"
-            android:text="@{btnContent}"
             android:textColor="@color/MAIN_WHITE"
             android:textSize="12dp"
+            android:text="@{btnContent}"
+            tools:visibility="visible"
+            tools:text="인증코드 재발송"
             android:visibility='@{(btnContent == "" || btnContent == null)?View.GONE:View.VISIBLE}'
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

@@ -162,7 +162,7 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         }
 
         vm.errorSnackBar.observe(this) {
-            val snackBar = CustomSnackBar(mainLayout, it, 3000, SnackBarEnum.ERROR)
+            val snackBar = CustomSnackBar(mainLayout, it, 3000, SnackBarEnum.ERROR, vm.onSnackClickListener)
             snackBar.show()
         }
     }

@@ -1,7 +1,9 @@
 package com.delivery.sopo.util.ui_util
 
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.Animation
@@ -21,11 +23,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 typealias OnSnackBarClickListener = ()->Unit
-class CustomSnackBar(private val view: View, private val content: String, private val duration: Int, private val type: SnackBarEnum? = null, private val clickListener: Pair<String, OnSnackBarClickListener>? = null)
+class CustomSnackBar(private val view: View, private val content: String, private val duration: Int, private val type: SnackBarEnum? = null, private val clickListener: Pair<CharSequence, OnSnackBarClickListener>? = null)
 {
     companion object
     {
-        fun make(view: View, content: String, duration: Int, type: SnackBarEnum? = null, clickListener: Pair<String, OnSnackBarClickListener>? = null) =
+        fun make(view: View, content: String, duration: Int, type: SnackBarEnum? = null, clickListener: Pair<CharSequence, OnSnackBarClickListener>? = null) =
             CustomSnackBar(view = view, content = content, duration = duration, type = type, clickListener = clickListener)
     }
 
@@ -83,11 +85,12 @@ class CustomSnackBar(private val view: View, private val content: String, privat
 
     }
 
-    private fun initData(content: String, btnContent: String? = null, clickListener: Pair<String, OnSnackBarClickListener>? = null)
+    private fun initData(content: String, btnContent: String? = null, clickListener: Pair<CharSequence, OnSnackBarClickListener>? = null)
     {
         binding.content = content
 
         clickListener?.run {
+
             binding.btnContent = first
             binding.tvCancelDelete.setOnClickListener {
                 second.invoke()
