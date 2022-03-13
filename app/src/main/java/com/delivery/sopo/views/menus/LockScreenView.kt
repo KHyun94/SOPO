@@ -9,15 +9,18 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.LockStatusConst
 import com.delivery.sopo.databinding.LockScreenViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
+import com.delivery.sopo.extensions.makeGone
+import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.models.base.BaseView
+import com.delivery.sopo.util.AnimationUtil
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.VibrateUtil
 import com.delivery.sopo.viewmodels.menus.LockScreenViewModel
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -34,21 +37,7 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
     override fun receivedData(intent: Intent)
     {
         val lockScreenStatus = intent.getSerializableExtra(IntentConst.LOCK_SCREEN) as LockScreenStatusEnum? ?: throw NullPointerException("'STATUS'가 존재하지 않습니다.")
-
-        intent.getStringExtra("EMAIL")?.run {
-            vm.email = this
-        }
-
-        intent.getStringExtra("JWT_TOKEN")?.run {
-            vm.jwtToken = this
-        }
-
         vm.setLockScreenStatus(lockScreenStatus)
-    }
-
-    override fun onBeforeBinding()
-    {
-
     }
 
     override fun onAfterBinding()
@@ -56,37 +45,33 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
         super.onAfterBinding()
 
         noneOfNumberPadIsPressed()
-
-        val (title, error, guide) = when(vm.lockScreenStatus.value)
-        {
-            LockScreenStatusEnum.SET ->
-            {
-                Triple("잠금번호 입력","잠금번호가 일치하지 않습니다.", "어플 실행 잠금번호를 입력해 주세요.")
-            }
-            LockScreenStatusEnum.VERIFY ->
-            {
-                Triple("잠금번호 입력","잠금번호가 일치하지 않습니다.", "어플 실행 잠금번호를 입력해 주세요.")
-            }
-            LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD ->
-            {
-                Triple("인증 코드 입력","인증코드가 일치하지 않습니다.", "이메일로 받은 4자리 코드를 입력해주세요.")
-            }
-            else -> throw IllegalArgumentException("'STATUS'가 존재하지 않습니다.")
-        }
-
-        binding.tvTitleLock.text = title
-        binding.tvErrorComment.text = error
-        binding.tvGuideComment.text = guide
-
     }
 
     override fun setObserve()
     {
         super.setObserve()
 
-        vm.isActivateResendMail.observe(this){ isActivityResendMail ->
-            if(isActivityResendMail) binding.tvResendMail.visibility = View.VISIBLE
-            else binding.tvResendMail.visibility = View.GONE
+        vm.lockScreenStatus.observe(this) { status ->
+
+            val (title, error, guide) = when(status)
+            {
+                LockScreenStatusEnum.SET_CONFIRM ->
+                {
+                    Triple("잠금번호 확인","잠금번호가 일치하지 않습니다.", "먼저, 기존 잠금번호를 확인합니다.")
+                }
+                LockScreenStatusEnum.SET_UPDATE ->
+                {
+                    Triple("잠금번호 변경","잠금번호가 일치하지 않습니다.", "변경할 잠금번호를 입력해 주세요.")
+                }
+                LockScreenStatusEnum.VERIFY ->
+                {
+                    Triple("잠금번호 입력","잠금번호가 일치하지 않습니다.", "어플 실행 잠금번호를 입력해 주세요.")
+                }
+            }
+
+            binding.tvTitleLock.text = title
+            binding.tvErrorComment.text = error
+            binding.tvGuideComment.text = guide
         }
 
         vm.lockNum.observe(this@LockScreenView) { lockNum ->
@@ -147,6 +132,23 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
             SopoLog.d("Verify Type Observe [data:$it]")
             when(it)
             {
+                LockStatusConst.CONFIRM.CONFIRM_STATUS ->
+                {
+
+                }
+                LockStatusConst.CONFIRM.FAILURE_STATUS ->
+                {
+                    binding.tvErrorComment.makeVisible()
+                    binding.tvGuideComment.text = "다시 입력해 주세요."
+                    VibrateUtil.startVibrate(context = this)
+                    AnimationUtil.shakeHorizon(binding.tvErrorComment)
+
+
+                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                         binding.tvGuideComment.text = "먼저, 기존 잠금번호를 확인합니다."
+                        binding.tvErrorComment.makeGone()
+                    }, 1000)
+                }
                 LockStatusConst.SET.VERIFY_STATUS ->
                 {
                     binding.tvErrorComment.visibility = INVISIBLE
@@ -154,10 +156,19 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
                 }
                 LockStatusConst.SET.FAILURE_STATUS ->
                 {
-                    binding.tvErrorComment.visibility = VISIBLE
+                    binding.tvErrorComment.makeVisible()
                     binding.tvGuideComment.text = "처음부터 다시 시도해 주세요."
+                    VibrateUtil.startVibrate(context = this)
+                    AnimationUtil.shakeHorizon(binding.tvErrorComment)
+
+
                     firstPassword = ""
                     firstCheck = false
+
+                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                        binding.tvGuideComment.text = "변경할 잠금번호를 입력해 주세요."
+                        binding.tvErrorComment.makeGone()
+                    }, 1000)
                 }
                 LockStatusConst.SET.CONFIRM_STATUS ->
                 {
@@ -170,25 +181,16 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
                 }
                 LockStatusConst.VERIFY.FAILURE_STATUS ->
                 {
-                    binding.tvErrorComment.visibility = VISIBLE
+                    binding.tvErrorComment.makeVisible()
                     binding.tvGuideComment.text = "다시 입력해 주세요."
-                }
-                LockStatusConst.AUTH.CONFIRM_STATUS ->
-                {
-                    binding.tvGuideComment.text = "인증 완료되었습니다."
+                    VibrateUtil.startVibrate(context = this)
+                    AnimationUtil.shakeHorizon(binding.tvErrorComment)
+
 
                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                        val intent = Intent().apply { putExtra("AUTH_TOKEN", vm.authCode) }
-                        setResult(Activity.RESULT_OK, intent)
-                        finish()
-                    }, 300)
-
-                }
-                LockStatusConst.AUTH.FAILURE_STATUS ->
-                {
-//                    binding.tvErrorComment.visibility = VISIBLE
-                    binding.tvGuideComment.text = "코드가 일치하지 않습니다."
-                    binding.tvGuideComment.setTextColor(ContextCompat.getColor(this, R.color.COLOR_MAIN_700))
+                        binding.tvGuideComment.text = "어플 실행 잠금번호를 입력해 주세요."
+                        binding.tvErrorComment.makeGone()
+                    }, 1000)
                 }
             }
         })

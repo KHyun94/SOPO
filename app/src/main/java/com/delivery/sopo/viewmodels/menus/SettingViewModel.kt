@@ -6,6 +6,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
+import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserSharedPrefHelper
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.SettingEnum
@@ -18,16 +19,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SettingViewModel(
-        private val sharedPref: UserSharedPrefHelper,
+        private val userLocalRepo: UserLocalRepository,
         private val appPasswordRepo: AppPasswordRepository) : BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
     get() = _navigator
 
-    private val _isSetOfSecurity = appPasswordRepo.getCntOfAppPasswordLiveData()
-    val isSetOfSecurity: LiveData<Int>
-        get() = _isSetOfSecurity
+    val isSetOfSecurity: LiveData<Int> = appPasswordRepo.getCntOfAppPasswordLiveData()
 
     private val _showSetPassword = MutableLiveData<Boolean>()
     val showSetPassword: LiveData<Boolean>
@@ -38,26 +37,44 @@ class SettingViewModel(
     val pushAlarmType: LiveData<SettingEnum.PushAlarmType>
         get() = _pushAlarmType
 
+    val notDisturbStartTime = MutableLiveData<String>()
+    val notDisturbEndTime = MutableLiveData<String>()
+
     private val _notDisturbTime = MutableLiveData<String>()
     val notDisturbTime: LiveData<String>
     get() = _notDisturbTime
 
     init
     {
-        setPushAlarmType(sharedPref.getPushAlarmType())
+        setPushAlarmType(userLocalRepo.getPushAlarmType())
 
-        if(sharedPref.getDisturbStartTime() != "" && sharedPref.getDisturbEndTime() != "")
+        notDisturbStartTime.postValue(userLocalRepo.getDisturbStartTime())
+        notDisturbEndTime.postValue(userLocalRepo.getDisturbEndTime())
+
+        if(userLocalRepo.getDisturbStartTime() != "" && userLocalRepo.getDisturbEndTime() != "")
         {
-            setNotDisturbTime("${sharedPref.getDisturbStartTime()} ~ ${sharedPref.getDisturbEndTime()}" )
+            setNotDisturbTime("${userLocalRepo.getDisturbStartTime()} ~ ${userLocalRepo.getDisturbEndTime()}" )
         }
         else
         {
-            setNotDisturbTime("설정 꺼짐")
+            setNotDisturbTime("")
         }
     }
 
     fun setNavigator(navigator: String){
         _navigator.postValue(navigator)
+    }
+
+    fun setNotDisturbStartTime(notDisturbStartTime: String)
+    {
+        this.notDisturbStartTime.postValue(notDisturbStartTime)
+        userLocalRepo.setDisturbStartTime(notDisturbStartTime)
+    }
+
+    fun setNotDisturbEndTime(notDisturbEndTime: String)
+    {
+        this.notDisturbEndTime.postValue(notDisturbEndTime)
+        userLocalRepo.setDisturbEndTime(notDisturbEndTime)
     }
 
     fun setNotDisturbTime(notDisturbTime: String)
@@ -68,21 +85,32 @@ class SettingViewModel(
     fun setPushAlarmType(pushAlarmType: SettingEnum.PushAlarmType)
     {
         _pushAlarmType.postValue(pushAlarmType)
-        sharedPref.setPushAlarmType(pushAlarmType)
+        userLocalRepo.setPushAlarmType(pushAlarmType)
     }
 
     fun setAppPassword(){
-        _isSetOfSecurity.value?.also {
-            if(it>0){
-                viewModelScope.launch(Dispatchers.IO){
-                    appPasswordRepo.deleteAll()
-                }
 
-                return
-            }
-
-            _showSetPassword.value = true
+        if(notDisturbTime.value?.length?:0 > 0)
+        {
+            setNotDisturbStartTime("")
+            setNotDisturbEndTime("")
+            setNotDisturbTime("")
         }
+        else
+        {
+            _navigator.postValue(NavigatorConst.TO_NOT_DISTURB)
+        }
+//        isSetOfSecurity.value?.also {
+//            if(it){
+//                viewModelScope.launch(Dispatchers.IO){
+//                    appPasswordRepo.deleteAll()
+//                }
+//
+//                return
+//            }
+//
+//            _showSetPassword.value = true
+//        }
     }
 
     fun deleteAppPassword(){

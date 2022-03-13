@@ -22,10 +22,11 @@
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout_time"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_marginHorizontal="60dp"
             android:background="@color/MAIN_WHITE"
-            app:tabBackground="@drawable/selector_tab_indicator"
+            app:tabBackground="@drawable/selector_tab_indicator_white_scale"
             app:tabIndicatorColor="@color/COLOR_GRAY_700"
             app:tabIndicatorHeight="3dp"
             app:tabRippleColor="@null"
@@ -33,16 +34,13 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_height="wrap_content">
 
             <com.delivery.sopo.util.ui_util.NotDisturbTimePicker
                 android:id="@+id/time_picker_start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="18dp"
-                android:layout_marginBottom="24dp"
                 android:theme="@style/AppTheme.NotDisturbTimePicker"
                 android:timePickerMode="spinner"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -55,8 +53,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="18dp"
-                android:layout_marginBottom="24dp"
                 android:theme="@style/AppTheme.NotDisturbTimePicker"
                 android:timePickerMode="spinner"
                 android:visibility="gone"
@@ -74,9 +70,10 @@
             android:layout_width="135dp"
             android:layout_height="43dp"
             android:layout_gravity="center"
-            android:layout_marginBottom="25dp"
             android:gravity="center"
-            android:text="확인" />
+            android:text="확인"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"/>
 
 
     </LinearLayout>

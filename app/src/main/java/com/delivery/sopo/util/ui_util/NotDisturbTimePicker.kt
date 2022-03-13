@@ -93,6 +93,7 @@ class NotDisturbTimePicker(context: Context, attrs: AttributeSet? = null): TimeP
         val hourArray = ArrayList<String>()
         for (i in 0 until HOUR_MAX) {
             hourArray.add(i.toString().padStart(2, '0') + "시")
+//            hourArray.add(i.toString())
         }
 
         return hourArray.toTypedArray()
@@ -102,7 +103,7 @@ class NotDisturbTimePicker(context: Context, attrs: AttributeSet? = null): TimeP
     {
         val minutesArray = ArrayList<String>()
         for (i in 0 until MINUTES_MAX step timeInterval) {
-            minutesArray.add(i.toString().padStart(2, '0') + "분")
+            minutesArray.add(i.toString().padEnd(2, '0') + "분")
         }
 
         return minutesArray.toTypedArray()

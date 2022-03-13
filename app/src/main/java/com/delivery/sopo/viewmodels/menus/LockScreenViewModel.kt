@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.consts.LockStatusConst
-import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.consts.ResetPasswordConst
 import com.delivery.sopo.data.database.room.dto.AppPasswordDTO
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.asSHA256
@@ -16,7 +14,6 @@ import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.models.user.ResetAuthCode
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.*
@@ -49,30 +46,6 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
         {
             SopoLog.e("인증 오류 ${error.toString()}")
 
-            when(error){
-                ErrorEnum.INVALID_AUTH_CODE ->
-                {
-                    cntOfAuthError++
-
-                    verifyType.postValue(LockStatusConst.AUTH.FAILURE_STATUS)
-
-                    if(cntOfAuthError == 2)
-                    {
-                        SopoLog.d("틀린 횟수가 2회임")
-                        isActivateResendMail.postValue(true)
-                        return
-                    }
-                }
-                ErrorEnum.INVALID_JWT_TOKEN ->
-                {
-                    postErrorSnackBar("일정시간이 지났기 때문에 다시 시도해주세요.")
-                    //TODO JWT_TOKEN 만료 시 안내와 동시에 처음부터 시작
-                    setNavigator(ResetPasswordConst.CANCEL)
-                    jwtToken = ""
-                }
-            }
-
-
         }
 
         override fun onInternalServerError(error: ErrorEnum)
@@ -100,15 +73,7 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
         _navigator.postValue(navigator)
     }
 
-    // AUTH:
-    var email: String = ""
-    var jwtToken: String = ""
-    var isActivateResendMail = MutableLiveData<Boolean>()
-
     var isButtonEnabled = MutableLiveData<Boolean>()
-
-    // Pin num 오류 체크
-    private var cntOfAuthError = 0
 
     init
     {
@@ -118,8 +83,7 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
 
     fun setLockScreenStatus(status: LockScreenStatusEnum)
     {
-        SopoLog.i("setLockScreenStatus(...) 호출 [status:$status]")
-        _lockScreenStatus.value = status
+        _lockScreenStatus.postValue(status)
     }
 
     // 입력 데이터가 들어온 값을 기존 입력 데이터에 병합
@@ -140,20 +104,6 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
             } ?: false
         }
 
-    // AUTH: 생성된 'PIN CODE'와 입력받은 'PIN CODE'를 비교
-    private fun verifyPasswordByEmail(authCode: String) = scope.launch(Dispatchers.IO) {
-        try
-        {
-            userRemoteRepo.requestVerifyAuthToken(ResetAuthCode(jwtToken, authCode, email))
-            this@LockScreenViewModel.authCode = authCode
-            verifyType.postValue(LockStatusConst.AUTH.CONFIRM_STATUS)
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
-        }
-    }
-
     // 버튼 누르기 이벤트
     fun onPressLockKeyPadClicked(num: Int)
     { // 완성된 입력 데이터가 4글자를 넘지 않으면 반환
@@ -164,9 +114,9 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
         // 완성된 입력 데이터가 4글자 일 때 각 status 기준으로 비교
         when(lockScreenStatus.value)
         {
-            LockScreenStatusEnum.SET -> setLockPassword(currentLockNum)
+            LockScreenStatusEnum.SET_CONFIRM -> checkLockPassword(currentLockNum)
+            LockScreenStatusEnum.SET_UPDATE -> setLockPassword(currentLockNum)
             LockScreenStatusEnum.VERIFY -> verifyLockPassword(currentLockNum)
-            LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD -> verifyAuthPinNumber(currentLockNum)
         }
     }
 
@@ -206,6 +156,55 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
         }
     }
 
+    // SET_CONFIRM: 내부 DB에 저장된
+    private fun checkLockPassword(lockNum: String) = scope.launch(Dispatchers.Default) {
+        SopoLog.i("checkLockPassword(...) 호출 [data:$lockNum]")
+
+        val appPassword = appPasswordRepo.get()
+
+        if(appPassword?.appPassword != lockNum.asSHA256)
+        {
+            this@LockScreenViewModel.lockNum.postValue("")
+            verifyType.postValue(LockStatusConst.CONFIRM.FAILURE_STATUS)
+            return@launch
+        }
+
+        // 입력 데이터 초기화
+        this@LockScreenViewModel.lockNum.postValue("")
+
+        setLockScreenStatus(LockScreenStatusEnum.SET_UPDATE)
+        // 1차 입력 데이터가 빈 값일 때 임시 저장 후, 2차 입력 상태로 변경
+
+
+//        if(primaryAuthNumber == "")
+//        {
+//            primaryAuthNumber = lockNum
+//            this.lockNum.value = ""
+//            verifyType.value = LockStatusConst.SET.VERIFY_STATUS
+//            return
+//        }
+//
+//        // 1, 2차 입력 데이터가 달랐을 때, 처음 상태로 이동
+//        if(primaryAuthNumber != lockNum)
+//        {
+//            this.lockNum.value = ""
+//            primaryAuthNumber = ""
+//            verifyType.value = LockStatusConst.SET.FAILURE_STATUS
+//            return
+//        }
+
+
+
+//        // 1, 2차 입력 데이터가 같을 때
+//        verifyType.value = LockStatusConst.SET.CONFIRM_STATUS
+//
+//        viewModelScope.launch(Dispatchers.Default) {
+//            val dto =
+//                AppPasswordDTO(userId = userLocalRepo.getUserId(), appPassword = lockNum.asSHA256, auditDte = TimeUtil.getDateTime())
+//            appPasswordRepo.insert(dto)
+//        }
+    }
+
     // VERIFY: 입력 데이터와 저장된 데이터가 동일한지 비교
     private fun verifyLockPassword(lockNum: String)
     {
@@ -221,19 +220,6 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
         }
     }
 
-    // AUTH: 입력 데이터와 'PIN CODE'가 동일한지 비교
-    private fun verifyAuthPinNumber(lockNum: String)
-    {
-        SopoLog.i("verifyAuthPinNumber(...) 호출 [data:$lockNum]")
-
-        // 입력 데이터 초기화
-        this.lockNum.postValue("")
-
-        verifyPasswordByEmail(lockNum)
-
-        SopoLog.d("틀린 횟수:$cntOfAuthError")
-    }
-
     fun eraseLockPassword()
     {
         val currentPassword = lockNum.value
@@ -245,14 +231,5 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
                 lockNum.value = substring
             }
         }
-    }
-
-    fun onResendAuthMailClicked()
-    {
-        SopoLog.i("onResendAuthMailClicked(...) 호출")
-
-        isButtonEnabled.postValue(false)
-
-        _navigator.postValue("CANCEL")
     }
 }

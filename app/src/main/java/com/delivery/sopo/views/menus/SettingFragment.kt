@@ -6,6 +6,7 @@ import android.os.Looper
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -28,6 +29,7 @@ import com.delivery.sopo.views.main.MainView
 import com.google.android.material.tabs.TabLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.math.abs
 
 
 class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
@@ -57,6 +59,13 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
             override fun onBackPressed()
             {
                 super.onBackPressed()
+
+                if(binding.slideMainSetting.panelState == SlidingUpPanelLayout.PanelState.EXPANDED)
+                {
+                    binding.slideMainSetting.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+                    return
+                }
+
                 TabCode.MY_MENU_MAIN.FRAGMENT = MenuFragment.newInstance()
                 FragmentManager.move(requireActivity(), TabCode.MY_MENU_MAIN, MenuMainFragment.viewId)
             }
@@ -79,10 +88,35 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
         }
     }
 
+    fun initNotDisturbTime()
+    {
+        binding.includeNotDisturbTime.run {
+            timePickerStart.hour = 0
+            timePickerStart.minute = 0
+
+            timePickerEnd.hour = 0
+            timePickerEnd.minute = 0
+
+            tabLayoutTime.setScrollPosition(0, 0.0f, true, true)
+
+            timePickerStart.makeVisible()
+            timePickerEnd.makeGone()
+        }
+
+        startTabBinding.run {
+            tvTitle.convertTextColor(R.color.COLOR_GRAY_800)
+            tvTime.convertTextColor(R.color.COLOR_GRAY_800)
+        }
+
+        endTabBinding.run {
+            tvTitle.convertTextColor(R.color.COLOR_GRAY_400)
+            tvTime.convertTextColor(R.color.COLOR_GRAY_200)
+        }
+    }
+
     @SuppressLint("SetTextI18n")
     fun setNotDisturbTime()
     {
-
         val tabLayout = binding.includeNotDisturbTime.tabLayoutTime
         tabLayout.addTab(tabLayout.newTab().setCustomView(R.layout.item_time_tab))
         tabLayout.addTab(tabLayout.newTab().setCustomView(R.layout.item_time_tab))
@@ -93,11 +127,10 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
         startTabBinding.tvTitle.text = "시작"
         endTabBinding.tvTitle.text = "종료"
 
-        startTabBinding.tvTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800))
-        startTabBinding.tvTime.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800))
+        initNotDisturbTime()
 
-        startTabBinding.tvTime.text = "00:00"
-        endTabBinding.tvTime.text = "00:00"
+        startTabBinding.tvTime.text = vm.notDisturbStartTime.value ?: "00:00"
+        endTabBinding.tvTime.text = vm.notDisturbEndTime.value ?: "00:00"
 
         tabLayout.addOnTabSelectedListener(object: TabLayout.OnTabSelectedListener
                                            {
@@ -107,23 +140,23 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                                                    {
                                                        0 ->
                                                        {
-                                                           startTabBinding.tvTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800))
-                                                           startTabBinding.tvTime.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800))
+                                                           startTabBinding.run {
+                                                               tvTitle.convertTextColor(R.color.COLOR_GRAY_800)
+                                                               tvTime.convertTextColor(R.color.COLOR_GRAY_800)
+                                                           }
 
-                                                           binding.includeNotDisturbTime.timePickerStart.visibility =
-                                                               View.VISIBLE
-
+                                                           binding.includeNotDisturbTime.timePickerStart.makeVisible()
                                                        }
                                                        1 ->
                                                        {
-                                                           endTabBinding.tvTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800))
-                                                           endTabBinding.tvTime.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800))
+                                                           endTabBinding.run {
+                                                               tvTitle.convertTextColor(R.color.COLOR_GRAY_800)
+                                                               tvTime.convertTextColor(R.color.COLOR_GRAY_800)
+                                                           }
 
-                                                           binding.includeNotDisturbTime.timePickerEnd.visibility =
-                                                               View.VISIBLE
+                                                           binding.includeNotDisturbTime.timePickerEnd.makeVisible()
                                                        }
                                                    }
-
                                                }
 
                                                override fun onTabUnselected(tab: TabLayout.Tab?)
@@ -132,15 +165,19 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                                                    {
                                                        0 ->
                                                        {
-                                                           startTabBinding.tvTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
-                                                           startTabBinding.tvTime.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_200))
+                                                           startTabBinding.run {
+                                                               tvTitle.convertTextColor(R.color.COLOR_GRAY_400)
+                                                               tvTime.convertTextColor(R.color.COLOR_GRAY_200)
+                                                           }
 
                                                            binding.includeNotDisturbTime.timePickerStart.makeGone()
                                                        }
                                                        1 ->
                                                        {
-                                                           endTabBinding.tvTitle.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_400))
-                                                           endTabBinding.tvTime.setTextColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_200))
+                                                           endTabBinding.run {
+                                                               tvTitle.convertTextColor(R.color.COLOR_GRAY_400)
+                                                               tvTime.convertTextColor(R.color.COLOR_GRAY_200)
+                                                           }
 
                                                            binding.includeNotDisturbTime.timePickerEnd.makeGone()
                                                        }
@@ -148,32 +185,69 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
 
                                                }
 
-                                               override fun onTabReselected(tab: TabLayout.Tab?)
-                                               {
-                                               }
-
+                                               override fun onTabReselected(tab: TabLayout.Tab?) {}
                                            })
 
         binding.includeNotDisturbTime.timePickerStart.setIs24HourView(true)
         binding.includeNotDisturbTime.timePickerEnd.setIs24HourView(true)
 
         binding.includeNotDisturbTime.timePickerStart.setOnTimeChangedListener { view, hourOfDay, minute ->
-            SopoLog.d("Start TimePicker [$hourOfDay:$minute]")
-            startTabBinding.tvTime.text =
-                "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padEnd(2, '0')}"
+            startTabBinding.tvTime.text = "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padEnd(2, '0')}"
         }
 
         binding.includeNotDisturbTime.timePickerEnd.setOnTimeChangedListener { view, hourOfDay, minute ->
-            SopoLog.d("End TimePicker [$hourOfDay:$minute]")
-            endTabBinding.tvTime.text =
-                "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padEnd(2, '0')}"
+            endTabBinding.tvTime.text = "${hourOfDay.toString().padStart(2, '0')}:${minute.toString().padEnd(2, '0')}"
         }
 
-        setClickEvent()
+        binding.includeNotDisturbTime.tvOk.setOnClickListener {
+            val startHour = binding.includeNotDisturbTime.timePickerStart.hour
+            val startMin = binding.includeNotDisturbTime.timePickerStart.minute
+            val endHour = binding.includeNotDisturbTime.timePickerEnd.hour
+            val endMin = binding.includeNotDisturbTime.timePickerEnd.minute
+
+            val toStartTotalMin = startHour * 60 + startMin
+            val toEndTotalMin = endHour * 60 + endMin
+
+            val abs = abs(toStartTotalMin - toEndTotalMin)
+
+            when
+            {
+                abs == 0 ->
+                {
+                    vm.setNotDisturbStartTime("")
+                    vm.setNotDisturbEndTime("")
+
+                    vm.setNotDisturbTime("")
+
+                    binding.slideMainSetting.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+                }
+                abs <= 90 ->
+                {
+                    Toast.makeText(requireContext(), "방해 금지 시간대는 최소 한시간 반 이상이어야 합니다.", Toast.LENGTH_LONG)
+                        .show()
+                }
+                else ->
+                {
+                    val startTime = "${startHour.toString().padStart(2, '0')}:${
+                        startMin.toString()
+                            .padEnd(2, '0')
+                    }"
+                    val endTime =
+                        "${endHour.toString().padStart(2, '0')}:${endMin.toString().padEnd(2, '0')}"
+
+                    vm.setNotDisturbStartTime(startTime)
+                    vm.setNotDisturbEndTime(endTime)
+
+                    vm.setNotDisturbTime("$startTime ~ $endTime")
+
+                    binding.slideMainSetting.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+                }
+            }
+        }
     }
 
-    fun setLockPasswordListener(){
-
+    fun setLockPasswordListener()
+    {
         var isSetOn: Boolean = false
 
         binding.includeLockApp.setOnItemClickListener {
@@ -200,7 +274,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
             binding.slideMainSetting.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
 
             activity?.launchActivitiy<LockScreenView> {
-                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET)
+                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET_CONFIRM)
             }
         }
 
@@ -213,15 +287,21 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                 return@setOnConfirmClickListener vm.deleteAppPassword()
             }
 
+            if(vm.isSetOfSecurity.value?:0 > 0)
+            {
+                return@setOnConfirmClickListener
+            }
+
             activity?.launchActivitiy<LockScreenView> {
-                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET)
+                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET_UPDATE)
             }
         }
     }
 
     fun setPushAlarmListener()
     {
-        var selectedPushAlarmType: SettingEnum.PushAlarmType = vm.pushAlarmType.value?:SettingEnum.PushAlarmType.ALWAYS
+        var selectedPushAlarmType: SettingEnum.PushAlarmType =
+            vm.pushAlarmType.value ?: SettingEnum.PushAlarmType.ALWAYS
 
         binding.includePushAlarm.setOnItemClickListener {
             when(it.id)
@@ -230,23 +310,19 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                 {
                     selectedPushAlarmType = SettingEnum.PushAlarmType.ALWAYS
                     setSelectItemView(Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways))
-                    setUnselectItemView(Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive),
-                                        Pair(binding.includePushAlarm.tvReject, binding.includePushAlarm.ivReject))
+                    setUnselectItemView(Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive), Pair(binding.includePushAlarm.tvReject, binding.includePushAlarm.ivReject))
                 }
                 R.id.constraint_main_push_arrive ->
                 {
                     selectedPushAlarmType = SettingEnum.PushAlarmType.ARRIVE
                     setSelectItemView(Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive))
-                    setUnselectItemView(Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways),
-                                        Pair(binding.includePushAlarm.tvReject, binding.includePushAlarm.ivReject))
+                    setUnselectItemView(Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways), Pair(binding.includePushAlarm.tvReject, binding.includePushAlarm.ivReject))
                 }
                 R.id.constraint_main_push_reject ->
                 {
                     selectedPushAlarmType = SettingEnum.PushAlarmType.REJECT
                     setSelectItemView(Pair(binding.includePushAlarm.tvReject, binding.includePushAlarm.ivReject))
-                    setUnselectItemView(
-                        Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive),
-                        Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways))
+                    setUnselectItemView(Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive), Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways))
                 }
             }
         }
@@ -265,15 +341,13 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
         setNotDisturbTime()
         setPushAlarmListener()
         setLockPasswordListener()
-
-
-
     }
 
     private fun setDisableView()
     {
         binding.constraintMainNotDisturbTime.disabledClick()
         binding.constraintMainPushAlarm.disabledClick()
+        binding.toggleBtn.disabledClick()
         binding.constraintMainLockApp.disabledClick()
     }
 
@@ -281,6 +355,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
     {
         binding.constraintMainNotDisturbTime.enabledClick()
         binding.constraintMainPushAlarm.enabledClick()
+        binding.toggleBtn.enabledClick()
         binding.constraintMainLockApp.enabledClick()
     }
 
@@ -322,6 +397,19 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
 
                                                        })
 
+        vm.notDisturbTime.observe(this) {
+            if(it == "")
+            {
+                binding.toggleBtn.background =
+                    ContextCompat.getDrawable(requireContext(), R.drawable.ic_toggle_off)
+            }
+            else
+            {
+                binding.toggleBtn.background =
+                    ContextCompat.getDrawable(requireContext(), R.drawable.ic_toggle_on)
+            }
+        }
+
         vm.navigator.observe(requireActivity()) { navigator ->
             SopoLog.d("navigator[$navigator]")
 
@@ -335,10 +423,12 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                     binding.includePushAlarm.root.makeGone()
                     binding.includeNotDisturbTime.root.makeVisible()
 
+                    initNotDisturbTime()
+
                     Handler(Looper.getMainLooper()).postDelayed({
-                                                                    binding.slideMainSetting.panelState =
-                                                                        SlidingUpPanelLayout.PanelState.EXPANDED
-                                                                }, 200)
+                        binding.slideMainSetting.panelState =
+                            SlidingUpPanelLayout.PanelState.EXPANDED
+                    }, 200)
                 }
                 NavigatorConst.TO_SET_NOTIFY_OPTION ->
                 {
@@ -348,10 +438,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                     binding.includeLockApp.root.makeGone()
                     binding.includePushAlarm.root.makeVisible()
 
-                    setUnselectItemView(
-                        Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways),
-                        Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive),
-                        Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways))
+                    setUnselectItemView(Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways), Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive), Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways))
 
                     when(vm.pushAlarmType.value)
                     {
@@ -361,9 +448,9 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                     }
 
                     Handler(Looper.getMainLooper()).postDelayed({
-                                                                    binding.slideMainSetting.panelState =
-                                                                        SlidingUpPanelLayout.PanelState.EXPANDED
-                                                                }, 200)
+                        binding.slideMainSetting.panelState =
+                            SlidingUpPanelLayout.PanelState.EXPANDED
+                    }, 200)
                 }
                 NavigatorConst.TO_UPDATE_APP_PASSWORD ->
                 {
@@ -373,16 +460,14 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                     binding.includeNotDisturbTime.root.makeGone()
                     binding.includePushAlarm.root.makeGone()
 
-                    setUnselectItemView(
-                        Pair(binding.includeLockApp.tvSetOn, binding.includeLockApp.ivSetOn),
-                        Pair(binding.includeLockApp.tvSetOff, binding.includeLockApp.ivSetOff))
+                    setUnselectItemView(Pair(binding.includeLockApp.tvSetOn, binding.includeLockApp.ivSetOn), Pair(binding.includeLockApp.tvSetOff, binding.includeLockApp.ivSetOff))
 
-                    if(vm.isSetOfSecurity.value?:0 > 0)
+                    if(vm.isSetOfSecurity.value ?: 0 > 0)
                     {
                         setSelectItemView(Pair(binding.includeLockApp.tvSetOn, binding.includeLockApp.ivSetOn))
                         binding.includeLockApp.tvLockPasswordChange.enabledClick()
-                        binding.includeLockApp.tvLockPasswordChange.backgroundTintList = resources.getColorStateList(R.color.COLOR_MAIN_700, null)
-                        binding.includeLockApp.tvLockPasswordChange.convertTextColor(R.color.MAIN_WHITE)
+                        binding.includeLockApp.tvLockPasswordChange.backgroundTintList = null
+                        binding.includeLockApp.tvLockPasswordChange.convertTextColor(R.color.COLOR_MAIN_700)
                     }
                     else
                     {
@@ -393,8 +478,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                     }
 
                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                        binding.slideMainSetting.panelState =
-                            SlidingUpPanelLayout.PanelState.EXPANDED
+                        binding.slideMainSetting.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
                     }, 200)
                 }
             }
@@ -409,42 +493,6 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
             {
             }
         })
-    }
-
-    var startTimeList: List<String> = "00:00".split(":")
-    var endTimeList: List<String> = "00:00".split(":")
-
-    private fun setClickEvent()
-    {
-
-        /* binding.includeNotDisturbTime.tvOk.setOnClickListener {
-             SopoLog.d( msg = "Ok button")
-
-             val startHour = binding.includeNotDisturbTime.timePickerStart.hour
-             val startMin = binding.includeNotDisturbTime.timePickerStart.minute
-             val endHour = binding.includeNotDisturbTime.timePickerEnd.hour
-             val endMin = binding.includeNotDisturbTime.timePickerEnd.minute
-
-             val toStartTotalMin = startHour * 60 + startMin
-             val toEndTotalMin = endHour * 60 + endMin
-
-             val abs = abs(toStartTotalMin - toEndTotalMin)
-
-             var startTime = "00:00"
-             var endTime = "00:00"
-
-             if(abs <= 90)
-             {
-                 Toast.makeText(SOPOApp.INSTANCE, "방해 금지 시간대는 최소 한시간 반이상이어야 합니다.", Toast.LENGTH_LONG).show()
-                 startTime = "00:00"
-                 endTime = "00:00"
-             }
-             else
-             {
-                 startTime = "${startHour.toString().padStart(2, '0')}:${startMin.toString().padStart(2, '0')}"
-                 endTime = "${endHour.toString().padStart(2, '0')}:${endMin.toString().padStart(2, '0')}"
-             }
-         }*/
     }
 
     companion object

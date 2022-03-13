@@ -104,19 +104,6 @@
                 android:enabled="false" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tv_resend_mail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="@{()->vm.onResendAuthMailClicked()}"
-            android:text="@string/RESENT_AUTH_MAIL"
-            android:textColor="@color/COLOR_GRAY_600"
-            android:visibility="@{vm.isActivateResendMail()?View.VISIBLE:View.GONE, default=gone}"
-            app:layout_constraintBottom_toTopOf="@+id/grid_numPad"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
-
         <GridLayout
             android:id="@+id/grid_numPad"
             android:layout_width="match_parent"

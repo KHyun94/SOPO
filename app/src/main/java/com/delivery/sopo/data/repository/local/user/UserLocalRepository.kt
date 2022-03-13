@@ -1,6 +1,9 @@
 package com.delivery.sopo.data.repository.local.user
 
+import com.delivery.sopo.consts.InfoConst
+import com.delivery.sopo.enums.SettingEnum
 import com.delivery.sopo.firebase.FirebaseRepository
+import com.delivery.sopo.util.CodeUtil
 import org.koin.core.KoinComponent
 
 class UserLocalRepository(private val userShared: UserSharedPrefHelper): UserLocalDataSource, KoinComponent
@@ -136,6 +139,16 @@ class UserLocalRepository(private val userShared: UserSharedPrefHelper): UserLoc
         userShared.setDisturbEndTime(endTime)
     }
 
+    fun getPushAlarmType(): SettingEnum.PushAlarmType
+    {
+        return userShared.getPushAlarmType()
+    }
+
+    fun setPushAlarmType(pushAlarmType: SettingEnum.PushAlarmType)
+    {
+        userShared.setPushAlarmType(pushAlarmType)
+    }
+
     override fun removeUserRepo()
     {
         setUserId("")
@@ -144,6 +157,7 @@ class UserLocalRepository(private val userShared: UserSharedPrefHelper): UserLoc
         setRegisterDate("")
         setStatus(0)
         setDeviceInfo("")
+        setPushAlarmType(SettingEnum.PushAlarmType.ALWAYS)
 
         FirebaseRepository.unsubscribedToTopicInFCM()
     }

@@ -13,9 +13,9 @@ sealed class LockStatusConst
         const val FAILURE_STATUS = "VERIFY_FAILURE_STATUS"
     }
 
-    object AUTH{
-        const val CONFIRM_STATUS = "AUTH_CONFIRM_STATUS"
-        const val FAILURE_STATUS = "AUTH_FIRST_FAILURE_STATUS"
+    object CONFIRM{
+        const val CONFIRM_STATUS = "CONFIRM_CONFIRM_STATUS"
+        const val FAILURE_STATUS = "CONFIRM_FAILURE_STATUS"
     }
 
 }

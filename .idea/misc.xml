@@ -3,14 +3,19 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/border_15dp_blue_rounder.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/border_all_round_10dp.xml" value="0.234" />
         <entry key="app/src/main/res/drawable/border_all_round_10dp_blue_scale.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/border_all_round_15dp.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/ic_erase_btn.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/ic_lock_edittext_off.xml" value="0.1735" />
         <entry key="app/src/main/res/drawable/ic_lock_edittext_on.xml" value="0.1735" />
+        <entry key="app/src/main/res/drawable/ic_toggle_on.xml" value="0.1605" />
         <entry key="app/src/main/res/drawable/ripple_circle.xml" value="0.206" />
+        <entry key="app/src/main/res/drawable/selector_inquiry_tab.xml" value="0.206" />
+        <entry key="app/src/main/res/drawable/selector_inquiry_tab_gray_scale.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/selector_tab_indicator.xml" value="0.1135" />
+        <entry key="app/src/main/res/drawable/selector_tab_indicator_gray_scale.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/selector_time_2_tab.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/selector_time_tab.xml" value="0.206" />
         <entry key="app/src/main/res/layout/app_info_view.xml" value="0.1293918918918919" />
@@ -25,9 +30,9 @@
         <entry key="app/src/main/res/layout/fragment_ongoing_type.xml" value="0.335" />
         <entry key="app/src/main/res/layout/fragment_setting.xml" value="0.25" />
         <entry key="app/src/main/res/layout/general_dialog.xml" value="0.17725409836065573" />
-        <entry key="app/src/main/res/layout/include_lock_app.xml" value="0.20116120218579234" />
+        <entry key="app/src/main/res/layout/include_lock_app.xml" value="0.4957992637092299" />
         <entry key="app/src/main/res/layout/include_no_item.xml" value="0.103125" />
-        <entry key="app/src/main/res/layout/include_not_disturb_time.xml" value="0.20116120218579234" />
+        <entry key="app/src/main/res/layout/include_not_disturb_time.xml" value="0.36165618896484375" />
         <entry key="app/src/main/res/layout/include_push_alarm.xml" value="0.3227953410981697" />
         <entry key="app/src/main/res/layout/inquiry_list_complete_item.xml" value="0.1" />
         <entry key="app/src/main/res/layout/inquiry_list_ongoing_item.xml" value="0.1" />

@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="onItemClickListener"
             type="android.view.View.OnClickListener" />
@@ -30,8 +31,8 @@
             style="@style/kor_H3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:layout_marginLeft="24dp"
+            android:layout_marginTop="24dp"
             android:layout_marginBottom="9dp"
             android:text="앱을 켤 때마다 잠금번호를 입력합니다." />
 
@@ -48,25 +49,25 @@
                 style="@style/kor_H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginLeft="24dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
-                android:layout_marginLeft="24dp"
+                android:text="설정 켜기"
                 android:textColor="@color/COLOR_GRAY_500"
-                android:text="설정 켜기"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/iv_set_on"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginRight="24dp"
                 android:background="@drawable/ic_checked_blue_scale"
-                app:layout_constraintRight_toRightOf="parent"
                 android:visibility="gone"
-                android:layout_marginRight="24dp"/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -74,7 +75,7 @@
             android:id="@+id/v_divider_line1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/COLOR_GRAY_200"/>
+            android:background="@color/COLOR_GRAY_200" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint_main_set_off"
@@ -85,29 +86,29 @@
             android:onClick="@{onItemClickListener}">
 
             <TextView
-                style="@style/kor_H4"
                 android:id="@+id/tv_set_off"
+                style="@style/kor_H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginLeft="24dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
+                android:text="설정 끄기."
                 android:textColor="@color/COLOR_GRAY_500"
-                android:text="설정 끄기."/>
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/iv_set_off"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
+                android:layout_marginRight="24dp"
+                android:background="@drawable/ic_checked_blue_scale"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:background="@drawable/ic_checked_blue_scale"
                 app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginRight="24dp"/>
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -122,17 +123,18 @@
                 style="@style/buttonHalfStyle"
                 android:layout_width="136dp"
                 android:layout_height="43dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                android:gravity="center"
-                app:layout_constraintRight_toLeftOf="@id/tv_ok"
-                android:text="잠금번호변경"
                 android:layout_marginLeft="35dp"
                 android:layout_marginRight="8dp"
+                android:gravity="center"
                 android:onClick="@{onChangeClickListener}"
+                android:text="잠금번호변경"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/tv_ok"
+                app:layout_constraintTop_toTopOf="parent"
+                android:background="@drawable/border_15dp_blue_rounder"
                 tools:backgroundTint="@color/COLOR_GRAY_200"
-                tools:textColor="@color/COLOR_GRAY_400"/>
+                tools:textColor="@color/COLOR_GRAY_400" />
 
             <TextView
                 android:id="@+id/tv_ok"
@@ -140,15 +142,15 @@
                 android:layout_width="136dp"
                 android:layout_height="43dp"
                 android:layout_gravity="center"
-                android:gravity="center"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toRightOf="@id/tv_lock_password_change"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:onClick="@{onConfirmClickListener}"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="35dp"
-                android:text="확인" />
+                android:gravity="center"
+                android:onClick="@{onConfirmClickListener}"
+                android:text="확인"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/tv_lock_password_change"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
