@@ -28,6 +28,30 @@ class ParcelRepository(
         ParcelDataSource,
         BaseServiceBeta()
 {
+    fun insert(parcel: Parcel.Common){
+        val entity = ParcelMapper.parcelObjectToEntity(parcel)
+        appDatabase.parcelDao().insert(entity)
+    }
+
+    fun insert(parcels: List<Parcel.Common>){
+        val entities = parcels.map { ParcelMapper.parcelObjectToEntity(it) }
+        appDatabase.parcelDao().insert(entities)
+    }
+
+    suspend fun insertParcelFromServer(parcel: Parcel.Common)
+    {
+        val status = parcelManagementRepo.getParcelStatus(parcel.parcelId)
+
+        status.apply {
+            unidentifiedStatus = 0
+            updatableStatus = 0
+            auditDte = TimeUtil.getDateTime()
+        }
+
+        insert(parcel)
+        parcelManagementRepo.insertParcelStatus(status)
+    }
+
     suspend fun insertParcelsFromServer(parcels: List<Parcel.Common>)
     {
 

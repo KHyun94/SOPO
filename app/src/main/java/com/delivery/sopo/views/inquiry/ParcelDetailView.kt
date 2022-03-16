@@ -212,10 +212,6 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             }
         })
 
-        vm.result.observe(requireActivity(), Observer { res ->
-            if(res.result) return@Observer
-        })
-
         vm.statusList.observe(requireActivity(), Observer { list ->
             if(list == null) return@Observer
 
@@ -224,43 +220,6 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             updateDrawerLayoutSize(binding.includeSemi.root)
 
             setIndicatorView(baseLayout = binding.includeFull.layoutDetailContent, topView = binding.includeFull.tvTitle, bottomView = binding.includeFull.vEmpty, list = list)
-        })
-
-        vm.updateType.observe(requireActivity(), Observer { type ->
-
-            val (message, clickMessage, clickListener) = when(type)
-            {
-                StatusConst.SUCCESS ->
-                {
-                    Triple("업데이트 사항이 있습니다.", "업데이트", View.OnClickListener {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            val parcelId =
-                                vm.parcelId.value ?: throw Exception("Parcel id가 존재하지 않습니다.")
-                            vm.getRemoteParcel(parcelId)
-                            //                            parentView.getAlertMessageBar().onDismiss()
-                        }
-                    })
-                }
-                StatusConst.FAILURE ->
-                {
-                    Triple("업데이트 도중 에러가 발생했습니다.", "재시도", View.OnClickListener {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            val parcelId =
-                                vm.parcelId.value ?: throw Exception("Parcel id가 존재하지 않습니다.")
-                            vm.requestParcelForRefresh(parcelId)
-                            //                            parentView.getAlertMessageBar().onDismiss()
-                        }
-                    })
-                }
-                else -> return@Observer SopoLog.e("올바른 업데이트 형식이 아닙니다. - type[${type}]")
-            }
-
-            //            parentView.getAlertMessageBar().run {
-            //                setText(message)
-            //                setOnCancelClicked(clickMessage, null, clickListener)
-            //                onStart()
-            //            }
-
         })
 
         vm.isBack.observe(requireActivity(), Observer {

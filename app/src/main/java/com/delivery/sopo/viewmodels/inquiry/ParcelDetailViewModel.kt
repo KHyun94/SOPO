@@ -1,29 +1,27 @@
 package com.delivery.sopo.viewmodels.inquiry
 
 import android.view.View
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.DeliveryStatusConst
-import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
-import com.delivery.sopo.enums.DeliveryStatusEnum
-import com.delivery.sopo.models.mapper.ParcelMapper
-import com.delivery.sopo.models.SelectItem
-import com.delivery.sopo.models.parcel.*
-import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.models.ResponseResult
+import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
+import com.delivery.sopo.models.mapper.ParcelMapper
+import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.TimeLineProgress
+import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.views.adapter.TimeLineRecyclerViewAdapter
-import com.google.gson.Gson
-import kotlinx.coroutines.*
-import java.lang.NullPointerException
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl):
         BaseViewModel()
@@ -46,19 +44,6 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
 
     // 상세 화면 Full Down
     var isDragOut = SingleLiveEvent<Boolean>()
-
-    // 업데이트 여부
-    private val _updateType = MutableLiveData<Int>()
-    val updateType: LiveData<Int>
-        get() = _updateType
-
-    private val _isProgress = MutableLiveData<Boolean>()
-    val isProgress: LiveData<Boolean>
-        get() = _isProgress
-
-    private val _result = MutableLiveData<ResponseResult<*>>()
-    val result: LiveData<ResponseResult<*>>
-        get() = _result
 
     // Full Detail View의 리사이클러뷰 어댑터 세팅
     private fun getTimeLineRvAdapter(list: List<TimeLineProgress?>): TimeLineRecyclerViewAdapter
@@ -151,28 +136,6 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
     {
         SopoLog.d("requestParcelForRefresh() 호출 - parcelId[$parcelId]")
         val res = ParcelCall.requestParcelForRefresh(parcelId = parcelId)
-
-        if(!res.result)
-        {
-            SopoLog.d("업데이트 여부 체크 ${res.code} / ${res}")
-            when(res.code)
-            {
-                ResponseCode.PARCEL_NOTHING_TO_UPDATES ->
-                {
-                    SopoLog.d("상세 내역 업데이트할 요소가 없습니다.")
-                }
-                ResponseCode.PARCEL_SOMETHING_TO_UPDATES ->
-                {
-                    SopoLog.d("상세 내역 업데이트할 요소가 있습니다.")
-                    _updateType.postValue(StatusConst.SUCCESS)
-                }
-                else ->
-                {
-                    SopoLog.e("상세 내역 업데이트 조회 실패 message:[${res.message}], code:[${res.code}]")
-                    _updateType.postValue(StatusConst.FAILURE)
-                }
-            }
-        }
     }
 
     fun getRemoteParcel(parcelId: Int) = scope.launch(Dispatchers.IO) {
