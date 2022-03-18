@@ -13,7 +13,6 @@ class Parcel{
                 @SerializedName("waybillNum") var waybillNum: String,
                 @SerializedName("carrier") var carrier: String,
                 @SerializedName("alias") var alias: String,
-//                @SerializedName("inquiryResult") var inquiryResult: String?,
                 @SerializedName("inquiryResult") var trackingInfo: TrackingInfo?,
                 @SerializedName("inquiryHash") var inquiryHash: String?,
                 @SerializedName("deliveryStatus") var deliveryStatus: String,

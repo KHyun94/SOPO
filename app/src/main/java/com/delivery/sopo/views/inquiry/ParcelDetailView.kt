@@ -2,6 +2,8 @@ package com.delivery.sopo.views.inquiry
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +37,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.properties.Delegates
@@ -49,8 +52,6 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     override val vm: ParcelDetailViewModel by viewModel()
 
     private var slideViewStatus = 0
-
-    private var progressBar: SopoLoadingBar? = null
 
     var parcelId by Delegates.notNull<Int>()
 
@@ -97,15 +98,13 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         binding.layoutMain.addPanelSlideListener(object: SlidingUpPanelLayout.PanelSlideListener
                                                  {
                                                      override fun onPanelSlide(panel: View?, slideOffset: Float)
-                                                     {
-                                                         //                                                         panel?.alpha = 0xffffff.toFloat()
+                                                     { //                                                         panel?.alpha = 0xffffff.toFloat()
                                                          _slideOffset = slideOffset
                                                          CoroutineScope(Dispatchers.Main).launch {
                                                              when
                                                              {
                                                                  _slideOffset < 0.3 ->
-                                                                 {
-                                                                     // 테두리
+                                                                 { // 테두리
                                                                      //                            binding.layoutDrawer.setBackgroundResource(R.drawable.border_rounded_30dp)
                                                                      binding.layoutDrawer.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_50))
 
@@ -120,36 +119,20 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                                                                  _slideOffset < 0.7 ->
                                                                  {
                                                                      binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
-                                                                     binding.includeFull.layoutHedaer.visibility = View.VISIBLE
-                                                                     binding.includeSemi.root.visibility = View.GONE
-
-//                                                                     AnimationUtil.slideUp(binding.includeSemi.root)
-
-                                                                     binding.includeFull.root.visibility =
-                                                                         View.VISIBLE
-                                                                     slideViewStatus = 1
-
-                                                                     /*binding.layoutDrawer.setBackgroundResource(R.drawable.border_rounded_15dp)
-                                                                     binding.includeFull.layoutHedaer.visibility = View.INVISIBLE
-
-                                                                     AnimationUtil.slideUp(binding.includeFull.svMain)
-
-                                                                     binding.includeSemi.root.visibility = View.GONE
-                                                                     binding.includeFull.root.visibility = View.VISIBLE
-                                                                     slideViewStatus = 1*/
-                                                                 }
-                                                                /* else ->
-                                                                 {
-                                                                     // 테두리
-                                                                     binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
                                                                      binding.includeFull.layoutHedaer.visibility =
                                                                          View.VISIBLE
                                                                      binding.includeSemi.root.visibility =
                                                                          View.GONE
+
+                                                                     //                                                                     AnimationUtil.slideUp(binding.includeSemi.root)
+
                                                                      binding.includeFull.root.visibility =
                                                                          View.VISIBLE
                                                                      slideViewStatus = 1
-                                                                 }*/
+
+
+                                                                 }
+
                                                              }
                                                          }
 
@@ -216,10 +199,11 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             if(list == null) return@Observer
 
             setIndicatorView(baseLayout = binding.includeSemi.layoutDetailContent, topView = binding.includeSemi.vGuideline, bottomView = null, list = list)
+            setIndicatorView(baseLayout = binding.includeFull.layoutDetailContent, topView = binding.includeFull.tvTitle, bottomView = binding.includeFull.vEmpty, list = list)
 
             updateDrawerLayoutSize(binding.includeSemi.root)
 
-            setIndicatorView(baseLayout = binding.includeFull.layoutDetailContent, topView = binding.includeFull.tvTitle, bottomView = binding.includeFull.vEmpty, list = list)
+
         })
 
         vm.isBack.observe(requireActivity(), Observer {
@@ -261,8 +245,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         if(baseLayout.childCount > 0) baseLayout.removeAllViews()
 
         for(item in list)
-        {
-            // 해당 xml binding
+        { // 해당 xml binding
             val itemBinding = StatusDisplayBinding.inflate(inflater, baseLayout, false)
             itemBinding.lifecycleOwner = this
             itemBinding.item = item
@@ -279,8 +262,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                 ivParam.bottomMargin = SizeUtil.changeDpToPx(requireActivity(), 3.0f)
                 itemBinding.ivIndicator.layoutParams = ivParam
 
-                val typeface =
-                    ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
+                val typeface = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
 
                 itemBinding.tvStatus.typeface = typeface
             }

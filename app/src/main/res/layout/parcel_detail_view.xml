@@ -27,9 +27,9 @@
             android:background="@color/COLOR_GRAY_50"
             android:gravity="bottom"
             app:umanoDragView="@+id/layout_drawer"
+            app:umanoFadeColor="#00F9F9FB"
             app:umanoOverlay="true"
-            app:umanoShadowHeight="0dp"
-            app:umanoFadeColor="#00F9F9FB">
+            app:umanoShadowHeight="0dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -53,7 +53,8 @@
                     app:layout_constraintBottom_toTopOf="@+id/layout_tail"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/include_header">
+                    app:layout_constraintTop_toBottomOf="@+id/include_header"
+                    android:visibility="@{vm.deliveryStatus != null ? View.VISIBLE:View.GONE}">
 
                     <TextView
                         android:id="@+id/tv_subtext"
@@ -63,9 +64,7 @@
                         android:fontFamily="@font/pretendard_medium"
                         android:includeFontPadding="false"
                         android:text="@{vm.deliveryStatus.MSG}"
-                        android:textColor="@color/COLOR_GRAY_400"
-                        android:visibility="@{vm.deliveryStatus != null ? View.VISIBLE:View.GONE}" />
-
+                        android:textColor="@color/COLOR_GRAY_400" />
 
                     <com.airbnb.lottie.LottieAnimationView
                         android:id="@+id/iv_status"
@@ -80,49 +79,27 @@
 
                 </LinearLayout>
 
-                <!--<TextView
-                    android:id="@+id/tv_subtext"
-                    style="@style/kor_H3"
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/lottie_default_skeleton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="39dp"
-                    android:fontFamily="@font/pretendard_medium"
-                    android:includeFontPadding="false"
-                    android:text="@{vm.deliveryStatus.MSG}"
-                    android:textColor="@color/COLOR_GRAY_400"
-                    android:visibility="@{vm.deliveryStatus != null ? View.VISIBLE:View.GONE}"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_title" />
-
-                <LinearLayout
-                    android:id="@+id/layout_body"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
+                    android:layout_gravity="center"
+                    android:adjustViewBounds="true"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    android:visibility="@{vm.deliveryStatus == null ? View.VISIBLE:View.GONE}"
+                    app:setDeliveryStatusInLottie="@{vm.deliveryStatus}"
                     app:layout_constraintBottom_toTopOf="@+id/layout_tail"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_subtext">
-
-                    <com.airbnb.lottie.LottieAnimationView
-                        android:id="@+id/iv_status"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:adjustViewBounds="true"
-                        app:lottie_autoPlay="true"
-                        app:lottie_loop="true"
-                        app:setDeliveryStatusInLottie="@{vm.deliveryStatus}"
-                        tools:setDeliveryStatusInLottie="@raw/inquiry_2depth_out_for_delivery.json" />
-
-                </LinearLayout>-->
+                    app:layout_constraintTop_toBottomOf="@+id/include_header" />
 
                 <LinearLayout
                     android:id="@+id/layout_tail"
                     android:layout_width="match_parent"
                     android:layout_height="304dp"
                     android:orientation="vertical"
+                    app:lottie_rawRes="@raw/lottie_inquiry_2deth_skeleton"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
@@ -141,7 +118,7 @@
                     layout="@layout/parcel_semi_detail_item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:item="@{vm.item}"/>
+                    app:item="@{vm.item}" />
 
                 <include
                     android:id="@+id/include_full"

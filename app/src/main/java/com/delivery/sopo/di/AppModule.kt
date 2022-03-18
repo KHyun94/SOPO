@@ -11,6 +11,7 @@ import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.networks.repository.JoinRepositoryImpl
 import com.delivery.sopo.usecase.LogoutUseCase
 import com.delivery.sopo.usecase.UpdateNicknameUseCase
+import com.delivery.sopo.usecase.parcel.local.GetLocalParcelUseCase
 import com.delivery.sopo.usecase.parcel.remote.*
 import com.delivery.sopo.viewmodels.IntroViewModel
 import com.delivery.sopo.viewmodels.inquiry.*
@@ -57,6 +58,7 @@ val appModule = module {
     factory { UpdateParcelAliasUseCase(get()) }
     factory { DeleteParcelsUseCase(get(), get()) }
     factory { LogoutUseCase(get(), get()) }
+    factory { GetLocalParcelUseCase(get()) }
 
     viewModel { SplashViewModel(get(), get(), get()) }
     viewModel { IntroViewModel() }
@@ -85,7 +87,7 @@ val appModule = module {
     viewModel { OngoingTypeViewModel(get(), get(),get(),get(),get(),get()) }
     viewModel { CompletedTypeViewModel(get(), get(), get(), get()) }
     viewModel { MenuMainViewModel() }
-    viewModel { ParcelDetailViewModel(get(), get(), get()) }
+    viewModel { ParcelDetailViewModel(get(), get(), get(),get()) }
 
     viewModel { InputParcelViewModel(get()) }
     viewModel { SelectCarrierViewModel(get()) }

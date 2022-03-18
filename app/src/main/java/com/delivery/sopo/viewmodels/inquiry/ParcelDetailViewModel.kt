@@ -1,5 +1,7 @@
 package com.delivery.sopo.viewmodels.inquiry
 
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.DeliveryStatusConst
@@ -15,6 +17,8 @@ import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.TimeLineProgress
 import com.delivery.sopo.networks.call.ParcelCall
+import com.delivery.sopo.usecase.parcel.local.GetLocalParcelUseCase
+import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.livedates.SingleLiveEvent
 import com.delivery.sopo.views.adapter.TimeLineRecyclerViewAdapter
@@ -23,10 +27,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl):
+class ParcelDetailViewModel(
+        private val getLocalParcelUseCase: GetLocalParcelUseCase,
+        private val carrierRepository: CarrierRepository,
+        private val parcelRepo: ParcelRepository,
+        private val parcelManagementRepoImpl: ParcelManagementRepoImpl):
         BaseViewModel()
-{
-    // 택배 인포의 pk
+{ // 택배 인포의 pk
     val parcelId = MutableLiveData<Int>()
 
     // delivery status 리스트
@@ -53,40 +60,35 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
     }
 
     // 택배 상세 UI 세팅
-    private suspend fun updateParcelToUI(parcelResponse: Parcel.Common)
+    private suspend fun updateParcelToUI(parcel: Parcel.Common)
     {
         SopoLog.d("updateParcelToUI() 호출")
 
         val progressList = mutableListOf<TimeLineProgress>()
 
-        val deliveryStatus = DeliveryStatusConst.getDeliveryStatus(parcelResponse.deliveryStatus)
+        val deliveryStatus = CodeUtil.getEnumValueOfName<DeliveryStatusEnum>(parcel.deliveryStatus)
 
         deliveryStatus.let { enum ->
+
             this.deliveryStatus.postValue(enum)
             statusList.postValue(getDeliveryStatusIndicator(deliveryStatus = enum.CODE))
         }
 
         // ParcelEntity의 택배사 코드를 이용하여 택배사 정보를 로컬 DB에서 읽어온다.
-        val carrierDTO = carrierRepository.getCarrierWithCode(parcelResponse.carrier)
+        val carrier = carrierRepository.getCarrierWithCode(parcel.carrier)
 
-        if(parcelResponse.trackingInfo != null)
+        if(parcel.trackingInfo != null)
         {
-//            val trackingInfo: TrackingInfo = Gson().fromJson<TrackingInfo>(parcelResponse.inquiryResult, TrackingInfo::class.java)
-
-            parcelResponse.trackingInfo?.progresses?.forEach { progressess ->
+            parcel.trackingInfo?.progresses?.forEach { progressess ->
                 val date = progressess?.getDate()
-                val progress = TimeLineProgress(date = date, location = progressess?.location?.name,
-                                                description = progressess?.description,
-                                                status = progressess?.status)
+                val progress =
+                    TimeLineProgress(date = date, location = progressess?.location?.name, description = progressess?.description, status = progressess?.status)
                 progressList.add(progress)
             }
         }
 
-        val parcelDetailDTO = Parcel.Detail(regDt = parcelResponse.regDte, alias = parcelResponse.alias,
-                                     carrier = carrierDTO,
-                                     waybillNum = parcelResponse.waybillNum,
-                                     deliverStatus = this.deliveryStatus.value?.TITLE,
-                                     timeLineProgresses = progressList)
+        val parcelDetailDTO =
+            Parcel.Detail(regDt = parcel.regDte, alias = parcel.alias, carrier = carrier, waybillNum = parcel.waybillNum, deliverStatus = this.deliveryStatus.value?.TITLE, timeLineProgresses = progressList)
 
         item.postValue(parcelDetailDTO)
         adapter.postValue(getTimeLineRvAdapter(progressList))
@@ -95,10 +97,8 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
     // 택배의 이동 상태(indicator)의 값을 리스트 형식으로 반환 / true => 현재 상태
     private fun getDeliveryStatusIndicator(deliveryStatus: String): MutableList<SelectItem<String>>
     {
-        val statusList = mutableListOf(SelectItem(DeliveryStatusEnum.AT_PICKUP.TITLE, false),
-                                       SelectItem(DeliveryStatusEnum.IN_TRANSIT.TITLE, false),
-                                       SelectItem(DeliveryStatusEnum.OUT_FOR_DELIVERY.TITLE, false),
-                                       SelectItem(DeliveryStatusEnum.DELIVERED.TITLE, false))
+        val statusList =
+            mutableListOf(SelectItem(DeliveryStatusEnum.AT_PICKUP.TITLE, false), SelectItem(DeliveryStatusEnum.IN_TRANSIT.TITLE, false), SelectItem(DeliveryStatusEnum.OUT_FOR_DELIVERY.TITLE, false), SelectItem(DeliveryStatusEnum.DELIVERED.TITLE, false))
 
         when(deliveryStatus)
         {
@@ -125,9 +125,7 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
     {
         SopoLog.d("requestLocalParcel() 호출 - parcelId[${parcelId}]")
 
-        val parcelResponse =
-            parcelRepo.getLocalParcelById(parcelId = parcelId) ?: throw NullPointerException(
-                "내부에 저장된 parcelId[$parcelId]의 상세 내역이 존재하지 않습니다.")
+        val parcelResponse = getLocalParcelUseCase.invoke(parcelId = parcelId) ?: return
 
         updateParcelToUI(parcelResponse)
     }
@@ -153,7 +151,8 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
 
             updateParcelData(parcelEntity = parcelEntity)
             updateIsBeUpdate(parcelId = parcelId, status = StatusConst.DEACTIVATE)
-        }catch(e:Exception)
+        }
+        catch(e: Exception)
         {
             exceptionHandler.handleException(coroutineContext, e)
         }
@@ -182,8 +181,7 @@ class ParcelDetailViewModel(private val carrierRepository: CarrierRepository, pr
     suspend fun updateUnidentifiedStatusToZero(parcelId: Int) = withContext(Dispatchers.Default) {
         parcelManagementRepoImpl.run {
             val status = getUnidentifiedStatusByParcelId(parcelId)
-            if(status == StatusConst.ACTIVATE) parcelManagementRepoImpl.updateUnidentifiedStatus(
-                parcelId = parcelId, value = StatusConst.DEACTIVATE)
+            if(status == StatusConst.ACTIVATE) parcelManagementRepoImpl.updateUnidentifiedStatus(parcelId = parcelId, value = StatusConst.DEACTIVATE)
         }
     }
 
