@@ -1,6 +1,7 @@
 package com.delivery.sopo.views.inquiry
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,9 +13,12 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
+import com.delivery.sopo.BR
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
+import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.extensions.makeGone
 import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
@@ -22,6 +26,7 @@ import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.util.*
 import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
+import com.delivery.sopo.views.adapter.TimeLineRecyclerViewAdapter
 import com.delivery.sopo.views.main.MainView
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
@@ -43,7 +48,6 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     override fun receiveData(bundle: Bundle)
     {
         super.receiveData(bundle)
-
         parcelId = bundle.getInt(PARCEL_ID)
     }
 
@@ -84,51 +88,54 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
 
         var _slideOffset: Float = 0.0f
 
-        binding.layoutMain.addPanelSlideListener(object: SlidingUpPanelLayout.PanelSlideListener
-                                                 {
-                                                     override fun onPanelSlide(panel: View?, slideOffset: Float)
-                                                     { //                                                         panel?.alpha = 0xffffff.toFloat()
-                                                         _slideOffset = slideOffset
-                                                         CoroutineScope(Dispatchers.Main).launch {
-                                                             when
-                                                             {
-                                                                 _slideOffset < 0.3 ->
-                                                                 { // 테두리
-                                                                     binding.layoutDrawer.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_50))
+        val onPanelSlideListener = object: SlidingUpPanelLayout.PanelSlideListener
+        {
+            override fun onPanelSlide(panel: View?, slideOffset: Float)
+            {
+                _slideOffset = slideOffset
 
-                                                                     binding.includeSemi.root.makeVisible()
-                                                                     binding.includeFull.root.makeGone()
-                                                                 }
-                                                                 _slideOffset < 0.7 ->
-                                                                 {
-                                                                     binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
-                                                                     binding.includeSemi.root.makeGone()
-                                                                     binding.includeFull.layoutHedaer.makeVisible()
-                                                                     binding.includeFull.root.makeVisible()
-                                                                 }
+                when
+                {
+                    slideOffset < 0.3 ->
+                    { // 테두리
+                        binding.layoutDrawer.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_50))
 
-                                                             }
-                                                         }
+                        binding.includeSemi.root.makeVisible()
+                        binding.includeFull.root.makeGone()
+                    }
+                    slideOffset < 0.7 ->
+                    {
+                        binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
+                        binding.includeSemi.root.makeGone()
+                        binding.includeFull.layoutHedaer.makeVisible()
+                        binding.includeFull.root.makeVisible()
+                    }
+                    slideOffset < 1.0f ->
+                    {
+                        WindowUtil.setWindowStatusBarColor(requireActivity(), R.color.COLOR_GRAY_50)
+                    }
+                    slideOffset == 1.0f ->
+                    {
+                        WindowUtil.setWindowStatusBarColor(requireActivity(), R.color.MAIN_WHITE)
+                    }
+                }
 
-                                                     }
+            }
 
-                                                     override fun onPanelStateChanged(panel: View?, previousState: PanelState?, newState: PanelState)
-                                                     { //                                                         CoroutineScope(Dispatchers.Main).launch {
-                                                         if(_slideOffset < 0.1 && previousState == SlidingUpPanelLayout.PanelState.DRAGGING)
-                                                         {
-                                                             binding.layoutMain.panelState =
-                                                                 PanelState.COLLAPSED
-                                                         }
-                                                         else if(_slideOffset == 1.0f && previousState == PanelState.DRAGGING)
-                                                         {
-                                                             binding.layoutMain.panelState =
-                                                                 PanelState.EXPANDED
-                                                         }
+            override fun onPanelStateChanged(panel: View?, previousState: PanelState?, newState: PanelState)
+            {
+                if(_slideOffset < 0.1 && previousState == PanelState.DRAGGING)
+                {
+                    binding.layoutMain.panelState = PanelState.COLLAPSED
+                }
+                else if(_slideOffset == 1.0f && previousState == PanelState.DRAGGING)
+                {
+                    binding.layoutMain.panelState = PanelState.EXPANDED
+                }
+            }
+        }
 
-                                                         //                                                         }
-
-                                                     }
-                                                 })
+        binding.layoutMain.addPanelSlideListener(onPanelSlideListener)
     }
 
     override fun onDestroyView()
@@ -167,46 +174,46 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
-        vm.statusList.observe(requireActivity(), Observer { list ->
-            if(list == null) return@Observer
-
-            setIndicatorView(baseLayout = binding.includeSemi.layoutDetailContent, topView = binding.includeSemi.vGuideline, bottomView = null, list = list)
-            setIndicatorView(baseLayout = binding.includeFull.layoutDetailContent, topView = binding.includeFull.tvTitle, bottomView = binding.includeFull.vEmpty, list = list)
-
-            updateDrawerLayoutSize(binding.includeSemi.root).start()
-        })
-
-        vm.isBack.observe(requireActivity(), Observer {
-
-            if(it == null) return@Observer
-
-            if(it)
+        vm.navigator.observe(this) { nav ->
+            when(nav)
             {
-                FragmentManager.remove(requireActivity())
-                vm.isBack.call()
-            }
-        })
-
-        vm.isDragOut.observe(requireActivity(), Observer {
-            if(it != null)
-            {
-                if(it)
+                NavigatorConst.TO_BACK_SCREEN ->
                 {
-                    binding.layoutMain.panelState = PanelState.COLLAPSED
-                    vm.isDragOut.call()
+                    if(binding.layoutMain.panelState == PanelState.COLLAPSED)
+                    {
+                        FragmentManager.remove(requireActivity())
+                    }
+                    else
+                    {
+                        binding.layoutMain.panelState = PanelState.COLLAPSED
+                    }
                 }
             }
-        })
+
+        }
+
+        vm.parcelDetail.observe(this) { parcelDetail ->
+
+            val adapter =
+                TimeLineRecyclerViewAdapter().apply { setItemList(parcelDetail.timeLineProgresses) }
+
+            binding.setVariable(BR.timeLineAdapter, adapter)
+
+            val indicators = vm.getDeliveryStatusIndicator(parcelDetail.deliverStatus)
+
+            setIndicatorView(baseLayout = binding.includeSemi.layoutDetailContent, topView = binding.includeSemi.vGuideline, bottomView = null, list = indicators)
+            setIndicatorView(baseLayout = binding.includeFull.layoutDetailContent, topView = binding.includeFull.tvTitle, bottomView = binding.includeFull.vEmpty, list = indicators)
+
+            updateDrawerLayoutSize(binding.includeSemi.root).start()
+        }
     }
 
     // 동적으로 indicator view 생성
     private fun setIndicatorView(baseLayout: LinearLayout, list: List<SelectItem<String>>, topView: View?, bottomView: View?)
     {
-        val inflater =
-            requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val inflater = requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-        val linearParams =
-            LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        val linearParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
 
         linearParams.leftMargin = SizeUtil.changeDpToPx(requireActivity(), 12.0f)
         linearParams.rightMargin = SizeUtil.changeDpToPx(requireActivity(), 12.0f)
@@ -216,6 +223,15 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
 
         for(item in list)
         { // 해당 xml binding
+
+            if(item.item == DeliveryStatusEnum.NOT_REGISTERED.TITLE ||
+                item.item == DeliveryStatusEnum.ORPHANED.TITLE ||
+                item.item == DeliveryStatusEnum.ERROR.TITLE ||
+                item.item == DeliveryStatusEnum.INFORMATION_RECEIVED.TITLE)
+            {
+                continue
+            }
+
             val itemBinding = StatusDisplayBinding.inflate(inflater, baseLayout, false)
             itemBinding.lifecycleOwner = this
             itemBinding.item = item

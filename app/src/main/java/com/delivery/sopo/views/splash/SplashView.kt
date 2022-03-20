@@ -11,6 +11,7 @@ import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.interfaces.listener.OnPermissionResponseCallback
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.PermissionUtil
+import com.delivery.sopo.util.WindowUtil
 import com.delivery.sopo.viewmodels.splash.SplashViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.intro.IntroView
@@ -41,17 +42,13 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
                               finish()
                           })).show(supportFragmentManager, "permission")
         }
-
     }
 
     override fun onBeforeBinding()
     {
         super.onBeforeBinding()
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-        {
-            window.statusBarColor = ContextCompat.getColor(this, R.color.COLOR_MAIN_700);
-        }
+        WindowUtil.setWindowStatusBarColor(this, R.color.COLOR_MAIN_700)
     }
 
     override fun setObserve()

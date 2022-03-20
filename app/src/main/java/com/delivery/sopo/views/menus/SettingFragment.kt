@@ -418,6 +418,8 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
             {
                 NavigatorConst.TO_BACK_SCREEN ->
                 {
+                    if(binding.slideMainSetting.panelState != SlidingUpPanelLayout.PanelState.COLLAPSED) return@observe
+
                     FragmentManager.refreshMove(parentView, TabCode.MY_MENU_MAIN.apply {
                         FRAGMENT = MenuFragment.newInstance()
                     }, MenuMainFragment.viewId)
@@ -455,8 +457,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                     }
 
                     Handler(Looper.getMainLooper()).postDelayed({
-                        binding.slideMainSetting.panelState =
-                            SlidingUpPanelLayout.PanelState.EXPANDED
+                        binding.slideMainSetting.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
                     }, 200)
                 }
                 NavigatorConst.TO_UPDATE_APP_PASSWORD ->

@@ -22,18 +22,18 @@ import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class ParcelRepository(
-        private val parcelManagementRepo: ParcelManagementRepoImpl,
-        private val appDatabase: AppDatabase):
+class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImpl, private val appDatabase: AppDatabase):
         ParcelDataSource,
         BaseServiceBeta()
 {
-    fun insert(parcel: Parcel.Common){
+    fun insert(parcel: Parcel.Common)
+    {
         val entity = ParcelMapper.parcelObjectToEntity(parcel)
         appDatabase.parcelDao().insert(entity)
     }
 
-    fun insert(parcels: List<Parcel.Common>){
+    fun insert(parcels: List<Parcel.Common>)
+    {
         val entities = parcels.map { ParcelMapper.parcelObjectToEntity(it) }
         appDatabase.parcelDao().insert(entities)
     }
@@ -148,6 +148,13 @@ class ParcelRepository(
                 ?.let { ParcelMapper.parcelEntityToObject(it) }
         }
 
+    suspend fun getLocalParcelByIdAsLiveData(parcelId: Int): LiveData<Parcel.Common> =
+        withContext(Dispatchers.Default) {
+            return@withContext Transformations.map(appDatabase.parcelDao().getByIdAsLiveData(parcelId)) {
+                ParcelMapper.parcelEntityToObject(it)
+            }
+        }
+
     // 배송 중인 택배 리스트를 LiveData로 받기
     override fun getLocalOngoingParcelsAsLiveData(): LiveData<List<Parcel.Common>>
     {
@@ -258,7 +265,9 @@ class ParcelRepository(
 
     suspend fun registerParcel(parcel: Parcel.Register): Int
     {
-        val registerParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).registerParcel(register = parcel)
+        val registerParcel =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .registerParcel(register = parcel)
         val result = apiCall { registerParcel }
         return result.data?.data ?: throw NullPointerException()
     }
@@ -292,7 +301,9 @@ class ParcelRepository(
 
     override suspend fun getRemoteMonths(): List<CompletedParcelHistory>
     {
-        val getRemoteMonths = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getCompletedMonths()
+        val getRemoteMonths =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .getCompletedMonths()
         val result = apiCall { getRemoteMonths }
         return result.data?.data ?: emptyList()
     }

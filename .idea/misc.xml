@@ -44,6 +44,7 @@
         <entry key="app/src/main/res/layout/login_select_view.xml" value="0.17725409836065573" />
         <entry key="app/src/main/res/layout/login_view.xml" value="0.12292634372926343" />
         <entry key="app/src/main/res/layout/parcel_detail_view.xml" value="0.17725409836065573" />
+        <entry key="app/src/main/res/layout/parcel_full_detail_item.xml" value="0.12292634372926343" />
         <entry key="app/src/main/res/layout/reset_password_view.xml" value="0.335" />
         <entry key="app/src/main/res/layout/set_not_disturb_time_dialog.xml" value="0.25" />
         <entry key="app/src/main/res/layout/snack_bar_custom.xml" value="0.22" />

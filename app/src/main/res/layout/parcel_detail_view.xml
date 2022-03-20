@@ -12,6 +12,10 @@
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel" />
+
+        <variable
+            name="timeLineAdapter"
+            type="com.delivery.sopo.views.adapter.TimeLineRecyclerViewAdapter" />
     </data>
 
     <RelativeLayout
@@ -111,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:visibility="gone"
                     app:OnDownClicked="@{vm.onDownClicked()}"
-                    app:adapter="@{vm.adapter}"
+                    app:adapter="@{timeLineAdapter}"
                     app:item="@{vm.parcelDetail}" />
 
             </LinearLayout>

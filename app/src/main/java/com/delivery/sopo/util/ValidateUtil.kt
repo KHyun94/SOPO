@@ -25,7 +25,7 @@ object ValidateUtil {
         }
     }
 
-    fun isValidateNickname(nickname: String) = Pattern.compile("^[a-zA-Z0-9가-힣]+$").matcher(nickname).matches()
+    fun isValidateNickname(nickname: String) = Pattern.compile("^[a-zA-Z0-9가-힣]+$").matcher(nickname).matches() && nickname.length <= 12
 
     fun isValidateDateFormat(date: String): Boolean
     {

@@ -30,8 +30,6 @@ class AppInfoFragment: BaseFragment<AppInfoViewBinding, AppInfoViewModel>()
     {
         super.setBeforeBinding()
 
-        SopoLog.d("FAQFAQ")
-
         useCommonBackPressListener(isUseCommon = true)
 
         onSOPOBackPressedListener = object: OnSOPOBackPressEvent(true)

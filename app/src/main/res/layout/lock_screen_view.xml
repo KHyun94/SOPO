@@ -9,6 +9,10 @@
 
         <import type="android.view.View" />
 
+        <import type="androidx.core.content.ContextCompat" />
+
+        <import type="com.delivery.sopo.R" />
+
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.menus.LockScreenViewModel" />
@@ -20,17 +24,19 @@
         android:layout_height="match_parent"
         android:background="@color/COLOR_GRAY_50">
 
-        <TextView
-            android:id="@+id/tv_title_lock"
-            style="@style/kor_H2"
-            android:layout_width="wrap_content"
+        <include
+            android:id="@+id/include_header"
+            layout="@layout/include_header_center_title_with_right_button"
+            app:title='@{vm.title}'
+            app:buttonIcon="@{R.drawable.ic_clear_btn}"
+            app:onEventClickListener="@{()->vm.onBackClicked()}"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="13dp"
-            android:includeFontPadding="false"
-            android:textColor="@color/COLOR_GRAY_800"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+
 
         <TextView
             android:id="@+id/tv_errorComment"
@@ -54,7 +60,7 @@
             android:textColor="@color/COLOR_GRAY_600"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title_lock" />
+            app:layout_constraintTop_toBottomOf="@+id/include_header" />
 
         <LinearLayout
             android:id="@+id/linearLayout3"

@@ -6,13 +6,13 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.LockStatusConst
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.LockScreenViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.makeGone
@@ -69,7 +69,7 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
                 }
             }
 
-            binding.tvTitleLock.text = title
+            vm.title.postValue(title)
             binding.tvErrorComment.text = error
             binding.tvGuideComment.text = guide
         }
@@ -161,7 +161,6 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
                     VibrateUtil.startVibrate(context = this)
                     AnimationUtil.shakeHorizon(binding.tvErrorComment)
 
-
                     firstPassword = ""
                     firstCheck = false
 
@@ -186,7 +185,6 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
                     VibrateUtil.startVibrate(context = this)
                     AnimationUtil.shakeHorizon(binding.tvErrorComment)
 
-
                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                         binding.tvGuideComment.text = "어플 실행 잠금번호를 입력해 주세요."
                         binding.tvErrorComment.makeGone()
@@ -210,6 +208,11 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
                 "CANCEL" ->
                 {
                     setResult(Activity.RESULT_CANCELED)
+                    finish()
+                }
+                NavigatorConst.TO_BACK_SCREEN ->
+                {
+                    setResult(RESULT_CANCELED)
                     finish()
                 }
             }

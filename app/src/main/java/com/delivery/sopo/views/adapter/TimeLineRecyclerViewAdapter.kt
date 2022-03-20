@@ -56,7 +56,7 @@ class TimeLineRecyclerViewAdapter : RecyclerView.Adapter<TimeLineViewHolder>()
         holder.setIsRecyclable(false)
     }
 
-    fun setItemList(_list: MutableList<TimeLineProgress?>)
+    fun setItemList(_list: MutableList<TimeLineProgress>)
     {
         list = _list.reversed()
     }

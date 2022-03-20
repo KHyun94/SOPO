@@ -21,7 +21,7 @@ class FaqViewModel : BaseViewModel()
     }
 
     fun onBackClicked(){
-        _navigator.postValue(NavigatorConst.TO_BACK_SCREEN)
+        setNavigator(NavigatorConst.TO_BACK_SCREEN)
     }
 
     private val onSOPOErrorCallback = object: OnSOPOErrorCallback

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.consts.LockStatusConst
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.database.room.dto.AppPasswordDTO
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.asSHA256
@@ -18,12 +19,10 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.*
 
-class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo: UserRemoteRepository, private val appPasswordRepo: AppPasswordRepository):
+class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, private val appPasswordRepo: AppPasswordRepository):
         BaseViewModel()
 {
-    private val _navigator = MutableLiveData<String>()
-    val navigator: LiveData<String>
-        get() = _navigator
+    var title = MutableLiveData<String>()
 
     // SET,VERIFY,RESET: 현재 입력 받고 있는 비밀번호
     var lockNum = MutableLiveData<String>()
@@ -45,7 +44,6 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
         override fun onFailure(error: ErrorEnum)
         {
             SopoLog.e("인증 오류 ${error.toString()}")
-
         }
 
         override fun onInternalServerError(error: ErrorEnum)
@@ -65,13 +63,21 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
         UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 
-    // 1차 인증 번호 저장
-    private var primaryAuthNumber = ""
+    private val _navigator = MutableLiveData<String>()
+    val navigator: LiveData<String>
+        get() = _navigator
 
     fun setNavigator(navigator: String)
     {
         _navigator.postValue(navigator)
     }
+
+    fun onBackClicked(){
+        setNavigator(NavigatorConst.TO_BACK_SCREEN)
+    }
+
+    // 1차 인증 번호 저장
+    private var primaryAuthNumber = ""
 
     var isButtonEnabled = MutableLiveData<Boolean>()
 

@@ -1,14 +1,17 @@
 package com.delivery.sopo.viewmodels.inquiry
 
 import android.view.View
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.DeliveryStatusConst
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.mapper.ParcelMapper
@@ -28,27 +31,18 @@ import kotlinx.coroutines.withContext
 class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUseCase, private val carrierRepository: CarrierRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl):
         BaseViewModel()
 {
+    // 상세 화면에서 사용할 데이터 객체
+    val parcelDetail = MutableLiveData<Parcel.Detail>()
+
     // delivery status 리스트
     val statusList = MutableLiveData<MutableList<SelectItem<String>>?>()
-    var adapter = MutableLiveData<TimeLineRecyclerViewAdapter?>()
 
-    // 상세 화면에서 사용할 데이터 객체
-    var parcelDetail = MutableLiveData<Parcel.Detail>()
+    private var _navigator = MutableLiveData<String>()
+    val navigator : LiveData<String>
+        get() = _navigator
 
-    // 상세 페이지 택배 상태(백그라운드 이미지, 텍스트)
-    var deliveryStatus = MutableLiveData<DeliveryStatusEnum?>()
-
-    // 상세 화면 종료
-    var isBack = SingleLiveEvent<Boolean>()
-
-    // 상세 화면 Full Down
-    var isDragOut = SingleLiveEvent<Boolean>()
-
-    // Full Detail View의 리사이클러뷰 어댑터 세팅
-    private fun getTimeLineRvAdapter(list: List<TimeLineProgress?>): TimeLineRecyclerViewAdapter
-    {
-        SopoLog.d("getTimeLineRvAdapter() 호출 - list[${list.size}]")
-        return TimeLineRecyclerViewAdapter().apply { setItemList(list.toMutableList()) }
+    fun setNavigator(navigator: String){
+        _navigator.postValue(navigator)
     }
 
     private suspend fun getParcelDetail(parcel: Parcel.Common): Parcel.Detail
@@ -64,21 +58,14 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
     }
 
     // 택배의 이동 상태(indicator)의 값을 리스트 형식으로 반환 / true => 현재 상태
-    private fun getDeliveryStatusIndicator(deliveryStatus: String): MutableList<SelectItem<String>>
+    fun getDeliveryStatusIndicator(deliveryStatus: DeliveryStatusEnum?): MutableList<SelectItem<String>>
     {
-        val statusList =
-            mutableListOf(SelectItem(DeliveryStatusEnum.AT_PICKUP.TITLE, false), SelectItem(DeliveryStatusEnum.IN_TRANSIT.TITLE, false), SelectItem(DeliveryStatusEnum.OUT_FOR_DELIVERY.TITLE, false), SelectItem(DeliveryStatusEnum.DELIVERED.TITLE, false))
+        val deliveryStatuses = enumValues<DeliveryStatusEnum>().map { status ->
+            val isSelect = deliveryStatus == status
+            SelectItem(item = status.TITLE, isSelect = isSelect)
+        } as MutableList<SelectItem<String>>
 
-        when(deliveryStatus)
-        {
-            DeliveryStatusConst.INFORMATION_RECEIVED -> statusList[0].isSelect = true
-            DeliveryStatusConst.AT_PICKUP -> statusList[0].isSelect = true
-            DeliveryStatusConst.IN_TRANSIT -> statusList[1].isSelect = true
-            DeliveryStatusConst.OUT_FOR_DELIVERY -> statusList[2].isSelect = true
-            DeliveryStatusConst.DELIVERED -> statusList[3].isSelect = true
-        }
-
-        return statusList
+        return deliveryStatuses
     }
 
     // remote data를 요청과 동시에
@@ -100,9 +87,6 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
         val parcelDetail = getParcelDetail(parcel = parcel)
 
         this.parcelDetail.postValue(parcelDetail)
-        adapter.postValue(getTimeLineRvAdapter(parcelDetail.timeLineProgresses?: emptyList()))
-
-        statusList.postValue(parcelDetail.deliverStatus?.CODE?.let { getDeliveryStatusIndicator(deliveryStatus = it) })
     }
 
     suspend fun requestParcelForRefresh(parcelId: Int)
@@ -111,7 +95,7 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
         val res = ParcelCall.requestParcelForRefresh(parcelId = parcelId)
     }
 
-    fun getRemoteParcel(parcelId: Int) = scope.launch(Dispatchers.IO) {
+    /*fun getRemoteParcel(parcelId: Int) = scope.launch(Dispatchers.IO) {
         SopoLog.i("getRemoteParcel(...) 호출 [택배 번호:${parcelId.toString()}]")
 
         try
@@ -121,9 +105,8 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
             val parcelDetail = getParcelDetail(parcel = parcel)
 
             this@ParcelDetailViewModel.parcelDetail.postValue(parcelDetail)
-            adapter.postValue(getTimeLineRvAdapter(parcelDetail.timeLineProgresses?: emptyList()))
 
-            statusList.postValue(parcelDetail.deliverStatus?.CODE?.let { getDeliveryStatusIndicator(deliveryStatus = it) })
+//            statusList.postValue(parcelDetail.deliverStatus?.CODE?.let { getDeliveryStatusIndicator(deliveryStatus = it) })
 
             val parcelEntity = ParcelMapper.parcelToParcelEntity(parcel)
 
@@ -135,7 +118,7 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
             exceptionHandler.handleException(coroutineContext, e)
         }
 
-    }
+    }*/
 
     private suspend fun updateParcelData(parcelEntity: ParcelEntity) =
         withContext(Dispatchers.Default) {
@@ -149,7 +132,7 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
 
     fun onBackClicked()
     {
-        isBack.value = true
+        setNavigator(NavigatorConst.TO_BACK_SCREEN)
     }
 
     /**
@@ -166,7 +149,7 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
     fun onDownClicked(): View.OnClickListener
     {
         return View.OnClickListener() {
-            isDragOut.value = true
+            setNavigator(NavigatorConst.TO_BACK_SCREEN)
         }
     }
 

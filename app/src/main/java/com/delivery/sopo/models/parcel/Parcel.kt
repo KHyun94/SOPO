@@ -28,7 +28,7 @@ class Parcel{
                 val carrier: Carrier,
                 val waybillNum: String,
                 val deliverStatus: DeliveryStatusEnum?,
-                val timeLineProgresses: MutableList<TimeLineProgress>?
+                val timeLineProgresses: MutableList<TimeLineProgress>
         )
         {
                 fun changeRegDtFormat():String
