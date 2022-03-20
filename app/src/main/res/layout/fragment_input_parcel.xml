@@ -61,6 +61,7 @@
             app:errorEnabled="true"
             app:errorIconTint="@null"
             app:errorTextColor="@color/COLOR_MAIN_700"
+            app:helperTextTextColor="@color/COLOR_MAIN_700"
             app:hintEnabled="true"
             app:hintTextColor="@color/COLOR_MAIN_700"
             android:layout_marginHorizontal="24dp"

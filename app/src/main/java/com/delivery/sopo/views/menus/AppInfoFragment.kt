@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.AppInfoViewBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
@@ -52,6 +53,18 @@ class AppInfoFragment: BaseFragment<AppInfoViewBinding, AppInfoViewModel>()
         parentView.currentPage.observe(this) {
             if(it != 2) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        }
+
+        vm.navigator.observe(this) { nav ->
+            when(nav)
+            {
+                NavigatorConst.TO_BACK_SCREEN ->
+                {
+                    FragmentManager.refreshMove(parentView, TabCode.MY_MENU_MAIN.apply {
+                        FRAGMENT = MenuFragment.newInstance()
+                    }, MenuMainFragment.viewId)
+                }
+            }
         }
     }
 

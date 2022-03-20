@@ -3,6 +3,7 @@ package com.delivery.sopo.views.menus
 import android.os.Bundle
 import android.view.View
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentNoticeBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
@@ -47,6 +48,18 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding, NoticeViewModel>(){
         parentView.currentPage.observe(this) {
             if(it != 2) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        }
+
+        vm.navigator.observe(this) { nav ->
+            when(nav)
+            {
+                NavigatorConst.TO_BACK_SCREEN ->
+                {
+                    FragmentManager.refreshMove(parentView, TabCode.MY_MENU_MAIN.apply {
+                        FRAGMENT = MenuFragment.newInstance()
+                    }, MenuMainFragment.viewId)
+                }
+            }
         }
     }
 

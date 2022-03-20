@@ -146,7 +146,6 @@ class MenuSubFragment: Fragment()
     }
 
     fun moveToBack(){
-        SopoLog.d("!@#!@#!@#!@#!@#")
         FragmentManager.run {
             remove(parentView)
             move(parentView, TabCode.MY_MENU_MAIN.apply { FRAGMENT = MenuFragment.newInstance() }, MenuMainFragment.viewId)

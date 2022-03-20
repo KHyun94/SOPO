@@ -1,19 +1,17 @@
 package com.delivery.sopo.viewmodels.menus
 
-import android.view.View
-import androidx.lifecycle.*
-import com.delivery.sopo.R
-import com.delivery.sopo.exceptions.UserExceptionHandler
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.data.repository.local.user.UserSharedPrefHelper
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.SettingEnum
+import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
-import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,7 +29,6 @@ class SettingViewModel(
     private val _showSetPassword = MutableLiveData<Boolean>()
     val showSetPassword: LiveData<Boolean>
         get() = _showSetPassword
-
 
     private val _pushAlarmType = MutableLiveData<SettingEnum.PushAlarmType>()
     val pushAlarmType: LiveData<SettingEnum.PushAlarmType>
@@ -89,7 +86,6 @@ class SettingViewModel(
     }
 
     fun setAppPassword(){
-
         if(notDisturbTime.value?.length?:0 > 0)
         {
             setNotDisturbStartTime("")
@@ -98,19 +94,8 @@ class SettingViewModel(
         }
         else
         {
-            _navigator.postValue(NavigatorConst.TO_NOT_DISTURB)
+            setNavigator(NavigatorConst.TO_NOT_DISTURB)
         }
-//        isSetOfSecurity.value?.also {
-//            if(it){
-//                viewModelScope.launch(Dispatchers.IO){
-//                    appPasswordRepo.deleteAll()
-//                }
-//
-//                return
-//            }
-//
-//            _showSetPassword.value = true
-//        }
     }
 
     fun deleteAppPassword(){
@@ -122,23 +107,28 @@ class SettingViewModel(
     fun onSetPushAlarmListener()
     {
         SopoLog.d("호출")
-        _navigator.postValue(NavigatorConst.TO_SET_NOTIFY_OPTION)
+        setNavigator(NavigatorConst.TO_SET_NOTIFY_OPTION)
     }
 
     fun onSetNotDisturbTime(){
         SopoLog.d("호출")
-        _navigator.postValue(NavigatorConst.TO_NOT_DISTURB)
+        setNavigator(NavigatorConst.TO_NOT_DISTURB)
     }
 
     fun  onSetLockPassword(){
         SopoLog.d("호출")
-        _navigator.postValue(NavigatorConst.TO_UPDATE_APP_PASSWORD)
+        setNavigator(NavigatorConst.TO_UPDATE_APP_PASSWORD)
     }
 
-    override fun onCleared()
-    {
-        super.onCleared()
-        _navigator.postValue("")
+//    override fun onCleared()
+//    {
+//        super.onCleared()
+//        setNavigator("")
+//    }
+
+
+    fun onBackClicked(){
+        setNavigator(NavigatorConst.TO_BACK_SCREEN)
     }
 
     private val onSOPOErrorCallback = object: OnSOPOErrorCallback

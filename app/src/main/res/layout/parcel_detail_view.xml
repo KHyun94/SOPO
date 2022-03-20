@@ -53,8 +53,7 @@
                     app:layout_constraintBottom_toTopOf="@+id/layout_tail"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/include_header"
-                    android:visibility="@{vm.deliveryStatus != null ? View.VISIBLE:View.GONE}">
+                    app:layout_constraintTop_toBottomOf="@+id/include_header">
 
                     <TextView
                         android:id="@+id/tv_subtext"
@@ -63,7 +62,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/pretendard_medium"
                         android:includeFontPadding="false"
-                        android:text="@{vm.deliveryStatus.MSG}"
+                        android:text="@{vm.parcelDetail.deliverStatus.MSG}"
                         android:textColor="@color/COLOR_GRAY_400" />
 
                     <com.airbnb.lottie.LottieAnimationView
@@ -74,25 +73,10 @@
                         android:adjustViewBounds="true"
                         app:lottie_autoPlay="true"
                         app:lottie_loop="true"
-                        app:setDeliveryStatusInLottie="@{vm.deliveryStatus}"
+                        app:setDeliveryStatusInLottie="@{vm.parcelDetail.deliverStatus}"
                         tools:setDeliveryStatusInLottie="@raw/inquiry_2depth_out_for_delivery.json" />
 
                 </LinearLayout>
-
-                <com.airbnb.lottie.LottieAnimationView
-                    android:id="@+id/lottie_default_skeleton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:adjustViewBounds="true"
-                    app:lottie_autoPlay="true"
-                    app:lottie_loop="true"
-                    android:visibility="@{vm.deliveryStatus == null ? View.VISIBLE:View.GONE}"
-                    app:setDeliveryStatusInLottie="@{vm.deliveryStatus}"
-                    app:layout_constraintBottom_toTopOf="@+id/layout_tail"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/include_header" />
 
                 <LinearLayout
                     android:id="@+id/layout_tail"
@@ -118,7 +102,7 @@
                     layout="@layout/parcel_semi_detail_item"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:item="@{vm.item}" />
+                    app:item="@{vm.parcelDetail}" />
 
                 <include
                     android:id="@+id/include_full"
@@ -128,7 +112,7 @@
                     android:visibility="gone"
                     app:OnDownClicked="@{vm.onDownClicked()}"
                     app:adapter="@{vm.adapter}"
-                    app:item="@{vm.item}" />
+                    app:item="@{vm.parcelDetail}" />
 
             </LinearLayout>
 

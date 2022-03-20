@@ -1,6 +1,7 @@
 package com.delivery.sopo.models.parcel
 
 import com.delivery.sopo.enums.CarrierEnum
+import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
 import com.google.gson.annotations.SerializedName
@@ -26,7 +27,7 @@ class Parcel{
                 val alias: String,
                 val carrier: Carrier,
                 val waybillNum: String,
-                val deliverStatus: String?,
+                val deliverStatus: DeliveryStatusEnum?,
                 val timeLineProgresses: MutableList<TimeLineProgress>?
         )
         {

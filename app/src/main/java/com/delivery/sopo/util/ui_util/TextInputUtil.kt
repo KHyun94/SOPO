@@ -120,7 +120,7 @@ object TextInputUtil
 
             textInputEditText.addTextChangedListener(setTextInputLayoutTextWatcher(textInputEditText, infoEnum))
 
-            setHelperTextColor(ContextCompat.getColorStateList(context, R.color.COLOR_MAIN_700))
+//            setHelperTextColor(ContextCompat.getColorStateList(context, R.color.COLOR_MAIN_700))
 
             isEndIconVisible = true
             endIconMode = TextInputLayout.END_ICON_CUSTOM

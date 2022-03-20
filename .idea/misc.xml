@@ -26,6 +26,7 @@
         <entry key="app/src/main/res/layout/fragment_inquiry.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_inquiry_re.xml" value="0.18262411347517732" />
         <entry key="app/src/main/res/layout/fragment_menu.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_menu_sub.xml" value="0.12292634372926343" />
         <entry key="app/src/main/res/layout/fragment_notice.xml" value="0.11977438619774386" />
         <entry key="app/src/main/res/layout/fragment_ongoing_type.xml" value="0.335" />
         <entry key="app/src/main/res/layout/fragment_setting.xml" value="0.25" />
@@ -42,7 +43,7 @@
         <entry key="app/src/main/res/layout/lock_screen_view.xml" value="0.30245666503906254" />
         <entry key="app/src/main/res/layout/login_select_view.xml" value="0.17725409836065573" />
         <entry key="app/src/main/res/layout/login_view.xml" value="0.12292634372926343" />
-        <entry key="app/src/main/res/layout/parcel_detail_view.xml" value="0.37447916666666664" />
+        <entry key="app/src/main/res/layout/parcel_detail_view.xml" value="0.17725409836065573" />
         <entry key="app/src/main/res/layout/reset_password_view.xml" value="0.335" />
         <entry key="app/src/main/res/layout/set_not_disturb_time_dialog.xml" value="0.25" />
         <entry key="app/src/main/res/layout/snack_bar_custom.xml" value="0.22" />

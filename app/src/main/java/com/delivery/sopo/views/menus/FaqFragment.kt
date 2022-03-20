@@ -2,7 +2,9 @@ package com.delivery.sopo.views.menus
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentFaqBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
@@ -51,6 +53,18 @@ class FaqFragment: BaseFragment<FragmentFaqBinding, FaqViewModel>(){
         parentView.currentPage.observe(this) {
             if(it != 2) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        }
+
+        vm.navigator.observe(this) { nav ->
+            when(nav)
+            {
+                NavigatorConst.TO_BACK_SCREEN ->
+                {
+                    FragmentManager.refreshMove(parentView, TabCode.MY_MENU_MAIN.apply {
+                        FRAGMENT = MenuFragment.newInstance()
+                    }, MenuMainFragment.viewId)
+                }
+            }
         }
     }
 

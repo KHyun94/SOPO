@@ -22,7 +22,6 @@
             android:background="@color/MAIN_WHITE"
             app:layout_constrainedHeight="true"
             android:layoutDirection="ltr"
-
             app:layout_constraintBottom_toTopOf="@+id/layout_main_tab"
             app:layout_constraintTop_toTopOf="parent" />
 

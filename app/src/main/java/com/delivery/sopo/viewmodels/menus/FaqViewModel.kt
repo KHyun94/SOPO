@@ -1,5 +1,8 @@
 package com.delivery.sopo.viewmodels.menus
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
@@ -9,6 +12,18 @@ import kotlinx.coroutines.Dispatchers
 
 class FaqViewModel : BaseViewModel()
 {
+    private val _navigator = MutableLiveData<String>()
+    val navigator: LiveData<String>
+        get() = _navigator
+
+    fun setNavigator(navigator: String){
+        _navigator.postValue(navigator)
+    }
+
+    fun onBackClicked(){
+        _navigator.postValue(NavigatorConst.TO_BACK_SCREEN)
+    }
+
     private val onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum) { }

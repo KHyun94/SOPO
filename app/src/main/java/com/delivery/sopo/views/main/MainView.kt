@@ -267,7 +267,8 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     {
         binding.layoutMainTab.visibility = View.VISIBLE
 
-        binding.layoutViewPager.isUserInputEnabled = true
+//        binding.layoutViewPager.isUserInputEnabled = true
+        binding.layoutViewPager.isUserInputEnabled = false
         binding.layoutMainTab.getTabAt(0)?.view?.visibility = View.VISIBLE
         binding.layoutMainTab.getTabAt(1)?.view?.visibility = View.VISIBLE
         binding.layoutMainTab.getTabAt(2)?.view?.visibility = View.VISIBLE
@@ -307,8 +308,6 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
 
     override fun onMoveToPage(page: Int)
     {
-        Toast.makeText(this, "테스트 $page", Toast.LENGTH_SHORT).show()
-
         binding.layoutViewPager.setCurrentItem(page, true)
     }
 

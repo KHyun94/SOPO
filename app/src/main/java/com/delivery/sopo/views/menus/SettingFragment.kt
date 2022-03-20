@@ -364,6 +364,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
         super.setObserve()
 
         activity ?: return
+
         parentView.currentPage.observe(this) {
             if(it != 2) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -415,6 +416,12 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
 
             when(navigator)
             {
+                NavigatorConst.TO_BACK_SCREEN ->
+                {
+                    FragmentManager.refreshMove(parentView, TabCode.MY_MENU_MAIN.apply {
+                        FRAGMENT = MenuFragment.newInstance()
+                    }, MenuMainFragment.viewId)
+                }
                 NavigatorConst.TO_NOT_DISTURB ->
                 {
                     parentView.hideTab()

@@ -32,14 +32,24 @@
             android:layout_height="match_parent"
             android:background="@color/COLOR_GRAY_50">
 
+            <include
+                android:id="@+id/include_header"
+                layout="@layout/include_header_center_title_with_left_button"
+                app:title='@{"설정"}'
+                app:buttonIcon="@{R.drawable.ic_left_arrow}"
+                app:onEventClickListener="@{()->vm.onBackClicked()}"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_main_push_alarm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
-                android:onClick="@{()->vm.onSetPushAlarmListener()}"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/include_header"
+                android:onClick="@{()->vm.onSetPushAlarmListener()}">
 
                 <TextView
                     android:id="@+id/tv_sub_title_push_alarm"

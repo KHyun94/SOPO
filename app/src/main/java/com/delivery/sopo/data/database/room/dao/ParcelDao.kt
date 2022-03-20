@@ -39,6 +39,9 @@ interface ParcelDao
     @Query("SELECT * FROM PARCEL WHERE PARCEL_ID = :parcelId")
     fun getById(parcelId: Int): ParcelEntity?
 
+    @Query("SELECT * FROM PARCEL WHERE PARCEL_ID = :parcelId")
+    fun getByIdAsLiveData(parcelId: Int): LiveData<ParcelEntity>
+
     @Query("SELECT parcel.* FROM PARCEL as parcel LEFT JOIN PARCEL_STATUS as status ON parcel.PARCEL_ID = status.PARCEL_ID WHERE parcel.REG_DT LIKE :date AND STATUS = 1 AND DELIVERY_STATUS = 'DELIVERED'")
     fun getCompleteParcelByDate(date: String): List<ParcelEntity>
 

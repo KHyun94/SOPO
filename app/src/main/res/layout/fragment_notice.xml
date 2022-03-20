@@ -3,6 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="androidx.core.content.ContextCompat" />
+        <import type="com.delivery.sopo.R" />
 
         <variable
             name="vm"
@@ -15,6 +17,16 @@
         android:layout_height="wrap_content"
         android:background="@color/COLOR_GRAY_50"
         android:orientation="vertical">
+
+        <include
+            android:id="@+id/include_header"
+            layout="@layout/include_header_center_title_with_left_button"
+            app:title='@{"공지사항"}'
+            app:buttonIcon="@{R.drawable.ic_left_arrow}"
+            app:onEventClickListener="@{()->vm.onBackClicked()}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+             />
 
         <View
             android:id="@+id/view_divisionLine"

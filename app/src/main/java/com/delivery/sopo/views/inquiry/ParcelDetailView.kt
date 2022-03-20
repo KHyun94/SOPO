@@ -2,43 +2,30 @@ package com.delivery.sopo.views.inquiry
 
 import android.content.Context
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.ScaleAnimation
-import android.view.animation.TranslateAnimation
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
-import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.extensions.makeGone
+import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
-import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.util.*
-import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.views.main.MainView
-import com.delivery.sopo.views.registers.InputParcelFragment
-import com.delivery.sopo.views.registers.RegisterMainFragment
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.properties.Delegates
 
@@ -50,8 +37,6 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     override val layoutRes: Int = R.layout.parcel_detail_view
     override val mainLayout: View by lazy { binding.relativeMainInquiryDetail }
     override val vm: ParcelDetailViewModel by viewModel()
-
-    private var slideViewStatus = 0
 
     var parcelId by Delegates.notNull<Int>()
 
@@ -74,7 +59,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             {
                 super.onBackPressed()
 
-                if(slideViewStatus == 0)
+                if(binding.layoutMain.panelState == PanelState.COLLAPSED)
                 {
                     requireActivity().supportFragmentManager.popBackStack()
                 }
@@ -90,7 +75,11 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     {
         super.setAfterBinding()
 
-        vm.parcelId.postValue(parcelId)
+        CoroutineScope(Dispatchers.Main).launch {
+            vm.updateUnidentifiedStatusToZero(parcelId = parcelId)
+            vm.requestParcelDetailData(parcelId = parcelId)
+        }
+
         setListener()
 
         var _slideOffset: Float = 0.0f
@@ -105,32 +94,17 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                                                              {
                                                                  _slideOffset < 0.3 ->
                                                                  { // 테두리
-                                                                     //                            binding.layoutDrawer.setBackgroundResource(R.drawable.border_rounded_30dp)
                                                                      binding.layoutDrawer.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_50))
 
-                                                                     binding.includeSemi.root.visibility =
-                                                                         View.VISIBLE
-                                                                     binding.includeFull.root.visibility =
-                                                                         View.GONE
-                                                                     slideViewStatus = 0
-
-
+                                                                     binding.includeSemi.root.makeVisible()
+                                                                     binding.includeFull.root.makeGone()
                                                                  }
                                                                  _slideOffset < 0.7 ->
                                                                  {
                                                                      binding.layoutDrawer.setBackgroundResource(R.color.MAIN_WHITE)
-                                                                     binding.includeFull.layoutHedaer.visibility =
-                                                                         View.VISIBLE
-                                                                     binding.includeSemi.root.visibility =
-                                                                         View.GONE
-
-                                                                     //                                                                     AnimationUtil.slideUp(binding.includeSemi.root)
-
-                                                                     binding.includeFull.root.visibility =
-                                                                         View.VISIBLE
-                                                                     slideViewStatus = 1
-
-
+                                                                     binding.includeSemi.root.makeGone()
+                                                                     binding.includeFull.layoutHedaer.makeVisible()
+                                                                     binding.includeFull.root.makeVisible()
                                                                  }
 
                                                              }
@@ -139,14 +113,19 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                                                      }
 
                                                      override fun onPanelStateChanged(panel: View?, previousState: PanelState?, newState: PanelState)
-                                                     {
-                                                         CoroutineScope(Dispatchers.Main).launch {
-                                                             if(_slideOffset < 0.1 && previousState == SlidingUpPanelLayout.PanelState.DRAGGING) binding.layoutMain.panelState =
+                                                     { //                                                         CoroutineScope(Dispatchers.Main).launch {
+                                                         if(_slideOffset < 0.1 && previousState == SlidingUpPanelLayout.PanelState.DRAGGING)
+                                                         {
+                                                             binding.layoutMain.panelState =
                                                                  PanelState.COLLAPSED
-                                                             else if(_slideOffset == 1.0f && previousState == PanelState.DRAGGING) binding.layoutMain.panelState =
-                                                                 PanelState.EXPANDED
-
                                                          }
+                                                         else if(_slideOffset == 1.0f && previousState == PanelState.DRAGGING)
+                                                         {
+                                                             binding.layoutMain.panelState =
+                                                                 PanelState.EXPANDED
+                                                         }
+
+                                                         //                                                         }
 
                                                      }
                                                  })
@@ -188,22 +167,13 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
-        vm.parcelId.observe(requireActivity(), Observer { parcelId ->
-            CoroutineScope(Dispatchers.Main).launch {
-                vm.updateUnidentifiedStatusToZero(parcelId = parcelId)
-                vm.requestParcelDetailData(parcelId = parcelId)
-            }
-        })
-
         vm.statusList.observe(requireActivity(), Observer { list ->
             if(list == null) return@Observer
 
             setIndicatorView(baseLayout = binding.includeSemi.layoutDetailContent, topView = binding.includeSemi.vGuideline, bottomView = null, list = list)
             setIndicatorView(baseLayout = binding.includeFull.layoutDetailContent, topView = binding.includeFull.tvTitle, bottomView = binding.includeFull.vEmpty, list = list)
 
-            updateDrawerLayoutSize(binding.includeSemi.root)
-
-
+            updateDrawerLayoutSize(binding.includeSemi.root).start()
         })
 
         vm.isBack.observe(requireActivity(), Observer {
@@ -296,103 +266,13 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         constraintParams2.topMargin = SizeUtil.changeDpToPx(requireActivity(), 40.0f)
 
         bottomView.layoutParams = constraintParams2
-
-        // todo 추후 param 받아서 처리하거나 callback 처리를 해서 빼도록 처리할 예정
-        /*if(topView != null)
-        {
-            if(topView is LinearLayout)
-            {
-                val constraintParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
-
-                constraintParams.topToBottom = topView.id
-                constraintParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID
-                constraintParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID
-                constraintParams.topMargin = SizeUtil.changeDpToPx(requireActivity(), 34.0f)
-
-                baseLayout.layoutParams = constraintParams
-
-                val constraintParams2 =
-                    ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, SizeUtil.changeDpToPx(requireActivity(), 8.0f))
-
-                constraintParams2.topToBottom = baseLayout.id
-                constraintParams2.topMargin = SizeUtil.changeDpToPx(requireActivity(), 40.0f)
-
-                bottomView!!.layoutParams = constraintParams2
-            }
-            else
-            {
-                val constraintParams =
-                    ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT, ConstraintLayout.LayoutParams.WRAP_CONTENT)
-
-                constraintParams.topToBottom = topView.id
-                constraintParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID
-                constraintParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID
-                constraintParams.topMargin = SizeUtil.changeDpToPx(requireActivity(), 27.0f)
-
-                baseLayout.layoutParams = constraintParams
-
-                val constraintParams2 =
-                    ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, SizeUtil.changeDpToPx(requireActivity(), 8.0f))
-
-                constraintParams2.topToBottom = baseLayout.id
-                constraintParams2.topMargin = SizeUtil.changeDpToPx(requireActivity(), 40.0f)
-
-                bottomView!!.layoutParams = constraintParams2
-            }
-        }*/
     }
-
-    //    var bar = updateDrawerLayoutSize(layout)
 
     // 하단 드로우 레이아웃 사이즈 변경
-    private fun updateDrawerLayoutSize(view: View)
-    {
-        CoroutineScope(Dispatchers.Main).launch {
-            val height = view.height
-            binding.layoutMain.panelHeight = height
-        }
-
-        /*val globalListener = ViewTreeObserver.OnGlobalLayoutListener {
-            val height = view.height
-            binding.layoutMain.panelHeight = height
-        }
-
-        view.viewTreeObserver.run {
-            addOnGlobalLayoutListener(globalListener)
-
-            Handler().postDelayed(Runnable {
-                removeOnGlobalLayoutListener(globalListener)
-            }, 1000)
-
-        }*/
-
+    private fun updateDrawerLayoutSize(view: View) = CoroutineScope(Dispatchers.Main).launch {
+        val height = view.height
+        binding.layoutMain.panelHeight = height
     }
-
-    var callback: OnBackPressedCallback? = null
-
-    override fun onAttach(context: Context)
-    {
-        super.onAttach(context)
-
-        callback = object: OnBackPressedCallback(true)
-        {
-            override fun handleOnBackPressed()
-            {
-                if(slideViewStatus == 0)
-                {
-                    requireActivity().supportFragmentManager.popBackStack()
-                }
-                else
-                {
-                    binding.layoutMain.panelState = PanelState.COLLAPSED
-                }
-            }
-
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(this, callback!!)
-    }
-
 
     companion object
     {

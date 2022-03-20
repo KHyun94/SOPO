@@ -148,11 +148,6 @@ abstract class BaseViewModel: ViewModel()
         _isLoading.postValue(false)
     }
 
-    override fun onCleared()
-    {
-        super.onCleared()
-    }
-
     fun getConnectivityStatus(context: Context): NetworkStatus
     { // 네트워크 연결 상태 확인하기 위한 ConnectivityManager 객체 생성
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

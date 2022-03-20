@@ -1,6 +1,7 @@
 package com.delivery.sopo.viewmodels.menus
 
 import androidx.lifecycle.*
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
@@ -16,5 +17,17 @@ class AppInfoViewModel : BaseViewModel() {
 
     override val exceptionHandler: CoroutineExceptionHandler by lazy {
         UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
+    }
+
+    private val _navigator = MutableLiveData<String>()
+    val navigator: LiveData<String>
+        get() = _navigator
+
+    fun setNavigator(navigator: String){
+        _navigator.postValue(navigator)
+    }
+
+    fun onBackClicked(){
+        _navigator.postValue(NavigatorConst.TO_BACK_SCREEN)
     }
 }

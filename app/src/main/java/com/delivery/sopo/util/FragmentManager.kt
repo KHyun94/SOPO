@@ -15,25 +15,36 @@ object FragmentManager
         val fm = activity.supportFragmentManager
         val transaction = fm.beginTransaction()
 
-        transaction.add(viewId, code.FRAGMENT, code.NAME)
-            .addToBackStack(null)
-            .commit()
+        transaction.add(viewId, code.FRAGMENT, code.NAME).addToBackStack(null).commit()
     }
 
-    fun move(activity: FragmentActivity, code: TabCode, @IdRes viewId: Int, isAdd:Boolean = false)
+    fun refreshMove(activity: FragmentActivity, code: TabCode, viewId:Int)
+    {
+        val fm = activity.supportFragmentManager
+        fm.popBackStack()
+
+        val transaction = fm.beginTransaction()
+
+        transaction.run {
+            replace(viewId, code.FRAGMENT, code.NAME)
+            commit()
+        }
+    }
+
+    fun move(activity: FragmentActivity, code: TabCode, @IdRes viewId: Int, isAdd: Boolean = false)
     {
         SopoLog.d("move() 호출:[Fragment:${code.NAME}][viewId:$viewId]")
 
         val fm = activity.supportFragmentManager
         val transaction = fm.beginTransaction()
 
-/*
-        if(code.FRAGMENT.isAdded)
-        {
-            transaction.remove(code.FRAGMENT)
-            SopoLog.d("중첩 프래그먼트[${code}] 존재 삭제 중? : ${code.FRAGMENT.isRemoving}")
-        }
-*/
+        /*
+                if(code.FRAGMENT.isAdded)
+                {
+                    transaction.remove(code.FRAGMENT)
+                    SopoLog.d("중첩 프래그먼트[${code}] 존재 삭제 중? : ${code.FRAGMENT.isRemoving}")
+                }
+        */
 
         transaction.run {
             replace(viewId, code.FRAGMENT, code.NAME)

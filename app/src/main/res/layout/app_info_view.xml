@@ -3,7 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
+        <import type="androidx.core.content.ContextCompat" />
+        <import type="com.delivery.sopo.R" />
+
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.menus.AppInfoViewModel" />
@@ -14,6 +19,16 @@
         android:layout_height="match_parent"
         android:background="@color/COLOR_GRAY_50">
 
+        <include
+            android:id="@+id/include_header"
+            layout="@layout/include_header_center_title_with_left_button"
+            app:title='@{"설정"}'
+            app:buttonIcon="@{R.drawable.ic_left_arrow}"
+            app:onEventClickListener="@{()->vm.onBackClicked()}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageView
             android:id="@+id/iv_appLogo"
             android:layout_width="wrap_content"
@@ -22,7 +37,7 @@
             android:background="@drawable/ic_light_sopo_logo"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/include_header"
             />
 
         <TextView

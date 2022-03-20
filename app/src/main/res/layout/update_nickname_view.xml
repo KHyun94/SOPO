@@ -132,6 +132,7 @@
                 app:errorIconTint="@null"
                 app:errorTextColor="@color/COLOR_MAIN_700"
                 app:hintEnabled="true"
+                app:helperTextTextColor="@color/COLOR_MAIN_700"
                 app:hintTextColor="@color/COLOR_MAIN_700">
 
                 <com.google.android.material.textfield.TextInputEditText
