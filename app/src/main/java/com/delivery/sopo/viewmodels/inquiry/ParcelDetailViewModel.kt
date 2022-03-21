@@ -10,6 +10,9 @@ import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.exceptions.ParcelExceptionHandler
+import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.parcel.Parcel
@@ -67,14 +70,12 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
         return deliveryStatuses
     }
 
-    // remote data를 요청과 동시에
-    fun requestParcelDetailData(parcelId: Int)
-    {
-        SopoLog.d("requestRemoteParcel() 호출 - parcelId[$parcelId]")
-        withContext(Dispatchers.Default) { requestLocalParcel(parcelId) }
-        withContext(Dispatchers.IO) { requestRemoteParcel(parcelId = parcelId) }
+    fun requestParcelDetail(parcelId: Int) = scope.launch(Dispatchers.IO) {
+        requestLocalParcel(parcelId)
+        requestRemoteParcel(parcelId = parcelId)
 
         updateUnidentifiedStatusToZero(parcelId = parcelId)
+        updateIsBeUpdate(parcelId = parcelId, status = StatusConst.DEACTIVATE)
     }
 
     // 로컬에 저장된 택배 인포를 로드
@@ -84,7 +85,8 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
         _parcelDetail.postValue(parcelDetail)
     }
 
-    suspend fun requestRemoteParcel(parcelId: Int) = scope.launch(Dispatchers.IO) {
+    suspend fun requestRemoteParcel(parcelId: Int) = withContext(Dispatchers.IO) {
+
         try
         {
             val remoteParcel = refreshParcelUseCase.invoke(parcelId = parcelId)
@@ -97,36 +99,6 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
             exceptionHandler.handleException(context = coroutineContext, e)
         }
     }
-
-    /*fun getRemoteParcel(parcelId: Int) = scope.launch(Dispatchers.IO) {
-        SopoLog.i("getRemoteParcel(...) 호출 [택배 번호:${parcelId.toString()}]")
-
-        try
-        {
-            val parcel = parcelRepo.getRemoteParcelById(parcelId = parcelId)
-
-            val parcelDetail = getParcelDetail(parcel = parcel)
-
-            this@ParcelDetailViewModel.parcelDetail.postValue(parcelDetail)
-
-//            statusList.postValue(parcelDetail.deliverStatus?.CODE?.let { getDeliveryStatusIndicator(deliveryStatus = it) })
-
-            val parcelEntity = ParcelMapper.parcelToParcelEntity(parcel)
-
-            updateParcelData(parcelEntity = parcelEntity)
-            updateIsBeUpdate(parcelId = parcelId, status = StatusConst.DEACTIVATE)
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
-        }
-
-    }*/
-
-    private suspend fun updateParcelData(parcelEntity: ParcelEntity) =
-        withContext(Dispatchers.Default) {
-            parcelRepo.update(parcelEntity)
-        }
 
     private suspend fun updateIsBeUpdate(parcelId: Int, status: Int) =
         withContext(Dispatchers.Default) {
@@ -156,6 +128,29 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
         }
     }
 
-    override val exceptionHandler: CoroutineExceptionHandler
-        get() = TODO("Not yet implemented")
+    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    {
+        override fun onFailure(error: ErrorEnum)
+        {
+            postErrorSnackBar("알 수 없는 이유로 등록에 실패했습니다.[${error.toString()}]")
+        }
+
+        override fun onInternalServerError(error: ErrorEnum)
+        {
+            super.onInternalServerError(error)
+
+            postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
+        }
+
+        override fun onAuthError(error: ErrorEnum)
+        {
+            super.onAuthError(error)
+
+            postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
+        }
+    }
+
+    override val exceptionHandler: CoroutineExceptionHandler by lazy {
+        ParcelExceptionHandler(Dispatchers.IO, onSOPOErrorCallback)
+    }
 }

@@ -23,6 +23,7 @@ import kotlin.system.exitProcess
 
 abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
 {
+
     lateinit var binding: T
     abstract val layoutRes: Int
     abstract val vm: R
@@ -88,6 +89,11 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
         super.onDetach()
 
         onBackPressedCallback.remove()
+    }
+
+    override fun onDestroyView()
+    {
+        super.onDestroyView()
     }
 
     private fun setOnBackPressedListener(owner: LifecycleOwner){

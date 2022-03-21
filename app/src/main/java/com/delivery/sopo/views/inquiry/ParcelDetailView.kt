@@ -79,10 +79,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     {
         super.setAfterBinding()
 
-        CoroutineScope(Dispatchers.Main).launch {
-            vm.updateUnidentifiedStatusToZero(parcelId = parcelId)
-            vm.requestParcelDetailData(parcelId = parcelId)
-        }
+        vm.requestParcelDetail(parcelId = parcelId)
 
         setListener()
 
