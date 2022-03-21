@@ -87,7 +87,7 @@ val appModule = module {
     viewModel { OngoingTypeViewModel(get(), get(),get(),get(),get(),get()) }
     viewModel { CompletedTypeViewModel(get(), get(), get(), get()) }
     viewModel { MenuMainViewModel() }
-    viewModel { ParcelDetailViewModel(get(), get(), get(),get()) }
+    viewModel { ParcelDetailViewModel(get(), get(), get(),get(), get()) }
 
     viewModel { InputParcelViewModel(get()) }
     viewModel { SelectCarrierViewModel(get()) }

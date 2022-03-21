@@ -11,5 +11,6 @@ class RefreshParcelUseCase(private val parcelRepo: ParcelRepository)
         SopoLog.i("RefreshParcelUseCase(...)")
         val updatableParcel = parcelRepo.requestParcelForRefresh(parcelId = parcelId)
         parcelRepo.update(updatableParcel.parcel)
+        return@withContext updatableParcel.parcel
     }
 }

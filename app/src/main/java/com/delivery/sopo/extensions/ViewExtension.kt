@@ -56,7 +56,7 @@ fun ViewPager2.reduceSensitive()
         val recyclerView = recyclerViewField.get(this)
         val touchSlopField = RecyclerView::class.java.getDeclaredField("mTouchSlop")
         touchSlopField.isAccessible = true
-        touchSlopField.set(recyclerView, touchSlopField.getInt(recyclerView) * 2.5) //6 is empirical value
+        touchSlopField.set(recyclerView, (touchSlopField.getInt(recyclerView) * 3)) //6 is empirical value
     }
     catch(ignore: java.lang.Exception)
     {

@@ -194,8 +194,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
 
         vm.parcelDetail.observe(this) { parcelDetail ->
 
-            val adapter =
-                TimeLineRecyclerViewAdapter().apply { setItemList(parcelDetail.timeLineProgresses) }
+            val adapter = TimeLineRecyclerViewAdapter().apply { setItemList(parcelDetail.timeLineProgresses) }
 
             binding.setVariable(BR.timeLineAdapter, adapter)
 

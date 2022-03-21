@@ -3,7 +3,6 @@ package com.delivery.sopo.viewmodels.inquiry
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.consts.DeliveryStatusConst
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
@@ -11,28 +10,28 @@ import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
-import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.TimeLineProgress
-import com.delivery.sopo.networks.call.ParcelCall
 import com.delivery.sopo.usecase.parcel.local.GetLocalParcelUseCase
+import com.delivery.sopo.usecase.parcel.remote.RefreshParcelUseCase
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.livedates.SingleLiveEvent
-import com.delivery.sopo.views.adapter.TimeLineRecyclerViewAdapter
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUseCase, private val carrierRepository: CarrierRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl):
+class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUseCase,
+                            private val refreshParcelUseCase: RefreshParcelUseCase,
+                            private val carrierRepository: CarrierRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl):
         BaseViewModel()
 {
     // 상세 화면에서 사용할 데이터 객체
-    val parcelDetail = MutableLiveData<Parcel.Detail>()
+    private var _parcelDetail = MutableLiveData<Parcel.Detail>()
+    val parcelDetail:LiveData<Parcel.Detail>
+    get() = _parcelDetail
 
     // delivery status 리스트
     val statusList = MutableLiveData<MutableList<SelectItem<String>>?>()
@@ -69,30 +68,34 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
     }
 
     // remote data를 요청과 동시에
-    suspend fun requestParcelDetailData(parcelId: Int)
+    fun requestParcelDetailData(parcelId: Int)
     {
         SopoLog.d("requestRemoteParcel() 호출 - parcelId[$parcelId]")
         withContext(Dispatchers.Default) { requestLocalParcel(parcelId) }
-        withContext(Dispatchers.IO) { requestParcelForRefresh(parcelId = parcelId) }
+        withContext(Dispatchers.IO) { requestRemoteParcel(parcelId = parcelId) }
 
         updateUnidentifiedStatusToZero(parcelId = parcelId)
     }
 
     // 로컬에 저장된 택배 인포를 로드
-    private suspend fun requestLocalParcel(parcelId: Int)
-    {
-        SopoLog.d("requestLocalParcel() 호출 - parcelId[${parcelId}]")
-
-        val parcel = getLocalParcelUseCase.invoke(parcelId = parcelId) ?: return
+    private suspend fun requestLocalParcel(parcelId: Int) = withContext(Dispatchers.Default) {
+        val parcel = getLocalParcelUseCase.invoke(parcelId = parcelId) ?: return@withContext
         val parcelDetail = getParcelDetail(parcel = parcel)
-
-        this.parcelDetail.postValue(parcelDetail)
+        _parcelDetail.postValue(parcelDetail)
     }
 
-    suspend fun requestParcelForRefresh(parcelId: Int)
-    {
-        SopoLog.d("requestParcelForRefresh() 호출 - parcelId[$parcelId]")
-        val res = ParcelCall.requestParcelForRefresh(parcelId = parcelId)
+    suspend fun requestRemoteParcel(parcelId: Int) = scope.launch(Dispatchers.IO) {
+        try
+        {
+            val remoteParcel = refreshParcelUseCase.invoke(parcelId = parcelId)
+            val remoteParcelDetail = getParcelDetail(remoteParcel)
+
+            _parcelDetail.postValue(remoteParcelDetail)
+        }
+        catch(e: Exception)
+        {
+            exceptionHandler.handleException(context = coroutineContext, e)
+        }
     }
 
     /*fun getRemoteParcel(parcelId: Int) = scope.launch(Dispatchers.IO) {
