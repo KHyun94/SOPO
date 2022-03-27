@@ -29,6 +29,7 @@ object NavigatorConst {
     const val TO_BACK_SCREEN = "TO_BACK_SCREEN"
 
     const val TO_COMPLETE = "TO_COMPLETE"
+    const val TO_DELETE = "TO_DELETE"
 
     const val MAIN_BRIDGE_REGISTER = "MAIN_BRIDGE_REGISTER"
 

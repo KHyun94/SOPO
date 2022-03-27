@@ -36,6 +36,11 @@ class ParcelExceptionHandler(private val dispatcher: CoroutineDispatcher, privat
                     return callback.onInquiryParcelError(errorCode)
                 }
 
+                if(errorCode == ErrorEnum.OAUTH2_DELETE_TOKEN)
+                {
+                    return callback.onDuplicateError(errorCode)
+                }
+
                 callback.onFailure(errorCode)
             }
             is OAuthException ->

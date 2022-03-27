@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.enums.ErrorEnum
@@ -13,10 +14,8 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.usecase.parcel.remote.*
 import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.launch
+import com.delivery.sopo.views.dialog.LogoutDialog
+import kotlinx.coroutines.*
 
 class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
                        private val updateParcelsUseCase: UpdateParcelsUseCase,
@@ -41,6 +40,14 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
     val updatableParcelIds: LiveData<List<Int>>
         get() = parcelManagementRepo.getUpdatableParcelIdsAsLiveData()
 
+    private val _navigator = MutableLiveData<String>()
+    val navigator: LiveData<String>
+        get() = _navigator
+
+    fun setNavigator(navigator: String){
+        _navigator.postValue(navigator)
+    }
+
     fun onUpdateParcels(parcelIds: List<Int>)=scope.launch{
         try
         {
@@ -51,8 +58,6 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
         {
             exceptionHandler.handleException(coroutineContext, e)
         }
-
-
     }
 
     fun onSyncParcels()= scope.launch{
@@ -86,6 +91,10 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
             }, 3000)
 
         }
+    }
+
+    fun onDeleteParcelsClicked(){
+        setNavigator(NavigatorConst.TO_DELETE)
     }
 
     fun startDeleteCount()
@@ -147,15 +156,19 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
         override fun onInternalServerError(error: ErrorEnum)
         {
             super.onInternalServerError(error)
-
             postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
         }
 
         override fun onAuthError(error: ErrorEnum)
         {
             super.onAuthError(error)
-
             postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
+        }
+
+        override fun onDuplicateError(error: ErrorEnum)
+        {
+            super.onDuplicateError(error)
+            moveDuplicated()
         }
     }
     override val exceptionHandler: CoroutineExceptionHandler by lazy {

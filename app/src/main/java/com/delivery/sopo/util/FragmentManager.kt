@@ -1,5 +1,6 @@
 package com.delivery.sopo.util
 
+import android.widget.Toast
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -38,18 +39,21 @@ object FragmentManager
         val fm = activity.supportFragmentManager
         val transaction = fm.beginTransaction()
 
-        /*
-                if(code.FRAGMENT.isAdded)
-                {
-                    transaction.remove(code.FRAGMENT)
-                    SopoLog.d("중첩 프래그먼트[${code}] 존재 삭제 중? : ${code.FRAGMENT.isRemoving}")
-                }
-        */
-
         transaction.run {
             replace(viewId, code.FRAGMENT, code.NAME)
             if(isAdd) addToBackStack(null)
-            commit()
+//            addToBackStack(null)
+
+            if(fm.isDestroyed)
+            {
+                commitAllowingStateLoss()
+                return Toast.makeText(activity, "isDestroyed", Toast.LENGTH_SHORT).show()
+            }
+            else
+            {
+                commit()
+            }
+
         }
     }
 

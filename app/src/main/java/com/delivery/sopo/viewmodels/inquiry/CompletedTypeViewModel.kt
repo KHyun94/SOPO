@@ -209,6 +209,12 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
 
             postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
         }
+
+        override fun onDuplicateError(error: ErrorEnum)
+        {
+            super.onDuplicateError(error)
+            moveDuplicated()
+        }
     }
     override val exceptionHandler: CoroutineExceptionHandler by lazy {
         ParcelExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)

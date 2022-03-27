@@ -56,7 +56,7 @@ abstract class BaseServiceBeta
 
         SopoLog.e("BaseService Error [status:$statusCode] [res:${errorResponse.toString()}]")
 
-        if(statusCode in 400..403 && errorResponse.code in 801..811) throw OAuthException(statusCode, errorResponse)
+        if(statusCode in 400..403 && errorResponse.code in 801..812) throw OAuthException(statusCode, errorResponse)
 
         if(statusCode == 500) throw InternalServerException("일시적으로 서비스를 이용할 수 없습니다.", errorResponse)
 

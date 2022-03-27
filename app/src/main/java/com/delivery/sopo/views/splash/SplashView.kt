@@ -14,6 +14,7 @@ import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.util.WindowUtil
 import com.delivery.sopo.viewmodels.splash.SplashViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
+import com.delivery.sopo.views.dialog.LogoutDialog
 import com.delivery.sopo.views.intro.IntroView
 import com.delivery.sopo.views.main.MainView
 import com.delivery.sopo.views.signup.RegisterNicknameView

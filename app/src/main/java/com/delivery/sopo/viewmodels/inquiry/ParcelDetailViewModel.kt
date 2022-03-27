@@ -71,21 +71,22 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
     }
 
     fun requestParcelDetail(parcelId: Int) = scope.launch(Dispatchers.IO) {
-        requestLocalParcel(parcelId)
-        requestRemoteParcel(parcelId = parcelId)
 
         updateUnidentifiedStatusToZero(parcelId = parcelId)
         updateIsBeUpdate(parcelId = parcelId, status = StatusConst.DEACTIVATE)
+
+        requestLocalParcel(parcelId)
+        requestRemoteParcel(parcelId = parcelId)
     }
 
     // 로컬에 저장된 택배 인포를 로드
     private suspend fun requestLocalParcel(parcelId: Int) = withContext(Dispatchers.Default) {
         val parcel = getLocalParcelUseCase.invoke(parcelId = parcelId) ?: return@withContext
         val parcelDetail = getParcelDetail(parcel = parcel)
-        _parcelDetail.postValue(parcelDetail)
-    }
 
-    suspend fun requestRemoteParcel(parcelId: Int) = withContext(Dispatchers.IO) {
+        _parcelDetail.postValue(parcelDetail)
+
+        if(parcelDetail.deliverStatus == DeliveryStatusEnum.DELIVERED) return@withContext
 
         try
         {
@@ -98,6 +99,13 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
         {
             exceptionHandler.handleException(context = coroutineContext, e)
         }
+
+
+    }
+
+    suspend fun requestRemoteParcel(parcelId: Int) = withContext(Dispatchers.IO) {
+
+
     }
 
     private suspend fun updateIsBeUpdate(parcelId: Int, status: Int) =

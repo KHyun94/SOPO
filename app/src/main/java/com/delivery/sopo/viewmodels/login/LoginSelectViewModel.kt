@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.extensions.toMD5
@@ -20,6 +21,7 @@ import java.util.*
 import com.kakao.network.ErrorResult as KakaoErrorResult
 
 class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
+                           private val carrierRepo: CarrierRepository,
                            private val joinRepoImpl: JoinRepositoryImpl): BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
@@ -29,6 +31,13 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
     private var email = ""
     private var kakaoUserId = ""
     private var kakaoNickname = ""
+
+    init
+    {
+        CoroutineScope(Dispatchers.Default).launch {
+            carrierRepo.initCarrierDB()
+        }
+    }
 
     private val onSOPOErrorCallback = object: OnSOPOErrorCallback
     {

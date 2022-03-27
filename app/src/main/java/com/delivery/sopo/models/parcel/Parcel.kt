@@ -20,7 +20,9 @@ class Parcel{
                 @SerializedName("regDte") var regDte: String,
                 @SerializedName("arrivalDte") var arrivalDte: String?,
                 @SerializedName("auditDte") var auditDte: String,
-                @SerializedName("status") var status: Int?): Serializable
+                @SerializedName("status") var status: Int?,
+                @SerializedName("isRegistered") var isRegistered: Boolean = true
+        ): Serializable
 
         data class Detail(
                 val regDt: String,
@@ -50,7 +52,7 @@ class Parcel{
 
         data class Updatable(
                 @SerializedName("parcel")
-                val parcel: Parcel.Common,
+                val parcel: Common,
                 @SerializedName("updated")
                 val updated: Boolean
         )

@@ -19,19 +19,36 @@ import io.reactivex.Flowable.just
 import io.reactivex.Observable
 import io.reactivex.Observable.just
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.util.*
 
 abstract class BaseViewModel: ViewModel()
 {
+    abstract val exceptionHandler: CoroutineExceptionHandler
+
+    val scope: CoroutineScope = (viewModelScope + Job())
+
     var onSnackClickListener: Pair<CharSequence, OnSnackBarClickListener>? = null
 
     private val _isClickEvent = MutableLiveData<Boolean>()
     val isClickEvent: LiveData<Boolean>
         get() = _isClickEvent
+
+    private val _isCheckNetwork = MutableLiveData<Boolean>()
+    val isCheckNetwork: LiveData<Boolean>
+        get() = _isCheckNetwork
+
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean>
+        get() = _isLoading
+
+    private val _errorSnackBar = MutableLiveData<String>()
+    val errorSnackBar: LiveData<String>
+        get() = _errorSnackBar
+
+    private val _isDuplicated = MutableLiveData<Boolean>()
+    val isDuplicated: LiveData<Boolean>
+        get() = _isDuplicated
 
     fun checkEventStatus(checkNetwork: Boolean = false, delayMillisecond: Long = 100, event: () -> Unit)
     {
@@ -75,21 +92,7 @@ abstract class BaseViewModel: ViewModel()
         }, delayMillisecond)
     }
 
-    private val _isCheckNetwork = MutableLiveData<Boolean>()
-    val isCheckNetwork: LiveData<Boolean>
-        get() = _isCheckNetwork
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean>
-        get() = _isLoading
-
-    private val _errorSnackBar = MutableLiveData<String>()
-    val errorSnackBar: LiveData<String>
-        get() = _errorSnackBar
-
-    val scope: CoroutineScope = viewModelScope
-
-    abstract val exceptionHandler: CoroutineExceptionHandler
 
     fun checkNetworkStatus(): Boolean
     {
@@ -148,6 +151,11 @@ abstract class BaseViewModel: ViewModel()
         _isLoading.postValue(false)
     }
 
+    fun moveDuplicated(){
+        _isDuplicated.postValue(true)
+        scope.cancel("중복 로그인으로 인한 모든 프로세스 종료")
+    }
+
     fun getConnectivityStatus(context: Context): NetworkStatus
     { // 네트워크 연결 상태 확인하기 위한 ConnectivityManager 객체 생성
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -186,5 +194,12 @@ abstract class BaseViewModel: ViewModel()
             }
             else -> NetworkStatus.NOT_CONNECT
         }
+    }
+
+    override fun onCleared()
+    {
+        super.onCleared()
+
+        scope.cancel()
     }
 }

@@ -66,7 +66,7 @@ val appModule = module {
     viewModel { SignUpViewModel(get(), get()) }
     viewModel { SignUpCompleteViewModel(get(), get()) }
     viewModel { RegisterNicknameViewModel(get()) }
-    viewModel { LoginSelectViewModel(get(),get()) }
+    viewModel { LoginSelectViewModel(get(),get(), get()) }
     viewModel { ResetPasswordViewModel(get()) }
     viewModel { MainViewModel(get(), get()) }
     viewModel { MenuSubViewModel() }

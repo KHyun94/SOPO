@@ -66,14 +66,8 @@ class SOPOApp: Application()
             accessToken = Session.getCurrentSession().tokenInfo
         }
 
-        CoroutineScope(Dispatchers.Default).launch {
-            carrierRepository.initCarrierDB()
-        }
-
         FirebaseRepository.subscribedToTopic(17, 0).start()
     }
-
-
 
     companion object
     {

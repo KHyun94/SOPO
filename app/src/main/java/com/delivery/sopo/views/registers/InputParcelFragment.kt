@@ -171,7 +171,6 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
                     FragmentManager.move(parentView, TabCode.REGISTER_CONFIRM, RegisterMainFragment.viewId)
                 }
             }
-
         }
     }
 
@@ -187,12 +186,12 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
                     vm.clipboardText.postValue(it)
                 }
             }
-        }catch(e: Exception){
+        }
+        catch(e: Exception){
             e.printStackTrace()
         }
-
-
     }
+
 
     companion object
     {

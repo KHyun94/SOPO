@@ -198,7 +198,6 @@ class OngoingTypeViewModel(
         override fun onRegisterParcelError(error: ErrorEnum)
         {
             super.onRegisterParcelError(error)
-
             postErrorSnackBar(error.message)
         }
 
@@ -210,15 +209,19 @@ class OngoingTypeViewModel(
         override fun onInternalServerError(error: ErrorEnum)
         {
             super.onInternalServerError(error)
-
             postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
         }
 
         override fun onAuthError(error: ErrorEnum)
         {
             super.onAuthError(error)
-
             postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
+        }
+
+        override fun onDuplicateError(error: ErrorEnum)
+        {
+            super.onDuplicateError(error)
+            moveDuplicated()
         }
     }
     override val exceptionHandler: CoroutineExceptionHandler by lazy {

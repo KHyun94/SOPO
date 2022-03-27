@@ -1,6 +1,8 @@
 package com.delivery.sopo.models.base
 
+import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,16 +16,23 @@ import com.delivery.sopo.BR
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.enums.SnackBarEnum
+import com.delivery.sopo.extensions.moveToActivity
+import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
+import com.delivery.sopo.usecase.LogoutUseCase
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.util.ui_util.CustomSnackBar
+import com.delivery.sopo.views.dialog.LogoutDialog
+import com.delivery.sopo.views.login.LoginSelectView
+import com.delivery.sopo.views.splash.SplashView
+import org.koin.android.ext.android.inject
+import org.koin.core.KoinComponent
 import kotlin.system.exitProcess
 
-abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
+abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), KoinComponent
 {
-
     lateinit var binding: T
     abstract val layoutRes: Int
     abstract val vm: R
@@ -50,7 +59,10 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
 
     private var isUseCommonBackPress: Boolean = false
 
-    fun useCommonBackPressListener(isUseCommon: Boolean){
+    val logoutUseCase: LogoutUseCase by inject<LogoutUseCase>()
+
+    fun useCommonBackPressListener(isUseCommon: Boolean)
+    {
         isUseCommonBackPress = isUseCommon
     }
 
@@ -96,7 +108,8 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
         super.onDestroyView()
     }
 
-    private fun setOnBackPressedListener(owner: LifecycleOwner){
+    private fun setOnBackPressedListener(owner: LifecycleOwner)
+    {
         var pressedTime: Long = 0
 
         onBackPressedCallback = object: OnBackPressedCallback(true)
@@ -132,35 +145,44 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
         }
     }
 
-    protected open fun receiveData(bundle: Bundle){ }
+    protected open fun receiveData(bundle: Bundle)
+    {
+    }
 
     /**
      * 초기 화면 세팅
      */
-    protected open fun setBeforeBinding() { }
+    protected open fun setBeforeBinding()
+    {
+    }
 
     /**
      * UI 세팅 이후
      */
-    protected open fun setAfterBinding() { }
+    protected open fun setAfterBinding()
+    {
+    }
 
     /*    */
     /**
      * Observe 로직
      */
-    protected open fun setObserve(){
+    protected open fun setObserve()
+    {
         setInnerObserve()
     }
 
-    private fun setInnerObserve(){
+    private fun setInnerObserve()
+    {
 
-        SOPOApp.networkStatus.observe(viewLifecycleOwner){ status ->
+        SOPOApp.networkStatus.observe(viewLifecycleOwner) { status ->
 
             SopoLog.d("status [status:$status]")
 
             if(vm.isCheckNetwork.value != true) return@observe
 
-            when(status){
+            when(status)
+            {
 
                 NetworkStatus.WIFI, NetworkStatus.CELLULAR ->
                 {
@@ -184,23 +206,38 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment()
             hideKeyboard()
         }
 
-        vm.isLoading.observe(viewLifecycleOwner){ isLoading ->
+        vm.isLoading.observe(viewLifecycleOwner) { isLoading ->
             if(isLoading) return@observe progressBar.show()
             else progressBar.dismiss()
         }
 
-        vm.errorSnackBar.observe(viewLifecycleOwner){
+        vm.errorSnackBar.observe(viewLifecycleOwner) {
             val snackBar = CustomSnackBar(mainLayout, it, 3000, SnackBarEnum.ERROR)
             snackBar.show()
         }
+
+        vm.isDuplicated.observe(viewLifecycleOwner) {
+            if(!it) return@observe
+
+            LogoutDialog(requireActivity()) {
+                logoutUseCase.invoke()
+
+                Handler().postDelayed(Runnable {
+                    exit()
+                }, 500)
+
+            }.show(this.parentFragmentManager, "")
+        }
     }
 
-    fun exit(){
+    fun exit()
+    {
         ActivityCompat.finishAffinity(requireActivity())
         exitProcess(0)
     }
 
-    fun hideKeyboard(){
+    fun hideKeyboard()
+    {
         mainLayout.requestFocus()
         OtherUtil.hideKeyboardSoft(requireActivity())
     }

@@ -107,11 +107,15 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                         binding.includeFull.layoutHedaer.makeVisible()
                         binding.includeFull.root.makeVisible()
                     }
-                    slideOffset < 1.0f ->
+                }
+
+                when(slideOffset < 1.0f)
+                {
+                    true ->
                     {
                         WindowUtil.setWindowStatusBarColor(requireActivity(), R.color.COLOR_GRAY_50)
                     }
-                    slideOffset == 1.0f ->
+                    false ->
                     {
                         WindowUtil.setWindowStatusBarColor(requireActivity(), R.color.MAIN_WHITE)
                     }

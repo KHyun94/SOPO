@@ -4,8 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="com.delivery.sopo.R"/>
+
+        <import type="com.delivery.sopo.R" />
+
         <import type="androidx.core.content.ContextCompat" />
+
         <import type="android.view.View" />
 
         <import type="com.delivery.sopo.enums.TabCode" />
@@ -15,6 +18,7 @@
             type="com.delivery.sopo.viewmodels.menus.MenuViewModel" />
     </data>
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraint_main_menu"
         android:layout_width="match_parent"
@@ -22,17 +26,17 @@
         android:background="@color/COLOR_GRAY_50">
 
         <TextView
-            style="@style/kor_H2"
-            android:textColor="@color/COLOR_GRAY_800"
             android:id="@+id/tv_nickname"
-            app:layout_constraintTop_toTopOf="@+id/linear_settingPassword"
-            app:layout_constraintBottom_toBottomOf="@+id/linear_settingPassword"
-            app:layout_constraintLeft_toLeftOf="parent"
+            style="@style/kor_H2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="42dp"
             android:text="@{vm.nickname}"
-            tools:text = "퍈교돼지병아리"/>
+            android:textColor="@color/COLOR_GRAY_800"
+            app:layout_constraintBottom_toBottomOf="@+id/linear_settingPassword"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/linear_settingPassword"
+            tools:text="퍈교돼지병아리" />
 
         <LinearLayout
             android:id="@+id/linear_settingPassword"
@@ -45,48 +49,46 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-
             <TextView
-                android:background="@drawable/border_17dp_rounder"
                 android:id="@+id/tv_settingPassword"
                 style="@style/kor_H5"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginStart="4dp"
-                android:paddingVertical="7dp"
+                android:background="@drawable/border_17dp_rounder"
+                android:gravity="center"
                 android:paddingHorizontal="11dp"
+                android:paddingVertical="7dp"
                 android:text="@string/MENU_VIEW_PASSWORD"
-                android:textColor="@color/COLOR_GRAY_700"
-                android:gravity="center"/>
+                android:textColor="@color/COLOR_GRAY_700" />
 
         </LinearLayout>
 
         <TextView
             android:id="@+id/tv_personal_message"
             style="@style/kor_H3"
-            android:textSize="17dp"
-            android:lineSpacingExtra="6dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/tv_nickname"
-            android:layout_marginTop="30dp"
             android:layout_marginLeft="42dp"
-            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginTop="30dp"
+            android:lineSpacingExtra="6dp"
             android:text="@{vm.personalMessage.component1()}"
-            tools:text="판교돼지병아리12343님,\n손꼽아 기다리는 택배가 있나요?"/>
+            android:textSize="17dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_nickname"
+            tools:text="판교돼지병아리12343님,\n손꼽아 기다리는 택배가 있나요?" />
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/iv_status"
             android:layout_width="150dp"
             android:layout_height="150dp"
-            app:layout_constraintTop_toBottomOf="@+id/tv_personal_message"
+            app:layout_constraintHorizontal_bias="0.7"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_personal_message"
             app:lottie_autoPlay="true"
             app:lottie_loop="true"
-            app:layout_constraintHorizontal_bias="0.7"
-            app:setLottieRawRes="@{vm.personalMessageEnum}"
-            />
+            app:setLottieRawRes="@{vm.personalMessageEnum}" />
 
         <View
             android:id="@+id/v_dividerLine1"
@@ -348,4 +350,5 @@
             app:layout_constraintTop_toBottomOf="@+id/constraint_appInfo" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </layout>

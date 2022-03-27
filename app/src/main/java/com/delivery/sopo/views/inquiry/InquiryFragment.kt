@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentInquiryBinding
 import com.delivery.sopo.databinding.ItemInquiryTabBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
@@ -48,8 +49,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
     lateinit var ongoingTabBinding: ItemInquiryTabBinding
     lateinit var completedTabBinding: ItemInquiryTabBinding
 
-    private var menuPopUpWindow: PopupWindow? = null
-
     var isRefresh = true
     var returnType = 0
 
@@ -72,9 +71,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
         setOnTabSelectedListener()
         processReturnType()
 
-        binding.includeHeader.onRightClickListener = OnClickListener {
-            openInquiryMenu(it)
-        }
+//        binding.includeHeader.onRightClickListener = OnClickListener {
+//            openInquiryMenu(it)
+//        }
     }
 
     override fun setObserve()
@@ -107,9 +106,22 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
                 vm.confirmDeleteParcels()
             }, 5500)
         }
+
+        vm.navigator.observe(this) { nav ->
+
+            when(nav)
+            {
+                NavigatorConst.TO_DELETE ->
+                {
+                    TabCode.DELETE_PARCEL.FRAGMENT = DeleteParcelFragment.newInstance(inquiryStatus)
+                    FragmentManager.move(requireActivity(), TabCode.DELETE_PARCEL, InquiryMainFragment.viewId)
+                }
+            }
+
+        }
     }
 
-    private fun openInquiryMenu(anchorView: View)
+    /*private fun openInquiryMenu(anchorView: View)
     {
         if(menuPopUpWindow != null)
         {
@@ -127,8 +139,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
 
                 v.recyclerviewInquiryPopupMenu.also {
                     it.adapter = popupMenuListAdapter
-                    val dividerItemDecoration =
-                        DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+                    val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
                     dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
                     it.addItemDecoration(dividerItemDecoration)
 
@@ -163,7 +174,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
             PopupWindow(popUpView.root, SizeUtil.changeDpToPx(binding.root.context, 175F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
                 showAsDropDown(anchorView)
             }
-    }
+    }*/
 
     private fun setViewPager(viewPager: ViewPager2)
     {

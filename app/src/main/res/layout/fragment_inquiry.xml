@@ -32,7 +32,8 @@
             layout="@layout/include_header_left_title_with_right_button"
             app:leftEventIcon="@{vm.isAvailableRefresh()?R.drawable.ic_bttn_update_active:R.drawable.ic_bttn_update_inactive}"
             app:onLeftEventClickListener="@{()->vm.onRefreshParcelsClicked()}"
-            app:rightEventIcon="@{R.drawable.ic_24_meatball}"
+            app:rightEventIcon="@{R.drawable.ic_garbage_gray_scale}"
+            app:onRightClickListener="@{()->vm.onDeleteParcelsClicked()}"
             app:title='@{"택배 조회"}' />
 
 
