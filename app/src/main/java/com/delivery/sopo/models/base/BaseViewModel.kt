@@ -113,12 +113,14 @@ abstract class BaseViewModel: ViewModel()
 
     fun startLoading()
     {
+        SopoLog.d("start isLoading ${_isLoading.value}")
         if(_isLoading.value == true) return
         _isLoading.postValue(true)
     }
 
     fun stopLoading()
     {
+        SopoLog.d("stop isLoading ${_isLoading.value}")
         if(_isLoading.value == false) return
         _isLoading.postValue(false)
     }

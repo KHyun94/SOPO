@@ -4,14 +4,10 @@ import com.delivery.sopo.BuildConfig
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.ErrorType
 import com.delivery.sopo.enums.NetworkEnum
-import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.SOPOApiException
-import com.delivery.sopo.exceptions.APIException
 import com.delivery.sopo.models.user.ResetPassword
-import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.ErrorResponse
 import com.delivery.sopo.models.dto.OAuthToken
@@ -19,9 +15,7 @@ import com.delivery.sopo.models.user.ResetAuthCode
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.OAuthAPI
 import com.delivery.sopo.networks.api.UserAPI
-import com.delivery.sopo.networks.call.UserCall
 import com.delivery.sopo.services.network_handler.BaseServiceBeta
-import com.delivery.sopo.services.network_handler.NetworkResult
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -112,31 +106,10 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
         apiCall { updateNickname }
     }
 
-    suspend fun requestSignOut(reason: String): ResponseResult<String?>
+    suspend fun requestSignOut(reason: String) = withContext(Dispatchers.IO)
     {
-        when(val result = UserCall.requestSignOut(reason))
-        {
-            is NetworkResult.Success ->
-            {
-                val apiResult = (result as NetworkResult.Success).data
-
-                SopoLog.d("Success to sign out")
-
-                return ResponseResult(true, ResponseCode.SUCCESS, apiResult.data, ResponseCode.SUCCESS.MSG)
-            }
-            is NetworkResult.Error ->
-            {
-                SopoLog.d("Fail to sign out")
-
-                val exception = result.exception as APIException
-                val responseCode = exception.responseCode
-                //                val date = SOPOApp.oAuth.let { it?.expiresIn }
-                //
-                //                return if(responseCode.HTTP_STATUS == 401 && DateUtil.isOverExpiredDate(date!!)) ResponseResult(false, responseCode, null, "로그인 기한이 만료되었습니다.\n다시 로그인해주세요.", DisplayEnum.DIALOG)
-                //                else ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
-                return ResponseResult(false, responseCode, null, responseCode.MSG, DisplayEnum.DIALOG)
-            }
-        }
+        val signOut = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java).requestSignOut(reason = reason)
+        apiCall { signOut }
     }
 
     suspend fun requestSendTokenToEmail(email: String): String

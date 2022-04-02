@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -14,6 +15,7 @@ import com.delivery.sopo.databinding.SignOutViewBinding
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.OptionalTypeEnum
+import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.viewmodels.menus.SignOutViewModel
 import com.delivery.sopo.views.dialog.OptionalClickListener
@@ -25,31 +27,19 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SignOutView: AppCompatActivity()
+class SignOutView: BaseView<SignOutViewBinding, SignOutViewModel>()
 {
-    lateinit var binding: SignOutViewBinding
-    private val vm: SignOutViewModel by viewModel()
+    override val layoutRes: Int = R.layout.sign_out_view
+    override val vm: SignOutViewModel by viewModel()
+    override val mainLayout: View by lazy { binding.constraintMainSignOut }
 
     private val userLocalRepo: UserLocalRepository by inject()
 
-    override fun onCreate(savedInstanceState: Bundle?)
+    override fun setObserve()
     {
-        super.onCreate(savedInstanceState)
+        super.setObserve()
 
-        bindView()
-        setObserve()
-    }
-
-    fun bindView()
-    {
-        binding = DataBindingUtil.setContentView(this, R.layout.sign_out_view)
-        binding.vm = vm
-        binding.lifecycleOwner = this
-    }
-
-    fun setObserve()
-    {
-        binding.vm!!.result.observe(this, Observer { res ->
+        vm.result.observe(this, Observer { res ->
 
             if(!res.result)
             {
@@ -77,39 +67,33 @@ class SignOutView: AppCompatActivity()
                 }
                 DisplayEnum.DIALOG ->
                 {
-                    OptionalDialog(
-                        optionalType = OptionalTypeEnum.RIGHT,
-                        titleIcon = 0,
-                        title = "탈퇴 시 유의사항",
-                        subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.",
-                        content = """
+                    OptionalDialog(optionalType = OptionalTypeEnum.RIGHT, titleIcon = 0, title = "탈퇴 시 유의사항", subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.", content = """
                     * 계정 개인정보(이메일, 비밀번호)
                     * 등록하신 모든 택배 추적 정보
-                                """.trimIndent(),
-                        leftHandler = Pair("삭제할게요", object: OptionalClickListener
+                                """.trimIndent(), leftHandler = Pair("삭제할게요", object:
+                            OptionalClickListener
+                    {
+                        override fun invoke(dialog: OptionalDialog)
                         {
-                            override fun invoke(dialog: OptionalDialog)
-                            {
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    binding.vm!!.requestSignOut(res.data as String)
-                                }
-                                dialog.dismiss()
+                            CoroutineScope(Dispatchers.Main).launch {
+                                binding.vm!!.requestSignOut(res.data as String)
                             }
-                        }),
-                        rightHandler = Pair("다시 생각할게요", object: OptionalClickListener
+                            dialog.dismiss()
+                        }
+                    }), rightHandler = Pair("다시 생각할게요", object: OptionalClickListener
+                    {
+                        override fun invoke(dialog: OptionalDialog)
                         {
-                            override fun invoke(dialog: OptionalDialog)
-                            {
-                                dialog.dismiss()
-                            }
-                        })).show(supportFragmentManager, "")
+                            dialog.dismiss()
+                        }
+                    })).show(supportFragmentManager, "")
                 }
             }
 
 
         })
 
-        binding.vm!!.message.observe(this, Observer { message ->
+        vm.message.observe(this, Observer { message ->
             if(message != "")
             {
                 binding.tvBtn.run {
@@ -127,7 +111,7 @@ class SignOutView: AppCompatActivity()
                 setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
             }
 
-            binding.vm!!.otherReason.observe(this, Observer {
+            vm.otherReason.observe(this, Observer {
                 if(it.isNotEmpty())
                 {
                     binding.vm!!.message.postValue(it)
@@ -136,4 +120,6 @@ class SignOutView: AppCompatActivity()
 
         })
     }
+
+
 }

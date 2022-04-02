@@ -65,7 +65,7 @@ interface UserAPI
      * @param reason : String
      * @return Response<APIResult<String?>>
      */
-    @POST("/api/v1/sopo-user/signOut")
+    @POST("/api/v1/sopo-user/sign-out")
     @Headers("Accept: application/json")
     suspend fun requestSignOut(@Query("reason") reason : String) : Response<APIResult<String?>>
 }

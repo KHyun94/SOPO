@@ -158,7 +158,7 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
         vm.isLoading.observe(this) { isLoading ->
             if(isLoading) return@observe loadingBar.show()
-            else loadingBar.dismiss()
+//            else loadingBar.dismiss()
         }
 
         vm.errorSnackBar.observe(this) {

@@ -1,5 +1,7 @@
 package com.delivery.sopo.viewmodels.signup
 
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.lifecycle.LiveData
@@ -7,7 +9,6 @@ import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.data.repository.JoinRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.InfoEnum
@@ -16,16 +17,17 @@ import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.networks.dto.joins.JoinInfo
 import com.delivery.sopo.networks.repository.JoinRepositoryImpl
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class SignUpViewModel(
         private val userLocalRepo: UserLocalRepository,
-        private val joinRepoImpl: JoinRepositoryImpl):
+        private val joinRepo: JoinRepositoryImpl):
         BaseViewModel()
 {
-    private val joinRepo: JoinRepository = joinRepoImpl
-
     val email = MutableLiveData<String>()
     val password = MutableLiveData<String>()
     val rePassword = MutableLiveData<String>()
@@ -48,6 +50,12 @@ class SignUpViewModel(
     val navigator: LiveData<String>
         get() = _navigator
 
+    fun setNavigator(navigator: String){ _navigator.postValue(navigator) }
+
+    override val exceptionHandler: CoroutineExceptionHandler by lazy {
+        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
+    }
+
     private val onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum)
@@ -65,10 +73,6 @@ class SignUpViewModel(
             super.onInternalServerError(error)
             postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
         }
-    }
-
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 
     init
@@ -93,22 +97,28 @@ class SignUpViewModel(
 
     fun onSignUpClicked(v: View) = checkEventStatus(checkNetwork = true)
     {
-        startLoading()
         // 입력값의 유효 처리 여부 확인
         validity.forEach { (k, v) ->
-            if(!v)
-            {
-                stopLoading()
-                return@checkEventStatus _invalidity.postValue(Pair(k, v))
-            }
+            if(!v) return@checkEventStatus _invalidity.postValue(Pair(k, v))
         }
 
-        val email = email.value.toString().trim()
-        val password = password.value.toString().trim()
+        try
+        {
+            onStartLoading()
 
-        val joinInfo = JoinInfo(email = email, password = password.toMD5())
+            val email = email.value.toString().trim()
+            val password = password.value.toString().trim()
 
-        requestSignUp(joinInfo = joinInfo)
+            val joinInfo = JoinInfo(email = email, password = password.toMD5())
+
+            requestSignUp(joinInfo = joinInfo)
+        }
+        finally
+        {
+            Handler(Looper.getMainLooper()).postDelayed(Runnable { onStopLoading() }, 1000)
+
+        }
+
     }
 
     private fun requestSignUp(joinInfo: JoinInfo) = scope.launch(Dispatchers.IO) {
@@ -127,10 +137,6 @@ class SignUpViewModel(
         catch(e: Exception)
         {
             return@launch exceptionHandler.handleException(coroutineContext, e)
-        }
-        finally
-        {
-            stopLoading()
         }
     }
 }

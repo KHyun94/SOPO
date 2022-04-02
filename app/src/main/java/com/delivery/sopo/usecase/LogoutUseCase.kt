@@ -7,10 +7,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class LogoutUseCase(private val userLocalRepo: UserLocalRepository, private val appDatabase: AppDatabase)
+class LogoutUseCase(private val userLocalRepo: UserLocalRepository)
 {
     operator fun invoke() = CoroutineScope(Dispatchers.Default).launch {
-        appDatabase.clearAllTables()
         userLocalRepo.removeUserRepo()
     }
 }
