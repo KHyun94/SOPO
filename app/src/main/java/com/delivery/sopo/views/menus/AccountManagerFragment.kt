@@ -1,25 +1,23 @@
 package com.delivery.sopo.views.menus
 
 import android.view.View
+import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentAccountManagerBinding
 import com.delivery.sopo.enums.OptionalTypeEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.moveToActivity
-import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.viewmodels.menus.AccountManagerViewModel
 import com.delivery.sopo.viewmodels.menus.MenuMainFragment
-import com.delivery.sopo.views.dialog.OptionalClickListener
+import com.delivery.sopo.views.dialog.OnOptionalClickListener
 import com.delivery.sopo.views.dialog.OptionalDialog
 import com.delivery.sopo.views.login.LoginSelectView
 import com.delivery.sopo.views.login.ResetPasswordView
 import com.delivery.sopo.views.main.MainView
-import com.delivery.sopo.views.registers.RegisterMainFragment
-import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, AccountManagerViewModel>()
@@ -60,6 +58,11 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
         vm.navigator.observe(this) { navigator ->
             when(navigator)
             {
+                NavigatorConst.TO_BACK_SCREEN ->
+                {
+                    TabCode.MY_MENU_MAIN.FRAGMENT = MenuFragment.newInstance()
+                    FragmentManager.move(requireActivity(), TabCode.MY_MENU_MAIN, MenuMainFragment.viewId)
+                }
                 NavigatorConst.TO_UPDATE_NICKNAME ->
                 {
                     requireActivity().moveToActivity(UpdateNicknameView::class.java)
@@ -74,8 +77,8 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
                      * TODO 전체 테이블 clear
                      */
 
-                    val leftOptionalClickListener = object: OptionalClickListener {
-                        override fun invoke(dialog: OptionalDialog)
+                    val leftOptionalClickListener = object: OnOptionalClickListener {
+                        override fun invoke(dialog: DialogFragment)
                         {
                             vm.onLogout()
                             requireActivity().moveToActivity(LoginSelectView::class.java)
@@ -84,14 +87,14 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
                         }
                     }
 
-                    val rightOptionalClickListener = object: OptionalClickListener
+                    val rightOptionalClickListener = object: OnOptionalClickListener
                     {
-                        override fun invoke(dialog: OptionalDialog)
+                        override fun invoke(dialog: DialogFragment)
                         {
                             dialog.dismiss()
                         }
                     }
-                    val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.RIGHT, titleIcon = 0, title = "로그아웃 하시겠어요?", subTitle = "", content = "이계정에 등록된 택배 정보는 로그아웃하셔도\n아이템 별로 90일까지 보관됩니다.",
+                    val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.TWO_WAY_RIGHT, title = "로그아웃 하시겠어요?", content = "이계정에 등록된 택배 정보는 로그아웃하셔도\n아이템 별로 90일까지 보관됩니다.",
                                                         leftHandler = Pair("로그아웃", second = leftOptionalClickListener),
                                                         rightHandler = Pair(first = "취소", second = rightOptionalClickListener))
 

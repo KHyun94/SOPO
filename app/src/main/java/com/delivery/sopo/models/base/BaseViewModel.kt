@@ -140,7 +140,7 @@ abstract class BaseViewModel: ViewModel()
     {
         SopoLog.d("MSG : $msg")
         _errorSnackBar.postValue(msg)
-        this.onSnackClickListener = onSnackClickListener
+        this.onSnackClickListener = onSnackBarClickListener
     }
 
     fun onStartLoading()

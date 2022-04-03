@@ -13,6 +13,7 @@ import com.delivery.sopo.usecase.LogoutUseCase
 import com.delivery.sopo.usecase.UpdateNicknameUseCase
 import com.delivery.sopo.usecase.parcel.local.GetLocalParcelUseCase
 import com.delivery.sopo.usecase.parcel.remote.*
+import com.delivery.sopo.usecase.user.SignOutUseCase
 import com.delivery.sopo.viewmodels.IntroViewModel
 import com.delivery.sopo.viewmodels.inquiry.*
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
@@ -36,7 +37,7 @@ val appModule = module {
 
     single { SharedPref(androidApplication()) }
     single { UserSharedPrefHelper(get(), androidApplication()) }
-    single { UserLocalRepository(get()) }
+    single { UserLocalRepository(appDatabase = get(), userShared = get()) }
     single { UserRemoteRepository() }
     single { JoinRepositoryImpl() }
     single { ParcelRepository(get(), get()) }
@@ -57,7 +58,8 @@ val appModule = module {
     factory { UpdateNicknameUseCase(get(), get()) }
     factory { UpdateParcelAliasUseCase(get()) }
     factory { DeleteParcelsUseCase(get(), get()) }
-    factory { LogoutUseCase(get(), get()) }
+    factory { LogoutUseCase(get()) }
+    factory { return@factory SignOutUseCase(userLocalRepo = get(), userRemoteRepo = get()) }
     factory { GetLocalParcelUseCase(get()) }
 
     viewModel { SplashViewModel(get(), get(), get()) }
@@ -75,7 +77,6 @@ val appModule = module {
     viewModel { NoticeViewModel() }
     viewModel { FaqViewModel() }
     viewModel { AppInfoViewModel() }
-    viewModel { NotDisturbTimeViewModel() }
     viewModel { InquiryViewModel(get(), get(), get(), get(),get(), get()) }
     viewModel { DeleteParcelViewModel(get(), get(), get(), get(), get()) }
     viewModel { MenuViewModel(get()) }

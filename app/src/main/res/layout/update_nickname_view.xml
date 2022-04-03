@@ -5,6 +5,8 @@
 
     <data>
 
+        <import type="androidx.core.content.ContextCompat" />
+
         <import type="com.delivery.sopo.R" />
 
         <import type="android.view.View" />
@@ -27,7 +29,7 @@
         <include
             android:id="@+id/include_header"
             layout="@layout/include_header_center_title_with_right_button"
-            app:buttonIcon="@{R.drawable.ic_clear_btn}"
+            app:buttonIcon="@{ContextCompat.getDrawable(context, R.drawable.ic_clear_btn)}"
             app:layout_constraintTop_toTopOf="parent"
             app:onEventClickListener="@{()->vm.onClearClicked()}"
             app:title='@{"닉네임 변경"}' />

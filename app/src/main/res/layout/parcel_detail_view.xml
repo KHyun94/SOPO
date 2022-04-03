@@ -5,8 +5,8 @@
 
     <data>
 
+        <import type="androidx.core.content.ContextCompat" />
         <import type="android.view.View" />
-
         <import type="com.delivery.sopo.R" />
 
         <variable
@@ -28,7 +28,6 @@
             android:id="@+id/layout_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/COLOR_GRAY_50"
             android:gravity="bottom"
             app:umanoDragView="@+id/layout_drawer"
             app:umanoFadeColor="#00F9F9FB"
@@ -44,7 +43,7 @@
                 <include
                     android:id="@+id/include_header"
                     layout="@layout/include_header_center_title_with_left_button"
-                    app:buttonIcon="@{R.drawable.ic_left_arrow}"
+                    app:buttonIcon="@{ContextCompat.getDrawable(context, R.drawable.ic_left_arrow)}"
                     app:onEventClickListener="@{()->vm.onBackClicked()}"
                     app:title='@{"상세 조회"}' />
 
@@ -54,9 +53,9 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="vertical"
-                    app:layout_constraintBottom_toTopOf="@+id/layout_tail"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/guide_1st"
                     app:layout_constraintTop_toBottomOf="@+id/include_header">
 
                     <TextView
@@ -82,16 +81,12 @@
 
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/layout_tail"
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guide_1st"
                     android:layout_width="match_parent"
-                    android:layout_height="304dp"
-                    android:orientation="vertical"
-                    app:lottie_rawRes="@raw/lottie_inquiry_2deth_skeleton"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/layout_body" />
+                    android:layout_height="1dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintGuide_percent="0.6" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

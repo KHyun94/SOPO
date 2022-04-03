@@ -7,6 +7,7 @@ import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.enums.ErrorType
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.exceptions.SOPOApiException
+import com.delivery.sopo.extensions.wrapBodyAliasToHashMap
 import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.ErrorResponse
@@ -108,7 +109,8 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
 
     suspend fun requestSignOut(reason: String) = withContext(Dispatchers.IO)
     {
-        val signOut = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java).requestSignOut(reason = reason)
+        val wrap = reason.wrapBodyAliasToHashMap("reason")
+        val signOut = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserAPI::class.java).requestSignOut(reason = wrap)
         apiCall { signOut }
     }
 

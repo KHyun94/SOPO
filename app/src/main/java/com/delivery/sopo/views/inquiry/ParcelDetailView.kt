@@ -85,11 +85,29 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
 
         var _slideOffset: Float = 0.0f
 
+        val elevation = binding.includeSemi.constraintSubCardview.elevation
+
         val onPanelSlideListener = object: SlidingUpPanelLayout.PanelSlideListener
         {
             override fun onPanelSlide(panel: View?, slideOffset: Float)
             {
                 _slideOffset = slideOffset
+
+                SopoLog.d("elevation => $elevation  | slideOffset $_slideOffset")
+
+                CoroutineScope(Dispatchers.Main).launch {
+
+                    if(slideOffset == 0.0f)
+                    {
+                        binding.includeSemi.constraintSubCardview.elevation = elevation
+                    }
+                    else
+                    {
+                        binding.includeSemi.constraintSubCardview.elevation = elevation - ((elevation / 3) * slideOffset * 10)
+                    }
+
+
+                }
 
                 when
                 {

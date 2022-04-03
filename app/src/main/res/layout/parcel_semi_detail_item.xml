@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="item"
             type="com.delivery.sopo.models.parcel.Parcel.Detail" />
@@ -13,13 +12,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/COLOR_GRAY_50"
         android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraint_sub_cardview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="8dp"
+            android:outlineSpotShadowColor="#CFCFD7"
+            android:layout_marginTop="16dp"
+            android:elevation="24dp"
             android:layout_marginHorizontal="16dp"
             android:background="@drawable/border_rounded_30dp">
 
@@ -57,33 +58,34 @@
                 style="@style/kor_H3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
+                android:layout_marginStart="36dp"
                 android:layout_marginTop="32dp"
                 android:includeFontPadding="false"
                 android:letterSpacing="-0.01"
                 android:text="@{item.alias}"
+                android:textColor="@color/COLOR_GRAY_900"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/layout_add_view"
-                tools:text="123456789077가나다라마바사abac12345뮤AB" />
+                tools:text="갤럭시 버즈 플러스 화이트" />
 
             <TextView
                 android:id="@+id/tv_carrier"
-                style="@style/kor_H3"
+                style="@style/kor_H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="18dp"
+                android:layout_marginStart="36dp"
+                android:layout_marginTop="8dp"
                 android:fontFamily="@font/spoqa_han_sans_neo_regular"
                 android:includeFontPadding="false"
                 android:text="@{item.carrier.carrier.NAME}"
-                android:textColor="@color/COLOR_GRAY_800"
+                android:textColor="@color/COLOR_GRAY_600"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_alias"
                 tools:text="롯데택" />
 
             <TextView
                 android:id="@+id/tv_waybill_num"
-                style="@style/kor_H3"
+                style="@style/kor_H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
@@ -91,7 +93,7 @@
                 android:includeFontPadding="false"
                 android:letterSpacing="0.01"
                 android:text="@{item.waybillNum}"
-                android:textColor="@color/COLOR_GRAY_800"
+                android:textColor="@color/COLOR_GRAY_600"
                 app:layout_constraintBaseline_toBaselineOf="@+id/tv_carrier"
                 app:layout_constraintLeft_toRightOf="@+id/tv_carrier"
                 app:layout_constraintRight_toLeftOf="@id/iv_copy"
@@ -103,11 +105,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:layout_marginTop="18dp"
                 android:background="@drawable/ic_paste"
                 android:includeFontPadding="false"
                 app:layout_constraintLeft_toRightOf="@id/tv_waybill_num"
-                app:layout_constraintTop_toBottomOf="@id/tv_alias" />
+                app:layout_constraintTop_toTopOf="@id/tv_waybill_num"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_waybill_num"/>
 
             <View
                 android:id="@+id/v_guideline"
@@ -146,7 +148,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="14dp"
-            android:background="@color/COLOR_GRAY_50"/>
+            android:background="@android:color/transparent"/>
 
     </LinearLayout>
 

@@ -6,48 +6,52 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.exceptions.ParcelExceptionHandler
+import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.base.BaseViewModel
+import com.delivery.sopo.usecase.user.SignOutUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class SignOutViewModel(
-        private val userRemoteRepo: UserRemoteRepository,
+       private val signOutUseCase: SignOutUseCase,
 ): BaseViewModel()
 {
     private var preCheckBox: AppCompatCheckBox? = null
     private var currentCheckBox: AppCompatCheckBox? = null
-
-    private var _result = MutableLiveData<ResponseResult<*>>()
-    val result: LiveData<ResponseResult<*>>
-        get() = _result
 
     var message = MutableLiveData<String>()
 
     var otherReason = MutableLiveData<String>()
     var isOtherReasonEt = MutableLiveData<Boolean>()
 
+    private val _navigator = MutableLiveData<String>()
+    val navigator: LiveData<String>
+        get() = _navigator
+
+    fun setNavigator(navigator: String){ _navigator.postValue(navigator) }
+
     init
     {
+        message.value = ""
         isOtherReasonEt.value = false
     }
 
     fun onBackClicked()
     {
-
+        setNavigator(NavigatorConst.TO_BACK_SCREEN)
     }
 
-    fun onCheckClicked(v: View, message: String?)
-    { //        v.requestFocusFromTouch()
-        v.requestFocus()
-        SopoLog.d("Sign Out Message >>> $message")
+    fun onCheckClicked(v: View, message: String?) = checkEventStatus {
 
         currentCheckBox = v as AppCompatCheckBox
 
@@ -57,8 +61,7 @@ class SignOutViewModel(
             preCheckBox?.isChecked = false
         }
 
-        isOtherReasonEt.value =
-            currentCheckBox!!.id == R.id.cb_reason6 && currentCheckBox!!.isChecked == true
+        isOtherReasonEt.value = currentCheckBox!!.id == R.id.cb_reason6 && currentCheckBox!!.isChecked == true
 
         if(isOtherReasonEt.value == false)
         {
@@ -70,26 +73,30 @@ class SignOutViewModel(
         preCheckBox = currentCheckBox
     }
 
-    fun onSignOutClicked()
-    {
-        if(message.value.toString() == "") return SopoLog.e("Message is null or empty")
+    fun onSignOutClicked() = checkEventStatus(checkNetwork = true){
 
-        _result.postValue(ResponseResult(true, ResponseCode.SUCCESS, message.value.toString(), "SUCCESS", DisplayEnum.DIALOG))
+        val reason = message.value.toString()
+        if(reason == "") return@checkEventStatus postErrorSnackBar("탈퇴 사유를 선택해주세요.")
+
+        setNavigator(NavigatorConst.CONFIRM_SIGN_OUT)
     }
 
-    suspend fun requestSignOut(reason: String)
-    {
-        val res = userRemoteRepo.requestSignOut(reason)
+    fun requestSignOut(reason: String) = scope.launch(Dispatchers.IO){
 
-//        if(!res.result)
-//        {
-//            SopoLog.e("계정 탈퇴 >>> ${res.code} / ${res.message}")
-//            _result.postValue(ResponseResult(false, res.code, null, res.message, DisplayEnum.DIALOG))
-//            return
-//        }
-//
-//        SopoLog.d("계정 탈퇴 완료")
-//        _result.postValue(ResponseResult(true, ResponseCode.SUCCESS, null, "SUCCESS", DisplayEnum.TOAST_MESSAGE))
+        try
+        {
+            onStartLoading()
+            signOutUseCase.invoke(reason)
+            setNavigator(NavigatorConst.EXIT)
+        }
+        catch(e: Exception)
+        {
+            exceptionHandler.handleException(coroutineContext, e)
+        }
+        finally
+        {
+            onStopLoading()
+        }
     }
 
     private val onSOPOErrorCallback = object: OnSOPOErrorCallback
@@ -103,7 +110,7 @@ class SignOutViewModel(
 
         override fun onFailure(error: ErrorEnum)
         {
-            postErrorSnackBar("알 수 없는 이유로 등록에 실패했습니다.[${error.toString()}]")
+            postErrorSnackBar("알 수 없는 이유로 탈퇴에 실패했습니다.[${error.toString()}]")
         }
 
         override fun onInternalServerError(error: ErrorEnum)
@@ -127,6 +134,6 @@ class SignOutViewModel(
         }
     }
     override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        ParcelExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
+        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 }

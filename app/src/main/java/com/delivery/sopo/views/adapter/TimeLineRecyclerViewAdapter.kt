@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.TimeLineItemBinding
+import com.delivery.sopo.extensions.convertTextColor
 import com.delivery.sopo.models.parcel.TimeLineProgress
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.views.adapter.TimeLineRecyclerViewAdapter.TimeLineViewHolder
@@ -32,8 +33,6 @@ class TimeLineRecyclerViewAdapter : RecyclerView.Adapter<TimeLineViewHolder>()
     {
         val iv = holder.itemBindingUtil.ivTimeLineOval
 
-        SopoLog.d( msg = "마지막 사이즈 ${list.size - 1}")
-
         if(position == list.size -1){
             holder.itemBindingUtil.vTimeLineBar.setBackgroundResource(0)
         }
@@ -43,6 +42,8 @@ class TimeLineRecyclerViewAdapter : RecyclerView.Adapter<TimeLineViewHolder>()
             Glide.with(iv.context)
                 .load(R.drawable.ic_time_line_current)
                 .into(iv)
+
+            holder.itemBindingUtil.tvDeliveryStatus.convertTextColor(R.color.COLOR_MAIN_700)
         }
         else
         {

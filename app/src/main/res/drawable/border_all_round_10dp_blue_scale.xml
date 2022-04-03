@@ -9,7 +9,7 @@
         android:color="@color/COLOR_MAIN_50"/>
 
     <stroke
-        android:width="3dp"
+        android:width="2dp"
         android:color="@color/COLOR_MAIN_700" />
 
     <corners

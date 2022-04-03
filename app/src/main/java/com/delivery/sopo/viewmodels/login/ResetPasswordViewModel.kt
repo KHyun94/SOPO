@@ -64,8 +64,6 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
     {
         override fun onFailure(error: ErrorEnum)
         {
-            stopLoading()
-
             when(error)
             {
                 ErrorEnum.INVALID_USER ->
@@ -79,8 +77,10 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
 
                     _focusOn.postValue(InfoEnum.AUTH_CODE)
 
+                    // TODO 실행되지 않음
                     if(cnfOfFailureAuthCode >= 2)
                     {
+                        SopoLog.d("1cnfOfFailureAuthCode $cnfOfFailureAuthCode")
                         val comment = "인증코드 재발송"
                         val underlineComment = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { Html.fromHtml("<u>${comment}</u>", Html.FROM_HTML_MODE_LEGACY) } else { Html.fromHtml("<u>${comment}</u>") }
 
@@ -94,6 +94,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
                     }
                     else
                     {
+                        SopoLog.d("2cnfOfFailureAuthCode $cnfOfFailureAuthCode")
                         postErrorSnackBar("인증 코드가 일치하지 않아요.")
                     }
                 }
@@ -140,8 +141,6 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
     fun onSendEmailClicked(v: View) = checkEventStatus(checkNetwork = true) {
         SopoLog.i("onSendEmailClicked() 호출")
 
-        startLoading()
-
         validity.forEach { (k, v) ->
             if(!v)
             {
@@ -159,56 +158,23 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
             return@checkEventStatus
         }
 
-        requestSendTokenToEmail(email = email)
-
-
-        /*when(navigator.value)
+        try
         {
-            ResetPasswordConst.INPUT_EMAIL_FOR_SEND ->
-            {
-                val email = email.value?.toString()
-
-                if(email == null)
-                {
-                    postErrorSnackBar("이메일을 다시 입력해주세요.")
-                    _invalidity.postValue(Pair(InfoEnum.EMAIL, false))
-                    stopLoading()
-                    return@checkEventStatus
-                }
-
-                requestSendTokenToEmail(email = email)
-            }
-            ResetPasswordConst.INPUT_PASSWORD_FOR_RESET ->
-            {
-                val password = password.value?.toString()
-
-                if(password == null)
-                {
-                    postErrorSnackBar("이메일을 다시 입력해주세요.")
-                    _invalidity.postValue(Pair(InfoEnum.PASSWORD, false))
-                    stopLoading()
-                    return@checkEventStatus
-                }
-
-                val resetPassword = ResetPassword(jwtToken, authToken, email.value.toString(), password)
-                requestResetPassword(resetPassword = resetPassword)
-                stopLoading()
-            }
-            ResetPasswordConst.COMPLETED_RESET_PASSWORD ->
-            {
-                _navigator.postValue(NavigatorConst.TO_COMPLETE)
-                stopLoading()
-            }
-
-        }*/
+            onStartLoading()
+            requestSendTokenToEmail(email = email)
+        }
+        finally
+        {
+            onStopLoading()
+        }
     }
 
     fun onVerifyAuthCode() = checkEventStatus(checkNetwork = true)
     {
-        startLoading()
-
         try
         {
+            onStartLoading()
+
             val email: String = email.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.EMAIL)
             val authCode: String = authCode.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.AUTH_CODE)
 
@@ -216,24 +182,23 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         }
         finally
         {
-            stopLoading()
+            onStopLoading()
         }
     }
 
     fun onResetPassword() = checkEventStatus(checkNetwork = true)
     {
-        startLoading()
-
         validity.forEach { (k, v) ->
             if(!v)
             {
-                stopLoading()
                 return@checkEventStatus _invalidity.postValue(Pair(k, v))
             }
         }
 
         try
         {
+            onStartLoading()
+
             val email: String = email.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.EMAIL)
             val authCode: String = authCode.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.AUTH_CODE)
             val password: String = password.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.PASSWORD)

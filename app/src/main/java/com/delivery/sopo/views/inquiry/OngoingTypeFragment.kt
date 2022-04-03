@@ -1,16 +1,12 @@
 package com.delivery.sopo.views.inquiry
 
 import android.content.Context
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ScrollView
 import android.widget.Toast
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.delivery.sopo.R
@@ -23,10 +19,9 @@ import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.OngoingTypeViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
-import com.delivery.sopo.views.dialog.OptionalClickListener
+import com.delivery.sopo.views.dialog.OnOptionalClickListener
 import com.delivery.sopo.views.dialog.OptionalDialog
 import com.delivery.sopo.views.main.MainView
 import com.google.android.material.snackbar.Snackbar
@@ -184,18 +179,18 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             {
                 super.onMaintainParcelClicked(view, pos, parcelId)
 
-                val leftOptionalClickListener = object: OptionalClickListener
+                val leftOptionalClickListener = object: OnOptionalClickListener
                 {
-                    override fun invoke(dialog: OptionalDialog)
+                    override fun invoke(dialog: DialogFragment)
                     {
                         vm.deleteParcel(parcelId = parcelId)
                         dialog.dismiss()
                     }
                 }
 
-                val rightOptionalClickListener = object: OptionalClickListener
+                val rightOptionalClickListener = object: OnOptionalClickListener
                 {
-                    override fun invoke(dialog: OptionalDialog)
+                    override fun invoke(dialog: DialogFragment)
                     {
                         CoroutineScope(Dispatchers.Main).async {
                             withContext(Dispatchers.IO) { vm.refreshParcel(parcelId) }
@@ -204,10 +199,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
 
                                 val updatedPos = registeredParcelAdapter.getList()
                                     .indexOfFirst { it.parcelResponse.parcelId == parcelId }
-
-//                                binding.recyclerviewRegisteredParcel.adapter?.
-//                                SopoLog.d("range : ${binding.recyclerviewRegisteredParcel.computeVerticalScrollRange()}")
-//                                SopoLog.d("offset : ${binding.recyclerviewRegisteredParcel.computeVerticalScrollOffset()}")
 
                                 binding.nestedSvMainOngoingInquiry.smoothScrollTo(0, updatedPos) //
 
@@ -219,11 +210,14 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                         dialog.dismiss()
                     }
                 }
-                val optionalDialog =
-                    OptionalDialog(optionalType = OptionalTypeEnum.LEFT, titleIcon = 0, title = "이 아이템을 제거할까요?", subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.", content = """
+                val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.TWO_WAY_LEFT,
+                                   title = "이 아이템을 제거할까요?",
+                                   content = """
                     배송 상태가 2주간 확인되지 않고 있어요.
                     등록된 송장번호가 유효하지 않을지도 몰라요.
-                                """.trimIndent(), leftHandler = Pair("지울게요", second = leftOptionalClickListener), rightHandler = Pair(first = "유지할게요", second = rightOptionalClickListener))
+                                """.trimIndent(),
+                                   leftHandler = Pair("지울게요", second = leftOptionalClickListener),
+                                   rightHandler = Pair(first = "유지할게요", second = rightOptionalClickListener))
 
                 optionalDialog.show(requireActivity().supportFragmentManager, "")
             }

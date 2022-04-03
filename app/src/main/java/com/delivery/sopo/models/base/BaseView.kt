@@ -9,6 +9,7 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
@@ -21,6 +22,7 @@ import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.SopoLoadingBar
+import kotlin.system.exitProcess
 
 interface OnActivityResultCallbackListener{
     fun callback(activityResult: ActivityResult)
@@ -182,5 +184,11 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         activityResultLauncher.unregister()
         //        activityResultLauncher = null
 
+    }
+
+    fun exit()
+    {
+        ActivityCompat.finishAffinity(this)
+        exitProcess(0)
     }
 }

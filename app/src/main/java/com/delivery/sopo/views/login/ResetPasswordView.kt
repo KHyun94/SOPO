@@ -124,43 +124,6 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
             }.show()
         })
 
-//        vm.email.observe(this@ResetPasswordView, Observer { email ->
-//
-//            val isValidate = ValidateUtil.isValidateEmail(email.toString())
-//
-//            if(isValidate)
-//            {
-//                binding.btnNext.backgroundTintList =
-//                    resources.getColorStateList(R.color.COLOR_MAIN_700, null)
-//                binding.btnNext.setTextColor(ContextCompat.getColor(this, R.color.MAIN_WHITE))
-//                return@Observer
-//            }
-//
-//            binding.btnNext.backgroundTintList =
-//                resources.getColorStateList(R.color.COLOR_GRAY_200, null)
-//            binding.btnNext.setTextColor(ContextCompat.getColor(this, R.color.COLOR_GRAY_400))
-//        })
-
-//        vm.password.observe(this@ResetPasswordView, Observer { password ->
-//
-//            val isValidate = ValidateUtil.isValidatePassword(password.toString())
-//
-//            if(isValidate)
-//            {
-//                binding.btnNext.backgroundTintList = resources.getColorStateList(R.color.COLOR_MAIN_700, null)
-//                binding.btnNext.setTextColor(ContextCompat.getColor(this, R.color.MAIN_WHITE))
-//                binding.tvPasswordHint.makeGone()
-//                return@Observer
-//            }
-//
-//            binding.btnNext.backgroundTintList =
-//                resources.getColorStateList(R.color.COLOR_GRAY_200, null)
-//            binding.btnNext.setTextColor(ContextCompat.getColor(this, R.color.COLOR_GRAY_400))
-//            binding.tvPasswordHint.makeVisible()
-//
-//
-//        })
-
         binding.etAuthCode.setOnFocusChangeListener { v, hasFocus ->
             if(hasFocus)
             {
@@ -236,7 +199,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
                     "${currentSeconds}초 내 입력"
                } else
                {
-                   "타임오버"
+                   "인증시간 초과"
                }
 
                binding.tvCountOfAuth.text = time

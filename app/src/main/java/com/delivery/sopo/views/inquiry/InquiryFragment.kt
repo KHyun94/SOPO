@@ -121,61 +121,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
         }
     }
 
-    /*private fun openInquiryMenu(anchorView: View)
-    {
-        if(menuPopUpWindow != null)
-        {
-            menuPopUpWindow?.showAsDropDown(anchorView)
-            return
-        }
-
-        val menu = PopupMenu(requireActivity(), anchorView).menu
-
-        requireActivity().menuInflater.inflate(R.menu.inquiry_popup_menu, menu)
-
-        val popUpView: PopupMenuViewBinding = PopupMenuViewBinding.inflate(LayoutInflater.from(requireContext())).also { v ->
-                val popupMenuListAdapter =
-                    PopupMenuListAdapter(MenuMapper.menuToMenuItemList(menu) as MutableList<InquiryMenuItem>)
-
-                v.recyclerviewInquiryPopupMenu.also {
-                    it.adapter = popupMenuListAdapter
-                    val dividerItemDecoration = DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                    dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
-                    it.addItemDecoration(dividerItemDecoration)
-
-                    // 'Inquiry' 화면 우측 상단의 메뉴 아이템 이벤트
-                    popupMenuListAdapter.setPopUpMenuOnclick(object: PopupMenuListAdapter.InquiryPopUpMenuItemOnclick
-                                                             {
-                                                                 override fun removeItem(v: View)
-                                                                 { //삭제하기
-                                                                     //                                                                     vm.onOpenDeleteView()
-                                                                     TabCode.DELETE_PARCEL.FRAGMENT =
-                                                                         DeleteParcelFragment.newInstance(inquiryStatus
-                                                                                                              ?: InquiryStatusEnum.ONGOING)
-                                                                     FragmentManager.move(requireActivity(), TabCode.DELETE_PARCEL, InquiryMainFragment.viewId)
-                                                                     menuPopUpWindow?.dismiss()
-                                                                 }
-
-                                                                 override fun refreshItems(v: View)
-                                                                 { // 새로고침
-                                                                     //                                                                     vm.syncParcelsByOngoing()
-                                                                     menuPopUpWindow?.dismiss()
-                                                                 }
-
-                                                                 override fun help(v: View)
-                                                                 { // 도움말
-                                                                     menuPopUpWindow?.dismiss()
-                                                                 }
-                                                             })
-                }
-            }
-
-        menuPopUpWindow =
-            PopupWindow(popUpView.root, SizeUtil.changeDpToPx(binding.root.context, 175F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
-                showAsDropDown(anchorView)
-            }
-    }*/
-
     private fun setViewPager(viewPager: ViewPager2)
     {
         val adapter =

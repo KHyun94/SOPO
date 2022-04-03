@@ -13,7 +13,7 @@ enum class CarrierEnum(
     CHUNILPS(1, "CHUNILPS", "천일택배"),
     CJ_LOGISTICS(2,"CJ_LOGISTICS", "CJ대한통운"),
     CU_POST(3,"CU_POST", "CU 편의점 택배"),
-    CVSNET(4,"CVSNET", "GS Postbox 택배"),
+    CVSNET(4,"CVSNET", "GS 편의점 택배"),
     DAESIN(5,"DAESIN", "대신택배"),
     EPOST(6,"EPOST", "우체국택배"),
     HANJINS(7,"HANJINS", "한진택배"),

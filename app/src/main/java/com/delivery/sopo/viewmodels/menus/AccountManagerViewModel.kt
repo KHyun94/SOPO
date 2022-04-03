@@ -25,6 +25,10 @@ class AccountManagerViewModel(
         logoutUseCase.invoke()
     }
 
+    fun onBackClicked(){
+        _navigator.postValue(NavigatorConst.TO_BACK_SCREEN)
+    }
+
     fun onMoveClicked(v: View){
         when(v.id)
         {

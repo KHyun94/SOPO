@@ -2,5 +2,5 @@ package com.delivery.sopo.enums
 
 enum class OptionalTypeEnum
 {
-    LEFT, RIGHT
+    TWO_WAY_LEFT, TWO_WAY_RIGHT, ONE_WAY
 }

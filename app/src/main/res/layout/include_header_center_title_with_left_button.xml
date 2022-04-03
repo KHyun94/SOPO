@@ -11,7 +11,7 @@
 
         <variable
             name="buttonIcon"
-            type="int" />
+            type="android.graphics.drawable.Drawable" />
 
         <variable
             name="onEventClickListener"
@@ -34,6 +34,7 @@
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
             android:text="@{title}"
+            android:textColor="@color/COLOR_GRAY_800"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -47,8 +48,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:setDefaultImage="@{0}"
-            app:setImage="@{buttonIcon}"
+            android:background='@{buttonIcon}'
             android:adjustViewBounds="true"
             android:scaleType="center"
             tools:background="@drawable/ic_clear_btn" />

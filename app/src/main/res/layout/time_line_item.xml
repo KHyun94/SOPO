@@ -31,6 +31,7 @@
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
             android:text="19:40:10"
+            android:layout_marginTop="5dp"
             android:textColor="@color/COLOR_GRAY_400"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_date_yymmdd" />
@@ -68,9 +69,10 @@
             android:layout_marginStart="11dp"
             android:includeFontPadding="false"
             android:text="간선상차"
-            android:textColor="@color/COLOR_MAIN_700"
+            android:fontFamily="@font/pretendard_semi_bold"
+            android:textColor="@color/COLOR_GRAY_800"
             app:layout_constraintLeft_toRightOf="@+id/layout_status"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/tv_date_yymmdd" />
 
         <TextView
             android:id="@+id/tv_delivery_location"
@@ -80,7 +82,8 @@
             android:layout_marginStart="11dp"
             android:includeFontPadding="false"
             android:text="곤지암Hub"
-            android:textColor="@color/COLOR_GRAY_800"
+            app:layout_constraintTop_toTopOf="@id/tv_date_hhmmss"
+            android:textColor="@color/COLOR_GRAY_500"
             app:layout_constraintLeft_toRightOf="@+id/layout_status"
             app:layout_constraintTop_toBottomOf="@+id/tv_delivery_status" />
 

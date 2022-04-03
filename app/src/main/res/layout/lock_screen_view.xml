@@ -28,7 +28,7 @@
             android:id="@+id/include_header"
             layout="@layout/include_header_center_title_with_right_button"
             app:title='@{vm.title}'
-            app:buttonIcon="@{R.drawable.ic_clear_btn}"
+            app:buttonIcon="@{ContextCompat.getDrawable(context, R.drawable.ic_clear_btn)}"
             app:onEventClickListener="@{()->vm.onBackClicked()}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="androidx.core.content.ContextCompat" />
+        <import type="com.delivery.sopo.R" />
         <variable
             name="vm"
             type="com.delivery.sopo.viewmodels.menus.AccountManagerViewModel" />
@@ -17,7 +18,14 @@
         android:background="@color/COLOR_GRAY_50"
         android:orientation="vertical">
 
-        <LinearLayout
+        <include
+            android:id="@+id/include_header"
+            layout="@layout/include_header_center_title_with_left_button"
+            app:title='@{"계정 관리"}'
+            app:buttonIcon="@{ContextCompat.getDrawable(context, R.drawable.ic_left_arrow_black_24dp)}"
+            app:onEventClickListener='@{()->vm.onBackClicked()}'/>
+
+        <RelativeLayout
             android:id="@+id/layout_update_nickname"
             android:layout_width="match_parent"
             android:layout_height="71dp"
@@ -31,19 +39,28 @@
                 style="@style/kor_H3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="32dp"
                 android:text="닉네임 변경"
                 android:textColor="@color/COLOR_GRAY_800" />
 
-        </LinearLayout>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_right_arrow_black_24dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="14dp"/>
+
+        </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/COLOR_GRAY_100" />
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/layout_reset_password"
             android:layout_width="match_parent"
             android:layout_height="71dp"
@@ -60,16 +77,25 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="32dp"
                 android:text="계정 비밀번호 재설정"
-                android:textColor="@color/COLOR_GRAY_800" />
+                android:textColor="@color/COLOR_GRAY_800"
+                android:layout_centerVertical="true"/>
 
-        </LinearLayout>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_right_arrow_black_24dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="14dp"/>
+
+        </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/COLOR_GRAY_100" />
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/layout_logout"
             android:layout_width="match_parent"
             android:layout_height="71dp"
@@ -86,16 +112,25 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="32dp"
                 android:text="로그아웃"
+                android:layout_centerVertical="true"
                 android:textColor="@color/COLOR_GRAY_800" />
 
-        </LinearLayout>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_right_arrow_black_24dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="14dp"/>
+
+        </RelativeLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/COLOR_GRAY_100" />
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/layout_sign_out"
             android:layout_width="match_parent"
             android:layout_height="71dp"
@@ -112,8 +147,18 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="32dp"
                 android:text="계정 탈퇴"
-                android:textColor="@color/COLOR_GRAY_800" />
-        </LinearLayout>
+                android:textColor="@color/COLOR_GRAY_800"
+                android:layout_centerVertical="true"/>
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_right_arrow_black_24dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="14dp"/>
+
+        </RelativeLayout>
 
         <View
             android:layout_width="match_parent"

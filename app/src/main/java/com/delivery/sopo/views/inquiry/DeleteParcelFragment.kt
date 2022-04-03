@@ -9,6 +9,7 @@ import android.view.View.*
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -29,6 +30,8 @@ import com.delivery.sopo.util.*
 import com.delivery.sopo.viewmodels.inquiry.DeleteParcelViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.adapter.PopupMenuListAdapter
+import com.delivery.sopo.views.dialog.OnOptionalClickListener
+import com.delivery.sopo.views.dialog.OptionalDialog
 import com.delivery.sopo.views.main.MainView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -153,15 +156,31 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
                 }
                 NavigatorEnum.DELETE_PARCEL ->
                 {
-                    val deleteParcelIds =
-                        soonArrivalParcelAdapter.getSelectedListData() + registeredParcelAdapter.getSelectedListData() + completedParcelAdapter.getSelectedListData()
+                    val deleteParcelIds = soonArrivalParcelAdapter.getSelectedListData() + registeredParcelAdapter.getSelectedListData() + completedParcelAdapter.getSelectedListData()
 
-                    CoroutineScope(Dispatchers.Main).launch {
-                        vm.updateParcelToDeleteParcels(deleteParcelIds)
+                    OptionalDialog(optionalType = OptionalTypeEnum.TWO_WAY_LEFT,  title = "정말로 삭제할까요?", content = """
+                    · 배송완료된 물품은 [배송완료]탭에 보관되요
+                    · 삭제하신 내역은 복구할 수 없어요
+                                """.trimIndent(), leftHandler = Pair("삭제할게요", object: OnOptionalClickListener {
+                        override fun invoke(dialog: DialogFragment)
+                        {
+                            CoroutineScope(Dispatchers.Main).launch {
+                                vm.updateParcelToDeleteParcels(deleteParcelIds)
 
-                        TabCode.INQUIRY.FRAGMENT = InquiryFragment.newInstance(returnType = 2)
-                        FragmentManager.move(parentView, TabCode.INQUIRY, InquiryMainFragment.viewId)
-                    }
+                                TabCode.INQUIRY.FRAGMENT = InquiryFragment.newInstance(returnType = 2)
+                                FragmentManager.move(parentView, TabCode.INQUIRY, InquiryMainFragment.viewId)
+                            }
+                            dialog.dismiss()
+                        }
+                    }), rightHandler = Pair("다시 생각할게요", object: OnOptionalClickListener
+                    {
+                        override fun invoke(dialog: DialogFragment)
+                        {
+                            dialog.dismiss()
+                        }
+                    })).show(requireActivity().supportFragmentManager, "")
+
+
                 }
             }
 

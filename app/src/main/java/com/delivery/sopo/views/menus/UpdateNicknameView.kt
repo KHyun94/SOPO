@@ -1,6 +1,9 @@
 package com.delivery.sopo.views.menus
 
 import android.content.Intent
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import android.view.Gravity
 import android.view.View
 import android.widget.Toast
@@ -12,6 +15,7 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.UpdateNicknameViewBinding
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
+import com.delivery.sopo.enums.OptionalTypeEnum
 import com.delivery.sopo.extensions.launchActivityWithAllClear
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.SopoLog
@@ -20,6 +24,7 @@ import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.menus.UpdateNicknameViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
 import com.delivery.sopo.views.dialog.OnAgreeClickListener
+import com.delivery.sopo.views.dialog.OptionalDialog
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -99,15 +104,18 @@ class UpdateNicknameView: BaseView<UpdateNicknameViewBinding, UpdateNicknameView
             {
                 NavigatorConst.TO_MAIN ->
                 {
-                    GeneralDialog(this@UpdateNicknameView, "성공", "정상적으로 닉네임을 등록했습니다.", null, Pair("네", object:
-                            OnAgreeClickListener
-                    {
-                        override fun invoke(agree: GeneralDialog)
-                        {
-                            Intent(this@UpdateNicknameView, MainView::class.java).launchActivityWithAllClear(this@UpdateNicknameView)
-                            finish()
-                        }
-                    })).show(supportFragmentManager, "DIALOG")
+                    val builder = SpannableStringBuilder("변경된 닉네임은\n${vm.nickname.value?.toString()}입니다.")
+                    builder.setSpan(ForegroundColorSpan(ContextCompat.getColor(this, R.color.COLOR_MAIN_700)), 8, builder.length - 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+
+                    val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.ONE_WAY,
+                                                        title = builder,
+                                                        leftHandler = Pair("확인"){
+                                                            Intent(this@UpdateNicknameView, MainView::class.java).launchActivityWithAllClear(this@UpdateNicknameView)
+                                                            finish()
+                                                        })
+
+                    optionalDialog.show(supportFragmentManager, "")
                 }
                 NavigatorConst.TO_BACK_SCREEN ->
                 {

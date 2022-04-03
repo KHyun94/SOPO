@@ -2,6 +2,8 @@ package com.delivery.sopo.consts
 
 object NavigatorConst {
 
+    const val CONFIRM_SIGN_OUT:String = "CONFIRM_SIGN_OUT"
+    const val EXIT: String = "EXIT"
     const val DUPLICATE_LOGIN: String = "DUPLICATE_LOGIN"
     const val TO_SIGN_OUT = "TO_SIGN_OUT"
     const val TO_LOGIN = "TO_LOGIN"

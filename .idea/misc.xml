@@ -4,13 +4,19 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/border_15dp_blue_rounder.xml" value="0.206" />
+        <entry key="app/src/main/res/drawable/border_17dp_rounder.xml" value="0.289" />
         <entry key="app/src/main/res/drawable/border_all_round_10dp.xml" value="0.234" />
         <entry key="app/src/main/res/drawable/border_all_round_10dp_blue_scale.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/border_all_round_15dp.xml" value="0.206" />
+        <entry key="app/src/main/res/drawable/border_all_round_8dp.xml" value="0.2055" />
+        <entry key="app/src/main/res/drawable/border_oval.xml" value="0.339" />
+        <entry key="app/src/main/res/drawable/ic_checked_deep_blue.xml" value="0.1585" />
         <entry key="app/src/main/res/drawable/ic_erase_btn.xml" value="0.206" />
+        <entry key="app/src/main/res/drawable/ic_inquiry_cardview_not_registered.xml" value="0.3765" />
         <entry key="app/src/main/res/drawable/ic_lock_edittext_off.xml" value="0.1735" />
         <entry key="app/src/main/res/drawable/ic_lock_edittext_on.xml" value="0.1735" />
         <entry key="app/src/main/res/drawable/ic_toggle_on.xml" value="0.1605" />
+        <entry key="app/src/main/res/drawable/right_arrow_black_24dp.xml" value="0.1705" />
         <entry key="app/src/main/res/drawable/ripple_circle.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/selector_inquiry_tab.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/selector_inquiry_tab_gray_scale.xml" value="0.206" />
@@ -20,25 +26,32 @@
         <entry key="app/src/main/res/drawable/selector_time_tab.xml" value="0.206" />
         <entry key="app/src/main/res/layout/alert_update_dialog.xml" value="0.20116120218579234" />
         <entry key="app/src/main/res/layout/app_info_view.xml" value="0.1293918918918919" />
-        <entry key="app/src/main/res/layout/confirm_delete_dialog.xml" value="0.3848958333333333" />
+        <entry key="app/src/main/res/layout/confirm_delete_dialog.xml" value="0.2868972778320313" />
         <entry key="app/src/main/res/layout/dialog_logout.xml" value="0.20116120218579234" />
+        <entry key="app/src/main/res/layout/fragment_account_manager.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_completed_type.xml" value="0.22266009852216748" />
+        <entry key="app/src/main/res/layout/fragment_confirm_parcel.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/fragment_delete_parcel.xml" value="0.1293918918918919" />
         <entry key="app/src/main/res/layout/fragment_faq.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/fragment_input_parcel.xml" value="0.17725409836065573" />
+        <entry key="app/src/main/res/layout/fragment_input_parcel.xml" value="0.5" />
         <entry key="app/src/main/res/layout/fragment_inquiry.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_inquiry_re.xml" value="0.18262411347517732" />
-        <entry key="app/src/main/res/layout/fragment_menu.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_menu.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_menu_sub.xml" value="0.12292634372926343" />
         <entry key="app/src/main/res/layout/fragment_notice.xml" value="0.11977438619774386" />
         <entry key="app/src/main/res/layout/fragment_ongoing_type.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/fragment_select_carrier.xml" value="0.17725409836065573" />
         <entry key="app/src/main/res/layout/fragment_setting.xml" value="0.25" />
         <entry key="app/src/main/res/layout/general_dialog.xml" value="0.17725409836065573" />
+        <entry key="app/src/main/res/layout/include_header_center_title_with_left_button.xml" value="0.17725409836065573" />
+        <entry key="app/src/main/res/layout/include_header_center_title_with_right_button.xml" value="0.12292634372926343" />
+        <entry key="app/src/main/res/layout/include_header_left_title_with_right_button.xml" value="0.12292634372926343" />
         <entry key="app/src/main/res/layout/include_lock_app.xml" value="0.4957992637092299" />
         <entry key="app/src/main/res/layout/include_no_item.xml" value="0.103125" />
         <entry key="app/src/main/res/layout/include_not_disturb_time.xml" value="0.36165618896484375" />
         <entry key="app/src/main/res/layout/include_push_alarm.xml" value="0.3227953410981697" />
         <entry key="app/src/main/res/layout/inquiry_list_complete_item.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/inquiry_list_ongoing_item.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/inquiry_list_ongoing_item.xml" value="0.67" />
         <entry key="app/src/main/res/layout/inquiry_main_frame.xml" value="0.11977438619774386" />
         <entry key="app/src/main/res/layout/intro_view.xml" value="0.17725409836065573" />
         <entry key="app/src/main/res/layout/intro_view_3.xml" value="0.11977438619774386" />
@@ -46,13 +59,16 @@
         <entry key="app/src/main/res/layout/lock_screen_view.xml" value="0.30245666503906254" />
         <entry key="app/src/main/res/layout/login_select_view.xml" value="0.17725409836065573" />
         <entry key="app/src/main/res/layout/login_view.xml" value="0.12292634372926343" />
+        <entry key="app/src/main/res/layout/main_view.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/notification_register_expanded.xml" value="0.21653005464480873" />
         <entry key="app/src/main/res/layout/parcel_detail_view.xml" value="0.17725409836065573" />
-        <entry key="app/src/main/res/layout/parcel_full_detail_item.xml" value="0.12292634372926343" />
-        <entry key="app/src/main/res/layout/reset_password_view.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/parcel_full_detail_item.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/parcel_semi_detail_item.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/reset_password_view.xml" value="0.25" />
         <entry key="app/src/main/res/layout/set_not_disturb_time_dialog.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/sign_out_view.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/sign_up_complete.xml" value="0.3953125" />
-        <entry key="app/src/main/res/layout/snack_bar_custom.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/sign_out_view.xml" value="0.3368055555555556" />
+        <entry key="app/src/main/res/layout/snack_bar_custom.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/time_line_item.xml" value="0.5" />
         <entry key="app/src/main/res/layout/update_nickname_view.xml" value="0.11977438619774386" />
       </map>
     </option>

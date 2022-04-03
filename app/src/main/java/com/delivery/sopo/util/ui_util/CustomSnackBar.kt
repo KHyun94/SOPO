@@ -1,26 +1,15 @@
 package com.delivery.sopo.util.ui_util
 
-import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import android.widget.FrameLayout
-import android.widget.LinearLayout
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.SnackBarCustomBinding
 import com.delivery.sopo.enums.SnackBarEnum
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 typealias OnSnackBarClickListener = ()->Unit
 class CustomSnackBar(private val view: View, private val content: String, private val duration: Int, private val type: SnackBarEnum? = null, private val clickListener: Pair<CharSequence, OnSnackBarClickListener>? = null)
@@ -66,9 +55,9 @@ class CustomSnackBar(private val view: View, private val content: String, privat
             }
             SnackBarEnum.CONFIRM_DELETE ->
             {
-                binding.ivExclamationMark.background = ContextCompat.getDrawable(view.context, R.drawable.ic_checked_blue_300)
+                binding.ivExclamationMark.background = ContextCompat.getDrawable(view.context, R.drawable.ic_checked_deep_blue_small)
                 binding.layoutSnackBar.setBackgroundColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_100))
-                binding.tvCountOfDeleted.setTextColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_900))
+                binding.tvCountOfDeleted.setTextColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_700))
                 binding.tvCancelDelete.setTextColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_700))
             }
             SnackBarEnum.ERROR ->

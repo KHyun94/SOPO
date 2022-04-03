@@ -4,8 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
         <import type="com.delivery.sopo.enums.InfoEnum" />
+
         <import type="com.delivery.sopo.models.Carrier" />
 
         <variable
@@ -17,34 +20,36 @@
         android:id="@+id/constraint_main_register"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:focusableInTouchMode="true"
+        android:background="@color/COLOR_GRAY_50"
         android:focusable="true"
-        android:background="@color/COLOR_GRAY_50">
+        android:focusableInTouchMode="true">
 
         <include
             android:id="@+id/include_header"
             layout="@layout/include_header_left_title_with_right_button"
-            app:title='@{"운송장 등록"}'
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/layout_waybill_num" />
+            app:layout_constraintBottom_toTopOf="@+id/layout_waybill_num"
+            app:title='@{"운송장 등록"}' />
 
-   <!--     <TextView
-            style="@style/kor_H2"
-            android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="17dp"
-            android:layout_marginHorizontal="24dp"
-            android:text="운송장 등록"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />-->
+        <!--     <TextView
+                 style="@style/kor_H2"
+                 android:id="@+id/tv_title"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:layout_marginTop="17dp"
+                 android:layout_marginHorizontal="24dp"
+                 android:text="운송장 등록"
+                 app:layout_constraintStart_toStartOf="parent"
+                 app:layout_constraintTop_toTopOf="parent" />-->
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layout_waybill_num"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="32dp"
             android:background="@color/COLOR_GRAY_50"
             android:textColorHint="@color/COLOR_GRAY_400"
             app:boxBackgroundColor="@color/COLOR_GRAY_100"
@@ -64,8 +69,6 @@
             app:helperTextTextColor="@color/COLOR_MAIN_700"
             app:hintEnabled="true"
             app:hintTextColor="@color/COLOR_MAIN_700"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="32dp"
             app:layout_constraintTop_toBottomOf="@id/include_header">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -73,13 +76,13 @@
                 style="@style/kor_H4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:maxLength="15"
-                android:inputType="number"
                 android:hint="운송장번호를 여기에 입력하세요."
+                android:inputType="number"
+                android:maxLength="15"
+                android:singleLine="true"
                 android:text="@={vm.waybillNum}"
-                app:type="@{InfoEnum.WAYBILL_NUMBER}"
-                app:focusChangeListener="@{vm.focusChangeCallback}"/>
+                app:focusChangeListener="@{vm.focusChangeCallback}"
+                app:type="@{InfoEnum.WAYBILL_NUMBER}" />
 
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -88,25 +91,25 @@
             android:id="@+id/custom_et_delivery_co"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/layout_waybill_num"
             android:layout_marginHorizontal="24dp"
             android:background="@drawable/border_all_round_10dp"
             android:backgroundTint="@color/COLOR_GRAY_100"
             android:onClick="@{()->vm.onMoveCarrierSelectorClicked()}"
-            android:paddingVertical="1dp">
+            android:paddingVertical="1dp"
+            app:layout_constraintTop_toBottomOf="@id/layout_waybill_num">
 
             <TextView
                 android:id="@+id/tv_carrier_hint"
                 style="@style/kor_H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@null"
-                android:text="배송사"
-                android:visibility="@{(vm.carrier.carrier.NAME.length() > 0) ? View.GONE : View.VISIBLE, default=visible}"
-                android:includeFontPadding="false"
-                android:textColor="@color/COLOR_GRAY_400"
                 android:layout_marginVertical="18.5dp"
-                android:layout_marginStart="14dp"/>
+                android:layout_marginStart="14dp"
+                android:background="@null"
+                android:includeFontPadding="false"
+                android:text="배송사"
+                android:textColor="@color/COLOR_GRAY_400"
+                android:visibility="@{(vm.carrier.carrier.NAME.length() > 0) ? View.GONE : View.VISIBLE, default=visible}" />
 
             <ImageView
                 android:id="@+id/iv_carrier"
@@ -115,29 +118,27 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="16dp"
-                android:layout_marginEnd="8dp"
                 android:layout_marginTop="14dp"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="11dp"
                 android:visibility="@{(vm.carrier.carrier.NAME.length() > 0)?View.VISIBLE:View.GONE}"
                 app:setDefaultImage="@{0}"
                 app:setImage="@{vm.carrier.icons[0]}"
-                tools:visibility="visible"/>
+                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/tv_input_text"
                 style="@style/kor_H4"
-                android:fontFamily="@font/pretendard_bold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="17dp"
+                android:layout_marginBottom="15dp"
                 android:layout_toEndOf="@+id/iv_carrier"
                 android:background="@null"
-                android:visibility="@{(vm.carrier.carrier.NAME.length() > 0)?View.VISIBLE:View.GONE}"
                 android:includeFontPadding="false"
                 android:text="@{vm.carrier.carrier.NAME}"
                 android:textColorHint="@color/COLOR_GRAY_300"
-                android:layout_marginTop="17dp"
-                android:layout_marginBottom="15dp"
-                />
+                android:visibility="@{(vm.carrier.carrier.NAME.length() > 0)?View.VISIBLE:View.GONE}" />
 
         </RelativeLayout>
 
@@ -147,31 +148,31 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="40dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
             android:background="@android:color/transparent"
             android:gravity="center"
             android:onClick="@{()->vm.onPasteClicked()}"
             android:orientation="horizontal"
             android:visibility="@{(vm.clipboardText.length() > 0) &amp;&amp; (vm.carrier.carrier.NAME.length() == 0)?View.VISIBLE:View.GONE}"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co"
             tools:visibility="visible">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_register_clip_board"/>
+                android:src="@drawable/ic_register_clip_board" />
 
             <TextView
-                style="@style/kor_H4"
                 android:id="@+id/tv_clipboard_text"
+                style="@style/kor_H4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@={vm.clipboardText}"
+                android:layout_marginLeft="8dp"
                 android:fontFamily="@font/pretendard_bold"
+                android:text="@={vm.clipboardText}"
                 android:textColor="@color/COLOR_MAIN_700"
-                tools:text="11111111111"
-                android:layout_marginLeft="8dp"/>
+                tools:text="11111111111" />
 
             <TextView
                 style="@style/kor_H4"
@@ -184,17 +185,17 @@
         </LinearLayout>
 
         <TextView
-            style="@style/buttonBasicStyle"
             android:id="@+id/tv_next"
+            style="@style/buttonBasicStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="68dp"
+            android:focusable="true"
             android:onClick="@{()->vm.onMove3rdStepClicked(tvNext)}"
+            android:text="다음으로"
             android:visibility="@{(vm.waybillNum.length() > 8) &amp;&amp; (vm.carrier.carrier.NAME.length() > 0)?View.VISIBLE:View.GONE}"
             app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co"
-            android:text="다음으로"
-            android:focusable="true"
-            android:layout_marginTop="18dp"
-            tools:visibility="gone"/>
+            tools:visibility="visible" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

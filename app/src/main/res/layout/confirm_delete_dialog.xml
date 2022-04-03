@@ -18,16 +18,12 @@
             type="com.delivery.sopo.enums.OptionalTypeEnum" />
 
         <variable
-            name="titleIcon"
-            type="int" />
-
-        <variable
             name="title"
-            type="String" />
+            type="CharSequence" />
 
         <variable
-            name="subTitle"
-            type="String" />
+            name="subtitle"
+            type="CharSequence" />
 
         <variable
             name="content"
@@ -50,153 +46,208 @@
             type="android.view.View.OnClickListener" />
     </data>
 
-    <LinearLayout
-        android:id="@+id/linear_main_dialog"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_main_optional_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/border_all_rounded"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/linear_header"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_dialog_title"
+            style="@style/kor_H3"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="4dp"
+            android:fontFamily="@font/pretendard_bold"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:letterSpacing="-0.02"
+            android:text="@{title}"
+            android:textColor="@color/MAIN_BLACK"
+            app:layout_constraintBottom_toTopOf="@id/tv_dialog_subtitle"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="정말로 삭제하시겠습니까?" />
 
-            <ImageView
-                android:id="@+id/iv_title_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="@{(titleIcon == 0)?View.GONE:View.VISIBLE}"
-                app:setDefaultImage="@{0}"
-                app:setImage="@{titleIcon}" />
+        <TextView
+            android:id="@+id/tv_dialog_subtitle"
+            style="@style/kor_H4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/pretendard_bold"
+            android:gravity="center"
+            android:text="@{subtitle}"
+            android:textColor="@color/COLOR_GRAY_800"
+            android:textSize="14dp"
+            android:visibility='@{(subtitle != null) ? View.VISIBLE : View.GONE}'
+            app:layout_constraintBottom_toTopOf="@id/tv_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_dialog_title"
+            tools:text="고객님 정보가 삭제되어\n영구히 복구가 불가능합니다."
+            tools:visibility="visible" />
 
-            <TextView
-                android:id="@+id/tv_dialog_title"
-                style="@style/kor_H2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:fontFamily="@font/pretendard_bold"
-                android:gravity="center"
-                android:includeFontPadding="false"
-                android:letterSpacing="-0.02"
-                android:text="@{title}"
-                android:textColor="@color/MAIN_BLACK"
-                android:textSize="20sp"
-                tools:text="정말로 삭제하시겠습니까?" />
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tv_content"
+            style="@style/kor_H5"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="12dp"
+            android:fontFamily="@font/pretendard_medium"
+            android:letterSpacing="0.04"
+            android:text="@{content}"
+            android:textColor="@color/COLOR_GRAY_600"
+            android:gravity="center"
+            android:layout_marginBottom="3.5dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_dialog_subtitle"
+            app:layout_constraintBottom_toTopOf="@id/linear_main_button"
+            android:visibility='@{(content != null) ? View.VISIBLE : View.GONE}'
+            tools:text="* 배송이 완료된 내역은 [배송완료]탭에 보관 처리됩니다.\n* 삭제하신 내역은 복구되지 않습니다." />
 
         <LinearLayout
-            android:id="@+id/layout_sub_title"
+            android:id="@+id/linear_main_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="24dp"
-            android:layout_marginBottom="4dp"
-            android:visibility="invisible">
-
-            <TextView
-                android:id="@+id/tv_sub_title"
-                style="@style/kor_H4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/pretendard_bold"
-                android:text="@{subTitle}"
-                android:textColor="@color/COLOR_MAIN_700"
-                android:visibility="@{(subTitle == null)?View.GONE:View.VISIBLE}"
-                tools:text="고객님 정보가 삭제되며 복구가 불가능합니다." />
-
-        </LinearLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="22dp"
-                android:layout_marginRight="22dp"
-                android:layout_marginBottom="15dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <TextView
-                    android:id="@+id/tv_content"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:fontFamily="@font/pretendard_medium"
-                    android:letterSpacing="0.04"
-                    android:text="@{content}"
-                    android:textColor="@color/COLOR_GRAY_600"
-                    android:textSize="13sp"
-                    tools:text="* 배송이 완료된 내역은 [배송완료]탭에 보관 처리됩니다.\n* 삭제하신 내역은 복구되지 않습니다." />
-
-
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="16.5dp"
             android:orientation="horizontal"
-            android:weightSum="1">
+            app:layout_constraintTop_toBottomOf="@+id/tv_content"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:gravity="center"
+            android:layout_marginBottom="23dp">
 
             <TextView
                 android:id="@+id/tv_left_btn"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="0.5"
-                android:fontFamily="@font/pretendard_bold"
-                android:gravity="center"
-                android:padding="10dp"
+                android:layout_width="112dp"
+                android:layout_height="43dp"
+                android:background="@{(optionalType == OptionalTypeEnum.TWO_WAY_LEFT || optionalType == OptionalTypeEnum.ONE_WAY)?ContextCompat.getDrawable(context, R.drawable.border_all_rounded_main_blue):ContextCompat.getDrawable(context,R.drawable.border_15dp_blue_rounder)}"
                 android:clickable="true"
                 android:focusable="true"
-                android:text="@{leftBtnText}"
-                android:textSize="14dp"
+                android:fontFamily="@font/pretendard_bold"
+                android:gravity="center"
                 android:onClick="@{leftBtnClickListener}"
-                android:textColor="@{(optionalType == OptionalTypeEnum.LEFT)? ContextCompat.getColor(context, R.color.MAIN_WHITE):ContextCompat.getColor(context, R.color.COLOR_MAIN_500)}"
-                android:background="@{(optionalType == OptionalTypeEnum.LEFT)?ContextCompat.getDrawable(context, R.drawable.border_all_rounded_main_blue):ContextCompat.getDrawable(context,R.drawable.border_15dp_blue_rounder)}"
+                android:padding="10dp"
+                android:text="@{leftBtnText}"
+                android:textColor="@{(optionalType == OptionalTypeEnum.TWO_WAY_LEFT || optionalType == OptionalTypeEnum.ONE_WAY)? ContextCompat.getColor(context, R.color.MAIN_WHITE):ContextCompat.getColor(context, R.color.COLOR_MAIN_700)}"
+                android:textSize="14dp"
                 tools:background="@drawable/border_all_rounded_main_blue"
                 tools:textColor="@color/MAIN_WHITE" />
 
             <TextView
                 android:id="@+id/tv_right_btn"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="10dp"
-                android:layout_weight="0.5"
+                android:layout_width="112dp"
+                android:layout_height="43dp"
+                android:background="@{(optionalType == OptionalTypeEnum.TWO_WAY_RIGHT)?ContextCompat.getDrawable(context, R.drawable.border_all_rounded_main_blue):ContextCompat.getDrawable(context,R.drawable.border_15dp_blue_rounder)}"
+                android:clickable="true"
+                android:focusable="true"
                 android:fontFamily="@font/pretendard_bold"
                 android:gravity="center"
-                android:padding="10dp"
-                android:clickable="true"
                 android:onClick="@{rightBtnClickListener}"
-                android:focusable="true"
                 android:text="@{rightBtnText}"
+                android:textColor="@{(optionalType == OptionalTypeEnum.TWO_WAY_RIGHT)? ContextCompat.getColor(context, R.color.MAIN_WHITE):ContextCompat.getColor(context, R.color.COLOR_MAIN_500)}"
                 android:textSize="14dp"
-                android:textColor="@{(optionalType == OptionalTypeEnum.RIGHT)? ContextCompat.getColor(context, R.color.MAIN_WHITE):ContextCompat.getColor(context, R.color.COLOR_MAIN_500)}"
-                android:background="@{(optionalType == OptionalTypeEnum.RIGHT)?ContextCompat.getDrawable(context, R.drawable.border_all_rounded_main_blue):ContextCompat.getDrawable(context,R.drawable.border_15dp_blue_rounder)}"
+                android:layout_marginLeft="16dp"
+                android:visibility='@{(optionalType != OptionalTypeEnum.ONE_WAY) ? View.VISIBLE : View.GONE}'
                 tools:background="@drawable/border_15dp_blue_rounder"
-                tools:textColor="@color/COLOR_MAIN_500" />
+                tools:textColor="@color/COLOR_MAIN_500"
+                />
 
 
         </LinearLayout>
 
-    </LinearLayout>
+        <!--        <androidx.constraintlayout.widget.ConstraintLayout-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content">-->
+
+        <!--            <LinearLayout-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_marginLeft="22dp"-->
+        <!--                android:layout_marginRight="22dp"-->
+        <!--                android:layout_marginBottom="15dp"-->
+        <!--                android:orientation="vertical"-->
+        <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                app:layout_constraintStart_toStartOf="parent"-->
+        <!--                app:layout_constraintTop_toTopOf="parent">-->
+
+        <!--                <TextView-->
+        <!--                    android:id="@+id/tv_content"-->
+        <!--                    android:layout_width="wrap_content"-->
+        <!--                    android:layout_height="match_parent"-->
+        <!--                    android:fontFamily="@font/pretendard_medium"-->
+        <!--                    android:letterSpacing="0.04"-->
+        <!--                    android:text="@{content}"-->
+        <!--                    android:textColor="@color/COLOR_GRAY_600"-->
+        <!--                    android:textSize="13sp"-->
+        <!--                    tools:text="* 배송이 완료된 내역은 [배송완료]탭에 보관 처리됩니다.\n* 삭제하신 내역은 복구되지 않습니다." />-->
+
+
+        <!--            </LinearLayout>-->
+
+        <!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+        <!--        <LinearLayout-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_marginTop="10dp"-->
+        <!--            android:orientation="horizontal"-->
+        <!--            android:weightSum="1">-->
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/tv_left_btn"-->
+        <!--                android:layout_width="0dp"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_marginLeft="20dp"-->
+        <!--                android:layout_marginRight="20dp"-->
+        <!--                android:layout_marginBottom="10dp"-->
+        <!--                android:layout_weight="0.5"-->
+        <!--                android:fontFamily="@font/pretendard_bold"-->
+        <!--                android:gravity="center"-->
+        <!--                android:padding="10dp"-->
+        <!--                android:clickable="true"-->
+        <!--                android:focusable="true"-->
+        <!--                android:text="@{leftBtnText}"-->
+        <!--                android:textSize="14dp"-->
+        <!--                android:onClick="@{leftBtnClickListener}"-->
+        <!--                android:textColor="@{(optionalType == OptionalTypeEnum.LEFT)? ContextCompat.getColor(context, R.color.MAIN_WHITE):ContextCompat.getColor(context, R.color.COLOR_MAIN_500)}"-->
+        <!--                android:background="@{(optionalType == OptionalTypeEnum.LEFT)?ContextCompat.getDrawable(context, R.drawable.border_all_rounded_main_blue):ContextCompat.getDrawable(context,R.drawable.border_15dp_blue_rounder)}"-->
+        <!--                tools:background="@drawable/border_all_rounded_main_blue"-->
+        <!--                tools:textColor="@color/MAIN_WHITE" />-->
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/tv_right_btn"-->
+        <!--                android:layout_width="0dp"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_marginRight="20dp"-->
+        <!--                android:layout_marginBottom="10dp"-->
+        <!--                android:layout_weight="0.5"-->
+        <!--                android:fontFamily="@font/pretendard_bold"-->
+        <!--                android:gravity="center"-->
+        <!--                android:padding="10dp"-->
+        <!--                android:clickable="true"-->
+        <!--                android:onClick="@{rightBtnClickListener}"-->
+        <!--                android:focusable="true"-->
+        <!--                android:text="@{rightBtnText}"-->
+        <!--                android:textSize="14dp"-->
+        <!--                android:textColor="@{(optionalType == OptionalTypeEnum.RIGHT)? ContextCompat.getColor(context, R.color.MAIN_WHITE):ContextCompat.getColor(context, R.color.COLOR_MAIN_500)}"-->
+        <!--                android:background="@{(optionalType == OptionalTypeEnum.RIGHT)?ContextCompat.getDrawable(context, R.drawable.border_all_rounded_main_blue):ContextCompat.getDrawable(context,R.drawable.border_15dp_blue_rounder)}"-->
+        <!--                tools:background="@drawable/border_15dp_blue_rounder"-->
+        <!--                tools:textColor="@color/COLOR_MAIN_500" />-->
+
+
+        <!--        </LinearLayout>-->
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </layout>
