@@ -61,14 +61,14 @@ class SignOutViewModel(
             preCheckBox?.isChecked = false
         }
 
-        isOtherReasonEt.value = currentCheckBox!!.id == R.id.cb_reason6 && currentCheckBox!!.isChecked == true
+        isOtherReasonEt.value = (currentCheckBox?.id == R.id.cb_reason6) && (currentCheckBox?.isChecked == true)
 
         if(isOtherReasonEt.value == false)
         {
             this.otherReason.value = ""
         }
 
-        this.message.value = if(!currentCheckBox!!.isChecked) "" else message
+        this.message.value = if((currentCheckBox?.isChecked) == false) "" else message
 
         preCheckBox = currentCheckBox
     }
@@ -82,7 +82,6 @@ class SignOutViewModel(
     }
 
     fun requestSignOut(reason: String) = scope.launch(Dispatchers.IO){
-
         try
         {
             onStartLoading()

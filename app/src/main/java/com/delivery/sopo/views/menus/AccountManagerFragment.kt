@@ -73,16 +73,11 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
                 }
                 NavigatorConst.TO_LOGOUT ->
                 {
-                    /**
-                     * TODO 전체 테이블 clear
-                     */
-
                     val leftOptionalClickListener = object: OnOptionalClickListener {
                         override fun invoke(dialog: DialogFragment)
                         {
                             vm.onLogout()
-                            requireActivity().moveToActivity(LoginSelectView::class.java)
-                            requireActivity().finish()
+                            exit()
                             dialog.dismiss()
                         }
                     }
@@ -94,6 +89,7 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
                             dialog.dismiss()
                         }
                     }
+
                     val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.TWO_WAY_RIGHT, title = "로그아웃 하시겠어요?", content = "이계정에 등록된 택배 정보는 로그아웃하셔도\n아이템 별로 90일까지 보관됩니다.",
                                                         leftHandler = Pair("로그아웃", second = leftOptionalClickListener),
                                                         rightHandler = Pair(first = "취소", second = rightOptionalClickListener))

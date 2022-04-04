@@ -42,12 +42,10 @@ class SignOutView: BaseView<SignOutViewBinding, SignOutViewModel>()
                     val builder = SpannableStringBuilder("고객의 정보가 삭제되어\n영구히 복구 불가능합니다.")
                     builder.setSpan(ForegroundColorSpan(ContextCompat.getColor(this, R.color.COLOR_MAIN_700)), 12, 23, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-//                    val subtitle = Html.fromHtml("고객의 정보가 삭제되어\n<font color=\"#5C92F6\">영구히 복구 불가능</font>합니다.")
-
                     OptionalDialog(optionalType = OptionalTypeEnum.TWO_WAY_RIGHT,  title = "잠깐만요!", subtitle = builder, content = """
                     * 계정 개인정보(이메일, 비밀번호)
                     * 등록하신 모든 택배 추적 정보
-                                """.trimIndent(), leftHandler = Pair("삭제할게요", object: OnOptionalClickListener {
+                    """.trimIndent(), leftHandler = Pair("삭제할게요", object: OnOptionalClickListener {
                         override fun invoke(dialog: DialogFragment)
                         {
                             vm.requestSignOut(vm.message.value.toString())
@@ -76,56 +74,6 @@ class SignOutView: BaseView<SignOutViewBinding, SignOutViewModel>()
             }
         }
 
-        /*vm.result.observe(this, Observer { res ->
-
-            if(!res.result)
-            {
-
-                return@Observer
-            }
-
-            when(res.displayType)
-            {
-                DisplayEnum.TOAST_MESSAGE ->
-                {
-                    Intent(this@SignOutView, LoginSelectView::class.java).let {
-                        it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        startActivity(it)
-                        finish()
-                    }
-
-                    Toast.makeText(this, "지금까지 사용해주셔서 감사합니다.", Toast.LENGTH_LONG).apply {
-                        setGravity(Gravity.TOP, 0, 180)
-                    }.show()
-                }
-                DisplayEnum.DIALOG ->
-                {
-                    OptionalDialog(optionalType = OptionalTypeEnum.RIGHT, titleIcon = 0, title = "탈퇴 시 유의사항", subTitle = "고객의 정보가 삭제되며 복구가 불가능합니다.", content = """
-                    * 계정 개인정보(이메일, 비밀번호)
-                    * 등록하신 모든 택배 추적 정보
-                                """.trimIndent(), leftHandler = Pair("삭제할게요", object:
-                            OptionalClickListener
-                    {
-                        override fun invoke(dialog: OptionalDialog)
-                        {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                binding.vm!!.requestSignOut(res.data as String)
-                            }
-                            dialog.dismiss()
-                        }
-                    }), rightHandler = Pair("다시 생각할게요", object: OptionalClickListener
-                    {
-                        override fun invoke(dialog: OptionalDialog)
-                        {
-                            dialog.dismiss()
-                        }
-                    })).show(supportFragmentManager, "")
-                }
-            }
-
-
-        })*/
-
         vm.message.observe(this, Observer { message ->
             if(message != "")
             {
@@ -133,6 +81,7 @@ class SignOutView: BaseView<SignOutViewBinding, SignOutViewModel>()
                     setBackgroundResource(R.drawable.border_15dp_blue_rounder)
                     backgroundTintList = null
                     setTextColor(resources.getColor(R.color.COLOR_MAIN_700))
+                    isEnabled = true
                 }
                 return@Observer
             }
@@ -142,6 +91,7 @@ class SignOutView: BaseView<SignOutViewBinding, SignOutViewModel>()
                 backgroundTintList =
                     ColorStateList.valueOf(ContextCompat.getColor(this@SignOutView, R.color.COLOR_GRAY_200))
                 setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
+                isEnabled = false
             }
 
             vm.otherReason.observe(this, Observer {
