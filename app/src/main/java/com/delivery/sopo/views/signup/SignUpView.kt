@@ -66,11 +66,8 @@ class SignUpView: BaseView<SignUpViewBinding, SignUpViewModel>()
             {
                 NavigatorConst.TO_COMPLETE ->
                 {
-                    GeneralDialog(this, "알림", "정상적으로 회원가입 성공했습니다.", null, Pair("네") { dialog ->
-                        dialog.dismiss()
-                        moveToActivityWithFinish(SignUpCompleteView::class.java)
-                        finish()
-                    }).show(supportFragmentManager.beginTransaction(), "dialog")
+                    moveToActivityWithFinish(SignUpCompleteView::class.java)
+                    finish()
                 }
             }
         }
