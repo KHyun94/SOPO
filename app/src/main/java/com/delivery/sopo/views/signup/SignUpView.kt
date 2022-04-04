@@ -22,7 +22,6 @@ class SignUpView: BaseView<SignUpViewBinding, SignUpViewModel>()
     override fun onBeforeBinding()
     {
         super.onBeforeBinding()
-
     }
 
     override fun setObserve()

@@ -115,8 +115,7 @@ class SignUpViewModel(
         }
         finally
         {
-            Handler(Looper.getMainLooper()).postDelayed(Runnable { onStopLoading() }, 1000)
-
+            onStopLoading()
         }
 
     }
