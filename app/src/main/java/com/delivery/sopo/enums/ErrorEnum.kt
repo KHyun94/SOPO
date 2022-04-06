@@ -35,9 +35,9 @@ enum class ErrorEnum(val httpStatusCode: Int, val code: Int, val errorType: Erro
 
     ALREADY_REGISTERED_PARCEL(409, 701, ErrorType.CONFLICT, "이미 등록된 택배입니다.", "이미 등록된 택배입니다."),
     OVER_REGISTERED_PARCEL(409, 702, ErrorType.CONFLICT, "등록할 수 있는 택배의 개수를 초과하였습니다.", "등록할 수 있는 택배의 개수를 초과하였습니다."),
-    PARCEL_NOT_FOUND(404, 703, ErrorType.NO_RESOURCE, "해당하는 id에 부합하는 택배를 찾을 수 없습니다.", "해당하는 id에 부합하는 택배를 찾을 수 없습니다.");
-    PARCEL_NOT_FOUND(404, 704, ErrorType.NO_RESOURCE, "해당하는 id에 부합하는 택배를 찾을 수 없습니다.", "해당하는 id에 부합하는 택배를 찾을 수 없습니다.");
-    PARCEL_NOT_FOUND(404, 703, ErrorType.NO_RESOURCE, "해당하는 id에 부합하는 택배를 찾을 수 없습니다.", "해당하는 id에 부합하는 택배를 찾을 수 없습니다.");
+    PARCEL_NOT_FOUND(404, 703, ErrorType.NO_RESOURCE, "해당하는 id에 부합하는 택배를 찾을 수 없습니다.", "해당하는 id에 부합하는 택배를 찾을 수 없습니다."),
+    FAIL_TO_SEARCH_PARCEL(500, 704, ErrorType.DELIVERY, "택배 조회에 실패하였습니다.", "택배 조회에 실패하였습니다."),
+    PARCEL_BAD_REQUEST(400, 705, ErrorType.VALIDATION, "송장 번호를 확인해주세요.", "송장 번호를 확인해주세요.");
 
     companion object{
         fun getErrorCode(code: Int): ErrorEnum
