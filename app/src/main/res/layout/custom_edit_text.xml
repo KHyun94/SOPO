@@ -71,7 +71,7 @@
             android:layout_height="20dp"
             android:layout_alignParentEnd="true"
             android:layout_marginEnd="5dp"
-            android:src="@drawable/ic_blue_ok"
+            android:src="@drawable/ic_checked_blue_24dp"
             android:visibility="gone" />
 
         <View

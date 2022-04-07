@@ -208,7 +208,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         }
         finally
         {
-            stopLoading()
+            onStopLoading()
         }
     }
 
@@ -228,10 +228,6 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         catch(e: Exception)
         {
             exceptionHandler.handleException(coroutineContext, e)
-        }
-        finally
-        {
-            stopLoading()
         }
     }
 

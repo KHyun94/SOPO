@@ -11,6 +11,8 @@ import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.interfaces.listener.OnPermissionResponseCallback
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.PermissionUtil
+import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.util.WindowUtil
 import com.delivery.sopo.viewmodels.splash.SplashViewModel
 import com.delivery.sopo.views.dialog.GeneralDialog
@@ -48,6 +50,34 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
     override fun onBeforeBinding()
     {
         super.onBeforeBinding()
+
+        ValidateUtil.hasEnglish("asdg").apply {
+            SopoLog.d("Validation TEST $this")
+        }
+        ValidateUtil.hasEnglish("AadsfA").apply {
+            SopoLog.d("Validation TEST $this")
+        }
+        ValidateUtil.hasEnglish("asdg123").apply {
+            SopoLog.d("Validation TEST $this")
+        }
+        ValidateUtil.hasEnglish("123asdg").apply {
+            SopoLog.d("Validation TEST $this")
+        }
+        ValidateUtil.hasEnglish("1dg1").apply {
+            SopoLog.d("Validation TEST $this")
+        }
+        ValidateUtil.hasEnglish("1dg1").apply {
+            SopoLog.d("Validation TEST $this")
+        }
+        ValidateUtil.hasEnglish("ㅁㄴㅇㄹ1dg1").apply {
+            SopoLog.d("Validation TEST $this")
+        }
+        ValidateUtil.hasEnglish("12345").apply {
+            SopoLog.d("Validation TEST $this")
+        }
+        ValidateUtil.hasEnglish("12345가나다라").apply {
+            SopoLog.d("Validation TEST $this")
+        }
 
         WindowUtil.setWindowStatusBarColor(this, R.color.COLOR_MAIN_700)
     }

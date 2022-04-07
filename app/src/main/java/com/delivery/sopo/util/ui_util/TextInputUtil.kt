@@ -267,9 +267,9 @@ object TextInputUtil
         SopoLog.d("${focus.third.NAME}'s validation is success >>>${textInputEditText.text.toString()}")
 
         textInputLayout.run {
-//            isHintEnabled = false
+            isHintEnabled = false
             hint = null
-            boxBackgroundColor = resources.getColor(R.color.COLOR_MAIN_BLUE_50)
+            boxBackgroundColor = ContextCompat.getColor(context, R.color.COLOR_MAIN_BLUE_50)
 
             boxStrokeWidth = SizeUtil.changeDpToPx(context, 0.0f)
             boxStrokeErrorColor = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))

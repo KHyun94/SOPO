@@ -1,40 +1,25 @@
 package com.delivery.sopo.views.login
 
-import android.app.Activity
-import android.content.Intent
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultCallback
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.ResetPasswordConst
 import com.delivery.sopo.databinding.ResetPasswordViewBinding
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.enums.LockScreenStatusEnum
-import com.delivery.sopo.enums.ResponseCode
 import com.delivery.sopo.extensions.convertTextColor
-import com.delivery.sopo.extensions.makeGone
-import com.delivery.sopo.extensions.makeVisible
-import com.delivery.sopo.models.EmailAuthDTO
 import com.delivery.sopo.models.base.BaseView
-import com.delivery.sopo.models.base.OnActivityResultCallbackListener
-import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.login.ResetPasswordViewModel
-import com.delivery.sopo.views.dialog.GeneralDialog
-import com.delivery.sopo.views.menus.LockScreenView
-import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.collections.set
 
 class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewModel>()
 {
@@ -44,33 +29,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
     var timer: CountDownTimer? = null
 
-//    private var activityResultLauncher: ActivityResultLauncher<Intent>? = null
-
-//    private val registerCallback = ActivityResultCallback<ActivityResult> { result ->
-//
-//        SopoLog.d("activityResult => ${result.resultCode}")
-//
-//        if(result.resultCode == Activity.RESULT_CANCELED)
-//        {
-//            vm.setNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_SEND)
-//            binding.etEmail.setText("")
-//            binding.etEmail.requestFocus()
-//
-//            return@ActivityResultCallback
-//        }
-//
-//        vm.authToken = result.data?.getStringExtra("AUTH_TOKEN") ?: ""
-//        vm.setNavigator(ResetPasswordConst.INPUT_PASSWORD_FOR_RESET)
-//
-//        return@ActivityResultCallback
-//    }
-
-    override fun onBeforeBinding()
-    {
-        super.onBeforeBinding()
-//        activityResultLauncher =
-//            registerForActivityResult(ActivityResultContracts.StartActivityForResult(), registerCallback)
-    }
+    private var isCountTimer = false
 
     override fun setObserve()
     {
@@ -127,12 +86,14 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
         binding.etAuthCode.setOnFocusChangeListener { v, hasFocus ->
             if(hasFocus)
             {
-                binding.relativeMainAuthCode.background = ContextCompat.getDrawable(this@ResetPasswordView, R.drawable.border_all_round_10dp_blue_scale)
+                binding.relativeMainAuthCode.background =
+                    ContextCompat.getDrawable(this@ResetPasswordView, R.drawable.border_all_round_10dp_blue_scale)
                 binding.etAuthCode.convertTextColor(R.color.COLOR_GRAY_800)
             }
             else
             {
-                binding.relativeMainAuthCode.background = ContextCompat.getDrawable(this@ResetPasswordView, R.drawable.border_all_round_10dp)
+                binding.relativeMainAuthCode.background =
+                    ContextCompat.getDrawable(this@ResetPasswordView, R.drawable.border_all_round_10dp)
                 binding.etAuthCode.convertTextColor(R.color.COLOR_GRAY_400)
             }
         }
@@ -143,72 +104,58 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
             when(navigator)
             {
-                ResetPasswordConst.INPUT_EMAIL_FOR_SEND ->
-                {
-//                    updateUIForInputEmail()
-                }
                 ResetPasswordConst.INPUT_AUTH_CODE ->
                 {
                     if(!isCountTimer) timer = countLimitTime()
                     timer?.start()
-
-//                    val intent = Intent(this@ResetPasswordView, LockScreenView::class.java).apply {
-//                        putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.RESET_ACCOUNT_PASSWORD)
-//                        putExtra("JWT_TOKEN", vm.jwtToken)
-//                        putExtra("EMAIL", vm.email.value)
-//                    }
-//
-//                    activityResultLauncher?.launch(intent)
-                }
-                ResetPasswordConst.INPUT_PASSWORD_FOR_RESET ->
-                {
-//                    updateUIForInputPassword()
-                }
-                ResetPasswordConst.COMPLETED_RESET_PASSWORD ->
-                {
                 }
                 NavigatorConst.TO_COMPLETE, NavigatorConst.TO_BACK_SCREEN ->
                 {
                     finish()
                 }
-
-
             }
         }
     }
 
-    var isCountTimer = false
-
     fun countLimitTime(): CountDownTimer
     {
-       return object: CountDownTimer(180000, 1000){
-           override fun onTick(millisUntilFinished: Long)
-           {
-               isCountTimer = true
-               val currentSecond = millisUntilFinished / 1000
+        return object: CountDownTimer(180000, 1000)
+        {
+            override fun onTick(millisUntilFinished: Long)
+            {
+                isCountTimer = true
 
-               val currentMinutes = (currentSecond / 60)
-               val currentSeconds = (currentSecond % 60)
+                val currentSecond = millisUntilFinished / 1000
 
-               val time = if(currentMinutes > 0)
-               {
-                   "${currentMinutes}분 ${currentSeconds}초 내 입력"
-               }
-               else if(currentMinutes == 0L && currentSeconds > 0)
-               {
+                val currentMinutes = (currentSecond / 60)
+                val currentSeconds = (currentSecond % 60)
+
+                val time = if(currentMinutes > 0)
+                {
+                    "${currentMinutes}분 ${currentSeconds}초 내 입력"
+                }
+                else
+                {
                     "${currentSeconds}초 내 입력"
-               } else
-               {
-                   "인증시간 초과"
-               }
+                }
 
-               binding.tvCountOfAuth.text = time
-           }
-           override fun onFinish()
-           {
-               isCountTimer = false
-           }
+                binding.tvCountOfAuth.text = time
+            }
 
-       }
+            override fun onFinish()
+            {
+                vm.setNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_RESEND)
+                vm.authCode.postValue("")
+
+                binding.tvCountOfAuth.text = "인증시간 초과"
+
+                Handler(Looper.getMainLooper()).postDelayed({
+                    binding.etEmail.requestFocus()
+                }, 100)
+
+                isCountTimer = false
+            }
+
+        }
     }
 }
