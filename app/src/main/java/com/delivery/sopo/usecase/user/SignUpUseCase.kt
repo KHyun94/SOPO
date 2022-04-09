@@ -9,7 +9,7 @@ import com.delivery.sopo.networks.repository.JoinRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class SignInUseCase(private val userLocalRepo:UserLocalRepository, private val joinRepo:JoinRepositoryImpl)
+class SignUpUseCase(private val userLocalRepo:UserLocalRepository, private val joinRepo:JoinRepositoryImpl)
 {
     suspend operator fun invoke(joinInfo: JoinInfo)= withContext(Dispatchers.IO){
 
@@ -19,6 +19,5 @@ class SignInUseCase(private val userLocalRepo:UserLocalRepository, private val j
             userLocalRepo.setUserId(joinInfo.email)
             userLocalRepo.setUserPassword(joinInfo.password)
         }
-
     }
 }

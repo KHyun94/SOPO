@@ -74,7 +74,7 @@ abstract class BaseViewModel: ViewModel()
 
         SopoLog.d("인터넷 체크 후")
 
-        //        if(_isClickEvent.value == true) return
+        if(_isClickEvent.value == true) return
 
         SopoLog.d("이벤트 시작 전")
 
@@ -110,21 +110,6 @@ abstract class BaseViewModel: ViewModel()
 
         return false
     }
-
-    fun startLoading()
-    {
-        SopoLog.d("start isLoading ${_isLoading.value}")
-        if(_isLoading.value == true) return
-        _isLoading.postValue(true)
-    }
-
-    fun stopLoading()
-    {
-        SopoLog.d("stop isLoading ${_isLoading.value}")
-        if(_isLoading.value == false) return
-        _isLoading.postValue(false)
-    }
-
 
     fun startToCheckNetworkStatus()
     {
@@ -201,7 +186,7 @@ abstract class BaseViewModel: ViewModel()
     override fun onCleared()
     {
         super.onCleared()
-
+        _isClickEvent.value = false
         scope.cancel()
     }
 }

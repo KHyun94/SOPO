@@ -41,7 +41,6 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
             }
             R.id.tv_register ->
             {
-                startLoading()
 
                 if(alias.value.toString() == "null") alias.value = ""
 
@@ -63,13 +62,11 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
                 SopoLog.d("택배 등록 성공 [번호:$this]")
             }
 
-            stopLoading()
 
             _navigator.postValue(NavigatorEnum.REGISTER_INPUT_SUCCESS)
         }
         catch(e: Exception)
         {
-            stopLoading()
             exceptionHandler.handleException(coroutineContext, e)
         }
     }

@@ -3,6 +3,8 @@ package com.delivery.sopo.models.base
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
@@ -24,7 +26,8 @@ import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import kotlin.system.exitProcess
 
-interface OnActivityResultCallbackListener{
+interface OnActivityResultCallbackListener
+{
     fun callback(activityResult: ActivityResult)
 }
 
@@ -40,7 +43,8 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
     private lateinit var onActivityResultCallbackListener: OnActivityResultCallbackListener
     lateinit var networkStatusMonitor: NetworkStatusMonitor
 
-    fun setOnActivityResultCallbackListener(listener: OnActivityResultCallbackListener){
+    fun setOnActivityResultCallbackListener(listener: OnActivityResultCallbackListener)
+    {
         this.onActivityResultCallbackListener = listener
     }
 
@@ -74,7 +78,8 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         networkStatusMonitor.enable()
         networkStatusMonitor.initNetworkCheck()
 
-        activityResultLauncher = getActivityResultLauncher { onActivityResultCallbackListener.callback(it) }
+        activityResultLauncher =
+            getActivityResultLauncher { onActivityResultCallbackListener.callback(it) }
 
         onAfterBinding()
         setObserve()
@@ -159,12 +164,19 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         }
 
         vm.isLoading.observe(this) { isLoading ->
-            if(isLoading) return@observe loadingBar.show()
-//            else loadingBar.dismiss()
+            if(isLoading)
+            {
+                loadingBar.show()
+            }
+            else
+            {
+                loadingBar.dismiss()
+            }
         }
 
         vm.errorSnackBar.observe(this) {
-            val snackBar = CustomSnackBar(mainLayout, it, 3000, SnackBarEnum.ERROR, vm.onSnackClickListener)
+            val snackBar =
+                CustomSnackBar(mainLayout, it, 3000, SnackBarEnum.ERROR, vm.onSnackClickListener)
             snackBar.show()
         }
     }
@@ -180,10 +192,7 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         super.onDestroy()
 
         networkStatusMonitor.disable()
-
         activityResultLauncher.unregister()
-        //        activityResultLauncher = null
-
     }
 
     fun exit()

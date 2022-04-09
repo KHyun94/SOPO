@@ -14,6 +14,7 @@ import com.delivery.sopo.usecase.UpdateNicknameUseCase
 import com.delivery.sopo.usecase.parcel.local.GetLocalParcelUseCase
 import com.delivery.sopo.usecase.parcel.remote.*
 import com.delivery.sopo.usecase.user.SignOutUseCase
+import com.delivery.sopo.usecase.user.SignUpUseCase
 import com.delivery.sopo.viewmodels.IntroViewModel
 import com.delivery.sopo.viewmodels.inquiry.*
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
@@ -61,11 +62,12 @@ val appModule = module {
     factory { LogoutUseCase(get()) }
     factory { return@factory SignOutUseCase(userLocalRepo = get(), userRemoteRepo = get()) }
     factory { GetLocalParcelUseCase(get()) }
+    factory { return@factory SignUpUseCase(userLocalRepo = get(), joinRepo = get()) }
 
-    viewModel { SplashViewModel(get(), get(), get()) }
+    viewModel { SplashViewModel(get(), get(), get(), get()) }
     viewModel { IntroViewModel() }
     viewModel { LoginViewModel(get()) }
-    viewModel { SignUpViewModel(get(), get()) }
+    viewModel { return@viewModel SignUpViewModel(signUpUseCase = get()) }
     viewModel { SignUpCompleteViewModel(get(), get()) }
     viewModel { RegisterNicknameViewModel(get()) }
     viewModel { LoginSelectViewModel(get(),get(), get()) }

@@ -81,15 +81,9 @@ class LoginViewModel(private val userRemoteRepo: UserRemoteRepository): BaseView
         validity.forEach { (k, v) ->
             if(!v) return@checkEventStatus _invalidity.postValue(Pair(k, v))
         }
-        try
-        {
-            onStartLoading()
-            requestLoginBySelf()
-        }
-        finally
-        {
-            onStopLoading()
-        }
+
+        onStartLoading()
+        requestLoginBySelf()
     }
 
     private fun requestLoginBySelf() = scope.launch(Dispatchers.IO) {
@@ -102,6 +96,10 @@ class LoginViewModel(private val userRemoteRepo: UserRemoteRepository): BaseView
         catch(e: Exception)
         {
             exceptionHandler.handleException(coroutineContext, e)
+        }
+        finally
+        {
+            onStopLoading()
         }
     }
 

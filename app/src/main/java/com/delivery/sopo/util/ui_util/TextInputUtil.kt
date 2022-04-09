@@ -2,6 +2,8 @@ package com.delivery.sopo.util.ui_util
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -213,8 +215,6 @@ object TextInputUtil
             }
         }
 
-
-
         if(textInputEditText.text.toString().isEmpty())
         {
             textInputLayout.run {
@@ -267,8 +267,11 @@ object TextInputUtil
         SopoLog.d("${focus.third.NAME}'s validation is success >>>${textInputEditText.text.toString()}")
 
         textInputLayout.run {
-            isHintEnabled = false
-            hint = null
+            post {
+                hint = null
+                isHintEnabled = false
+            }
+
             boxBackgroundColor = ContextCompat.getColor(context, R.color.COLOR_MAIN_BLUE_50)
 
             boxStrokeWidth = SizeUtil.changeDpToPx(context, 0.0f)

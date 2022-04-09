@@ -2,8 +2,6 @@ package com.delivery.sopo.viewmodels.login
 
 import android.os.Build
 import android.text.Html
-import android.text.SpannableString
-import android.text.style.UnderlineSpan
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -82,12 +80,21 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
                     {
                         SopoLog.d("1cnfOfFailureAuthCode $cnfOfFailureAuthCode")
                         val comment = "인증코드 재발송"
-                        val underlineComment = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) { Html.fromHtml("<u>${comment}</u>", Html.FROM_HTML_MODE_LEGACY) } else { Html.fromHtml("<u>${comment}</u>") }
+                        val underlineComment = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+                        {
+                            Html.fromHtml("<u>${comment}</u>", Html.FROM_HTML_MODE_LEGACY)
+                        }
+                        else
+                        {
+                            Html.fromHtml("<u>${comment}</u>")
+                        }
 
-                        postErrorSnackBar("인증 코드가 일치하지 않아요.", Pair(underlineComment, object : OnSnackBarClickListener{
+                        postErrorSnackBar("인증 코드가 일치하지 않아요.", Pair(underlineComment, object:
+                                OnSnackBarClickListener
+                        {
                             override fun invoke()
                             {
-                                requestSendTokenToEmail(email = email.value?.toString()?:"")
+                                requestSendTokenToEmail(email = email.value?.toString() ?: "")
                             }
 
                         }))
@@ -144,7 +151,6 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         validity.forEach { (k, v) ->
             if(!v)
             {
-                stopLoading()
                 return@checkEventStatus _invalidity.postValue(Pair(k, v))
             }
         }
@@ -158,36 +164,20 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
             return@checkEventStatus
         }
 
-        try
-        {
-            onStartLoading()
-            requestSendTokenToEmail(email = email)
-        }
-        finally
-        {
-            onStopLoading()
-        }
+        onStartLoading()
+        requestSendTokenToEmail(email = email)
     }
 
-    fun onVerifyAuthCode() = checkEventStatus(checkNetwork = true)
-    {
-        try
-        {
-            onStartLoading()
+    fun onVerifyAuthCode() = checkEventStatus(checkNetwork = true) {
+        onStartLoading()
 
-            val email: String = email.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.EMAIL)
-            val authCode: String = authCode.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.AUTH_CODE)
+        val email: String = email.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.EMAIL)
+        val authCode: String = authCode.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.AUTH_CODE)
 
-            verifyAuthCode(email = email, authCode = authCode).start()
-        }
-        finally
-        {
-            onStopLoading()
-        }
+        verifyAuthCode(email = email, authCode = authCode).start()
     }
 
-    fun onResetPassword() = checkEventStatus(checkNetwork = true)
-    {
+    fun onResetPassword() = checkEventStatus(checkNetwork = true) {
         validity.forEach { (k, v) ->
             if(!v)
             {
@@ -195,24 +185,21 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
             }
         }
 
-        try
-        {
-            onStartLoading()
+        onStartLoading()
 
-            val email: String = email.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.EMAIL)
-            val authCode: String = authCode.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.AUTH_CODE)
-            val password: String = password.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.PASSWORD)
+        val email: String = email.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.EMAIL)
+        val authCode: String =
+            authCode.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.AUTH_CODE)
+        val password: String =
+            password.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.PASSWORD)
 
-            val resetPassword = ResetPassword(resetToken = jwtToken, authCode = authCode, email = email, password = password)
-            requestResetPassword(resetPassword = resetPassword)
-        }
-        finally
-        {
-            onStopLoading()
-        }
+        val resetPassword =
+            ResetPassword(resetToken = jwtToken, authCode = authCode, email = email, password = password)
+        requestResetPassword(resetPassword = resetPassword)
     }
 
-    fun onConfirmResetPassword(){
+    fun onConfirmResetPassword()
+    {
         setNavigator(NavigatorConst.TO_COMPLETE)
     }
 
@@ -229,6 +216,10 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         {
             exceptionHandler.handleException(coroutineContext, e)
         }
+        finally
+        {
+            onStopLoading()
+        }
     }
 
     private fun requestSendTokenToEmail(email: String) = scope.launch(Dispatchers.IO) {
@@ -244,7 +235,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         }
         finally
         {
-            stopLoading()
+            onStopLoading()
         }
     }
 
@@ -260,7 +251,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         }
         finally
         {
-            stopLoading()
+            onStopLoading()
         }
     }
 

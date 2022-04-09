@@ -20,9 +20,8 @@ import kotlinx.coroutines.*
 import java.util.*
 import com.kakao.network.ErrorResult as KakaoErrorResult
 
-class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
-                           private val carrierRepo: CarrierRepository,
-                           private val joinRepoImpl: JoinRepositoryImpl): BaseViewModel()
+class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository, private val carrierRepo: CarrierRepository, private val joinRepoImpl: JoinRepositoryImpl):
+        BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
@@ -32,32 +31,22 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
     private var kakaoUserId = ""
     private var kakaoNickname = ""
 
-    init
-    {
-        CoroutineScope(Dispatchers.Default).launch {
-            carrierRepo.initCarrierDB()
-        }
-    }
-
     private val onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
-        override fun onSignUpError(error: ErrorEnum)
+        override fun onErrorAlreadyRegisteredUser(error: ErrorEnum)
         {
-            super.onSignUpError(error)
+            super.onErrorAlreadyRegisteredUser(error)
 
-            if(error == ErrorEnum.ALREADY_REGISTERED_USER) {
-                requestLoginByKakao(email = email, uId = kakaoUserId, nickname = kakaoNickname)
+            if(error == ErrorEnum.ALREADY_REGISTERED_USER)
+            {
+                requestLoginByKakao(email = email, uId = kakaoUserId)
                 return
             }
-
-            stopLoading()
         }
 
         override fun onLoginError(error: ErrorEnum)
         {
             super.onLoginError(error)
-
-            stopLoading()
 
             postErrorSnackBar("유효한 이메일 또는 비밀번호가 아닙니다.")
         }
@@ -65,20 +54,17 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
         override fun onInternalServerError(error: ErrorEnum)
         {
             super.onInternalServerError(error)
-            stopLoading()
             postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.[${error.toString()}]")
         }
 
         override fun onAuthError(error: ErrorEnum)
         {
             super.onAuthError(error)
-            stopLoading()
             postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
         }
 
         override fun onFailure(error: ErrorEnum)
         {
-            stopLoading()
 
             when(error)
             {
@@ -114,12 +100,13 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
         _navigator.value = NavigatorConst.TO_SIGN_UP
     }
 
-    fun onKakaoLoginClicked() = checkEventStatus(checkNetwork = true, delayMillisecond = 0){
+    fun onKakaoLoginClicked() = checkEventStatus(checkNetwork = true, delayMillisecond = 0) {
         _navigator.value = NavigatorConst.TO_KAKAO_LOGIN
     }
 
     // 카카오톡 로그인을 통해 사용자에 대한 정보를 가져온다
-    fun requestKakaoLogin() {
+    fun requestKakaoLogin()
+    {
         SopoLog.i(msg = "requestKakaoLogin(...) 호출")
 
         onStartLoading()
@@ -160,35 +147,45 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
                 kakaoNickname = result.nickname
 
                 scope.launch(Dispatchers.IO) {
+
+                    onStartLoading()
+
                     val isSuccess =
                         requestJoinByKakao(email = email, uId = kakaoUserId, nickname = kakaoNickname)
 
-                    if(!isSuccess) return@launch
+                    if(!isSuccess)
+                    {
 
-                    requestLoginByKakao(email = email, uId = kakaoUserId, nickname = kakaoNickname)
+                        return@launch
+                    }
+
+                    requestLoginByKakao(email = email, uId = kakaoUserId)
                 }
 
             }
         })
     }
 
-    private suspend fun requestJoinByKakao(email: String, uId: String, nickname: String): Boolean = withContext(Dispatchers.IO) {
+    private suspend fun requestJoinByKakao(email: String, uId: String, nickname: String): Boolean =
+        withContext(Dispatchers.IO) {
             try
             {
                 SopoLog.i(msg = "requestJoinByKakao(...) 호출")
 
-                val joinInfo = JoinInfo(email = email, password = uId.toMD5(), kakaoUid = uId, nickname = nickname)
+                val joinInfo =
+                    JoinInfo(email = email, password = uId.toMD5(), kakaoUid = uId, nickname = nickname)
                 joinRepoImpl.requestJoinByKakao(joinInfo = joinInfo)
                 return@withContext true
             }
             catch(e: Exception)
             {
+                onStopLoading()
                 exceptionHandler.handleException(coroutineContext, e)
                 return@withContext false
             }
         }
 
-    private fun requestLoginByKakao(email: String, uId: String, nickname: String): Job = scope.launch(Dispatchers.IO) {
+    private fun requestLoginByKakao(email: String, uId: String) = scope.launch(Dispatchers.IO) {
             try
             {
                 SopoLog.i(msg = "requestLoginBySelf(...) 호출")
@@ -197,13 +194,15 @@ class LoginSelectViewModel(private val userRemoteRepo: UserRemoteRepository,
 
                 userRemoteRepo.getUserInfo()
 
-                stopLoading()
-
                 return@launch _navigator.postValue(NavigatorConst.TO_MAIN)
             }
             catch(e: Exception)
             {
                 exceptionHandler.handleException(coroutineContext, e)
+            }
+            finally
+            {
+                onStopLoading()
             }
         }
 }

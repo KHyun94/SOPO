@@ -29,7 +29,7 @@ class UserExceptionHandler(private val dispatcher: CoroutineDispatcher, private 
                     message = exception.getErrorResponse().message
                 }
                 SopoLog.e("SOPO API Error $errorCode", exception)
-                if(errorCode == ErrorEnum.ALREADY_REGISTERED_USER) return callback.onSignUpError(errorCode)
+                if(errorCode == ErrorEnum.ALREADY_REGISTERED_USER) return callback.onErrorAlreadyRegisteredUser(errorCode)
                 callback.onFailure(errorCode)
             }
             is OAuthException ->

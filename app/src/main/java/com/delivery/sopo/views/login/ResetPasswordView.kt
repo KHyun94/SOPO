@@ -83,7 +83,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
             }.show()
         })
 
-        binding.etAuthCode.setOnFocusChangeListener { v, hasFocus ->
+        binding.etAuthCode.setOnFocusChangeListener { _, hasFocus ->
             if(hasFocus)
             {
                 binding.relativeMainAuthCode.background =
@@ -109,6 +109,11 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
                     if(!isCountTimer) timer = countLimitTime()
                     timer?.start()
                 }
+                ResetPasswordConst.INPUT_PASSWORD_FOR_RESET ->
+                {
+                    timer?.cancel()
+                    timer = null
+                }
                 NavigatorConst.TO_COMPLETE, NavigatorConst.TO_BACK_SCREEN ->
                 {
                     finish()
@@ -119,7 +124,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
     fun countLimitTime(): CountDownTimer
     {
-        return object: CountDownTimer(180000, 1000)
+        return object: CountDownTimer(30000, 1000)
         {
             override fun onTick(millisUntilFinished: Long)
             {

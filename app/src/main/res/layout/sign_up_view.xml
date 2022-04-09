@@ -204,7 +204,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:onClick="@{()->vm.onSignUpClicked(btnSignUp)}"
+            android:onClick="@{()->vm.onSignUpClicked()}"
             android:text="@string/DO_SIGN_UP"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

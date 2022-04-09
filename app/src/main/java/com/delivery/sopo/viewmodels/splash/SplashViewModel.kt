@@ -8,6 +8,7 @@ import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.ErrorEnum
@@ -20,8 +21,16 @@ import kotlinx.coroutines.*
 class SplashViewModel(
         private val userLocalRepo: UserLocalRepository,
         private val userRemoteRepo: UserRemoteRepository,
+        private val carrierRepo: CarrierRepository,
         private val oAuthLocalRepo: OAuthLocalRepository): BaseViewModel()
 {
+    init
+    {
+        CoroutineScope(Dispatchers.Default).launch {
+            carrierRepo.initCarrierDB()
+        }
+    }
+
     private var _navigator = MutableLiveData<String>()
     val navigator : LiveData<String>
     get() = _navigator

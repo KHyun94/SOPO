@@ -1,5 +1,6 @@
 package com.delivery.sopo.views.signup
 
+import android.content.Intent
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
@@ -18,11 +19,6 @@ class SignUpView: BaseView<SignUpViewBinding, SignUpViewModel>()
     override val layoutRes: Int = R.layout.sign_up_view
     override val vm: SignUpViewModel by viewModel()
     override val mainLayout by lazy { binding.constraintMainSignUp }
-
-    override fun onBeforeBinding()
-    {
-        super.onBeforeBinding()
-    }
 
     override fun setObserve()
     {
@@ -66,8 +62,7 @@ class SignUpView: BaseView<SignUpViewBinding, SignUpViewModel>()
             {
                 NavigatorConst.TO_COMPLETE ->
                 {
-                    moveToActivityWithFinish(SignUpCompleteView::class.java)
-                    finish()
+                    moveToActivityWithFinish(SignUpCompleteView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 }
             }
         }

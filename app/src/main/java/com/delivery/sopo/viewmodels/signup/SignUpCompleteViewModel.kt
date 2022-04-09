@@ -2,18 +2,19 @@ package com.delivery.sopo.viewmodels.signup
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo: UserRemoteRepository): BaseViewModel()
+class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, private val userRemoteRepo: UserRemoteRepository):
+        BaseViewModel()
 {
     val email = MutableLiveData<String>().also {
         it.postValue(userLocalRepo.getUserId())
@@ -22,6 +23,8 @@ class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, pr
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
         get() = _navigator
+
+    fun setNavigator(navigator: String){ _navigator.postValue(navigator) }
 
     private val onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
@@ -76,12 +79,18 @@ class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, pr
     private fun requestLogin(email: String, password: String) = scope.launch(Dispatchers.IO) {
         try
         {
+            onStartLoading()
             userRemoteRepo.requestLogin(email, password)
             userRemoteRepo.getUserInfo()
-            _navigator.postValue(NavigatorConst.TO_MAIN)
-        }catch(e: Exception)
+            setNavigator(NavigatorConst.TO_MAIN)
+        }
+        catch(e: Exception)
         {
-            exceptionHandler.handleException(context = coroutineContext, exception =  e)
+            exceptionHandler.handleException(context = coroutineContext, exception = e)
+        }
+        finally
+        {
+            onStopLoading()
         }
 
     }
