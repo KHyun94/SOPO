@@ -12,10 +12,11 @@ import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
+import com.delivery.sopo.usecase.user.LoginUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 
-class LoginViewModel(private val userRemoteRepo: UserRemoteRepository): BaseViewModel()
+class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
 {
     val email = MutableLiveData<String>()
     var password = MutableLiveData<String>()
@@ -38,7 +39,15 @@ class LoginViewModel(private val userRemoteRepo: UserRemoteRepository): BaseView
         _focus.value = (Triple(v, hasFocus, type))
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override val exceptionHandler: CoroutineExceptionHandler by lazy { UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback) }
+
+    init
+    {
+        validity[InfoEnum.EMAIL] = false
+        validity[InfoEnum.PASSWORD] = false
+    }
+
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onLoginError(error: ErrorEnum)
         {
@@ -68,43 +77,30 @@ class LoginViewModel(private val userRemoteRepo: UserRemoteRepository): BaseView
         }
     }
 
-    override val exceptionHandler: CoroutineExceptionHandler by lazy { UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback) }
-
-    init
-    {
-        validity[InfoEnum.EMAIL] = false
-        validity[InfoEnum.PASSWORD] = false
-    }
-
     fun onLoginClicked() = checkEventStatus(checkNetwork = true) {
 
         validity.forEach { (k, v) ->
             if(!v) return@checkEventStatus _invalidity.postValue(Pair(k, v))
         }
 
-        onStartLoading()
         requestLoginBySelf()
-    }
-
-    private fun requestLoginBySelf() = scope.launch(Dispatchers.IO) {
-        try
-        {
-            userRemoteRepo.requestLogin(email = email.value.toString(), password = password.value.toString().toMD5())
-            userRemoteRepo.getUserInfo()
-            _navigator.postValue(NavigatorConst.TO_MAIN)
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
-        }
-        finally
-        {
-            onStopLoading()
-        }
     }
 
     fun onResetPasswordClicked()
     {
         _navigator.postValue(NavigatorConst.TO_RESET_PASSWORD)
+    }
+
+    private fun requestLoginBySelf() = scope.launch(coroutineExceptionHandler) {
+        try
+        {
+            onStartLoading()
+            loginUseCase.invoke(email = email.value.toString(), password = password.value.toString().toMD5())
+            _navigator.postValue(NavigatorConst.TO_MAIN)
+        }
+        finally
+        {
+            onStopLoading()
+        }
     }
 }

@@ -35,11 +35,11 @@ class SplashViewModel(
     val navigator : LiveData<String>
     get() = _navigator
 
-    fun setNavigator(navigator: String){
+    fun postNavigator(navigator: String){
         _navigator.postValue(navigator)
     }
 
-    private val onSOPOErrorCallback = object : OnSOPOErrorCallback{
+    override var onSOPOErrorCallback = object : OnSOPOErrorCallback{
 
         override fun onFailure(error: ErrorEnum)
         {
@@ -47,11 +47,11 @@ class SplashViewModel(
             {
                 ErrorEnum.NICK_NAME_NOT_FOUND ->
                 {
-                    setNavigator(NavigatorConst.TO_UPDATE_NICKNAME)
+                    postNavigator(NavigatorConst.TO_UPDATE_NICKNAME)
                 }
                 else ->
                 {
-                    setNavigator(NavigatorConst.TO_INTRO)
+                    postNavigator(NavigatorConst.TO_INTRO)
                 }
             }
         }
@@ -61,20 +61,20 @@ class SplashViewModel(
             super.onInternalServerError(error)
 
             postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
-            setNavigator(NavigatorConst.TO_INTRO)
+            postNavigator(NavigatorConst.TO_INTRO)
         }
 
         override fun onAuthError(error: ErrorEnum)
         {
             super.onAuthError(error)
-            setNavigator(NavigatorConst.TO_INTRO)
+            postNavigator(NavigatorConst.TO_INTRO)
         }
 
         override fun onDuplicateError(error: ErrorEnum)
         {
             super.onDuplicateError(error)
 
-            setNavigator(NavigatorConst.DUPLICATE_LOGIN)
+            postNavigator(NavigatorConst.DUPLICATE_LOGIN)
         }
     }
 
@@ -93,17 +93,15 @@ class SplashViewModel(
 
         if(userLocalRepo.getStatus() == StatusConst.ACTIVATE)
         {
-            return setNavigator(NavigatorConst.TO_PERMISSION)
+            return postNavigator(NavigatorConst.TO_PERMISSION)
         }
 
-        setNavigator(NavigatorConst.TO_INTRO)
+        postNavigator(NavigatorConst.TO_INTRO)
     }
 
     fun requestUserInfo() = checkEventStatus(true) {
 
-        scope.launch {
-            try
-            {
+        scope.launch(coroutineExceptionHandler) {
                 val isExpired = isExpiredTokenWithinWeek()
 
                 if(isExpired)
@@ -115,14 +113,9 @@ class SplashViewModel(
                 val userInfo = userRemoteRepo.getUserInfo()
                 SopoLog.d("로그인 성공 [UserInfo:${userInfo.toString()}]")
 
-                if(userInfo.nickname == "") return@launch setNavigator(NavigatorConst.TO_UPDATE_NICKNAME)
+                if(userInfo.nickname == "") return@launch postNavigator(NavigatorConst.TO_UPDATE_NICKNAME)
 
-                setNavigator(NavigatorConst.TO_MAIN)
-            }
-            catch(e: Exception)
-            {
-                exceptionHandler.handleException(coroutineContext, e)
-            }
+                postNavigator(NavigatorConst.TO_MAIN)
         }
 
     }

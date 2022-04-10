@@ -43,7 +43,7 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
     val navigator : LiveData<String>
         get() = _navigator
 
-    fun setNavigator(navigator: String){
+    fun postNavigator(navigator: String){
         _navigator.postValue(navigator)
     }
 
@@ -115,7 +115,7 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
 
     fun onBackClicked()
     {
-        setNavigator(NavigatorConst.TO_BACK_SCREEN)
+        postNavigator(NavigatorConst.TO_BACK_SCREEN)
     }
 
     /**
@@ -132,11 +132,11 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
     fun onDownClicked(): View.OnClickListener
     {
         return View.OnClickListener() {
-            setNavigator(NavigatorConst.TO_BACK_SCREEN)
+            postNavigator(NavigatorConst.TO_BACK_SCREEN)
         }
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum)
         {

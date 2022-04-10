@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.BR
@@ -26,7 +25,6 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.setting.DiffCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class InquiryListAdapter(
@@ -102,7 +100,7 @@ class InquiryListAdapter(
 
                 CoroutineScope(Dispatchers.Main).launch {
                     holder.ongoingBinding.tvDeliveryStatus.bringToFront()
-                    holder.ongoingBinding.tvRegisteredParcelName.text = item.parcelResponse.alias.toEllipsis()
+                    holder.ongoingBinding.tvRegisteredParcelName.text = item.parcel.alias.toEllipsis()
                 }
 
                 if(item.isSelected)
@@ -131,19 +129,19 @@ class InquiryListAdapter(
                     }
                     else
                     {
-                        if(item.parcelResponse.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE)
+                        if(item.parcel.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE)
                         {
-                            return@setOnClickListener parcelClickListener.onEnterParcelDetailClicked(view = v, type = InquiryStatusEnum.ONGOING, parcelId = item.parcelResponse.parcelId)
+                            return@setOnClickListener parcelClickListener.onEnterParcelDetailClicked(view = v, type = InquiryStatusEnum.ONGOING, parcelId = item.parcel.parcelId)
                         }
 
-                        parcelClickListener.onMaintainParcelClicked(view = v, pos = position, parcelId = item.parcelResponse.parcelId)
+                        parcelClickListener.onMaintainParcelClicked(view = v, pos = position, parcelId = item.parcel.parcelId)
                     }
                 }
 
                 holder.ongoingBinding.cvOngoingParent.setOnLongClickListener {
                     if(isRemoveMode) return@setOnLongClickListener true
 
-                    parcelClickListener.onUpdateParcelAliasClicked(view = it, type = InquiryStatusEnum.ONGOING, parcelId = item.parcelResponse.parcelId)
+                    parcelClickListener.onUpdateParcelAliasClicked(view = it, type = InquiryStatusEnum.ONGOING, parcelId = item.parcel.parcelId)
 
                     return@setOnLongClickListener true
                 }
@@ -163,7 +161,7 @@ class InquiryListAdapter(
                 }
 
                 CoroutineScope(Dispatchers.Main).launch {
-                    holder.completeBinding.tvCompleteParcelName.text =item.parcelResponse.alias.toEllipsis()
+                    holder.completeBinding.tvCompleteParcelName.text =item.parcel.alias.toEllipsis()
                 }
 
                 holder.completeBinding.cvCompleteParent.setOnClickListener { v ->
@@ -184,13 +182,13 @@ class InquiryListAdapter(
                     }
                     else
                     {
-                        parcelClickListener.onEnterParcelDetailClicked(view = v, type = InquiryStatusEnum.COMPLETE, parcelId = item.parcelResponse.parcelId)
+                        parcelClickListener.onEnterParcelDetailClicked(view = v, type = InquiryStatusEnum.COMPLETE, parcelId = item.parcel.parcelId)
                     }
                 }
 
                 holder.completeBinding.cvCompleteParent.setOnLongClickListener {
                     if(isRemoveMode) return@setOnLongClickListener true
-                    parcelClickListener.onUpdateParcelAliasClicked(view = it, type = InquiryStatusEnum.COMPLETE, parcelId = item.parcelResponse.parcelId)
+                    parcelClickListener.onUpdateParcelAliasClicked(view = it, type = InquiryStatusEnum.COMPLETE, parcelId = item.parcel.parcelId)
                     return@setOnLongClickListener true
                 }
             }
@@ -228,7 +226,7 @@ class InquiryListAdapter(
         return parcels.filter {
             it.isSelected
         }.map {
-            it.parcelResponse.parcelId
+            it.parcel.parcelId
         }
     }
 
@@ -287,10 +285,10 @@ class InquiryListAdapter(
         notifyDataSetChanged()
     }
 
-    //현재는 '배송완료'에만 적용되어있음. 데이터를 무조건 notifyDataSetChanged()로 데이터를 리프레쉬하지 않고 진짜 변경된 데이터만 변경할 수 있도록함.
+ /*   //현재는 '배송완료'에만 적용되어있음. 데이터를 무조건 notifyDataSetChanged()로 데이터를 리프레쉬하지 않고 진짜 변경된 데이터만 변경할 수 있도록함.
     fun notifyChanged(updatedList: MutableList<InquiryListItem>)
     {
-        updatedList.sortByDescending { it.parcelResponse.arrivalDte }
+        updatedList.sortByDescending { it.parcel.arrivalDte }
 
         if(parcels.size > updatedList.size)
         {
@@ -303,13 +301,13 @@ class InquiryListAdapter(
         {
             if(parcels.getOrNull(index) == null)
             {
-                SopoLog.d("기존 리스트에 해당 index[$index]가 존재하지 않아 list[$index]에 ${updatedList[index].parcelResponse.alias} 아이템을 추가합니다.")
+                SopoLog.d("기존 리스트에 해당 index[$index]가 존재하지 않아 list[$index]에 ${updatedList[index].parcel.alias} 아이템을 추가합니다.")
                 parcels.add(updatedList[index])
                 notifyIndexList.add(index)
             }
-            else if(updatedList[index].parcelResponse.parcelId != parcels[index].parcelResponse.parcelId)
+            else if(updatedList[index].parcel.parcelId != parcels[index].parcel.parcelId)
             {
-                SopoLog.d("index[$index]에 해당하는 ${parcels[index].parcelResponse.alias}와 업데이트될 아이템(${updatedList[index].parcelResponse.alias}) 일치하지 않아 기존 아이템에 업데이트될 아이템을 덮어씁니다.")
+                SopoLog.d("index[$index]에 해당하는 ${parcels[index].parcel.alias}와 업데이트될 아이템(${updatedList[index].parcel.alias}) 일치하지 않아 기존 아이템에 업데이트될 아이템을 덮어씁니다.")
                 parcels[index] = updatedList[index]
                 notifyIndexList.add(index)
             }
@@ -319,65 +317,31 @@ class InquiryListAdapter(
         {
             notifyItemChanged(notifyIndexList[index])
         }
+    }*/
+
+    fun separateCompletedParcels(parcels: MutableList<InquiryListItem>){
+        val newParcels = parcels.filter { it.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE }
+        dispatchUpdateItems(parcels, newParcels)
     }
 
-    // 택배 리스트를 상태에 따라 분류
-    fun separateDeliveryListByStatus(list: MutableList<InquiryListItem>?)
-    {
-        if(list == null) return
+    fun separateSoonParcels(parcels: MutableList<InquiryListItem>){
+        val newParcels = parcels.filter { it.parcel.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE }
+        dispatchUpdateItems(parcels, newParcels)
+    }
 
-        val newParcels = when(parcelType)
-        {
-            InquiryItemTypeEnum.Soon ->
-            {
-                list.filter {
-                    it.parcelResponse.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
-                }.toMutableList()
-            }
-            InquiryItemTypeEnum.Registered ->
-            {
-                list.filter {
-                    it.parcelResponse.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE && it.parcelResponse.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
-                }.toMutableList()
-            }
-            InquiryItemTypeEnum.Complete ->
-            {
-                list.filter {
-                    it.parcelResponse.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
-                }.toMutableList()
-            }
-        }
+    fun separateRegisteredParcels(parcels: MutableList<InquiryListItem>){
+        val newParcels = parcels.filter { it.parcel.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE && it.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE }
+        dispatchUpdateItems(parcels, newParcels)
+    }
 
-        val diffCallback = DiffCallback(parcels, newParcels)
+    private fun dispatchUpdateItems(oldItems:List<InquiryListItem>, newItems:List<InquiryListItem>){
+        val diffCallback = DiffCallback(oldItems, newItems)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
 
         parcels.clear()
-        parcels.addAll(newParcels)
+        parcels.addAll(newItems)
 
         diffResult.dispatchUpdatesTo(this)
-//        this.parcels = when(parcelType)
-//        {
-//            InquiryItemTypeEnum.Soon ->
-//            {
-//                list.filter {
-//                    it.parcelResponse.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
-//                }.toMutableList()
-//            }
-//            InquiryItemTypeEnum.Registered ->
-//            {
-//                list.filter {
-//                    it.parcelResponse.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE && it.parcelResponse.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
-//                }.toMutableList()
-//            }
-//            InquiryItemTypeEnum.Complete ->
-//            {
-//                list.filter {
-//                    it.parcelResponse.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
-//                }.toMutableList()
-//            }
-//        }
-//
-//        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int =  parcels.size

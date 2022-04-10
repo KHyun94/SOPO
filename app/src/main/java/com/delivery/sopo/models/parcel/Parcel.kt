@@ -9,10 +9,10 @@ import java.io.Serializable
 
 class Parcel{
         data class Common(
-                @SerializedName("parcelId") var parcelId: Int,
-                @SerializedName("userId") var userId: Int,
-                @SerializedName("waybillNum") var waybillNum: String,
-                @SerializedName("carrier") var carrier: String,
+                @SerializedName("parcelId") val parcelId: Int,
+                @SerializedName("userId") val userId: Int,
+                @SerializedName("waybillNum") val waybillNum: String,
+                @SerializedName("carrier") val carrier: String,
                 @SerializedName("alias") var alias: String,
                 @SerializedName("inquiryResult") var trackingInfo: TrackingInfo?,
                 @SerializedName("inquiryHash") var inquiryHash: String?,
@@ -21,7 +21,7 @@ class Parcel{
                 @SerializedName("arrivalDte") var arrivalDte: String?,
                 @SerializedName("auditDte") var auditDte: String,
                 @SerializedName("status") var status: Int?,
-                @SerializedName("isRegistered") var isRegistered: Boolean = true
+                @SerializedName("reported") var reported: Boolean = false
         ): Serializable
 
         data class Detail(

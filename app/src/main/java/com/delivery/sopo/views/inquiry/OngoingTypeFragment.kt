@@ -59,7 +59,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             onPageSelectListener.onChangeTab(null)
         }
 
-        parentView.tabReselectListener = object: () -> Unit
+        parentView.onTabReselectListener = object: () -> Unit
         {
             override fun invoke()
             {
@@ -141,7 +141,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         super.setObserve()
 
         activity ?: return
-        parentView.currentPage.observe(this) {
+        parentView.getCurrentPage().observe(this) {
             if(it != 1) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
@@ -151,8 +151,8 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
             else binding.linearNoItem.visibility = View.GONE
 
-            soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
-            registeredParcelAdapter.separateDeliveryListByStatus(list)
+            soonArrivalParcelAdapter.separateSoonParcels(list)
+            registeredParcelAdapter.separateRegisteredParcels(list)
 
             viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
             viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
@@ -167,7 +167,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                 }
 
             }
-
         }
     }
 
@@ -198,7 +197,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                             Handler(Looper.getMainLooper()).postDelayed(Runnable {
 
                                 val updatedPos = registeredParcelAdapter.getList()
-                                    .indexOfFirst { it.parcelResponse.parcelId == parcelId }
+                                    .indexOfFirst { it.parcel.parcelId == parcelId }
 
                                 binding.nestedSvMainOngoingInquiry.smoothScrollTo(0, updatedPos) //
 
@@ -259,7 +258,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             {
                 refreshDelay = true
 
-                vm.syncParcelsByOngoing()
+                vm.syncOngoingParcels()
 
                 //5초후에 실행
                 Timer().schedule(object: TimerTask()

@@ -44,7 +44,7 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
     val navigator: LiveData<String>
         get() = _navigator
 
-    fun setNavigator(navigator: String){
+    fun postNavigator(navigator: String){
         _navigator.postValue(navigator)
     }
 
@@ -94,7 +94,7 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
     }
 
     fun onDeleteParcelsClicked(){
-        setNavigator(NavigatorConst.TO_DELETE)
+        postNavigator(NavigatorConst.TO_DELETE)
     }
 
     fun startDeleteCount()
@@ -139,7 +139,7 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
         parcelManagementRepo.updateParcelStatuses(parcelStatuses)
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onRegisterParcelError(error: ErrorEnum)
         {

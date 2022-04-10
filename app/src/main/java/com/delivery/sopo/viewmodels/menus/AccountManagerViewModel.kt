@@ -39,7 +39,7 @@ class AccountManagerViewModel(
         }
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum) { }
     }

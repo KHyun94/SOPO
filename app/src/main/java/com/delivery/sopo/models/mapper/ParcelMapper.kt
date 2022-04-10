@@ -21,7 +21,7 @@ object ParcelMapper
 
         val toJson = req.trackingInfo?.toJson()
 
-        return with(req) { ParcelEntity(parcelId, userId, waybillNum, carrier, alias, toJson, inquiryHash, deliveryStatus, arrivalDte?:"", regDte, auditDte, status?:0)}
+        return with(req) { ParcelEntity(parcelId, userId, waybillNum, carrier, alias, toJson, inquiryHash, deliveryStatus, arrivalDte?:"", regDte, auditDte, status?:0, reported = reported)}
     }
 
     fun parcelStatusEntityToObject(req:ParcelStatusEntity): Parcel.Status
@@ -98,7 +98,8 @@ object ParcelMapper
             arrivalDte = parcel.arrivalDte.toString(),
             auditDte = parcel.auditDte,
             regDte = parcel.regDte,
-            status = parcel.status ?: 0
+            status = parcel.status ?: 0,
+            reported = parcel.reported
         )
     }
 

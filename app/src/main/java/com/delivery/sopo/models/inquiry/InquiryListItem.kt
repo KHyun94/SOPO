@@ -4,17 +4,20 @@ import androidx.databinding.BaseObservable
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.R
+import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import java.text.SimpleDateFormat
 import java.util.*
 
-class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean = false): KoinComponent, BaseObservable()
+class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false): KoinComponent, BaseObservable()
 {
     private val parcelRepository: ParcelRepository by inject()
 
@@ -25,58 +28,55 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
 
     val isUnidentified = ObservableField<Boolean>().apply {
         checkIsUnidentified {
-            set(it)
+            set(it && !parcel.reported)
             notifyChange()
         }
     }
 
-    private val completeTimeDate: Calendar by lazy {
-        Calendar.getInstance()
-            .apply {
-                this.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(
-                    parcelResponse.arrivalDte?.replace("T", " "))
-            }
+    private val ongoingTimeDate: Calendar? by lazy {
+        val time = DateUtil.changeDateFormat2(parcel.auditDte.replace("T", " "))?:return@lazy null
+        val calendar = Calendar.getInstance().apply {
+            this.time = time
+        }
+        return@lazy calendar
     }
-    private val ongoingTimeDate: Calendar by lazy {
-        Calendar.getInstance()
-            .apply {
-                this.time = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(
-                    parcelResponse.auditDte.replace("T", " "))
-            }
+
+    private val completeTimeDate: Calendar? by lazy {
+        val time = DateUtil.changeDateFormat2(parcel.arrivalDte?.replace("T", " ")?:"")?:return@lazy null
+        val calendar = Calendar.getInstance().apply {
+            this.time = time
+        }
+        return@lazy calendar
     }
+
 
     fun getCompleteYearMonth(): String
     {
-        return "${completeTimeDate.get(Calendar.YEAR)}/${completeTimeDate.get(Calendar.MONTH) + 1}"
+        if(completeTimeDate == null) return "시간불명"
+        return DateUtil.changeCalendarToDate(completeTimeDate!!)
     }
 
     fun getCompleteDateTime(): String
     {
-        return "${completeTimeDate.get(Calendar.YEAR)}/${
-            completeTimeDate.get(Calendar.MONTH) + 1
-        }/${completeTimeDate.get(Calendar.DATE)} ${
-            String.format("%02d", completeTimeDate.get(Calendar.HOUR_OF_DAY))
-        }:${String.format("%02d", completeTimeDate.get(Calendar.MINUTE))}"
+        if(completeTimeDate == null) return "시간불명"
+        return DateUtil.changeCalendarToDateTime(completeTimeDate!!)
     }
 
     fun getOngoingDateTime(): String
     {
-        return "${ongoingTimeDate.get(Calendar.YEAR)}/${
-            ongoingTimeDate.get(Calendar.MONTH) + 1
-        }/${ongoingTimeDate.get(Calendar.DATE)} ${
-            String.format("%02d", ongoingTimeDate.get(Calendar.HOUR_OF_DAY))
-        }:${String.format("%02d", ongoingTimeDate.get(Calendar.MINUTE))}"
+        if(ongoingTimeDate == null) return "시간불명"
+        return DateUtil.changeCalendarToDateTime(ongoingTimeDate!!)
     }
 
     fun getDateOfMonth(): String
     {
-        return "${completeTimeDate.get(Calendar.DATE)}"
+        return "${completeTimeDate?.get(Calendar.DATE)}"
     }
 
     fun getDayOfWeek(): String
     {
 
-        return when(completeTimeDate.get(Calendar.DAY_OF_WEEK))
+        return when(completeTimeDate?.get(Calendar.DAY_OF_WEEK))
         {
             1 ->
             {
@@ -115,12 +115,11 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
 
     fun checkIsUnidentified(cb: (Boolean) -> Unit)
     {
-
         CoroutineScope(Dispatchers.Main).launch {
             var update: LiveData<Int?>? = null
 
             withContext(Dispatchers.Default) {
-                update = parcelRepository.getIsUnidentifiedAsLiveData(parcelResponse.parcelId)
+                update = parcelRepository.getIsUnidentifiedAsLiveData(parcel.parcelId)
             }
 
             // TODO 이렇게 옵저빙안하고도 변경 가능한지 테스트 필시 해야함
@@ -132,7 +131,7 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
 
     private fun getParcelStatus(): String
     {
-        return when(parcelResponse.deliveryStatus)
+        return when(parcel.deliveryStatus)
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> "준비중"
             DeliveryStatusEnum.ORPHANED.CODE -> "조회불가"
@@ -150,7 +149,7 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
 
     private fun getParcelStatusColor(): Int
     {
-        return when(parcelResponse.deliveryStatus)
+        return when(parcel.deliveryStatus)
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.color.COLOR_GRAY_300
             DeliveryStatusEnum.ORPHANED.CODE -> R.color.COLOR_MAIN_300
@@ -168,7 +167,7 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
 
     private fun getParcelStatusBackgroundColor(): Int
     {
-        return when(parcelResponse.deliveryStatus)
+        return when(parcel.deliveryStatus)
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.color.STATUS_PREPARING
             DeliveryStatusEnum.ORPHANED.CODE -> R.color.MAIN_WHITE
@@ -186,7 +185,7 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
 
     private fun getParcelStatusIcon(): Int
     {
-        return when(parcelResponse.deliveryStatus)
+        return when(parcel.deliveryStatus)
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.drawable.ic_inquiry_cardview_not_registered
             DeliveryStatusEnum.ORPHANED.CODE -> R.drawable.ic_inquiry_cardview_orphaned
@@ -206,6 +205,6 @@ class InquiryListItem(var parcelResponse: Parcel.Common, var isSelected: Boolean
     }
 
     fun toParcelString(){
-        SopoLog.d("parcel:${parcelResponse.toString()}")
+        SopoLog.d("parcel:${parcel.toString()}")
     }
 }

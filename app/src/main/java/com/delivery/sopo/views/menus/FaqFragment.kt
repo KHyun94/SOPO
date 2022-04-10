@@ -50,7 +50,7 @@ class FaqFragment: BaseFragment<FragmentFaqBinding, FaqViewModel>(){
         super.setObserve()
 
         activity ?: return
-        parentView.currentPage.observe(this) {
+        parentView.getCurrentPage().observe(this) {
             if(it != 2) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }

@@ -58,7 +58,7 @@ class SettingViewModel(
         }
     }
 
-    fun setNavigator(navigator: String){
+    fun postNavigator(navigator: String){
         _navigator.postValue(navigator)
     }
 
@@ -94,7 +94,7 @@ class SettingViewModel(
         }
         else
         {
-            setNavigator(NavigatorConst.TO_NOT_DISTURB)
+            postNavigator(NavigatorConst.TO_NOT_DISTURB)
         }
     }
 
@@ -107,31 +107,31 @@ class SettingViewModel(
     fun onSetPushAlarmListener()
     {
         SopoLog.d("호출")
-        setNavigator(NavigatorConst.TO_SET_NOTIFY_OPTION)
+        postNavigator(NavigatorConst.TO_SET_NOTIFY_OPTION)
     }
 
     fun onSetNotDisturbTime(){
         SopoLog.d("호출")
-        setNavigator(NavigatorConst.TO_NOT_DISTURB)
+        postNavigator(NavigatorConst.TO_NOT_DISTURB)
     }
 
     fun  onSetLockPassword(){
         SopoLog.d("호출")
-        setNavigator(NavigatorConst.TO_UPDATE_APP_PASSWORD)
+        postNavigator(NavigatorConst.TO_UPDATE_APP_PASSWORD)
     }
 
 //    override fun onCleared()
 //    {
 //        super.onCleared()
-//        setNavigator("")
+//        postNavigator("")
 //    }
 
 
     fun onBackClicked(){
-        setNavigator(NavigatorConst.TO_BACK_SCREEN)
+        postNavigator(NavigatorConst.TO_BACK_SCREEN)
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum) { }
     }

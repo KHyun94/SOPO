@@ -2,20 +2,17 @@ package com.delivery.sopo.exceptions
 
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
-import com.delivery.sopo.usecase.LogoutUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
-import org.koin.core.KoinComponent
-import org.koin.core.inject
 import kotlin.coroutines.CoroutineContext
 
 class UserExceptionHandler(private val dispatcher: CoroutineDispatcher, private val callback: OnSOPOErrorCallback):
-        CoroutineExceptionHandler, KoinComponent
+        CoroutineExceptionHandler
 {
     override val key: CoroutineContext.Key<*> = dispatcher.key
 
-    private val logoutUseCase: LogoutUseCase by inject()
+//    private val logoutUseCase: LogoutUseCase by inject()
 
     override fun handleException(context: CoroutineContext, exception: Throwable)
     {
@@ -29,7 +26,7 @@ class UserExceptionHandler(private val dispatcher: CoroutineDispatcher, private 
                     message = exception.getErrorResponse().message
                 }
                 SopoLog.e("SOPO API Error $errorCode", exception)
-                if(errorCode == ErrorEnum.ALREADY_REGISTERED_USER) return callback.onErrorAlreadyRegisteredUser(errorCode)
+                if(errorCode == ErrorEnum.ALREADY_REGISTERED_USER) return callback.onAlreadyRegisteredUser(errorCode)
                 callback.onFailure(errorCode)
             }
             is OAuthException ->
@@ -44,7 +41,7 @@ class UserExceptionHandler(private val dispatcher: CoroutineDispatcher, private 
                 }
                 else if(errorCode == ErrorEnum.OAUTH2_DELETE_TOKEN)
                 {
-                    logoutUseCase.invoke()
+//                    logoutUseCase.invoke()
                     return callback.onDuplicateError(errorCode)
                 }
 

@@ -89,7 +89,7 @@ class MenuSubFragment: Fragment()
 
     private fun setObserve()
     {
-//        parentView.currentPage.observe(this, Observer {
+//        parentView.getCurrentPage().observe(this, Observer {
 //            if (it != null && it == TabCode.thirdTab)
 //            {
 //                callback = object : OnBackPressedCallback(true)

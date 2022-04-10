@@ -41,7 +41,7 @@ class MenuViewModel(private val userLocalRepo: UserLocalRepository) : BaseViewMo
         _menu.postValue(code)
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum)
         { // TODO 발생하는 에러가 있을까?

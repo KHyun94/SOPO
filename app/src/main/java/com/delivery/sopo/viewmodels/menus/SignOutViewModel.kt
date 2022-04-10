@@ -38,7 +38,7 @@ class SignOutViewModel(
     val navigator: LiveData<String>
         get() = _navigator
 
-    fun setNavigator(navigator: String){ _navigator.postValue(navigator) }
+    fun postNavigator(navigator: String){ _navigator.postValue(navigator) }
 
     init
     {
@@ -48,7 +48,7 @@ class SignOutViewModel(
 
     fun onBackClicked()
     {
-        setNavigator(NavigatorConst.TO_BACK_SCREEN)
+        postNavigator(NavigatorConst.TO_BACK_SCREEN)
     }
 
     fun onCheckClicked(v: View, message: String?) = checkEventStatus {
@@ -78,7 +78,7 @@ class SignOutViewModel(
         val reason = message.value.toString()
         if(reason == "") return@checkEventStatus postErrorSnackBar("탈퇴 사유를 선택해주세요.")
 
-        setNavigator(NavigatorConst.CONFIRM_SIGN_OUT)
+        postNavigator(NavigatorConst.CONFIRM_SIGN_OUT)
     }
 
     fun requestSignOut(reason: String) = scope.launch(Dispatchers.IO){
@@ -86,7 +86,7 @@ class SignOutViewModel(
         {
             onStartLoading()
             signOutUseCase.invoke(reason)
-            setNavigator(NavigatorConst.EXIT)
+            postNavigator(NavigatorConst.EXIT)
         }
         catch(e: Exception)
         {
@@ -98,7 +98,7 @@ class SignOutViewModel(
         }
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onRegisterParcelError(error: ErrorEnum)
         {

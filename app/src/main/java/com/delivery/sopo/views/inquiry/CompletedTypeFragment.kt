@@ -69,7 +69,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
             onPageSelectListener.onChangeTab(null)
         }
 
-        parentView.tabReselectListener = object : () -> Unit {
+        parentView.onTabReselectListener = object : () -> Unit {
             override fun invoke()
             {
                 if(scrollStatus == ScrollStatusEnum.TOP) return
@@ -124,7 +124,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
 
         activity ?: return
 
-        parentView.currentPage.observe(this) {
+        parentView.getCurrentPage().observe(this) {
             if(it != 1) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
@@ -132,7 +132,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity()) { list ->
 
-            completedParcelAdapter.separateDeliveryListByStatus((list).toMutableList())
+            completedParcelAdapter.separateCompletedParcels((list).toMutableList())
 //            val mock = list + list+ list+ list+ list+ list+ list+ list+ list+ list+ list+ list+ list+ list
 //            completedParcelAdapter.notifyChanged(mock.toMutableList().subList(0, 10))
         }

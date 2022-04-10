@@ -6,27 +6,32 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.NetworkStatus
+import com.delivery.sopo.exceptions.InternalServerException
+import com.delivery.sopo.exceptions.OAuthException
+import com.delivery.sopo.exceptions.SOPOApiException
+import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
+import com.delivery.sopo.usecase.LogoutUseCase
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.OnSnackBarClickListener
-import io.reactivex.Flowable.just
-import io.reactivex.Observable
-import io.reactivex.Observable.just
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 import java.util.*
 
-abstract class BaseViewModel: ViewModel()
+abstract class BaseViewModel: ViewModel(), KoinComponent
 {
+    private val logoutUseCase: LogoutUseCase by inject()
+
     abstract val exceptionHandler: CoroutineExceptionHandler
 
-    val scope: CoroutineScope = (viewModelScope + Job())
+    protected val scope: CoroutineScope = (viewModelScope + SupervisorJob())
 
     var onSnackClickListener: Pair<CharSequence, OnSnackBarClickListener>? = null
 
@@ -50,6 +55,71 @@ abstract class BaseViewModel: ViewModel()
     val isDuplicated: LiveData<Boolean>
         get() = _isDuplicated
 
+    open lateinit var onSOPOErrorCallback: OnSOPOErrorCallback
+
+    protected val coroutineExceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler{ coroutineContext, exception ->
+
+        when(exception)
+        {
+            is SOPOApiException ->
+            {
+                val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
+                    message = exception.getErrorResponse().message
+                }
+
+                SopoLog.e("SOPO API Error $errorCode", exception)
+
+                if(errorCode == ErrorEnum.ALREADY_REGISTERED_USER) return@CoroutineExceptionHandler onSOPOErrorCallback.onAlreadyRegisteredUser(errorCode)
+
+                if(errorCode == ErrorEnum.ALREADY_REGISTERED_USER && errorCode == ErrorEnum.OVER_REGISTERED_PARCEL)
+                {
+                    return@CoroutineExceptionHandler onSOPOErrorCallback.onRegisterParcelError(errorCode)
+                }
+
+                if(errorCode == ErrorEnum.PARCEL_NOT_FOUND)
+                {
+                    return@CoroutineExceptionHandler onSOPOErrorCallback.onInquiryParcelError(errorCode)
+                }
+
+                if(errorCode == ErrorEnum.OAUTH2_DELETE_TOKEN)
+                {
+                    return@CoroutineExceptionHandler onSOPOErrorCallback.onDuplicateError(errorCode)
+                }
+                onSOPOErrorCallback.onFailure(errorCode)
+            }
+            is OAuthException ->
+            {
+                val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
+                    message = exception.getErrorResponse().message
+                }
+                SopoLog.e("OAuthException API Error $errorCode", exception)
+                if(errorCode == ErrorEnum.OAUTH2_INVALID_GRANT || errorCode == ErrorEnum.OAUTH2_INVALID_TOKEN)
+                {
+                    return@CoroutineExceptionHandler onSOPOErrorCallback.onLoginError(errorCode)
+                }
+                else if(errorCode == ErrorEnum.OAUTH2_DELETE_TOKEN)
+                {
+                                        logoutUseCase.invoke()
+                    return@CoroutineExceptionHandler onSOPOErrorCallback.onDuplicateError(errorCode)
+                }
+
+                onSOPOErrorCallback.onAuthError(errorCode)
+            }
+            is InternalServerException ->
+            {
+                val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
+                    message = exception.getErrorResponse().message
+                }
+                SopoLog.e("InternalServerException API Error $errorCode", exception)
+                onSOPOErrorCallback.onInternalServerError(errorCode)
+            }
+            else ->
+            {
+                onSOPOErrorCallback.onFailure(ErrorEnum.UNKNOWN_ERROR)
+            }
+        }
+    } 
+    
     fun checkEventStatus(checkNetwork: Boolean = false, delayMillisecond: Long = 100, event: () -> Unit)
     {
         if(_isClickEvent.value == true) return
@@ -123,7 +193,6 @@ abstract class BaseViewModel: ViewModel()
 
     fun postErrorSnackBar(msg: String, onSnackBarClickListener: Pair<CharSequence, OnSnackBarClickListener>? = null)
     {
-        SopoLog.d("MSG : $msg")
         _errorSnackBar.postValue(msg)
         this.onSnackClickListener = onSnackBarClickListener
     }

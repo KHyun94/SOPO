@@ -13,6 +13,7 @@ import com.delivery.sopo.usecase.LogoutUseCase
 import com.delivery.sopo.usecase.UpdateNicknameUseCase
 import com.delivery.sopo.usecase.parcel.local.GetLocalParcelUseCase
 import com.delivery.sopo.usecase.parcel.remote.*
+import com.delivery.sopo.usecase.user.LoginUseCase
 import com.delivery.sopo.usecase.user.SignOutUseCase
 import com.delivery.sopo.usecase.user.SignUpUseCase
 import com.delivery.sopo.viewmodels.IntroViewModel
@@ -59,6 +60,7 @@ val appModule = module {
     factory { UpdateNicknameUseCase(get(), get()) }
     factory { UpdateParcelAliasUseCase(get()) }
     factory { DeleteParcelsUseCase(get(), get()) }
+    factory { return@factory LoginUseCase(userRemoteRepo = get()) }
     factory { LogoutUseCase(get()) }
     factory { return@factory SignOutUseCase(userLocalRepo = get(), userRemoteRepo = get()) }
     factory { GetLocalParcelUseCase(get()) }
@@ -70,9 +72,9 @@ val appModule = module {
     viewModel { return@viewModel SignUpViewModel(signUpUseCase = get()) }
     viewModel { SignUpCompleteViewModel(get(), get()) }
     viewModel { RegisterNicknameViewModel(get()) }
-    viewModel { LoginSelectViewModel(get(),get(), get()) }
+    viewModel { return@viewModel LoginSelectViewModel(loginUseCase = get(), signUpUseCase = get()) }
     viewModel { ResetPasswordViewModel(get()) }
-    viewModel { MainViewModel(get(), get()) }
+    viewModel { MainViewModel(get(), get(), get()) }
     viewModel { MenuSubViewModel() }
     viewModel { LockScreenViewModel(get(), get()) }
     viewModel { SettingViewModel(get(), get()) }

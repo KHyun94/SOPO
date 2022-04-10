@@ -122,7 +122,11 @@ class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
     // TODO KAKAO Session Return 처리
     override fun onActivityResult(requestCode : Int, resultCode : Int, data : Intent?)
     {
-        if (Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data)) return
+        if (Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data))
+        {
+            SopoLog.d("!!!!! 역시 이건가?")
+            return
+        }
         super.onActivityResult(requestCode, resultCode, data)
     }
 

@@ -119,7 +119,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="8dp"
-                    android:visibility="@{ongoingInquiryData.isUnidentified()?View.VISIBLE:View.GONE, default=gone}"
+                    android:visibility="@{ongoingInquiryData.parcel.reported ?View.GONE:View.VISIBLE, default=gone}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     android:src="@drawable/ic_new_parcel_status"
@@ -145,7 +145,7 @@
                         android:letterSpacing="-0.01"
                         android:textSize="15.5dp"
                         android:maxLines="1"
-                        android:text='@{ongoingInquiryData.parcelResponse.alias}'
+                        android:text="@{ongoingInquiryData.parcel.alias}"
                         tools:text="갤럭시 버즈 플러스 화이트" />
 
                     <TextView
@@ -187,7 +187,7 @@
                         android:textSize="15.5dp"
                         android:maxLines="1"
                         android:textColor="@color/COLOR_MAIN_700"
-                        android:text='@{ongoingInquiryData.parcelResponse.alias}'
+                        android:text="@{ongoingInquiryData.parcel.alias}"
                         tools:text="갤럭시 버즈 플러스 화이트777갤1234ABCabc" />
 
                     <TextView

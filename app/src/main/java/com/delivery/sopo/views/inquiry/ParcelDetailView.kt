@@ -188,7 +188,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         super.setObserve()
 
         activity ?: return
-        parentView.currentPage.observe(this) {
+        parentView.getCurrentPage().observe(this) {
             if(it != 1) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }

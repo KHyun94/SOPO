@@ -38,7 +38,7 @@ class SelectCarrierViewModel(private val carrierRepo: CarrierRepository): BaseVi
         waybillNum.value = ""
     }
 
-    fun setNavigator(nav: NavigatorEnum?){
+    fun postNavigator(nav: NavigatorEnum?){
         _navigator.postValue(nav)
     }
 

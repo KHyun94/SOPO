@@ -24,9 +24,9 @@ class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, pr
     val navigator: LiveData<String>
         get() = _navigator
 
-    fun setNavigator(navigator: String){ _navigator.postValue(navigator) }
+    fun postNavigator(navigator: String){ _navigator.postValue(navigator) }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum)
         {
@@ -82,7 +82,7 @@ class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, pr
             onStartLoading()
             userRemoteRepo.requestLogin(email, password)
             userRemoteRepo.getUserInfo()
-            setNavigator(NavigatorConst.TO_MAIN)
+            postNavigator(NavigatorConst.TO_MAIN)
         }
         catch(e: Exception)
         {

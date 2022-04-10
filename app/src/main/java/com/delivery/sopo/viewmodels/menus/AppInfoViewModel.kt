@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 
 class AppInfoViewModel : BaseViewModel() {
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum) { }
     }
@@ -23,7 +23,7 @@ class AppInfoViewModel : BaseViewModel() {
     val navigator: LiveData<String>
         get() = _navigator
 
-    fun setNavigator(navigator: String){
+    fun postNavigator(navigator: String){
         _navigator.postValue(navigator)
     }
 

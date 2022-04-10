@@ -118,7 +118,7 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
         super.setObserve()
 
         activity ?: return
-        parentView.currentPage.observe(this) {
+        parentView.getCurrentPage().observe(this) {
             if(it != 0) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }

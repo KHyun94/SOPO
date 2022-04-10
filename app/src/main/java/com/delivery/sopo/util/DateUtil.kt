@@ -1,12 +1,8 @@
 package com.delivery.sopo.util
 
 import android.annotation.SuppressLint
-import com.delivery.sopo.extensions.toMilliSeconds
-import org.jetbrains.annotations.TestOnly
-import java.lang.Exception
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.*
 
 object DateUtil
@@ -18,7 +14,7 @@ object DateUtil
         return calendar.get(Calendar.YEAR).toString()
     }
 
-    fun getIntToMilliSeconds(seconds : Int) : Long
+    fun getIntToMilliSeconds(seconds: Int): Long
     {
         val currentTimeMilliSeconds = System.currentTimeMillis()
         val secondsToMilliSeconds = seconds * 1000
@@ -26,7 +22,7 @@ object DateUtil
     }
 
     // dateTime => yyyy-MM-dd'T'HH"mm:ss.SSS'Z -> yyyy-MM-dd HHmm
-    fun changeDateFormat(dateTime : String) : String
+    fun changeDateFormat(dateTime: String): String
     {
         val oldFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
         oldFormat.timeZone = TimeZone.getTimeZone("KST")
@@ -37,7 +33,7 @@ object DateUtil
             val oldDate = oldFormat.parse(dateTime)
             newFormat.format(oldDate)
         }
-        catch (e : ParseException)
+        catch(e: ParseException)
         {
             SopoLog.e(msg = "Data Format Change Error", e = e)
             throw e
@@ -51,12 +47,28 @@ object DateUtil
         {
             val sdf = SimpleDateFormat(format)
             val parseDate = sdf.parse(date)
-            return parseDate?.time?:throw NullPointerException()
+            return parseDate?.time ?: throw NullPointerException()
         }
-        catch (e: Exception)
+        catch(e: Exception)
         {
             throw e
         }
+    }
+
+    fun changeDateFormat2(date: String): Date?
+    {
+        return SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(date)
+    }
+
+    fun changeCalendarToDate(calendar: Calendar): String
+    {
+        return "${calendar.get(Calendar.YEAR)}/${calendar.get(Calendar.MONTH) + 1}"
+    }
+
+    fun changeCalendarToDateTime(calendar: Calendar): String
+    {
+        return "${calendar.get(Calendar.YEAR)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.DATE)} " +
+                "${String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY))}:${String.format("%02d", calendar.get(Calendar.MINUTE))}"
     }
 
     /**
@@ -68,8 +80,7 @@ object DateUtil
         SopoLog.i("isOverExpiredDate() 호출")
 
         // 1. 현재 시간
-        val currentMilliSeconds = System.currentTimeMillis()
-        // 2. O-Auth 만료 기간
+        val currentMilliSeconds = System.currentTimeMillis() // 2. O-Auth 만료 기간
         val expiredDateToMilliSeconds = changeDateToMilli(expiredDate)
 
         SopoLog.d("현재시간:$currentMilliSeconds")
@@ -87,8 +98,7 @@ object DateUtil
         SopoLog.i("isExpiredDateWithinAWeek() 호출")
 
         // 1. 현재 시간
-        val currentMilliSeconds = System.currentTimeMillis()
-        // 2. O-Auth 만료 기간
+        val currentMilliSeconds = System.currentTimeMillis() // 2. O-Auth 만료 기간
         val expiredDateToMilliSeconds = changeDateToMilli(expiredDate)
 
         SopoLog.d("현재시간 [$currentMilliSeconds]")
@@ -101,9 +111,13 @@ object DateUtil
         return remainMilliSeconds <= weekMilliSeconds
     }
 
-    fun getSubscribedTime(hour: Int, minutes: Int) : String
+    fun getSubscribedTime(hour: Int, minutes: Int): String
     {
-        val topicHour = if(minutes == 0) { hour + 1 } else hour
+        val topicHour = if(minutes == 0)
+        {
+            hour + 1
+        }
+        else hour
         return topicHour.toString().padStart(2, '0').padEnd(4, '0')
     }
 }

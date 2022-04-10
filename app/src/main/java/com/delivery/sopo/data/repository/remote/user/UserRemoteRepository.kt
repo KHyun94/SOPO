@@ -16,7 +16,7 @@ import com.delivery.sopo.models.user.ResetAuthCode
 import com.delivery.sopo.networks.NetworkManager
 import com.delivery.sopo.networks.api.OAuthAPI
 import com.delivery.sopo.networks.api.UserAPI
-import com.delivery.sopo.services.network_handler.BaseServiceBeta
+import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -25,7 +25,7 @@ import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
-class UserRemoteRepository: KoinComponent, BaseServiceBeta()
+class UserRemoteRepository: KoinComponent, BaseService()
 {
     private val userLocalRepo: UserLocalRepository by inject()
     private val oAuthLocalRepo: OAuthLocalRepository by inject()
@@ -86,9 +86,6 @@ class UserRemoteRepository: KoinComponent, BaseServiceBeta()
         val result = apiCall { getUserInfo }
 
         val userInfo = result.data?.data ?: throw SOPOApiException(200, ErrorResponse(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
-
-        SopoLog.d("유저 데이터 ${userInfo.toString()}")
-        SopoLog.d("유저 데이터 ${userInfo.nickname}")
 
         withContext(Dispatchers.Default) {
             userLocalRepo.run {

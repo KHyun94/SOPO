@@ -108,7 +108,7 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
 
         activity?:return
 
-        parentView.currentPage.observe(this) {
+        parentView.getCurrentPage().observe(this) {
             if(it != 0) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
@@ -154,7 +154,7 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
 
         vm.navigator.observe(this) { nav ->
 
-            vm.setNavigator(null)
+            vm.postNavigator(null)
 
             val registerDTO = Parcel.Register(vm.waybillNum.value, vm.carrier.value?.carrier, null)
 

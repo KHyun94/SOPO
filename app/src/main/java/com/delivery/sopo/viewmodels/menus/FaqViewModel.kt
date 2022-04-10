@@ -16,15 +16,15 @@ class FaqViewModel : BaseViewModel()
     val navigator: LiveData<String>
         get() = _navigator
 
-    fun setNavigator(navigator: String){
+    fun postNavigator(navigator: String){
         _navigator.postValue(navigator)
     }
 
     fun onBackClicked(){
-        setNavigator(NavigatorConst.TO_BACK_SCREEN)
+        postNavigator(NavigatorConst.TO_BACK_SCREEN)
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum) { }
     }

@@ -15,7 +15,7 @@ class IntroViewModel:BaseViewModel()
     val navigator: LiveData<String>
         get() = _navigator
 
-    fun setNavigator(navigator: String){
+    fun postNavigator(navigator: String){
         _navigator.postValue(navigator)
     }
 }

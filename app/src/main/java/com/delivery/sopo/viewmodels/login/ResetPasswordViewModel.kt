@@ -12,6 +12,7 @@ import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.exceptions.UserExceptionHandler
+import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.user.ResetAuthCode
@@ -39,7 +40,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
 
     val authCode = MutableLiveData<String>()
 
-    fun setNavigator(navigator: String)
+    fun postNavigator(navigator: String)
     {
         _navigator.postValue(navigator)
     }
@@ -58,7 +59,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         _focus.value = (Triple(v, hasFocus, type))
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum)
         {
@@ -108,7 +109,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
                 ErrorEnum.INVALID_JWT_TOKEN ->
                 {
                     postErrorSnackBar("일정시간이 지났기 때문에 다시 시도해주세요.") //TODO JWT_TOKEN 만료 시 안내와 동시에 처음부터 시작
-                    setNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_SEND)
+                    postNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_SEND)
 
                     jwtToken = ""
                     authCode.postValue("")
@@ -137,22 +138,19 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
     init
     {
         validity[InfoEnum.EMAIL] = false
-        setNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_SEND)
+        postNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_SEND)
     }
 
     fun onClearClicked()
     {
-        setNavigator(NavigatorConst.TO_BACK_SCREEN)
+        postNavigator(NavigatorConst.TO_BACK_SCREEN)
     }
 
     fun onSendEmailClicked(v: View) = checkEventStatus(checkNetwork = true) {
         SopoLog.i("onSendEmailClicked() 호출")
 
         validity.forEach { (k, v) ->
-            if(!v)
-            {
-                return@checkEventStatus _invalidity.postValue(Pair(k, v))
-            }
+            if(!v) return@checkEventStatus _invalidity.postValue(Pair(k, v))
         }
 
         val email = email.value?.toString()
@@ -164,13 +162,10 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
             return@checkEventStatus
         }
 
-        onStartLoading()
         requestSendTokenToEmail(email = email)
     }
 
     fun onVerifyAuthCode() = checkEventStatus(checkNetwork = true) {
-        onStartLoading()
-
         val email: String = email.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.EMAIL)
         val authCode: String = authCode.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.AUTH_CODE)
 
@@ -185,53 +180,43 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
             }
         }
 
-        onStartLoading()
 
         val email: String = email.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.EMAIL)
-        val authCode: String =
-            authCode.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.AUTH_CODE)
-        val password: String =
-            password.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.PASSWORD)
+        val authCode: String = authCode.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.AUTH_CODE)
+        val password: String = password.value ?: return@checkEventStatus focusOn.postValue(InfoEnum.PASSWORD)
 
-        val resetPassword =
-            ResetPassword(resetToken = jwtToken, authCode = authCode, email = email, password = password)
+        val resetPassword = ResetPassword(resetToken = jwtToken, authCode = authCode, email = email, password = password.toMD5())
         requestResetPassword(resetPassword = resetPassword)
     }
 
     fun onConfirmResetPassword()
     {
-        setNavigator(NavigatorConst.TO_COMPLETE)
+        postNavigator(NavigatorConst.TO_COMPLETE)
     }
 
-    private fun verifyAuthCode(email: String, authCode: String) = scope.launch(Dispatchers.IO) {
+    private fun verifyAuthCode(email: String, authCode: String) = scope.launch(coroutineExceptionHandler) {
         try
         {
+            onStartLoading()
             userRemoteRepo.requestVerifyAuthToken(ResetAuthCode(jwtToken, authCode, email))
-            setNavigator(ResetPasswordConst.INPUT_PASSWORD_FOR_RESET)
+            postNavigator(ResetPasswordConst.INPUT_PASSWORD_FOR_RESET)
 
             validity.clear()
             validity[InfoEnum.PASSWORD] = false
         }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
-        }
         finally
         {
             onStopLoading()
         }
     }
 
-    private fun requestSendTokenToEmail(email: String) = scope.launch(Dispatchers.IO) {
+    private fun requestSendTokenToEmail(email: String) = scope.launch(coroutineExceptionHandler) {
         try
         {
+            onStartLoading()
             cnfOfFailureAuthCode = 0
             jwtToken = userRemoteRepo.requestSendTokenToEmail(email = email)
-            setNavigator(ResetPasswordConst.INPUT_AUTH_CODE)
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
+            postNavigator(ResetPasswordConst.INPUT_AUTH_CODE)
         }
         finally
         {
@@ -239,21 +224,16 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         }
     }
 
-    private fun requestResetPassword(resetPassword: ResetPassword) = scope.launch(Dispatchers.IO) {
+    private fun requestResetPassword(resetPassword: ResetPassword) = scope.launch(coroutineExceptionHandler) {
         try
         {
+            onStartLoading()
             userRemoteRepo.requestResetPassword(resetPassword = resetPassword)
-            setNavigator(ResetPasswordConst.COMPLETED_RESET_PASSWORD)
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
+            postNavigator(ResetPasswordConst.COMPLETED_RESET_PASSWORD)
         }
         finally
         {
             onStopLoading()
         }
     }
-
-
 }

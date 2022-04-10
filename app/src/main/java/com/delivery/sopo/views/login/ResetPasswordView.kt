@@ -149,7 +149,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
             override fun onFinish()
             {
-                vm.setNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_RESEND)
+                vm.postNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_RESEND)
                 vm.authCode.postValue("")
 
                 binding.tvCountOfAuth.text = "인증시간 초과"

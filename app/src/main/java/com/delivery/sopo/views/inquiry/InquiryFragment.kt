@@ -70,10 +70,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
         connectTabAndViewPager(binding.viewPagerInquiryType, binding.tabLayoutInquiryType)
         setOnTabSelectedListener()
         processReturnType()
-
-//        binding.includeHeader.onRightClickListener = OnClickListener {
-//            openInquiryMenu(it)
-//        }
     }
 
     override fun setObserve()

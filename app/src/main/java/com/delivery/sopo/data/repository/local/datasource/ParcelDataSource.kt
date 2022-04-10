@@ -7,7 +7,7 @@ import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.parcel.Parcel
 
 interface ParcelDataSource {
-   suspend fun getRemoteParcelByOngoing(): List<Parcel.Common>
+   suspend fun getOngoingParcelsFromRemote(): List<Parcel.Common>
    suspend fun getRemoteMonths(): List<CompletedParcelHistory>?
 
    suspend fun getCompleteParcelsByRemote(page: Int, inquiryDate: String): List<Parcel.Common>

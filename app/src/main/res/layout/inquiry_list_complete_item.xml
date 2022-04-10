@@ -124,7 +124,7 @@
                         android:layout_marginBottom="6dp"
                         android:fontFamily="@font/roboto_medium"
                         android:letterSpacing="0"
-                        android:text="@{completeInquiryData.parcelResponse.alias}"
+                        android:text="@{completeInquiryData.parcel.alias}"
                         android:textSize="14.5dp"
                         tools:text="갤럭시 버즈 플러스 화이트777갤1234ABCabc" />
 
@@ -165,7 +165,7 @@
                         android:layout_marginBottom="6dp"
                         android:fontFamily="@font/roboto_medium"
                         android:letterSpacing="0"
-                        android:text="@{completeInquiryData.parcelResponse.alias}"
+                        android:text="@{completeInquiryData.parcel.alias}"
                         android:textSize="14.5dp"
                         android:textColor="@color/COLOR_MAIN_700"
                         tools:text="갤럭시 버즈 플러스 화이트777갤1234ABCabc" />

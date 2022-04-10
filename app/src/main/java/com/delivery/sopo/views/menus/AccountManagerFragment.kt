@@ -50,7 +50,7 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
         super.setObserve()
 
         activity ?: return
-        parentView.currentPage.observe(this) {
+        parentView.getCurrentPage().observe(this) {
             if(it != 2) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }

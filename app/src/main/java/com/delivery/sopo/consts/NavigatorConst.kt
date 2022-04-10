@@ -2,6 +2,7 @@ package com.delivery.sopo.consts
 
 object NavigatorConst {
 
+    const val MOVE_TO_LOCK_SCREEN: String = "MOVE_TO_LOCK_SCREEN"
     const val CONFIRM_SIGN_OUT:String = "CONFIRM_SIGN_OUT"
     const val EXIT: String = "EXIT"
     const val DUPLICATE_LOGIN: String = "DUPLICATE_LOGIN"

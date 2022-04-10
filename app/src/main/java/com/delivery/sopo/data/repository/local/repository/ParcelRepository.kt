@@ -15,7 +15,7 @@ import com.delivery.sopo.data.repository.local.datasource.ParcelDataSource
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.extensions.wrapBodyAliasToHashMap
 import com.delivery.sopo.extensions.wrapBodyAliasToMap
-import com.delivery.sopo.services.network_handler.BaseServiceBeta
+import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResponse
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 
 class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImpl, private val appDatabase: AppDatabase):
         ParcelDataSource,
-        BaseServiceBeta()
+        BaseService()
 {
     fun insert(parcel: Parcel.Common)
     {
@@ -290,12 +290,11 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
         return result.data?.data ?: throw NullPointerException()
     }
 
-    override suspend fun getRemoteParcelByOngoing(): List<Parcel.Common>
+    override suspend fun getOngoingParcelsFromRemote(): List<Parcel.Common>
     {
-        val getRemoteParcelByOngoing =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
-                .getParcelsOngoing()
-        val result = apiCall { getRemoteParcelByOngoing }
+        val getOngoingParcelsFromRemote = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .getOngoingParcels()
+        val result = apiCall { getOngoingParcelsFromRemote }
         return result.data?.data ?: emptyList()
     }
 
@@ -312,7 +311,7 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
     {
         val getCompleteParcelsByRemote =
             NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
-                .getParcelsComplete(page = page, inquiryDate = inquiryDate)
+                .getCompletedParcelsByPaging(page = page, inquiryDate = inquiryDate)
         val result = apiCall { getCompleteParcelsByRemote }
         return result.data?.data ?: emptyList()
     }

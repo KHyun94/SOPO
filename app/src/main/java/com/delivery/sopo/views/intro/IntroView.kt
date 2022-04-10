@@ -44,7 +44,7 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
 
             if(!isNow)
             {
-                return vm.setNavigator(NavigatorConst.TO_LOGIN_SELECT)
+                return vm.postNavigator(NavigatorConst.TO_LOGIN_SELECT)
             }
 
             launchNotificationSetting()
@@ -64,7 +64,7 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
                     return
                 }
 
-                vm.setNavigator(NavigatorConst.TO_LOGIN_SELECT)
+                vm.postNavigator(NavigatorConst.TO_LOGIN_SELECT)
             }
         })
 

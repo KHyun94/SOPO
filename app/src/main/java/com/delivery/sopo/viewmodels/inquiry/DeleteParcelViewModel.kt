@@ -18,7 +18,6 @@ import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
-import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.usecase.parcel.remote.*
 import com.delivery.sopo.util.SopoLog
@@ -230,54 +229,54 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
 
         val elseList = list.asSequence().filter { item ->
 
-            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
             {
                 multiList[0].add(item)
             }
 
-            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
+            item.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
         }.filter { item ->
-            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE)
             {
                 multiList[1].add(item)
             }
 
-            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
+            item.parcel.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
         }.filter { item ->
-            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE)
             {
                 multiList[2].add(item)
             }
 
-            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.IN_TRANSIT.CODE
+            item.parcel.deliveryStatus != DeliveryStatusEnum.IN_TRANSIT.CODE
         }.filter { item ->
-            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE)
             {
                 multiList[3].add(item)
             }
 
-            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.AT_PICKUP.CODE
+            item.parcel.deliveryStatus != DeliveryStatusEnum.AT_PICKUP.CODE
         }.filter { item ->
-            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE)
             {
                 multiList[4].add(item)
             }
 
-            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
+            item.parcel.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
         }.filter { item ->
-            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.NOT_REGISTERED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.NOT_REGISTERED.CODE)
             { //                SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
                 multiList[5].add(item)
             }
 
-            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.NOT_REGISTERED.CODE
+            item.parcel.deliveryStatus != DeliveryStatusEnum.NOT_REGISTERED.CODE
         }.filter { item ->
-            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.ORPHANED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.ORPHANED.CODE)
             { //                SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
                 multiList[6].add(item)
             }
 
-            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE
+            item.parcel.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE
         }.toList()
 
         multiList[7].addAll(elseList)
@@ -316,11 +315,11 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
     {
         override fun compare(p0: InquiryListItem, p1: InquiryListItem): Int
         {
-            return p0.parcelResponse.auditDte.compareTo(p1.parcelResponse.auditDte)
+            return p0.parcel.auditDte.compareTo(p1.parcel.auditDte)
         }
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onRegisterParcelError(error: ErrorEnum)
         {

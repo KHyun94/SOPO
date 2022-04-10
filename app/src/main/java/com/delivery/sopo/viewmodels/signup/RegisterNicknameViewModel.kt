@@ -40,7 +40,7 @@ class RegisterNicknameViewModel(private val updateNicknameUseCase: UpdateNicknam
     val navigator: LiveData<NavigatorEnum>
         get() = _navigator
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
 
         override fun onFailure(error: ErrorEnum)

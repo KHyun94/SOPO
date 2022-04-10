@@ -88,7 +88,7 @@ class RefreshParcelBroadcastReceiver: BroadcastReceiver(), KoinComponent
         }
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    val onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onRegisterParcelError(error: ErrorEnum)
         {

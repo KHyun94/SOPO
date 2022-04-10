@@ -13,8 +13,6 @@ class InternalServerException : Exception
     private lateinit var e: Exception
     private lateinit var errorResponse: ErrorResponse
 
-    constructor(){}
-
     constructor(message: String){
         this.message = message
     }

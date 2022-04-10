@@ -47,7 +47,7 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository): Ba
         ParcelExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum) {  }
     }
@@ -57,7 +57,7 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository): Ba
         validity[InfoEnum.WAYBILL_NUMBER] = false
     }
 
-    fun setNavigator(nav: NavigatorEnum?){
+    fun postNavigator(nav: NavigatorEnum?){
         _navigator.postValue(nav)
     }
 

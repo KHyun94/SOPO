@@ -78,14 +78,14 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
         super.setObserve()
 
         activity ?: return
-        parentView.currentPage.observe(this) {
+        parentView.getCurrentPage().observe(this) {
             if(it != 0) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
         vm.navigator.observe(this) { nav ->
 
-            vm.setNavigator(null)
+            vm.postNavigator(null)
 
             val parcelRegister = Parcel.Register(waybillNum, carrier, null)
 
@@ -156,7 +156,7 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
                             this@SelectCarrierFragment.carrier = carrier.carrier
                         }
 
-                        vm.setNavigator(NavigatorEnum.REGISTER_CONFIRM)
+                        vm.postNavigator(NavigatorEnum.REGISTER_CONFIRM)
 
                     }
                 }

@@ -71,7 +71,7 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
         }
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onRegisterParcelError(error: ErrorEnum)
         {

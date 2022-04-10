@@ -3,7 +3,6 @@ package com.delivery.sopo.viewmodels.inquiry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import androidx.lifecycle.map
 import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
@@ -13,7 +12,6 @@ import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.usecase.parcel.remote.DeleteParcelsUseCase
 import com.delivery.sopo.usecase.parcel.remote.RefreshParcelUseCase
 import com.delivery.sopo.usecase.parcel.remote.SyncParcelsUseCase
@@ -28,23 +26,21 @@ class OngoingTypeViewModel(
                            private val updateParcelAliasUseCase: UpdateParcelAliasUseCase,
                            private val deleteParcelsUseCase: DeleteParcelsUseCase,
                            private val parcelRepo: ParcelRepository,
-                           private val parcelManagementRepo: ParcelManagementRepoImpl):
-        BaseViewModel()
+                           private val parcelManagementRepo: ParcelManagementRepoImpl): BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
         get() = _navigator
 
-    private val _ongoingParcels = Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
+    fun postNavigator(navigator: String){
+        _navigator.postValue(navigator)
+    }
 
+    private val _ongoingParcels = Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
         val list = parcelList.map {  parcel ->
             InquiryListItem(parcel, false)
         }
-
         sortByDeliveryStatus(list).toMutableList()
-
-//        val list: MutableList<InquiryListItem> = ParcelMapper.parcelListToInquiryItemList(parcelList)
-//        sortByDeliveryStatus(list).toMutableList()
     }
     val ongoingParcels: LiveData<MutableList<InquiryListItem>>
         get() = _ongoingParcels
@@ -53,7 +49,7 @@ class OngoingTypeViewModel(
 
     init
     {
-        syncParcelsByOngoing().start()
+        syncOngoingParcels()
     }
 
     /**
@@ -61,7 +57,7 @@ class OngoingTypeViewModel(
      */
 
     // 서버에서 DB 내 택배 정보를 가져와서 로컬 내 디비 정보를 갱신
-    fun syncParcelsByOngoing() = scope.async(Dispatchers.IO) {
+    fun syncOngoingParcels() = scope.launch(Dispatchers.IO) {
         try
         {
             syncParcelsUseCase.invoke()
@@ -120,54 +116,54 @@ class OngoingTypeViewModel(
 
         val elseList = list.asSequence().filter { item ->
 
-            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
             {
                 multiList[0].add(item)
             }
 
-            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
+            item.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
         }.filter { item ->
-            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE)
             {
                 multiList[1].add(item)
             }
 
-            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
+            item.parcel.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
         }.filter { item ->
-            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE)
             {
                 multiList[2].add(item)
             }
 
-            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.IN_TRANSIT.CODE
+            item.parcel.deliveryStatus != DeliveryStatusEnum.IN_TRANSIT.CODE
         }.filter { item ->
-            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE)
             {
                 multiList[3].add(item)
             }
 
-            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.AT_PICKUP.CODE
+            item.parcel.deliveryStatus != DeliveryStatusEnum.AT_PICKUP.CODE
         }.filter { item ->
-            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE)
             {
                 multiList[4].add(item)
             }
 
-            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
+            item.parcel.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
         }.filter { item ->
-            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.NOT_REGISTERED.CODE)
-            { //                SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.NOT_REGISTERED.CODE)
+            {
                 multiList[5].add(item)
             }
 
-            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.NOT_REGISTERED.CODE
+            item.parcel.deliveryStatus != DeliveryStatusEnum.NOT_REGISTERED.CODE
         }.filter { item ->
-            if(item.parcelResponse.deliveryStatus == DeliveryStatusEnum.ORPHANED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.ORPHANED.CODE)
             { //                SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
                 multiList[6].add(item)
             }
 
-            item.parcelResponse.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE
+            item.parcel.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE
         }.toList()
 
         multiList[7].addAll(elseList)
@@ -189,11 +185,11 @@ class OngoingTypeViewModel(
     {
         override fun compare(p0: InquiryListItem, p1: InquiryListItem): Int
         {
-            return p0.parcelResponse.auditDte.compareTo(p1.parcelResponse.auditDte)
+            return p0.parcel.auditDte.compareTo(p1.parcel.auditDte)
         }
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onRegisterParcelError(error: ErrorEnum)
         {

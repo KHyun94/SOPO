@@ -53,7 +53,7 @@ class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository,
     val result: LiveData<ResponseResult<*>>
         get() = _result
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum)
         { // TODO 발생하는 에러가 있을까?

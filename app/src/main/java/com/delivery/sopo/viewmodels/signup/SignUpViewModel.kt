@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.consts.UserTypeConst
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.toMD5
@@ -43,7 +44,7 @@ class SignUpViewModel(private val signUpUseCase: SignUpUseCase): BaseViewModel()
     val navigator: LiveData<String>
         get() = _navigator
 
-    fun setNavigator(navigator: String)
+    fun postNavigator(navigator: String)
     {
         _navigator.postValue(navigator)
     }
@@ -52,16 +53,16 @@ class SignUpViewModel(private val signUpUseCase: SignUpUseCase): BaseViewModel()
         UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum)
         {
             postErrorSnackBar("로그인에 실패했습니다.")
         }
 
-        override fun onErrorAlreadyRegisteredUser(error: ErrorEnum)
+        override fun onAlreadyRegisteredUser(error: ErrorEnum)
         {
-            super.onErrorAlreadyRegisteredUser(error)
+            super.onAlreadyRegisteredUser(error)
             postErrorSnackBar("이미 등록된 사용자입니다.")
         }
 
@@ -109,8 +110,8 @@ class SignUpViewModel(private val signUpUseCase: SignUpUseCase): BaseViewModel()
         {
             onStartLoading()
 
-            signUpUseCase.invoke(joinInfo = joinInfo)
-            setNavigator(NavigatorConst.TO_COMPLETE)
+            signUpUseCase.invoke(joinInfo = joinInfo, userType = UserTypeConst.SELF)
+            postNavigator(NavigatorConst.TO_COMPLETE)
         }
         catch(e: Exception)
         {

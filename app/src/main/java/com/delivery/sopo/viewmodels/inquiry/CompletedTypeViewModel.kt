@@ -182,7 +182,7 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
         }
     }
 
-    private val onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onRegisterParcelError(error: ErrorEnum)
         {

@@ -365,7 +365,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
 
         activity ?: return
 
-        parentView.currentPage.observe(this) {
+        parentView.getCurrentPage().observe(this) {
             if(it != 2) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
@@ -495,7 +495,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
         vm.showSetPassword.observe(requireActivity(), Observer {
             if(it)
             {
-                vm.setNavigator(NavigatorConst.TO_NOT_DISTURB)
+                vm.postNavigator(NavigatorConst.TO_NOT_DISTURB)
             }
             else
             {
