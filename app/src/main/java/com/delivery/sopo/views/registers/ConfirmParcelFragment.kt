@@ -3,23 +3,18 @@ package com.delivery.sopo.views.registers
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.Observer
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.databinding.FragmentConfirmParcelBinding
-import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
-import com.delivery.sopo.models.*
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.services.receivers.RefreshParcelBroadcastReceiver
 import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.registesrs.ConfirmParcelViewModel
-import com.delivery.sopo.views.dialog.GeneralDialog
-import com.delivery.sopo.views.dialog.OnAgreeClickListener
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -32,38 +27,28 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
     private val parentView: MainView by lazy { activity as MainView }
 
     private lateinit var parcelRegister: Parcel.Register
-    private var beforeStep: Int = 0
+    private var beforeStep: String = ""
 
     override fun receiveData(bundle: Bundle)
     {
         super.receiveData(bundle)
 
-        try
-        {
-            val parcelSerializable = bundle.getSerializable(RegisterMainFragment.REGISTER_INFO) ?: throw NullPointerException("등록 데이터가 정상적으로 오지 않았습니다.")
+        val parcelSerializable = bundle.getSerializable(RegisterMainFragment.REGISTER_INFO)
 
-            if(parcelSerializable !is Parcel.Register) throw IllegalArgumentException("등록 데이터가 정상적으로 오지 않았습니다.")
+        if(parcelSerializable !is Parcel.Register) throw IllegalArgumentException("등록 데이터가 정상적으로 오지 않았습니다.")
 
-            parcelRegister = parcelSerializable
-            beforeStep = bundle.getInt("beforeStep")
+        parcelRegister = parcelSerializable
+        beforeStep = bundle.getString("BEFORE_STEP") ?: return
 
-            parcelRegister.waybillNum.let { waybillNo ->
-                requireNotNull(waybillNo)
-                vm.waybillNum.value = waybillNo
-            }
-
-            parcelRegister.carrier.let { carrierEnum ->
-                requireNotNull(carrierEnum)
-                vm.carrier.value = CarrierMapper.enumToObject(carrierEnum)
-            }
-
-            parcelRegister.alias?.let { alias -> vm.alias.value = alias }
+        parcelRegister.waybillNum.let { waybillNum ->
+            vm.waybillNum.value = waybillNum
         }
-        catch(e: Exception)
-        {
-            SopoLog.e("등록 3단계 실패 - 데이터를 정상적으로 받지 못했습니다.", e)
-            alertErrorMessage()
+
+        parcelRegister.carrier?.let { carrier ->
+            vm.carrier.value = CarrierMapper.enumToObject(carrier)
         }
+
+        parcelRegister.alias?.let { alias -> vm.alias.value = alias }
 
     }
 
@@ -81,12 +66,12 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
 
                 when(beforeStep)
                 {
-                    0->
+                    NavigatorConst.REGISTER_INPUT_INFO ->
                     {
                         TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
                         FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
                     }
-                    1->
+                    NavigatorConst.REGISTER_SELECT_CARRIER ->
                     {
                         TabCode.REGISTER_SELECT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
                         FragmentManager.move(requireActivity(), TabCode.REGISTER_SELECT, RegisterMainFragment.viewId)
@@ -96,79 +81,55 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
         }
     }
 
-    private fun alertErrorMessage(){
-        GeneralDialog(requireActivity(), "등록 오류", "시스템 오류로 다시 입력을 부탁드립니다. ㅠㅡㅜ", null, Pair("이동", object: OnAgreeClickListener
-        {
-            override fun invoke(agree: GeneralDialog)
-            {
-                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(null, RegisterMainFragment.REGISTER_PROCESS_RESET)
-
-                FragmentManager.initFragment(activity = requireActivity(),
-                                             viewId = RegisterMainFragment.viewId,
-                                             currentFragment = this@ConfirmParcelFragment,
-                                             nextFragment = TabCode.REGISTER_INPUT.FRAGMENT,
-                                             nextFragmentTag = TabCode.REGISTER_INPUT.NAME)
-            }
-        })).show(parentFragmentManager, "DIALOG")
-    }
-
-
     override fun setObserve()
     {
         super.setObserve()
 
         activity ?: return
+
         parentView.getCurrentPage().observe(this) {
-            if(it != 0) return@observe
+            if(it != TabCode.firstTab) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
-        vm.navigator.observe(this, Observer { navigator ->
+        vm.navigator.observe(this) { navigator ->
 
-            TabCode.REGISTER_INPUT.FRAGMENT  = when(navigator)
+            TabCode.REGISTER_INPUT.FRAGMENT = when(navigator)
             {
-                NavigatorEnum.REGISTER_INPUT_INIT ->
+                NavigatorConst.REGISTER_INITIALIZE ->
                 {
                     InputParcelFragment.newInstance(null, RegisterMainFragment.REGISTER_PROCESS_RESET)
                 }
-                NavigatorEnum.REGISTER_INPUT_REVISE ->
+                NavigatorConst.REGISTER_REVISE ->
                 {
                     InputParcelFragment.newInstance(parcelRegister, RegisterMainFragment.REGISTER_PROCESS_RESET)
                 }
-                NavigatorEnum.REGISTER_INPUT_SUCCESS ->
+                NavigatorConst.REGISTER_SUCCESS ->
                 {
-                    val intent  = Intent(RefreshParcelBroadcastReceiver.ACTION)
-                    intent.putExtra("TYPE", 3)
-                    parentView.sendBroadcast(intent)
-
                     val defer = FirebaseRepository.subscribedToTopic()
                     defer.start()
+
+                    val intent = Intent(RefreshParcelBroadcastReceiver.COMPLETE_REGISTER_ACTION)
+                    intent.putExtra("PARCEL_ID", vm.parcelId)
+                    requireActivity().sendBroadcast(intent)
 
                     InputParcelFragment.newInstance(null, RegisterMainFragment.REGISTER_PROCESS_SUCCESS)
                 }
                 else -> throw Exception("NOT SUPPORT REGISTER TYPE")
             }
 
-//            FragmentManager.remove(requireActivity())
             FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
-
-           /* FragmentManager.initFragment(activity = requireActivity(),
-                                         viewId = RegisterMainFragment.viewId,
-                                         currentFragment = this@ConfirmParcelFragment,
-                                         nextFragment = TabCode.REGISTER_INPUT.FRAGMENT,
-                                         nextFragmentTag = TabCode.REGISTER_INPUT.NAME)*/
-
-        })
+        }
 
     }
 
     companion object
     {
-        fun newInstance(register: Parcel.Register?, beforeStep:Int): ConfirmParcelFragment
+        fun newInstance(register: Parcel.Register?, beforeStep: String): ConfirmParcelFragment
         {
             val args = Bundle().apply {
                 putSerializable(RegisterMainFragment.REGISTER_INFO, register)
-                putInt("beforeStep", beforeStep)
+                putString("BEFORE_STEP", beforeStep)
             }
 
             return ConfirmParcelFragment().apply {

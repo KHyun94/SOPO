@@ -49,10 +49,6 @@ class SignUpViewModel(private val signUpUseCase: SignUpUseCase): BaseViewModel()
         _navigator.postValue(navigator)
     }
 
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
-    }
-
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum)
@@ -105,17 +101,12 @@ class SignUpViewModel(private val signUpUseCase: SignUpUseCase): BaseViewModel()
         requestSignUp(joinInfo = joinInfo)
     }
 
-    private fun requestSignUp(joinInfo: JoinInfo) = scope.launch(Dispatchers.IO) {
+    private fun requestSignUp(joinInfo: JoinInfo) = scope.launch(coroutineExceptionHandler) {
         try
         {
             onStartLoading()
-
             signUpUseCase.invoke(joinInfo = joinInfo, userType = UserTypeConst.SELF)
             postNavigator(NavigatorConst.TO_COMPLETE)
-        }
-        catch(e: Exception)
-        {
-            return@launch exceptionHandler.handleException(coroutineContext, e)
         }
         finally
         {

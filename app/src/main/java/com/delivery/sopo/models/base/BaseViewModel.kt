@@ -29,7 +29,7 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
 {
     private val logoutUseCase: LogoutUseCase by inject()
 
-    abstract val exceptionHandler: CoroutineExceptionHandler
+//    abstract val exceptionHandler: CoroutineExceptionHandler
 
     protected val scope: CoroutineScope = (viewModelScope + SupervisorJob())
 
@@ -57,69 +57,70 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
 
     open lateinit var onSOPOErrorCallback: OnSOPOErrorCallback
 
-    protected val coroutineExceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler{ coroutineContext, exception ->
+    protected val coroutineExceptionHandler: CoroutineExceptionHandler =
+        CoroutineExceptionHandler { _, exception ->
 
-        when(exception)
-        {
-            is SOPOApiException ->
+            when(exception)
             {
-                val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
-                    message = exception.getErrorResponse().message
-                }
-
-                SopoLog.e("SOPO API Error $errorCode", exception)
-
-                if(errorCode == ErrorEnum.ALREADY_REGISTERED_USER) return@CoroutineExceptionHandler onSOPOErrorCallback.onAlreadyRegisteredUser(errorCode)
-
-                if(errorCode == ErrorEnum.ALREADY_REGISTERED_USER && errorCode == ErrorEnum.OVER_REGISTERED_PARCEL)
+                is SOPOApiException ->
                 {
-                    return@CoroutineExceptionHandler onSOPOErrorCallback.onRegisterParcelError(errorCode)
-                }
+                    val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
+                        message = exception.getErrorResponse().message
+                    }
 
-                if(errorCode == ErrorEnum.PARCEL_NOT_FOUND)
-                {
-                    return@CoroutineExceptionHandler onSOPOErrorCallback.onInquiryParcelError(errorCode)
-                }
+                    SopoLog.e("SOPO API Error $errorCode", exception)
 
-                if(errorCode == ErrorEnum.OAUTH2_DELETE_TOKEN)
+                    when(errorCode)
+                    {
+                        ErrorEnum.ALREADY_REGISTERED_PARCEL, ErrorEnum.OVER_REGISTERED_PARCEL, ErrorEnum.PARCEL_BAD_REQUEST -> onSOPOErrorCallback.onRegisterParcelError(errorCode)
+                        ErrorEnum.ALREADY_REGISTERED_USER -> onSOPOErrorCallback.onAlreadyRegisteredUser(errorCode)
+                        ErrorEnum.PARCEL_NOT_FOUND -> onSOPOErrorCallback.onInquiryParcelError(errorCode)
+                        else -> onSOPOErrorCallback.onFailure(errorCode)
+                    }
+                }
+                is OAuthException ->
                 {
-                    return@CoroutineExceptionHandler onSOPOErrorCallback.onDuplicateError(errorCode)
-                }
-                onSOPOErrorCallback.onFailure(errorCode)
-            }
-            is OAuthException ->
-            {
-                val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
-                    message = exception.getErrorResponse().message
-                }
-                SopoLog.e("OAuthException API Error $errorCode", exception)
-                if(errorCode == ErrorEnum.OAUTH2_INVALID_GRANT || errorCode == ErrorEnum.OAUTH2_INVALID_TOKEN)
-                {
-                    return@CoroutineExceptionHandler onSOPOErrorCallback.onLoginError(errorCode)
-                }
-                else if(errorCode == ErrorEnum.OAUTH2_DELETE_TOKEN)
-                {
-                                        logoutUseCase.invoke()
-                    return@CoroutineExceptionHandler onSOPOErrorCallback.onDuplicateError(errorCode)
-                }
+                    val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
+                        message = exception.getErrorResponse().message
+                    }
 
-                onSOPOErrorCallback.onAuthError(errorCode)
-            }
-            is InternalServerException ->
-            {
-                val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
-                    message = exception.getErrorResponse().message
+                    SopoLog.e("OAuthException API Error $errorCode", exception)
+
+                    when(errorCode)
+                    {
+                        ErrorEnum.OAUTH2_INVALID_GRANT, ErrorEnum.OAUTH2_INVALID_TOKEN ->
+                        {
+                            onSOPOErrorCallback.onLoginError(errorCode)
+                        }
+                        ErrorEnum.OAUTH2_DELETE_TOKEN ->
+                        {
+                            logoutUseCase.invoke()
+                            moveDuplicated()
+                        }
+                        else -> onSOPOErrorCallback.onAuthError(errorCode)
+                    }
                 }
-                SopoLog.e("InternalServerException API Error $errorCode", exception)
-                onSOPOErrorCallback.onInternalServerError(errorCode)
-            }
-            else ->
-            {
-                onSOPOErrorCallback.onFailure(ErrorEnum.UNKNOWN_ERROR)
+                is InternalServerException ->
+                {
+                    val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
+                            message = exception.getErrorResponse().message
+                        }
+                    SopoLog.e("InternalServerException API Error $errorCode", exception)
+
+                    if(errorCode == ErrorEnum.FAIL_TO_SEARCH_PARCEL)
+                    {
+                        return@CoroutineExceptionHandler onSOPOErrorCallback.onInquiryParcelError(errorCode)
+                    }
+
+                    onSOPOErrorCallback.onInternalServerError(errorCode)
+                }
+                else ->
+                {
+                    onSOPOErrorCallback.onFailure(ErrorEnum.UNKNOWN_ERROR)
+                }
             }
         }
-    } 
-    
+
     fun checkEventStatus(checkNetwork: Boolean = false, delayMillisecond: Long = 100, event: () -> Unit)
     {
         if(_isClickEvent.value == true) return
@@ -149,19 +150,18 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
         SopoLog.d("이벤트 시작 전")
 
         Handler(Looper.getMainLooper()).postDelayed({
-            try
-            {
-                SopoLog.d("이벤트 시작")
-                event.invoke()
-            }
-            finally
-            {
-                SopoLog.d("이벤트 종료")
-                _isClickEvent.postValue(false)
-            }
-        }, delayMillisecond)
+                                                        try
+                                                        {
+                                                            SopoLog.d("이벤트 시작")
+                                                            event.invoke()
+                                                        }
+                                                        finally
+                                                        {
+                                                            SopoLog.d("이벤트 종료")
+                                                            _isClickEvent.postValue(false)
+                                                        }
+                                                    }, delayMillisecond)
     }
-
 
 
     fun checkNetworkStatus(): Boolean
@@ -207,7 +207,8 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
         _isLoading.postValue(false)
     }
 
-    fun moveDuplicated(){
+    fun moveDuplicated()
+    {
         _isDuplicated.postValue(true)
         scope.cancel("중복 로그인으로 인한 모든 프로세스 종료")
     }

@@ -34,9 +34,6 @@ class MainViewModel(private val userRepo: UserLocalRepository,
     val currentPage: LiveData<Int>
         get() = _currentPage
 
-    override val exceptionHandler: CoroutineExceptionHandler
-        get() = CoroutineExceptionHandler { coroutineContext, throwable ->  }
-
     init
     {
         updateFCMToken()

@@ -39,8 +39,6 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
         _focus.value = (Triple(v, hasFocus, type))
     }
 
-    override val exceptionHandler: CoroutineExceptionHandler by lazy { UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback) }
-
     init
     {
         validity[InfoEnum.EMAIL] = false

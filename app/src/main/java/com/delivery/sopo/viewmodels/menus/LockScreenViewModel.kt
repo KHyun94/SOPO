@@ -6,18 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.consts.LockStatusConst
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.database.room.dto.AppPasswordDTO
-import com.delivery.sopo.enums.LockScreenStatusEnum
-import com.delivery.sopo.extensions.asSHA256
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
-import com.delivery.sopo.enums.ErrorEnum
-import com.delivery.sopo.exceptions.UserExceptionHandler
-import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
+import com.delivery.sopo.enums.LockScreenStatusEnum
+import com.delivery.sopo.extensions.asSHA256
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, private val appPasswordRepo: AppPasswordRepository):
         BaseViewModel()
@@ -38,30 +36,6 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
         get() = _error
 
     var authCode: String = ""
-
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
-    {
-        override fun onFailure(error: ErrorEnum)
-        {
-            SopoLog.e("인증 오류 ${error.toString()}")
-        }
-
-        override fun onInternalServerError(error: ErrorEnum)
-        {
-            super.onInternalServerError(error)
-             postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
-        }
-
-        override fun onAuthError(error: ErrorEnum)
-        {
-            super.onAuthError(error)
-            postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
-        }
-    }
-
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
-    }
 
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
@@ -180,35 +154,6 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
 
         setLockScreenStatus(LockScreenStatusEnum.SET_UPDATE)
         // 1차 입력 데이터가 빈 값일 때 임시 저장 후, 2차 입력 상태로 변경
-
-
-//        if(primaryAuthNumber == "")
-//        {
-//            primaryAuthNumber = lockNum
-//            this.lockNum.value = ""
-//            verifyType.value = LockStatusConst.SET.VERIFY_STATUS
-//            return
-//        }
-//
-//        // 1, 2차 입력 데이터가 달랐을 때, 처음 상태로 이동
-//        if(primaryAuthNumber != lockNum)
-//        {
-//            this.lockNum.value = ""
-//            primaryAuthNumber = ""
-//            verifyType.value = LockStatusConst.SET.FAILURE_STATUS
-//            return
-//        }
-
-
-
-//        // 1, 2차 입력 데이터가 같을 때
-//        verifyType.value = LockStatusConst.SET.CONFIRM_STATUS
-//
-//        viewModelScope.launch(Dispatchers.Default) {
-//            val dto =
-//                AppPasswordDTO(userId = userLocalRepo.getUserId(), appPassword = lockNum.asSHA256, auditDte = TimeUtil.getDateTime())
-//            appPasswordRepo.insert(dto)
-//        }
     }
 
     // VERIFY: 입력 데이터와 저장된 데이터가 동일한지 비교

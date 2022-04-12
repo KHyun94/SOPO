@@ -7,7 +7,6 @@ import com.delivery.sopo.extensions.wrapBodyAliasToHashMap
 class SignOutUseCase(private val userLocalRepo:UserLocalRepository, private val userRemoteRepo:UserRemoteRepository)
 {
     suspend operator fun invoke(reason: String){
-
         userRemoteRepo.requestSignOut(reason)
         userLocalRepo.removeUserRepo()
     }

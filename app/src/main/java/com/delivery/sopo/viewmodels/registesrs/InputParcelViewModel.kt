@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.bindings.FocusChangeCallback
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.InfoEnum
@@ -16,17 +17,16 @@ import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 
-
 class InputParcelViewModel(private val carrierRepository: CarrierRepository): BaseViewModel()
 {
-    val waybillNum = MutableLiveData<String>().apply { value = "" }
+    val waybillNum = MutableLiveData<String>()
     val carrier = MutableLiveData<Carrier?>()
 
     // 가져온 클립보드 문자열
-    val clipboardText = MutableLiveData<String>().apply { value = "" }
+    val clipboardText = MutableLiveData<String>()
 
-    private val _navigator = MutableLiveData<NavigatorEnum?>()
-    val navigator: LiveData<NavigatorEnum?>
+    private val _navigator = MutableLiveData<String>()
+    val navigator: LiveData<String>
         get() = _navigator
 
     val validity = mutableMapOf<InfoEnum, Boolean>()
@@ -43,27 +43,18 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository): Ba
         _focus.value = (Triple(v, hasFocus, type))
     }
 
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        ParcelExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
-    }
-
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
-    {
-        override fun onFailure(error: ErrorEnum) {  }
-    }
-
     init
     {
         validity[InfoEnum.WAYBILL_NUMBER] = false
     }
 
-    fun postNavigator(nav: NavigatorEnum?){
-        _navigator.postValue(nav)
+    fun postNavigator(navigator: String){
+        _navigator.postValue(navigator)
     }
 
     fun onMoveCarrierSelectorClicked()
     {
-        _navigator.postValue(NavigatorEnum.REGISTER_SELECT)
+        postNavigator(NavigatorConst.REGISTER_SELECT_CARRIER)
     }
 
     fun onMove3rdStepClicked(v: View) = checkEventStatus(checkNetwork = true) {
@@ -75,7 +66,7 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository): Ba
             }
         }
 
-        _navigator.postValue(NavigatorEnum.REGISTER_CONFIRM)
+        postNavigator(NavigatorConst.REGISTER_CONFIRM_PARCEL)
     }
 
     fun recommendCarrierByWaybill(waybillNum: String) = scope.launch(Dispatchers.Default) {
@@ -88,11 +79,6 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository): Ba
         }
 
         this@InputParcelViewModel.carrier.postValue(CarrierMapper.enumToObject(carrier))
-//        val carrier = carrierRepository.recommendAutoCarrier(waybillNum, 1).apply {
-//            if(size == 0) return@launch
-//        }.first()
-
-//        this@InputParcelViewModel.carrier.postValue(carrier)
     }
 
     fun onPasteClicked()
@@ -103,7 +89,6 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository): Ba
     override fun onCleared()
     {
         super.onCleared()
-        _navigator.value = null
     }
 }
 

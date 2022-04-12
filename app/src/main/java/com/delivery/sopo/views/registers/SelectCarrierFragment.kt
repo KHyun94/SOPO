@@ -6,9 +6,9 @@ import android.os.Looper
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentSelectCarrierBinding
 import com.delivery.sopo.enums.CarrierEnum
-import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.Carrier
@@ -35,7 +35,7 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
     private val parentView: MainView by lazy { activity as MainView }
 
     lateinit var adapter: GridTypedRecyclerViewAdapter
-    lateinit var waybillNum: String
+    var waybillNum: String? = null
     var carrier: CarrierEnum? = null
 
     override fun receiveData(bundle: Bundle)
@@ -58,8 +58,9 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
             {
                 super.onBackPressed()
 
-                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = null, returnType = 0)
+                val parcelRegister = Parcel.Register(waybillNum = waybillNum, carrier = carrier, alias = null)
 
+                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
                 FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
             }
         }
@@ -79,13 +80,11 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
 
         activity ?: return
         parentView.getCurrentPage().observe(this) {
-            if(it != 0) return@observe
+            if(it != TabCode.firstTab) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
         vm.navigator.observe(this) { nav ->
-
-            vm.postNavigator(null)
 
             val parcelRegister = Parcel.Register(waybillNum, carrier, null)
 
@@ -93,37 +92,29 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
 
             when(nav)
             {
-                NavigatorEnum.REGISTER_CONFIRM ->
+                NavigatorConst.REGISTER_INPUT_INFO ->
+                {
+                    val parcelRegister = Parcel.Register(waybillNum = waybillNum, carrier = carrier, alias = null)
+                    TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
+                    FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
+                }
+                NavigatorConst.REGISTER_CONFIRM_PARCEL ->
                 {
                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
 
                         if(waybillNum == "")
                         {
-                            TabCode.REGISTER_INPUT.FRAGMENT =
-                                InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
-
+                            TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
                             FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
                             return@Runnable
                         }
 
                         TabCode.REGISTER_CONFIRM.FRAGMENT =
-                            ConfirmParcelFragment.newInstance(register = parcelRegister,beforeStep = 1)
+                            ConfirmParcelFragment.newInstance(register = parcelRegister,beforeStep = NavigatorConst.REGISTER_SELECT_CARRIER)
 
                         FragmentManager.move(requireActivity(), TabCode.REGISTER_CONFIRM, RegisterMainFragment.viewId)
 
                     }, 500) // 0.5초후
-                }
-
-                NavigatorEnum.REGISTER_INPUT ->
-                {
-
-//                    requireActivity().supportFragmentManager.popBackStack()
-                    FragmentManager.remove(activity = requireActivity())
-
-                    TabCode.REGISTER_INPUT.FRAGMENT =
-                        InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
-
-                    FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
                 }
             }
         }
@@ -141,27 +132,26 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
     }
 
     private fun setRecyclerViewItem() = CoroutineScope(Dispatchers.Main).launch {
-        adapter.setItems(vm.getCarriers(waybillNum = waybillNum))
+        adapter.setItems(vm.getCarriers(waybillNum = waybillNum?:""))
 
-        val listener =
-            object: GridTypedRecyclerViewAdapter.OnItemClickListener<List<SelectItem<Carrier?>>>
+        val listener = object: GridTypedRecyclerViewAdapter.OnItemClickListener<List<SelectItem<Carrier?>>>
+        {
+            override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<Carrier?>>)
             {
-                override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<Carrier?>>)
+                val item = items[pos]
+
+                if(item.isSelect)
                 {
-                    val item = items[pos]
-
-                    if(item.isSelect)
-                    {
-                        item.item?.let { carrier ->
-                            this@SelectCarrierFragment.carrier = carrier.carrier
-                        }
-
-                        vm.postNavigator(NavigatorEnum.REGISTER_CONFIRM)
-
+                    item.item?.let { carrier ->
+                        this@SelectCarrierFragment.carrier = carrier.carrier
                     }
-                }
 
+                    vm.postNavigator(NavigatorConst.REGISTER_CONFIRM_PARCEL)
+
+                }
             }
+
+        }
 
         adapter.setOnItemClickListener(listener)
     }

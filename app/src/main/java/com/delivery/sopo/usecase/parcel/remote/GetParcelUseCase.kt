@@ -2,9 +2,7 @@ package com.delivery.sopo.usecase.parcel.remote
 
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.models.UpdateParcelAliasRequest
 import com.delivery.sopo.models.mapper.ParcelMapper
-import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -24,9 +22,7 @@ class GetParcelUseCase(private val parcelRepo: ParcelRepository, private val par
             return@withContext remoteParcel
         }
 
-        val status = parcelManagementRepoImpl.getParcelStatus(parcelId = localParcel.parcelId).apply {
-            auditDte = TimeUtil.getDateTime()
-        }
+        val status = parcelManagementRepoImpl.getParcelStatus(parcelId = localParcel.parcelId).apply { auditDte = TimeUtil.getDateTime() }
 
         parcelRepo.update(parcel = remoteParcel)
         parcelManagementRepoImpl.update(status)

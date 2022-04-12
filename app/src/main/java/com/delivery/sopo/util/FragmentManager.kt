@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
 import com.delivery.sopo.enums.TabCode
 import com.google.android.material.tabs.TabLayout
 
@@ -34,7 +35,8 @@ object FragmentManager
 
     fun move(activity: FragmentActivity, code: TabCode, @IdRes viewId: Int, isAdd: Boolean = false)
     {
-        SopoLog.d("move() 호출:[Fragment:${code.NAME}][viewId:$viewId]")
+
+        SopoLog.d("move() 호출:[Fragment:${code.NAME}][viewId:$viewId] ${activity.localClassName} ${activity.componentName}")
 
         val fm = activity.supportFragmentManager
         val transaction = fm.beginTransaction()
@@ -42,8 +44,8 @@ object FragmentManager
         transaction.run {
             replace(viewId, code.FRAGMENT, code.NAME)
             if(isAdd) addToBackStack(null)
-//            addToBackStack(null)
-
+//            commitAllowingStateLoss()
+//            return Toast.makeText(activity, "isDestroyed", Toast.LENGTH_SHORT).show()
             if(fm.isDestroyed)
             {
                 commitAllowingStateLoss()
@@ -61,6 +63,13 @@ object FragmentManager
     {
         val fm = activity.supportFragmentManager
         fm.popBackStack()
+    }
+
+    fun clearBackStack(fragmentManager: FragmentManager) {
+        with(fragmentManager) {
+            if (backStackEntryCount > 0)
+                popBackStack()
+        }
     }
 
     // 작업이 옳은 프로세스로 진행되었을 때 프래그먼트 스택을 초기화시키고 다른 화면으로 이동하는 함수

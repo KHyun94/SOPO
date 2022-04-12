@@ -24,16 +24,14 @@ import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*
 
-class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase,
-                            private val getCompletedMonthUseCase: GetCompletedMonthUseCase,
-                            private val parcelRepo: ParcelRepository,
-                            private val parcelManagementRepo: ParcelManagementRepoImpl,
-                            private val historyRepo: CompletedParcelHistoryRepoImpl): BaseViewModel()
+class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase, private val getCompletedMonthUseCase: GetCompletedMonthUseCase, private val parcelRepo: ParcelRepository, private val parcelManagementRepo: ParcelManagementRepoImpl, private val historyRepo: CompletedParcelHistoryRepoImpl):
+        BaseViewModel()
 {
     /**
      * 공용
      */ // '배송 중' 또는 '배송완료' 화면 선택의 기준
-    private val _inquiryStatus = MutableLiveData<InquiryStatusEnum>().initialize(InquiryStatusEnum.ONGOING)
+    private val _inquiryStatus =
+        MutableLiveData<InquiryStatusEnum>().initialize(InquiryStatusEnum.ONGOING)
     val inquiryStatus: LiveData<InquiryStatusEnum>
         get() = _inquiryStatus
 
@@ -54,7 +52,7 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
 
     private var _ongoingList =
         Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
-            val list = parcelList.map {  parcel ->
+            val list = parcelList.map { parcel ->
                 InquiryListItem(parcel, false)
             }
 
@@ -92,7 +90,7 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
      * 이벤트 리스너
      */
 
-    fun setIsSelectAllItems(value:Boolean)
+    fun setIsSelectAllItems(value: Boolean)
     {
         _isSelectAllItems.postValue(value)
     }
@@ -107,15 +105,8 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
         return inquiryStatus.value
     }
 
-    fun getCompleteParcelMonth() = scope.launch(Dispatchers.IO) {
-        try
-        {
-            getCompletedMonthUseCase.invoke()
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
-        }
+    fun getCompleteParcelMonth() = scope.launch(coroutineExceptionHandler) {
+        getCompletedMonthUseCase.invoke()
     }
 
     fun changeCompletedParcelHistoryDate(year: String)
@@ -139,7 +130,7 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
     }
 
     // UI를 통해 사용자가 배송완료에서 조회하고 싶은 년월을 바꾼다.
-    private fun updateMonthsSelector(year: String) = viewModelScope.launch(Dispatchers.Default) {
+    private fun updateMonthsSelector(year: String) = scope.launch(Dispatchers.Default) {
 
         SopoLog.i("updateMonthsSelector(...) 호출 [data:$year]")
 
@@ -181,7 +172,7 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
         monthsOfCalendar.postValue(list)
     }
 
-    fun refreshCompleteParcelsByDate(inquiryDate: String) = CoroutineScope(Dispatchers.IO).launch {
+    fun refreshCompleteParcelsByDate(inquiryDate: String) = scope.launch(coroutineExceptionHandler) {
         val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map { parcel ->
             InquiryListItem(parcel, false)
         }.toMutableList()
@@ -346,8 +337,5 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
 
             postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
         }
-    }
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 }

@@ -78,10 +78,6 @@ class SplashViewModel(
         }
     }
 
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
-    }
-
     init
     {
         Handler(Looper.getMainLooper()).postDelayed(Runnable { checkUserStatus() }, 1500)
@@ -117,7 +113,6 @@ class SplashViewModel(
 
                 postNavigator(NavigatorConst.TO_MAIN)
         }
-
     }
 
     /**
@@ -130,7 +125,6 @@ class SplashViewModel(
     private suspend fun isExpiredTokenWithinWeek(): Boolean = withContext(Dispatchers.Default) {
         SopoLog.i("checkExpiredTokenWithinWeek() 호출")
 
-        // 로컬 내 oAuth Token의 만료 기일을 로드
         val currentExpiredDate: String = oAuthLocalRepo.get(userLocalRepo.getUserId()).refreshTokenExpiredAt
         return@withContext DateUtil.isExpiredDateWithinAWeek(currentExpiredDate)
     }

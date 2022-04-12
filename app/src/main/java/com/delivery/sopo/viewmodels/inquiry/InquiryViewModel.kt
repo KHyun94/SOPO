@@ -5,7 +5,6 @@ import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize
@@ -14,15 +13,12 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.usecase.parcel.remote.*
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.views.dialog.LogoutDialog
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.launch
 
-class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
-                       private val updateParcelsUseCase: UpdateParcelsUseCase,
-                       private val getCompletedMonthUseCase: GetCompletedMonthUseCase,
-                       private val refreshParcelsUseCase: RefreshParcelsUseCase,
-                       private val deleteParcelsUseCase: DeleteParcelsUseCase,
-                       private val parcelManagementRepo: ParcelManagementRepoImpl): BaseViewModel()
+class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase, private val updateParcelsUseCase: UpdateParcelsUseCase, private val getCompletedMonthUseCase: GetCompletedMonthUseCase, private val refreshParcelsUseCase: RefreshParcelsUseCase, private val deleteParcelsUseCase: DeleteParcelsUseCase, private val parcelManagementRepo: ParcelManagementRepoImpl):
+        BaseViewModel()
 {
     // '배송중' => '배송완료' 개수
     private val _cntOfBeDelivered = parcelManagementRepo.getIsDeliveredCntLiveData()
@@ -44,34 +40,22 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
     val navigator: LiveData<String>
         get() = _navigator
 
-    fun postNavigator(navigator: String){
+    fun postNavigator(navigator: String)
+    {
         _navigator.postValue(navigator)
     }
 
-    fun onUpdateParcels(parcelIds: List<Int>)=scope.launch{
-        try
-        {
-            updateParcelsUseCase.invoke(parcelIds)
-            getCompletedMonthUseCase.invoke()
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
-        }
+    fun onUpdateParcels(parcelIds: List<Int>) = scope.launch(coroutineExceptionHandler) {
+
+        updateParcelsUseCase.invoke(parcelIds)
+        getCompletedMonthUseCase.invoke()
     }
 
-    fun onSyncParcels()= scope.launch{
-        try
-        {
-            syncParcelsUseCase.invoke()
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
-        }
+    fun onSyncParcels() = scope.launch(coroutineExceptionHandler) {
+        syncParcelsUseCase.invoke()
     }
 
-    fun onRefreshParcelsClicked() = scope.launch {
+    fun onRefreshParcelsClicked() = scope.launch(coroutineExceptionHandler) {
         SopoLog.i("onRefreshParcelsClicked(...) 호출")
 
         _isAvailableRefresh.postValue(false)
@@ -79,10 +63,6 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
         try
         {
             refreshParcelsUseCase.invoke()
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
         }
         finally
         {
@@ -93,7 +73,8 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
         }
     }
 
-    fun onDeleteParcelsClicked(){
+    fun onDeleteParcelsClicked()
+    {
         postNavigator(NavigatorConst.TO_DELETE)
     }
 
@@ -112,20 +93,13 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
     }
 
     fun confirmDeleteParcels() = checkEventStatus(checkNetwork = true) {
-        scope.launch(Dispatchers.IO) {
-            try
-            {
-                val parcelStatuses = getDeletableParcelStatuses().apply {
-                    if(isEmpty()) return@launch
-                }
+        scope.launch(coroutineExceptionHandler) {
 
-                deleteParcelsUseCase.invoke()
+            val parcelStatuses = getDeletableParcelStatuses().apply {
+                if(isEmpty()) return@launch
             }
-            catch(e: Exception)
-            {
-                exceptionHandler.handleException(coroutineContext, e)
 
-            }
+            deleteParcelsUseCase.invoke()
         }
     }
 
@@ -170,8 +144,5 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase,
             super.onDuplicateError(error)
             moveDuplicated()
         }
-    }
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        ParcelExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 }

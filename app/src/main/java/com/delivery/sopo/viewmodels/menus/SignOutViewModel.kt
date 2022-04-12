@@ -4,22 +4,12 @@ import android.view.View
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
-import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.ErrorEnum
-import com.delivery.sopo.enums.ResponseCode
-import com.delivery.sopo.exceptions.ParcelExceptionHandler
-import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
-import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.usecase.user.SignOutUseCase
-import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SignOutViewModel(
@@ -81,16 +71,12 @@ class SignOutViewModel(
         postNavigator(NavigatorConst.CONFIRM_SIGN_OUT)
     }
 
-    fun requestSignOut(reason: String) = scope.launch(Dispatchers.IO){
+    fun requestSignOut(reason: String) = scope.launch(coroutineExceptionHandler){
         try
         {
             onStartLoading()
             signOutUseCase.invoke(reason)
             postNavigator(NavigatorConst.EXIT)
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
         }
         finally
         {
@@ -131,8 +117,5 @@ class SignOutViewModel(
             super.onDuplicateError(error)
             moveDuplicated()
         }
-    }
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 }

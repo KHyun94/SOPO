@@ -107,7 +107,7 @@
             style="@style/buttonBasicStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{()->vm.onRegisterNicknameClicked(btnSndEmail)}"
+            android:onClick="@{()->vm.onRegisterNicknameClicked()}"
             android:text="시작하기"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"

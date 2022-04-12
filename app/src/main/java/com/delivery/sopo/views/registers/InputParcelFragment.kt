@@ -6,9 +6,9 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Toast
 import com.delivery.sopo.R
+import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentInputParcelBinding
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.isGreaterThanOrEqual
 import com.delivery.sopo.interfaces.OnPageSelectListener
@@ -16,7 +16,10 @@ import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.util.*
+import com.delivery.sopo.util.ClipboardUtil
+import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.OtherUtil
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.viewmodels.registesrs.InputParcelViewModel
 import com.delivery.sopo.views.main.MainView
@@ -26,9 +29,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-/**
- * 택배 등록 1단
- */
 class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelViewModel>()
 {
     override val layoutRes: Int = R.layout.fragment_input_parcel
@@ -67,7 +67,9 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         {
             override fun onBackPressedInTime()
             {
-                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }.show()
+                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
+                    .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }
+                    .show()
             }
 
             override fun onBackPressedOutTime()
@@ -80,7 +82,7 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
 
         if(returnType == RegisterMainFragment.REGISTER_PROCESS_SUCCESS)
         {
-            onPageSelectListener.onMoveToPage(1)
+            onPageSelectListener.onMoveToPage(TabCode.secondTab)
         }
     }
 
@@ -88,28 +90,29 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
     {
         super.setAfterBinding()
 
-        if(::parcelRegister.isInitialized)
-        {
-            vm.waybillNum.postValue(parcelRegister.waybillNum)
-            binding.layoutWaybillNum.hint = ""
-
-            parcelRegister.carrier?.let { vm.carrier.postValue(CarrierMapper.enumToObject(it)) }
-        }
-
         binding.constraintMainRegister.setOnClickListener {
             it.requestFocus()
             OtherUtil.hideKeyboardSoft(requireActivity())
         }
+
+        if(!::parcelRegister.isInitialized) return
+
+        if(parcelRegister.waybillNum != null && parcelRegister.waybillNum?.length?:0 > 0)
+        {
+            vm.waybillNum.postValue(parcelRegister.waybillNum)
+            binding.layoutWaybillNum.hint = ""
+        }
+        parcelRegister.carrier?.let { vm.carrier.postValue(CarrierMapper.enumToObject(it)) }
     }
 
     override fun setObserve()
     {
         super.setObserve()
 
-        activity?:return
+        activity ?: return
 
         parentView.getCurrentPage().observe(this) {
-            if(it != 0) return@observe
+            if(it != TabCode.firstTab) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
@@ -154,20 +157,18 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
 
         vm.navigator.observe(this) { nav ->
 
-            vm.postNavigator(null)
-
-            val registerDTO = Parcel.Register(vm.waybillNum.value, vm.carrier.value?.carrier, null)
+            val registerParcel = Parcel.Register(vm.waybillNum.value, vm.carrier.value?.carrier, null)
 
             when(nav)
             {
-                NavigatorEnum.REGISTER_SELECT ->
+                NavigatorConst.REGISTER_SELECT_CARRIER ->
                 {
                     TabCode.REGISTER_SELECT.FRAGMENT = SelectCarrierFragment.newInstance(vm.waybillNum.value ?: "")
                     FragmentManager.move(parentView, TabCode.REGISTER_SELECT, RegisterMainFragment.viewId)
                 }
-                NavigatorEnum.REGISTER_CONFIRM ->
+                NavigatorConst.REGISTER_CONFIRM_PARCEL ->
                 {
-                    TabCode.REGISTER_CONFIRM.FRAGMENT = ConfirmParcelFragment.newInstance(register = registerDTO, beforeStep = 0)
+                    TabCode.REGISTER_CONFIRM.FRAGMENT = ConfirmParcelFragment.newInstance(register = registerParcel, beforeStep = NavigatorConst.REGISTER_INPUT_INFO)
                     FragmentManager.move(parentView, TabCode.REGISTER_CONFIRM, RegisterMainFragment.viewId)
                 }
             }
@@ -178,18 +179,13 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
     {
         super.onResume()
 
-        try
-        {
-            CoroutineScope(Dispatchers.Default).launch {
-                ClipboardUtil.pasteClipboardText(context = requireContext())?.let {
-                    SopoLog.d("클립보드 데이터 $it")
-                    vm.clipboardText.postValue(it)
-                }
+        CoroutineScope(Dispatchers.Default).launch {
+            ClipboardUtil.pasteClipboardText(context = requireContext())?.let {
+                SopoLog.d("클립보드 데이터 $it")
+                vm.clipboardText.postValue(it)
             }
         }
-        catch(e: Exception){
-            e.printStackTrace()
-        }
+
     }
 
 
@@ -199,7 +195,8 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         {
             val args = Bundle().apply {
                 putSerializable(RegisterMainFragment.REGISTER_INFO, parcelRegister)
-                putInt(RegisterMainFragment.RETURN_TYPE, returnType ?: RegisterMainFragment.REGISTER_PROCESS_RESET)
+                putInt(RegisterMainFragment.RETURN_TYPE, returnType
+                    ?: RegisterMainFragment.REGISTER_PROCESS_RESET)
             }
 
             return InputParcelFragment().apply {
@@ -207,7 +204,6 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
             }
         }
     }
-
 
 
 }

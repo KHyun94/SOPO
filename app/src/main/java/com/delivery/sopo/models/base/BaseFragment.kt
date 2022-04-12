@@ -1,6 +1,5 @@
 package com.delivery.sopo.models.base
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -16,17 +15,13 @@ import com.delivery.sopo.BR
 import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.enums.SnackBarEnum
-import com.delivery.sopo.extensions.moveToActivity
-import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
 import com.delivery.sopo.usecase.LogoutUseCase
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.util.ui_util.CustomSnackBar
+import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.views.dialog.LogoutDialog
-import com.delivery.sopo.views.login.LoginSelectView
-import com.delivery.sopo.views.splash.SplashView
 import org.koin.android.ext.android.inject
 import org.koin.core.KoinComponent
 import kotlin.system.exitProcess
@@ -58,8 +53,6 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
     }
 
     private var isUseCommonBackPress: Boolean = false
-
-    val logoutUseCase: LogoutUseCase by inject<LogoutUseCase>()
 
     fun useCommonBackPressListener(isUseCommon: Boolean)
     {
@@ -219,8 +212,6 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
             if(!it) return@observe
 
             LogoutDialog(requireActivity()) {
-                logoutUseCase.invoke()
-
                 Handler().postDelayed(Runnable {
                     exit()
                 }, 500)

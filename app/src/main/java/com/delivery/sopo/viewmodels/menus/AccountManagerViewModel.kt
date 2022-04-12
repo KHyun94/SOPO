@@ -12,6 +12,7 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.usecase.LogoutUseCase
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class AccountManagerViewModel(
         private val logoutUseCase: LogoutUseCase
@@ -21,7 +22,7 @@ class AccountManagerViewModel(
     val navigator : LiveData<String>
     get() = _navigator
 
-    fun onLogout(){
+    fun onLogout() = scope.launch(coroutineExceptionHandler){
         logoutUseCase.invoke()
     }
 
@@ -42,9 +43,5 @@ class AccountManagerViewModel(
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
         override fun onFailure(error: ErrorEnum) { }
-    }
-
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 }

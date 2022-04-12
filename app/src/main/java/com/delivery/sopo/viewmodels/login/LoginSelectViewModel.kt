@@ -30,8 +30,6 @@ class LoginSelectViewModel(private val loginUseCase: LoginUseCase, private val s
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String> get() = _navigator
 
-    override val exceptionHandler: CoroutineExceptionHandler by lazy { UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback) }
-
     fun setNavigator(navigator: String){
         _navigator.value = navigator
     }

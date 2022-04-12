@@ -31,10 +31,10 @@
         <entry key="app/src/main/res/layout/dialog_logout.xml" value="0.20116120218579234" />
         <entry key="app/src/main/res/layout/fragment_account_manager.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_completed_type.xml" value="0.22266009852216748" />
-        <entry key="app/src/main/res/layout/fragment_confirm_parcel.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/fragment_confirm_parcel.xml" value="0.18798283261802576" />
         <entry key="app/src/main/res/layout/fragment_delete_parcel.xml" value="0.1293918918918919" />
         <entry key="app/src/main/res/layout/fragment_faq.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/fragment_input_parcel.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/fragment_input_parcel.xml" value="0.48742138364779874" />
         <entry key="app/src/main/res/layout/fragment_inquiry.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_inquiry_re.xml" value="0.18262411347517732" />
         <entry key="app/src/main/res/layout/fragment_menu.xml" value="0.25" />
@@ -65,6 +65,7 @@
         <entry key="app/src/main/res/layout/parcel_detail_view.xml" value="0.17725409836065573" />
         <entry key="app/src/main/res/layout/parcel_full_detail_item.xml" value="0.5" />
         <entry key="app/src/main/res/layout/parcel_semi_detail_item.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/register_nickname_view.xml" value="0.10587431693989072" />
         <entry key="app/src/main/res/layout/reset_password_view.xml" value="0.3201663201663202" />
         <entry key="app/src/main/res/layout/set_not_disturb_time_dialog.xml" value="0.25" />
         <entry key="app/src/main/res/layout/sign_out_view.xml" value="0.3368055555555556" />

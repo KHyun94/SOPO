@@ -67,26 +67,18 @@ class SignUpCompleteViewModel(private val userLocalRepo: UserLocalRepository, pr
         }
     }
 
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
-    }
-
     fun onCompleteClicked()
     {
         requestLogin(userLocalRepo.getUserId(), userLocalRepo.getUserPassword())
     }
 
-    private fun requestLogin(email: String, password: String) = scope.launch(Dispatchers.IO) {
+    private fun requestLogin(email: String, password: String) = scope.launch(coroutineExceptionHandler) {
         try
         {
             onStartLoading()
             userRemoteRepo.requestLogin(email, password)
             userRemoteRepo.getUserInfo()
             postNavigator(NavigatorConst.TO_MAIN)
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(context = coroutineContext, exception = e)
         }
         finally
         {

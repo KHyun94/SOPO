@@ -6,13 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.SettingEnum
-import com.delivery.sopo.exceptions.UserExceptionHandler
-import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -120,23 +116,7 @@ class SettingViewModel(
         postNavigator(NavigatorConst.TO_UPDATE_APP_PASSWORD)
     }
 
-//    override fun onCleared()
-//    {
-//        super.onCleared()
-//        postNavigator("")
-//    }
-
-
     fun onBackClicked(){
         postNavigator(NavigatorConst.TO_BACK_SCREEN)
-    }
-
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
-    {
-        override fun onFailure(error: ErrorEnum) { }
-    }
-
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 }

@@ -3,20 +3,17 @@ package com.delivery.sopo.viewmodels.menus
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
+import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.usecase.UpdateNicknameUseCase
 import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository,
@@ -72,10 +69,6 @@ class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository,
         }
     }
 
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
-    }
-
     init
     {
         validates[InfoEnum.NICKNAME] = false
@@ -99,22 +92,17 @@ class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository,
         updateNickname(nickname.value ?: "")
     }
 
-    private fun updateNickname(nickname: String) = scope.launch(Dispatchers.IO) {
+    private fun updateNickname(nickname: String) = scope.launch(coroutineExceptionHandler) {
 
         try
         {
+            onStartLoading()
             updateNicknameUseCase.invoke(nickname = nickname)
             _navigator.postValue(NavigatorConst.TO_MAIN)
         }
-        catch(e: Exception)
+        finally
         {
-            exceptionHandler.handleException(scope.coroutineContext, e)
+            onStopLoading()
         }
-    }
-
-    private fun requestLogin() = scope.launch(Dispatchers.IO) {
-        val email = userLocalRepo.getUserId()
-        val password = userLocalRepo.getUserPassword()
-        userRemoteRepo.requestLogin(email, password)
     }
 }

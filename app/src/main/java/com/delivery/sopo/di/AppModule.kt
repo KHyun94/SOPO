@@ -50,6 +50,7 @@ val appModule = module {
     single { AppPasswordRepository(get()) }
     single { OAuthLocalRepository(get()) }
 
+    factory { return@factory GetParcelUseCase(parcelRepo = get(), parcelManagementRepoImpl = get()) }
     factory { SyncParcelsUseCase(get()) }
     factory { UpdateParcelsUseCase(get()) }
     factory { RegisterParcelUseCase(get()) }

@@ -21,10 +21,7 @@ import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 
-class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase,
-                             private val getCompletedMonthUseCase: GetCompletedMonthUseCase,
-                             private val updateParcelAliasUseCase: UpdateParcelAliasUseCase,
-                             private val historyRepo: CompletedParcelHistoryRepoImpl):
+class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase, private val getCompletedMonthUseCase: GetCompletedMonthUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val historyRepo: CompletedParcelHistoryRepoImpl):
         BaseViewModel()
 {
     /**
@@ -47,7 +44,8 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
 
     private var pagingManagement: PagingManagement
 
-    fun initPage(){
+    fun initPage()
+    {
         pagingManagement = PagingManagement(0, "", true)
     }
 
@@ -64,15 +62,8 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
         updateMonthsSelector(year)
     }
 
-    fun getRemoteCompletedMonth() = scope.async {
-        try
-        {
-            getCompletedMonthUseCase.invoke()
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
-        }
+    fun getRemoteCompletedMonth() = scope.launch(coroutineExceptionHandler) {
+        getCompletedMonthUseCase.invoke()
     }
 
     fun updateCompletedParcelCalendar(year: String)
@@ -113,13 +104,14 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
         monthsOfCalendar.postValue(histories)
     }
 
-    fun refreshCompleteParcelsByDate(inquiryDate: String) = CoroutineScope(Dispatchers.IO).launch {
-        val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map { parcel ->
-            InquiryListItem(parcel, false)
-        }.toMutableList()
+    fun refreshCompleteParcelsByDate(inquiryDate: String) =
+        scope.launch(coroutineExceptionHandler) {
+            val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map { parcel ->
+                InquiryListItem(parcel, false)
+            }.toMutableList()
 
-        _completeList.postValue(list)
-    }
+            _completeList.postValue(list)
+        }
 
 
     // 배송완료 리스트를 가져온다.(페이징 포함)
@@ -169,18 +161,13 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
         monthsOfCalendar.postValue(list)
     }
 
-    fun updateParcelAlias(parcelId: Int, parcelAlias: String) = checkEventStatus(checkNetwork = true) {
-        scope.launch {
-            try
-            {
+    fun updateParcelAlias(parcelId: Int, parcelAlias: String) =
+        checkEventStatus(checkNetwork = true) {
+            scope.launch(coroutineExceptionHandler) {
                 updateParcelAliasUseCase.invoke(parcelId = parcelId, parcelAlias = parcelAlias)
-            }
-            catch(e: Exception)
-            {
-                exceptionHandler.handleException(coroutineContext, e)
+
             }
         }
-    }
 
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
@@ -215,8 +202,5 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
             super.onDuplicateError(error)
             moveDuplicated()
         }
-    }
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        ParcelExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 }

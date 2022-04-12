@@ -77,7 +77,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     override fun onResume()
     {
         super.onResume()
-        registerReceiver(refreshParcelBroadcastReceiver, IntentFilter().apply { addAction(RefreshParcelBroadcastReceiver.ACTION) })
+        registerReceiver(refreshParcelBroadcastReceiver, IntentFilter().apply { addAction(RefreshParcelBroadcastReceiver.COMPLETE_REGISTER_ACTION) })
     }
 
     override fun onPause()

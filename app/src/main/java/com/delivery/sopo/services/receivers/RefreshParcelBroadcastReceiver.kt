@@ -7,6 +7,7 @@ import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.usecase.parcel.remote.GetCompletedMonthUseCase
+import com.delivery.sopo.usecase.parcel.remote.GetParcelUseCase
 import com.delivery.sopo.usecase.parcel.remote.SyncParcelsUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -18,6 +19,7 @@ import org.koin.core.inject
 
 class RefreshParcelBroadcastReceiver: BroadcastReceiver(), KoinComponent
 {
+    private val getParcelUseCase: GetParcelUseCase by inject()
     private val syncParcelsUseCase: SyncParcelsUseCase by inject()
     private val getCompletedMonthUseCase: GetCompletedMonthUseCase by inject()
 
@@ -66,26 +68,40 @@ class RefreshParcelBroadcastReceiver: BroadcastReceiver(), KoinComponent
         context ?: return
         intent ?: return
 
-        SopoLog.d("BroadCastReceiver Type:")
-        if(intent.action != ACTION) return
+        SopoLog.d("BroadCastReceiver Type:${intent.action}")
 
-        val type = intent.getIntExtra("TYPE", 0)
-
-        when(type)
+        when(intent.action)
         {
-            1 ->
+            COMPLETE_REGISTER_ACTION ->
             {
-                syncOngoingParcels().start()
-            }
-            2 ->
-            {
-                getCompletedMonth().start()
-            }
-            3 ->
-            {
-                refreshAllParcel().start()
+                val parcelId  = intent.getIntExtra("PARCEL_ID", 0)
+                CoroutineScope(Dispatchers.IO).launch {
+                    val parcel = getParcelUseCase.invoke(parcelId= parcelId)
+                    SopoLog.d("업데이트 택배:${parcel.toString()}")
+                }
             }
         }
+
+
+
+//        val type = intent.getIntExtra("TYPE", 0)
+//
+//
+//        when(type)
+//        {
+//            1 ->
+//            {
+//                syncOngoingParcels().start()
+//            }
+//            2 ->
+//            {
+//                getCompletedMonth().start()
+//            }
+//            3 ->
+//            {
+//                refreshAllParcel().start()
+//            }
+//        }
     }
 
     val onSOPOErrorCallback = object: OnSOPOErrorCallback
@@ -114,7 +130,10 @@ class RefreshParcelBroadcastReceiver: BroadcastReceiver(), KoinComponent
     }
 
     companion object{
-        const val ACTION = "com.delivery.sopo.ACTION_COMPLETED_REGISTER_PARCEL"
+        const val COMPLETE_REGISTER_ACTION = "com.delivery.sopo.ACTION_COMPLETED_REGISTER_PARCEL"
+//        const val ACTION = "com.delivery.sopo.ACTION_COMPLETED_REGISTER_PARCEL"
+//        const val ACTION = "com.delivery.sopo.ACTION_COMPLETED_REGISTER_PARCEL"
+//        const val ACTION = "com.delivery.sopo.ACTION_COMPLETED_REGISTER_PARCEL"
     }
 
 

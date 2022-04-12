@@ -3,21 +3,17 @@ package com.delivery.sopo.viewmodels.signup
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.bindings.FocusChangeCallback
-import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.usecase.UpdateNicknameUseCase
 import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class RegisterNicknameViewModel(private val updateNicknameUseCase: UpdateNicknameUseCase):
-        BaseViewModel()
+class RegisterNicknameViewModel(private val updateNicknameUseCase: UpdateNicknameUseCase): BaseViewModel()
 {
     val nickname = MutableLiveData<String>()
     val validates = mutableMapOf<InfoEnum, Boolean>()
@@ -60,16 +56,12 @@ class RegisterNicknameViewModel(private val updateNicknameUseCase: UpdateNicknam
         }
     }
 
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
-    }
-
     init
     {
         validates[InfoEnum.NICKNAME] = false
     }
 
-    fun onRegisterNicknameClicked(v: View) = checkEventStatus(checkNetwork = true) {
+    fun onRegisterNicknameClicked() = checkEventStatus(checkNetwork = true) {
         SopoLog.d("onCompleteSignUpClicked()")
         validates.forEach { (k, v) ->
             if(!v)
@@ -80,15 +72,16 @@ class RegisterNicknameViewModel(private val updateNicknameUseCase: UpdateNicknam
             }
         }
 
-        scope.launch {
+        scope.launch(coroutineExceptionHandler) {
             try
             {
+                onStartLoading()
                 updateNicknameUseCase.invoke(nickname = nickname.value ?: "")
                 _navigator.postValue(NavigatorEnum.MAIN)
             }
-            catch(e: Exception)
+            finally
             {
-                exceptionHandler.handleException(coroutineContext, e)
+                onStopLoading()
             }
         }
     }

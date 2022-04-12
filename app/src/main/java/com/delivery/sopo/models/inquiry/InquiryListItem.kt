@@ -34,6 +34,15 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
     }
 
     private val ongoingTimeDate: Calendar? by lazy {
+
+        SopoLog.d("Inquiry Test ${parcel.toString()}")
+
+        if(parcel.auditDte == "")
+        {
+            SopoLog.d("에러")
+            return@lazy null
+        }
+
         val time = DateUtil.changeDateFormat2(parcel.auditDte.replace("T", " "))?:return@lazy null
         val calendar = Calendar.getInstance().apply {
             this.time = time

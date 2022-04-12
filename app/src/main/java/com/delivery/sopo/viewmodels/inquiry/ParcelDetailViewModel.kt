@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.StatusConst
-import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
@@ -20,37 +19,35 @@ import com.delivery.sopo.models.parcel.TimeLineProgress
 import com.delivery.sopo.usecase.parcel.local.GetLocalParcelUseCase
 import com.delivery.sopo.usecase.parcel.remote.RefreshParcelUseCase
 import com.delivery.sopo.util.CodeUtil
-import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUseCase,
-                            private val refreshParcelUseCase: RefreshParcelUseCase,
-                            private val carrierRepository: CarrierRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl):
+class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUseCase, private val refreshParcelUseCase: RefreshParcelUseCase, private val carrierRepository: CarrierRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl):
         BaseViewModel()
 {
     // 상세 화면에서 사용할 데이터 객체
     private var _parcelDetail = MutableLiveData<Parcel.Detail>()
-    val parcelDetail:LiveData<Parcel.Detail>
-    get() = _parcelDetail
+    val parcelDetail: LiveData<Parcel.Detail>
+        get() = _parcelDetail
 
     // delivery status 리스트
     val statusList = MutableLiveData<MutableList<SelectItem<String>>?>()
 
     private var _navigator = MutableLiveData<String>()
-    val navigator : LiveData<String>
+    val navigator: LiveData<String>
         get() = _navigator
 
-    fun postNavigator(navigator: String){
+    fun postNavigator(navigator: String)
+    {
         _navigator.postValue(navigator)
     }
 
     private suspend fun getParcelDetail(parcel: Parcel.Common): Parcel.Detail
     {
         val deliveryStatus = CodeUtil.getEnumValueOfName<DeliveryStatusEnum>(parcel.deliveryStatus)
-        val carrier = carrierRepository.getCarrierWithCode(parcel.carrier)
+        val carrier = carrierRepository.getByCode(parcel.carrier)
 
         val progresses = parcel.trackingInfo?.progresses?.map { progress ->
             TimeLineProgress(date = progress?.getDate(), location = progress?.location?.name, description = progress?.description, status = progress?.status)
@@ -70,7 +67,7 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
         return deliveryStatuses
     }
 
-    fun requestParcelDetail(parcelId: Int) = scope.launch(Dispatchers.IO) {
+    fun requestParcelDetail(parcelId: Int) = scope.launch(coroutineExceptionHandler) {
 
         updateUnidentifiedStatusToZero(parcelId = parcelId)
         updateIsBeUpdate(parcelId = parcelId, status = StatusConst.DEACTIVATE)
@@ -80,7 +77,7 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
     }
 
     // 로컬에 저장된 택배 인포를 로드
-    private suspend fun requestLocalParcel(parcelId: Int) = withContext(Dispatchers.Default) {
+    private suspend fun requestLocalParcel(parcelId: Int) = withContext(coroutineExceptionHandler) {
         val parcel = getLocalParcelUseCase.invoke(parcelId = parcelId) ?: return@withContext
         val parcelDetail = getParcelDetail(parcel = parcel)
 
@@ -88,19 +85,10 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
 
         if(parcelDetail.deliverStatus == DeliveryStatusEnum.DELIVERED) return@withContext
 
-        try
-        {
-            val remoteParcel = refreshParcelUseCase.invoke(parcelId = parcelId)
-            val remoteParcelDetail = getParcelDetail(remoteParcel)
+        val remoteParcel = refreshParcelUseCase.invoke(parcelId = parcelId)
+        val remoteParcelDetail = getParcelDetail(remoteParcel)
 
-            _parcelDetail.postValue(remoteParcelDetail)
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(context = coroutineContext, e)
-        }
-
-
+        _parcelDetail.postValue(remoteParcelDetail)
     }
 
     suspend fun requestRemoteParcel(parcelId: Int) = withContext(Dispatchers.IO) {
@@ -156,9 +144,5 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
 
             postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
         }
-    }
-
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        ParcelExceptionHandler(Dispatchers.IO, onSOPOErrorCallback)
     }
 }

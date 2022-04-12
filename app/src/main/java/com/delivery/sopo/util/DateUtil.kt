@@ -72,24 +72,6 @@ object DateUtil
     }
 
     /**
-     *  true refreshToken의 만료일자가 현재 시간보다 작을 경우
-     *  false 클 경우
-     */
-    fun isOverExpiredDate(expiredDate: String): Boolean
-    {
-        SopoLog.i("isOverExpiredDate() 호출")
-
-        // 1. 현재 시간
-        val currentMilliSeconds = System.currentTimeMillis() // 2. O-Auth 만료 기간
-        val expiredDateToMilliSeconds = changeDateToMilli(expiredDate)
-
-        SopoLog.d("현재시간:$currentMilliSeconds")
-        SopoLog.d("만료기한:$expiredDateToMilliSeconds [형태:$expiredDate]")
-
-        return currentMilliSeconds >= expiredDateToMilliSeconds
-    }
-
-    /**
      *  true refreshToken의 만료일이 1주일 이하일 경우
      *  false 초과일 경우
      */

@@ -2,6 +2,7 @@ package com.delivery.sopo.consts
 
 object NavigatorConst {
 
+
     const val MOVE_TO_LOCK_SCREEN: String = "MOVE_TO_LOCK_SCREEN"
     const val CONFIRM_SIGN_OUT:String = "CONFIRM_SIGN_OUT"
     const val EXIT: String = "EXIT"
@@ -35,5 +36,13 @@ object NavigatorConst {
     const val TO_DELETE = "TO_DELETE"
 
     const val MAIN_BRIDGE_REGISTER = "MAIN_BRIDGE_REGISTER"
+
+    const val REGISTER_INPUT_INFO = "REGISTER_INPUT_INFO"
+    const val REGISTER_SELECT_CARRIER = "REGISTER_SELECT_CARRIER"
+    const val REGISTER_CONFIRM_PARCEL = "REGISTER_CONFIRM_PARCEL"
+
+    const val REGISTER_REVISE = "REGISTER_REVISE"
+    const val REGISTER_INITIALIZE = "REGISTER_INITIALIZE"
+    const val REGISTER_SUCCESS: String = "REGISTER_SUCCESS"
 
 }

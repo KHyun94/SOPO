@@ -20,32 +20,30 @@ import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*
 
-class OngoingTypeViewModel(
-                           private val refreshParcelUseCase: RefreshParcelUseCase,
-                           private val syncParcelsUseCase: SyncParcelsUseCase,
-                           private val updateParcelAliasUseCase: UpdateParcelAliasUseCase,
-                           private val deleteParcelsUseCase: DeleteParcelsUseCase,
-                           private val parcelRepo: ParcelRepository,
-                           private val parcelManagementRepo: ParcelManagementRepoImpl): BaseViewModel()
+class OngoingTypeViewModel(private val refreshParcelUseCase: RefreshParcelUseCase, private val syncParcelsUseCase: SyncParcelsUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val deleteParcelsUseCase: DeleteParcelsUseCase, private val parcelRepo: ParcelRepository, private val parcelManagementRepo: ParcelManagementRepoImpl):
+        BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
         get() = _navigator
 
-    fun postNavigator(navigator: String){
+    fun postNavigator(navigator: String)
+    {
         _navigator.postValue(navigator)
     }
 
-    private val _ongoingParcels = Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
-        val list = parcelList.map {  parcel ->
-            InquiryListItem(parcel, false)
+    private val _ongoingParcels =
+        Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
+            val list = parcelList.map { parcel ->
+                InquiryListItem(parcel, false)
+            }
+            sortByDeliveryStatus(list).toMutableList()
         }
-        sortByDeliveryStatus(list).toMutableList()
-    }
     val ongoingParcels: LiveData<MutableList<InquiryListItem>>
         get() = _ongoingParcels
 
-    val cntOfPresentOngoingParcels: LiveData<Int> = Transformations.map(parcelRepo.getLocalOnGoingParcelCnt()) { cnt -> cnt }
+    val cntOfPresentOngoingParcels: LiveData<Int> =
+        Transformations.map(parcelRepo.getLocalOnGoingParcelCnt()) { cnt -> cnt }
 
     init
     {
@@ -57,53 +55,27 @@ class OngoingTypeViewModel(
      */
 
     // 서버에서 DB 내 택배 정보를 가져와서 로컬 내 디비 정보를 갱신
-    fun syncOngoingParcels() = scope.launch(Dispatchers.IO) {
-        try
-        {
-            syncParcelsUseCase.invoke()
-        }
-        catch(e: Exception)
-        {
-            exceptionHandler.handleException(coroutineContext, e)
-        }
+    fun syncOngoingParcels() = scope.launch(coroutineExceptionHandler) {
+        syncParcelsUseCase.invoke()
     }
 
 
-    fun updateParcelAlias(parcelId: Int, parcelAlias: String) = checkEventStatus(checkNetwork = true) {
-        scope.launch {
-            try
-            {
+    fun updateParcelAlias(parcelId: Int, parcelAlias: String) =
+        checkEventStatus(checkNetwork = true) {
+            scope.launch(coroutineExceptionHandler) {
                 updateParcelAliasUseCase.invoke(parcelId = parcelId, parcelAlias = parcelAlias)
             }
-            catch(e: Exception)
-            {
-                exceptionHandler.handleException(coroutineContext, e)
-            }
         }
+
+    suspend fun refreshParcel(parcelId: Int) = withContext(coroutineExceptionHandler) {
+        refreshParcelUseCase.invoke(parcelId = parcelId)
     }
 
-    suspend fun refreshParcel(parcelId: Int)  = withContext(Dispatchers.IO){
-            try
-            {
-                refreshParcelUseCase.invoke(parcelId = parcelId)
-            }
-            catch(e: Exception)
-            {
-                exceptionHandler.handleException(coroutineContext, e)
-            }
-        }
-
     fun deleteParcel(parcelId: Int) = checkEventStatus(checkNetwork = true) {
-        scope.launch(Dispatchers.IO) {
-            try
-            {
-                withContext(Dispatchers.Default) { parcelManagementRepo.delete(parcelId) }
-                deleteParcelsUseCase.invoke()
-            }
-            catch(e: Exception)
-            {
-                exceptionHandler.handleException(coroutineContext, e)
-            }
+        scope.launch(coroutineExceptionHandler) {
+            withContext(Dispatchers.Default) { parcelManagementRepo.delete(parcelId) }
+            deleteParcelsUseCase.invoke()
+
         }
     }
 
@@ -213,14 +185,5 @@ class OngoingTypeViewModel(
             super.onAuthError(error)
             postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
         }
-
-        override fun onDuplicateError(error: ErrorEnum)
-        {
-            super.onDuplicateError(error)
-            moveDuplicated()
-        }
-    }
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        ParcelExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
     }
 }

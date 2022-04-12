@@ -19,6 +19,7 @@ import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.viewmodels.inquiry.OngoingTypeViewModel
 import com.delivery.sopo.views.adapter.InquiryListAdapter
 import com.delivery.sopo.views.dialog.OnOptionalClickListener
@@ -147,6 +148,8 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         }
 
         vm.ongoingParcels.observe(requireActivity()) { list ->
+
+            SopoLog.d("Ongoing Parcels ${list.joinToString()}")
 
             if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
             else binding.linearNoItem.visibility = View.GONE

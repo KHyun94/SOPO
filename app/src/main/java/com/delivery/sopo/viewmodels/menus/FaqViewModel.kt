@@ -10,26 +10,19 @@ import com.delivery.sopo.models.base.BaseViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 
-class FaqViewModel : BaseViewModel()
+class FaqViewModel: BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
         get() = _navigator
 
-    fun postNavigator(navigator: String){
+    fun postNavigator(navigator: String)
+    {
         _navigator.postValue(navigator)
     }
 
-    fun onBackClicked(){
-        postNavigator(NavigatorConst.TO_BACK_SCREEN)
-    }
-
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
+    fun onBackClicked()
     {
-        override fun onFailure(error: ErrorEnum) { }
-    }
-
-    override val exceptionHandler: CoroutineExceptionHandler by lazy {
-        UserExceptionHandler(Dispatchers.Main, onSOPOErrorCallback)
+        postNavigator(NavigatorConst.TO_BACK_SCREEN)
     }
 }
