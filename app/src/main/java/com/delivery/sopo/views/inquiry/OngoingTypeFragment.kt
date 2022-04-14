@@ -149,13 +149,11 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
 
         vm.ongoingParcels.observe(requireActivity()) { list ->
 
-            SopoLog.d("Ongoing Parcels ${list.joinToString()}")
-
             if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
             else binding.linearNoItem.visibility = View.GONE
 
-            soonArrivalParcelAdapter.separateSoonParcels(list)
-            registeredParcelAdapter.separateRegisteredParcels(list)
+            soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
+            registeredParcelAdapter.separateDeliveryListByStatus(list)
 
             viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
             viewSettingForRegisteredList(registeredParcelAdapter.getListSize())

@@ -51,34 +51,6 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
     {
         super.onBeforeBinding()
 
-        ValidateUtil.hasEnglish("asdg").apply {
-            SopoLog.d("Validation TEST $this")
-        }
-        ValidateUtil.hasEnglish("AadsfA").apply {
-            SopoLog.d("Validation TEST $this")
-        }
-        ValidateUtil.hasEnglish("asdg123").apply {
-            SopoLog.d("Validation TEST $this")
-        }
-        ValidateUtil.hasEnglish("123asdg").apply {
-            SopoLog.d("Validation TEST $this")
-        }
-        ValidateUtil.hasEnglish("1dg1").apply {
-            SopoLog.d("Validation TEST $this")
-        }
-        ValidateUtil.hasEnglish("1dg1").apply {
-            SopoLog.d("Validation TEST $this")
-        }
-        ValidateUtil.hasEnglish("ㅁㄴㅇㄹ1dg1").apply {
-            SopoLog.d("Validation TEST $this")
-        }
-        ValidateUtil.hasEnglish("12345").apply {
-            SopoLog.d("Validation TEST $this")
-        }
-        ValidateUtil.hasEnglish("12345가나다라").apply {
-            SopoLog.d("Validation TEST $this")
-        }
-
         WindowUtil.setWindowStatusBarColor(this, R.color.COLOR_MAIN_700)
     }
 

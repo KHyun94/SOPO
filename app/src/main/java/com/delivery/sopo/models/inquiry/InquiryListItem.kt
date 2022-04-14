@@ -35,7 +35,7 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
 
     private val ongoingTimeDate: Calendar? by lazy {
 
-        SopoLog.d("Inquiry Test ${parcel.toString()}")
+//        SopoLog.d("Inquiry Test ${parcel.toString()}")
 
         if(parcel.auditDte == "")
         {
@@ -43,7 +43,7 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
             return@lazy null
         }
 
-        val time = DateUtil.changeDateFormat2(parcel.auditDte.replace("T", " "))?:return@lazy null
+        val time = DateUtil.changeDateTime(parcel.auditDte)?:return@lazy null
         val calendar = Calendar.getInstance().apply {
             this.time = time
         }
@@ -51,7 +51,7 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
     }
 
     private val completeTimeDate: Calendar? by lazy {
-        val time = DateUtil.changeDateFormat2(parcel.arrivalDte?.replace("T", " ")?:"")?:return@lazy null
+        val time = DateUtil.changeDateTime(parcel.arrivalDte?:"")?:return@lazy null
         val calendar = Calendar.getInstance().apply {
             this.time = time
         }

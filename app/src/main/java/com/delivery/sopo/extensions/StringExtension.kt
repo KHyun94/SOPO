@@ -31,6 +31,15 @@ fun SHA256(string: String): String
     return digest.asHex
 }
 
+fun String.replaceAll(vararg changeChar:Pair<String,String>): String
+{
+    changeChar.forEach {
+        val (oldChar, newChar) = it
+        this.replace(oldChar, newChar)
+    }
+    return this
+}
+
 fun String.toMilliSeconds(): Long?
 {
     val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")

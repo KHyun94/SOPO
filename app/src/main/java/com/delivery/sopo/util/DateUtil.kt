@@ -55,7 +55,7 @@ object DateUtil
         }
     }
 
-    fun changeDateFormat2(date: String): Date?
+    fun changeDateTime(date: String): Date?
     {
         return SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(date)
     }

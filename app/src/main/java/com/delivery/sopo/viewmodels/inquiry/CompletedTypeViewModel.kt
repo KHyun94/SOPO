@@ -2,11 +2,8 @@ package com.delivery.sopo.viewmodels.inquiry
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
-import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
-import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.SelectItem
@@ -19,7 +16,9 @@ import com.delivery.sopo.usecase.parcel.remote.GetCompletedMonthUseCase
 import com.delivery.sopo.usecase.parcel.remote.UpdateParcelAliasUseCase
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase, private val getCompletedMonthUseCase: GetCompletedMonthUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val historyRepo: CompletedParcelHistoryRepoImpl):
         BaseViewModel()
@@ -27,7 +26,6 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
     /**
      * 완료된 택배 페이지
      */
-
     private var _completeList = MutableLiveData<MutableList<InquiryListItem>>()
     val completeList: LiveData<MutableList<InquiryListItem>>
         get() = _completeList
@@ -42,27 +40,29 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
     val monthsOfCalendar = MutableLiveData<List<SelectItem<CompletedParcelHistory>>>()
     val selectedDate = MutableLiveData<String>()
 
-    private var pagingManagement: PagingManagement
+    private lateinit var pagingManagement: PagingManagement
 
-    fun initPage()
-    {
-        pagingManagement = PagingManagement(0, "", true)
-    }
+    private var isUpdating: Boolean = false
 
     init
     {
-        pagingManagement = PagingManagement(0, "", true)
-        getRemoteCompletedMonth().start()
+        initPage()
+        getActivateMonths()
+    }
+
+    fun initPage()
+    {
+        pagingManagement = PagingManagement.init()
     }
 
     fun changeCompletedParcelHistoryDate(year: String)
     {
-        pagingManagement = PagingManagement(0, "", true)
-        yearOfCalendar.postValue(year)
+        initPage()
+        updateYearSpinner(year)
         updateMonthsSelector(year)
     }
 
-    fun getRemoteCompletedMonth() = scope.launch(coroutineExceptionHandler) {
+    fun getActivateMonths() = scope.launch(coroutineExceptionHandler) {
         getCompletedMonthUseCase.invoke()
     }
 
@@ -74,50 +74,52 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
 
     private fun updateYearSpinner(year: String)
     {
-        SopoLog.i("호출 [data:$year]")
         yearOfCalendar.postValue(year)
     }
 
     // UI를 통해 사용자가 배송완료에서 조회하고 싶은 년월을 바꾼다.
     private fun updateMonthsSelector(year: String) = scope.launch(Dispatchers.Default) {
 
-        SopoLog.i("호출 [data:$year]")
-
         var isLastMonth = false
 
-        val histories = withContext(Dispatchers.Default) {
-            historyRepo.findById("${year}%").map {
+        val histories = historyRepo.findById("${year}%").map {
 
-                val isSelected = if(it.count > 0 && !isLastMonth)
-                {
-                    isLastMonth = true
-                    true
-                }
-                else
-                {
-                    false
-                }
-
-                SelectItem(item = it, isSelect = isSelected)
+            val isSelected = if(it.count > 0 && !isLastMonth)
+            {
+                isLastMonth = true
+                true
             }
+            else
+            {
+                false
+            }
+
+            SelectItem(item = it, isSelect = isSelected)
         }
         monthsOfCalendar.postValue(histories)
     }
 
-    fun refreshCompleteParcelsByDate(inquiryDate: String) =
-        scope.launch(coroutineExceptionHandler) {
-            val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map { parcel ->
-                InquiryListItem(parcel, false)
-            }.toMutableList()
+    fun refreshCompleteParcelsByDate(inquiryDate: String) = scope.launch(coroutineExceptionHandler) {
 
-            _completeList.postValue(list)
+        if(isUpdating) return@launch
+
+        val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map { parcel ->
+            InquiryListItem(parcel, false)
+        }.toMutableList()
+
+        if(pagingManagement.pagingNum <= 1) _completeList.postValue(list)
+        else {
+            val li = _completeList.value?.plus(list)?: emptyList<InquiryListItem>()
+            _completeList.postValue(li.toMutableList())
         }
-
+    }
 
     // 배송완료 리스트를 가져온다.(페이징 포함)
     suspend fun getCompleteParcelsWithPaging(inquiryDate: String): List<Parcel.Common>
     {
         SopoLog.i("호출 [date:$inquiryDate]")
+
+        isUpdating = true
 
         if(pagingManagement.inquiryDate != inquiryDate)
         {
@@ -128,6 +130,7 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
         if(!pagingManagement.hasNext)
         {
             SopoLog.d("다음 페이지가 없습니다. [data:${pagingManagement.toString()}]")
+            isUpdating = false
             return emptyList()
         }
 
@@ -142,6 +145,9 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
         {
             pagingManagement.pagingNum += 1
         }
+        SopoLog.d("Next Paging Management ${pagingManagement.toString()}")
+
+        isUpdating = false
 
         return nextPageParcels
     }

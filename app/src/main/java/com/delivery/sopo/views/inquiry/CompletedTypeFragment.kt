@@ -18,6 +18,7 @@ import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.databinding.FragmentCompletedTypeBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.*
+import com.delivery.sopo.extensions.replaceAll
 import com.delivery.sopo.interfaces.OnPageSelectListener
 import com.delivery.sopo.interfaces.OnTapReselectListener
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
@@ -38,11 +39,14 @@ import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
-class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, CompletedTypeViewModel>(), OnTapReselectListener
+class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, CompletedTypeViewModel>(),
+        OnTapReselectListener
 {
     override val layoutRes: Int = R.layout.fragment_completed_type
     override val vm: CompletedTypeViewModel by viewModel()
     override val mainLayout: View by lazy { binding.swipeLayoutMainCompleted }
+
+    private val parentView: MainView by lazy { activity as MainView }
 
     private lateinit var completedParcelAdapter: InquiryListAdapter
 
@@ -50,7 +54,6 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
 
     private var refreshDelay: Boolean = false
 
-    private val parentView: MainView by lazy { activity as MainView }
 
     private lateinit var onPageSelectListener: OnPageSelectListener
 
@@ -69,15 +72,14 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
             onPageSelectListener.onChangeTab(null)
         }
 
-        parentView.onTabReselectListener = object : () -> Unit {
+        parentView.onTabReselectListener = object: () -> Unit
+        {
             override fun invoke()
             {
                 if(scrollStatus == ScrollStatusEnum.TOP) return
                 binding.nestSvMainCompleted.scrollTo(0, 0)
             }
         }
-
-
     }
 
     private fun setOnMainBridgeListener(context: Context)
@@ -109,12 +111,10 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
 
     override fun setAfterBinding()
     {
-        updateCompletedDateSector()
+        setActivateMonthCalendar()
 
         setAdapters()
         setListener()
-
-
     }
 
 
@@ -132,9 +132,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity()) { list ->
 
-            completedParcelAdapter.separateCompletedParcels((list).toMutableList())
-//            val mock = list + list+ list+ list+ list+ list+ list+ list+ list+ list+ list+ list+ list+ list
-//            completedParcelAdapter.notifyChanged(mock.toMutableList().subList(0, 10))
+            completedParcelAdapter.separateDelivered(list.toMutableList())
         }
 
         // 배송완료 화면에서 표출 가능한 년월 리스트
@@ -285,9 +283,10 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         ViewCompat.setNestedScrollingEnabled(binding.recyclerviewCompleteParcel, false)
     }
 
-    private fun updateCompletedDateSector()
+    // 활성화된 월 선택 세팅 setActivateMonthCalendar
+    private fun setActivateMonthCalendar()
     {
-        SopoLog.i("호출")
+        SopoLog.d("호출")
 
         val onGlobalLayoutListener = object: ViewTreeObserver.OnGlobalLayoutListener
         {
@@ -352,35 +351,34 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
     private fun drawCompletedParcelHistoryPopMenu(anchorView: View, histories: List<CompletedParcelHistory>)
     {
         val historyPopUpView: PopupMenuViewBinding =
-            PopupMenuViewBinding.inflate(LayoutInflater.from(context)).also { v ->
+            PopupMenuViewBinding.inflate(LayoutInflater.from(context))
 
-                val inquiryMenuItems =
-                    MenuMapper.completeParcelStatusDTOToMenuItem(histories) as MutableList<InquiryMenuItem>
+        val inquiryMenuItems =
+            MenuMapper.completeParcelStatusDTOToMenuItem(histories) as MutableList<InquiryMenuItem>
 
-                val popupMenuListAdapter = PopupMenuListAdapter(inquiryMenuItems)
+        val popupMenuListAdapter = PopupMenuListAdapter(inquiryMenuItems)
 
-                v.recyclerviewInquiryPopupMenu.also {
-                    it.adapter = popupMenuListAdapter
-                    val dividerItemDecoration =
-                        DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-                    dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
-                    it.addItemDecoration(dividerItemDecoration)
+        historyPopUpView.recyclerviewInquiryPopupMenu.also {
+            it.adapter = popupMenuListAdapter
+            val dividerItemDecoration =
+                DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
+            dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
+            it.addItemDecoration(dividerItemDecoration)
 
-                    val historyPopUpItemOnClick =
-                        object: PopupMenuListAdapter.HistoryPopUpItemOnclick
-                        {
-                            override fun changeTimeCount(v: View, year: String)
-                            {
-                                vm.changeCompletedParcelHistoryDate(year = year)
-                                historyPopUpWindow?.dismiss()
-                            }
-                        }
-
-                    popupMenuListAdapter.setHistoryPopUpItemOnclick(historyPopUpItemOnClick)
-
-                    it.scrollBarFadeDuration = 800
+            val historyPopUpItemOnClick = object: PopupMenuListAdapter.HistoryPopUpItemOnclick
+            {
+                override fun changeTimeCount(v: View, year: String)
+                {
+                    vm.changeCompletedParcelHistoryDate(year = year)
+                    historyPopUpWindow?.dismiss()
                 }
             }
+
+            popupMenuListAdapter.setHistoryPopUpItemOnclick(historyPopUpItemOnClick)
+
+            it.scrollBarFadeDuration = 800
+        }
+
         historyPopUpWindow = if(histories.size > 2)
         {
             PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F), SizeUtil.changeDpToPx(binding.root.context, 35 * 6F), true).apply {
@@ -401,6 +399,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setListener()
     { // 당겨서 새로고침 !
         binding.swipeLayoutMainCompleted.setOnRefreshListener {
@@ -431,61 +430,33 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         }
 
 
-
         val onScrollListener = object: RecyclerView.OnScrollListener()
         {
-//            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int)
-//            {
-//                super.onScrolled(recyclerView, dx, dy)
-//
-//                val lastVisibleItemPosition =  (recyclerView.layoutManager as LinearLayoutManager).findLastCompletelyVisibleItemPosition()
-//
-//                val itemTotalCount = (recyclerView.adapter?.itemCount?:1) - 1
-//
-//                SopoLog.d("토탈 갯수 $itemTotalCount | $lastVisibleItemPosition")
-//
-//                if(lastVisibleItemPosition == itemTotalCount)
-//                {
-//                    SopoLog.d("마지막처럼");
-//                }
-//                else
-//                {
-//                    SopoLog.d("붐바야");
-//                }
-//
-//                if (!recyclerView.canScrollVertically(-1)) {
-//                    SopoLog.d("TESTTAG Top of list");
-//                } else
-//                    if (!recyclerView.canScrollVertically(1)) {
-//                        SopoLog.d("TESTTAG End of list");
-//                    } else {
-//                        SopoLog.d("TESTTAG idle");
-//                    }
-//            }
-
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int)
             {
                 super.onScrollStateChanged(recyclerView, newState)
 
                 val storedParcels = completedParcelAdapter.getListSize()
                 val hasNextPage = storedParcels > 0 && storedParcels % 10 == 0
+
+                val linearLayoutManager =
+                    (binding.recyclerviewCompleteParcel.layoutManager as LinearLayoutManager)
+                val lastCompletelyVisibleItemPosition =
+                    linearLayoutManager.findLastCompletelyVisibleItemPosition()
+
+                val isLastCompletelyVisibleItemPosition =
+                    lastCompletelyVisibleItemPosition % 10 == 9 || lastCompletelyVisibleItemPosition % 10 == 0
                 val isEndOfList = !recyclerView.canScrollVertically(1)
 
-                if(isEndOfList && hasNextPage)
-                {
-                    SopoLog.d("마지막 단위 1 ")
-                }
-
-//                val searchDate =
-//                    vm.selectedDate.value?.replace("년 ", "")?.replace("월", "") ?: return
-//
-//                vm.refreshCompleteParcelsByDate(inquiryDate = searchDate)
+                if(!hasNextPage || !isLastCompletelyVisibleItemPosition) return
+                val searchDate = vm.selectedDate.value?.replace("년 ", "")?.replace("월", "") ?: return
+                vm.refreshCompleteParcelsByDate(searchDate)
             }
         }
 
         binding.recyclerviewCompleteParcel.addOnScrollListener(onScrollListener)
 
-        binding.vInnerCompletedSpace.setOnTouchListener { v, event ->
+        binding.vInnerCompletedSpace.setOnTouchListener { _, event ->
             return@setOnTouchListener binding.linearMainMonthSelector.dispatchTouchEvent(event)
         }
 
