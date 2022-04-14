@@ -4,7 +4,9 @@ import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoIm
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.util.TimeUtil
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class GetParcelUseCase(private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl)
@@ -26,6 +28,11 @@ class GetParcelUseCase(private val parcelRepo: ParcelRepository, private val par
 
         parcelRepo.update(parcel = remoteParcel)
         parcelManagementRepoImpl.update(status)
+
+         if(!remoteParcel.reported)
+         {
+             CoroutineScope(Dispatchers.IO).launch { parcelRepo.reportParcelStatus(listOf(parcelId)) }
+         }
 
         return@withContext remoteParcel
     }

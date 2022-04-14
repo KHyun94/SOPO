@@ -178,6 +178,12 @@ class FirebaseService: FirebaseMessagingService()
 
         SopoLog.d("Notification 예정 택배 [data:${notifyParcel.joinToString()}]")
 
+        val reportParcelIds = notifyParcel.mapNotNull {
+            if(!it.reported) it.parcelId else null
+        }
+
+        CoroutineScope(Dispatchers.IO).launch { parcelRepository.reportParcelStatus(reportParcelIds) }
+
         notifyParcel.flatMap {
             listOf(NotificationMessage.getUpdatePusMessage(it))
         }

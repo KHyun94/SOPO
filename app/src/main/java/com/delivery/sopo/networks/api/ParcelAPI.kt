@@ -79,5 +79,7 @@ interface ParcelAPI
     @Headers("Accept: application/json")
     suspend fun requestParcelForRefresh(@Body parcelId: Map<String, Int>): Response<APIResult<Parcel.Updatable>>
 
-
+    @POST("/api/v1/sopo-parcel/delivery/parcel/reporting")
+    @Headers("Accept: application/json")
+    suspend fun reportParcelStatus(@Body parcelIds: Map<String, List<Int>>): Response<Unit>
 }

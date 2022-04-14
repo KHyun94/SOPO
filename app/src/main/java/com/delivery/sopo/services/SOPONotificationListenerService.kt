@@ -88,6 +88,12 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
             val parcelRegister = getReceivedData(content)
             val parcelId = registerParcelUseCase.invoke(parcelRegister)
             val parcel = parcelRepo.getRemoteParcelById(parcelId = parcelId)
+
+            if(!parcel.reported)
+            {
+                CoroutineScope(Dispatchers.IO).launch { parcelRepo.reportParcelStatus(listOf(parcelId)) }
+            }
+
             val notificationMessage = NotificationMessage.getUpdatePusMessage(parcel)
             NotificationImpl.notifyRegisterParcel(context = applicationContext, notificationMessage = notificationMessage)
         }

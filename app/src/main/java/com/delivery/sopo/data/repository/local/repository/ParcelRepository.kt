@@ -316,6 +316,13 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
         return result.data?.data ?: emptyList()
     }
 
+    suspend fun reportParcelStatus(parcelIds: List<Int>)
+    {
+        val wrapParcelIds = parcelIds.wrapBodyAliasToMap("parcelIds")
+        val reportParcelStatus = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).reportParcelStatus(wrapParcelIds)
+        apiCall { reportParcelStatus }
+    }
+
     /**
      * 택배 Alias 업데이트
      */
