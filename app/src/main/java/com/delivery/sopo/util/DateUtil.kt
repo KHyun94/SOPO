@@ -71,6 +71,48 @@ object DateUtil
                 "${String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY))}:${String.format("%02d", calendar.get(Calendar.MINUTE))}"
     }
 
+    fun calculateDiffPresentDate(targetDate: Date): String
+    {
+        val now = System.currentTimeMillis()
+        val target = targetDate.time
+
+        val diffMillis = (now - target)
+        val diffHour = diffMillis / (1000 * 60 * 60)
+
+        return when
+        {
+            diffHour < 1 ->
+            {
+                "최근 1시간 내 업데이트"
+            }
+            diffHour in 1..23 ->
+            {
+                "${diffHour}시간 전 업데이트"
+            }
+            diffHour in 24..743 ->
+            {
+                val diffDay = diffHour / 24
+                "${diffDay}일 전 업데이트"
+            }
+            diffHour in 744..8927 ->
+            {
+                val diffMonth = diffHour / (24 * 31)
+                "${diffMonth}개월 전 업데이트"
+            }
+            diffHour > 8927 ->
+            {
+                val diffYear = diffHour / (24 * 31 * 12)
+                "${diffYear}년 전 업데이트"
+            }
+            else ->
+            {
+                "업데이트 일자 확인 불가"
+            }
+        }
+
+
+    }
+
     /**
      *  true refreshToken의 만료일이 1주일 이하일 경우
      *  false 초과일 경우

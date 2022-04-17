@@ -109,12 +109,10 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
                             return@Runnable
                         }
 
-                        TabCode.REGISTER_CONFIRM.FRAGMENT =
-                            ConfirmParcelFragment.newInstance(register = parcelRegister,beforeStep = NavigatorConst.REGISTER_SELECT_CARRIER)
-
+                        TabCode.REGISTER_CONFIRM.FRAGMENT = ConfirmParcelFragment.newInstance(register = parcelRegister,beforeStep = NavigatorConst.REGISTER_SELECT_CARRIER)
                         FragmentManager.move(requireActivity(), TabCode.REGISTER_CONFIRM, RegisterMainFragment.viewId)
 
-                    }, 500) // 0.5초후
+                    }, 300) // 0.5초후
                 }
             }
         }
@@ -134,12 +132,10 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
     private fun setRecyclerViewItem() = CoroutineScope(Dispatchers.Main).launch {
         adapter.setItems(vm.getCarriers(waybillNum = waybillNum?:""))
 
-        val listener = object: GridTypedRecyclerViewAdapter.OnItemClickListener<List<SelectItem<Carrier?>>>
+        val listener = object: GridTypedRecyclerViewAdapter.OnItemClickListener<SelectItem<Carrier?>>
         {
-            override fun onItemClicked(v: View, pos: Int, items: List<SelectItem<Carrier?>>)
+            override fun onItemClicked(v: View, item: SelectItem<Carrier?>)
             {
-                val item = items[pos]
-
                 if(item.isSelect)
                 {
                     item.item?.let { carrier ->

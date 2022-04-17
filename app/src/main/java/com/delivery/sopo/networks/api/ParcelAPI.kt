@@ -81,5 +81,5 @@ interface ParcelAPI
 
     @POST("/api/v1/sopo-parcel/delivery/parcel/reporting")
     @Headers("Accept: application/json")
-    suspend fun reportParcelStatus(@Body parcelIds: Map<String, List<Int>>): Response<Unit>
+    suspend fun reportParcelStatus(@Body parcelIds: HashMap<String, List<Int>>): Response<Unit>
 }

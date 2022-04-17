@@ -16,5 +16,4 @@ data class ParcelEntity(
         @ColumnInfo(name = "ARRIVAL_DTE", typeAffinity = ColumnInfo.TEXT) var arrivalDte: String,
         @ColumnInfo(name = "REG_DT", typeAffinity = ColumnInfo.TEXT) var regDte: String,
         @ColumnInfo(name = "AUDIT_DTE", typeAffinity = ColumnInfo.TEXT) var auditDte: String,
-        @ColumnInfo(name = "STATUS", typeAffinity = ColumnInfo.INTEGER) var status: Int,
-        @ColumnInfo(name = "REPORTED", typeAffinity = ColumnInfo.INTEGER) var reported: Boolean)
+        @ColumnInfo(name = "STATUS", typeAffinity = ColumnInfo.INTEGER) var status: Int)

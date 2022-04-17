@@ -51,8 +51,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".views.signup.RegisterNicknameView" />
         <activity
-            android:name=".views.main.MainView"
-            android:windowSoftInputMode="adjustResize" />
+            android:name=".views.main.MainView" />
         <activity
             android:name=".views.signup.SignUpCompleteView"
             android:windowSoftInputMode="adjustResize" />
@@ -62,9 +61,9 @@
         <activity
             android:name=".views.menus.LockScreenView"
             android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".views.menus.NotDisturbTimeView"
-            android:windowSoftInputMode="adjustPan" />
+<!--        <activity-->
+<!--            android:name=".views.menus.NotDisturbTimeView"-->
+<!--            android:windowSoftInputMode="adjustPan" />-->
         <activity
             android:name=".views.menus.SignOutView"
             android:windowSoftInputMode="adjustPan" />

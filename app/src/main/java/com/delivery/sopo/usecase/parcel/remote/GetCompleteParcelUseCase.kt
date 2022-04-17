@@ -4,7 +4,9 @@ import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class GetCompleteParcelUseCase(private val parcelRepo: ParcelRepository)
@@ -17,6 +19,12 @@ class GetCompleteParcelUseCase(private val parcelRepo: ParcelRepository)
 
             parcelRepo.insertParcelsFromServer(completeParcels)
             parcelRepo.updateParcelsFromServer(completeParcels)
+
+            val reportParcelIds = completeParcels.mapNotNull {
+                if(!it.reported) it.parcelId else null
+            }
+
+            CoroutineScope(Dispatchers.IO).launch { parcelRepo.reportParcelStatus(reportParcelIds) }
 
             return@withContext completeParcels
         }

@@ -38,30 +38,16 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
         appDatabase.parcelDao().insert(entities)
     }
 
-    suspend fun insertParcelFromServer(parcel: Parcel.Common)
-    {
-        val status = parcelManagementRepo.getParcelStatus(parcel.parcelId)
-
-        status.apply {
-            unidentifiedStatus = 0
-            updatableStatus = 0
-            auditDte = TimeUtil.getDateTime()
-        }
-
-        insert(parcel)
-        parcelManagementRepo.insertParcelStatus(status)
-    }
 
     suspend fun insertParcelsFromServer(parcels: List<Parcel.Common>)
     {
-
         val insertParcels = parcels.filter { getLocalParcelById(it.parcelId) == null }
-        val insertParcelStatuses = insertParcels.map {
+        val insertParcelStatuses = insertParcels.map { parcel ->
 
-            val status = parcelManagementRepo.getParcelStatus(it.parcelId)
+            val status = parcelManagementRepo.getParcelStatus(parcel.parcelId)
 
             status.apply {
-                unidentifiedStatus = 1
+                unidentifiedStatus = if(!parcel.reported) 1 else 0
                 updatableStatus = 0
                 auditDte = TimeUtil.getDateTime()
             }
@@ -69,27 +55,6 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
 
         insertParcels(insertParcels)
         parcelManagementRepo.insertParcelStatuses(insertParcelStatuses)
-    }
-
-    suspend fun updateParcelFromServer(parcel: Parcel.Common)
-    {
-        val local = getLocalParcelById(parcel.parcelId) ?: return
-
-        val unidentifiedStatus = getUnidentifiedStatus(parcelId = parcel.parcelId)
-
-        if(unidentifiedStatus == 1)
-        {
-            parcelManagementRepo.updateUnidentifiedStatus(parcelId = parcel.parcelId, 0)
-        }
-
-        if(parcel.inquiryHash == local.inquiryHash) return
-
-        val parcelStatus = parcelManagementRepo.getParcelStatus(parcel.parcelId).apply {
-            auditDte = TimeUtil.getDateTime()
-        }
-
-        update(parcel = ParcelMapper.parcelObjectToEntity(parcel))
-        parcelManagementRepo.update(parcelStatus)
     }
 
     suspend fun updateParcelsFromServer(parcels: List<Parcel.Common>)
@@ -112,8 +77,7 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
             val parcelStatus = parcelManagementRepo.getParcelStatus(it.parcelId)
 
             parcelStatus.apply {
-
-                if(unidentifiedStatus == 1) this.unidentifiedStatus = 0 else unidentifiedStatus = 1
+                if(unidentifiedStatus == 1) this.unidentifiedStatus = 0 else unidentifiedStatus = if(!it.reported) 1 else 0
                 updatableStatus = 0
                 auditDte = TimeUtil.getDateTime()
             }
@@ -125,12 +89,8 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
 
     suspend fun updateUnidentifiedStatus(parcels: List<Parcel.Common>)
     {
-        val parcelStatuses =
-            parcels.mapNotNull { parcelManagementRepo.getParcelStatus(it.parcelId) }
-                .filter { it.unidentifiedStatus == 1 }
-
+        val parcelStatuses = parcels.map { parcelManagementRepo.getParcelStatus(it.parcelId) }.filter { it.unidentifiedStatus == 1 }
         parcelStatuses.forEach { it.unidentifiedStatus = 0 }
-
         parcelManagementRepo.updateParcelStatuses(parcelStatuses)
     }
 
@@ -236,7 +196,7 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
 
         SopoLog.d("TEST::이전 데이터=>${parcel.toString()}")
 
-        parcel.auditDte = TimeUtil.getDateTime()
+//        parcel.auditDte = TimeUtil.getDateTime()
         val entity = ParcelMapper.parcelObjectToEntity(req = parcel)
 
         SopoLog.d("TEST::이후 데이터=>${entity.toString()}")
@@ -244,7 +204,6 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
     }
 
     override suspend fun update(parcel: ParcelEntity): Int = withContext(Dispatchers.Default) {
-        parcel.auditDte = TimeUtil.getDateTime()
         return@withContext appDatabase.parcelDao().update(parcel)
     }
 
@@ -265,27 +224,21 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
 
     suspend fun registerParcel(parcel: Parcel.Register): Int
     {
-        val registerParcel =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
-                .registerParcel(register = parcel)
+        val registerParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).registerParcel(register = parcel)
         val result = apiCall { registerParcel }
         return result.data?.data ?: throw NullPointerException()
     }
 
     suspend fun getRemoteParcelById(parcelId: Int): Parcel.Common
     {
-        val getRemoteParcel =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
-                .getParcel(parcelId = parcelId)
+        val getRemoteParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcel(parcelId = parcelId)
         val result = apiCall { getRemoteParcel }
         return result.data?.data ?: throw NullPointerException()
     }
 
     suspend fun getRemoteParcelById(parcelIds: List<Int>): List<Parcel.Common>
     {
-        val getRemoteParcel =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
-                .getParcels(parcelId = parcelIds.joinToString(", "))
+        val getRemoteParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcels(parcelId = parcelIds.joinToString(", "))
         val result = apiCall { getRemoteParcel }
         return result.data?.data ?: throw NullPointerException()
     }
@@ -318,7 +271,7 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
 
     suspend fun reportParcelStatus(parcelIds: List<Int>)
     {
-        val wrapParcelIds = parcelIds.wrapBodyAliasToMap("parcelIds")
+        val wrapParcelIds = parcelIds.wrapBodyAliasToHashMap<List<Int>>("parcelIds")
         val reportParcelStatus = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).reportParcelStatus(wrapParcelIds)
         apiCall { reportParcelStatus }
     }
@@ -373,7 +326,6 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
             val updateParcelsByDelete = parcelIds.mapNotNull { parcelId ->
                 getLocalParcelById(parcelId)?.apply {
                     status = 0
-                    auditDte = TimeUtil.getDateTime()
                 }
             }
 

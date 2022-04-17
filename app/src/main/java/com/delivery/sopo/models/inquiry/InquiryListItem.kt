@@ -28,14 +28,12 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
 
     val isUnidentified = ObservableField<Boolean>().apply {
         checkIsUnidentified {
-            set(it && !parcel.reported)
+            set(it)
             notifyChange()
         }
     }
 
     private val ongoingTimeDate: Calendar? by lazy {
-
-//        SopoLog.d("Inquiry Test ${parcel.toString()}")
 
         if(parcel.auditDte == "")
         {
@@ -58,7 +56,6 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
         return@lazy calendar
     }
 
-
     fun getCompleteYearMonth(): String
     {
         if(completeTimeDate == null) return "시간불명"
@@ -68,13 +65,13 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
     fun getCompleteDateTime(): String
     {
         if(completeTimeDate == null) return "시간불명"
-        return DateUtil.changeCalendarToDateTime(completeTimeDate!!)
+        return DateUtil.calculateDiffPresentDate(completeTimeDate?.time!!)
     }
 
     fun getOngoingDateTime(): String
     {
         if(ongoingTimeDate == null) return "시간불명"
-        return DateUtil.changeCalendarToDateTime(ongoingTimeDate!!)
+        return DateUtil.calculateDiffPresentDate(ongoingTimeDate?.time!!)
     }
 
     fun getDateOfMonth(): String
@@ -84,7 +81,6 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
 
     fun getDayOfWeek(): String
     {
-
         return when(completeTimeDate?.get(Calendar.DAY_OF_WEEK))
         {
             1 ->
@@ -180,13 +176,9 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.color.STATUS_PREPARING
             DeliveryStatusEnum.ORPHANED.CODE -> R.color.MAIN_WHITE
-            //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> R.color.STATUS_PREPARING
-            //상품 인수
             DeliveryStatusEnum.AT_PICKUP.CODE -> R.color.STATUS_PREPARING
-            //상품 이동 중
             DeliveryStatusEnum.IN_TRANSIT.CODE -> R.color.STATUS_ING
-            // 동네도착
             DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.color.COLOR_MAIN_700
             else -> R.color.STATUS_PREPARING
         }
@@ -201,16 +193,13 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
             //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> R.drawable.ic_inquiry_cardview_not_registered
             //상품 인수
-            //            DeliveryStatusEnum.AT_PICKUP.CODE -> R.drawable.ic_inquiry_cardview_at_pickup
-            DeliveryStatusEnum.AT_PICKUP.CODE -> R.drawable.ic_inquiry_cardview_at_pickup_jpg
+            DeliveryStatusEnum.AT_PICKUP.CODE -> R.drawable.ic_inquiry_cardview_at_pickup
             //상품 이동 중
-            //            DeliveryStatusEnum.IN_TRANSIT.CODE -> R.drawable.ic_inquiry_cardview_in_transit
             DeliveryStatusEnum.IN_TRANSIT.CODE -> R.drawable.ic_inquiry_cardview_in_transit_test
             // 동네도착
             DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.drawable.ic_inquiry_cardview_out_for_delivery
             else -> R.drawable.ic_inquiry_cardview_error
         }
-
     }
 
     fun toParcelString(){

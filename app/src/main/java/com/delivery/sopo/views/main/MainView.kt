@@ -3,6 +3,7 @@ package com.delivery.sopo.views.main
 import android.app.Activity
 import android.content.Intent
 import android.content.IntentFilter
+import android.view.KeyEvent
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.annotation.DrawableRes
@@ -72,6 +73,8 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         setViewPager()
         setTabLayout()
         checkInitializedTab()
+
+
     }
 
     override fun onResume()

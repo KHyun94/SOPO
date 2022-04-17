@@ -1,56 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <import type="androidx.core.content.ContextCompat" />
+        <import type="androidx.core.content.res.ResourcesCompat" />
         <import type="android.view.View" />
 
         <import type="com.delivery.sopo.R" />
-
-        <variable
-            name="isClick"
-            type="Boolean" />
 
         <variable
             name="text"
             type="String" />
 
         <variable
+            name="textFont"
+            type="int" />
+
+        <variable
             name="textColor"
             type="int" />
 
         <variable
-            name="img"
+            name="icon"
             type="Integer" />
     </data>
 
     <LinearLayout
+        android:id="@+id/linear_main_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:clickable="true"
+        android:focusable="true"
         android:orientation="vertical">
 
-        <LinearLayout
+<!--        <LinearLayout
             android:id="@+id/layout_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:orientation="vertical"
-            android:background="@{isClick?@drawable/border_click_img:@drawable/border_non_click_img}">
+            android:orientation="vertical">
+&lt;!&ndash;            android:background="@{isClick?@drawable/border_click_img:@drawable/border_non_click_img}">&ndash;&gt;
 
             <ImageView
                 android:id="@+id/iv_img"
-                app:setImage="@{img}"
-                app:setDefaultImage="@{0}"
+                android:src='@{ContextCompat.getDrawable(context, img)}'
                 android:layout_width="72dp"
                 android:layout_height="72dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
                 android:layout_margin="2dp"/>
 
-        </LinearLayout>
+        </LinearLayout>-->
+
+        <ImageView
+            android:id="@+id/iv_img"
+            android:src='@{ContextCompat.getDrawable(context, icon)}'
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:adjustViewBounds="true"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:scaleType="fitCenter"
+            android:layout_margin="2dp"
+            tools:src="@drawable/ic_color_cj"/>
 
         <TextView
             android:id="@+id/tv_name"
@@ -59,6 +75,7 @@
             android:layout_height="wrap_content"
             android:text="@{text}"
             android:textColor="@{ContextCompat.getColor(context, textColor)}"
+            android:typeface="@{ResourcesCompat.getFont(context, textFont)}"
             android:layout_marginTop="6dp"
             android:layout_marginBottom="12dp"/>
 

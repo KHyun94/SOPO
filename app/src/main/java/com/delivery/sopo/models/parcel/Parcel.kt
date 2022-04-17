@@ -21,7 +21,7 @@ class Parcel{
                 @SerializedName("arrivalDte") var arrivalDte: String?,
                 @SerializedName("auditDte") var auditDte: String,
                 @SerializedName("status") var status: Int?,
-                @SerializedName("reported") var reported: Boolean = false
+                @SerializedName("reported") var reported: Boolean
         ): Serializable
 
         data class Detail(

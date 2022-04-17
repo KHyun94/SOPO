@@ -64,10 +64,10 @@ object ImageBindingAdapter
         when(enum)
         {
             DeliveryStatusEnum.NOT_REGISTERED -> {
-                view.background = ContextCompat.getDrawable(view.context, R.drawable.ic_inquiry_cardview_not_registered)
+                view.background = ContextCompat.getDrawable(view.context, R.drawable.ic_inquiry_2depth_not_registered)
             }
             DeliveryStatusEnum.INFORMATION_RECEIVED -> {
-                view.background = ContextCompat.getDrawable(view.context, R.drawable.ic_inquiry_cardview_not_registered)
+                view.background = ContextCompat.getDrawable(view.context, R.drawable.ic_inquiry_2depth_not_registered)
 
             }
             DeliveryStatusEnum.AT_PICKUP ->

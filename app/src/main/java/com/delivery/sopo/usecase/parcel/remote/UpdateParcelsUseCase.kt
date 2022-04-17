@@ -5,7 +5,9 @@ import com.delivery.sopo.models.UpdateParcelAliasRequest
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class UpdateParcelsUseCase(private val parcelRepo: ParcelRepository)
@@ -17,5 +19,11 @@ class UpdateParcelsUseCase(private val parcelRepo: ParcelRepository)
         parcelRepo.insertParcelsFromServer(parcels)
         parcelRepo.updateParcelsFromServer(parcels)
         parcelRepo.getRemoteMonths()
+
+        val reportParcelIds = parcels.mapNotNull {
+            if(!it.reported) it.parcelId else null
+        }
+
+        CoroutineScope(Dispatchers.IO).launch { parcelRepo.reportParcelStatus(reportParcelIds) }
     }
 }

@@ -1,13 +1,18 @@
 package com.delivery.sopo.views.registers
 
+import android.app.Service
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.ContextCompat.getSystemService
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.databinding.FragmentConfirmParcelBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.firebase.FirebaseRepository
-import com.delivery.sopo.databinding.FragmentConfirmParcelBinding
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.mapper.CarrierMapper
@@ -17,6 +22,7 @@ import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.viewmodels.registesrs.ConfirmParcelViewModel
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
+
 
 class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmParcelViewModel>()
 {
@@ -79,6 +85,8 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
                 }
             }
         }
+
+
     }
 
     override fun setObserve()
@@ -121,6 +129,22 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
             FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
         }
 
+//        binding.etInputText.setOnFocusChangeListener { v, hasFocus ->
+//
+//            if(hasFocus)
+//            {
+//                Handler(Looper.getMainLooper()).postDelayed({
+//                    parentView.hideTab()
+//                }, 100)
+//            }
+//            else
+//            {
+//                Handler(Looper.getMainLooper()).postDelayed({
+//                    parentView.showTab()
+//                }, 100)
+//            }
+//
+//        }
     }
 
     companion object

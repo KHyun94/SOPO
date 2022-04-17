@@ -24,7 +24,9 @@ class GetParcelUseCase(private val parcelRepo: ParcelRepository, private val par
             return@withContext remoteParcel
         }
 
-        val status = parcelManagementRepoImpl.getParcelStatus(parcelId = localParcel.parcelId).apply { auditDte = TimeUtil.getDateTime() }
+        val status = parcelManagementRepoImpl.getParcelStatus(parcelId = localParcel.parcelId).apply {
+            auditDte = TimeUtil.getDateTime()
+        }
 
         parcelRepo.update(parcel = remoteParcel)
         parcelManagementRepoImpl.update(status)

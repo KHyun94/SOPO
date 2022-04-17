@@ -9,6 +9,7 @@
         <entry key="app/src/main/res/drawable/border_all_round_10dp_blue_scale.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/border_all_round_15dp.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/border_all_round_8dp.xml" value="0.2055" />
+        <entry key="app/src/main/res/drawable/border_non_click_img.xml" value="0.32" />
         <entry key="app/src/main/res/drawable/border_oval.xml" value="0.339" />
         <entry key="app/src/main/res/drawable/ic_blue_ok.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_checked_deep_blue.xml" value="0.1585" />
@@ -56,6 +57,7 @@
         <entry key="app/src/main/res/layout/inquiry_main_frame.xml" value="0.11977438619774386" />
         <entry key="app/src/main/res/layout/intro_view.xml" value="0.17725409836065573" />
         <entry key="app/src/main/res/layout/intro_view_3.xml" value="0.11977438619774386" />
+        <entry key="app/src/main/res/layout/item_img.xml" value="0.33" />
         <entry key="app/src/main/res/layout/item_time_tab.xml" value="0.5" />
         <entry key="app/src/main/res/layout/lock_screen_view.xml" value="0.30245666503906254" />
         <entry key="app/src/main/res/layout/login_select_view.xml" value="0.17725409836065573" />
