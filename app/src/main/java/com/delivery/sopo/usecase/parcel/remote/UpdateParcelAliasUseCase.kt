@@ -11,17 +11,8 @@ class UpdateParcelAliasUseCase(private val parcelRepo: ParcelRepository)
 {
     suspend operator fun invoke(parcelId:Int, parcelAlias: String) = withContext(Dispatchers.IO) {
         SopoLog.i("UpdateParcelAliasUseCase(...)")
-
         parcelRepo.updateParcelAlias(parcelId, parcelAlias)
-
-        withContext(Dispatchers.Default) {
-            val parcelEntity =
-                (parcelRepo.getLocalParcelById(parcelId) ?: return@withContext).run {
-                    alias = parcelAlias
-                    ParcelMapper.parcelObjectToEntity(this)
-                }
-            parcelRepo.update(parcelEntity)
-        }
-
+        val parcel = (parcelRepo.getLocalParcelById(parcelId) ?: return@withContext).apply { alias = parcelAlias }
+        parcelRepo.update(parcel)
     }
 }

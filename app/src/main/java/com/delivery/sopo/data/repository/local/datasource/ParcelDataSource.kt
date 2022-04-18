@@ -2,11 +2,11 @@ package com.delivery.sopo.data.repository.local.datasource
 
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
-
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.parcel.Parcel
 
 interface ParcelDataSource {
+
    suspend fun getOngoingParcelsFromRemote(): List<Parcel.Common>
    suspend fun getRemoteMonths(): List<CompletedParcelHistory>?
 
@@ -24,8 +24,7 @@ interface ParcelDataSource {
    suspend fun insetEntity(parcel: ParcelEntity)
    suspend fun insertParcels(parcelResponseList: List<Parcel.Common>)
 
-   suspend fun update(parcel: ParcelEntity): Int
-    suspend fun updateLocalParcels(parcelResponseList: List<Parcel.Common>)
+
 
    suspend fun updateParcelsToDeletable(parcelIdList: List<Int>)
 

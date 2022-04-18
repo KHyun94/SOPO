@@ -12,6 +12,7 @@ class SyncParcelsUseCase(private val parcelRepo: ParcelRepository)
     suspend operator fun invoke() = withContext(Dispatchers.IO){
         SopoLog.i("SyncParcelsUseCase(...)")
         val remoteParcels = parcelRepo.getOngoingParcelsFromRemote()
+
         parcelRepo.updateUnidentifiedStatus(remoteParcels)
         parcelRepo.insertParcelsFromServer(remoteParcels)
         parcelRepo.updateParcelsFromServer(remoteParcels)

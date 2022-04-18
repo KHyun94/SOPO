@@ -2,6 +2,8 @@ package com.delivery.sopo.data.repository.local.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
+import com.delivery.sopo.consts.StatusConst.ACTIVATE
+import com.delivery.sopo.consts.StatusConst.DEACTIVATE
 import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
@@ -15,6 +17,7 @@ import com.delivery.sopo.data.repository.local.datasource.ParcelDataSource
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.extensions.wrapBodyAliasToHashMap
 import com.delivery.sopo.extensions.wrapBodyAliasToMap
+import com.delivery.sopo.interfaces.BaseDataSource
 import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResponse
 import com.delivery.sopo.util.SopoLog
@@ -23,73 +26,73 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImpl, private val appDatabase: AppDatabase):
-        ParcelDataSource,
+        BaseDataSource<Parcel.Common>, ParcelDataSource,
         BaseService()
 {
-    fun insert(parcel: Parcel.Common)
+    override fun get(): List<Parcel.Common>
     {
-        val entity = ParcelMapper.parcelObjectToEntity(parcel)
-        appDatabase.parcelDao().insert(entity)
+        return appDatabase.parcelDao().get().map(ParcelMapper::parcelEntityToObject)
     }
 
-    fun insert(parcels: List<Parcel.Common>)
+    override fun insert(vararg data: Parcel.Common)
     {
-        val entities = parcels.map { ParcelMapper.parcelObjectToEntity(it) }
+        val entities = data.map(ParcelMapper::parcelObjectToEntity)
         appDatabase.parcelDao().insert(entities)
     }
 
+    override fun update(vararg data: Parcel.Common)
+    {
+        val entities = data.map(ParcelMapper::parcelObjectToEntity)
+        appDatabase.parcelDao().update(entities)
+    }
+
+    override fun delete(vararg data: Parcel.Common)
+    {
+        val entities = data.map(ParcelMapper::parcelObjectToEntity)
+        appDatabase.parcelDao().delete(entities)
+    }
+
+    fun hasLocalParcel(parcel: Parcel.Common): Boolean{
+        return appDatabase.parcelDao().getById(parcel.parcelId) != null
+    }
+
+    fun compareInquiryHash(parcel: Parcel.Common): Boolean{
+        val local = appDatabase.parcelDao().getById(parcel.parcelId)?.let { ParcelMapper.parcelEntityToObject(it) }?:return false
+        return parcel.inquiryHash != local.inquiryHash
+    }
+
+    fun makeParcelStatus(parcel: Parcel.Common): Parcel.Status{
+        return parcelManagementRepo.getParcelStatus(parcel.parcelId).apply {
+            unidentifiedStatus = if(!parcel.reported) ACTIVATE else DEACTIVATE
+            auditDte = TimeUtil.getDateTime()
+        }
+    }
 
     suspend fun insertParcelsFromServer(parcels: List<Parcel.Common>)
     {
-        val insertParcels = parcels.filter { getLocalParcelById(it.parcelId) == null }
-        val insertParcelStatuses = insertParcels.map { parcel ->
+        SopoLog.d("호출")
 
-            val status = parcelManagementRepo.getParcelStatus(parcel.parcelId)
-
-            status.apply {
-                unidentifiedStatus = if(!parcel.reported) 1 else 0
-                updatableStatus = 0
-                auditDte = TimeUtil.getDateTime()
-            }
-        }
-
+        val insertParcels = parcels.filterNot(::hasLocalParcel)
+        SopoLog.d("신규 택배 리스트\n${insertParcels.joinToString("번 | ") { it.parcelId.toString() }}")
+        val insertParcelStatuses = insertParcels.map(::makeParcelStatus)
         insertParcels(insertParcels)
         parcelManagementRepo.insertParcelStatuses(insertParcelStatuses)
     }
 
     suspend fun updateParcelsFromServer(parcels: List<Parcel.Common>)
     {
-
-        val updateParcels = parcels.filter { remote ->
-            val local = getLocalParcelById(remote.parcelId) ?: return@filter false
-
-            val unidentifiedStatus = getIsUnidentifiedAsLiveData(remote.parcelId).value ?: 0
-            if(unidentifiedStatus == 1)
-            {
-                parcelManagementRepo.updateUnidentifiedStatus(remote.parcelId, 0)
-            }
-
-            remote.inquiryHash != local.inquiryHash
-        }
-
-        val updateParcelStatuses = updateParcels.map {
-
-            val parcelStatus = parcelManagementRepo.getParcelStatus(it.parcelId)
-
-            parcelStatus.apply {
-                if(unidentifiedStatus == 1) this.unidentifiedStatus = 0 else unidentifiedStatus = if(!it.reported) 1 else 0
-                updatableStatus = 0
-                auditDte = TimeUtil.getDateTime()
-            }
-        }
-
-        updateLocalParcels(updateParcels)
+        SopoLog.d("호출")
+        val updateParcels = parcels.filter(::compareInquiryHash)
+        SopoLog.d("업데이트 택배 리스트\n${updateParcels.joinToString("번 | ") { it.parcelId.toString() }}")
+        val updateParcelStatuses = updateParcels.map(::makeParcelStatus)
+        update(*updateParcels.toTypedArray())
         parcelManagementRepo.updateParcelStatuses(updateParcelStatuses)
     }
 
     suspend fun updateUnidentifiedStatus(parcels: List<Parcel.Common>)
     {
-        val parcelStatuses = parcels.map { parcelManagementRepo.getParcelStatus(it.parcelId) }.filter { it.unidentifiedStatus == 1 }
+        val parcelStatuses = parcels.map { parcelManagementRepo.getParcelStatus(it.parcelId) }
+            .filter { it.unidentifiedStatus == 1 }
         parcelStatuses.forEach { it.unidentifiedStatus = 0 }
         parcelManagementRepo.updateParcelStatuses(parcelStatuses)
     }
@@ -101,16 +104,16 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
     }
 
 
-    override suspend fun getLocalParcelById(parcelId: Int): Parcel.Common? =
-        withContext(Dispatchers.Default) {
+    override suspend fun getLocalParcelById(parcelId: Int): Parcel.Common? = withContext(Dispatchers.Default) {
             return@withContext appDatabase.parcelDao()
                 .getById(parcelId)
                 ?.let { ParcelMapper.parcelEntityToObject(it) }
-        }
+    }
 
     suspend fun getLocalParcelByIdAsLiveData(parcelId: Int): LiveData<Parcel.Common> =
         withContext(Dispatchers.Default) {
-            return@withContext Transformations.map(appDatabase.parcelDao().getByIdAsLiveData(parcelId)) {
+            return@withContext Transformations.map(appDatabase.parcelDao()
+                                                       .getByIdAsLiveData(parcelId)) {
                 ParcelMapper.parcelEntityToObject(it)
             }
         }
@@ -129,15 +132,6 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
             entity.map(ParcelMapper::parcelEntityToParcel)
         }
     }
-
-    /*
-        fun getCompleteParcelsByDateLiveData(date:String): LiveData<List<ParcelDTO>>{
-            return Transformations.map(appDatabase.parcelDao().getCompleteParcelByDateAsLiveData(date)){ entity ->
-                SopoLog.d("Test ---> ${entity.size} ${entity.joinToString()}")
-                entity.filterNotNull().map(ParcelMapper::parcelEntityToParcel)
-            }
-        }
-    */
 
     fun getCompleteParcelsByDate(date: String): List<Parcel.Common>
     {
@@ -169,8 +163,7 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
     override suspend fun isBeingUpdateParcel(parcelId: Int): LiveData<Int?> =
         appDatabase.parcelDao().isBeingUpdateParcel(parcelId = parcelId)
 
-    fun getUnidentifiedStatus(parcelId: Int) =
-        appDatabase.parcelDao().getUnidentifiedStatus(parcelId = parcelId)
+    fun getUnidentifiedStatus(parcelId: Int) = appDatabase.parcelDao().getUnidentifiedStatus(parcelId = parcelId)
 
     override fun getIsUnidentifiedAsLiveData(parcelId: Int): LiveData<Int?>
     {
@@ -192,26 +185,6 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
         appDatabase.parcelDao().insert(parcel)
     }
 
-    suspend fun update(parcel: Parcel.Common): Int = withContext(Dispatchers.Default) {
-
-        SopoLog.d("TEST::이전 데이터=>${parcel.toString()}")
-
-//        parcel.auditDte = TimeUtil.getDateTime()
-        val entity = ParcelMapper.parcelObjectToEntity(req = parcel)
-
-        SopoLog.d("TEST::이후 데이터=>${entity.toString()}")
-        return@withContext appDatabase.parcelDao().update(entity)
-    }
-
-    override suspend fun update(parcel: ParcelEntity): Int = withContext(Dispatchers.Default) {
-        return@withContext appDatabase.parcelDao().update(parcel)
-    }
-
-    override suspend fun updateLocalParcels(parcelResponseList: List<Parcel.Common>)
-    {
-        appDatabase.parcelDao().update(parcelResponseList.map(ParcelMapper::parcelToParcelEntity))
-    }
-
     // 0922 kh 추가사항
     override suspend fun getSingleParcelWithWaybillNum(waybillNum: String): ParcelEntity?
     {
@@ -224,28 +197,35 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
 
     suspend fun registerParcel(parcel: Parcel.Register): Int
     {
-        val registerParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).registerParcel(register = parcel)
+        val registerParcel =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .registerParcel(register = parcel)
         val result = apiCall { registerParcel }
         return result.data?.data ?: throw NullPointerException()
     }
 
     suspend fun getRemoteParcelById(parcelId: Int): Parcel.Common
     {
-        val getRemoteParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcel(parcelId = parcelId)
+        val getRemoteParcel =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .getParcel(parcelId = parcelId)
         val result = apiCall { getRemoteParcel }
         return result.data?.data ?: throw NullPointerException()
     }
 
     suspend fun getRemoteParcelById(parcelIds: List<Int>): List<Parcel.Common>
     {
-        val getRemoteParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcels(parcelId = parcelIds.joinToString(", "))
+        val getRemoteParcel =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .getParcels(parcelId = parcelIds.joinToString(", "))
         val result = apiCall { getRemoteParcel }
         return result.data?.data ?: throw NullPointerException()
     }
 
     override suspend fun getOngoingParcelsFromRemote(): List<Parcel.Common>
     {
-        val getOngoingParcelsFromRemote = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+        val getOngoingParcelsFromRemote =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
                 .getOngoingParcels()
         val result = apiCall { getOngoingParcelsFromRemote }
         return result.data?.data ?: emptyList()
@@ -272,7 +252,9 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
     suspend fun reportParcelStatus(parcelIds: List<Int>)
     {
         val wrapParcelIds = parcelIds.wrapBodyAliasToHashMap<List<Int>>("parcelIds")
-        val reportParcelStatus = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).reportParcelStatus(wrapParcelIds)
+        val reportParcelStatus =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .reportParcelStatus(wrapParcelIds)
         apiCall { reportParcelStatus }
     }
 
@@ -329,7 +311,7 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
                 }
             }
 
-            updateLocalParcels(updateParcelsByDelete)
+            update(*updateParcelsByDelete.toTypedArray())
         }
 
     /**

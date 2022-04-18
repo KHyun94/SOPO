@@ -119,7 +119,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginRight="8dp"
-                    android:visibility="@{ongoingInquiryData.parcel.reported ?View.GONE:View.VISIBLE, default=gone}"
+                    android:visibility="@{ongoingInquiryData.isUnidentified()?View.VISIBLE:View.GONE, default=gone}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     android:src="@drawable/ic_new_parcel_status"

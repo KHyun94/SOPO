@@ -4,6 +4,7 @@ import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
+import com.delivery.sopo.util.TimeUtil
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
@@ -47,7 +48,7 @@ class Parcel{
                 var unidentifiedStatus: Int = 0,
                 var deliveredStatus: Int = 0,
                 var isNowVisible: Int = 0,
-                var auditDte: String = ""
+                var auditDte: String = TimeUtil.getDateTime()
         )
 
         data class Updatable(
