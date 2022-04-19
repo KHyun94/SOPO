@@ -17,8 +17,8 @@ class GetCompleteParcelUseCase(private val parcelRepo: ParcelRepository)
 
             val completeParcels = parcelRepo.getCompleteParcelsByRemote(page = currentPagingManagement.pagingNum, inquiryDate = currentPagingManagement.inquiryDate)
 
-            parcelRepo.insertParcelsFromServer(completeParcels)
-            parcelRepo.updateParcelsFromServer(completeParcels)
+            parcelRepo.insertParcels(completeParcels)
+            parcelRepo.updateParcels(completeParcels)
 
             val reportParcelIds = completeParcels.mapNotNull {
                 if(!it.reported) it.parcelId else null

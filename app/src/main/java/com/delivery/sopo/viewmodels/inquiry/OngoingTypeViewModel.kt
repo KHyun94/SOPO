@@ -73,9 +73,7 @@ class OngoingTypeViewModel(private val refreshParcelUseCase: RefreshParcelUseCas
 
     fun deleteParcel(parcelId: Int) = checkEventStatus(checkNetwork = true) {
         scope.launch(coroutineExceptionHandler) {
-            withContext(Dispatchers.Default) { parcelManagementRepo.delete(parcelId) }
             deleteParcelsUseCase.invoke()
-
         }
     }
 

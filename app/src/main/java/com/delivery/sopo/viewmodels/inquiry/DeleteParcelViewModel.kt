@@ -3,7 +3,6 @@ package com.delivery.sopo.viewmodels.inquiry
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.lifecycle.*
-import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
@@ -294,7 +293,7 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
     suspend fun updateParcelToDeleteParcels(deleteParcelIds: List<Int>) =
         withContext(Dispatchers.Default) {
             val parcelStatuses = deleteParcelIds.map { parcelId ->
-                parcelManagementRepo.getParcelStatus(parcelId = parcelId).apply {
+                parcelManagementRepo.getParcelStatusById(parcelId = parcelId).apply {
                     isBeDelete = 1
                 }
             }

@@ -1,11 +1,7 @@
 package com.delivery.sopo.usecase.parcel.remote
 
-import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.models.mapper.ParcelMapper
-import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,10 +11,10 @@ class GetParcelUseCase(private val parcelRepo: ParcelRepository, private val par
 {
     suspend operator fun invoke(parcelId: Int) = withContext(Dispatchers.IO) {
         val remoteParcel = parcelRepo.getRemoteParcelById(parcelId = parcelId)
-        val localParcel = parcelRepo.getLocalParcelById(remoteParcel.parcelId)
+        val localParcel = parcelRepo.getParcelById(remoteParcel.parcelId)
 
-        parcelRepo.insertParcelsFromServer(listOf(remoteParcel))
-        parcelRepo.updateParcelsFromServer(listOf(remoteParcel))
+        parcelRepo.insertParcels(listOf(remoteParcel))
+        parcelRepo.updateParcels(listOf(remoteParcel))
 //        if(localParcel == null)
 //        {
 //            val status = ParcelMapper.parcelToParcelStatus(remoteParcel).apply {

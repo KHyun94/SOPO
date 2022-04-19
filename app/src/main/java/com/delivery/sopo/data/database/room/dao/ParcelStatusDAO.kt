@@ -10,7 +10,7 @@ import com.delivery.sopo.data.database.room.entity.ParcelStatusEntity
 interface ParcelStatusDAO
 {
     @Query("SELECT * FROM PARCEL_STATUS")
-    fun getAll() : List<ParcelStatusEntity>?
+    fun get() : List<ParcelStatusEntity>
 
     @Query("SELECT COUNT(*) FROM PARCEL_STATUS WHERE isBeDelete = 1")
     fun getIsDeleteCntLiveData(): LiveData<Int>

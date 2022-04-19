@@ -20,7 +20,6 @@ import com.delivery.sopo.extensions.wrapBodyAliasToMap
 import com.delivery.sopo.interfaces.BaseDataSource
 import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResponse
-import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -52,6 +51,10 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
         appDatabase.parcelDao().delete(entities)
     }
 
+    fun getParcelById(parcelId: Int): Parcel.Common?{
+        return appDatabase.parcelDao().getById(parcelId = parcelId)?.run(ParcelMapper::parcelEntityToObject)
+    }
+
     fun hasLocalParcel(parcel: Parcel.Common): Boolean{
         return appDatabase.parcelDao().getById(parcel.parcelId) != null
     }
@@ -62,53 +65,29 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
     }
 
     fun makeParcelStatus(parcel: Parcel.Common): Parcel.Status{
-        return parcelManagementRepo.getParcelStatus(parcel.parcelId).apply {
+        return parcelManagementRepo.getParcelStatusById(parcel.parcelId).apply {
             unidentifiedStatus = if(!parcel.reported) ACTIVATE else DEACTIVATE
             auditDte = TimeUtil.getDateTime()
         }
     }
 
-    suspend fun insertParcelsFromServer(parcels: List<Parcel.Common>)
+    fun insertParcels(parcels: List<Parcel.Common>)
     {
-        SopoLog.d("호출")
-
         val insertParcels = parcels.filterNot(::hasLocalParcel)
-        SopoLog.d("신규 택배 리스트\n${insertParcels.joinToString("번 | ") { it.parcelId.toString() }}")
         val insertParcelStatuses = insertParcels.map(::makeParcelStatus)
-        insertParcels(insertParcels)
+        insert(*insertParcels.toTypedArray())
         parcelManagementRepo.insertParcelStatuses(insertParcelStatuses)
     }
 
-    suspend fun updateParcelsFromServer(parcels: List<Parcel.Common>)
+    suspend fun updateParcels(parcels: List<Parcel.Common>)
     {
-        SopoLog.d("호출")
         val updateParcels = parcels.filter(::compareInquiryHash)
-        SopoLog.d("업데이트 택배 리스트\n${updateParcels.joinToString("번 | ") { it.parcelId.toString() }}")
         val updateParcelStatuses = updateParcels.map(::makeParcelStatus)
         update(*updateParcels.toTypedArray())
         parcelManagementRepo.updateParcelStatuses(updateParcelStatuses)
     }
 
-    suspend fun updateUnidentifiedStatus(parcels: List<Parcel.Common>)
-    {
-        val parcelStatuses = parcels.map { parcelManagementRepo.getParcelStatus(it.parcelId) }
-            .filter { it.unidentifiedStatus == 1 }
-        parcelStatuses.forEach { it.unidentifiedStatus = 0 }
-        parcelManagementRepo.updateParcelStatuses(parcelStatuses)
-    }
 
-    suspend fun deleteParcelFromServer(parcels: List<Parcel.Common>)
-    {
-        val insertList = parcels.filter { getLocalParcelById(it.parcelId) == null }
-        insertParcels(insertList)
-    }
-
-
-    override suspend fun getLocalParcelById(parcelId: Int): Parcel.Common? = withContext(Dispatchers.Default) {
-            return@withContext appDatabase.parcelDao()
-                .getById(parcelId)
-                ?.let { ParcelMapper.parcelEntityToObject(it) }
-    }
 
     suspend fun getLocalParcelByIdAsLiveData(parcelId: Int): LiveData<Parcel.Common> =
         withContext(Dispatchers.Default) {
@@ -173,16 +152,6 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
     override fun getLocalOnGoingParcelCnt(): LiveData<Int>
     {
         return appDatabase.parcelDao().getOngoingDataCntLiveData()
-    }
-
-    override suspend fun insertParcels(parcels: List<Parcel.Common>)
-    {
-        appDatabase.parcelDao().insert(parcels.map(ParcelMapper::parcelToParcelEntity))
-    }
-
-    override suspend fun insetEntity(parcel: ParcelEntity)
-    {
-        appDatabase.parcelDao().insert(parcel)
     }
 
     // 0922 kh 추가사항
@@ -281,38 +250,22 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
             .map { parcelEntity -> parcelEntity.parcelId } ?: emptyList()
     }
 
-    fun deleteLocalParcels(parcelIds: List<Int>)
-    {
-        val parcels = parcelIds.mapNotNull { parcelId ->
-            appDatabase.parcelDao().getById(parcelId = parcelId)
-        }
-        val parcelStatuses = parcelIds.mapNotNull { parcelId ->
-            appDatabase.parcelManagementDao().getById(parcelId = parcelId)
-        }
-        appDatabase.parcelManagementDao().delete(parcelStatuses)
-        appDatabase.parcelDao().delete(parcels)
-
-    }
-
-    suspend fun deleteRemoteParcels(parcelIds: List<Int>)
-    {
-        val wrapBody = parcelIds.wrapBodyAliasToHashMap("parcelIds")
-        val deleteParcels =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
-                .deleteParcels(parcelIds = wrapBody)
-        apiCall { deleteParcels }
-    }
-
-    override suspend fun updateParcelsToDeletable(parcelIds: List<Int>) =
-        withContext(Dispatchers.Default) {
+    override suspend fun updateParcelsToDeletable(parcelIds: List<Int>) = withContext(Dispatchers.Default) {
             val updateParcelsByDelete = parcelIds.mapNotNull { parcelId ->
-                getLocalParcelById(parcelId)?.apply {
+                getParcelById(parcelId)?.apply {
                     status = 0
                 }
             }
 
             update(*updateParcelsByDelete.toTypedArray())
         }
+
+    suspend fun deleteRemoteParcels(parcelIds: List<Int>)
+    {
+        val wrapBody = parcelIds.wrapBodyAliasToHashMap("parcelIds")
+        val deleteParcels = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).deleteParcels(parcelIds = wrapBody)
+        apiCall { deleteParcels }
+    }
 
     /**
      * 택배 업데이트 관련

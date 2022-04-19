@@ -12,19 +12,12 @@ interface ParcelDataSource {
 
    suspend fun getCompleteParcelsByRemote(page: Int, inquiryDate: String): List<Parcel.Common>
 
-   suspend fun getLocalParcelById(parcelId: Int): Parcel.Common?
-
    fun getLocalCompleteParcelsLiveData(): LiveData<List<Parcel.Common>>
    fun getLocalCompleteParcels(): List<Parcel.Common>
    suspend fun getLocalOngoingParcels(): List<Parcel.Common>?
 
    fun getSoonDataCntLiveData(): LiveData<Int>
    fun getOngoingDataCntLiveData(): LiveData<Int>
-
-   suspend fun insetEntity(parcel: ParcelEntity)
-   suspend fun insertParcels(parcelResponseList: List<Parcel.Common>)
-
-
 
    suspend fun updateParcelsToDeletable(parcelIdList: List<Int>)
 

@@ -1,25 +1,19 @@
 package com.delivery.sopo.services
 
 import android.content.Intent
-import com.delivery.sopo.R
-import com.delivery.sopo.consts.EmojiConst
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.networks.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.extensions.asEmoji
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
 import com.delivery.sopo.models.push.NotificationMessage
 import com.delivery.sopo.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
-import com.delivery.sopo.views.splash.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -122,7 +116,7 @@ class FirebaseService: FirebaseMessagingService()
     private suspend fun makeRefreshParcelStatus(updatableParcels: List<Parcel.Common>) = withContext(Dispatchers.Default) {
 
         return@withContext updatableParcels.map { parcel ->
-            val status = parcelManagementRepo.getParcelStatus(parcel.parcelId)
+            val status = parcelManagementRepo.getParcelStatusById(parcel.parcelId)
 
             status.updatableStatus = 1
             status.auditDte = TimeUtil.getDateTime()
@@ -143,7 +137,7 @@ class FirebaseService: FirebaseMessagingService()
 
         // 1단계 업데이트 가능한 택배가 로컬 내 존재하는지 및 신규 택배 구분
         val updatableLocalParcels = parcelIds.mapNotNull { parcelId ->
-            val localParcel = parcelRepository.getLocalParcelById(parcelId = parcelId)
+            val localParcel = parcelRepository.getParcelById(parcelId = parcelId)
             if(localParcel == null)
             {
                 SopoLog.d("이게 왜 찍히는거지? $parcelId")
@@ -171,7 +165,7 @@ class FirebaseService: FirebaseMessagingService()
         parcelManagementRepo.insertParcelStatuses(newParcelStatuses)
 
         val notifyParcel = updatableRemoteParcels.filter { parcel ->
-            val local = parcelRepository.getLocalParcelById(parcel.parcelId)
+            val local = parcelRepository.getParcelById(parcel.parcelId)
             SopoLog.d("서버 택배 상태 ${local?.deliveryStatus} >>> ${parcel.deliveryStatus}")
             parcel.deliveryStatus != local?.deliveryStatus
         } + newInsertParcels

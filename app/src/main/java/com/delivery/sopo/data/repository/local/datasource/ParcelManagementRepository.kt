@@ -5,7 +5,6 @@ import com.delivery.sopo.data.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.models.parcel.Parcel
 
 interface ParcelManagementRepository {
-   suspend fun getAll(): List<ParcelStatusEntity>?
    fun getIsDeleteCntLiveData():LiveData<Int>
    fun getIsUpdateCntLiveData(): LiveData<Int>
    fun getIsDeliveredCntLiveData(): LiveData<Int>
@@ -19,9 +18,9 @@ interface ParcelManagementRepository {
    suspend fun update(parcelStatusEntity: ParcelStatusEntity)
    suspend fun updateParcelStatuses(parcelStatus: List<Parcel.Status>)
    suspend fun updateUpdatableStatus(parcelId:Int, status : Int)
-   fun getParcelStatus(parcelId: Int): Parcel.Status?
+   fun getParcelStatusById(parcelId: Int): Parcel.Status?
    suspend fun updateTotalIsBeDeliveredToZero()
    suspend fun updateIsBeDeleteToOneByParcelIdList(parcelIdList: List<Int>)
-   suspend fun updateUnidentifiedStatus(parcelId: Int, value : Int) : Int
-
+   suspend fun updateUnidentifiedStatusById(parcelId: Int, value : Int) : Int
+   suspend fun updateUnidentifiedStatus(parcels: List<Parcel.Common>)
 }

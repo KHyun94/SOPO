@@ -10,7 +10,6 @@ import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoIm
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.ErrorEnum
-import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
@@ -19,7 +18,6 @@ import com.delivery.sopo.models.parcel.TimeLineProgress
 import com.delivery.sopo.usecase.parcel.local.GetLocalParcelUseCase
 import com.delivery.sopo.usecase.parcel.remote.RefreshParcelUseCase
 import com.delivery.sopo.util.CodeUtil
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -113,7 +111,7 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
     suspend fun updateUnidentifiedStatusToZero(parcelId: Int) = withContext(Dispatchers.Default) {
         parcelManagementRepoImpl.run {
             val status = getUnidentifiedStatusByParcelId(parcelId)
-            if(status == StatusConst.ACTIVATE) parcelManagementRepoImpl.updateUnidentifiedStatus(parcelId = parcelId, value = StatusConst.DEACTIVATE)
+            if(status == StatusConst.ACTIVATE) parcelManagementRepoImpl.updateUnidentifiedStatusById(parcelId = parcelId, value = StatusConst.DEACTIVATE)
         }
     }
 

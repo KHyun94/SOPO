@@ -3,6 +3,7 @@ package com.delivery.sopo.di
 import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.data.database.shared.SharedPref
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
+import com.delivery.sopo.data.repository.local.datasource.ParcelManagementRepository
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserSharedPrefHelper
 import com.delivery.sopo.data.repository.local.repository.*
@@ -32,6 +33,7 @@ import com.delivery.sopo.viewmodels.signup.SignUpViewModel
 import com.delivery.sopo.viewmodels.splash.SplashViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 
@@ -45,14 +47,14 @@ val appModule = module {
     single { ParcelRepository(get(), get()) }
     single { AppDatabase.getInstance(get()) }
     single { CarrierRepository(get()) }
-    single { ParcelManagementRepoImpl(get()) }
+    single<ParcelManagementRepository> { ParcelManagementRepoImpl(get()) } bind ParcelManagementRepository::class
     single { CompletedParcelHistoryRepoImpl(get()) }
     single { AppPasswordRepository(get()) }
     single { OAuthLocalRepository(get()) }
 
     factory { return@factory GetParcelUseCase(parcelRepo = get(), parcelStatusRepo = get()) }
-    factory { SyncParcelsUseCase(get()) }
-    factory { UpdateParcelsUseCase(get()) }
+    factory { SyncParcelsUseCase(parcelRepo = get(), parcelStatusRepo = get()) }
+    factory { UpdateParcelsUseCase(get(), get()) }
     factory { RegisterParcelUseCase(get()) }
     factory { GetCompleteParcelUseCase(get()) }
     factory { GetCompletedMonthUseCase(get(), get())}
