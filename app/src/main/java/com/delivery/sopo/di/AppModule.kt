@@ -44,10 +44,10 @@ val appModule = module {
     single { UserLocalRepository(appDatabase = get(), userShared = get()) }
     single { UserRemoteRepository() }
     single { JoinRepositoryImpl() }
-    single { ParcelRepository(get(), get()) }
+    single { ParcelRepository(get()) }
     single { AppDatabase.getInstance(get()) }
     single { CarrierRepository(get()) }
-    single<ParcelManagementRepository> { ParcelManagementRepoImpl(get()) } bind ParcelManagementRepository::class
+    single { ParcelManagementRepoImpl(get()) }
     single { CompletedParcelHistoryRepoImpl(get()) }
     single { AppPasswordRepository(get()) }
     single { OAuthLocalRepository(get()) }
@@ -56,7 +56,7 @@ val appModule = module {
     factory { SyncParcelsUseCase(parcelRepo = get(), parcelStatusRepo = get()) }
     factory { UpdateParcelsUseCase(get(), get()) }
     factory { RegisterParcelUseCase(get()) }
-    factory { GetCompleteParcelUseCase(get()) }
+    factory { GetCompleteParcelUseCase(get(), get()) }
     factory { GetCompletedMonthUseCase(get(), get())}
     factory { RefreshParcelUseCase(get()) }
     factory { RefreshParcelsUseCase(get()) }

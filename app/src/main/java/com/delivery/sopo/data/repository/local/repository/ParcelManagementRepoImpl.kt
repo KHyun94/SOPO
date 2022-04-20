@@ -1,6 +1,7 @@
 package com.delivery.sopo.data.repository.local.repository
 
 import androidx.lifecycle.LiveData
+import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.data.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.data.repository.local.datasource.ParcelManagementRepository
@@ -142,11 +143,18 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
         appDatabase.parcelManagementDao().delete(entities)
     }
 
-    suspend fun updateUnidentifiedStatus(parcels: List<Parcel.Common>)
+    override suspend fun updateUnidentifiedStatus(parcels: List<Parcel.Common>)
     {
         val parcelStatuses = parcels.map { getParcelStatusById(it.parcelId) }
             .filter { it.unidentifiedStatus == 1 }
         parcelStatuses.forEach { it.unidentifiedStatus = 0 }
         updateParcelStatuses(parcelStatuses)
+    }
+
+    override fun makeParcelStatus(parcel: Parcel.Common): Parcel.Status{
+        return getParcelStatusById(parcel.parcelId).apply {
+            unidentifiedStatus = if(!parcel.reported) StatusConst.ACTIVATE else StatusConst.DEACTIVATE
+            auditDte = TimeUtil.getDateTime()
+        }
     }
 }

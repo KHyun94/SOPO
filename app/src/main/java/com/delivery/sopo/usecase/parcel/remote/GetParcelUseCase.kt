@@ -2,6 +2,7 @@ package com.delivery.sopo.usecase.parcel.remote
 
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.models.parcel.Parcel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,45 +14,8 @@ class GetParcelUseCase(private val parcelRepo: ParcelRepository, private val par
         val remoteParcel = parcelRepo.getRemoteParcelById(parcelId = parcelId)
         val localParcel = parcelRepo.getParcelById(remoteParcel.parcelId)
 
-        parcelRepo.insertParcels(listOf(remoteParcel))
-        parcelRepo.updateParcels(listOf(remoteParcel))
-//        if(localParcel == null)
-//        {
-//            val status = ParcelMapper.parcelToParcelStatus(remoteParcel).apply {
-//                unidentifiedStatus = if(!remoteParcel.reported)
-//                {
-//                    SopoLog.d("[ParcelId:${remoteParcel.parcelId}] New Status")
-//                    StatusConst.ACTIVATE
-//                }
-//                else
-//                {
-//                    StatusConst.DEACTIVATE
-//                }
-//                auditDte = TimeUtil.getDateTime()
-//            }
-//
-//            parcelRepo.insert(remoteParcel)
-//            parcelStatusRepo.insertParcelStatus(status)
-//
-//            return@withContext remoteParcel
-//        }
-//
-//        val status = parcelStatusRepo.getParcelStatus(parcelId = localParcel.parcelId).apply {
-//            unidentifiedStatus = if(!remoteParcel.reported)
-//            {
-//                SopoLog.d("[ParcelId:${remoteParcel.parcelId}] New Status")
-//                StatusConst.ACTIVATE
-//            }
-//            else
-//            {
-//                StatusConst.DEACTIVATE
-//            }
-//
-//            auditDte = TimeUtil.getDateTime()
-//        }
-//
-//        parcelRepo.update(parcel = remoteParcel)
-//        parcelStatusRepo.update(status)
+        insertParcels(listOf(remoteParcel))
+        updateParcels(listOf(remoteParcel))
 
          if(!remoteParcel.reported)
          {
@@ -59,5 +23,20 @@ class GetParcelUseCase(private val parcelRepo: ParcelRepository, private val par
          }
 
         return@withContext remoteParcel
+    }
+
+    private fun insertParcels(parcels:List<Parcel.Common>){
+        val insertParcels = parcels.filterNot(parcelRepo::hasLocalParcel)
+        val insertParcelStatuses = insertParcels.map(parcelStatusRepo::makeParcelStatus)
+        parcelRepo.insert(*insertParcels.toTypedArray())
+        parcelStatusRepo.insertParcelStatuses(insertParcelStatuses)
+    }
+
+    suspend fun updateParcels(parcels: List<Parcel.Common>)
+    {
+        val updateParcels = parcels.filter(parcelRepo::compareInquiryHash)
+        val updateParcelStatuses = updateParcels.map(parcelStatusRepo::makeParcelStatus)
+        parcelRepo.update(*updateParcels.toTypedArray())
+        parcelStatusRepo.updateParcelStatuses(updateParcelStatuses)
     }
 }

@@ -23,4 +23,5 @@ interface ParcelManagementRepository {
    suspend fun updateIsBeDeleteToOneByParcelIdList(parcelIdList: List<Int>)
    suspend fun updateUnidentifiedStatusById(parcelId: Int, value : Int) : Int
    suspend fun updateUnidentifiedStatus(parcels: List<Parcel.Common>)
+   fun makeParcelStatus(parcel: Parcel.Common): Parcel.Status
 }

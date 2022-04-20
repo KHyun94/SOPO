@@ -24,7 +24,7 @@ import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImpl, private val appDatabase: AppDatabase):
+class ParcelRepository(private val appDatabase: AppDatabase):
         BaseDataSource<Parcel.Common>, ParcelDataSource,
         BaseService()
 {
@@ -63,39 +63,6 @@ class ParcelRepository(private val parcelManagementRepo: ParcelManagementRepoImp
         val local = appDatabase.parcelDao().getById(parcel.parcelId)?.let { ParcelMapper.parcelEntityToObject(it) }?:return false
         return parcel.inquiryHash != local.inquiryHash
     }
-
-    fun makeParcelStatus(parcel: Parcel.Common): Parcel.Status{
-        return parcelManagementRepo.getParcelStatusById(parcel.parcelId).apply {
-            unidentifiedStatus = if(!parcel.reported) ACTIVATE else DEACTIVATE
-            auditDte = TimeUtil.getDateTime()
-        }
-    }
-
-    fun insertParcels(parcels: List<Parcel.Common>)
-    {
-        val insertParcels = parcels.filterNot(::hasLocalParcel)
-        val insertParcelStatuses = insertParcels.map(::makeParcelStatus)
-        insert(*insertParcels.toTypedArray())
-        parcelManagementRepo.insertParcelStatuses(insertParcelStatuses)
-    }
-
-    suspend fun updateParcels(parcels: List<Parcel.Common>)
-    {
-        val updateParcels = parcels.filter(::compareInquiryHash)
-        val updateParcelStatuses = updateParcels.map(::makeParcelStatus)
-        update(*updateParcels.toTypedArray())
-        parcelManagementRepo.updateParcelStatuses(updateParcelStatuses)
-    }
-
-
-
-    suspend fun getLocalParcelByIdAsLiveData(parcelId: Int): LiveData<Parcel.Common> =
-        withContext(Dispatchers.Default) {
-            return@withContext Transformations.map(appDatabase.parcelDao()
-                                                       .getByIdAsLiveData(parcelId)) {
-                ParcelMapper.parcelEntityToObject(it)
-            }
-        }
 
     // 배송 중인 택배 리스트를 LiveData로 받기
     override fun getLocalOngoingParcelsAsLiveData(): LiveData<List<Parcel.Common>>
