@@ -12,8 +12,7 @@ interface ParcelDataSource {
 
    suspend fun getCompleteParcelsByRemote(page: Int, inquiryDate: String): List<Parcel.Common>
 
-   fun getLocalCompleteParcelsLiveData(): LiveData<List<Parcel.Common>>
-   fun getLocalCompleteParcels(): List<Parcel.Common>
+   fun getCompleteParcelsAsLiveData(): LiveData<List<Parcel.Common>>
    suspend fun getLocalOngoingParcels(): List<Parcel.Common>?
 
    fun getSoonDataCntLiveData(): LiveData<Int>
@@ -32,5 +31,5 @@ interface ParcelDataSource {
    fun getLocalOnGoingParcelCnt() : LiveData<Int>
 
    // 배송 중인 택배 리스트를 LiveData로 받기
-   fun getLocalOngoingParcelsAsLiveData(): LiveData<List<Parcel.Common>>
+   fun getOngoingParcelAsLiveData(): LiveData<List<Parcel.Common>>
 }

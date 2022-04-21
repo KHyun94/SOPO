@@ -2,8 +2,6 @@ package com.delivery.sopo.data.repository.local.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
-import com.delivery.sopo.consts.StatusConst.ACTIVATE
-import com.delivery.sopo.consts.StatusConst.DEACTIVATE
 import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
@@ -24,8 +22,8 @@ import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class ParcelRepository(private val appDatabase: AppDatabase):
-        BaseDataSource<Parcel.Common>, ParcelDataSource,
+class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Parcel.Common>,
+        ParcelDataSource,
         BaseService()
 {
     override fun get(): List<Parcel.Common>
@@ -51,28 +49,35 @@ class ParcelRepository(private val appDatabase: AppDatabase):
         appDatabase.parcelDao().delete(entities)
     }
 
-    fun getParcelById(parcelId: Int): Parcel.Common?{
-        return appDatabase.parcelDao().getById(parcelId = parcelId)?.run(ParcelMapper::parcelEntityToObject)
+    fun getParcelById(parcelId: Int): Parcel.Common?
+    {
+        return appDatabase.parcelDao()
+            .getById(parcelId = parcelId)
+            ?.run(ParcelMapper::parcelEntityToObject)
     }
 
-    fun hasLocalParcel(parcel: Parcel.Common): Boolean{
+    fun hasLocalParcel(parcel: Parcel.Common): Boolean
+    {
         return appDatabase.parcelDao().getById(parcel.parcelId) != null
     }
 
-    fun compareInquiryHash(parcel: Parcel.Common): Boolean{
-        val local = appDatabase.parcelDao().getById(parcel.parcelId)?.let { ParcelMapper.parcelEntityToObject(it) }?:return false
+    fun compareInquiryHash(parcel: Parcel.Common): Boolean
+    {
+        val local = appDatabase.parcelDao()
+            .getById(parcel.parcelId)
+            ?.let { ParcelMapper.parcelEntityToObject(it) } ?: return false
         return parcel.inquiryHash != local.inquiryHash
     }
 
     // 배송 중인 택배 리스트를 LiveData로 받기
-    override fun getLocalOngoingParcelsAsLiveData(): LiveData<List<Parcel.Common>>
+    override fun getOngoingParcelAsLiveData(): LiveData<List<Parcel.Common>>
     {
         return Transformations.map(appDatabase.parcelDao().getOngoingLiveData()) { entityList ->
             entityList.map(ParcelMapper::parcelEntityToParcel)
         }
     }
 
-    override fun getLocalCompleteParcelsLiveData(): LiveData<List<Parcel.Common>>
+    override fun getCompleteParcelsAsLiveData(): LiveData<List<Parcel.Common>>
     {
         return Transformations.map(appDatabase.parcelDao().getCompleteLiveData()) { entity ->
             entity.map(ParcelMapper::parcelEntityToParcel)
@@ -83,12 +88,6 @@ class ParcelRepository(private val appDatabase: AppDatabase):
     {
         val entity = appDatabase.parcelDao().getCompleteParcelByDate(date)
         return entity.filterNotNull().map(ParcelMapper::parcelEntityToParcel)
-    }
-
-
-    override fun getLocalCompleteParcels(): List<Parcel.Common>
-    {
-        return appDatabase.parcelDao().getComplete().map(ParcelMapper::parcelEntityToParcel)
     }
 
     override suspend fun getLocalOngoingParcels(): List<Parcel.Common>
@@ -109,7 +108,8 @@ class ParcelRepository(private val appDatabase: AppDatabase):
     override suspend fun isBeingUpdateParcel(parcelId: Int): LiveData<Int?> =
         appDatabase.parcelDao().isBeingUpdateParcel(parcelId = parcelId)
 
-    fun getUnidentifiedStatus(parcelId: Int) = appDatabase.parcelDao().getUnidentifiedStatus(parcelId = parcelId)
+    fun getUnidentifiedStatus(parcelId: Int) =
+        appDatabase.parcelDao().getUnidentifiedStatus(parcelId = parcelId)
 
     override fun getIsUnidentifiedAsLiveData(parcelId: Int): LiveData<Int?>
     {
@@ -217,7 +217,8 @@ class ParcelRepository(private val appDatabase: AppDatabase):
             .map { parcelEntity -> parcelEntity.parcelId } ?: emptyList()
     }
 
-    override suspend fun updateParcelsToDeletable(parcelIds: List<Int>) = withContext(Dispatchers.Default) {
+    override suspend fun updateParcelsToDeletable(parcelIds: List<Int>) =
+        withContext(Dispatchers.Default) {
             val updateParcelsByDelete = parcelIds.mapNotNull { parcelId ->
                 getParcelById(parcelId)?.apply {
                     status = 0
@@ -230,7 +231,9 @@ class ParcelRepository(private val appDatabase: AppDatabase):
     suspend fun deleteRemoteParcels(parcelIds: List<Int>)
     {
         val wrapBody = parcelIds.wrapBodyAliasToHashMap("parcelIds")
-        val deleteParcels = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).deleteParcels(parcelIds = wrapBody)
+        val deleteParcels =
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+                .deleteParcels(parcelIds = wrapBody)
         apiCall { deleteParcels }
     }
 

@@ -3,7 +3,6 @@ package com.delivery.sopo.viewmodels.inquiry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
@@ -33,7 +32,7 @@ class OngoingTypeViewModel(private val refreshParcelUseCase: RefreshParcelUseCas
     }
 
     private val _ongoingParcels =
-        Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
+        Transformations.map(parcelRepo.getOngoingParcelAsLiveData()) { parcelList ->
             val list = parcelList.map { parcel ->
                 InquiryListItem(parcel, false)
             }

@@ -76,6 +76,15 @@ object DateUtil
         val now = System.currentTimeMillis()
         val target = targetDate.time
 
+        val nowDate = Date(now)
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA)
+
+        SopoLog.d("""
+            Calculate
+            $now | ${sdf.format(nowDate).toString()}
+            $target | ${sdf.format(targetDate).toString()}
+        """.trimIndent())
+
         val diffMillis = (now - target)
         val diffHour = diffMillis / (1000 * 60 * 60)
 

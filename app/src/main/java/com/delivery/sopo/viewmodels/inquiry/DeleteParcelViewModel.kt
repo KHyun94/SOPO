@@ -50,7 +50,7 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
      */
 
     private var _ongoingList =
-        Transformations.map(parcelRepo.getLocalOngoingParcelsAsLiveData()) { parcelList ->
+        Transformations.map(parcelRepo.getOngoingParcelAsLiveData()) { parcelList ->
             val list = parcelList.map { parcel ->
                 InquiryListItem(parcel, false)
             }
