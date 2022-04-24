@@ -41,6 +41,8 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
             return@lazy null
         }
 
+        SopoLog.d("수정 일자 - ${parcel.parcelId} - ${parcel.auditDte}")
+
         val time = DateUtil.changeDateTime(parcel.auditDte)?:return@lazy null
         val calendar = Calendar.getInstance().apply {
             this.time = time

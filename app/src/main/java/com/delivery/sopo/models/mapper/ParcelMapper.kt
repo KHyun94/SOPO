@@ -6,7 +6,6 @@ import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.extensions.fromJson
 import com.delivery.sopo.extensions.toJson
-import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
 
@@ -67,7 +66,6 @@ object ParcelMapper
 
     fun parcelEntityToParcel(parcelEntity: ParcelEntity): Parcel.Common
     {
-
         val fromJson = parcelEntity.inquiryResult?.fromJson<TrackingInfo?>()
 
         return Parcel.Common(parcelId = parcelEntity.parcelId, userId = parcelEntity.userId, waybillNum = parcelEntity.waybillNum, carrier = parcelEntity.carrier, alias = parcelEntity.alias, trackingInfo = fromJson, inquiryHash = parcelEntity.inquiryHash, deliveryStatus = parcelEntity.deliveryStatus, arrivalDte = parcelEntity.arrivalDte, auditDte = parcelEntity.auditDte, status = parcelEntity.status, regDte = parcelEntity.regDte, reported = true)
