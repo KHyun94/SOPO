@@ -2,9 +2,11 @@ package com.delivery.sopo.models.base
 
 import android.os.Bundle
 import android.os.Handler
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
@@ -37,6 +39,8 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
     lateinit var onBackPressedCallback: OnBackPressedCallback
     lateinit var onSOPOBackPressedListener: OnSOPOBackPressListener
 
+    protected var toast: Toast? = null
+
     /**
      * Network Status Check
      */
@@ -53,6 +57,17 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
     }
 
     private var isUseCommonBackPress: Boolean = false
+
+    fun showToast(message: String, duration: Int){
+        requireActivity().runOnUiThread {
+            if(toast != null) toast?.cancel()
+            toast = Toast.makeText(requireContext(), message, duration)
+            toast?.setGravity(Gravity.TOP, 0, 0)
+            toast?.show()
+
+        }
+
+    }
 
     fun useCommonBackPressListener(isUseCommon: Boolean)
     {
@@ -93,6 +108,12 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
         super.onDetach()
 
         onBackPressedCallback.remove()
+    }
+
+    override fun onDestroy()
+    {
+        super.onDestroy()
+        toast?.cancel()
     }
 
     override fun onDestroyView()

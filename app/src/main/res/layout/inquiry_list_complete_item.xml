@@ -133,7 +133,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto_regular"
-                        android:text="@{completeInquiryData.completeDateTime}"
+                        android:text="@{completeInquiryData.toCarrierName()}"
                         android:textColor="@color/COLOR_GRAY_500"
                         android:textSize="13dp"
                         tools:text="2020/08/31" />

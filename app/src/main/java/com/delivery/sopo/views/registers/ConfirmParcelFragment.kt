@@ -1,13 +1,9 @@
 package com.delivery.sopo.views.registers
 
-import android.app.Service
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
-import android.view.inputmethod.InputMethodManager
-import androidx.core.content.ContextCompat.getSystemService
+import android.widget.Toast
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentConfirmParcelBinding
@@ -19,6 +15,7 @@ import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.services.receivers.RefreshParcelBroadcastReceiver
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.KeyboardVisibilityUtil
 import com.delivery.sopo.viewmodels.registesrs.ConfirmParcelViewModel
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -34,6 +31,8 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
 
     private lateinit var parcelRegister: Parcel.Register
     private var beforeStep: String = ""
+
+    private lateinit var keyboardVisibilityUtil: KeyboardVisibilityUtil
 
     override fun receiveData(bundle: Bundle)
     {
@@ -74,18 +73,28 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
                 {
                     NavigatorConst.REGISTER_INPUT_INFO ->
                     {
-                        TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
+                        TabCode.REGISTER_INPUT.FRAGMENT =
+                            InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
                         FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
                     }
                     NavigatorConst.REGISTER_SELECT_CARRIER ->
                     {
-                        TabCode.REGISTER_SELECT.FRAGMENT = InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
+                        TabCode.REGISTER_SELECT.FRAGMENT =
+                            InputParcelFragment.newInstance(parcelRegister = parcelRegister, returnType = 0)
                         FragmentManager.move(requireActivity(), TabCode.REGISTER_SELECT, RegisterMainFragment.viewId)
                     }
                 }
             }
         }
 
+        keyboardVisibilityUtil = KeyboardVisibilityUtil(requireActivity().window,
+                                                          onShowKeyboard = {
+                                                              parentView.hideTab()
+                                                          },
+                                                          onHideKeyboard = {
+                                                              parentView.showTab()
+                                                          }
+        )
 
     }
 
@@ -129,22 +138,20 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
             FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
         }
 
-//        binding.etInputText.setOnFocusChangeListener { v, hasFocus ->
-//
-//            if(hasFocus)
-//            {
-//                Handler(Looper.getMainLooper()).postDelayed({
-//                    parentView.hideTab()
-//                }, 100)
-//            }
-//            else
-//            {
-//                Handler(Looper.getMainLooper()).postDelayed({
-//                    parentView.showTab()
-//                }, 100)
-//            }
-//
-//        }
+        vm.alias.observe(this) { alias ->
+
+            if(alias.length >= 15)
+            {
+                showToast("15자 이내로 입력이 가능합니다.", Toast.LENGTH_SHORT)
+            }
+
+        }
+    }
+
+    override fun onDestroy()
+    {
+        keyboardVisibilityUtil.detachKeyboardListeners()
+        super.onDestroy()
     }
 
     companion object

@@ -3,18 +3,15 @@ package com.delivery.sopo.viewmodels.registesrs
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
-import com.delivery.sopo.models.*
+import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.properties.Delegates
 
@@ -22,7 +19,7 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
 {
     val waybillNum = MutableLiveData<String>()
     val carrier = MutableLiveData<Carrier>()
-    val alias = MutableLiveData<String?>()
+    val alias = MutableLiveData<String>()
 
     var parcelId by Delegates.notNull<Int>()
 
@@ -34,7 +31,7 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
 
         when(v.id)
         {
-            R.id.tv_revise ->
+            R.id.iv_revise ->
             {
                 _navigator.value = NavigatorConst.REGISTER_REVISE
             }
@@ -56,20 +53,21 @@ class ConfirmParcelViewModel(private val parcelRepo: ParcelRepository): BaseView
     }
 
     // '등록하기' Button Click event
-    private fun requestParcelRegister(register: Parcel.Register) = scope.launch(coroutineExceptionHandler) {
-        SopoLog.i("requestParcelRegister(...) 호출[${register.toString()}]")
+    private fun requestParcelRegister(register: Parcel.Register) =
+        scope.launch(coroutineExceptionHandler) {
+            SopoLog.i("requestParcelRegister(...) 호출[${register.toString()}]")
 
-        try
-        {
-            onStartLoading()
-            parcelId = parcelRepo.registerParcel(register)
-            _navigator.postValue(NavigatorConst.REGISTER_SUCCESS)
+            try
+            {
+                onStartLoading()
+                parcelId = parcelRepo.registerParcel(register)
+                _navigator.postValue(NavigatorConst.REGISTER_SUCCESS)
+            }
+            finally
+            {
+                onStopLoading()
+            }
         }
-        finally
-        {
-            onStopLoading()
-        }
-    }
 
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {

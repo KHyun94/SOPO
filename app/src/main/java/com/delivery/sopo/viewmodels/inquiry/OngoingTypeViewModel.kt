@@ -33,9 +33,7 @@ class OngoingTypeViewModel(private val refreshParcelUseCase: RefreshParcelUseCas
 
     private val _ongoingParcels =
         Transformations.map(parcelRepo.getOngoingParcelAsLiveData()) { parcelList ->
-            val list = parcelList.map { parcel ->
-                InquiryListItem(parcel, false)
-            }
+            val list = parcelList.map { parcel -> InquiryListItem(parcel, false) }
             sortByDeliveryStatus(list).toMutableList()
         }
     val ongoingParcels: LiveData<MutableList<InquiryListItem>>

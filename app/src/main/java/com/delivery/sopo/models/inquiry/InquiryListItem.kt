@@ -5,6 +5,7 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.R
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.DateUtil
@@ -204,6 +205,8 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
             else -> R.drawable.ic_inquiry_cardview_error
         }
     }
+
+    fun toCarrierName() = CarrierEnum.getCarrierByCode(parcel.carrier).NAME
 
     fun toParcelString(){
         SopoLog.d("parcel:${parcel.toString()}")
