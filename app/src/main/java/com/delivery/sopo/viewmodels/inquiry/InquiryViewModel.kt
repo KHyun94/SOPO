@@ -46,7 +46,6 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase, priva
     }
 
     fun onUpdateParcels(parcelIds: List<Int>) = scope.launch(coroutineExceptionHandler) {
-
         updateParcelsUseCase.invoke(parcelIds)
         getCompletedMonthUseCase.invoke()
     }

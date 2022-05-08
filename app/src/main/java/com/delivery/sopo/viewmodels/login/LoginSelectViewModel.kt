@@ -90,8 +90,12 @@ class LoginSelectViewModel(private val loginUseCase: LoginUseCase, private val s
                 kakaoNickname = result.nickname
 
                 scope.launch(coroutineExceptionHandler) {
+                    onStartLoading()
+                    SopoLog.d("로딩")
                     requestJoinByKakao(email = email, uId = kakaoUserId, nickname = kakaoNickname)
                     requestLoginByKakao(email = email, uId = kakaoUserId)
+                    SopoLog.d("스탑")
+                    onStopLoading()
                 }
             }
         })

@@ -15,29 +15,33 @@ object FirebaseRepository: KoinComponent
     private val userLocalRepo: UserLocalRepository by inject()
     private val userRemoteRepo: UserRemoteRepository by inject()
 
-    fun subscribedToTopic(hour: Int? = null, minutes: Int? = null) = CoroutineScope(Dispatchers.Default).async {
-            val loadTopic = userLocalRepo.getTopic().let { if(it == "") null else it }
+    fun subscribedTopic(isForce: Boolean= false, hour: Int? = null, minutes: Int? = null) = CoroutineScope(Dispatchers.Default).launch {
 
-            this.launch(Dispatchers.Default) {
-                loadTopic?.let { topic ->
-                    isUnsubscribedToTopic(topic = topic) { isSuccess ->
-                        if(!isSuccess) return@isUnsubscribedToTopic else userLocalRepo.setTopic("")
-                    }
-                }
-            }
+        val savedTopic = userLocalRepo.getTopic()
 
-            this.launch(Dispatchers.Default) {
-                val newTopic = makeTopicForSubscribe(hour = hour, minutes = minutes)
+        // 기존 토픽이 존재, 강제 업데이트 X
+        if(!isForce && savedTopic.isNotEmpty())
+        {
+            return@launch
+        }
 
-                isSubscribedToTopic(topic = newTopic) { isSuccess ->
-                    if(!isSuccess)
-                    {
-                        return@isSubscribedToTopic
-                    } else userLocalRepo.setTopic(newTopic)
-                }
+        if(savedTopic.isNotEmpty())
+        {
+            isUnsubscribedToTopic(topic = savedTopic) { isSuccess ->
+                if(!isSuccess) return@isUnsubscribedToTopic
+                userLocalRepo.setTopic("")
+                SopoLog.d("기존 토픽 해지 완료 [$savedTopic]")
             }
         }
 
+        val newTopic = makeTopicForSubscribe(hour = hour, minutes = minutes)
+
+        isSubscribedToTopic(topic = newTopic) { isSuccess ->
+            if(!isSuccess) return@isSubscribedToTopic
+            userLocalRepo.setTopic(newTopic)
+            SopoLog.d("신규 토픽 등록 완료 [$newTopic]")
+        }
+    }
 
     private fun makeTopicForSubscribe(hour: Int? = null, minutes: Int? = null): String
     {
@@ -62,8 +66,7 @@ object FirebaseRepository: KoinComponent
 
         SopoLog.d(msg = "택배 등록 시간 $topicHour:$topicMinutes")
 
-        val topic = DateUtil.getSubscribedTime(topicHour, topicMinutes)
-        // 01 02 03  ~ 24(00)
+        val topic = DateUtil.getSubscribedTime(topicHour, topicMinutes) // 01 02 03  ~ 24(00)
         SopoLog.d(msg = "구독 시간 [data:$topic]")
 
         return topic
@@ -80,8 +83,7 @@ object FirebaseRepository: KoinComponent
 
                 if(!subscribeTask.isSuccessful)
                 {
-                    SopoLog.e("subscribedToTopic 실패 [message:${subscribeTask.exception?.message}]",
-                              subscribeTask.exception)
+                    SopoLog.e("subscribedToTopic 실패 [message:${subscribeTask.exception?.message}]", subscribeTask.exception)
                     return@addOnCompleteListener callback.invoke(false)
                 }
 
@@ -100,9 +102,7 @@ object FirebaseRepository: KoinComponent
             .addOnCompleteListener { unsubscribeTask ->
                 if(!unsubscribeTask.isSuccessful)
                 {
-                    SopoLog.e(
-                        "unsubscribedToTopic 실패 [message:${unsubscribeTask.exception?.message}]",
-                        unsubscribeTask.exception)
+                    SopoLog.e("unsubscribedToTopic 실패 [message:${unsubscribeTask.exception?.message}]", unsubscribeTask.exception)
                     return@addOnCompleteListener callback.invoke(false)
                 }
 
@@ -138,21 +138,20 @@ object FirebaseRepository: KoinComponent
         }
         SopoLog.d(msg = "택배 등록 시간 $topicHour:$topicMinutes")
 
-        val topic = DateUtil.getSubscribedTime(topicHour, topicMinutes)
-        // 01 02 03  ~ 24(00)
+        val topic = DateUtil.getSubscribedTime(topicHour, topicMinutes) // 01 02 03  ~ 24(00)
 
         SopoLog.d(msg = "Topic >>> $topic")
 
         // 01:01 ~ => 01
         FirebaseMessaging.getInstance().subscribeToTopic(topic).addOnCompleteListener { task ->
-                if(!task.isSuccessful)
-                {
-                    SopoLog.e("fail to subscribe topic", task.exception)
-                    return@addOnCompleteListener
-                }
-                SopoLog.d("success to subscribe topic at $topic")
-                userLocalRepo.setTopic(topic)
+            if(!task.isSuccessful)
+            {
+                SopoLog.e("fail to subscribe topic", task.exception)
+                return@addOnCompleteListener
             }
+            SopoLog.d("success to subscribe topic at $topic")
+            userLocalRepo.setTopic(topic)
+        }
     }
 
     /**
@@ -170,15 +169,15 @@ object FirebaseRepository: KoinComponent
         }
 
         FirebaseMessaging.getInstance().unsubscribeFromTopic(topic).addOnCompleteListener { task ->
-                if(!task.isSuccessful)
-                {
-                    SopoLog.e("fail to unsubscribe topic", task.exception)
-                    return@addOnCompleteListener
-                }
-
-                SopoLog.d("success to unsubscribe topic")
-                userLocalRepo.setTopic("")
+            if(!task.isSuccessful)
+            {
+                SopoLog.e("fail to unsubscribe topic", task.exception)
+                return@addOnCompleteListener
             }
+
+            SopoLog.d("success to unsubscribe topic")
+            userLocalRepo.setTopic("")
+        }
     }
 
     fun updateFCMToken()

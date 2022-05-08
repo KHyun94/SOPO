@@ -62,6 +62,9 @@ interface ParcelDao
     @Query("SELECT pm.updatableStatus FROM PARCEL as p INNER JOIN PARCEL_STATUS as pm where p.PARCEL_ID = pm.PARCEL_ID AND p.PARCEL_ID = :parcelId AND p.DELIVERY_STATUS != 'DELIVERED'")
     fun isBeingUpdateParcel(parcelId: Int): LiveData<Int?>
 
+    @Query("SELECT * FROM PARCEL WHERE PARCEL_ID NOT IN(:parcelIds)")
+    fun getNotExistParcels(parcelIds: List<Int>): List<ParcelEntity>
+
     @Query("SELECT * FROM PARCEL")
     fun get():List<ParcelEntity>
 

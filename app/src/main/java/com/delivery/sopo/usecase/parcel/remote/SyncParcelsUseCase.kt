@@ -24,7 +24,10 @@ class SyncParcelsUseCase(private val parcelRepo: ParcelRepository, private val p
             if(!it.reported) it.parcelId else null
         }
 
-        CoroutineScope(Dispatchers.IO).launch { parcelRepo.reportParcelStatus(reportParcelIds) }
+        CoroutineScope(Dispatchers.IO).launch {
+            if(reportParcelIds.isEmpty()) return@launch
+            parcelRepo.reportParcelStatus(reportParcelIds)
+        }
     }
 
     private fun insertParcels(parcels:List<Parcel.Common>){
@@ -36,8 +39,12 @@ class SyncParcelsUseCase(private val parcelRepo: ParcelRepository, private val p
 
     suspend fun updateParcels(parcels: List<Parcel.Common>)
     {
-        val updateParcels = parcels.filter(parcelRepo::compareInquiryHash)
+        val notExistParcelIds = parcelRepo.getNotExistParcels(parcels = parcels).map { it.parcelId }
+        val notExistParcels = parcelRepo.getRemoteParcelById(parcelIds = notExistParcelIds)
+
+        val updateParcels = parcels.filter(parcelRepo::compareInquiryHash) + notExistParcels
         val updateParcelStatuses = updateParcels.map(parcelStatusRepo::makeParcelStatus)
+
         parcelRepo.update(*updateParcels.toTypedArray())
         parcelStatusRepo.updateParcelStatuses(updateParcelStatuses)
     }

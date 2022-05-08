@@ -38,9 +38,7 @@ object NotificationImpl: Notification, KoinComponent
         intent.addCategory(Intent.CATEGORY_LAUNCHER)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
 
-        //        val pIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val contentIntent =
-            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val contentIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
 
         val nBuilder = NotificationCompat.Builder(context, channelId)
@@ -60,6 +58,7 @@ object NotificationImpl: Notification, KoinComponent
                 NotificationChannel(channelId, NotificationEnum.PUSH_UPDATE_PARCEL.channelName, NotificationManager.IMPORTANCE_DEFAULT)
             nManager.createNotificationChannel(channel)
         }
+
         nManager.notify(30001, nBuilder.build())
     }
 
@@ -188,8 +187,7 @@ object NotificationImpl: Notification, KoinComponent
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
         {
-            val channel =
-                NotificationChannel(channelId, "업데이트 확인 여부", NotificationManager.IMPORTANCE_HIGH)
+            val channel = NotificationChannel(channelId, "업데이트 확인 여부", NotificationManager.IMPORTANCE_HIGH)
             nManager.createNotificationChannel(channel)
         }
         nManager.notify(OtherUtil.getRandomInteger(5), nBuilder.build())

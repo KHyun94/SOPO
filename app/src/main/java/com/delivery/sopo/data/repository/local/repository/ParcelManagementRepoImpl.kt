@@ -154,6 +154,7 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
     override fun makeParcelStatus(parcel: Parcel.Common): Parcel.Status{
         return getParcelStatusById(parcel.parcelId).apply {
             unidentifiedStatus = if(!parcel.reported) StatusConst.ACTIVATE else StatusConst.DEACTIVATE
+            updatableStatus = 0
             auditDte = TimeUtil.getDateTime()
         }
     }

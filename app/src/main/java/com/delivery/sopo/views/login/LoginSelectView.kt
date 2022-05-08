@@ -124,7 +124,6 @@ class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
     {
         if (Session.getCurrentSession().handleActivityResult(requestCode, resultCode, data))
         {
-            SopoLog.d("!!!!! 역시 이건가?")
             return
         }
         super.onActivityResult(requestCode, resultCode, data)

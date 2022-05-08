@@ -20,7 +20,6 @@ import com.delivery.sopo.viewmodels.registesrs.ConfirmParcelViewModel
 import com.delivery.sopo.views.main.MainView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-
 class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmParcelViewModel>()
 {
     override val layoutRes: Int = R.layout.fragment_confirm_parcel
@@ -54,7 +53,6 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
         }
 
         parcelRegister.alias?.let { alias -> vm.alias.value = alias }
-
     }
 
     override fun setBeforeBinding()
@@ -123,9 +121,6 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
                 }
                 NavigatorConst.REGISTER_SUCCESS ->
                 {
-                    val defer = FirebaseRepository.subscribedToTopic()
-                    defer.start()
-
                     val intent = Intent(RefreshParcelBroadcastReceiver.COMPLETE_REGISTER_ACTION)
                     intent.putExtra("PARCEL_ID", vm.parcelId)
                     requireActivity().sendBroadcast(intent)

@@ -80,13 +80,16 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
             if(parcelIds.isEmpty()) return@observe
             // TODO 다중 택배 가져오기
 
+            SopoLog.d("업데이트 가능한 택배 아이디 ${parcelIds.joinToString()}")
+
             vm.onUpdateParcels(parcelIds)
 
-            val snackBar = CustomSnackBar(mainLayout, "방금 ${parcelIds.size}개의 배송정보가 업데이트 되었습니다.", 3000, SnackBarEnum.COMMON)
+            val snackBar = CustomSnackBar(binding.tabLayoutInquiryType, "방금 ${parcelIds.size}개의 배송정보가 업데이트 되었습니다.", 3000, SnackBarEnum.COMMON)
             snackBar.show()
         }
 
         vm.cntOfBeDelivered.observe(this) { cnt ->
+            SopoLog.d("테스트 도착 상태 갯수 $cnt")
             completedTabBinding.updateCount = cnt
         }
 

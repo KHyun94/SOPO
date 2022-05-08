@@ -19,7 +19,10 @@ class GetParcelUseCase(private val parcelRepo: ParcelRepository, private val par
 
          if(!remoteParcel.reported)
          {
-             CoroutineScope(Dispatchers.IO).launch { parcelRepo.reportParcelStatus(listOf(parcelId)) }
+             CoroutineScope(Dispatchers.IO).launch {
+                 if(!remoteParcel.reported) return@launch
+                 parcelRepo.reportParcelStatus(listOf(parcelId))
+             }
          }
 
         return@withContext remoteParcel
@@ -34,7 +37,10 @@ class GetParcelUseCase(private val parcelRepo: ParcelRepository, private val par
 
     suspend fun updateParcels(parcels: List<Parcel.Common>)
     {
-        val updateParcels = parcels.filter(parcelRepo::compareInquiryHash)
+        val notExistParcelIds = parcelRepo.getNotExistParcels(parcels = parcels).map { it.parcelId }
+        val notExistParcels = parcelRepo.getRemoteParcelById(parcelIds = notExistParcelIds)
+
+        val updateParcels = parcels.filter(parcelRepo::compareInquiryHash) + notExistParcels
         val updateParcelStatuses = updateParcels.map(parcelStatusRepo::makeParcelStatus)
         parcelRepo.update(*updateParcels.toTypedArray())
         parcelStatusRepo.updateParcelStatuses(updateParcelStatuses)

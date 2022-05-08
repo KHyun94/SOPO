@@ -37,6 +37,7 @@ class MainViewModel(private val userRepo: UserLocalRepository,
     init
     {
         updateFCMToken()
+        updateTopic()
     }
 
     fun postNavigator(navigator: String){
@@ -62,6 +63,11 @@ class MainViewModel(private val userRepo: UserLocalRepository,
         FirebaseRepository.updateFCMToken()
     }
 
+    private fun updateTopic()
+    {
+        FirebaseRepository.subscribedTopic()
+    }
+
     suspend fun checkSubscribedTime() = withContext(Dispatchers.Default) {
         SopoLog.i("checkSubscribedTime(...) 호출")
 
@@ -79,6 +85,4 @@ class MainViewModel(private val userRepo: UserLocalRepository,
             FirebaseRepository.subscribedToTopicInFCM()
         }
     }
-
-
 }

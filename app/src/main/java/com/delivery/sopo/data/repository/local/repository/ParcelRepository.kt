@@ -18,8 +18,6 @@ import com.delivery.sopo.extensions.wrapBodyAliasToMap
 import com.delivery.sopo.interfaces.BaseDataSource
 import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResponse
-import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -62,11 +60,15 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
         return appDatabase.parcelDao().getById(parcel.parcelId) != null
     }
 
+    fun getNotExistParcels(parcels: List<Parcel.Common>): List<Parcel.Common>
+    {
+        val parcelIds = parcels.map { it.parcelId }
+        return appDatabase.parcelDao().getNotExistParcels(parcelIds = parcelIds).map(ParcelMapper::parcelEntityToObject)
+    }
+
     fun compareInquiryHash(parcel: Parcel.Common): Boolean
     {
-        val local = appDatabase.parcelDao()
-            .getById(parcel.parcelId)
-            ?.let { ParcelMapper.parcelEntityToObject(it) } ?: return false
+        val local = appDatabase.parcelDao().getById(parcel.parcelId)?.let { ParcelMapper.parcelEntityToObject(it) } ?: return false
         return parcel.inquiryHash != local.inquiryHash
     }
 

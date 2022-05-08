@@ -176,7 +176,9 @@ class FirebaseService: FirebaseMessagingService()
             if(!it.reported) it.parcelId else null
         }
 
-        CoroutineScope(Dispatchers.IO).launch { parcelRepository.reportParcelStatus(reportParcelIds) }
+        launch {
+            if(reportParcelIds.isEmpty()) return@launch
+            parcelRepository.reportParcelStatus(reportParcelIds) }
 
         notifyParcel.flatMap {
             listOf(NotificationMessage.getUpdatePusMessage(it))
@@ -189,3 +191,7 @@ class FirebaseService: FirebaseMessagingService()
         }
     }
 }
+
+/*
+* 1.
+* */

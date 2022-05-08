@@ -5,9 +5,7 @@ import com.delivery.sopo.consts.EmojiConst
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.extensions.asEmoji
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
 import com.delivery.sopo.notification.NotificationImpl
-import com.google.gson.Gson
 
 data class NotificationMessage(val title: String, val content: String, val summaryText: String? = null, val bigPicture: Int? = null)
 {
@@ -15,18 +13,10 @@ data class NotificationMessage(val title: String, val content: String, val summa
     {
         fun getUpdatePusMessage(parcel: Parcel.Common): NotificationMessage
         {
-//            val trackingInfo: TrackingInfo? = Gson().fromJson<TrackingInfo>(parcel.inquiryResult, TrackingInfo::class.java)
-
             val from = parcel.trackingInfo?.from?.name ?: "노네임"
 
             when(parcel.deliveryStatus)
             {
-                DeliveryStatusEnum.ORPHANED.CODE ->
-                {
-                    val title = "2주간 소식이 없는 택배가 있어요."
-                    val content = "운송장이 맞는지 확인해주세요."
-                    return NotificationMessage(title = title, content = content)
-                }
                 DeliveryStatusEnum.INFORMATION_RECEIVED.CODE ->
                 {
                     val title = "${parcel.carrier} / ${parcel.waybillNum}"
@@ -68,6 +58,12 @@ data class NotificationMessage(val title: String, val content: String, val summa
                     val summaryText = "${EmojiConst.EMOJI_CHEERING_MEGAPHONE} ${from}님이 보내신 택배예요!"
                     val bigPicture = R.drawable.ic_noti_big_delivered
                     return NotificationMessage(title = title, content = content, summaryText = summaryText, bigPicture)
+                }
+                DeliveryStatusEnum.ORPHANED.CODE ->
+                {
+                    val title = "2주간 소식이 없는 택배가 있어요."
+                    val content = "운송장이 맞는지 확인해주세요."
+                    return NotificationMessage(title = title, content = content)
                 }
                 else -> throw IllegalArgumentException("불량 코드")
             }

@@ -25,7 +25,6 @@ interface ParcelAPI
      * @param parcelid
      * @return parcel
      */
-
     @GET("/api/v1/sopo-parcel/delivery/parcel/{parcelId}")
     @Headers("Accept: application/json")
     suspend fun getParcel(@Path("parcelId") parcelId: Int): Response<APIResult<Parcel.Common>>

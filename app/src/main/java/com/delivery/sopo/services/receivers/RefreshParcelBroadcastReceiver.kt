@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.usecase.parcel.remote.GetCompletedMonthUseCase
 import com.delivery.sopo.usecase.parcel.remote.GetParcelUseCase
@@ -74,34 +75,16 @@ class RefreshParcelBroadcastReceiver: BroadcastReceiver(), KoinComponent
         {
             COMPLETE_REGISTER_ACTION ->
             {
+                FirebaseRepository.subscribedTopic(isForce = true)
+
                 val parcelId  = intent.getIntExtra("PARCEL_ID", 0)
+
                 CoroutineScope(Dispatchers.IO).launch {
                     val parcel = getParcelUseCase.invoke(parcelId= parcelId)
                     SopoLog.d("업데이트 택배:${parcel.toString()}")
                 }
             }
         }
-
-
-
-//        val type = intent.getIntExtra("TYPE", 0)
-//
-//
-//        when(type)
-//        {
-//            1 ->
-//            {
-//                syncOngoingParcels().start()
-//            }
-//            2 ->
-//            {
-//                getCompletedMonth().start()
-//            }
-//            3 ->
-//            {
-//                refreshAllParcel().start()
-//            }
-//        }
     }
 
     val onSOPOErrorCallback = object: OnSOPOErrorCallback

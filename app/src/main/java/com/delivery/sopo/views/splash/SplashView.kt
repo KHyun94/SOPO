@@ -2,6 +2,7 @@ package com.delivery.sopo.views.splash
 
 import android.content.Intent
 import android.os.Build
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R

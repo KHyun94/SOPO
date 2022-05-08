@@ -91,7 +91,8 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
 
             if(!parcel.reported)
             {
-                CoroutineScope(Dispatchers.IO).launch { parcelRepo.reportParcelStatus(listOf(parcelId)) }
+                CoroutineScope(Dispatchers.IO).launch {
+                    parcelRepo.reportParcelStatus(listOf(parcelId)) }
             }
 
             val notificationMessage = NotificationMessage.getUpdatePusMessage(parcel)

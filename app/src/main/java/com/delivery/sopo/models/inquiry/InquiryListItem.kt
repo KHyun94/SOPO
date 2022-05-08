@@ -42,8 +42,6 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
             return@lazy null
         }
 
-        SopoLog.d("수정 일자 - ${parcel.parcelId} - ${parcel.auditDte}")
-
         val time = DateUtil.changeDateTime(parcel.auditDte)?:return@lazy null
         val calendar = Calendar.getInstance().apply {
             this.time = time
@@ -74,7 +72,6 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
     fun getOngoingDateTime(): String
     {
         if(ongoingTimeDate == null) return "시간불명"
-        SopoLog.d("테스트 택배 정보 ${parcel.toString()}")
         return DateUtil.calculateDiffPresentDate(ongoingTimeDate?.time!!)
     }
 
