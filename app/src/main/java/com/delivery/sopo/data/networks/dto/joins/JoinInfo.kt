@@ -1,4 +1,4 @@
-package com.delivery.sopo.networks.dto.joins
+package com.delivery.sopo.data.networks.dto.joins
 
 import com.google.gson.annotations.SerializedName
 

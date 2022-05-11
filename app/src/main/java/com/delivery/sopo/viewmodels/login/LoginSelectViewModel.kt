@@ -5,19 +5,16 @@ import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.UserTypeConst
 import com.delivery.sopo.enums.ErrorEnum
-import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.networks.dto.joins.JoinInfo
+import com.delivery.sopo.data.networks.dto.joins.JoinInfo
 import com.delivery.sopo.usecase.user.LoginUseCase
 import com.delivery.sopo.usecase.user.SignUpUseCase
 import com.delivery.sopo.util.SopoLog
 import com.kakao.usermgmt.UserManagement
 import com.kakao.usermgmt.callback.MeV2ResponseCallback
 import com.kakao.usermgmt.response.MeV2Response
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.kakao.network.ErrorResult as KakaoErrorResult
 

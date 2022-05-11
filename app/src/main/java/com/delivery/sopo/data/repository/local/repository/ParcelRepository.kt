@@ -8,8 +8,8 @@ import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.api.ParcelAPI
+import com.delivery.sopo.data.networks.NetworkManager
+import com.delivery.sopo.data.networks.serivces.ParcelAPI
 
 import com.delivery.sopo.data.repository.local.datasource.ParcelDataSource
 import com.delivery.sopo.enums.NetworkEnum

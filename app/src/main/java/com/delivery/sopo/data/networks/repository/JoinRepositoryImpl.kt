@@ -1,9 +1,9 @@
-package com.delivery.sopo.networks.repository
+package com.delivery.sopo.data.networks.repository
 
 import com.delivery.sopo.data.repository.JoinRepository
-import com.delivery.sopo.networks.NetworkManager
-import com.delivery.sopo.networks.api.JoinAPI
-import com.delivery.sopo.networks.dto.joins.JoinInfo
+import com.delivery.sopo.data.networks.NetworkManager
+import com.delivery.sopo.data.networks.serivces.JoinAPI
+import com.delivery.sopo.data.networks.dto.joins.JoinInfo
 import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResponse
 import kotlinx.coroutines.*

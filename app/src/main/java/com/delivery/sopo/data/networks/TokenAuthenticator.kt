@@ -1,4 +1,4 @@
-package com.delivery.sopo.networks
+package com.delivery.sopo.data.networks
 
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.util.SopoLog

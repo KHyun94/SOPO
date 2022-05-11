@@ -1,6 +1,6 @@
-package com.delivery.sopo.networks.api
+package com.delivery.sopo.data.networks.serivces
 
-import com.delivery.sopo.networks.dto.joins.JoinInfo
+import com.delivery.sopo.data.networks.dto.joins.JoinInfo
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Headers

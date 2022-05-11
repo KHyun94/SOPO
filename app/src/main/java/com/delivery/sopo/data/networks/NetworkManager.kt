@@ -1,9 +1,9 @@
-package com.delivery.sopo.networks
+package com.delivery.sopo.data.networks
 
 import com.delivery.sopo.BuildConfig
 import com.delivery.sopo.enums.NetworkEnum
-import com.delivery.sopo.networks.interceptors.BasicAuthInterceptor
-import com.delivery.sopo.networks.interceptors.OAuthInterceptor
+import com.delivery.sopo.data.networks.interceptors.BasicAuthInterceptor
+import com.delivery.sopo.data.networks.interceptors.OAuthInterceptor
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.models.dto.OAuthToken

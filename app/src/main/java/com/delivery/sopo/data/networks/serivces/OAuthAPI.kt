@@ -1,6 +1,5 @@
-package com.delivery.sopo.networks.api
+package com.delivery.sopo.data.networks.serivces
 
-import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -31,7 +30,7 @@ interface OAuthAPI
     @FormUrlEncoded
     @POST("api/v1/sopo-auth/oauth/token")
     @Headers("Accept: application/json")
-    suspend fun requestRefreshOAuthToken(
+    suspend fun refreshToken(
         @Field("grant_type") grantType: String,
         @Field("user_id") email: String,
         @Field("refresh_token") refreshToken : String

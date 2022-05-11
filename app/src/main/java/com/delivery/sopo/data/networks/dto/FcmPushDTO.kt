@@ -1,6 +1,5 @@
-package com.delivery.sopo.networks.dto
+package com.delivery.sopo.data.networks.dto
 
-import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken

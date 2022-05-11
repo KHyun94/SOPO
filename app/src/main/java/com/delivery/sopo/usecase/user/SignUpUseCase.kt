@@ -2,8 +2,8 @@ package com.delivery.sopo.usecase.user
 
 import com.delivery.sopo.consts.UserTypeConst
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.networks.dto.joins.JoinInfo
-import com.delivery.sopo.networks.repository.JoinRepositoryImpl
+import com.delivery.sopo.data.networks.dto.joins.JoinInfo
+import com.delivery.sopo.data.networks.repository.JoinRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

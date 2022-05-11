@@ -4,7 +4,6 @@ import android.view.View
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.UserTypeConst
@@ -13,10 +12,8 @@ import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.networks.dto.joins.JoinInfo
+import com.delivery.sopo.data.networks.dto.joins.JoinInfo
 import com.delivery.sopo.usecase.user.SignUpUseCase
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 

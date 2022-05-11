@@ -1,4 +1,4 @@
-package com.delivery.sopo.networks.api
+package com.delivery.sopo.data.networks.serivces
 
 import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 

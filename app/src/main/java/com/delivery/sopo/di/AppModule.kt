@@ -3,13 +3,12 @@ package com.delivery.sopo.di
 import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.data.database.shared.SharedPref
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
-import com.delivery.sopo.data.repository.local.datasource.ParcelManagementRepository
 import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repository.local.user.UserSharedPrefHelper
 import com.delivery.sopo.data.repository.local.repository.*
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
-import com.delivery.sopo.networks.repository.JoinRepositoryImpl
+import com.delivery.sopo.data.networks.repository.JoinRepositoryImpl
 import com.delivery.sopo.usecase.LogoutUseCase
 import com.delivery.sopo.usecase.UpdateNicknameUseCase
 import com.delivery.sopo.usecase.parcel.local.GetLocalParcelUseCase
@@ -33,7 +32,6 @@ import com.delivery.sopo.viewmodels.signup.SignUpViewModel
 import com.delivery.sopo.viewmodels.splash.SplashViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.dsl.bind
 import org.koin.dsl.module
 
 
