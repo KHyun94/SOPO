@@ -63,6 +63,8 @@ object NetworkManager : KoinComponent
     fun retro(vararg params : String? = emptyArray()) : Retrofit
     {
         INTERCEPTOR_TYPE = params.size
+
+        SopoLog.d( msg = "네트워크 인증 타입 => $INTERCEPTOR_TYPE ${params.joinToString()}")
         val interceptor : Interceptor? = when(INTERCEPTOR_TYPE)
         {
             1 -> OAuthInterceptor(params[0]!!)   // 파라미터 갯수 1일 때 OAuthInterceptor(Token)
@@ -97,7 +99,6 @@ object NetworkManager : KoinComponent
 
         return Retrofit.Builder()
             .baseUrl(BuildConfig.API_URL)
-//            .baseUrl("http://172.20.10.2:6443/")
             .client(mOKHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson.create()))
             .addCallAdapterFactory(CoroutineCallAdapterFactory())

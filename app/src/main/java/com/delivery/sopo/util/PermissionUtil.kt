@@ -39,29 +39,6 @@ object PermissionUtil
                 onPermissionResponseCallback.onPermissionGranted()
             }
 
-//            val permissionDialog = PermissionDialog(act = activity) { dialog ->
-//
-//                permissionCallback(activity, *PermissionConst.PERMISSION_ARRAY) { isGranted ->
-//
-//                    if(!isGranted)
-//                    {
-//                        SopoLog.e("권한 비허가 상태")
-//
-//                        onPermissionResponseCallback.onPermissionDenied()
-//
-//                        return@permissionCallback
-//                    }
-//
-//                    SopoLog.d("권한 허가 상태")
-//
-//                    onPermissionResponseCallback.onPermissionGranted()
-//                }
-//
-//                dialog.dismiss()
-//            }
-//
-//            permissionDialog.show(activity.supportFragmentManager, "PermissionTag")
-
             return
         }
 
@@ -99,9 +76,5 @@ object PermissionUtil
             .setPermissionListener(permissionListener)
             .setPermissions(*permissions)
             .check()
-    }
-
-    public fun requestPermission(){
-
     }
 }

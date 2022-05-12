@@ -1,6 +1,7 @@
 package com.delivery.sopo.data.networks.serivces
 
 import com.delivery.sopo.data.networks.NetworkManager
+import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.APIResult
@@ -86,7 +87,7 @@ interface UserService
      */
     @POST("/api/v1/sopo-user/password/reset")
     @Headers("Accept: application/json")
-    suspend fun requestResetPassword(@Body resetPassword: ResetPassword) : Response<APIResult<String?>>
+    suspend fun updatePassword(@Body resetPassword: ResetPassword) : Response<APIResult<String?>>
 
     /**
      * 탈퇴
@@ -98,14 +99,9 @@ interface UserService
     suspend fun deleteUser(@Body reason: Map<String, String>) : Response<Unit>
 
     companion object{
-        fun create(): UserService
+        fun create(networkType: NetworkEnum): UserService
         {
-            return NetworkManager.retro().create(UserService::class.java)
-        }
-
-        fun create(accessToken: String): UserService
-        {
-            return NetworkManager.retro(accessToken).create(UserService::class.java)
+            return NetworkManager.setLoginMethod(networkType, UserService::class.java)
         }
     }
 }

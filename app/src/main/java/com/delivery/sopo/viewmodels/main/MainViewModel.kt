@@ -11,6 +11,7 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repository.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.domain.usecase.user.UpdateFCMTokenUseCase
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.models.ResponseResult
@@ -22,6 +23,7 @@ import kotlinx.coroutines.*
 
 class MainViewModel(private val userRepo: UserLocalRepository,
                     private val parcelRepo: ParcelRepository,
+                    private val updateFCMTokenUseCase: UpdateFCMTokenUseCase,
                     private val appPasswordRepo: AppPasswordRepository):
         BaseViewModel()
 {
@@ -58,9 +60,8 @@ class MainViewModel(private val userRepo: UserLocalRepository,
     }
 
     /** Update FCM Token  **/
-    private fun updateFCMToken()
-    {
-        FirebaseRepository.updateFCMToken()
+    private fun updateFCMToken() = scope.launch{
+        updateFCMTokenUseCase.invoke()
     }
 
     private fun updateTopic()

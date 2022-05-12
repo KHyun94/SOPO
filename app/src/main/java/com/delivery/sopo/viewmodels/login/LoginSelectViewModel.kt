@@ -9,8 +9,8 @@ import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.data.networks.dto.joins.JoinInfo
-import com.delivery.sopo.usecase.user.LoginUseCase
-import com.delivery.sopo.usecase.user.SignUpUseCase
+import com.delivery.sopo.domain.usecase.user.token.LoginUseCase
+import com.delivery.sopo.domain.usecase.user.token.SignUpUseCase
 import com.delivery.sopo.util.SopoLog
 import com.kakao.usermgmt.UserManagement
 import com.kakao.usermgmt.callback.MeV2ResponseCallback
@@ -108,7 +108,7 @@ class LoginSelectViewModel(private val loginUseCase: LoginUseCase, private val s
     private suspend fun requestLoginByKakao(email: String, uId: String)
     {
         SopoLog.i(msg = "requestLoginBySelf(...) 호출")
-        loginUseCase.invoke(email = email, password = uId.toMD5())
+        loginUseCase.invoke(userName = email, password = uId.toMD5())
         return postNavigator(NavigatorConst.TO_MAIN)
     }
 

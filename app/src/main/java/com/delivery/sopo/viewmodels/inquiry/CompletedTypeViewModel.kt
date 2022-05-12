@@ -11,14 +11,13 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.usecase.parcel.remote.GetCompleteParcelUseCase
-import com.delivery.sopo.usecase.parcel.remote.GetCompletedMonthUseCase
-import com.delivery.sopo.usecase.parcel.remote.UpdateParcelAliasUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.GetCompleteParcelUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.GetCompletedMonthUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.UpdateParcelAliasUseCase
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase, private val getCompletedMonthUseCase: GetCompletedMonthUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val historyRepo: CompletedParcelHistoryRepoImpl):
         BaseViewModel()

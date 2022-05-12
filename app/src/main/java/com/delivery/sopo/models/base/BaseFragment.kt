@@ -18,13 +18,11 @@ import com.delivery.sopo.SOPOApp
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
-import com.delivery.sopo.usecase.LogoutUseCase
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.views.dialog.LogoutDialog
-import org.koin.android.ext.android.inject
 import org.koin.core.KoinComponent
 import kotlin.system.exitProcess
 

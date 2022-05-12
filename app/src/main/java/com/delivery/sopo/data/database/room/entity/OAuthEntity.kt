@@ -1,4 +1,4 @@
-package com.delivery.sopo.data.repository.local.o_auth
+package com.delivery.sopo.data.database.room.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

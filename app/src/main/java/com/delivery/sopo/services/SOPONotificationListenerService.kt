@@ -11,7 +11,7 @@ import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.push.NotificationMessage
 import com.delivery.sopo.notification.NotificationImpl
-import com.delivery.sopo.usecase.parcel.remote.RegisterParcelUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.RegisterParcelUseCase
 import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope

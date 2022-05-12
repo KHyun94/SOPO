@@ -1,11 +1,22 @@
 package com.delivery.sopo.data.resource.user.local
 
+import com.delivery.sopo.models.PersonalMessage
+import com.delivery.sopo.models.dto.OAuthToken
+
 interface UserDataSource
 {
+    suspend fun getToken(): OAuthToken
+    suspend fun insertToken(token: OAuthToken)
+    suspend fun updateToken(token: OAuthToken)
+    suspend fun deleteToken(token: OAuthToken)
+
+    fun insertUserAccount(userName: String, password: String, status: Int)
+    fun insertUserInfo(nickname: String, personalMessage: PersonalMessage)
+
     fun getNickname() :String
     fun setNickname(nickname : String)
 
-    fun getUserId(): String
+    fun getUserName(): String
     fun setUserId(userId: String)
 
     fun getUserPassword(): String

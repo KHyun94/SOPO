@@ -11,10 +11,10 @@ import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.usecase.parcel.remote.DeleteParcelsUseCase
-import com.delivery.sopo.usecase.parcel.remote.RefreshParcelUseCase
-import com.delivery.sopo.usecase.parcel.remote.SyncParcelsUseCase
-import com.delivery.sopo.usecase.parcel.remote.UpdateParcelAliasUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.DeleteParcelsUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.RefreshParcelUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.SyncParcelsUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.UpdateParcelAliasUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*

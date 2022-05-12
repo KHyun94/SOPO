@@ -8,8 +8,8 @@ import com.delivery.sopo.consts.BundleConst
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.usecase.parcel.remote.GetParcelUseCase
-import com.delivery.sopo.usecase.parcel.remote.RegisterParcelUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.GetParcelUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.RegisterParcelUseCase
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import kotlinx.coroutines.*

@@ -1,10 +1,51 @@
 package com.delivery.sopo.data.resource.user.local
 
+import com.delivery.sopo.data.database.room.dao.OAuthDao
 import com.delivery.sopo.data.repository.local.user.UserSharedPrefHelper
 import com.delivery.sopo.enums.SettingEnum
+import com.delivery.sopo.models.PersonalMessage
+import com.delivery.sopo.models.dto.OAuthToken
+import com.delivery.sopo.models.mapper.OAuthMapper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class UserDataSourceImpl(private val userShared: UserSharedPrefHelper):UserDataSource
+class UserDataSourceImpl(private val userShared: UserSharedPrefHelper, private val oAuthDao: OAuthDao):
+        UserDataSource
 {
+    override suspend fun getToken() = withContext(Dispatchers.Default) {
+        oAuthDao.get(userId = getUserName()) ?: throw NullPointerException("OAuth Token 정보가 없습니다.")
+    }.run(OAuthMapper::entityToObject)
+
+    override suspend fun insertToken(token: OAuthToken) = withContext(Dispatchers.Default) {
+        val entity = OAuthMapper.objectToEntity(oAuth = token)
+        oAuthDao.insert(entity)
+    }
+
+    override suspend fun updateToken(token: OAuthToken)
+    {
+        val entity = OAuthMapper.objectToEntity(oAuth = token)
+        oAuthDao.update(entity)
+    }
+
+    override suspend fun deleteToken(token: OAuthToken)
+    {
+        val entity = OAuthMapper.objectToEntity(oAuth = token)
+        oAuthDao.delete(entity)
+    }
+
+    override fun insertUserAccount(userName: String, password: String, status: Int){
+        setUserId(userName)
+        setUserPassword(password)
+        setStatus(status)
+    }
+
+    override fun insertUserInfo(nickname: String, personalMessage: PersonalMessage)
+    {
+        setNickname(nickname = nickname)
+        setPersonalStatusType(type = personalMessage.type)
+        setPersonalStatusMessage(message = personalMessage.message)
+    }
+
     override fun getNickname(): String
     {
         return userShared.getNickname() ?: ""
@@ -15,7 +56,7 @@ class UserDataSourceImpl(private val userShared: UserSharedPrefHelper):UserDataS
         userShared.setNickname(nickname)
     }
 
-    override fun getUserId(): String
+    override fun getUserName(): String
     {
         return userShared.getUserId() ?: ""
     }
@@ -148,6 +189,13 @@ class UserDataSourceImpl(private val userShared: UserSharedPrefHelper):UserDataS
 
     override fun removeUserRepo()
     {
+        setUserId("")
+        setUserPassword("")
+        setJoinType("")
+        setRegisterDate("")
+        setStatus(0)
+        setDeviceInfo("")
+        setPushAlarmType(SettingEnum.PushAlarmType.ALWAYS)
     }
 
 

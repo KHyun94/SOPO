@@ -2,6 +2,8 @@ package com.delivery.sopo.data.resource.user.remote
 
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.dto.OAuthToken
+import com.delivery.sopo.models.user.ResetAuthCode
+import com.delivery.sopo.models.user.ResetPassword
 
 interface UserRemoteDataSource
 {
@@ -11,7 +13,7 @@ interface UserRemoteDataSource
     suspend fun updateNickname(nickname: String)
     suspend fun deleteUser(reason: String)
     suspend fun requestAuthCodeEmail(email: String): String
-    suspend fun requestVerifyAuthToken()
-    suspend fun updatePassword()
-    suspend fun updateFCMToken()
+    suspend fun requestVerifyAuthToken(authCode: ResetAuthCode)
+    suspend fun updatePassword(resetPassword: ResetPassword)
+    suspend fun updateFCMToken(fcmToken: String)
 }

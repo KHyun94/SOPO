@@ -1,4 +1,4 @@
-package com.delivery.sopo.usecase.user
+package com.delivery.sopo.domain.usecase.user.token
 
 import com.delivery.sopo.consts.UserTypeConst
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository

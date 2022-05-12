@@ -3,17 +3,14 @@ package com.delivery.sopo.viewmodels.login
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.exceptions.UserExceptionHandler
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.usecase.user.LoginUseCase
-import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.domain.usecase.user.token.LoginUseCase
 import kotlinx.coroutines.*
 
 class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
@@ -93,7 +90,7 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
         try
         {
             onStartLoading()
-            loginUseCase.invoke(email = email.value.toString(), password = password.value.toString().toMD5())
+            loginUseCase.invoke(userName = email.value.toString(), password = password.value.toString().toMD5())
             _navigator.postValue(NavigatorConst.TO_MAIN)
         }
         finally

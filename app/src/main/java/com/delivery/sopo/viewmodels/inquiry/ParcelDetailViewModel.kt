@@ -15,8 +15,8 @@ import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.TimeLineProgress
-import com.delivery.sopo.usecase.parcel.local.GetLocalParcelUseCase
-import com.delivery.sopo.usecase.parcel.remote.RefreshParcelUseCase
+import com.delivery.sopo.domain.usecase.parcel.local.GetLocalParcelUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.RefreshParcelUseCase
 import com.delivery.sopo.util.CodeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

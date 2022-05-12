@@ -7,9 +7,9 @@ import com.delivery.sopo.exceptions.ParcelExceptionHandler
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
-import com.delivery.sopo.usecase.parcel.remote.GetCompletedMonthUseCase
-import com.delivery.sopo.usecase.parcel.remote.GetParcelUseCase
-import com.delivery.sopo.usecase.parcel.remote.SyncParcelsUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.GetCompletedMonthUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.GetParcelUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.SyncParcelsUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope

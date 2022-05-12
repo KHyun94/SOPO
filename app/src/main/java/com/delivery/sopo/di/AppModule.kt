@@ -9,13 +9,16 @@ import com.delivery.sopo.data.repository.local.repository.*
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
 import com.delivery.sopo.data.networks.repository.JoinRepositoryImpl
-import com.delivery.sopo.usecase.LogoutUseCase
-import com.delivery.sopo.usecase.UpdateNicknameUseCase
-import com.delivery.sopo.usecase.parcel.local.GetLocalParcelUseCase
-import com.delivery.sopo.usecase.parcel.remote.*
-import com.delivery.sopo.usecase.user.LoginUseCase
-import com.delivery.sopo.usecase.user.SignOutUseCase
-import com.delivery.sopo.usecase.user.SignUpUseCase
+import com.delivery.sopo.data.repository.user.UserRepository
+import com.delivery.sopo.data.repository.user.UserRepositoryImpl
+import com.delivery.sopo.data.resource.user.local.UserDataSource
+import com.delivery.sopo.data.resource.user.local.UserDataSourceImpl
+import com.delivery.sopo.data.resource.user.remote.UserRemoteDataSource
+import com.delivery.sopo.data.resource.user.remote.UserRemoteDataSourceImpl
+import com.delivery.sopo.domain.usecase.parcel.local.GetLocalParcelUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.*
+import com.delivery.sopo.domain.usecase.user.*
+import com.delivery.sopo.domain.usecase.user.token.*
 import com.delivery.sopo.viewmodels.IntroViewModel
 import com.delivery.sopo.viewmodels.inquiry.*
 import com.delivery.sopo.viewmodels.login.LoginSelectViewModel
@@ -37,18 +40,37 @@ import org.koin.dsl.module
 
 val appModule = module {
 
-    single { SharedPref(androidApplication()) }
-    single { UserSharedPrefHelper(get(), androidApplication()) }
+    single { AppDatabase.getInstance(context = get()) }
+    single { AppDatabase.getInstance(context = get()).oauthDao() }
+    single { AppDatabase.getInstance(context = get()).carrierDao() }
+    single { AppDatabase.getInstance(context = get()).carrierPatternDao() }
+    single { AppDatabase.getInstance(context = get()).parcelDao() }
+    single { AppDatabase.getInstance(context = get()).completeParcelStatusDao() }
+    single { AppDatabase.getInstance(context = get()).parcelManagementDao() }
+    single { AppDatabase.getInstance(context = get()).securityDao() }
+
+    single { return@single SharedPref(androidApplication()) }
+    single { return@single UserSharedPrefHelper(sharedPref = get(), androidApplication()) }
+
+    single { UserRemoteDataSourceImpl() as UserRemoteDataSource }
+    single{ UserDataSourceImpl(userShared = get(), oAuthDao = get()) as UserDataSource }
+    single{ UserRepositoryImpl(userDataSource = get(), userRemoteDataSource = get())  as UserRepository}
+
     single { UserLocalRepository(appDatabase = get(), userShared = get()) }
     single { UserRemoteRepository() }
     single { JoinRepositoryImpl() }
     single { ParcelRepository(get()) }
-    single { AppDatabase.getInstance(get()) }
+
     single { CarrierRepository(get()) }
     single { ParcelManagementRepoImpl(get()) }
     single { CompletedParcelHistoryRepoImpl(get()) }
     single { AppPasswordRepository(get()) }
     single { OAuthLocalRepository(get()) }
+
+    factory { return@factory LoginUseCase(userRepository = get()) }
+    factory { return@factory ForceLoginUseCase(userRepository = get()) }
+
+    factory { return@factory UpdateNicknameUseCase(userRepository = get()) }
 
     factory { return@factory GetParcelUseCase(parcelRepo = get(), parcelStatusRepo = get()) }
     factory { SyncParcelsUseCase(parcelRepo = get(), parcelStatusRepo = get()) }
@@ -58,24 +80,26 @@ val appModule = module {
     factory { GetCompletedMonthUseCase(get(), get())}
     factory { RefreshParcelUseCase(get()) }
     factory { RefreshParcelsUseCase(get()) }
-    factory { UpdateNicknameUseCase(get(), get()) }
+
     factory { UpdateParcelAliasUseCase(get()) }
     factory { DeleteParcelsUseCase(get(), get()) }
-    factory { return@factory LoginUseCase(userRemoteRepo = get()) }
+
     factory { LogoutUseCase(get()) }
-    factory { return@factory SignOutUseCase(userLocalRepo = get(), userRemoteRepo = get()) }
+    factory { return@factory SignOutUseCase(userRepository = get()) }
     factory { GetLocalParcelUseCase(get()) }
     factory { return@factory SignUpUseCase(userLocalRepo = get(), joinRepo = get()) }
 
-    viewModel { SplashViewModel(get(), get(), get(), get()) }
+    viewModel { SplashViewModel(forceLoginUseCase = get(), userDataSource = get(), carrierRepo = get()) }
+
     viewModel { IntroViewModel() }
+
     viewModel { LoginViewModel(get()) }
     viewModel { return@viewModel SignUpViewModel(signUpUseCase = get()) }
-    viewModel { SignUpCompleteViewModel(get(), get()) }
+    viewModel { SignUpCompleteViewModel(get(), get(), get()) }
     viewModel { RegisterNicknameViewModel(get()) }
     viewModel { return@viewModel LoginSelectViewModel(loginUseCase = get(), signUpUseCase = get()) }
     viewModel { ResetPasswordViewModel(get()) }
-    viewModel { MainViewModel(get(), get(), get()) }
+    viewModel { MainViewModel(get(), get(), get(), get()) }
     viewModel { MenuSubViewModel() }
     viewModel { LockScreenViewModel(get(), get()) }
     viewModel { SettingViewModel(get(), get()) }

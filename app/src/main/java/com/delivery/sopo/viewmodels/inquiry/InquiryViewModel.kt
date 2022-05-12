@@ -11,7 +11,7 @@ import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.usecase.parcel.remote.*
+import com.delivery.sopo.domain.usecase.parcel.remote.*
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable

@@ -1,38 +1,31 @@
-package com.delivery.sopo.usecase.parcel.remote
+package com.delivery.sopo.domain.usecase.parcel.remote
 
 import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class GetCompleteParcelUseCase(private val parcelRepo: ParcelRepository, private val parcelStatusRepo: ParcelManagementRepoImpl)
+class UpdateParcelsUseCase(private val parcelRepo: ParcelRepository, private val parcelStatusRepo: ParcelManagementRepoImpl)
 {
-    suspend operator fun invoke(currentPagingManagement: PagingManagement): List<Parcel.Common> =
-        withContext(Dispatchers.IO) {
-            SopoLog.i("GetCompleteParcelUseCase(...)")
+    suspend operator fun invoke(parcelIds: List<Int>) = withContext(Dispatchers.IO) {
+        SopoLog.i("호출 [data:${parcelIds.joinToString(", ")}")
 
-            val completeParcels =
-                parcelRepo.getCompleteParcelsByRemote(page = currentPagingManagement.pagingNum, inquiryDate = currentPagingManagement.inquiryDate)
+        val parcels: List<Parcel.Common> = parcelRepo.getRemoteParcelById(parcelIds = parcelIds) //        parcelStatusRepo.updateUnidentifiedStatus(parcels)
+        insertParcels(parcels)
+        updateParcels(parcels) //        parcelRepo.getRemoteMonths()
 
-            insertParcels(completeParcels)
-            updateParcels(completeParcels)
-
-            val reportParcelIds = completeParcels.mapNotNull {
-                if(!it.reported) it.parcelId else null
-            }
-
-            launch {
-                if(reportParcelIds.isEmpty()) return@launch
-                parcelRepo.reportParcelStatus(reportParcelIds)
-            }
-
-            return@withContext completeParcels
+        val reportParcelIds = parcels.mapNotNull {
+            if(!it.reported) it.parcelId else null
         }
+
+        launch {
+            if(reportParcelIds.isEmpty()) return@launch
+            parcelRepo.reportParcelStatus(reportParcelIds)
+        }
+    }
 
     private fun insertParcels(parcels: List<Parcel.Common>)
     {

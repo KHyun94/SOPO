@@ -3,7 +3,7 @@ package com.delivery.sopo.services.workmanager
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.delivery.sopo.usecase.parcel.remote.DeleteParcelsUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.DeleteParcelsUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent

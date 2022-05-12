@@ -1,6 +1,7 @@
 package com.delivery.sopo.data.networks
 
 import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
+import com.delivery.sopo.data.repository.user.UserRepository
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import okhttp3.Authenticator
@@ -13,7 +14,9 @@ import org.koin.core.inject
 // TODO 401 에러 발생 이슈 있음
 class TokenAuthenticator: Authenticator, KoinComponent
 {
-    val userRemoteRepo: UserRemoteRepository by inject()
+    var retryCnt: Int = 0
+
+    val userRepository: UserRepository by inject()
 
     override fun authenticate(route: Route?, response: Response): Request?
     {
@@ -27,13 +30,17 @@ class TokenAuthenticator: Authenticator, KoinComponent
 
         SopoLog.d(msg = "authenticate call() - 401 ${response.message}")
 
+        if(retryCnt > 2) return null
+
         return try
         {
             val refreshOAuthToken = runBlocking(Dispatchers.IO) {
-                userRemoteRepo.refreshOAuthToken()
+                userRepository.refreshToken()
             }
 
-            getRetrofitWithoutAuthenticator(response, refreshOAuthToken.accessToken)
+            retryCnt += 1
+
+            getRetrofitWithoutAuthenticator(response, refreshOAuthToken)
         }
         catch(e: Exception)
         {

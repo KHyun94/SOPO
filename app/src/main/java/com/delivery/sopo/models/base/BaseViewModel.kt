@@ -17,13 +17,12 @@ import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.OAuthException
 import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
-import com.delivery.sopo.usecase.LogoutUseCase
+import com.delivery.sopo.domain.usecase.user.token.LogoutUseCase
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.OnSnackBarClickListener
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import java.util.*
 
 abstract class BaseViewModel: ViewModel(), KoinComponent
 {

@@ -9,11 +9,11 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.usecase.user.SignOutUseCase
+import com.delivery.sopo.domain.usecase.user.token.SignOutUseCase
 import kotlinx.coroutines.launch
 
 class SignOutViewModel(
-       private val signOutUseCase: SignOutUseCase,
+        private val signOutUseCase: SignOutUseCase,
 ): BaseViewModel()
 {
     private var preCheckBox: AppCompatCheckBox? = null

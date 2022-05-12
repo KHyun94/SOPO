@@ -12,7 +12,7 @@ import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.ResponseResult
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.usecase.UpdateNicknameUseCase
+import com.delivery.sopo.domain.usecase.user.UpdateNicknameUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.launch
 

@@ -1,9 +1,10 @@
-package com.delivery.sopo.data.repository.local.o_auth
+package com.delivery.sopo.data.database.room.dao
 
 import androidx.room.*
+import com.delivery.sopo.data.database.room.entity.OAuthEntity
 
 @Dao
-interface OAuthDAO
+interface OAuthDao
 {
     @Query("SELECT * FROM OAUTH WHERE user_id = :userId")
     fun get(userId : String) : OAuthEntity?

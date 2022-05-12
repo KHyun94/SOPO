@@ -1,4 +1,4 @@
-package com.delivery.sopo.usecase.parcel.remote
+package com.delivery.sopo.domain.usecase.parcel.remote
 
 import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
 import com.delivery.sopo.data.repository.local.repository.CompletedParcelHistoryRepoImpl

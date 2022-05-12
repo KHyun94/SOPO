@@ -180,22 +180,4 @@ object FirebaseRepository: KoinComponent
         }
     }
 
-    fun updateFCMToken()
-    {
-        SopoLog.i(msg = "updateFCMToken(...) 호출")
-
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if(!task.isSuccessful)
-            {
-                SopoLog.e("updateFCMToken(...) 실패", task.exception)
-                return@addOnCompleteListener
-            }
-
-
-            SopoLog.d("updateFCMToken(...) 성공")
-            CoroutineScope(Dispatchers.IO).launch {
-                userRemoteRepo.updateFCMToken(task.result)
-            }
-        }
-    }
 }
