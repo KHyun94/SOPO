@@ -17,7 +17,6 @@ import org.koin.core.KoinComponent
 
 class UserRemoteRepository: KoinComponent, BaseService()
 {
-
     suspend fun requestSendTokenToEmail(email: String): String
     {
         val requestEmailForAuth = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, UserService::class.java).requestAuthCodeEmail(email = email)

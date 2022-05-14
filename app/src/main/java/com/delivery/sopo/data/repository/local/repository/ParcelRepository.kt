@@ -154,11 +154,10 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
 
     suspend fun getRemoteParcelById(parcelIds: List<Int>): List<Parcel.Common>
     {
-        val getRemoteParcel =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
-                .getParcels(parcelId = parcelIds.joinToString(", "))
+        if(parcelIds.isEmpty()) return emptyList()
+        val getRemoteParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcels(parcelId = parcelIds.joinToString(", "))
         val result = apiCall { getRemoteParcel }
-        return result.data?.data ?: throw NullPointerException()
+        return result.data?.data ?: emptyList()
     }
 
     override suspend fun getOngoingParcelsFromRemote(): List<Parcel.Common>

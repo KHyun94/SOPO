@@ -19,9 +19,6 @@ class UserRemoteDataSourceImpl:UserRemoteDataSource, BaseService()
 {
     val gson: Gson = Gson()
 
-
-
-
     override suspend fun issueToken(userName: String, password: String): OAuthToken
     {
         val publicUserService: UserService = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, UserService::class.java)

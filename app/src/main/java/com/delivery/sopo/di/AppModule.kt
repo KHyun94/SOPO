@@ -71,7 +71,7 @@ val appModule = module {
     factory { return@factory ForceLoginUseCase(userRepository = get()) }
 
     factory { return@factory UpdateNicknameUseCase(userRepository = get()) }
-
+    factory { return@factory UpdateFCMTokenUseCase(userRepository = get()) }
     factory { return@factory GetParcelUseCase(parcelRepo = get(), parcelStatusRepo = get()) }
     factory { SyncParcelsUseCase(parcelRepo = get(), parcelStatusRepo = get()) }
     factory { UpdateParcelsUseCase(get(), get()) }

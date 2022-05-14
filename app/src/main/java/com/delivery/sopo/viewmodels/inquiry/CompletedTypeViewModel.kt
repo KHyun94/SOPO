@@ -133,7 +133,7 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
             return emptyList()
         }
 
-        val nextPageParcels = getCompleteParcelUseCase.invoke(pagingManagement)
+        val nextPageParcels = getCompleteParcelUseCase(pagingManagement)
 
         // nextPage의 갯수가 10개 미만 일 경우
         if(nextPageParcels.size < 10)
