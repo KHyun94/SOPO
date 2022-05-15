@@ -1,9 +1,9 @@
-package com.delivery.sopo.data.repository
+package com.delivery.sopo.data.resource.user.remote
 
 import com.delivery.sopo.data.networks.dto.joins.JoinInfo
 import com.delivery.sopo.services.network_handler.NetworkResponse
 
-interface JoinRepository
+interface SignUpRemoteDataSource
 {
     suspend fun requestJoinBySelf(joinInfo: JoinInfo): NetworkResponse<Unit>
     suspend fun requestJoinByKakao(joinInfo: JoinInfo): NetworkResponse<Unit>

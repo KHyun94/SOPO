@@ -7,7 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repository.local.repository.CarrierRepository
-import com.delivery.sopo.data.resource.user.local.UserDataSource
+import com.delivery.sopo.data.resource.auth.local.UserDataSource
 import com.delivery.sopo.domain.usecase.user.token.ForceLoginUseCase
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback

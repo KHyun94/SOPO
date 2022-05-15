@@ -14,51 +14,27 @@ import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.services.network_handler.BaseService
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.CoroutineDispatcher
 
-class UserRemoteDataSourceImpl:UserRemoteDataSource, BaseService()
+class UserRemoteDataSourceImpl(private val dispatcher: CoroutineDispatcher): UserRemoteDataSource, BaseService()
 {
     val gson: Gson = Gson()
 
-    override suspend fun issueToken(userName: String, password: String): OAuthToken
-    {
-        val publicUserService: UserService = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, UserService::class.java)
-        val result = apiCall { publicUserService.issueToken(grantType = "password", userName = userName, password = password) }
-
-        val type = object: TypeToken<OAuthToken>() {}.type
-        val reader = gson.toJson(result.data)
-        val tokenInfo = gson.fromJson<OAuthToken>(reader, type)
-
-        return tokenInfo
-    }
-
-    override suspend fun refreshToken(userName: String, refreshToken: String): OAuthToken
-    {
-        val publicUserService: UserService = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, UserService::class.java)
-        val result = apiCall { publicUserService.refreshToken(grantType = "refresh_token", userName = userName, refreshToken = refreshToken) }
-
-        val type = object: TypeToken<OAuthToken>() {}.type
-        val reader = gson.toJson(result.data)
-        val tokenInfo = gson.fromJson<OAuthToken>(reader, type)
-
-        return tokenInfo
-    }
+    val publicUserService: UserService by lazy { NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, UserService::class.java) }
 
     override suspend fun requestAuthCodeEmail(email: String): String
     {
-        val publicUserService: UserService = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, UserService::class.java)
         val result = apiCall { publicUserService.requestAuthCodeEmail(email = email) }
         return result.data?.data?: throw SOPOApiException(404, ErrorResponse(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
     }
 
     override suspend fun requestVerifyAuthToken(authCode: ResetAuthCode)
     {
-        val publicUserService: UserService = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, UserService::class.java)
         apiCall { publicUserService.requestVerifyAuthToken(authCode = authCode) }
     }
 
     override suspend fun updatePassword(resetPassword: ResetPassword)
     {
-        val publicUserService: UserService = NetworkManager.setLoginMethod(NetworkEnum.PRIVATE_LOGIN, UserService::class.java)
         apiCall { publicUserService.updatePassword(resetPassword = resetPassword) }
     }
 

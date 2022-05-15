@@ -1,10 +1,8 @@
 package com.delivery.sopo.data.repository.local.user
 
-import com.delivery.sopo.consts.InfoConst
 import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.enums.SettingEnum
 import com.delivery.sopo.firebase.FirebaseRepository
-import com.delivery.sopo.util.CodeUtil
 import org.koin.core.KoinComponent
 
 class UserLocalRepository(private val appDatabase: AppDatabase, private val userShared: UserSharedPrefHelper): UserLocalDataSource, KoinComponent

@@ -1,6 +1,8 @@
 package com.delivery.sopo.data.repository.user
 
 import com.delivery.sopo.consts.StatusConst
+import com.delivery.sopo.data.resource.auth.local.AuthDataSource
+import com.delivery.sopo.data.resource.auth.remote.AuthRemoteDataSource
 import com.delivery.sopo.data.resource.user.local.UserDataSource
 import com.delivery.sopo.data.resource.user.remote.UserRemoteDataSource
 import com.delivery.sopo.enums.ErrorType
@@ -10,35 +12,36 @@ import com.delivery.sopo.models.user.ResetAuthCode
 import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.util.DateUtil
 
-class UserRepositoryImpl(private val userDataSource: UserDataSource, private val userRemoteDataSource: UserRemoteDataSource): UserRepository
+class UserRepositoryImpl(
+        private val authDataSource: AuthDataSource, private val authRemoteDataSource: AuthRemoteDataSource,
+        private val userDataSource: UserDataSource, private val userRemoteDataSource: UserRemoteDataSource): UserRepository
 {
     override suspend fun login()
     {
         val userName = userDataSource.getUserName()
         val password = userDataSource.getUserPassword()
 
-        val tokenInfo = userRemoteDataSource.issueToken(userName = userName, password = password)
+        val tokenInfo = authRemoteDataSource.issueToken(userName = userName, password = password)
 
         userDataSource.insertUserAccount(userName, password, StatusConst.ACTIVATE)
-        userDataSource.insertToken(token = tokenInfo)
+        authDataSource.insert(token = tokenInfo)
     }
 
     override suspend fun login(userName: String, password: String)
     {
-        val tokenInfo = userRemoteDataSource.issueToken(userName = userName, password = password)
+        val tokenInfo = authRemoteDataSource.issueToken(userName = userName, password = password)
 
         userDataSource.insertUserAccount(userName, password, StatusConst.ACTIVATE)
-        userDataSource.insertToken(token = tokenInfo)
+        authDataSource.insert(token = tokenInfo)
     }
 
     override suspend fun refreshToken(): String
     {
         val userName = userDataSource.getUserName()
-        val refreshToken = userDataSource.getToken().refreshToken
+        val refreshToken = authDataSource.get(userName = userName).refreshToken
+        val tokenInfo = authRemoteDataSource.refreshToken(userName = userName, refreshToken = refreshToken)
 
-        val tokenInfo = userRemoteDataSource.refreshToken(userName = userName, refreshToken = refreshToken)
-
-        userDataSource.insertToken(token = tokenInfo)
+        authDataSource.insert(token = tokenInfo)
 
         return tokenInfo.refreshToken
     }
@@ -84,7 +87,8 @@ class UserRepositoryImpl(private val userDataSource: UserDataSource, private val
     }
 
     override suspend fun checkExpiredTokenWithInWeek():Boolean{
-        val currentExpiredDate: String = userDataSource.getToken().refreshTokenExpiredAt
+        val userName = userDataSource.getUserName()
+        val currentExpiredDate: String = authDataSource.get(userName).refreshTokenExpiredAt
         return DateUtil.isExpiredDateWithinAWeek(currentExpiredDate)
     }
 

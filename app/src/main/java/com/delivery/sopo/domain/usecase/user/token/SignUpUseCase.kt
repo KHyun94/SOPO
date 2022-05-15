@@ -3,11 +3,11 @@ package com.delivery.sopo.domain.usecase.user.token
 import com.delivery.sopo.consts.UserTypeConst
 import com.delivery.sopo.data.repository.local.user.UserLocalRepository
 import com.delivery.sopo.data.networks.dto.joins.JoinInfo
-import com.delivery.sopo.data.networks.repository.JoinRepositoryImpl
+import com.delivery.sopo.data.resource.user.remote.SignUpRemoteDataSourceImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class SignUpUseCase(private val userLocalRepo: UserLocalRepository, private val joinRepo: JoinRepositoryImpl)
+class SignUpUseCase(private val userLocalRepo: UserLocalRepository, private val joinRepo: SignUpRemoteDataSourceImpl)
 {
     suspend operator fun invoke(joinInfo: JoinInfo, userType: String)
     {
