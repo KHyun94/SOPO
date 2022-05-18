@@ -11,7 +11,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.login.LoginSelectViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.login.LoginSelectViewModel" />
     </data>
 
     <com.sothree.slidinguppanel.SlidingUpPanelLayout

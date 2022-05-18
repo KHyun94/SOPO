@@ -2,7 +2,7 @@ package com.delivery.sopo.models
 
 import androidx.annotation.RawRes
 import com.delivery.sopo.R
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
 import com.delivery.sopo.enums.PersonalMessageEnum
 import com.delivery.sopo.util.TimeUtil
 import org.koin.core.KoinComponent

@@ -14,11 +14,11 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.R
 import com.delivery.sopo.data.database.room.AppDatabase
-import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.views.dialog.GeneralDialog
-import com.delivery.sopo.views.dialog.OnAgreeClickListener
-import com.delivery.sopo.views.login.LoginSelectView
+import com.delivery.sopo.data.repositories.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
+import com.delivery.sopo.presentation.views.dialog.GeneralDialog
+import com.delivery.sopo.presentation.views.dialog.OnAgreeClickListener
+import com.delivery.sopo.presentation.views.login.LoginSelectView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

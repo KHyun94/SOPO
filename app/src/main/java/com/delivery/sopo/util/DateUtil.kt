@@ -65,6 +65,13 @@ object DateUtil
         return "${calendar.get(Calendar.YEAR)}/${calendar.get(Calendar.MONTH) + 1}"
     }
 
+    fun toDateKorTime(date: String): String?
+    {
+        val date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(date) ?: return null
+        val newFormat = SimpleDateFormat("yy년 MM월", Locale.KOREA).format(Date(date.time)) ?: return null
+        return newFormat
+    }
+
     fun changeCalendarToDateTime(calendar: Calendar): String
     {
         return "${calendar.get(Calendar.YEAR)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.DATE)} " +

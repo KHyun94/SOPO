@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.main.MainViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.main.MainViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -16,7 +16,7 @@
         android:orientation="vertical">
 
         <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/layout_view_pager"
+            android:id="@+id/view_pager_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/MAIN_WHITE"

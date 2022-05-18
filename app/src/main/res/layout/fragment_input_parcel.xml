@@ -13,7 +13,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.registesrs.InputParcelViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.registesrs.InputParcelViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

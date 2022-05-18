@@ -1,7 +1,6 @@
 package com.delivery.sopo.data.networks
 
-import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
-import com.delivery.sopo.data.repository.user.UserRepository
+import com.delivery.sopo.data.repositories.user.UserRepository
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import okhttp3.Authenticator

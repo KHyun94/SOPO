@@ -4,9 +4,9 @@ import android.app.Notification
 import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import com.delivery.sopo.data.repository.local.repository.CarrierRepository
-import com.delivery.sopo.data.repository.local.repository.ParcelRepository
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
+import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
+import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.push.NotificationMessage
@@ -86,13 +86,12 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
         try
         {
             val parcelRegister = getReceivedData(content)
-            val parcelId = registerParcelUseCase.invoke(parcelRegister)
-            val parcel = parcelRepo.getRemoteParcelById(parcelId = parcelId)
+            val parcel = registerParcelUseCase.invoke(parcelRegister)
 
             if(!parcel.reported)
             {
                 CoroutineScope(Dispatchers.IO).launch {
-                    parcelRepo.reportParcelStatus(listOf(parcelId)) }
+                    parcelRepo.reportParcelStatus(listOf(parcel.parcelId)) }
             }
 
             val notificationMessage = NotificationMessage.getUpdatePusMessage(parcel)

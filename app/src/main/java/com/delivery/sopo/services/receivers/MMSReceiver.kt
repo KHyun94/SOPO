@@ -9,7 +9,7 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
-import com.delivery.sopo.data.repository.local.repository.CarrierRepository
+import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.services.workmanager.SOPOWorkManager

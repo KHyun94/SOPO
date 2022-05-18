@@ -11,7 +11,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.menus.AppInfoViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.menus.AppInfoViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraint_main_app_info"

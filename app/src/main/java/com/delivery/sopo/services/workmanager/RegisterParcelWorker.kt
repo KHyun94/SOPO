@@ -41,8 +41,8 @@ class RegisterParcelWorker(val context: Context, private val params: WorkerParam
 
         try
         {
-            val parcelId = registerParcelUseCase.invoke(parcelRegister = parcelRegister)
-            val parcel = getParcelUseCase.invoke(parcelId = parcelId)
+            val registerParcel = registerParcelUseCase.invoke(parcelRegister = parcelRegister)
+            val parcel = getParcelUseCase.invoke(parcelId = registerParcel.parcelId)
 
 //            NotificationImpl.notifyRegisterParcel(context = context, parcel = parcel)
 

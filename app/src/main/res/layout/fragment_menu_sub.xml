@@ -7,7 +7,7 @@
         <import type="com.delivery.sopo.util.CodeUtil"/>
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.menus.MenuSubViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.menus.MenuSubViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

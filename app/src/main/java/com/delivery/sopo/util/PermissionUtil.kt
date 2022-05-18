@@ -7,7 +7,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.consts.PermissionConst
 import com.delivery.sopo.interfaces.listener.OnPermissionResponseCallback
-import com.delivery.sopo.views.dialog.PermissionDialog
 import com.gun0912.tedpermission.PermissionListener
 import com.gun0912.tedpermission.TedPermission
 

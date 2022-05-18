@@ -10,7 +10,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.menus.FaqViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.menus.FaqViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linear_main_faq"

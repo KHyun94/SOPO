@@ -1,7 +1,7 @@
 package com.delivery.sopo.firebase
 
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
-import com.delivery.sopo.data.repository.remote.user.UserRemoteRepository
+import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
+import com.delivery.sopo.data.repositories.remote.user.UserRemoteRepository
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import com.google.firebase.messaging.FirebaseMessaging

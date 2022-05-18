@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.signup.SignUpCompleteViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.signup.SignUpCompleteViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

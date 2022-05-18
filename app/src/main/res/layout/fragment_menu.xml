@@ -15,7 +15,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.menus.MenuViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.menus.MenuViewModel" />
     </data>
 
 

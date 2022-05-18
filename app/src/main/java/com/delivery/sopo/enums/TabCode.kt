@@ -1,11 +1,11 @@
 package com.delivery.sopo.enums
 
 import androidx.fragment.app.Fragment
-import com.delivery.sopo.views.inquiry.*
-import com.delivery.sopo.views.menus.*
-import com.delivery.sopo.views.registers.SelectCarrierFragment
-import com.delivery.sopo.views.registers.InputParcelFragment
-import com.delivery.sopo.views.registers.ConfirmParcelFragment
+import com.delivery.sopo.presentation.views.inquiry.*
+import com.delivery.sopo.presentation.views.menus.*
+import com.delivery.sopo.presentation.views.registers.SelectCarrierFragment
+import com.delivery.sopo.presentation.views.registers.InputParcelFragment
+import com.delivery.sopo.presentation.views.registers.ConfirmParcelFragment
 
 enum class TabCode(val TAB_NO: Int, val NAME: String, var FRAGMENT: Fragment, val TITLE:String="")
 {

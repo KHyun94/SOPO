@@ -6,7 +6,7 @@
     <data>
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.inquiry.InquiryMainViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.inquiry.InquiryMainViewModel" />
     </data>
 
     <FrameLayout

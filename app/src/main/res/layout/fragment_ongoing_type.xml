@@ -13,7 +13,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.inquiry.OngoingTypeViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.inquiry.OngoingTypeViewModel" />
 
         <variable
             name="screenStatus"

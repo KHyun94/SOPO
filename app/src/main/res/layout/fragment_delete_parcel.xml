@@ -15,7 +15,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.inquiry.DeleteParcelViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.inquiry.DeleteParcelViewModel" />
 
         <variable
             name="screenStatus"

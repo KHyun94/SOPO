@@ -2,7 +2,7 @@ package com.delivery.sopo.models.mapper
 
 import com.delivery.sopo.data.database.room.entity.OAuthEntity
 import com.delivery.sopo.models.dto.OAuthToken
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 

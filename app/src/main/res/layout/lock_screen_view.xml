@@ -15,7 +15,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.menus.LockScreenViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.menus.LockScreenViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

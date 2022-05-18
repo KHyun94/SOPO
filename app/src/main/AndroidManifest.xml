@@ -27,7 +27,7 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name=".views.splash.SplashView"
+            android:name="com.delivery.sopo.presentation.views.splash.SplashView"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -37,35 +37,35 @@
         </activity>
 
         <activity
-            android:name=".views.intro.IntroView"
+            android:name="com.delivery.sopo.presentation.views.intro.IntroView"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".views.login.LoginView"
+            android:name="com.delivery.sopo.presentation.views.login.LoginView"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".views.signup.SignUpView"
+            android:name="com.delivery.sopo.presentation.views.signup.SignUpView"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".views.menus.UpdateNicknameView"/>
+        <activity android:name="com.delivery.sopo.presentation.views.menus.UpdateNicknameView"/>
         <activity
-            android:name=".views.login.ResetPasswordView"
+            android:name="com.delivery.sopo.presentation.views.login.ResetPasswordView"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".views.signup.RegisterNicknameView" />
+        <activity android:name="com.delivery.sopo.presentation.views.signup.RegisterNicknameView" />
         <activity
-            android:name=".views.main.MainView" />
+            android:name="com.delivery.sopo.presentation.views.main.MainView" />
         <activity
-            android:name=".views.signup.SignUpCompleteView"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name=".views.login.LoginSelectView"
+            android:name="com.delivery.sopo.presentation.views.signup.SignUpCompleteView"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".views.menus.LockScreenView"
+            android:name="com.delivery.sopo.presentation.views.login.LoginSelectView"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.delivery.sopo.presentation.views.menus.LockScreenView"
             android:windowSoftInputMode="adjustResize" />
 <!--        <activity-->
 <!--            android:name=".views.menus.NotDisturbTimeView"-->
 <!--            android:windowSoftInputMode="adjustPan" />-->
         <activity
-            android:name=".views.menus.SignOutView"
+            android:name="com.delivery.sopo.presentation.views.menus.SignOutView"
             android:windowSoftInputMode="adjustPan" />
 
         <service
@@ -114,7 +114,7 @@
         </service>
 
         <receiver
-            android:name=".services.receivers.RefreshParcelBroadcastReceiver"
+            android:name=".services.receivers.ParcelManagementBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.delivery.sopo.ACTION_COMPLETED_REGISTER_PARCEL" />

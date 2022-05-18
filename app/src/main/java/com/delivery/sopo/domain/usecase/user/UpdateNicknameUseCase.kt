@@ -1,6 +1,6 @@
 package com.delivery.sopo.domain.usecase.user
 
-import com.delivery.sopo.data.repository.user.UserRepository
+import com.delivery.sopo.data.repositories.user.UserRepository
 
 class UpdateNicknameUseCase(private val userRepository: UserRepository)
 {

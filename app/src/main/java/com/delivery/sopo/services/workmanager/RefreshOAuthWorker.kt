@@ -3,7 +3,7 @@ package com.delivery.sopo.services.workmanager
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repositories.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.coroutineScope
 import org.koin.core.KoinComponent

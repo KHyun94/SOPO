@@ -1,7 +1,7 @@
 package com.delivery.sopo.domain.usecase.parcel.remote
 
-import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
-import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepoImpl
+import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.models.parcel.Parcel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

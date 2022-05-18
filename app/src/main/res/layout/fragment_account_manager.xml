@@ -8,7 +8,7 @@
         <import type="com.delivery.sopo.R" />
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.menus.AccountManagerViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.menus.AccountManagerViewModel" />
     </data>
 
     <LinearLayout

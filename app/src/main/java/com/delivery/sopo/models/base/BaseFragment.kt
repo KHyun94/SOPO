@@ -2,7 +2,6 @@ package com.delivery.sopo.models.base
 
 import android.os.Bundle
 import android.os.Handler
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +21,7 @@ import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.SopoLoadingBar
-import com.delivery.sopo.views.dialog.LogoutDialog
+import com.delivery.sopo.presentation.views.dialog.LogoutDialog
 import org.koin.core.KoinComponent
 import kotlin.system.exitProcess
 
@@ -56,15 +55,12 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
 
     private var isUseCommonBackPress: Boolean = false
 
-    fun showToast(message: String, duration: Int){
+    fun showToast(message: String, duration: Int = Toast.LENGTH_SHORT){
         requireActivity().runOnUiThread {
             if(toast != null) toast?.cancel()
             toast = Toast.makeText(requireContext(), message, duration)
-            toast?.setGravity(Gravity.TOP, 0, 0)
             toast?.show()
-
         }
-
     }
 
     fun useCommonBackPressListener(isUseCommon: Boolean)
@@ -152,7 +148,6 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
         return DataBindingUtil.inflate<T>(inflater, layoutRes, container, false).apply {
             setVariable(BR.vm, vm)
             lifecycleOwner = viewLifecycleOwner
-            executePendingBindings()
         }
     }
 
@@ -225,6 +220,10 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
         vm.errorSnackBar.observe(viewLifecycleOwner) {
             val snackBar = CustomSnackBar(mainLayout, it, 3000, SnackBarEnum.ERROR)
             snackBar.show()
+        }
+
+        vm.toast.observe(viewLifecycleOwner) { toast ->
+            showToast(toast, Toast.LENGTH_SHORT)
         }
 
         vm.isDuplicated.observe(viewLifecycleOwner) {

@@ -1,6 +1,6 @@
 package com.delivery.sopo.domain.usecase.user.token
 
-import com.delivery.sopo.data.repository.user.UserRepository
+import com.delivery.sopo.data.repositories.user.UserRepository
 
 class LoginUseCase(private val userRepository: UserRepository)
 {

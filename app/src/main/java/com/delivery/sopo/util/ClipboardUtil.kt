@@ -4,7 +4,7 @@ import android.content.ClipData
 import android.content.ClipDescription.MIMETYPE_TEXT_PLAIN
 import android.content.ClipboardManager
 import android.content.Context
-import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent

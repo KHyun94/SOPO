@@ -11,11 +11,11 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.inquiry.ParcelDetailViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.inquiry.ParcelDetailViewModel" />
 
         <variable
             name="timeLineAdapter"
-            type="com.delivery.sopo.views.adapter.TimeLineRecyclerViewAdapter" />
+            type="com.delivery.sopo.presentation.views.adapter.TimeLineRecyclerViewAdapter" />
     </data>
 
     <RelativeLayout

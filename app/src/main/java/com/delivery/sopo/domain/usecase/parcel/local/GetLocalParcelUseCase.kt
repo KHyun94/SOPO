@@ -1,6 +1,6 @@
 package com.delivery.sopo.domain.usecase.parcel.local
 
-import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

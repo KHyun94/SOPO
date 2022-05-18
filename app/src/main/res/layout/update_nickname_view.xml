@@ -15,7 +15,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.menus.UpdateNicknameViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.menus.UpdateNicknameViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -12,7 +12,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.menus.SettingViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.menus.SettingViewModel" />
     </data>
 
     <com.sothree.slidinguppanel.SlidingUpPanelLayout

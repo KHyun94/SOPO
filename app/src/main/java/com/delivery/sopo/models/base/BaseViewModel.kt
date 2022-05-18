@@ -28,31 +28,27 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
 {
     private val logoutUseCase: LogoutUseCase by inject()
 
-//    abstract val exceptionHandler: CoroutineExceptionHandler
-
     protected val scope: CoroutineScope = (viewModelScope + SupervisorJob())
 
     var onSnackClickListener: Pair<CharSequence, OnSnackBarClickListener>? = null
 
     private val _isClickEvent = MutableLiveData<Boolean>()
-    val isClickEvent: LiveData<Boolean>
-        get() = _isClickEvent
+    val isClickEvent: LiveData<Boolean> = _isClickEvent
 
     private val _isCheckNetwork = MutableLiveData<Boolean>()
-    val isCheckNetwork: LiveData<Boolean>
-        get() = _isCheckNetwork
+    val isCheckNetwork: LiveData<Boolean> = _isCheckNetwork
 
     private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean>
-        get() = _isLoading
+    val isLoading: LiveData<Boolean> = _isLoading
 
     private val _errorSnackBar = MutableLiveData<String>()
-    val errorSnackBar: LiveData<String>
-        get() = _errorSnackBar
+    val errorSnackBar: LiveData<String> = _errorSnackBar
+
+    private val _toast = MutableLiveData<String>()
+    val toast: LiveData<String> = _toast
 
     private val _isDuplicated = MutableLiveData<Boolean>()
-    val isDuplicated: LiveData<Boolean>
-        get() = _isDuplicated
+    val isDuplicated: LiveData<Boolean> = _isDuplicated
 
     open lateinit var onSOPOErrorCallback: OnSOPOErrorCallback
 
@@ -194,6 +190,11 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
     {
         _errorSnackBar.postValue(msg)
         this.onSnackClickListener = onSnackBarClickListener
+    }
+
+    fun postToast(msg: String)
+    {
+        _toast.postValue(msg)
     }
 
     fun onStartLoading()

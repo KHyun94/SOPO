@@ -13,7 +13,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.signup.RegisterNicknameViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.signup.RegisterNicknameViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -4,7 +4,7 @@ import androidx.databinding.BaseObservable
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.R
-import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.parcel.Parcel

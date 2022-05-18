@@ -5,8 +5,8 @@ import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.data.networks.dto.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
-import com.delivery.sopo.data.repository.local.repository.ParcelManagementRepoImpl
-import com.delivery.sopo.data.repository.local.repository.ParcelRepository
+import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepoImpl
+import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.push.NotificationMessage
 import com.delivery.sopo.services.workmanager.SOPOWorkManager

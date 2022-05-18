@@ -4,8 +4,8 @@ import com.delivery.sopo.BuildConfig
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.data.networks.interceptors.BasicAuthInterceptor
 import com.delivery.sopo.data.networks.interceptors.OAuthInterceptor
-import com.delivery.sopo.data.repository.local.o_auth.OAuthLocalRepository
-import com.delivery.sopo.data.repository.local.user.UserLocalRepository
+import com.delivery.sopo.data.repositories.local.o_auth.OAuthLocalRepository
+import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
 import com.delivery.sopo.models.dto.OAuthToken
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.GsonBuilder

@@ -8,7 +8,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.viewmodels.menus.NoticeViewModel" />
+            type="com.delivery.sopo.presentation.viewmodels.menus.NoticeViewModel" />
     </data>
 
     <LinearLayout

@@ -1,6 +1,6 @@
 package com.delivery.sopo.domain.usecase.user
 
-import com.delivery.sopo.data.repository.user.UserRepository
+import com.delivery.sopo.data.repositories.user.UserRepository
 import com.delivery.sopo.util.SopoLog
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.CoroutineScope
