@@ -7,6 +7,36 @@ import java.util.*
 
 object DateUtil
 {
+    const val DATE_TIME_TYPE_DEFAULT = "yyyy-MM-dd HH:mm:ss"
+    const val DATE_TIME_TYPE_AUTH_EXPIRED = "yyyy.MM.dd HH:mm:ss"
+    const val DATE_TIME_TYPE_PROGRESSES = "yy/MM/dd HH:mm:ss"
+    const val TIMESTAMP_TYPE_AUTH_EXPIRED = "yyyy-MM-dd'T'HH:mm:ssX"
+
+    const val DATE_TYPE_KOREAN = "yy년 MM월"
+
+    fun getCurrentDate(pattern: String = DATE_TIME_TYPE_DEFAULT): Date?
+    {
+        val currentMillis = System.currentTimeMillis()
+        val date = Date(currentMillis)
+        val sdf = SimpleDateFormat(pattern, Locale.KOREAN)
+        return sdf.parse(date.toString())
+    }
+
+    fun convertDate(date: String, pattern: String = DATE_TIME_TYPE_DEFAULT): Date?
+    {
+        val sdf = SimpleDateFormat(pattern, Locale.KOREAN)
+        return sdf.parse(date)
+    }
+
+    fun changeDateFormat(date: String, oldPattern: String, newPattern: String): Date?
+    {
+        val oldSdf = SimpleDateFormat(oldPattern, Locale.KOREAN)
+        val newSdf = SimpleDateFormat(newPattern, Locale.KOREAN)
+
+        val oldDate = oldSdf.parse(date) ?: return null
+        val newDateString = newSdf.format(oldDate)
+        return newSdf.parse(newDateString)
+    }
 
     fun getCurrentYear(): String
     {
@@ -14,46 +44,6 @@ object DateUtil
         return calendar.get(Calendar.YEAR).toString()
     }
 
-    fun getIntToMilliSeconds(seconds: Int): Long
-    {
-        val currentTimeMilliSeconds = System.currentTimeMillis()
-        val secondsToMilliSeconds = seconds * 1000
-        return currentTimeMilliSeconds + secondsToMilliSeconds
-    }
-
-    // dateTime => yyyy-MM-dd'T'HH"mm:ss.SSS'Z -> yyyy-MM-dd HHmm
-    fun changeDateFormat(dateTime: String): String
-    {
-        val oldFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
-        oldFormat.timeZone = TimeZone.getTimeZone("KST")
-        val newFormat = SimpleDateFormat("yy/MM/dd HH:mm:ss")
-
-        return try
-        {
-            val oldDate = oldFormat.parse(dateTime)
-            newFormat.format(oldDate)
-        }
-        catch(e: ParseException)
-        {
-            SopoLog.e(msg = "Data Format Change Error", e = e)
-            throw e
-        }
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    fun changeDateToMilli(date: String, format: String = "yyyy.MM.dd HH:mm:ss"): Long
-    {
-        try
-        {
-            val sdf = SimpleDateFormat(format)
-            val parseDate = sdf.parse(date)
-            return parseDate?.time ?: throw NullPointerException()
-        }
-        catch(e: Exception)
-        {
-            throw e
-        }
-    }
 
     fun changeDateTime(date: String): Date?
     {
@@ -68,15 +58,17 @@ object DateUtil
     fun toDateKorTime(date: String): String?
     {
         val date = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA).parse(date) ?: return null
-        val newFormat = SimpleDateFormat("yy년 MM월", Locale.KOREA).format(Date(date.time)) ?: return null
+        val newFormat =
+            SimpleDateFormat("yy년 MM월", Locale.KOREA).format(Date(date.time)) ?: return null
         return newFormat
     }
 
-    fun changeCalendarToDateTime(calendar: Calendar): String
+    fun checkDateFormat(date: String, pattern: String = DATE_TIME_TYPE_DEFAULT): Boolean
     {
-        return "${calendar.get(Calendar.YEAR)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.DATE)} " +
-                "${String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY))}:${String.format("%02d", calendar.get(Calendar.MINUTE))}"
+        val sdf = SimpleDateFormat(pattern, Locale.KOREAN)
+        return sdf.parse(date) != null
     }
+
 
     fun calculateDiffPresentDate(targetDate: Date): String
     {
@@ -130,14 +122,14 @@ object DateUtil
 
         // 1. 현재 시간
         val currentMilliSeconds = System.currentTimeMillis() // 2. O-Auth 만료 기간
-        val expiredDateToMilliSeconds = changeDateToMilli(expiredDate)
+        val expiredDateToMilliSeconds = convertDate(expiredDate, DATE_TIME_TYPE_AUTH_EXPIRED) ?: return false
 
         SopoLog.d("현재시간 [$currentMilliSeconds]")
         SopoLog.d("만료기한[$expiredDateToMilliSeconds] [형태:$expiredDate]")
 
         val weekMilliSeconds = 1000 * 60 * 60 * 24 * 7
 
-        val remainMilliSeconds = expiredDateToMilliSeconds - currentMilliSeconds
+        val remainMilliSeconds = expiredDateToMilliSeconds.time - currentMilliSeconds
 
         return remainMilliSeconds <= weekMilliSeconds
     }
@@ -151,4 +143,45 @@ object DateUtil
         else hour
         return topicHour.toString().padStart(2, '0').padEnd(4, '0')
     }
+
+    /*// dateTime => yyyy-MM-dd'T'HH"mm:ss.SSS'Z -> yyyy-MM-dd HHmm
+    fun changeDateFormat(dateTime: String): String
+    {
+        val oldFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
+        oldFormat.timeZone = TimeZone.getTimeZone("KST")
+        val newFormat = SimpleDateFormat("yy/MM/dd HH:mm:ss")
+
+        return try
+        {
+            val oldDate = oldFormat.parse(dateTime)
+            newFormat.format(oldDate)
+        }
+        catch(e: ParseException)
+        {
+            SopoLog.e(msg = "Data Format Change Error", e = e)
+            throw e
+        }
+    }*/
+
+    /*    @SuppressLint("SimpleDateFormat")
+    fun changeDateToMilli(date: String, format: String = "yyyy.MM.dd HH:mm:ss"): Long
+    {
+        try
+        {
+            val sdf = SimpleDateFormat(format)
+            val parseDate = sdf.parse(date)
+            return parseDate?.time ?: throw NullPointerException()
+        }
+        catch(e: Exception)
+        {
+            throw e
+        }
+
+    fun changeCalendarToDateTime(calendar: Calendar): String
+    {
+        return "${calendar.get(Calendar.YEAR)}/${calendar.get(Calendar.MONTH) + 1}/${calendar.get(Calendar.DATE)} " +
+                "${String.format("%02d", calendar.get(Calendar.HOUR_OF_DAY))}:${String.format("%02d", calendar.get(Calendar.MINUTE))}"
+    }
+    }*/
+
 }

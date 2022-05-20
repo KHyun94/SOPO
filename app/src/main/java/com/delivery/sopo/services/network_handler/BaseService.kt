@@ -28,7 +28,6 @@ abstract class BaseService
 
         if(!response.isSuccessful)
         {
-//            SopoLog.e("통신 실패 ${response.code()} / ${response.errorBody()?.toString()}")
             convertErrorBody(response.code(), response.errorBody())
         }
 

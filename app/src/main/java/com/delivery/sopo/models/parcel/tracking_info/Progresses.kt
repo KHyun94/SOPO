@@ -15,10 +15,11 @@ data class Progresses (
         @SerializedName("description")
     val description: String?
 ) : Serializable {
-    fun getDate(): Date
+    fun getDate(): Date?
     {
-        if(time == null) throw Exception("택배 진행사항 중 'time' 오류")
-        val list = DateUtil.changeDateFormat(time).split(" ")
+        if(time == null) return null
+//        val list = DateUtil.changeDateFormat(time).split(" ")
+        val list = DateUtil.changeDateFormat(time, DateUtil.TIMESTAMP_TYPE_AUTH_EXPIRED, DateUtil.DATE_TIME_TYPE_PROGRESSES)?.toString()?.split(" ")?:return null
         return Date(list[0], list[1])
     }
 }
