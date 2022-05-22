@@ -32,7 +32,7 @@ class Parcel
                         return "택배가 등록되었습니다."
 
 //                    val date = DateUtil.toDateKorTime(arrivalDte?:"") ?: return "택배가 등록되었습니다."
-                    val date = DateUtil.changeDateFormat(arrivalDte?:"", oldPattern = DateUtil.DATE_TIME_TYPE_DEFAULT, newPattern = DateUtil.DATE_TYPE_KOREAN) ?: return "택배가 등록되었습니다."
+                    val date = DateUtil.changeDateFormat(arrivalDte?:"", oldPattern = DateUtil.DATE_TIME_TYPE_DEFAULT, newPattern = DateUtil.DATE_TYPE_KOREAN_SEMI) ?: return "택배가 등록되었습니다."
 
                     return date.toString()
                 }

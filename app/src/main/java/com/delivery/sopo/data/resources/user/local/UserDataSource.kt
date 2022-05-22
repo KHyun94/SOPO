@@ -4,14 +4,17 @@ import com.delivery.sopo.models.PersonalMessage
 
 interface UserDataSource
 {
-    fun insertUserAccount(userName: String, password: String, status: Int)
+    fun insertUserAccount(userToke: String, username: String, password: String, status: Int)
     fun insertUserInfo(nickname: String, personalMessage: PersonalMessage)
 
     fun getNickname() :String
     fun setNickname(nickname : String)
 
-    fun getUserName(): String
-    fun setUserId(userId: String)
+    fun getUsername(): String
+    fun setUsername(username: String)
+
+    fun getUserToken(): String
+    fun setUserToken(userToken: String)
 
     fun getUserPassword(): String
     fun setUserPassword(password: String)
@@ -49,6 +52,6 @@ interface UserDataSource
     fun getDisturbEndTime(): String?
     fun setDisturbEndTime(startTime: String)
 
-    fun removeUserRepo()
+    fun clearUserDataBase()
 
 }

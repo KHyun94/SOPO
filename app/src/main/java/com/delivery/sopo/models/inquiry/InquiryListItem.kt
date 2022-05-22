@@ -9,7 +9,6 @@ import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.DateUtil
-import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,55 +33,75 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
         }
     }
 
-    private val ongoingTimeDate: Calendar? by lazy {
-
-        if(parcel.auditDte == "")
-        {
-            SopoLog.d("에러")
-            return@lazy null
-        }
-
-        val time = DateUtil.changeDateTime(parcel.auditDte)?:return@lazy null
-        val calendar = Calendar.getInstance().apply {
-            this.time = time
-        }
-        return@lazy calendar
-    }
-
-    private val completeTimeDate: Calendar? by lazy {
-        val time = DateUtil.changeDateTime(parcel.arrivalDte?:"")?:return@lazy null
-        val calendar = Calendar.getInstance().apply {
-            this.time = time
-        }
-        return@lazy calendar
-    }
+    private val ongoingAuditDte: Date? by lazy { DateUtil.convertDate(parcel.auditDte) }
+    private val completedArrivalDte: Date? by lazy { parcel.arrivalDte?.let { DateUtil.convertDate(it) } }
 
     fun getCompleteYearMonth(): String
     {
-        if(completeTimeDate == null) return "시간불명"
-        return DateUtil.changeCalendarToDate(completeTimeDate!!)
+        val calendar = Calendar.getInstance(Locale.KOREAN)
+        calendar.time = completedArrivalDte ?: return "시간불명"
+        return "${calendar.get(Calendar.YEAR)}/${calendar.get(Calendar.MONTH) + 1}"
     }
-
     fun getCompleteDateTime(): String
     {
-        if(completeTimeDate == null) return "시간불명"
-        return DateUtil.calculateDiffPresentDate(completeTimeDate?.time!!)
+        val now = System.currentTimeMillis()
+        val target = completedArrivalDte?.time?: return "업데이트 일자 확인 불가"
+
+        val diffMillis = (now - target)
+        val diffHour = diffMillis / (1000 * 60 * 60)
+
+        return when
+        {
+            diffHour < 1 ->
+            {
+                "최근 1시간 내 업데이트"
+            }
+            diffHour in 1..23 ->
+            {
+                "${diffHour}시간 전 업데이트"
+            }
+            diffHour in 24..743 ->
+            {
+                val diffDay = diffHour / 24
+                "${diffDay}일 전 업데이트"
+            }
+            diffHour in 744..8927 ->
+            {
+                val diffMonth = diffHour / (24 * 31)
+                "${diffMonth}개월 전 업데이트"
+            }
+            diffHour > 8927 ->
+            {
+                val diffYear = diffHour / (24 * 31 * 12)
+                "${diffYear}년 전 업데이트"
+            }
+            else ->
+            {
+                "업데이트 일자 확인 불가"
+            }
+        }
     }
 
     fun getOngoingDateTime(): String
     {
-        if(ongoingTimeDate == null) return "시간불명"
-        return DateUtil.calculateDiffPresentDate(ongoingTimeDate?.time!!)
+        val milliseconds = ongoingAuditDte?.time ?: return "시간불명"
+        return DateUtil.convertDate(milliseconds, DateUtil.DATE_TYPE_PROGRESSES)?:"시간불명"
     }
 
     fun getDateOfMonth(): String
     {
-        return "${completeTimeDate?.get(Calendar.DATE)}"
+        val calendar = Calendar.getInstance(Locale.KOREAN)
+        calendar.time = completedArrivalDte ?: return ""
+
+        return "${calendar.get(Calendar.DATE)}"
     }
 
     fun getDayOfWeek(): String
     {
-        return when(completeTimeDate?.get(Calendar.DAY_OF_WEEK))
+        val calendar = Calendar.getInstance(Locale.KOREAN)
+        calendar.time = completedArrivalDte ?: return ""
+
+        return when(calendar.get(Calendar.DAY_OF_WEEK))
         {
             1 ->
             {
@@ -191,21 +210,13 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.drawable.ic_inquiry_cardview_not_registered
             DeliveryStatusEnum.ORPHANED.CODE -> R.drawable.ic_inquiry_cardview_orphaned
-            //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> R.drawable.ic_inquiry_cardview_not_registered
-            //상품 인수
             DeliveryStatusEnum.AT_PICKUP.CODE -> R.drawable.ic_inquiry_cardview_at_pickup
-            //상품 이동 중
             DeliveryStatusEnum.IN_TRANSIT.CODE -> R.drawable.ic_inquiry_cardview_in_transit_test
-            // 동네도착
             DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.drawable.ic_inquiry_cardview_out_for_delivery
             else -> R.drawable.ic_inquiry_cardview_error
         }
     }
 
     fun toCarrierName() = CarrierEnum.getCarrierByCode(parcel.carrier).NAME
-
-    fun toParcelString(){
-        SopoLog.d("parcel:${parcel.toString()}")
-    }
 }

@@ -1,7 +1,6 @@
 package com.delivery.sopo.interfaces.listener
 
 import com.delivery.sopo.enums.ErrorEnum
-import com.delivery.sopo.models.api.ErrorResponse
 
 interface OnSOPOErrorCallback
 {

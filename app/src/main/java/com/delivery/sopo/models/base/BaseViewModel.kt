@@ -59,8 +59,8 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
             {
                 is SOPOApiException ->
                 {
-                    val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
-                        message = exception.getErrorResponse().message
+                    val errorCode = ErrorEnum.getErrorCode(exception.getError().code).apply {
+                        message = exception.getError().message
                     }
 
                     SopoLog.e("SOPO API Error $errorCode", exception)
@@ -70,34 +70,56 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
                         ErrorEnum.ALREADY_REGISTERED_PARCEL, ErrorEnum.OVER_REGISTERED_PARCEL, ErrorEnum.PARCEL_BAD_REQUEST -> onSOPOErrorCallback.onRegisterParcelError(errorCode)
                         ErrorEnum.ALREADY_REGISTERED_USER -> onSOPOErrorCallback.onAlreadyRegisteredUser(errorCode)
                         ErrorEnum.PARCEL_NOT_FOUND -> onSOPOErrorCallback.onInquiryParcelError(errorCode)
-                        else -> onSOPOErrorCallback.onFailure(errorCode)
-                    }
-                }
-                is OAuthException ->
-                {
-                    val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
-                        message = exception.getErrorResponse().message
-                    }
-
-                    SopoLog.e("OAuthException API Error $errorCode", exception)
-
-                    when(errorCode)
-                    {
-                        ErrorEnum.OAUTH2_INVALID_GRANT, ErrorEnum.OAUTH2_INVALID_TOKEN ->
-                        {
+                        ErrorEnum.AUTHENTICATION_FAIL ->
+                        { // 서버에 유저 토큰이 없거나, 내부에 저장된 토큰이 없는 경우
+                        }
+                        ErrorEnum.INVALID_JWT_TOKEN ->
+                        { // Refresh Token이 잘못된 경우
+                        }
+                        ErrorEnum.USER_NOT_FOUND ->
+                        { // 존재하지 않은 계정
+                        }
+                        ErrorEnum.INVALID_USER ->
+                        { // 아이디 or 패스워드가 틀렸을 때 And 탈퇴한 회원이 요청했을 때 ?
                             onSOPOErrorCallback.onLoginError(errorCode)
                         }
-                        ErrorEnum.OAUTH2_DELETE_TOKEN ->
-                        {
+                        ErrorEnum.DUPLICATE_LOGIN ->
+                        { // 중복 로그인
                             logoutUseCase.invoke()
                             moveDuplicated()
                         }
-                        else -> onSOPOErrorCallback.onAuthError(errorCode)
+                        ErrorEnum.INVALID_TOKEN ->
+                        { // access or refresh Token이 만료
+                        }
+                        else -> onSOPOErrorCallback.onFailure(errorCode)
                     }
                 }
+//                is OAuthException ->
+//                {
+//                    val errorCode =
+//                        ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
+//                            message = exception.getErrorResponse().message
+//                        }
+//
+//                    SopoLog.e("OAuthException API Error $errorCode", exception)
+//
+//                    when(errorCode)
+//                    {
+//                        ErrorEnum.OAUTH2_INVALID_GRANT, ErrorEnum.OAUTH2_INVALID_TOKEN ->
+//                        {
+//                            onSOPOErrorCallback.onLoginError(errorCode)
+//                        }
+//                        ErrorEnum.OAUTH2_DELETE_TOKEN ->
+//                        {
+//
+//                        }
+//                        else -> onSOPOErrorCallback.onAuthError(errorCode)
+//                    }
+//                }
                 is InternalServerException ->
                 {
-                    val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
+                    val errorCode =
+                        ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
                             message = exception.getErrorResponse().message
                         }
                     SopoLog.e("InternalServerException API Error $errorCode", exception)

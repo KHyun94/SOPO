@@ -9,12 +9,12 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.delivery.sopo.data.database.room.dao.*
 import com.delivery.sopo.data.database.room.entity.*
 import com.delivery.sopo.data.database.room.util.Converters
-import com.delivery.sopo.data.database.room.dao.OAuthDao
-import com.delivery.sopo.data.database.room.entity.OAuthEntity
+import com.delivery.sopo.data.database.room.dao.AuthTokenDao
+import com.delivery.sopo.data.database.room.entity.AuthTokenEntity
 
 @TypeConverters(Converters::class)
 @Database(
-    entities = [CarrierEntity::class, CarrierPatternEntity::class, ParcelEntity::class, ParcelStatusEntity::class, CompletedParcelHistoryEntity::class, AppPasswordEntity::class, OAuthEntity::class],
+    entities = [CarrierEntity::class, CarrierPatternEntity::class, ParcelEntity::class, ParcelStatusEntity::class, CompletedParcelHistoryEntity::class, AppPasswordEntity::class, AuthTokenEntity::class],
     version = 1
 )
 abstract class AppDatabase : RoomDatabase()
@@ -25,7 +25,7 @@ abstract class AppDatabase : RoomDatabase()
     abstract fun parcelManagementDao(): ParcelStatusDAO
     abstract fun completeParcelStatusDao(): CompleteParcelStatusDao
     abstract fun securityDao(): AppPasswordDao
-    abstract fun oauthDao() : OAuthDao
+    abstract fun oauthDao() : AuthTokenDao
 
     companion object
     {

@@ -7,8 +7,9 @@ import com.delivery.sopo.models.PersonalMessage
 class UserDataSourceImpl(private val userShared: UserSharedPrefHelper):
         UserDataSource
 {
-    override fun insertUserAccount(userName: String, password: String, status: Int){
-        setUserId(userName)
+    override fun insertUserAccount(userToken: String, username: String, password: String, status: Int){
+        setUserToken(userToken)
+        setUsername(username)
         setUserPassword(password)
         setStatus(status)
     }
@@ -30,14 +31,24 @@ class UserDataSourceImpl(private val userShared: UserSharedPrefHelper):
         userShared.setNickname(nickname)
     }
 
-    override fun getUserName(): String
+    override fun getUsername(): String
     {
-        return userShared.getUserId() ?: ""
+        return userShared.getUsername() ?: ""
     }
 
-    override fun setUserId(userId: String)
+    override fun setUsername(username: String)
     {
-        userShared.setUserId(userId = userId)
+        userShared.setUsername(username = username)
+    }
+
+    override fun getUserToken(): String
+    {
+        return userShared.getUserToken() ?: ""
+    }
+
+    override fun setUserToken(userToken: String)
+    {
+        userShared.setUserToken(userToken = userToken)
     }
 
     override fun getUserPassword(): String
@@ -161,16 +172,8 @@ class UserDataSourceImpl(private val userShared: UserSharedPrefHelper):
         userShared.setPushAlarmType(pushAlarmType)
     }
 
-    override fun removeUserRepo()
+    override fun clearUserDataBase()
     {
-        setUserId("")
-        setUserPassword("")
-        setJoinType("")
-        setRegisterDate("")
-        setStatus(0)
-        setDeviceInfo("")
-        setPushAlarmType(SettingEnum.PushAlarmType.ALWAYS)
+        userShared.clear()
     }
-
-
 }

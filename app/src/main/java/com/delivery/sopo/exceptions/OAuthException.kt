@@ -1,9 +1,9 @@
 package com.delivery.sopo.exceptions
 
-import com.delivery.sopo.models.api.ErrorResponse
+import com.delivery.sopo.models.api.Error
 
-class OAuthException(private val statusCode: Int, private val errorResponse: ErrorResponse): Exception()
+class OAuthException(private val statusCode: Int, private val error: Error): Exception()
 {
     fun getStatusCode(): Int = statusCode
-    fun getErrorResponse(): ErrorResponse = errorResponse
+    fun getErrorResponse(): Error = error
 }

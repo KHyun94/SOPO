@@ -3,7 +3,8 @@ package com.delivery.sopo.consts
 object InfoConst
 {
 
-    const val USER_ID = "USER_ID"
+    const val USER_TOKEN: String = "USER_TOKEN"
+    const val USER_NAME = "USER_NAME"
     const val USER_PASSWORD = "USER_PASSWORD"
 
     const val DEVICE_INFO = "DEVICE_INFO"

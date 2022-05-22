@@ -1,9 +1,9 @@
 package com.delivery.sopo.data.resources.auth.remote
 
-import com.delivery.sopo.models.dto.OAuthToken
+import com.delivery.sopo.data.models.AuthToken
 
 interface AuthRemoteDataSource
 {
-    suspend fun issueToken(userName: String, password: String): OAuthToken
-    suspend fun refreshToken(userName: String, refreshToken: String): OAuthToken
+    suspend fun issueToken(username: String, password: String): AuthToken.Info
+    suspend fun refreshToken(refreshToken: String): AuthToken.Info
 }

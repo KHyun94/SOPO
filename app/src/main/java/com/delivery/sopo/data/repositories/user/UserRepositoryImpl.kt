@@ -7,7 +7,7 @@ import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.data.resources.user.remote.UserRemoteDataSource
 import com.delivery.sopo.enums.ErrorType
 import com.delivery.sopo.exceptions.SOPOApiException
-import com.delivery.sopo.models.api.ErrorResponse
+import com.delivery.sopo.models.api.Error
 import com.delivery.sopo.models.user.ResetAuthCode
 import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.util.DateUtil
@@ -18,28 +18,28 @@ class UserRepositoryImpl(
 {
     override suspend fun login()
     {
-        val userName = userDataSource.getUserName()
+        val username = userDataSource.getUsername()
         val password = userDataSource.getUserPassword()
 
-        val tokenInfo = authRemoteDataSource.issueToken(userName = userName, password = password)
+        val authToken = authRemoteDataSource.issueToken(username = username, password = password)
 
-        userDataSource.insertUserAccount(userName, password, StatusConst.ACTIVATE)
-        authDataSource.insert(token = tokenInfo)
+        userDataSource.insertUserAccount(userToke = authToken.userToken, username = username, password = password, status = StatusConst.ACTIVATE)
+        authDataSource.insert(token = authToken)
     }
 
-    override suspend fun login(userName: String, password: String)
+    override suspend fun login(username: String, password: String)
     {
-        val tokenInfo = authRemoteDataSource.issueToken(userName = userName, password = password)
+        val authToken = authRemoteDataSource.issueToken(username = username, password = password)
 
-        userDataSource.insertUserAccount(userName, password, StatusConst.ACTIVATE)
-        authDataSource.insert(token = tokenInfo)
+        userDataSource.insertUserAccount(userToke = authToken.userToken, username = username, password = password, status = StatusConst.ACTIVATE)
+        authDataSource.insert(token = authToken)
     }
 
     override suspend fun refreshToken(): String
     {
-        val userName = userDataSource.getUserName()
-        val refreshToken = authDataSource.get(userName = userName).refreshToken
-        val tokenInfo = authRemoteDataSource.refreshToken(userName = userName, refreshToken = refreshToken)
+        val userName = userDataSource.getUsername()
+        val refreshToken = authDataSource.get(username = userName).refreshToken
+        val tokenInfo = authRemoteDataSource.refreshToken(refreshToken = refreshToken)
 
         authDataSource.insert(token = tokenInfo)
 
@@ -49,7 +49,7 @@ class UserRepositoryImpl(
     override suspend fun fetchUserInfo()
     {
         val userInfo = userRemoteDataSource.fetchUserInfo()
-        val nickname = userInfo.nickname ?: throw SOPOApiException(404, ErrorResponse(609, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
+        val nickname = userInfo.nickname ?: throw SOPOApiException(404, Error(609, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
         userDataSource.insertUserInfo(nickname, userInfo.personalMessage)
     }
 
@@ -79,16 +79,15 @@ class UserRepositoryImpl(
         userDataSource.setUserPassword(resetPassword.password)
     }
 
-    // TODO Table CLEAR
     override suspend fun deleteUser(reason: String)
     {
         userRemoteDataSource.deleteUser(reason = reason)
-        userDataSource.removeUserRepo()
+        userDataSource.clearUserDataBase()
     }
 
     override suspend fun checkExpiredTokenWithInWeek():Boolean{
-        val userName = userDataSource.getUserName()
-        val currentExpiredDate: String = authDataSource.get(userName).refreshTokenExpiredAt
+        val userName = userDataSource.getUsername()
+        val currentExpiredDate: String = authDataSource.get(userName).expireAt
         return DateUtil.isExpiredDateWithinAWeek(currentExpiredDate)
     }
 

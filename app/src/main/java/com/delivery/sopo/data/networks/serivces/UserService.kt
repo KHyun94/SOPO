@@ -1,5 +1,6 @@
 package com.delivery.sopo.data.networks.serivces
 
+import com.delivery.sopo.data.models.AuthToken
 import com.delivery.sopo.data.networks.NetworkManager
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.models.user.ResetPassword
@@ -11,32 +12,32 @@ import retrofit2.http.*
 
 interface UserService
 {
-    @FormUrlEncoded
-    @POST("api/v1/sopo-auth/oauth/token")
-    @Headers("Accept: application/json")
-    suspend fun issueToken(
-            @Field("grant_type") grantType: String,
-            @Field("username") userName: String,
-            @Field("password") password: String
-    ):Response<Any>
 
     /**
-     * 기간이 만료된 OAuth Access Token을 갱신
-     * @param grantType
-     * @param userName
-     * @param refreshToken
-     * @param deviceInfo
-     * @return OAuthResult
-     * @throws APIResult<String>
-     * */
+     * 신규 토큰 발행
+     *
+     * @param request
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("api/v1/sopo-user/token")
+    @Headers("Accept: application/json")
+    suspend fun issueToken(
+           @Body request: AuthToken.Request
+    ):Response<AuthToken.Info>
+
+    /**
+     * 토큰 refresh
+     *
+     * @param request
+     * @return
+     */
     @FormUrlEncoded
     @POST("api/v1/sopo-auth/oauth/token")
     @Headers("Accept: application/json")
     suspend fun refreshToken(
-            @Field("grant_type") grantType: String,
-            @Field("user_id") userName: String,
-            @Field("refresh_token") refreshToken : String
-    ): Response<Any>
+            @Body request: AuthToken.Refresh
+    ): Response<AuthToken.Info>
 
     /**
      * 자동 로그인 및 유저 데이터 가져오기
@@ -90,9 +91,8 @@ interface UserService
     suspend fun updatePassword(@Body resetPassword: ResetPassword) : Response<APIResult<String?>>
 
     /**
-     * 탈퇴
-     * @param reason : String
-     * @return Response<APIResult<String?>>
+     * @param reason
+     * @return
      */
     @POST("/api/v1/sopo-user/sign-out")
     @Headers("Accept: application/json")

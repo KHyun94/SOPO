@@ -1,17 +1,14 @@
 package com.delivery.sopo.exceptions
 
 import com.delivery.sopo.enums.ErrorType
-import com.delivery.sopo.enums.ResponseCode
-import com.delivery.sopo.models.api.ErrorResponse
-import com.delivery.sopo.util.SopoLog
-import java.lang.ClassCastException
+import com.delivery.sopo.models.api.Error
 
 class InternalServerException : Exception
 {
     override var message: String = ""
     var statusCode: Int = 500
     private lateinit var e: Exception
-    private lateinit var errorResponse: ErrorResponse
+    private lateinit var error: Error
 
     constructor(message: String){
         this.message = message
@@ -22,9 +19,9 @@ class InternalServerException : Exception
         this.e = e
     }
 
-    constructor(message: String, errorResponse: ErrorResponse){
+    constructor(message: String, error: Error){
         this.message = message
-        this.errorResponse = errorResponse
+        this.error = error
     }
 
     fun getException(): Exception
@@ -33,9 +30,9 @@ class InternalServerException : Exception
         return e
     }
 
-    fun getErrorResponse(): ErrorResponse
+    fun getErrorResponse(): Error
     {
-        if(!::errorResponse.isInitialized) return ErrorResponse(999, ErrorType.LOCAL, "초기화되지 않은 데이터입니다.", "")
-        return errorResponse
+        if(!::error.isInitialized) return Error(999, ErrorType.LOCAL, "초기화되지 않은 데이터입니다.", "")
+        return error
     }
 }

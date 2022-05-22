@@ -7,7 +7,7 @@ import com.delivery.sopo.enums.ErrorType
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.extensions.wrapBodyAliasToMap
-import com.delivery.sopo.models.api.ErrorResponse
+import com.delivery.sopo.models.api.Error
 import com.delivery.sopo.models.user.ResetAuthCode
 import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.services.network_handler.BaseService
@@ -23,7 +23,7 @@ class UserRemoteDataSourceImpl(private val dispatcher: CoroutineDispatcher): Use
     override suspend fun requestAuthCodeEmail(email: String): String
     {
         val result = apiCall { publicUserService.requestAuthCodeEmail(email = email) }
-        return result.data?.data?: throw SOPOApiException(404, ErrorResponse(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
+        return result.data?.data?: throw SOPOApiException(404, Error(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
     }
 
     override suspend fun requestVerifyAuthToken(authCode: ResetAuthCode)
@@ -40,7 +40,7 @@ class UserRemoteDataSourceImpl(private val dispatcher: CoroutineDispatcher): Use
     {
         val privateUserService: UserService = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, UserService::class.java)
         val result = apiCall { privateUserService.fetchUserInfo() }
-        return result.data?.data ?: throw SOPOApiException(404, ErrorResponse(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
+        return result.data?.data ?: throw SOPOApiException(404, Error(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
     }
 
     override suspend fun updateNickname(nickname: String)

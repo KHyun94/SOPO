@@ -19,12 +19,12 @@ class UserLocalRepository(private val appDatabase: AppDatabase, private val user
 
     override fun getUserId(): String
     {
-        return userShared.getUserId() ?: ""
+        return userShared.getUsername() ?: ""
     }
 
     override fun setUserId(userId: String)
     {
-        userShared.setUserId(userId = userId)
+        userShared.setUsername(username = userId)
     }
 
     override fun getUserPassword(): String

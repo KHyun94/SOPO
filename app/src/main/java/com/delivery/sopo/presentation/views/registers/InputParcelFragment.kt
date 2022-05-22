@@ -90,11 +90,6 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         }
 
         setOnMotherViewBridgeListener(requireContext())
-
-        //        if(returnType == ReturnType.COMPLETE_REGISTER_PARCEL)
-        //        {
-        //            onPageSelectListener.onSetCurrentPage(TabCode.secondTab)
-        //        }
     }
 
     override fun setAfterBinding()
@@ -136,8 +131,7 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         {
             ReturnType.COMPLETE_REGISTER_PARCEL ->
             {
-
-
+                
                 CustomSnackBar(mainLayout, "네트워크 오류입니다.", 600000, SnackBarEnum.ERROR)
             }
             else -> return

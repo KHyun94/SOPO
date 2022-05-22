@@ -6,7 +6,7 @@ import com.delivery.sopo.models.user.ResetPassword
 interface UserRepository
 {
     suspend fun login()
-    suspend fun login(userName: String, password: String)
+    suspend fun login(username: String, password: String)
     suspend fun refreshToken(): String
     suspend fun fetchUserInfo()
     suspend fun checkExpiredTokenWithInWeek():Boolean

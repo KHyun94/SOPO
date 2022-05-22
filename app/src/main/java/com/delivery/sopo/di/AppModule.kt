@@ -66,7 +66,7 @@ val appModule = module {
     single { UserRemoteDataSourceImpl(dispatcher = Dispatchers.IO) as UserRemoteDataSource }
 
     single { AuthDataSourceImpl(oAuthDao = get(), Dispatchers.Default) as AuthDataSource }
-    single { AuthRemoteDataSourceImpl(dispatcher = Dispatchers.IO) as AuthRemoteDataSource }
+    single { AuthRemoteDataSourceImpl(context = androidApplication(),dispatcher = Dispatchers.IO) as AuthRemoteDataSource }
 
     single { SignUpRemoteDataSourceImpl(Dispatchers.IO) as SignUpRemoteDataSource }
 

@@ -54,7 +54,7 @@ class RegisterParcelWorker(val context: Context, private val params: WorkerParam
             {
                 is SOPOApiException ->
                 {
-                    val errorCode = ErrorEnum.getErrorCode(exception.getErrorResponse().code)
+                    val errorCode = ErrorEnum.getErrorCode(exception.getError().code)
                     SopoLog.e("SOPO API Error $errorCode", exception)
 
                     if(errorCode != ErrorEnum.ALREADY_REGISTERED_PARCEL) return@coroutineScope Result.failure()

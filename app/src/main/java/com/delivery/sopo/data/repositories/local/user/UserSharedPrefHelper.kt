@@ -19,14 +19,25 @@ class UserSharedPrefHelper(private val sharedPref: SharedPref, private val conte
         sharedPref.setString(InfoConst.USER_NICKNAME, userId)
     }
 
-    fun getUserId(): String?
+    fun getUserToken(): String?
     {
-        return sharedPref.getString(InfoConst.USER_ID, "")
+        return sharedPref.getString(InfoConst.USER_TOKEN, "")
     }
 
-    fun setUserId(userId: String)
+    fun setUserToken(userToken: String)
     {
-        sharedPref.setString(InfoConst.USER_ID, userId)
+        sharedPref.setString(InfoConst.USER_TOKEN, userToken)
+    }
+
+
+    fun getUsername(): String?
+    {
+        return sharedPref.getString(InfoConst.USER_NAME, "")
+    }
+
+    fun setUsername(username: String)
+    {
+        sharedPref.setString(InfoConst.USER_NAME, username)
     }
 
     fun getDeviceInfo(): String?
@@ -152,5 +163,9 @@ class UserSharedPrefHelper(private val sharedPref: SharedPref, private val conte
     fun setPushAlarmType(pushAlarmType: SettingEnum.PushAlarmType)
     {
         sharedPref.setString(InfoConst.PUSH_ALARM_TYPE, pushAlarmType.name)
+    }
+
+    fun clear(){
+        sharedPref.clear()
     }
 }

@@ -1,11 +1,11 @@
 package com.delivery.sopo.data.resources.auth.local
 
-import com.delivery.sopo.models.dto.OAuthToken
+import com.delivery.sopo.data.models.AuthToken
 
 interface AuthDataSource
 {
-    suspend fun get(userName: String): OAuthToken
-    suspend fun insert(token: OAuthToken)
-    suspend fun update(token: OAuthToken)
-    suspend fun delete(token: OAuthToken)
+    suspend fun get(): AuthToken.Info
+    suspend fun insert(token: AuthToken.Info)
+    suspend fun update(token: AuthToken.Info)
+    suspend fun delete(token: AuthToken.Info)
 }

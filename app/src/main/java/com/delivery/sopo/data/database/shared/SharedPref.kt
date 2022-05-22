@@ -45,4 +45,10 @@ class SharedPref(context: Context) {
         editor!!.putInt(key, value)
         editor!!.apply()
     }
+
+    fun clear()
+    {
+        editor?.clear()
+        editor?.commit()
+    }
 }

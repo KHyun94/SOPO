@@ -15,7 +15,7 @@ class ExampleUnitTest {
 
 //    val appDB : AppDatabase = AppDatabase.getInstance(context = javaClass)
 
-    @Test
+/*    @Test
     @Throws(Exception::class)
     fun testWithWorkManager()
     {
@@ -36,5 +36,5 @@ class ExampleUnitTest {
         println("DATE : ${calendar.get(Calendar.DATE)}")
 
 
-    }
+    }*/
 }

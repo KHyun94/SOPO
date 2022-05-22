@@ -9,7 +9,7 @@ enum class ErrorEnum(val httpStatusCode: Int, val code: Int, val errorType: Erro
     UNKNOWN_ERROR(500, 199, ErrorType.UNKNOWN_ERROR, "정의되지 않은 에러", "현재 서비스를 이용할 수 없습니다. 다음에 다시 시도해주세요."),
     SYSTEM_ERROR(500, 999, ErrorType.SYSTEM, "서버 내부에서 처리 중 에러가 발생했습니다.", "현재 서비스를 이용할 수 없습니다. 다음에 다시 시도해주세요."),
 
-    OAUTH2_INVALID_CLIENT(401, 801, ErrorType.OAUTH2, "Client 인증이 실패했습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
+   /* OAUTH2_INVALID_CLIENT(401, 801, ErrorType.OAUTH2, "Client 인증이 실패했습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
     OAUTH2_UNAUTHORIZED_CLIENT(400, 802, ErrorType.OAUTH2, "해당 client가 resource에 대한 접근권한이 존재하지 않습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
     OAUTH2_INVALID_GRANT(400, 803, ErrorType.OAUTH2, "인가코드, refrehs token이 틀리거나, 유효(만료)하지 않았습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
     OAUTH2_INVALID_SCOPE(403, 804, ErrorType.OAUTH2, "지정한 Scope 설정이 잘못되었습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
@@ -21,8 +21,8 @@ enum class ErrorEnum(val httpStatusCode: Int, val code: Int, val errorType: Erro
     OAUTH2_ACCOUNT_NOT_FOUND(403, 810, ErrorType.OAUTH2, "사용자의 계정을 찾을 수 없습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
     OAUTH2_UNKNOWN(401, 811, ErrorType.OAUTH2, "이 외 정의된 사유로 에러가 발생했습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
     OAUTH2_DELETE_TOKEN(400, 812, ErrorType.OAUTH2, "존재하지 않는 토큰입니다.(중복 로그인)", "다른 기기에 로그인되어있습니다. 다시 확인해주세요."),
+*/
 
-    INVALID_AUTH_CODE(401, 615, ErrorType.AUTHENTICATION, "입력한 인증코드가 일치하지 않습니다.", "입력한 인증코드가 일치하지 않습니다."),
     INVALID_JWT_TOKEN(401, 601, ErrorType.AUTHENTICATION, "비밀번호 초기화 API에서 JWT 토큰 검증에 실패했습니다.", ""),
     FAIL_TO_CREATE_JWT_TOKEN(500, 602, ErrorType.SYSTEM, "인증서버에서 인증토큰을 생성하는데 실패했습니다.", ""),
     FAIL_TO_CONNECT_INTERNAL_SERVICE(500, 603, ErrorType.SYSTEM, "서버간 서비스 연결에 실패했습니다.", "현재 서비스를 이용할 수 없습니다. 다음에 다시 시도해주세요."),
@@ -32,6 +32,10 @@ enum class ErrorEnum(val httpStatusCode: Int, val code: Int, val errorType: Erro
     USER_NOT_FOUND(404, 607, ErrorType.NO_RESOURCE, "해당하는 id에 부합하는 유저를 찾을 수 없습니다.", ""),
     FCM_TOKEN_NOT_FOUND(404,608, ErrorType.NO_RESOURCE,"fcm-token이 존재하지 않습니다.", ""),
     NICK_NAME_NOT_FOUND(404, 609, ErrorType.NO_RESOURCE, "Nickname이 등록되지 않았습니다.", "Nickname이 등록되지 않았습니다."),
+
+    INVALID_AUTH_CODE(401, 615, ErrorType.AUTHENTICATION, "입력한 인증코드가 일치하지 않습니다.", "입력한 인증코드가 일치하지 않습니다."),
+    DUPLICATE_LOGIN(401, 616, ErrorType.AUTHENTICATION, "다른 디바이스에서 로그인 중 입니다.", "다른 디바이스에서 로그인 중 입니다."),
+    INVALID_TOKEN(401, 617, ErrorType.AUTHENTICATION, "만료된 토큰입니다.", "만료된 토큰입니다."),
 
     ALREADY_REGISTERED_PARCEL(409, 701, ErrorType.CONFLICT, "이미 등록된 택배입니다.", "이미 등록된 택배입니다."),
     OVER_REGISTERED_PARCEL(409, 702, ErrorType.CONFLICT, "등록할 수 있는 택배의 개수를 초과하였습니다.", "등록할 수 있는 택배의 개수를 초과하였습니다."),
