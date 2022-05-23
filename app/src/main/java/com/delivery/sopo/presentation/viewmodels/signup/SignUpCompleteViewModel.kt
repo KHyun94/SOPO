@@ -3,19 +3,18 @@ package com.delivery.sopo.presentation.viewmodels.signup
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
-import com.delivery.sopo.data.repositories.remote.user.UserRemoteRepository
+import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.domain.usecase.user.token.LoginUseCase
 import com.delivery.sopo.enums.ErrorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import kotlinx.coroutines.launch
 
-class SignUpCompleteViewModel(private val loginUseCase: LoginUseCase, private val userLocalRepo: UserLocalRepository, private val userRemoteRepo: UserRemoteRepository):
+class SignUpCompleteViewModel(private val loginUseCase: LoginUseCase, private val userDataSource: UserDataSource):
         BaseViewModel()
 {
     val email = MutableLiveData<String>().also {
-        it.postValue(userLocalRepo.getUserId())
+        it.postValue(userDataSource.getUsername())
     }
 
     private val _navigator = MutableLiveData<String>()
@@ -67,7 +66,7 @@ class SignUpCompleteViewModel(private val loginUseCase: LoginUseCase, private va
 
     fun onCompleteClicked()
     {
-        requestLogin(userLocalRepo.getUserId(), userLocalRepo.getUserPassword())
+        requestLogin(userDataSource.getUsername(), userDataSource.getUserPassword())
     }
 
     private fun requestLogin(userName: String, password: String) = scope.launch(coroutineExceptionHandler) {

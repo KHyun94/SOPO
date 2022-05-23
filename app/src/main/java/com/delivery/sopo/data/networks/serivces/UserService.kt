@@ -19,9 +19,7 @@ interface UserService
      * @param request
      * @return
      */
-    @FormUrlEncoded
     @POST("api/v1/sopo-user/token")
-    @Headers("Accept: application/json")
     suspend fun issueToken(
            @Body request: AuthToken.Request
     ):Response<AuthToken.Info>
@@ -32,9 +30,7 @@ interface UserService
      * @param request
      * @return
      */
-    @FormUrlEncoded
     @POST("api/v1/sopo-auth/oauth/token")
-    @Headers("Accept: application/json")
     suspend fun refreshToken(
             @Body request: AuthToken.Refresh
     ): Response<AuthToken.Info>

@@ -90,7 +90,7 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
         try
         {
             onStartLoading()
-            loginUseCase.invoke(userName = email.value.toString(), password = password.value.toString().toMD5())
+            loginUseCase.invoke(username = email.value.toString(), password = password.value.toString().toMD5())
             _navigator.postValue(NavigatorConst.TO_MAIN)
         }
         finally
