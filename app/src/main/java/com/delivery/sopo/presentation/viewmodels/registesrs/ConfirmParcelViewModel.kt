@@ -5,16 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.domain.usecase.parcel.remote.RegisterParcelUseCase
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.launch
-import kotlin.properties.Delegates
 
 class ConfirmParcelViewModel(private val registerParcelUseCase: RegisterParcelUseCase): BaseViewModel()
 {
@@ -74,29 +72,29 @@ class ConfirmParcelViewModel(private val registerParcelUseCase: RegisterParcelUs
 
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
-        override fun onRegisterParcelError(error: ErrorEnum)
+        override fun onRegisterParcelError(error: ErrorCode)
         {
             super.onRegisterParcelError(error)
             postErrorSnackBar(error.message)
         }
 
-        override fun onInquiryParcelError(error: ErrorEnum)
+        override fun onInquiryParcelError(error: ErrorCode)
         {
             super.onInquiryParcelError(error)
         }
 
-        override fun onInternalServerError(error: ErrorEnum)
+        override fun onInternalServerError(error: ErrorCode)
         {
             super.onInternalServerError(error)
             postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
         }
 
-        override fun onAuthError(error: ErrorEnum)
+        override fun onAuthError(error: ErrorCode)
         {
             super.onAuthError(error)
         }
 
-        override fun onFailure(error: ErrorEnum)
+        override fun onFailure(error: ErrorCode)
         {
             postErrorSnackBar("알 수 없는 이유로 등록에 실패했습니다.[${error.toString()}]")
         }

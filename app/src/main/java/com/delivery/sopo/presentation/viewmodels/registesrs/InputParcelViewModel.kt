@@ -68,6 +68,8 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository): Ba
     fun recommendCarrierByWaybill(waybillNum: String) = scope.launch(Dispatchers.Default) {
         val carrier = carrierRepository.recommendCarrier(waybillNum)
 
+        SopoLog.d("추천 택배사 :: ${carrier?.toString()}")
+
         if(carrier == null)
         {
             this@InputParcelViewModel.carrier.postValue(null)

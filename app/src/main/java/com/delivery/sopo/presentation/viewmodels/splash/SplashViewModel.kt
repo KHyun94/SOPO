@@ -9,7 +9,7 @@ import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
 import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.domain.usecase.user.token.ForceLoginUseCase
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
@@ -22,6 +22,10 @@ class SplashViewModel(
 {
     init
     {
+
+        userDataSource.setUsername("asle1221@naver.com")
+        userDataSource.setUserPassword("EA028BB58781D1772CC1BAAE6518BFFE")
+        userDataSource.setStatus(1)
         CoroutineScope(Dispatchers.Default).launch {
             carrierRepo.initCarrierDB()
         }
@@ -37,11 +41,11 @@ class SplashViewModel(
 
     override var onSOPOErrorCallback = object : OnSOPOErrorCallback{
 
-        override fun onFailure(error: ErrorEnum)
+        override fun onFailure(error: ErrorCode)
         {
             when(error)
             {
-                ErrorEnum.NICK_NAME_NOT_FOUND ->
+                ErrorCode.NICK_NAME_NOT_FOUND ->
                 {
                     postNavigator(NavigatorConst.TO_UPDATE_NICKNAME)
                 }
@@ -52,7 +56,7 @@ class SplashViewModel(
             }
         }
 
-        override fun onInternalServerError(error: ErrorEnum)
+        override fun onInternalServerError(error: ErrorCode)
         {
             super.onInternalServerError(error)
 
@@ -60,13 +64,13 @@ class SplashViewModel(
             postNavigator(NavigatorConst.TO_INTRO)
         }
 
-        override fun onAuthError(error: ErrorEnum)
+        override fun onAuthError(error: ErrorCode)
         {
             super.onAuthError(error)
             postNavigator(NavigatorConst.TO_INTRO)
         }
 
-        override fun onDuplicateError(error: ErrorEnum)
+        override fun onDuplicateError(error: ErrorCode)
         {
             super.onDuplicateError(error)
 
@@ -92,6 +96,8 @@ class SplashViewModel(
     }
 
     fun requestUserInfo() = checkEventStatus(true) {
+
+
 
         scope.launch(coroutineExceptionHandler) {
                 forceLoginUseCase.invoke()

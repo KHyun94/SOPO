@@ -1,6 +1,6 @@
 package com.delivery.sopo.models.mapper
 
-import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.data.database.room.entity.CompletedParcelHistoryEntity
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.database.room.entity.ParcelStatusEntity
@@ -43,13 +43,13 @@ object ParcelMapper
         return with(parcel) { Parcel.Status(parcelId = parcelId) }
     }
 
-    fun completeParcelStatusEntityToDTO(entity: CompletedParcelHistoryEntity): CompletedParcelHistory
+    fun completeParcelStatusEntityToDTO(entity: CompletedParcelHistoryEntity): DeliveredParcelHistory
     {
         val dates = entity.date.split('-')
-        return with(entity) { CompletedParcelHistory(date = date, count = count, visibility = visibility, status = status, auditDte = auditDte) }
+        return with(entity) { DeliveredParcelHistory(date = date, count = count, visibility = visibility, status = status, auditDte = auditDte) }
     }
 
-    fun completeParcelStatusDTOToEntity(dto: CompletedParcelHistory): CompletedParcelHistoryEntity
+    fun completeParcelStatusDTOToEntity(dto: DeliveredParcelHistory): CompletedParcelHistoryEntity
     {
         return with(dto) { CompletedParcelHistoryEntity("${parseYear()}-${parseMonth()}", count, visibility, status, auditDte) }
     }

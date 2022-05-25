@@ -1,12 +1,11 @@
 package com.delivery.sopo.data.networks
 
 import com.delivery.sopo.BuildConfig
-import com.delivery.sopo.enums.NetworkEnum
+import com.delivery.sopo.data.models.AuthToken
 import com.delivery.sopo.data.networks.interceptors.BasicAuthInterceptor
-import com.delivery.sopo.data.networks.interceptors.OAuthInterceptor
-import com.delivery.sopo.data.repositories.local.o_auth.OAuthLocalRepository
-import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
-import com.delivery.sopo.models.dto.OAuthToken
+import com.delivery.sopo.data.networks.interceptors.AuthInterceptor
+import com.delivery.sopo.data.resources.auth.local.AuthDataSource
+import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -24,8 +23,7 @@ import java.util.concurrent.TimeUnit
 
 object NetworkManager : KoinComponent
 {
-    private val userLocalRepo : UserLocalRepository by inject()
-    private val oAuthLocalRepo : OAuthLocalRepository by inject()
+    private val authDataSource: AuthDataSource by inject()
 
     private const val CONNECT_TIMEOUT: Long = 15
     private const val WRITE_TIMEOUT: Long = 15
@@ -42,8 +40,8 @@ object NetworkManager : KoinComponent
         {
             NetworkEnum.O_AUTH_TOKEN_LOGIN ->
             {
-                val oAuth : OAuthToken = runBlocking(Dispatchers.Default) { oAuthLocalRepo.get(userId = userLocalRepo.getUserId()) }
-                retro(oAuth.accessToken).create(clz)
+                val authToken : AuthToken.Info = runBlocking(Dispatchers.Default) { authDataSource.get() }
+                retro(authToken.accessToken).create(clz)
             }
             NetworkEnum.PUBLIC_LOGIN ->
             {
@@ -67,12 +65,10 @@ object NetworkManager : KoinComponent
         SopoLog.d( msg = "네트워크 인증 타입 => $INTERCEPTOR_TYPE ${params.joinToString()}")
         val interceptor : Interceptor? = when(INTERCEPTOR_TYPE)
         {
-            1 -> OAuthInterceptor(params[0]!!)   // 파라미터 갯수 1일 때 OAuthInterceptor(Token)
+            1 -> AuthInterceptor(authDataSource)   // 파라미터 갯수 1일 때 OAuthInterceptor(Token)
             2 -> BasicAuthInterceptor(params[0]!!, params[1]!!)   // 파라미터 갯수 2일 때 BasicAuthInterceptor (userId or userPassword)
             else -> null
         }
-
-        SopoLog.d( msg = "네트워크 인증 타입 => $INTERCEPTOR_TYPE")
 
         val httpLoggingInterceptor = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger{
             override fun log(message: String)

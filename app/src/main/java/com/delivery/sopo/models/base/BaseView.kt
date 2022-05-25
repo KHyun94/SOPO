@@ -3,8 +3,6 @@ package com.delivery.sopo.models.base
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
@@ -16,7 +14,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.BR
-import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.SOPOApplication
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.util.NetworkStatusMonitor
@@ -136,7 +134,7 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
     private fun setInnerObserve()
     {
-        SOPOApp.networkStatus.observe(this) { status ->
+        SOPOApplication.networkStatus.observe(this) { status ->
 
             SopoLog.d("status [status:$status]")
 

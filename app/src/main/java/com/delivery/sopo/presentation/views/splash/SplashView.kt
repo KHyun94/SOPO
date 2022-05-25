@@ -15,6 +15,7 @@ import com.delivery.sopo.presentation.views.dialog.GeneralDialog
 import com.delivery.sopo.presentation.views.intro.IntroView
 import com.delivery.sopo.presentation.views.main.MainView
 import com.delivery.sopo.presentation.views.signup.RegisterNicknameView
+import com.delivery.sopo.util.SopoLog
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
@@ -53,7 +54,10 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
     {
         super.setObserve()
 
-        vm.navigator.observe(this, Observer {
+        vm.navigator.observe(this) {
+
+            SopoLog.d("navigator [$it]")
+
             when(it)
             {
                 NavigatorConst.TO_INTRO ->
@@ -80,7 +84,7 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
 
                 }
             }
-        })
+        }
 
     }
 }

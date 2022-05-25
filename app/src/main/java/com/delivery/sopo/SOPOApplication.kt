@@ -3,12 +3,10 @@ package com.delivery.sopo
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.di.appModule
-import com.delivery.sopo.data.repositories.local.o_auth.OAuthLocalRepository
 import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
 import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
-import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
+import com.delivery.sopo.di.*
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.thirdpartyapi.kako.KakaoSDKAdapter
 import com.google.firebase.FirebaseApp
@@ -20,13 +18,11 @@ import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
-class SOPOApp: Application()
+class SOPOApplication: Application()
 {
-    val userLocalRepository: UserLocalRepository by inject()
     val parcelStatusRepo: ParcelManagementRepoImpl by inject()
     val parcelRepository: ParcelRepository by inject()
     val carrierRepository: CarrierRepository by inject()
-    val OAuthLocalRepository: OAuthLocalRepository by inject()
 
     var kakaoSDKAdapter: KakaoSDKAdapter? = null
     var accessToken: AccessToken? = null
@@ -35,11 +31,11 @@ class SOPOApp: Application()
     {
         super.onCreate()
 
-        INSTANCE = this@SOPOApp
+        INSTANCE = this@SOPOApplication
 
         startKoin {
-            androidContext(this@SOPOApp)
-            modules(appModule)
+            androidContext(this@SOPOApplication)
+            modules(listOf(apiModule, serviceModule, viewModelModule, useCaseModule, sourceModule, dbModule))
         }
 
 

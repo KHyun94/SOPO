@@ -2,7 +2,7 @@ package com.delivery.sopo.thirdpartyapi.kako;
 
 import android.content.Context;
 
-import com.delivery.sopo.SOPOApp;
+import com.delivery.sopo.SOPOApplication;
 import com.kakao.auth.ApprovalType;
 import com.kakao.auth.AuthType;
 import com.kakao.auth.IApplicationConfig;
@@ -60,7 +60,7 @@ public class KakaoSDKAdapter extends KakaoAdapter {
         return new IApplicationConfig() {
             @Override
             public Context getApplicationContext() {
-                return SOPOApp.INSTANCE.getApplicationContext();
+                return SOPOApplication.INSTANCE.getApplicationContext();
             }
         };
     }

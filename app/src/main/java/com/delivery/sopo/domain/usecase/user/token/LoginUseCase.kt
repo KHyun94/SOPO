@@ -4,8 +4,8 @@ import com.delivery.sopo.data.repositories.user.UserRepository
 
 class LoginUseCase(private val userRepository: UserRepository)
 {
-    suspend operator fun invoke(userName: String, password: String) {
-        userRepository.login(username = userName, password = password)
+    suspend operator fun invoke(username: String, password: String) {
+        userRepository.login(username = username, password = password)
         userRepository.fetchUserInfo()
     }
 }

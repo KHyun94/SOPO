@@ -7,7 +7,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
-import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.SOPOApplication
 import com.delivery.sopo.enums.NetworkStatus
 
 
@@ -30,12 +30,12 @@ class NetworkStatusMonitor(private val activity: AppCompatActivity): Connectivit
         if(activeNetwork != null)
         {
             SopoLog.d("네트워크 연결되어있음 + ${getConnectivityStatus(context = activity)}")
-            SOPOApp.networkStatus.postValue(getConnectivityStatus(context = activity))
+            SOPOApplication.networkStatus.postValue(getConnectivityStatus(context = activity))
         }
         else
         {
             SopoLog.d("네트워크 연결되어 있지않음 + ${getConnectivityStatus(context = activity)}")
-            SOPOApp.networkStatus.postValue(getConnectivityStatus(context = activity))
+            SOPOApplication.networkStatus.postValue(getConnectivityStatus(context = activity))
         }
     }
 
@@ -55,14 +55,14 @@ class NetworkStatusMonitor(private val activity: AppCompatActivity): Connectivit
     {
         super.onAvailable(network)
         SopoLog.d("networkAvailable() + ${getConnectivityStatus(context = activity)}")
-        SOPOApp.networkStatus.postValue(getConnectivityStatus(context = activity))
+        SOPOApplication.networkStatus.postValue(getConnectivityStatus(context = activity))
     }
 
     override fun onLost(network: Network)
     {
         super.onLost(network)
         SopoLog.d("networkUnavailable() + ${getConnectivityStatus(context = activity)}")
-        SOPOApp.networkStatus.postValue(getConnectivityStatus(context = activity))
+        SOPOApplication.networkStatus.postValue(getConnectivityStatus(context = activity))
     }
 
 

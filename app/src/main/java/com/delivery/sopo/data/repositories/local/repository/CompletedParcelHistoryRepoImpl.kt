@@ -3,7 +3,7 @@ package com.delivery.sopo.data.repositories.local.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.delivery.sopo.data.database.room.AppDatabase
-import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.data.database.room.entity.CompletedParcelHistoryEntity
 import com.delivery.sopo.data.repositories.local.datasource.CompleteParcelStatusRepository
 import com.delivery.sopo.models.mapper.ParcelMapper
@@ -11,7 +11,7 @@ import com.delivery.sopo.util.TimeUtil
 
 class CompletedParcelHistoryRepoImpl(private val appDatabase: AppDatabase): CompleteParcelStatusRepository
 {
-    override fun findById(year: String): List<CompletedParcelHistory>
+    override fun findById(year: String): List<DeliveredParcelHistory>
     {
         return appDatabase.completeParcelStatusDao().findById(year)?.flatMap {
             listOf(ParcelMapper.completeParcelStatusEntityToDTO(it))
@@ -28,7 +28,7 @@ class CompletedParcelHistoryRepoImpl(private val appDatabase: AppDatabase): Comp
         return appDatabase.completeParcelStatusDao().getAllTimeCount()
     }
 
-    override fun getAllAsLiveData(): LiveData<List<CompletedParcelHistory>>
+    override fun getAllAsLiveData(): LiveData<List<DeliveredParcelHistory>>
     {
         return Transformations.map(appDatabase.completeParcelStatusDao().getAllTimeCountLiveData()){ entity ->
             entity.map(ParcelMapper::completeParcelStatusEntityToDTO)

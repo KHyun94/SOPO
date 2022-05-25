@@ -1,7 +1,6 @@
 package com.delivery.sopo.util
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
@@ -11,18 +10,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.R
 import com.delivery.sopo.data.database.room.AppDatabase
-import com.delivery.sopo.data.repositories.local.o_auth.OAuthLocalRepository
-import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
-import com.delivery.sopo.presentation.views.dialog.GeneralDialog
-import com.delivery.sopo.presentation.views.dialog.OnAgreeClickListener
-import com.delivery.sopo.presentation.views.login.LoginSelectView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import java.util.function.Function
@@ -31,8 +23,6 @@ typealias OnTextClickListener = Pair<String?, View.OnClickListener?>
 
 object AlertUtil: KoinComponent
 {
-    val userSITORY: UserLocalRepository by inject()
-    val O_AUTH_REPO_IMPL: OAuthLocalRepository by inject()
     val appDataBase: AppDatabase by inject()
 
     var alert: AlertDialog? = null
@@ -120,24 +110,5 @@ object AlertUtil: KoinComponent
             alert?.dismiss()
             alert = null
         }
-    }
-
-    // refreshToken이 비정상으로 만료되었을 때 호출되는 AlertMessage 모든 내부 DB 내용 초기화 및 앱 종
-    suspend fun alertExpiredToken(activity: FragmentActivity, message: String) = withContext(Dispatchers.Default) {
-        GeneralDialog(act = activity, title = "종료", msg = message, detailMsg = null, rHandler = Pair("확인", object: OnAgreeClickListener
-        {
-            override fun invoke(agree: GeneralDialog)
-            {
-                userSITORY.removeUserRepo()
-
-                CoroutineScope(Dispatchers.Default).launch { appDataBase.clearAllTables() }
-
-                Intent(activity, LoginSelectView::class.java).let {
-                    it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    activity.startActivity(it)
-                    activity.finish()
-                }
-            }
-        })).show(activity.supportFragmentManager, "FINISH")
     }
 }

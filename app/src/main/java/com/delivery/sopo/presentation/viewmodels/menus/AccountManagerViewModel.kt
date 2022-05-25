@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.domain.usecase.user.token.LogoutUseCase
@@ -39,6 +39,6 @@ class AccountManagerViewModel(
 
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
-        override fun onFailure(error: ErrorEnum) { }
+        override fun onFailure(error: ErrorCode) { }
     }
 }

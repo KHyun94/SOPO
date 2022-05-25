@@ -5,7 +5,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
 import com.delivery.sopo.consts.BundleConst
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.domain.usecase.parcel.remote.GetParcelUseCase
@@ -54,10 +54,10 @@ class RegisterParcelWorker(val context: Context, private val params: WorkerParam
             {
                 is SOPOApiException ->
                 {
-                    val errorCode = ErrorEnum.getErrorCode(exception.getError().code)
+                    val errorCode = ErrorCode.getCode(exception.error.code)
                     SopoLog.e("SOPO API Error $errorCode", exception)
 
-                    if(errorCode != ErrorEnum.ALREADY_REGISTERED_PARCEL) return@coroutineScope Result.failure()
+                    if(errorCode != ErrorCode.ALREADY_REGISTERED_PARCEL) return@coroutineScope Result.failure()
 
                     val data: Data = Data.Builder().putString(BundleConst.DO_WORK_RESULT, BundleConst.ERROR_ALREADY_REGISTERED_PARCEL).build()
 

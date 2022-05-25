@@ -2,7 +2,7 @@ package com.delivery.sopo.models.mapper
 
 import android.view.Menu
 import androidx.core.view.iterator
-import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.util.SopoLog
 
@@ -17,7 +17,7 @@ object MenuMapper
         return menuItemList
     }
 
-    fun completeParcelStatusDTOToMenuItem(list: List<CompletedParcelHistory>): List<InquiryMenuItem>{
+    fun completeParcelStatusDTOToMenuItem(list: List<DeliveredParcelHistory>): List<InquiryMenuItem>{
         /*val menuItemList = mutableListOf<InquiryMenuItem>()
         for(status in list){
             menuItemList.add(InquiryMenuItem(viewType = InquiryMenuItem.InquiryMenuType.CompleteHistoryList, completeParcelStatus = status))

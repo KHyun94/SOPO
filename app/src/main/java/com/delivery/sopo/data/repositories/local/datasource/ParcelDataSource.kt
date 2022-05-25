@@ -1,14 +1,14 @@
 package com.delivery.sopo.data.repositories.local.datasource
 
 import androidx.lifecycle.LiveData
-import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.parcel.Parcel
 
 interface ParcelDataSource {
 
    suspend fun getOngoingParcelsFromRemote(): List<Parcel.Common>
-   suspend fun getRemoteMonths(): List<CompletedParcelHistory>?
+   suspend fun getRemoteMonths(): List<DeliveredParcelHistory>?
 
    suspend fun getCompleteParcelsByRemote(page: Int, inquiryDate: String): List<Parcel.Common>
 
@@ -18,7 +18,7 @@ interface ParcelDataSource {
    fun getSoonDataCntLiveData(): LiveData<Int>
    fun getOngoingDataCntLiveData(): LiveData<Int>
 
-   suspend fun updateParcelsToDeletable(parcelIdList: List<Int>)
+//   suspend fun updateParcelsToDeletable(parcelIdList: List<Int>)
 
    // 0922 kh 추가사항
    suspend fun getSingleParcelWithWaybillNum(waybillNum:String) : ParcelEntity?

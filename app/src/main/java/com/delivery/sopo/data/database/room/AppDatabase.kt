@@ -25,7 +25,7 @@ abstract class AppDatabase : RoomDatabase()
     abstract fun parcelManagementDao(): ParcelStatusDAO
     abstract fun completeParcelStatusDao(): CompleteParcelStatusDao
     abstract fun securityDao(): AppPasswordDao
-    abstract fun oauthDao() : AuthTokenDao
+    abstract fun authTok() : AuthTokenDao
 
     companion object
     {

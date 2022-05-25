@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
@@ -44,28 +44,28 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
 
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
-        override fun onLoginError(error: ErrorEnum)
+        override fun onLoginError(error: ErrorCode)
         {
             super.onLoginError(error)
             postErrorSnackBar("유효한 이메일 또는 비밀번호가 아닙니다.")
         }
 
-        override fun onFailure(error: ErrorEnum)
+        override fun onFailure(error: ErrorCode)
         {
             when(error)
             {
-                ErrorEnum.NICK_NAME_NOT_FOUND -> _navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
+                ErrorCode.NICK_NAME_NOT_FOUND -> _navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
                 else -> postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
             }
         }
 
-        override fun onInternalServerError(error: ErrorEnum)
+        override fun onInternalServerError(error: ErrorCode)
         {
             super.onInternalServerError(error)
             postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.")
         }
 
-        override fun onAuthError(error: ErrorEnum)
+        override fun onAuthError(error: ErrorCode)
         {
             super.onAuthError(error)
             postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
@@ -90,7 +90,7 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
         try
         {
             onStartLoading()
-            loginUseCase.invoke(userName = email.value.toString(), password = password.value.toString().toMD5())
+            loginUseCase.invoke(username = email.value.toString(), password = password.value.toString().toMD5())
             _navigator.postValue(NavigatorConst.TO_MAIN)
         }
         finally

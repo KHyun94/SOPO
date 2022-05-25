@@ -1,6 +1,6 @@
 package com.delivery.sopo.enums
 
-enum class ErrorEnum(val httpStatusCode: Int, val code: Int, val errorType: ErrorType, val content: String, var message: String)
+enum class ErrorCode(val httpStatusCode: Int, val code: Int, val errorType: ErrorType, val content: String, var message: String)
 {
     // 사실상 발생하지 않는 에러
     AUTHORIZE_FAIL(403, 101, ErrorType.AUTHORIZE, "(권한 오류) 해당 API에 대한 요청 권한이 없습니다.", "허가되지 않은 접근입니다."),
@@ -44,11 +44,11 @@ enum class ErrorEnum(val httpStatusCode: Int, val code: Int, val errorType: Erro
     PARCEL_BAD_REQUEST(400, 705, ErrorType.VALIDATION, "송장 번호를 확인해주세요.", "송장 번호를 확인해주세요.");
 
     companion object{
-        fun getErrorCode(code: Int): ErrorEnum
+        fun getCode(code: Int): ErrorCode
         {
             return try
             {
-                enumValues<ErrorEnum>().first { it.code == code }
+                enumValues<ErrorCode>().first { it.code == code }
             }
             catch(e: Exception)
             {

@@ -6,12 +6,12 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
-import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
+import com.delivery.sopo.data.resources.user.local.UserDataSource
+import com.delivery.sopo.domain.usecase.parcel.remote.RegisterParcelUseCase
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.push.NotificationMessage
 import com.delivery.sopo.notification.NotificationImpl
-import com.delivery.sopo.domain.usecase.parcel.remote.RegisterParcelUseCase
 import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +23,7 @@ import org.koin.core.inject
 
 class SOPONotificationListenerService: NotificationListenerService(), KoinComponent
 {
-    private val userRepo: UserLocalRepository by inject()
+    private val userDataSource: UserDataSource by inject()
     private val parcelRepo: ParcelRepository by inject()
     private val carrierRepo: CarrierRepository by inject()
     private val registerParcelUseCase: RegisterParcelUseCase by inject()
@@ -32,7 +32,7 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
     {
         super.onNotificationPosted(sbn)
 
-        if(userRepo.getStatus() != 1) return
+        if(userDataSource.getStatus() != 1) return
         if(!PermissionUtil.checkNotificationListenerPermission(context = applicationContext, packageName)) return
 
         val notification: Notification = sbn?.notification?:return

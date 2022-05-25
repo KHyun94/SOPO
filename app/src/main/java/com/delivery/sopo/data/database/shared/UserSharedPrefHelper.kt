@@ -1,4 +1,4 @@
-package com.delivery.sopo.data.repositories.local.user
+package com.delivery.sopo.data.database.shared
 
 import android.content.Context
 import com.delivery.sopo.consts.InfoConst

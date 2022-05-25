@@ -38,7 +38,7 @@ class UserRepositoryImpl(
     override suspend fun refreshToken(): String
     {
         val userName = userDataSource.getUsername()
-        val refreshToken = authDataSource.get(username = userName).refreshToken
+        val refreshToken = authDataSource.get().refreshToken
         val tokenInfo = authRemoteDataSource.refreshToken(refreshToken = refreshToken)
 
         authDataSource.insert(token = tokenInfo)
@@ -87,7 +87,7 @@ class UserRepositoryImpl(
 
     override suspend fun checkExpiredTokenWithInWeek():Boolean{
         val userName = userDataSource.getUsername()
-        val currentExpiredDate: String = authDataSource.get(userName).expireAt
+        val currentExpiredDate: String = authDataSource.get().expireAt
         return DateUtil.isExpiredDateWithinAWeek(currentExpiredDate)
     }
 

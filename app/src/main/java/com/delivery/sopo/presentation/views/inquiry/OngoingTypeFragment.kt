@@ -24,6 +24,7 @@ import com.delivery.sopo.presentation.views.adapter.InquiryListAdapter
 import com.delivery.sopo.presentation.views.dialog.OnOptionalClickListener
 import com.delivery.sopo.presentation.views.dialog.OptionalDialog
 import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.util.SopoLog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -147,6 +148,10 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         }
 
         vm.ongoingParcels.observe(requireActivity()) { list ->
+
+            list.forEach {
+                SopoLog.d("ongoingParcels => ${it.parcel.toString()}")
+            }
 
             if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
             else binding.linearNoItem.visibility = View.GONE

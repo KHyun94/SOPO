@@ -13,7 +13,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import com.delivery.sopo.BR
-import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.SOPOApplication
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
@@ -148,6 +148,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
         return DataBindingUtil.inflate<T>(inflater, layoutRes, container, false).apply {
             setVariable(BR.vm, vm)
             lifecycleOwner = viewLifecycleOwner
+            executePendingBindings()
         }
     }
 
@@ -181,7 +182,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
     private fun setInnerObserve()
     {
 
-        SOPOApp.networkStatus.observe(viewLifecycleOwner) { status ->
+        SOPOApplication.networkStatus.observe(viewLifecycleOwner) { status ->
 
             SopoLog.d("status [status:$status]")
 

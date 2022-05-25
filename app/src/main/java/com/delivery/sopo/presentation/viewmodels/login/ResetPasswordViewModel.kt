@@ -9,7 +9,7 @@ import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.ResetPasswordConst
 import com.delivery.sopo.data.repositories.remote.user.UserRemoteRepository
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
@@ -58,16 +58,16 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
 
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
-        override fun onFailure(error: ErrorEnum)
+        override fun onFailure(error: ErrorCode)
         {
             when(error)
             {
-                ErrorEnum.INVALID_USER ->
+                ErrorCode.INVALID_USER ->
                 {
                     _focusOn.postValue(InfoEnum.EMAIL)
                     postErrorSnackBar(error.message)
                 }
-                ErrorEnum.INVALID_AUTH_CODE ->
+                ErrorCode.INVALID_AUTH_CODE ->
                 {
                     cnfOfFailureAuthCode += 1
 
@@ -103,7 +103,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
                         postErrorSnackBar("인증 코드가 일치하지 않아요.")
                     }
                 }
-                ErrorEnum.INVALID_JWT_TOKEN ->
+                ErrorCode.INVALID_JWT_TOKEN ->
                 {
                     postErrorSnackBar("일정시간이 지났기 때문에 다시 시도해주세요.") //TODO JWT_TOKEN 만료 시 안내와 동시에 처음부터 시작
                     postNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_SEND)
@@ -118,7 +118,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
             }
         }
 
-        override fun onInternalServerError(error: ErrorEnum)
+        override fun onInternalServerError(error: ErrorCode)
         {
             super.onInternalServerError(error)
             postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")

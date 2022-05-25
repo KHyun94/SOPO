@@ -22,6 +22,7 @@ abstract class BaseService
         }
         catch(e: Exception)
         {
+            e.printStackTrace()
             throw InternalServerException("일시적으로 서비스를 이용할 수 없습니다.", e)
         }
 

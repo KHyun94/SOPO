@@ -3,7 +3,7 @@ package com.delivery.sopo.services.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.domain.usecase.parcel.remote.GetParcelUseCase
@@ -43,23 +43,23 @@ class ParcelManagementBroadcastReceiver: BroadcastReceiver(), KoinComponent
 
     val onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
-        override fun onRegisterParcelError(error: ErrorEnum)
+        override fun onRegisterParcelError(error: ErrorCode)
         {
             super.onRegisterParcelError(error)
 
         }
 
-        override fun onFailure(error: ErrorEnum)
+        override fun onFailure(error: ErrorCode)
         {
         }
 
-        override fun onInternalServerError(error: ErrorEnum)
+        override fun onInternalServerError(error: ErrorCode)
         {
             super.onInternalServerError(error)
 
         }
 
-        override fun onAuthError(error: ErrorEnum)
+        override fun onAuthError(error: ErrorCode)
         {
             super.onAuthError(error)
 

@@ -1,7 +1,7 @@
 package com.delivery.sopo.data.resources.user.remote
 
 import com.delivery.sopo.data.networks.NetworkManager
-import com.delivery.sopo.data.networks.dto.joins.JoinInfo
+import com.delivery.sopo.data.models.JoinInfo
 import com.delivery.sopo.data.networks.serivces.SignUpService
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.services.network_handler.BaseService

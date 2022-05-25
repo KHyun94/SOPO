@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.delivery.sopo.R
-import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.databinding.FragmentCompletedTypeBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.*
@@ -347,7 +347,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
 
     // 배송완료 화면에서 년/월을 눌렀을 시 팝업 메뉴가 나온다.
     @SuppressLint("UseCompatLoadingForDrawables")
-    private fun drawCompletedParcelHistoryPopMenu(anchorView: View, histories: List<CompletedParcelHistory>)
+    private fun drawCompletedParcelHistoryPopMenu(anchorView: View, histories: List<DeliveredParcelHistory>)
     {
         val historyPopUpView: PopupMenuViewBinding =
             PopupMenuViewBinding.inflate(LayoutInflater.from(context))

@@ -7,12 +7,12 @@ import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.UserTypeConst
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.data.networks.dto.joins.JoinInfo
+import com.delivery.sopo.data.models.JoinInfo
 import com.delivery.sopo.domain.usecase.user.token.SignUpUseCase
 import kotlinx.coroutines.launch
 
@@ -48,18 +48,18 @@ class SignUpViewModel(private val signUpUseCase: SignUpUseCase): BaseViewModel()
 
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
-        override fun onFailure(error: ErrorEnum)
+        override fun onFailure(error: ErrorCode)
         {
             postErrorSnackBar("로그인에 실패했습니다.")
         }
 
-        override fun onAlreadyRegisteredUser(error: ErrorEnum)
+        override fun onAlreadyRegisteredUser(error: ErrorCode)
         {
             super.onAlreadyRegisteredUser(error)
             postErrorSnackBar("이미 등록된 사용자입니다.")
         }
 
-        override fun onInternalServerError(error: ErrorEnum)
+        override fun onInternalServerError(error: ErrorCode)
         {
             super.onInternalServerError(error)
             postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")

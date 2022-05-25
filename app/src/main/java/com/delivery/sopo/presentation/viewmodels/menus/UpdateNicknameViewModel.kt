@@ -7,7 +7,7 @@ import com.delivery.sopo.bindings.FocusChangeCallback
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
 import com.delivery.sopo.data.repositories.remote.user.UserRemoteRepository
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.ResponseResult
@@ -52,17 +52,17 @@ class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository,
 
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
-        override fun onFailure(error: ErrorEnum)
+        override fun onFailure(error: ErrorCode)
         { // TODO 발생하는 에러가 있을까?
             //            postErrorSnackBar("로그인에 실패했습니다.")
         }
 
-        override fun onLoginError(error: ErrorEnum)
+        override fun onLoginError(error: ErrorCode)
         {
             super.onLoginError(error)
         }
 
-        override fun onInternalServerError(error: ErrorEnum)
+        override fun onInternalServerError(error: ErrorCode)
         {
             super.onInternalServerError(error)
             postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")

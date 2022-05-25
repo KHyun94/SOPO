@@ -1,6 +1,6 @@
 package com.delivery.sopo.data.resources.user.local
 
-import com.delivery.sopo.data.repositories.local.user.UserSharedPrefHelper
+import com.delivery.sopo.data.database.shared.UserSharedPrefHelper
 import com.delivery.sopo.enums.SettingEnum
 import com.delivery.sopo.models.PersonalMessage
 

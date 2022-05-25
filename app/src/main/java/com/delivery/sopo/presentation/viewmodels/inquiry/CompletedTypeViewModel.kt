@@ -2,9 +2,9 @@ package com.delivery.sopo.presentation.viewmodels.inquiry
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.data.repositories.local.repository.CompletedParcelHistoryRepoImpl
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
@@ -30,13 +30,13 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
         get() = _completeList
 
     // 배송완료 조회 가능한 'Calendar'
-    val histories: LiveData<List<CompletedParcelHistory>>
+    val histories: LiveData<List<DeliveredParcelHistory>>
         get() = historyRepo.getAllAsLiveData()
 
     var isMonthClickable: Boolean = true
 
     val yearOfCalendar = MutableLiveData<String>().apply { postValue(DateUtil.getCurrentYear()) }
-    val monthsOfCalendar = MutableLiveData<List<SelectItem<CompletedParcelHistory>>>()
+    val monthsOfCalendar = MutableLiveData<List<SelectItem<DeliveredParcelHistory>>>()
     val selectedDate = MutableLiveData<String>()
 
     private lateinit var pagingManagement: PagingManagement
@@ -176,33 +176,33 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
 
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
-        override fun onRegisterParcelError(error: ErrorEnum)
+        override fun onRegisterParcelError(error: ErrorCode)
         {
             super.onRegisterParcelError(error)
 
             postErrorSnackBar(error.message)
         }
 
-        override fun onFailure(error: ErrorEnum)
+        override fun onFailure(error: ErrorCode)
         {
             postErrorSnackBar("알 수 없는 이유로 등록에 실패했습니다.[${error.toString()}]")
         }
 
-        override fun onInternalServerError(error: ErrorEnum)
+        override fun onInternalServerError(error: ErrorCode)
         {
             super.onInternalServerError(error)
 
             postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
         }
 
-        override fun onAuthError(error: ErrorEnum)
+        override fun onAuthError(error: ErrorCode)
         {
             super.onAuthError(error)
 
             postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
         }
 
-        override fun onDuplicateError(error: ErrorEnum)
+        override fun onDuplicateError(error: ErrorCode)
         {
             super.onDuplicateError(error)
             moveDuplicated()

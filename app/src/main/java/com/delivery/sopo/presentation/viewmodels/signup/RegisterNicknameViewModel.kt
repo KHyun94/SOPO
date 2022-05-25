@@ -4,7 +4,7 @@ import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.bindings.FocusChangeCallback
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
@@ -39,18 +39,18 @@ class RegisterNicknameViewModel(private val updateNicknameUseCase: UpdateNicknam
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
 
-        override fun onFailure(error: ErrorEnum)
+        override fun onFailure(error: ErrorCode)
         {
         }
 
-        override fun onInternalServerError(error: ErrorEnum)
+        override fun onInternalServerError(error: ErrorCode)
         {
             super.onInternalServerError(error)
 
             postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
         }
 
-        override fun onAuthError(error: ErrorEnum)
+        override fun onAuthError(error: ErrorCode)
         {
             super.onAuthError(error)
         }

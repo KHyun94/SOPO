@@ -10,11 +10,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.delivery.sopo.SOPOApp
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.SOPOApplication
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.exceptions.InternalServerException
-import com.delivery.sopo.exceptions.OAuthException
 import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.domain.usecase.user.token.LogoutUseCase
@@ -59,36 +58,36 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
             {
                 is SOPOApiException ->
                 {
-                    val errorCode = ErrorEnum.getErrorCode(exception.getError().code).apply {
-                        message = exception.getError().message
+                    val errorCode = ErrorCode.getCode(exception.error.code).apply {
+                        message = exception.error.message
                     }
 
                     SopoLog.e("SOPO API Error $errorCode", exception)
 
                     when(errorCode)
                     {
-                        ErrorEnum.ALREADY_REGISTERED_PARCEL, ErrorEnum.OVER_REGISTERED_PARCEL, ErrorEnum.PARCEL_BAD_REQUEST -> onSOPOErrorCallback.onRegisterParcelError(errorCode)
-                        ErrorEnum.ALREADY_REGISTERED_USER -> onSOPOErrorCallback.onAlreadyRegisteredUser(errorCode)
-                        ErrorEnum.PARCEL_NOT_FOUND -> onSOPOErrorCallback.onInquiryParcelError(errorCode)
-                        ErrorEnum.AUTHENTICATION_FAIL ->
+                        ErrorCode.ALREADY_REGISTERED_PARCEL, ErrorCode.OVER_REGISTERED_PARCEL, ErrorCode.PARCEL_BAD_REQUEST -> onSOPOErrorCallback.onRegisterParcelError(errorCode)
+                        ErrorCode.ALREADY_REGISTERED_USER -> onSOPOErrorCallback.onAlreadyRegisteredUser(errorCode)
+                        ErrorCode.PARCEL_NOT_FOUND -> onSOPOErrorCallback.onInquiryParcelError(errorCode)
+                        ErrorCode.AUTHENTICATION_FAIL ->
                         { // 서버에 유저 토큰이 없거나, 내부에 저장된 토큰이 없는 경우
                         }
-                        ErrorEnum.INVALID_JWT_TOKEN ->
+                        ErrorCode.INVALID_JWT_TOKEN ->
                         { // Refresh Token이 잘못된 경우
                         }
-                        ErrorEnum.USER_NOT_FOUND ->
+                        ErrorCode.USER_NOT_FOUND ->
                         { // 존재하지 않은 계정
                         }
-                        ErrorEnum.INVALID_USER ->
+                        ErrorCode.INVALID_USER ->
                         { // 아이디 or 패스워드가 틀렸을 때 And 탈퇴한 회원이 요청했을 때 ?
                             onSOPOErrorCallback.onLoginError(errorCode)
                         }
-                        ErrorEnum.DUPLICATE_LOGIN ->
+                        ErrorCode.DUPLICATE_LOGIN ->
                         { // 중복 로그인
                             logoutUseCase.invoke()
                             moveDuplicated()
                         }
-                        ErrorEnum.INVALID_TOKEN ->
+                        ErrorCode.INVALID_TOKEN ->
                         { // access or refresh Token이 만료
                         }
                         else -> onSOPOErrorCallback.onFailure(errorCode)
@@ -119,12 +118,12 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
                 is InternalServerException ->
                 {
                     val errorCode =
-                        ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
+                        ErrorCode.getCode(exception.getErrorResponse().code).apply {
                             message = exception.getErrorResponse().message
                         }
                     SopoLog.e("InternalServerException API Error $errorCode", exception)
 
-                    if(errorCode == ErrorEnum.FAIL_TO_SEARCH_PARCEL)
+                    if(errorCode == ErrorCode.FAIL_TO_SEARCH_PARCEL)
                     {
                         return@CoroutineExceptionHandler onSOPOErrorCallback.onInquiryParcelError(errorCode)
                     }
@@ -133,7 +132,7 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
                 }
                 else ->
                 {
-                    onSOPOErrorCallback.onFailure(ErrorEnum.UNKNOWN_ERROR)
+                    onSOPOErrorCallback.onFailure(ErrorCode.UNKNOWN_ERROR)
                 }
             }
         }
@@ -183,7 +182,7 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
 
     fun checkNetworkStatus(): Boolean
     {
-        val networkStatus = getConnectivityStatus(SOPOApp.INSTANCE)
+        val networkStatus = getConnectivityStatus(SOPOApplication.INSTANCE)
 
         if(networkStatus != NetworkStatus.NOT_CONNECT)
         {
@@ -193,7 +192,7 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
 
         startToCheckNetworkStatus()
 
-        SOPOApp.networkStatus.postValue(networkStatus)
+        SOPOApplication.networkStatus.postValue(networkStatus)
 
         return false
     }

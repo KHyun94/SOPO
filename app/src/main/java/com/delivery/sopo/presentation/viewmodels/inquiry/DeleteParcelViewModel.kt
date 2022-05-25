@@ -3,12 +3,12 @@ package com.delivery.sopo.presentation.viewmodels.inquiry
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.lifecycle.*
-import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.data.repositories.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.enums.InquiryStatusEnum
 import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize
@@ -69,13 +69,13 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
         get() = _completeList
 
     // 배송완료 조회 가능한 'Calendar'
-    val histories: LiveData<List<CompletedParcelHistory>>
+    val histories: LiveData<List<DeliveredParcelHistory>>
         get() = historyRepo.getAllAsLiveData()
 
     var isMonthClickable: Boolean = true
 
     val yearOfCalendar = MutableLiveData<String>().apply { postValue("2021") }
-    val monthsOfCalendar = MutableLiveData<List<SelectItem<CompletedParcelHistory>>>()
+    val monthsOfCalendar = MutableLiveData<List<SelectItem<DeliveredParcelHistory>>>()
     val selectedDate = MutableLiveData<String>()
 
     private var pagingManagement = PagingManagement(0, "", true)
@@ -148,7 +148,7 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
                     false
                 }
 
-                SelectItem<CompletedParcelHistory>(item = it, isSelect = isSelected)
+                SelectItem<DeliveredParcelHistory>(item = it, isSelect = isSelected)
             }
         }
         monthsOfCalendar.postValue(histories)
@@ -311,26 +311,26 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
 
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
-        override fun onRegisterParcelError(error: ErrorEnum)
+        override fun onRegisterParcelError(error: ErrorCode)
         {
             super.onRegisterParcelError(error)
 
             postErrorSnackBar(error.message)
         }
 
-        override fun onFailure(error: ErrorEnum)
+        override fun onFailure(error: ErrorCode)
         {
             postErrorSnackBar("알 수 없는 이유로 등록에 실패했습니다.[${error.toString()}]")
         }
 
-        override fun onInternalServerError(error: ErrorEnum)
+        override fun onInternalServerError(error: ErrorCode)
         {
             super.onInternalServerError(error)
 
             postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
         }
 
-        override fun onAuthError(error: ErrorEnum)
+        override fun onAuthError(error: ErrorCode)
         {
             super.onAuthError(error)
 

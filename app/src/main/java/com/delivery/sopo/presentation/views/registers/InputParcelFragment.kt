@@ -127,17 +127,11 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
             vm.validity[res.first] = res.second
         }
 
-        when(returnType)
-        {
-            ReturnType.COMPLETE_REGISTER_PARCEL ->
-            {
-                
-                CustomSnackBar(mainLayout, "네트워크 오류입니다.", 600000, SnackBarEnum.ERROR)
-            }
-            else -> return
-        }
+
 
         vm.waybillNum.observe(this) { waybillNum ->
+
+            SopoLog.d("WaybillNum :: $waybillNum")
 
             if(waybillNum.isEmpty()) return@observe
             vm.clipboardText.value = ""
@@ -191,6 +185,16 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
                     FragmentManager.move(motherView, TabCode.REGISTER_CONFIRM, RegisterMainFragment.viewId)
                 }
             }
+        }
+
+        when(returnType)
+        {
+            ReturnType.COMPLETE_REGISTER_PARCEL ->
+            {
+
+                CustomSnackBar(mainLayout, "네트워크 오류입니다.", 600000, SnackBarEnum.ERROR)
+            }
+            else -> return
         }
     }
 

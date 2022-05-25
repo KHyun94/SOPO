@@ -45,7 +45,7 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
     fun getCompleteDateTime(): String
     {
         val now = System.currentTimeMillis()
-        val target = completedArrivalDte?.time?: return "업데이트 일자 확인 불가"
+        val target = ongoingAuditDte?.time?: return "업데이트 일자 확인 불가"
 
         val diffMillis = (now - target)
         val diffHour = diffMillis / (1000 * 60 * 60)

@@ -3,7 +3,7 @@ package com.delivery.sopo.services
 import android.content.Intent
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.NotificationEnum
-import com.delivery.sopo.data.networks.dto.FcmPushDTO
+import com.delivery.sopo.data.models.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
 import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository

@@ -3,7 +3,7 @@ package com.delivery.sopo.data.database.room.dto
 import com.delivery.sopo.util.TimeUtil
 import com.google.gson.annotations.SerializedName
 
-data class CompletedParcelHistory(
+data class DeliveredParcelHistory(
         @SerializedName("time")
         val date: String,
         @SerializedName("count")

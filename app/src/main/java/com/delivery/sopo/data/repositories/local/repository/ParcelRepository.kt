@@ -3,13 +3,13 @@ package com.delivery.sopo.data.repositories.local.repository
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.delivery.sopo.data.database.room.AppDatabase
-import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.data.networks.NetworkManager
-import com.delivery.sopo.data.networks.serivces.ParcelAPI
+import com.delivery.sopo.data.networks.serivces.ParcelService
 
 import com.delivery.sopo.data.repositories.local.datasource.ParcelDataSource
 import com.delivery.sopo.enums.NetworkEnum
@@ -136,7 +136,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
 
     suspend fun registerParcel(parcel: Parcel.Register): Int
     {
-        val registerParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).registerParcel(register = parcel)
+        val registerParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java).registerParcel(parcelRegister = parcel)
         val result = apiCall { registerParcel }
         return result.data?.data ?: throw NullPointerException()
     }
@@ -144,7 +144,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     suspend fun getRemoteParcelById(parcelId: Int): Parcel.Common
     {
         val getRemoteParcel =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcel(parcelId = parcelId)
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java).fetchParcelById(parcelId = parcelId)
         val result = apiCall { getRemoteParcel }
         return result.data?.data ?: throw NullPointerException()
     }
@@ -152,7 +152,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     suspend fun getRemoteParcelById(parcelIds: List<Int>): List<Parcel.Common>
     {
         if(parcelIds.isEmpty()) return emptyList()
-        val getRemoteParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java).getParcels(parcelId = parcelIds.joinToString(", "))
+        val getRemoteParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java).fetchParcelById(parcelId = parcelIds.joinToString(", "))
         val result = apiCall { getRemoteParcel }
         return result.data?.data ?: emptyList()
     }
@@ -160,17 +160,17 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     override suspend fun getOngoingParcelsFromRemote(): List<Parcel.Common>
     {
         val getOngoingParcelsFromRemote =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
-                .getOngoingParcels()
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
+                .fetchOngoingParcels()
         val result = apiCall { getOngoingParcelsFromRemote }
         return result.data?.data ?: emptyList()
     }
 
-    override suspend fun getRemoteMonths(): List<CompletedParcelHistory>
+    override suspend fun getRemoteMonths(): List<DeliveredParcelHistory>
     {
         val getRemoteMonths =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
-                .getCompletedMonths()
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
+                .fetchDeliveredMonth()
         val result = apiCall { getRemoteMonths }
         return result.data?.data ?: emptyList()
     }
@@ -178,8 +178,8 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     override suspend fun getCompleteParcelsByRemote(page: Int, inquiryDate: String): List<Parcel.Common>
     {
         val getCompleteParcelsByRemote =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
-                .getCompletedParcelsByPaging(page = page, inquiryDate = inquiryDate)
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
+                .fetchDeliveredParcelsByPaging(page = page, inquiryDate = inquiryDate)
         val result = apiCall { getCompleteParcelsByRemote }
         return result.data?.data ?: emptyList()
     }
@@ -188,7 +188,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     {
         val wrapParcelIds = parcelIds.wrapBodyAliasToHashMap<List<Int>>("parcelIds")
         val reportParcelStatus =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
                 .reportParcelStatus(wrapParcelIds)
         apiCall { reportParcelStatus }
     }
@@ -201,7 +201,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
         val wrapParcelAlias = mapOf<String, String>(Pair("alias", parcelAlias))
 
         val updateParcelAlias =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
                 .updateParcelAlias(parcelId, wrapParcelAlias)
         apiCall { updateParcelAlias }
     }
@@ -209,6 +209,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     /**
      * 택배 삭제 관련
      */
+/*
 
     suspend fun getDeletableParcelIds(): List<Int> = withContext(Dispatchers.Default) {
         return@withContext appDatabase.parcelDao()
@@ -226,12 +227,13 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
 
             update(*updateParcelsByDelete.toTypedArray())
         }
+*/
 
     suspend fun deleteRemoteParcels(parcelIds: List<Int>)
     {
         val wrapBody = parcelIds.wrapBodyAliasToHashMap("parcelIds")
         val deleteParcels =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
                 .deleteParcels(parcelIds = wrapBody)
         apiCall { deleteParcels }
     }
@@ -243,8 +245,8 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     suspend fun requestParcelsForRefresh(): NetworkResponse<APIResult<String>>
     {
         val result =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
-                .requestParcelsForRefresh()
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
+                .requestParcelsRefresh()
         return apiCall { result }
     }
 
@@ -252,8 +254,8 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     {
         val wrapBody = parcelId.wrapBodyAliasToMap("parcelId")
         val result =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelAPI::class.java)
-                .requestParcelForRefresh(parcelId = wrapBody)
+            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
+                .requestParcelsUpdate(parcelId = wrapBody)
         return apiCall { result }.data?.data ?: throw NullPointerException("택배 데이터가 조회되지 않습니다.")
     }
 }

@@ -1,6 +1,6 @@
 package com.delivery.sopo.models.api
 
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.enums.ErrorType
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
@@ -16,7 +16,7 @@ data class Error(
     {
         fun makeError(errorCode: Int): Error
         {
-            val errorEnum = enumValues<ErrorEnum>().firstOrNull { it.code == errorCode } ?: ErrorEnum.SYSTEM_ERROR
+            val errorEnum = enumValues<ErrorCode>().firstOrNull { it.code == errorCode } ?: ErrorCode.SYSTEM_ERROR
             return Error(errorCode, errorEnum.errorType, errorEnum.message, "")
         }
     }

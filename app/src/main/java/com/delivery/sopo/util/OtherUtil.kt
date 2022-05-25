@@ -6,7 +6,7 @@ import android.provider.Settings
 import android.util.TypedValue
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.DrawableRes
-import com.delivery.sopo.SOPOApp
+import com.delivery.sopo.SOPOApplication
 import java.io.File
 
 
@@ -27,7 +27,7 @@ object OtherUtil
     {
         val typedValue = TypedValue()
 
-        SOPOApp.INSTANCE.resources.getValue(res, typedValue, true)
+        SOPOApplication.INSTANCE.resources.getValue(res, typedValue, true)
 
         val tmp = typedValue.string.toString()
 

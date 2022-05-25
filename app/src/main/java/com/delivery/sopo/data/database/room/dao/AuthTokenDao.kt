@@ -17,7 +17,4 @@ interface AuthTokenDao
 
     @Delete
     fun delete(authToken : AuthTokenEntity)
-
-    @Query("DELETE FROM AUTH_TOKEN")
-    fun getAndDrop()
 }

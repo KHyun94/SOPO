@@ -1,6 +1,6 @@
 package com.delivery.sopo.domain.usecase.parcel.remote
 
-import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.data.repositories.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.models.mapper.CompletedParcelHistoryMapper
@@ -10,7 +10,7 @@ import kotlinx.coroutines.withContext
 
 class GetCompletedMonthUseCase(private val parcelRepo: ParcelRepository, private val historyRepo: CompletedParcelHistoryRepoImpl)
 {
-    suspend operator fun invoke(): List<CompletedParcelHistory> = withContext(Dispatchers.IO) {
+    suspend operator fun invoke(): List<DeliveredParcelHistory> = withContext(Dispatchers.IO) {
             SopoLog.i("호출")
 
             val histories = parcelRepo.getRemoteMonths()

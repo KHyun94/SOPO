@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepoImpl
-import com.delivery.sopo.enums.ErrorEnum
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
@@ -114,31 +114,31 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase, priva
 
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
-        override fun onRegisterParcelError(error: ErrorEnum)
+        override fun onRegisterParcelError(error: ErrorCode)
         {
             super.onRegisterParcelError(error)
 
             postErrorSnackBar(error.message)
         }
 
-        override fun onFailure(error: ErrorEnum)
+        override fun onFailure(error: ErrorCode)
         {
             postErrorSnackBar("알 수 없는 이유로 등록에 실패했습니다.[${error.toString()}]")
         }
 
-        override fun onInternalServerError(error: ErrorEnum)
+        override fun onInternalServerError(error: ErrorCode)
         {
             super.onInternalServerError(error)
             postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
         }
 
-        override fun onAuthError(error: ErrorEnum)
+        override fun onAuthError(error: ErrorCode)
         {
             super.onAuthError(error)
             postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
         }
 
-        override fun onDuplicateError(error: ErrorEnum)
+        override fun onDuplicateError(error: ErrorCode)
         {
             super.onDuplicateError(error)
             moveDuplicated()

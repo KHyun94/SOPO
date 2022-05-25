@@ -1,13 +1,14 @@
 package com.delivery.sopo.data.networks.serivces
 
-import com.delivery.sopo.data.database.room.dto.CompletedParcelHistory
+import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.parcel.Parcel
 import retrofit2.Response
+import retrofit2.Retrofit
 import retrofit2.http.*
 
-interface ParcelAPI
+interface ParcelService
 {
     /**
      * 단일 택배 등록 요청
@@ -18,7 +19,7 @@ interface ParcelAPI
      */
     @POST("api/v1/sopo-parcel/delivery/parcel")
     @Headers("Accept: application/json")
-    suspend fun registerParcel(@Body register: Parcel.Register): Response<APIResult<Int>>
+    suspend fun registerParcel(@Body parcelRegister: Parcel.Register): Response<APIResult<Int>>
 
     /**
      * 단일 택배 정보 요청
@@ -27,25 +28,25 @@ interface ParcelAPI
      */
     @GET("/api/v1/sopo-parcel/delivery/parcel/{parcelId}")
     @Headers("Accept: application/json")
-    suspend fun getParcel(@Path("parcelId") parcelId: Int): Response<APIResult<Parcel.Common>>
+    suspend fun fetchParcelById(@Path("parcelId") parcelId: Int): Response<APIResult<Parcel.Common>>
 
     @GET("/api/v1/sopo-parcel/delivery/parcels")
     @Headers("Accept: application/json")
-    suspend fun getParcels(@Query("parcel") parcelId: String): Response<APIResult<List<Parcel.Common>>>
+    suspend fun fetchParcelById(@Query("parcel") parcelId: String): Response<APIResult<List<Parcel.Common>>>
 
     @GET("api/v1/sopo-parcel/delivery/parcels/months")
     @Headers("Accept: application/json")
-    suspend fun getCompletedMonths(): Response<APIResult<List<CompletedParcelHistory>>>
+    suspend fun fetchDeliveredMonth(): Response<APIResult<List<DeliveredParcelHistory>>>
 
     // 배송중 & 곧 도착 리스트 가져오는 api
     @GET("api/v1/sopo-parcel/delivery/parcels/ongoing")
     @Headers("Accept: application/json")
-    suspend fun getOngoingParcels(): Response<APIResult<List<Parcel.Common>>>
+    suspend fun fetchOngoingParcels(): Response<APIResult<List<Parcel.Common>>>
 
     // '배송완료' 리스트 가져오는 api
     @GET("api/v1/sopo-parcel/delivery/parcels/complete")
     @Headers("Accept: application/json")
-    suspend fun getCompletedParcelsByPaging(@Query("page") page: Int, @Query("itemCnt") itemCnt: Int = 10, @Query("inquiryDate") inquiryDate: String): Response<APIResult<List<Parcel.Common>>>
+    suspend fun fetchDeliveredParcelsByPaging(@Query("page") page: Int, @Query("itemCnt") itemCnt: Int = 50, @Query("inquiryDate") inquiryDate: String): Response<APIResult<List<Parcel.Common>>>
 
     @HTTP(method = "DELETE", path = "api/v1/sopo-parcel/delivery/parcels", hasBody = true)
     @Headers("Accept: application/json")
@@ -63,7 +64,7 @@ interface ParcelAPI
      */
     @POST("/api/v1/sopo-parcel/delivery/parcels/refresh")
     @Headers("Accept: application/json")
-    suspend fun requestParcelsForRefresh(): Response<APIResult<String>>
+    suspend fun requestParcelsRefresh(): Response<APIResult<String>>
 
     /**
      * 택배 리스트 단일 업데이트 요청
@@ -76,9 +77,10 @@ interface ParcelAPI
      */
     @POST("/api/v1/sopo-parcel/delivery/parcel/refresh")
     @Headers("Accept: application/json")
-    suspend fun requestParcelForRefresh(@Body parcelId: Map<String, Int>): Response<APIResult<Parcel.Updatable>>
+    suspend fun requestParcelsUpdate(@Body parcelId: Map<String, Int>): Response<APIResult<Parcel.Updatable>>
 
     @POST("/api/v1/sopo-parcel/delivery/parcel/reporting")
     @Headers("Accept: application/json")
     suspend fun reportParcelStatus(@Body parcelIds: HashMap<String, List<Int>>): Response<Unit>
+
 }
