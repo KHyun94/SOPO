@@ -3,25 +3,25 @@ package com.delivery.sopo.presentation.viewmodels.signup
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
+import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.domain.usecase.user.token.LoginUseCase
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import kotlinx.coroutines.launch
 
-class SignUpCompleteViewModel(private val loginUseCase: LoginUseCase, private val userLocalRepo: UserLocalRepository):
+class SignUpCompleteViewModel(private val loginUseCase: LoginUseCase, private val userDataSource: UserDataSource):
         BaseViewModel()
 {
-  val email = MutableLiveData<String>().also {
-    it.postValue(userLocalRepo.getUserId())
-  }
+    val email = MutableLiveData<String>().also {
+        it.postValue(userDataSource.getUsername())
+    }
 
-  private val _navigator = MutableLiveData<String>()
-  val navigator: LiveData<String>
-    get() = _navigator
+    private val _navigator = MutableLiveData<String>()
+    val navigator: LiveData<String>
+        get() = _navigator
 
-  fun postNavigator(navigator: String){ _navigator.postValue(navigator) }
+    fun postNavigator(navigator: String){ _navigator.postValue(navigator) }
 
   override var onSOPOErrorCallback = object: OnSOPOErrorCallback
   {
@@ -64,24 +64,24 @@ class SignUpCompleteViewModel(private val loginUseCase: LoginUseCase, private va
     }
   }
 
-  fun onCompleteClicked()
-  {
-    requestLogin(userLocalRepo.getUserId(), userLocalRepo.getUserPassword())
-  }
-
-  private fun requestLogin(userName: String, password: String) = scope.launch(coroutineExceptionHandler) {
-    try
+    fun onCompleteClicked()
     {
-      onStartLoading()
-
-      loginUseCase.invoke(userName, password)
-
-      postNavigator(NavigatorConst.TO_MAIN)
-    }
-    finally
-    {
-      onStopLoading()
+        requestLogin(userDataSource.getUsername(), userDataSource.getUserPassword())
     }
 
-  }
+    private fun requestLogin(userName: String, password: String) = scope.launch(coroutineExceptionHandler) {
+        try
+        {
+            onStartLoading()
+
+            loginUseCase.invoke(userName, password)
+
+            postNavigator(NavigatorConst.TO_MAIN)
+        }
+        finally
+        {
+            onStopLoading()
+        }
+
+    }
 }
