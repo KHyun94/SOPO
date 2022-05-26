@@ -35,6 +35,11 @@ class ParcelStatusDataSourceImpl(private val parcelStatusDao: ParcelStatusDAO): 
         parcelStatusDao.delete(entities)
     }
 
+    override fun isUnidentified(parcelId: Int): Boolean
+    {
+        return parcelStatusDao.getUnidentifiedStatus(parcelId = parcelId) == 1
+    }
+
     override fun getById(parcelId:Int): Parcel.Status
     {
         val entity = parcelStatusDao.getById(parcelId)?: ParcelMapper.parcelStatusObjectToEntity(Parcel.Status(parcelId = parcelId))
@@ -74,7 +79,7 @@ class ParcelStatusDataSourceImpl(private val parcelStatusDao: ParcelStatusDAO): 
 
     // 업데이트 미확인 체크용도
     override suspend fun getUnidentifiedStatus(parcelId:Int): Int = withContext(Dispatchers.Default) {
-        parcelStatusDao.getUnidentifiedStatusByParcelId(parcelId = parcelId)
+        parcelStatusDao.getUnidentifiedStatus(parcelId = parcelId)
     }
 
     override suspend fun updateParcelStatuses(parcelStatus: List<Parcel.Status>){

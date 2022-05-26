@@ -34,9 +34,8 @@ class ParcelDataSourceImpl(private val parcelDao:ParcelDao):ParcelDataSource
         parcelDao.delete(entities)
     }
 
-    override fun getParcelById(parcelId: Int): Parcel.Common?
-    {
-        return parcelDao
+    override suspend fun getParcelById(parcelId: Int): Parcel.Common? = withContext(Dispatchers.Default) {
+        return@withContext parcelDao
             .getById(parcelId = parcelId)
             ?.run(ParcelMapper::parcelEntityToObject)
     }

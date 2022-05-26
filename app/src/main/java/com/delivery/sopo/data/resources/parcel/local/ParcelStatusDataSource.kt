@@ -12,6 +12,8 @@ interface ParcelStatusDataSource: BaseDataSource<Parcel.Status>
     override fun update(vararg data: Parcel.Status)
     override fun delete(vararg data: Parcel.Status)
 
+    fun isUnidentified(parcelId: Int): Boolean
+
     fun getIsDeleteCntLiveData(): LiveData<Int>
     fun getIsUpdateCntLiveData(): LiveData<Int>
     fun getIsDeliveredCntLiveData(): LiveData<Int>

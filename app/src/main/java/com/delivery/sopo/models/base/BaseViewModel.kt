@@ -27,8 +27,6 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
 {
     private val logoutUseCase: LogoutUseCase by inject()
 
-    protected val scope: CoroutineScope = (viewModelScope + SupervisorJob())
-
     var onSnackClickListener: Pair<CharSequence, OnSnackBarClickListener>? = null
 
     private val _isClickEvent = MutableLiveData<Boolean>()
@@ -136,6 +134,8 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
                 }
             }
         }
+
+    protected val scope: CoroutineScope = (viewModelScope + SupervisorJob() + coroutineExceptionHandler)
 
     fun checkEventStatus(checkNetwork: Boolean = false, delayMillisecond: Long = 100, event: () -> Unit)
     {

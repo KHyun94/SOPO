@@ -10,7 +10,6 @@ import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
 import com.delivery.sopo.data.database.shared.UserSharedPrefHelper
 import com.delivery.sopo.data.networks.APIClient
-import com.delivery.sopo.data.networks.serivces.ParcelService
 import com.delivery.sopo.data.repositories.parcels.ParcelRepositoryImpl
 import com.delivery.sopo.data.repositories.remote.user.UserRemoteRepository
 import com.delivery.sopo.data.repositories.user.SignupRepository
@@ -75,9 +74,10 @@ val dbModule = module {
 val apiModule = module {
     single { APIClient.provideCache(application = androidApplication()) }
     single { APIClient.getHttpLoggingInterceptor() }
+    single { APIClient.getTokenAuthenticator(get()) }
 
-    single(named("PublicOkHttpClient")) { APIClient.providePublicOkHttpClient(cache = get()) }
-    single(named("PrivateOkHttpClient")) { APIClient.providePrivateOkHttpClient(cache = get(), authDataSource = get()) }
+    single(named("PublicOkHttpClient")) { APIClient.providePublicOkHttpClient(cache = get(), loggingInterceptor = get()) }
+    single(named("PrivateOkHttpClient")) { APIClient.providePrivateOkHttpClient(cache = get(), loggingInterceptor = get(), authDataSource = get(), authenticator = get()) }
 
     single(named("PublicAccess")) { APIClient.provideRetrofit(get(named("PublicOkHttpClient"))) }
     single(named("PrivateAccess")) { APIClient.provideRetrofit(get(named("PrivateOkHttpClient"))) }
@@ -132,7 +132,7 @@ val useCaseModule = module {
     factory { RegisterParcelUseCase(parcelRepository = get()) }
     factory { GetCompleteParcelUseCase(get(), get()) }
     factory { GetCompletedMonthUseCase(get(), get()) }
-    factory { RefreshParcelUseCase(get()) }
+    factory { UpdateParcelUseCase(get()) }
     factory { RefreshParcelsUseCase(get()) }
 
     factory { UpdateParcelAliasUseCase(get()) }
@@ -173,7 +173,7 @@ val viewModelModule = module {
     viewModel { OngoingTypeViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { CompletedTypeViewModel(get(), get(), get(), get()) }
     viewModel { MenuMainViewModel() }
-    viewModel { ParcelDetailViewModel(get(), get(), get(), get(), get()) }
+    viewModel { ParcelDetailViewModel(get(), get()) }
 
     viewModel { InputParcelViewModel(get()) }
     viewModel { SelectCarrierViewModel(get()) }

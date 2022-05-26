@@ -16,7 +16,7 @@ interface ParcelDataSource:BaseDataSource<Parcel.Common>
     override fun insert(vararg data: Parcel.Common)
     override fun update(vararg data: Parcel.Common)
 
-    fun getParcelById(parcelId: Int): Parcel.Common?
+    suspend fun getParcelById(parcelId: Int): Parcel.Common?
     fun hasLocalParcel(parcel: Parcel.Common): Boolean
     fun getNotExistParcels(parcels: List<Parcel.Common>): List<Parcel.Common>
 

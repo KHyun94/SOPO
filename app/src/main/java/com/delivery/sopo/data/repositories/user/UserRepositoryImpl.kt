@@ -43,7 +43,7 @@ class UserRepositoryImpl(
 
         authDataSource.insert(token = tokenInfo)
 
-        return tokenInfo.refreshToken
+        return tokenInfo.accessToken
     }
 
     override suspend fun fetchUserInfo()

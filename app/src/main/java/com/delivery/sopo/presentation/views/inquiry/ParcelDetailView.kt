@@ -39,10 +39,12 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     override val mainLayout: View by lazy { binding.relativeMainInquiryDetail }
     override val vm: ParcelDetailViewModel by viewModel()
 
+    var parcelId: Int = 0
+
     override fun receiveData(bundle: Bundle)
     {
         super.receiveData(bundle)
-        vm.parcelId = bundle.getInt(PARCEL_ID)
+        parcelId = (bundle.getInt(PARCEL_ID))
     }
 
     override fun setBeforeBinding()
@@ -72,7 +74,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     {
         super.setAfterBinding()
 
-        vm.requestParcelDetail()
+        vm.requestParcelDetail(parcelId)
 
         setListener()
 

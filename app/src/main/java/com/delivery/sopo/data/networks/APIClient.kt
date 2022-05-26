@@ -4,6 +4,7 @@ import android.app.Application
 import com.delivery.sopo.BuildConfig
 import com.delivery.sopo.data.networks.interceptors.AuthInterceptor
 import com.delivery.sopo.data.networks.serivces.ParcelService
+import com.delivery.sopo.data.repositories.user.UserRepository
 import com.delivery.sopo.data.resources.auth.local.AuthDataSource
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
@@ -38,10 +39,10 @@ object APIClient
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
     }
-    fun providePublicOkHttpClient(cache: Cache): OkHttpClient
+    fun providePublicOkHttpClient(cache: Cache,loggingInterceptor: HttpLoggingInterceptor): OkHttpClient
     {
         return OkHttpClient().newBuilder().apply {
-            addInterceptor(getHttpLoggingInterceptor())
+            addInterceptor(loggingInterceptor)
             connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
             writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
             readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
@@ -50,7 +51,7 @@ object APIClient
         }.build()
     }
 
-    fun providePrivateOkHttpClient(cache: Cache, authDataSource: AuthDataSource): OkHttpClient
+    fun providePrivateOkHttpClient(cache: Cache, authenticator: TokenAuthenticator, loggingInterceptor: HttpLoggingInterceptor, authDataSource: AuthDataSource): OkHttpClient
     {
         return OkHttpClient().newBuilder().apply {
             connectTimeout(timeout = CONNECT_TIMEOUT, unit = TimeUnit.SECONDS)
@@ -58,9 +59,9 @@ object APIClient
             readTimeout(timeout = READ_TIMEOUT, unit = TimeUnit.SECONDS)
             cache(cache = cache)
             followRedirects(followRedirects = false)
-            addInterceptor(interceptor = getHttpLoggingInterceptor())
+            addInterceptor(interceptor = loggingInterceptor)
             addInterceptor(interceptor = getAuthInterceptor(authDataSource = authDataSource))
-            authenticator(authenticator = getTokenAuthenticator())
+            authenticator(authenticator = authenticator)
         }.build()
     }
 
@@ -70,10 +71,16 @@ object APIClient
 
     fun getHttpLoggingInterceptor(): HttpLoggingInterceptor
     {
-        val interceptor = HttpLoggingInterceptor { message -> SopoLog.api(message) }
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
-        return interceptor
+        val httpLoggingInterceptor = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger{
+            override fun log(message: String)
+            {
+                SopoLog.api(message)
+            }
+        })
+
+        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        return httpLoggingInterceptor
     }
     fun getAuthInterceptor(authDataSource: AuthDataSource) = AuthInterceptor(authDataSource)
-    fun getTokenAuthenticator() = TokenAuthenticator()
+    fun getTokenAuthenticator(userRepository: UserRepository) = TokenAuthenticator(userRepository)
 }

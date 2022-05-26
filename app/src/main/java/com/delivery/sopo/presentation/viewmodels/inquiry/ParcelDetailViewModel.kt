@@ -7,7 +7,6 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
 import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepoImpl
-import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
@@ -16,18 +15,19 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.TimeLineProgress
 import com.delivery.sopo.domain.usecase.parcel.local.GetLocalParcelUseCase
-import com.delivery.sopo.domain.usecase.parcel.remote.RefreshParcelUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.UpdateParcelUseCase
 import com.delivery.sopo.util.CodeUtil
+import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.properties.Delegates
 
-class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUseCase, private val refreshParcelUseCase: RefreshParcelUseCase, private val carrierRepository: CarrierRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl):
+class ParcelDetailViewModel(
+                            private val updateParcelUseCase: UpdateParcelUseCase,
+                            private val carrierRepository: CarrierRepository):
         BaseViewModel()
 {
-    var parcelId by Delegates.notNull<Int>()
-
     // 상세 화면에서 사용할 데이터 객체
     private var _parcelDetail = MutableLiveData<Parcel.Detail>()
     val parcelDetail: LiveData<Parcel.Detail>
@@ -68,54 +68,29 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
         return deliveryStatuses
     }
 
-    fun requestParcelDetail(parcelId: Int = this.parcelId) = scope.launch(coroutineExceptionHandler) {
+    fun requestParcelDetail(parcelId: Int) = scope.launch{
 
-        updateUnidentifiedStatusToZero(parcelId = parcelId)
-        updateIsBeUpdate(parcelId = parcelId, status = StatusConst.DEACTIVATE)
+        SopoLog.d("requestParcelDetail(...) parcel id = $parcelId")
 
-        requestLocalParcel(parcelId)
-        requestRemoteParcel(parcelId = parcelId)
-    }
+        val localParcel = updateParcelUseCase.getLocalParcel(parcelId = parcelId)?: throw Exception("이 시발 여기냐 섭라")
+        SopoLog.d("Local Parcel $localParcel")
+        val localParcelDetail = getParcelDetail(localParcel)
+        _parcelDetail.postValue(localParcelDetail)
 
-    // 로컬에 저장된 택배 인포를 로드
-    private suspend fun requestLocalParcel(parcelId: Int) = withContext(coroutineExceptionHandler) {
-        val parcel = getLocalParcelUseCase.invoke(parcelId = parcelId) ?: return@withContext
-        val parcelDetail = getParcelDetail(parcel = parcel)
+        if(localParcelDetail.deliverStatus == DeliveryStatusEnum.DELIVERED) return@launch
 
-        _parcelDetail.postValue(parcelDetail)
+        val remoteParcel = updateParcelUseCase(parcelId = parcelId)
+        SopoLog.d("Remote Parcel $remoteParcel")
+        if(localParcel.inquiryHash == remoteParcel.inquiryHash) return@launch
 
-        if(parcelDetail.deliverStatus == DeliveryStatusEnum.DELIVERED) return@withContext
-
-        val remoteParcel = refreshParcelUseCase.invoke(parcelId = parcelId)
-        val remoteParcelDetail = getParcelDetail(remoteParcel)
-
+        val remoteParcelDetail = getParcelDetail(localParcel)
         _parcelDetail.postValue(remoteParcelDetail)
     }
 
-    suspend fun requestRemoteParcel(parcelId: Int) = withContext(Dispatchers.IO) {
-
-
-    }
-
-    private suspend fun updateIsBeUpdate(parcelId: Int, status: Int) =
-        withContext(Dispatchers.Default) {
-            parcelManagementRepoImpl.updateUpdatableStatus(parcelId, status)
-        }
 
     fun onBackClicked()
     {
         postNavigator(NavigatorConst.TO_BACK_SCREEN)
-    }
-
-    /**
-     * isUnidentified 를 Activate -> Deactivate로 수정
-     * unidentified => 내부 DB에 업데이트는 되어있으나, 사용자가 확인하지 않은 상태
-     * */
-    suspend fun updateUnidentifiedStatusToZero(parcelId: Int) = withContext(Dispatchers.Default) {
-        parcelManagementRepoImpl.run {
-            val status = getUnidentifiedStatusByParcelId(parcelId)
-            if(status == StatusConst.ACTIVATE) parcelManagementRepoImpl.updateUnidentifiedStatusById(parcelId = parcelId, value = StatusConst.DEACTIVATE)
-        }
     }
 
     fun onDownClicked(): View.OnClickListener

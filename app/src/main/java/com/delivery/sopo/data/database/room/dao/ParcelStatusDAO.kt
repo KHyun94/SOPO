@@ -34,7 +34,7 @@ interface ParcelStatusDAO
     fun getUpdatableParcelIdsAsLiveData(): LiveData<List<Int>>
 
     @Query("SELECT unidentifiedStatus FROM PARCEL_STATUS WHERE PARCEL_ID = :parcelId")
-    fun getUnidentifiedStatusByParcelId(parcelId: Int) : Int
+    fun getUnidentifiedStatus(parcelId: Int) : Int
 
     @Query("UPDATE PARCEL_STATUS SET unidentifiedStatus = :value WHERE PARCEL_ID = :parcelId")
     fun updateIsUnidentified(parcelId:Int, value : Int) : Int

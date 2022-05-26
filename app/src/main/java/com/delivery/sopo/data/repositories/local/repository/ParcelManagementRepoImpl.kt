@@ -82,7 +82,7 @@ class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelMana
 
     // 업데이트 미확인 체크용도
     override suspend fun getUnidentifiedStatusByParcelId(parcelId:Int): Int = withContext(Dispatchers.Default) {
-        appDatabase.parcelManagementDao().getUnidentifiedStatusByParcelId(parcelId = parcelId)
+        appDatabase.parcelManagementDao().getUnidentifiedStatus(parcelId = parcelId)
     }
 
     suspend fun getDeletableParcelStatuses():List<Parcel.Status> = withContext(Dispatchers.Default){

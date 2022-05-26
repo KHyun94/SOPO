@@ -4,10 +4,17 @@ import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.data.database.room.entity.CompletedParcelHistoryEntity
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
 import com.delivery.sopo.data.database.room.entity.ParcelStatusEntity
+import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
+import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.extensions.fromJson
 import com.delivery.sopo.extensions.toJson
 import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.models.parcel.TimeLineProgress
 import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
+import com.delivery.sopo.util.CodeUtil
+import org.koin.core.KoinComponent
+import org.koin.core.inject
+import org.koin.java.KoinJavaComponent.inject
 
 object ParcelMapper
 {

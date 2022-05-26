@@ -20,8 +20,27 @@ class ParcelRepositoryImpl(private val parcelDataSource: ParcelDataSource, priva
         return parcel
     }
 
-    override suspend fun updateParcel(parcelId: String): Parcel.Common
+    override suspend fun getParcel(parcelId: Int): Parcel.Common?
     {
-        parcelStatusDataSource.getUnidentifiedStatus()
+        return parcelDataSource.getParcelById(parcelId)
+    }
+
+    override suspend fun updateParcel(parcelId: Int): Parcel.Common
+    {
+        val parcelUpdatable = parcelRemoteDataSource.requestParcelUpdate(parcelId = parcelId)
+        val parcel = parcelUpdatable.parcel
+
+        val parcelStatus = parcelStatusDataSource.getById(parcelId) ?: parcelStatusDataSource.makeParcelStatus(parcel = parcel)
+
+        parcelStatus.apply {
+            unidentifiedStatus = 0
+            updatableStatus = 0
+        }
+
+        if(!parcelUpdatable.updated) return parcel
+
+        parcelDataSource.update(parcel)
+
+        return parcel
     }
 }

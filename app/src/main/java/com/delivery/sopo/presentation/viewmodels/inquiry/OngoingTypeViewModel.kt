@@ -12,14 +12,14 @@ import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.domain.usecase.parcel.remote.DeleteParcelsUseCase
-import com.delivery.sopo.domain.usecase.parcel.remote.RefreshParcelUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.UpdateParcelUseCase
 import com.delivery.sopo.domain.usecase.parcel.remote.SyncParcelsUseCase
 import com.delivery.sopo.domain.usecase.parcel.remote.UpdateParcelAliasUseCase
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*
 
-class OngoingTypeViewModel(private val refreshParcelUseCase: RefreshParcelUseCase, private val syncParcelsUseCase: SyncParcelsUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val deleteParcelsUseCase: DeleteParcelsUseCase, private val parcelRepo: ParcelRepository, private val parcelManagementRepo: ParcelManagementRepoImpl):
+class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase, private val syncParcelsUseCase: SyncParcelsUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val deleteParcelsUseCase: DeleteParcelsUseCase, private val parcelRepo: ParcelRepository, private val parcelManagementRepo: ParcelManagementRepoImpl):
         BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
@@ -67,7 +67,7 @@ class OngoingTypeViewModel(private val refreshParcelUseCase: RefreshParcelUseCas
         }
 
     suspend fun refreshParcel(parcelId: Int) = withContext(coroutineExceptionHandler) {
-        refreshParcelUseCase.invoke(parcelId = parcelId)
+        updateParcelUseCase.invoke(parcelId = parcelId)
     }
 
     fun deleteParcel(parcelId: Int) = checkEventStatus(checkNetwork = true) {
