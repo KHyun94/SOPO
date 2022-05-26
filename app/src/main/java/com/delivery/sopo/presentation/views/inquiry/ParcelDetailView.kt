@@ -17,8 +17,7 @@ import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
 import com.delivery.sopo.enums.DeliveryStatusEnum
-import com.delivery.sopo.extensions.makeGone
-import com.delivery.sopo.extensions.makeVisible
+import com.delivery.sopo.extensions.*
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseFragment
@@ -32,21 +31,18 @@ import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.properties.Delegates
 
-
 class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewModel>()
 {
-    private val parentView: MainView by lazy { activity as MainView }
+    private val motherView: MainView by lazy { activity as MainView }
 
     override val layoutRes: Int = R.layout.parcel_detail_view
     override val mainLayout: View by lazy { binding.relativeMainInquiryDetail }
     override val vm: ParcelDetailViewModel by viewModel()
 
-    var parcelId by Delegates.notNull<Int>()
-
     override fun receiveData(bundle: Bundle)
     {
         super.receiveData(bundle)
-        parcelId = bundle.getInt(PARCEL_ID)
+        vm.parcelId = bundle.getInt(PARCEL_ID)
     }
 
     override fun setBeforeBinding()
@@ -61,14 +57,13 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             {
                 super.onBackPressed()
 
-                if(binding.layoutMain.panelState == PanelState.COLLAPSED)
+                if(binding.slidingMain.isCollapsed())
                 {
-                    requireActivity().supportFragmentManager.popBackStack()
+                    activity?.supportFragmentManager?.popBackStack()
+                    return
                 }
-                else
-                {
-                    binding.layoutMain.panelState = PanelState.COLLAPSED
-                }
+
+                binding.slidingMain.collapsed()
             }
         }
     }
@@ -77,7 +72,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     {
         super.setAfterBinding()
 
-        vm.requestParcelDetail(parcelId = parcelId)
+        vm.requestParcelDetail()
 
         setListener()
 
@@ -91,8 +86,6 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             {
                 _slideOffset = slideOffset
 
-                SopoLog.d("elevation => $elevation  | slideOffset $_slideOffset")
-
                 CoroutineScope(Dispatchers.Main).launch {
 
                     if(slideOffset == 0.0f)
@@ -101,7 +94,8 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                     }
                     else
                     {
-                        binding.includeSemi.constraintSubCardview.elevation = elevation - ((elevation / 3) * slideOffset * 10)
+                        binding.includeSemi.constraintSubCardview.elevation =
+                            elevation - ((elevation / 3) * slideOffset * 10)
                     }
 
 
@@ -143,16 +137,16 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             {
                 if(_slideOffset < 0.1 && previousState == PanelState.DRAGGING)
                 {
-                    binding.layoutMain.panelState = PanelState.COLLAPSED
+                    binding.slidingMain.collapsed()
                 }
                 else if(_slideOffset == 1.0f && previousState == PanelState.DRAGGING)
                 {
-                    binding.layoutMain.panelState = PanelState.EXPANDED
+                    binding.slidingMain.expanded()
                 }
             }
         }
 
-        binding.layoutMain.addPanelSlideListener(onPanelSlideListener)
+        binding.slidingMain.addPanelSlideListener(onPanelSlideListener)
     }
 
     override fun onDestroyView()
@@ -186,7 +180,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         super.setObserve()
 
         activity ?: return
-        parentView.getCurrentPage().observe(this) {
+        motherView.getCurrentPage().observe(this) {
             if(it != 1) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
@@ -196,14 +190,13 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             {
                 NavigatorConst.TO_BACK_SCREEN ->
                 {
-                    if(binding.layoutMain.panelState == PanelState.COLLAPSED)
+                    if(binding.slidingMain.isCollapsed())
                     {
                         FragmentManager.remove(requireActivity())
+                        return@observe
                     }
-                    else
-                    {
-                        binding.layoutMain.panelState = PanelState.COLLAPSED
-                    }
+
+                    binding.slidingMain.collapsed()
                 }
             }
 
@@ -211,7 +204,8 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
 
         vm.parcelDetail.observe(this) { parcelDetail ->
 
-            val adapter = TimeLineRecyclerViewAdapter().apply { setItemList(parcelDetail.timeLineProgresses) }
+            val adapter =
+                TimeLineRecyclerViewAdapter().apply { setItemList(parcelDetail.timeLineProgresses) }
 
             binding.setVariable(BR.timeLineAdapter, adapter)
 
@@ -227,9 +221,11 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     // 동적으로 indicator view 생성
     private fun setIndicatorView(baseLayout: LinearLayout, list: List<SelectItem<String>>, topView: View?, bottomView: View?)
     {
-        val inflater = requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val inflater =
+            requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
-        val linearParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+        val linearParams =
+            LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
 
         linearParams.leftMargin = SizeUtil.changeDpToPx(requireActivity(), 12.0f)
         linearParams.rightMargin = SizeUtil.changeDpToPx(requireActivity(), 12.0f)
@@ -240,10 +236,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         for(item in list)
         { // 해당 xml binding
 
-            if(item.item == DeliveryStatusEnum.NOT_REGISTERED.TITLE ||
-                item.item == DeliveryStatusEnum.ORPHANED.TITLE ||
-                item.item == DeliveryStatusEnum.ERROR.TITLE ||
-                item.item == DeliveryStatusEnum.INFORMATION_RECEIVED.TITLE)
+            if(item.item == DeliveryStatusEnum.NOT_REGISTERED.TITLE || item.item == DeliveryStatusEnum.ORPHANED.TITLE || item.item == DeliveryStatusEnum.ERROR.TITLE || item.item == DeliveryStatusEnum.INFORMATION_RECEIVED.TITLE)
             {
                 continue
             }
@@ -303,7 +296,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     // 하단 드로우 레이아웃 사이즈 변경
     private fun updateDrawerLayoutSize(view: View) = CoroutineScope(Dispatchers.Main).launch {
         val height = view.height
-        binding.layoutMain.panelHeight = height
+        binding.slidingMain.panelHeight = height
     }
 
     companion object

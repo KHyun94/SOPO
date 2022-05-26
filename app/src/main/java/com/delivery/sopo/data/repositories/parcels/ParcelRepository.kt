@@ -5,4 +5,5 @@ import com.delivery.sopo.models.parcel.Parcel
 interface ParcelRepository
 {
     suspend fun registerParcel(parcelRegister: Parcel.Register): Parcel.Common
+    suspend fun updateParcel(parcelId: String): Parcel.Common
 }

@@ -140,7 +140,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(owner, onBackPressedCallback)
+        activity?.onBackPressedDispatcher?.addCallback(owner, onBackPressedCallback)
     }
 
     private fun bindView(inflater: LayoutInflater, container: ViewGroup?): T

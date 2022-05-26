@@ -19,4 +19,9 @@ class ParcelRepositoryImpl(private val parcelDataSource: ParcelDataSource, priva
 
         return parcel
     }
+
+    override suspend fun updateParcel(parcelId: String): Parcel.Common
+    {
+        parcelStatusDataSource.getUnidentifiedStatus()
+    }
 }

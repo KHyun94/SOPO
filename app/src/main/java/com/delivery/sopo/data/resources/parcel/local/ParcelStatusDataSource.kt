@@ -19,7 +19,7 @@ interface ParcelStatusDataSource: BaseDataSource<Parcel.Status>
     suspend fun getIsDeleteCnt(): Int
     suspend fun getIsDeliveredCnt(): Int
     suspend fun getCancelIsBeDelete():  List<ParcelStatusEntity>?
-    suspend fun getUnidentifiedStatusByParcelId(parcelId: Int) : Int
+    suspend fun getUnidentifiedStatus(parcelId: Int) : Int
     suspend fun updateParcelStatuses(parcelStatus: List<Parcel.Status>)
     suspend fun updateUpdatableStatus(parcelId:Int, status : Int)
     fun getById(parcelId: Int): Parcel.Status?

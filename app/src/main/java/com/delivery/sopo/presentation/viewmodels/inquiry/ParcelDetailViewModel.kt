@@ -21,10 +21,13 @@ import com.delivery.sopo.util.CodeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.properties.Delegates
 
 class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUseCase, private val refreshParcelUseCase: RefreshParcelUseCase, private val carrierRepository: CarrierRepository, private val parcelRepo: ParcelRepository, private val parcelManagementRepoImpl: ParcelManagementRepoImpl):
         BaseViewModel()
 {
+    var parcelId by Delegates.notNull<Int>()
+
     // 상세 화면에서 사용할 데이터 객체
     private var _parcelDetail = MutableLiveData<Parcel.Detail>()
     val parcelDetail: LiveData<Parcel.Detail>
@@ -65,7 +68,7 @@ class ParcelDetailViewModel(private val getLocalParcelUseCase: GetLocalParcelUse
         return deliveryStatuses
     }
 
-    fun requestParcelDetail(parcelId: Int) = scope.launch(coroutineExceptionHandler) {
+    fun requestParcelDetail(parcelId: Int = this.parcelId) = scope.launch(coroutineExceptionHandler) {
 
         updateUnidentifiedStatusToZero(parcelId = parcelId)
         updateIsBeUpdate(parcelId = parcelId, status = StatusConst.DEACTIVATE)

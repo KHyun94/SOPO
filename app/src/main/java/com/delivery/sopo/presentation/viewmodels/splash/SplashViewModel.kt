@@ -6,7 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.consts.StatusConst
+import com.delivery.sopo.data.models.AuthToken
 import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
+import com.delivery.sopo.data.resources.auth.local.AuthDataSource
 import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.domain.usecase.user.token.ForceLoginUseCase
 import com.delivery.sopo.enums.ErrorCode
@@ -14,19 +16,27 @@ import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
+import org.koin.core.inject
 
 class SplashViewModel(
         private val forceLoginUseCase: ForceLoginUseCase,
         private val userDataSource: UserDataSource,
         private val carrierRepo: CarrierRepository): BaseViewModel()
 {
+    private val authDataSource: AuthDataSource by inject()
+
     init
     {
+        val authToken = AuthToken.Info(grantType = "bearer", userToken = "user_JotbTyyS0FuavZJ", accessToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyX0pvdGJUeXlTMEZ1YXZaSiIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpYXQiOjE2NTM1NjY5NDEsImV4cCI6MTY1MzY1MzM0MX0.91KspEWnWydRa_WEr14Ey2vMxZ-mcJq2uhRPSuOY9I8", refreshToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyX0pvdGJUeXlTMEZ1YXZaSiIsInJvbGVzIjpbIlJPTEVfVVNFUiJdLCJpYXQiOjE2NTM1NjY5NDEsImV4cCI6MTY1NDc3NjU0MX0.tthcOkpcL2P5DhirpRyWdDYRzqU1C0KsPVhLo6ehypo", expireAt = "2022-06-09T21:09:01.944+09:00[Asia/Seoul]")
 
-        userDataSource.setUsername("asle1221@naver.com")
-        userDataSource.setUserPassword("EA028BB58781D1772CC1BAAE6518BFFE")
-        userDataSource.setStatus(1)
         CoroutineScope(Dispatchers.Default).launch {
+
+            authDataSource.insert(authToken)
+
+            userDataSource.setUsername("asle1221@naver.com")
+            userDataSource.setUserPassword("EA028BB58781D1772CC1BAAE6518BFFE")
+            userDataSource.setStatus(1)
+
             carrierRepo.initCarrierDB()
         }
     }

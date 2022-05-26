@@ -73,7 +73,7 @@ class ParcelStatusDataSourceImpl(private val parcelStatusDao: ParcelStatusDAO): 
     }
 
     // 업데이트 미확인 체크용도
-    override suspend fun getUnidentifiedStatusByParcelId(parcelId:Int): Int = withContext(Dispatchers.Default) {
+    override suspend fun getUnidentifiedStatus(parcelId:Int): Int = withContext(Dispatchers.Default) {
         parcelStatusDao.getUnidentifiedStatusByParcelId(parcelId = parcelId)
     }
 

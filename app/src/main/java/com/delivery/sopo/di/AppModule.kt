@@ -74,6 +74,8 @@ val dbModule = module {
 
 val apiModule = module {
     single { APIClient.provideCache(application = androidApplication()) }
+    single { APIClient.getHttpLoggingInterceptor() }
+
     single(named("PublicOkHttpClient")) { APIClient.providePublicOkHttpClient(cache = get()) }
     single(named("PrivateOkHttpClient")) { APIClient.providePrivateOkHttpClient(cache = get(), authDataSource = get()) }
 

@@ -67,7 +67,13 @@ object APIClient
     fun provideCache(application: Application): Cache { return Cache(application.cacheDir, 10L * 1024 * 1024) }
 
     fun getGson(): Gson = GsonBuilder().apply { setLenient() }.create()
-    fun getHttpLoggingInterceptor() = HttpLoggingInterceptor { message -> SopoLog.d(message) }.apply { level = HttpLoggingInterceptor.Level.BODY }
+
+    fun getHttpLoggingInterceptor(): HttpLoggingInterceptor
+    {
+        val interceptor = HttpLoggingInterceptor { message -> SopoLog.api(message) }
+        interceptor.level = HttpLoggingInterceptor.Level.BODY
+        return interceptor
+    }
     fun getAuthInterceptor(authDataSource: AuthDataSource) = AuthInterceptor(authDataSource)
     fun getTokenAuthenticator() = TokenAuthenticator()
 }

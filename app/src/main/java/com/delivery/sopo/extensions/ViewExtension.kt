@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager2.widget.ViewPager2
 import com.delivery.sopo.util.SopoLog
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
 
 internal fun View?.findSuitableParent(): ViewGroup?
 {
@@ -88,4 +89,22 @@ fun View.enabledClick(){
 fun View.disabledClick(){
     isFocusable = false
     isClickable = false
+}
+
+fun SlidingUpPanelLayout.expanded(){
+    this.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
+}
+
+fun SlidingUpPanelLayout.collapsed(){
+    this.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+}
+
+fun SlidingUpPanelLayout.isExpanded(): Boolean
+{
+    return this.panelState == SlidingUpPanelLayout.PanelState.EXPANDED
+}
+
+fun SlidingUpPanelLayout.isCollapsed(): Boolean
+{
+    return this.panelState == SlidingUpPanelLayout.PanelState.COLLAPSED
 }
