@@ -87,7 +87,6 @@ class ParcelDetailViewModel(
         _parcelDetail.postValue(remoteParcelDetail)
     }
 
-
     fun onBackClicked()
     {
         postNavigator(NavigatorConst.TO_BACK_SCREEN)

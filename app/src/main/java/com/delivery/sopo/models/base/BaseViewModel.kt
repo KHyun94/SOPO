@@ -47,6 +47,8 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
     private val _isDuplicated = MutableLiveData<Boolean>()
     val isDuplicated: LiveData<Boolean> = _isDuplicated
 
+    private val job = SupervisorJob()
+
     open lateinit var onSOPOErrorCallback: OnSOPOErrorCallback
 
     protected val coroutineExceptionHandler: CoroutineExceptionHandler =
@@ -91,34 +93,12 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
                         else -> onSOPOErrorCallback.onFailure(errorCode)
                     }
                 }
-//                is OAuthException ->
-//                {
-//                    val errorCode =
-//                        ErrorEnum.getErrorCode(exception.getErrorResponse().code).apply {
-//                            message = exception.getErrorResponse().message
-//                        }
-//
-//                    SopoLog.e("OAuthException API Error $errorCode", exception)
-//
-//                    when(errorCode)
-//                    {
-//                        ErrorEnum.OAUTH2_INVALID_GRANT, ErrorEnum.OAUTH2_INVALID_TOKEN ->
-//                        {
-//                            onSOPOErrorCallback.onLoginError(errorCode)
-//                        }
-//                        ErrorEnum.OAUTH2_DELETE_TOKEN ->
-//                        {
-//
-//                        }
-//                        else -> onSOPOErrorCallback.onAuthError(errorCode)
-//                    }
-//                }
                 is InternalServerException ->
                 {
-                    val errorCode =
-                        ErrorCode.getCode(exception.getErrorResponse().code).apply {
-                            message = exception.getErrorResponse().message
-                        }
+                    val errorCode = ErrorCode.getCode(exception.getErrorResponse().code).apply {
+                        message = exception.getErrorResponse().message
+                    }
+
                     SopoLog.e("InternalServerException API Error $errorCode", exception)
 
                     if(errorCode == ErrorCode.FAIL_TO_SEARCH_PARCEL)
@@ -135,7 +115,7 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
             }
         }
 
-    protected val scope: CoroutineScope = (viewModelScope + SupervisorJob() + coroutineExceptionHandler)
+    protected val scope: CoroutineScope = (viewModelScope + job + coroutineExceptionHandler)
 
     fun checkEventStatus(checkNetwork: Boolean = false, delayMillisecond: Long = 100, event: () -> Unit)
     {

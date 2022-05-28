@@ -87,7 +87,7 @@ object NetworkManager : KoinComponent
             followRedirects(false)
             writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
             readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-            if(INTERCEPTOR_TYPE == 1 && isAuthenticator) authenticator(TokenAuthenticator(userRepository))
+            if(INTERCEPTOR_TYPE == 1 && isAuthenticator) authenticator(TokenAuthenticator(authDataSource, userRepository))
         }.build()
 
         val gson = GsonBuilder().apply {

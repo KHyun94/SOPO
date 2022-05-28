@@ -82,5 +82,5 @@ object APIClient
         return httpLoggingInterceptor
     }
     fun getAuthInterceptor(authDataSource: AuthDataSource) = AuthInterceptor(authDataSource)
-    fun getTokenAuthenticator(userRepository: UserRepository) = TokenAuthenticator(userRepository)
+    fun getTokenAuthenticator(authDataSource: AuthDataSource, userRepository: UserRepository) = TokenAuthenticator(authDataSource, userRepository)
 }
