@@ -14,7 +14,9 @@ import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.launch
 
-class ConfirmParcelViewModel(private val registerParcelUseCase: RegisterParcelUseCase): BaseViewModel()
+class ConfirmParcelViewModel(
+        private val registerParcelUseCase: RegisterParcelUseCase
+        ): BaseViewModel()
 {
     lateinit var registerInfo: Parcel.Register
 

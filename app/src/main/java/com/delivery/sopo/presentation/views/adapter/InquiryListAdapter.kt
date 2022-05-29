@@ -1,5 +1,8 @@
 package com.delivery.sopo.presentation.views.adapter
 
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.view.LayoutInflater
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -369,8 +372,7 @@ class InquiryListAdapter(
         parcels.clear()
         parcels.addAll(newParcels)
 
-        diffResult.dispatchUpdatesTo(this)
-
+        diffResult.dispatchUpdatesTo(this@InquiryListAdapter)
     }
 
     override fun getItemCount(): Int =  parcels.size

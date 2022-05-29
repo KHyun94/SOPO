@@ -30,7 +30,7 @@ interface UserService
      * @param request
      * @return
      */
-    @POST("api/v1/sopo-auth/oauth/token")
+    @POST("api/v1/sopo-user/token/refresh")
     suspend fun refreshToken(
             @Body request: AuthToken.Refresh
     ): Response<AuthToken.Info>

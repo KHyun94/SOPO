@@ -92,9 +92,30 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         setOnMotherViewBridgeListener(requireContext())
     }
 
+    fun moveInquiryTap()
+    {
+        if(!::parcel.isInitialized) return
+
+        if(parcel.isDelivered())
+        {
+            parcel.makeDeliveredAlarm(mainLayout) {
+                motherView.onSetCurrentPage(1)
+            }
+        }
+        else
+        {
+            parcel.makeOtherAlarm(mainLayout) {
+                motherView.onSetCurrentPage(1)
+            }
+        }
+
+    }
+
     override fun setAfterBinding()
     {
         super.setAfterBinding()
+
+        moveInquiryTap()
 
         binding.constraintMainRegister.setOnClickListener {
             it.requestFocus()
@@ -126,8 +147,6 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
             val res = TextInputUtil.changeFocus(requireContext(), focus)
             vm.validity[res.first] = res.second
         }
-
-
 
         vm.waybillNum.observe(this) { waybillNum ->
 
@@ -191,7 +210,6 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         {
             ReturnType.COMPLETE_REGISTER_PARCEL ->
             {
-
                 CustomSnackBar(mainLayout, "네트워크 오류입니다.", 600000, SnackBarEnum.ERROR)
             }
             else -> return
@@ -210,7 +228,6 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         }
 
     }
-
 
     companion object
     {

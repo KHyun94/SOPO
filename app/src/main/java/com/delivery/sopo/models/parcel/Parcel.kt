@@ -1,11 +1,15 @@
 package com.delivery.sopo.models.parcel
 
+import android.view.View
 import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.TimeUtil
+import com.delivery.sopo.util.ui_util.CustomSnackBar
+import com.delivery.sopo.util.ui_util.OnSnackBarClickListener
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
@@ -24,20 +28,27 @@ class Parcel
             @SerializedName("arrivalDte") var arrivalDte: String?,
             @SerializedName("auditDte") var auditDte: String,
             @SerializedName("status") var status: Int?,
-            @SerializedName("reported") var reported: Boolean): Serializable {
+            @SerializedName("reported") var reported: Boolean): Serializable
+    {
+        fun isDelivered(): Boolean {
+            return deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
+        }
 
-                fun makeRegisterMessage(): String
-                {
-                    if(deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE)
-                        return "택배가 등록되었습니다."
+        fun makeOtherAlarm(view: View, onClickListener: OnSnackBarClickListener){
+            val char : CharSequence = "바로가기"
+            val listener = Pair(char, onClickListener)
+            val snackBar = CustomSnackBar(view = view, content = "택배가 등록되었습니다.", duration = 3000, type = SnackBarEnum.COMMON, listener)
+            snackBar.show()
+        }
 
-//                    val date = DateUtil.toDateKorTime(arrivalDte?:"") ?: return "택배가 등록되었습니다."
-                    val date = DateUtil.changeDateFormat(arrivalDte?:"", oldPattern = DateUtil.DATE_TIME_TYPE_DEFAULT, newPattern = DateUtil.DATE_TYPE_KOREAN_SEMI) ?: return "택배가 등록되었습니다."
-
-                    return date.toString()
-                }
-
-            }
+        fun makeDeliveredAlarm(view: View, onClickListener: OnSnackBarClickListener){
+            val char : CharSequence = "보기"
+            val listener = Pair(char, onClickListener)
+            val date = DateUtil.changeDateFormat(arrivalDte ?: "", oldPattern = DateUtil.DATE_TIME_TYPE_DEFAULT, newPattern = DateUtil.DATE_TYPE_KOREAN_SEMI)
+            val snackBar = CustomSnackBar(view = view, content = "${date}에 배송완료된 택배네요.", duration = 3000, type = SnackBarEnum.COMMON, listener)
+            snackBar.show()
+        }
+    }
 
     data class Detail(val regDt: String, val alias: String, val carrier: Carrier, val waybillNum: String, val deliverStatus: DeliveryStatusEnum?, val timeLineProgresses: MutableList<TimeLineProgress>)
     {

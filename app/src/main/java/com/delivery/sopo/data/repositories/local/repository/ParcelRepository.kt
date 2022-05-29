@@ -5,21 +5,26 @@ import androidx.lifecycle.Transformations
 import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
-import com.delivery.sopo.models.mapper.ParcelMapper
-import com.delivery.sopo.models.api.APIResult
-import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.data.networks.NetworkManager
 import com.delivery.sopo.data.networks.serivces.ParcelService
-
 import com.delivery.sopo.data.repositories.local.datasource.ParcelDataSource
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.extensions.wrapBodyAliasToHashMap
 import com.delivery.sopo.extensions.wrapBodyAliasToMap
 import com.delivery.sopo.interfaces.BaseDataSource
+import com.delivery.sopo.models.api.APIResult
+import com.delivery.sopo.models.mapper.ParcelMapper
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.services.network_handler.BaseService
 import com.delivery.sopo.services.network_handler.NetworkResponse
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import com.delivery.sopo.data.models.Result
+import com.delivery.sopo.models.inquiry.InquiryListItem
+import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 
 class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Parcel.Common>,
         ParcelDataSource,
@@ -79,6 +84,43 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
             entityList.map(ParcelMapper::parcelEntityToParcel)
         }
     }
+
+    fun getOngoingAllParcel() = flow<Result<List<InquiryListItem>>> {
+
+        SopoLog.d("TEST!!!! => Loading")
+        emit(Result.Loading)
+        SopoLog.d("TEST!!!! => Loading")
+        appDatabase.parcelDao().getFlowOngoingParcel().collect {
+            if(it.isEmpty())
+            {
+                emit(Result.Empty)
+                SopoLog.d("TEST!!!! => Empty")
+            }
+            else
+            {
+                val parcels = it.map{
+                    val parcel = ParcelMapper.parcelEntityToObject(it)
+                    InquiryListItem(parcel, false)
+                }
+
+                SopoLog.d("TEST!!!! => Success")
+
+                emit(Result.Success(parcels))
+            }
+        }
+    }.catch { e ->
+        SopoLog.e("TEST!!!! => Error ${e.printStackTrace()}")
+        emit(Result.Error(e)) }
+
+/*
+    fun getOngoingParcelAsFlow() = flow {
+        emit()
+    *//*    return appDatabase.parcelDao().getFlowOngoingParcel().map {
+            return@map it.map(ParcelMapper::parcelEntityToObject).map { InquiryListItem(it, false) }
+        }*//*
+
+
+    }*/
 
     override fun getCompleteParcelsAsLiveData(): LiveData<List<Parcel.Common>>
     {

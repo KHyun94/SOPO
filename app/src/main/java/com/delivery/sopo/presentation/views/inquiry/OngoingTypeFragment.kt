@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.delivery.sopo.R
@@ -17,18 +18,20 @@ import com.delivery.sopo.interfaces.OnPageSelectListener
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
-import com.delivery.sopo.util.AlertUtil
-import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.presentation.viewmodels.inquiry.OngoingTypeViewModel
 import com.delivery.sopo.presentation.views.adapter.InquiryListAdapter
 import com.delivery.sopo.presentation.views.dialog.OnOptionalClickListener
 import com.delivery.sopo.presentation.views.dialog.OptionalDialog
 import com.delivery.sopo.presentation.views.main.MainView
-import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.AlertUtil
+import com.delivery.sopo.util.FragmentManager
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
+import com.delivery.sopo.data.models.Result
+import com.delivery.sopo.models.inquiry.InquiryListItem
+import com.delivery.sopo.util.SopoLog
 
 class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeViewModel>()
 {
@@ -68,6 +71,8 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                 binding.nestedSvMainOngoingInquiry.scrollTo(0, 0)
             }
         }
+
+        vm.getOngoingParcels()
 
     }
 
@@ -147,21 +152,94 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
-        vm.ongoingParcels.observe(requireActivity()) { list ->
+        vm.parcels.asLiveData(Dispatchers.Default).observe(this) {
 
-            list.forEach {
-                SopoLog.d("ongoingParcels => ${it.parcel.toString()}")
+            if(vm.parcels.value is Result.Success<List<InquiryListItem>>)
+            {
+                SopoLog.d("TEST!!!! => 시발 성공이라매")
+
+                val list = (vm.parcels.value as Result.Success<List<InquiryListItem>>).data
+
+                list.forEach {
+                    SopoLog.d("ongoingParcels => ${it.parcel.toString()}")
+                }
+
+                if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
+                else binding.linearNoItem.visibility = View.GONE
+
+                soonArrivalParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
+                registeredParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
+
+                viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
+                viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
+            }
+            else if(vm.parcels.value is Result.Error)
+            {
+                val error = (vm.parcels.value as Result.Error)
+
+                SopoLog.d("TEST!!!! => 시발 실패 왜냐 ${error.exception.printStackTrace()}")
+                Toast.makeText(requireContext(), "아 시발 ", Toast.LENGTH_SHORT).show()
+            }
+            else if(vm.parcels.value is Result.Loading)
+            {
+                SopoLog.d("TEST!!!! => 로딩이라고? 시발 ")
+
+            }
+            else
+            {
+                SopoLog.d("TEST!!!! => 로딩이라고? 시발  초기화잖아")
             }
 
-            if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
-            else binding.linearNoItem.visibility = View.GONE
-
-            soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
-            registeredParcelAdapter.separateDeliveryListByStatus(list)
-
-            viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
-            viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
         }
+
+//        vm.ongoingParcels.asLiveData(Dispatchers.Default).observe(this@OngoingTypeFragment) { list ->
+//            list.forEach {
+//                SopoLog.d("ongoingParcels => ${it.parcel.toString()}")
+//            }
+//
+//            if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
+//            else binding.linearNoItem.visibility = View.GONE
+//
+//            soonArrivalParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
+//            registeredParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
+//
+//            viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
+//            viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
+//        }
+
+       /* vm.ongoingParcels.asLiveData(Dispatchers.Default).observe(this@OngoingTypeFragment) { list ->
+                list.forEach {
+                    SopoLog.d("ongoingParcels => ${it.parcel.toString()}")
+                }
+
+                if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
+                else binding.linearNoItem.visibility = View.GONE
+
+                soonArrivalParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
+                registeredParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
+
+                viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
+                viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
+            }*/
+
+
+/*
+                vm.ongoingParcels.observe(requireActivity()) { list ->
+
+                    list.forEach {
+                        SopoLog.d("ongoingParcels => ${it.parcel.toString()}")
+                    }
+
+                    if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
+                    else binding.linearNoItem.visibility = View.GONE
+
+                    soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
+                    registeredParcelAdapter.separateDeliveryListByStatus(list)
+
+                    viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
+                    viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
+                }
+*/
 
         vm.navigator.observe(this) { navigator ->
             when(navigator)
@@ -187,7 +265,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                 {
                     override fun invoke(dialog: DialogFragment)
                     {
-                        vm.deleteParcel(parcelId = parcelId)
+                        vm.deleteParcel()
                         dialog.dismiss()
                     }
                 }
@@ -214,14 +292,11 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                         dialog.dismiss()
                     }
                 }
-                val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.TWO_WAY_LEFT,
-                                   title = "이 아이템을 제거할까요?",
-                                   content = """
+                val optionalDialog =
+                    OptionalDialog(optionalType = OptionalTypeEnum.TWO_WAY_LEFT, title = "이 아이템을 제거할까요?", content = """
                     배송 상태가 2주간 확인되지 않고 있어요.
                     등록된 송장번호가 유효하지 않을지도 몰라요.
-                                """.trimIndent(),
-                                   leftHandler = Pair("지울게요", second = leftOptionalClickListener),
-                                   rightHandler = Pair(first = "유지할게요", second = rightOptionalClickListener))
+                                """.trimIndent(), leftHandler = Pair("지울게요", second = leftOptionalClickListener), rightHandler = Pair(first = "유지할게요", second = rightOptionalClickListener))
 
                 optionalDialog.show(requireActivity().supportFragmentManager, "")
             }

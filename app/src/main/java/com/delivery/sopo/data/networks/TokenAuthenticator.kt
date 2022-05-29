@@ -32,9 +32,7 @@ class TokenAuthenticator(private val authDataSource: AuthDataSource, private val
         return try
         {
             val accessToken = runBlocking(Dispatchers.IO) {
-//                userRepository.refreshToken()
-                userRepository.login()
-                return@runBlocking withContext(Dispatchers.Default) { authDataSource.get().accessToken }
+                userRepository.refreshToken()
             }
 
             getRetrofitWithoutAuthenticator(response, accessToken)

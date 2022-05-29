@@ -59,8 +59,6 @@ class SOPOApplication: Application()
         {
             accessToken = Session.getCurrentSession().tokenInfo
         }
-
-//        FirebaseRepository.subscribedToTopic(17, 0).start()
     }
 
     companion object

@@ -1,6 +1,7 @@
 package com.delivery.sopo.util
 
 import java.text.SimpleDateFormat
+import java.time.ZoneId
 import java.util.*
 
 object DateUtil
@@ -13,6 +14,7 @@ object DateUtil
     const val TIMESTAMP_TYPE_AUTH_EXPIRED = "yyyy-MM-dd'T'HH:mm:ssX"
 
     const val DATE_TYPE_KOREAN_SEMI = "yy년 MM월"
+    const val DATE_TYPE_yyyyMM = "yyyyMM"
     const val DATE_TYPE_KOREAN_FULL = "yyyy년 MM월"
 
     fun getCurrentDate(pattern: String = DATE_TIME_TYPE_DEFAULT): String
@@ -172,10 +174,11 @@ object DateUtil
 
 }
 
+/*
 fun main()
 {
 
     val data = "2022-06-05T19:00:02.606+09:00[Asia/Seoul]"
-
-    println("DateUtil.changeDateFormat() => ${DateUtil.changeDateFormat(data, DateUtil.DATE_TIME_TYPE_AUTH_EXPIRED, DateUtil.DATE_TIME_TYPE_DEFAULT)}")
-}
+    val zoneId = ZoneId.of("Asia/Seoul")
+    println("DateUtil.changeDateFormat() => ${DateUtil.changeDateFormat(data, DateUtil.TIMESTAMP_TYPE_AUTH_EXPIRED, DateUtil.DATE_TIME_TYPE_DEFAULT)}")
+}*/

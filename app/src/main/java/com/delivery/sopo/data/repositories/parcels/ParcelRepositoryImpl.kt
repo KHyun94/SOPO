@@ -17,6 +17,8 @@ class ParcelRepositoryImpl(private val parcelDataSource: ParcelDataSource, priva
         parcelDataSource.insert(parcel)
         parcelStatusDataSource.insert(parcelStatus)
 
+        parcelDataSource.getParcelById(parcelId)
+
         return parcel
     }
 

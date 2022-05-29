@@ -11,11 +11,12 @@ import kotlinx.coroutines.withContext
 
 class SyncParcelsUseCase(private val parcelRepo: ParcelRepository, private val parcelStatusRepo: ParcelManagementRepoImpl)
 {
-    suspend operator fun invoke() = withContext(Dispatchers.IO){
+    suspend operator fun invoke() = withContext(Dispatchers.IO) {
         SopoLog.i("SyncParcelsUseCase(...)")
         val remoteParcels = parcelRepo.getOngoingParcelsFromRemote()
 
         parcelStatusRepo.updateUnidentifiedStatus(remoteParcels)
+
         insertParcels(remoteParcels)
         updateParcels(remoteParcels)
 

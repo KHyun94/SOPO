@@ -3,7 +3,6 @@ package com.delivery.sopo.presentation.views.registers
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
-import androidx.core.widget.addTextChangedListener
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentConfirmParcelBinding

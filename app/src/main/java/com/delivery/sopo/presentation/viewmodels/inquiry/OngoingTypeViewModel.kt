@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.delivery.sopo.consts.NavigatorConst
-import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.ErrorCode
@@ -15,12 +14,20 @@ import com.delivery.sopo.domain.usecase.parcel.remote.DeleteParcelsUseCase
 import com.delivery.sopo.domain.usecase.parcel.remote.UpdateParcelUseCase
 import com.delivery.sopo.domain.usecase.parcel.remote.SyncParcelsUseCase
 import com.delivery.sopo.domain.usecase.parcel.remote.UpdateParcelAliasUseCase
+import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.*
+import com.delivery.sopo.data.models.Result
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 
-class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase, private val syncParcelsUseCase: SyncParcelsUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val deleteParcelsUseCase: DeleteParcelsUseCase, private val parcelRepo: ParcelRepository, private val parcelManagementRepo: ParcelManagementRepoImpl):
-        BaseViewModel()
+class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
+                           private val syncParcelsUseCase: SyncParcelsUseCase,
+                           private val updateParcelAliasUseCase: UpdateParcelAliasUseCase,
+                           private val deleteParcelsUseCase: DeleteParcelsUseCase,
+                           private val parcelRepo: ParcelRepository): BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String>
@@ -32,14 +39,17 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
     }
 
     private val _ongoingParcels = Transformations.map(parcelRepo.getOngoingParcelAsLiveData()) { parcelList ->
-            val list = parcelList.map { parcel ->
-                SopoLog.d("UPDATE ${parcel.toString()}")
-                return@map InquiryListItem(parcel, false)
-            }
-            sortByDeliveryStatus(list).toMutableList()
+        val list = parcelList.map { parcel ->
+            SopoLog.d("UPDATE ${parcel.toString()}")
+            return@map InquiryListItem(parcel, false)
         }
+        sortByDeliveryStatus(list).toMutableList()
+    }
     val ongoingParcels: LiveData<MutableList<InquiryListItem>>
         get() = _ongoingParcels
+
+    private val _parcels: MutableStateFlow<Result<List<InquiryListItem>>> = MutableStateFlow(Result.Uninitialized)
+    val parcels = _parcels.asStateFlow()
 
     val cntOfPresentOngoingParcels: LiveData<Int> =
         Transformations.map(parcelRepo.getLocalOnGoingParcelCnt()) { cnt -> cnt }
@@ -47,6 +57,10 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
     init
     {
         syncOngoingParcels()
+    }
+
+    fun getOngoingParcels() = scope.launch {
+        parcelRepo.getOngoingAllParcel().collect { _parcels.value = it }
     }
 
     /**
@@ -70,7 +84,7 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
         updateParcelUseCase.invoke(parcelId = parcelId)
     }
 
-    fun deleteParcel(parcelId: Int) = checkEventStatus(checkNetwork = true) {
+    fun deleteParcel() = checkEventStatus(checkNetwork = true) {
         scope.launch(coroutineExceptionHandler) {
             deleteParcelsUseCase.invoke()
         }

@@ -58,6 +58,9 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val dbModule = module {
+    single { SharedPref(androidApplication()) }
+    single { UserSharedPrefHelper(sharedPref = get(), context = androidApplication()) }
+
     single { AppDatabase.getInstance(context = get()) }
     single { AppDatabase.getInstance(context = get()).authTok() }
     single { AppDatabase.getInstance(context = get()).carrierDao() }
@@ -66,9 +69,6 @@ val dbModule = module {
     single { AppDatabase.getInstance(context = get()).completeParcelStatusDao() }
     single { AppDatabase.getInstance(context = get()).parcelManagementDao() }
     single { AppDatabase.getInstance(context = get()).securityDao() }
-
-    single { SharedPref(androidApplication()) }
-    single { UserSharedPrefHelper(sharedPref = get(), context = androidApplication()) }
 }
 
 val apiModule = module {
@@ -170,7 +170,7 @@ val viewModelModule = module {
     viewModel { UpdateNicknameViewModel(get(), get(), get()) }
 
     viewModel { InquiryMainViewModel() }
-    viewModel { OngoingTypeViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { OngoingTypeViewModel(get(), get(), get(), get(), get()) }
     viewModel { CompletedTypeViewModel(get(), get(), get(), get()) }
     viewModel { MenuMainViewModel() }
     viewModel { ParcelDetailViewModel(get(), get()) }
