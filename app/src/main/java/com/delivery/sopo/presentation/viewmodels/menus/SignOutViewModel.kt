@@ -38,7 +38,7 @@ class SignOutViewModel(
 
     fun onBackClicked()
     {
-        postNavigator(NavigatorConst.TO_BACK_SCREEN)
+        postNavigator(NavigatorConst.Event.BACK)
     }
 
     fun onCheckClicked(v: View, message: String?) = checkEventStatus {

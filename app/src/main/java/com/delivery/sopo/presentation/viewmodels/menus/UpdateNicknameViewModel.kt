@@ -76,7 +76,7 @@ class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository,
 
     fun onClearClicked()
     {
-        _navigator.postValue(NavigatorConst.TO_BACK_SCREEN)
+        _navigator.postValue(NavigatorConst.Event.BACK)
     }
 
     fun onUpdateNicknameClicked(v: View) = checkEventStatus(true, 100) {

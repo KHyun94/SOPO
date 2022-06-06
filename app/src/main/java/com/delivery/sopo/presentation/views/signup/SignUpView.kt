@@ -59,7 +59,7 @@ class SignUpView: BaseView<SignUpViewBinding, SignUpViewModel>()
         vm.navigator.observe(this) { navigator ->
             when(navigator)
             {
-                NavigatorConst.TO_COMPLETE ->
+                NavigatorConst.Event.COMPLETE ->
                 {
                     moveToActivityWithFinish(SignUpCompleteView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 }

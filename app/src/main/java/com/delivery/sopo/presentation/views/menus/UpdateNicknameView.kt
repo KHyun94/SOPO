@@ -116,7 +116,7 @@ class UpdateNicknameView: BaseView<UpdateNicknameViewBinding, UpdateNicknameView
 
                     optionalDialog.show(supportFragmentManager, "")
                 }
-                NavigatorConst.TO_BACK_SCREEN ->
+                NavigatorConst.Event.BACK ->
                 {
                     finish()
                 }

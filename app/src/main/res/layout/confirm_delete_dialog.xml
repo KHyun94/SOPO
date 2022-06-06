@@ -158,94 +158,9 @@
                 android:layout_marginLeft="16dp"
                 android:visibility='@{(optionalType != OptionalTypeEnum.ONE_WAY) ? View.VISIBLE : View.GONE}'
                 tools:background="@drawable/border_15dp_blue_rounder"
-                tools:textColor="@color/COLOR_MAIN_500"
-                />
-
+                tools:textColor="@color/COLOR_MAIN_500" />
 
         </LinearLayout>
-
-        <!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content">-->
-
-        <!--            <LinearLayout-->
-        <!--                android:layout_width="match_parent"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:layout_marginLeft="22dp"-->
-        <!--                android:layout_marginRight="22dp"-->
-        <!--                android:layout_marginBottom="15dp"-->
-        <!--                android:orientation="vertical"-->
-        <!--                app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--                app:layout_constraintEnd_toEndOf="parent"-->
-        <!--                app:layout_constraintStart_toStartOf="parent"-->
-        <!--                app:layout_constraintTop_toTopOf="parent">-->
-
-        <!--                <TextView-->
-        <!--                    android:id="@+id/tv_content"-->
-        <!--                    android:layout_width="wrap_content"-->
-        <!--                    android:layout_height="match_parent"-->
-        <!--                    android:fontFamily="@font/pretendard_medium"-->
-        <!--                    android:letterSpacing="0.04"-->
-        <!--                    android:text="@{content}"-->
-        <!--                    android:textColor="@color/COLOR_GRAY_600"-->
-        <!--                    android:textSize="13sp"-->
-        <!--                    tools:text="* 배송이 완료된 내역은 [배송완료]탭에 보관 처리됩니다.\n* 삭제하신 내역은 복구되지 않습니다." />-->
-
-
-        <!--            </LinearLayout>-->
-
-        <!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-        <!--        <LinearLayout-->
-        <!--            android:layout_width="match_parent"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_marginTop="10dp"-->
-        <!--            android:orientation="horizontal"-->
-        <!--            android:weightSum="1">-->
-
-        <!--            <TextView-->
-        <!--                android:id="@+id/tv_left_btn"-->
-        <!--                android:layout_width="0dp"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:layout_marginLeft="20dp"-->
-        <!--                android:layout_marginRight="20dp"-->
-        <!--                android:layout_marginBottom="10dp"-->
-        <!--                android:layout_weight="0.5"-->
-        <!--                android:fontFamily="@font/pretendard_bold"-->
-        <!--                android:gravity="center"-->
-        <!--                android:padding="10dp"-->
-        <!--                android:clickable="true"-->
-        <!--                android:focusable="true"-->
-        <!--                android:text="@{leftBtnText}"-->
-        <!--                android:textSize="14dp"-->
-        <!--                android:onClick="@{leftBtnClickListener}"-->
-        <!--                android:textColor="@{(optionalType == OptionalTypeEnum.LEFT)? ContextCompat.getColor(context, R.color.MAIN_WHITE):ContextCompat.getColor(context, R.color.COLOR_MAIN_500)}"-->
-        <!--                android:background="@{(optionalType == OptionalTypeEnum.LEFT)?ContextCompat.getDrawable(context, R.drawable.border_all_rounded_main_blue):ContextCompat.getDrawable(context,R.drawable.border_15dp_blue_rounder)}"-->
-        <!--                tools:background="@drawable/border_all_rounded_main_blue"-->
-        <!--                tools:textColor="@color/MAIN_WHITE" />-->
-
-        <!--            <TextView-->
-        <!--                android:id="@+id/tv_right_btn"-->
-        <!--                android:layout_width="0dp"-->
-        <!--                android:layout_height="wrap_content"-->
-        <!--                android:layout_marginRight="20dp"-->
-        <!--                android:layout_marginBottom="10dp"-->
-        <!--                android:layout_weight="0.5"-->
-        <!--                android:fontFamily="@font/pretendard_bold"-->
-        <!--                android:gravity="center"-->
-        <!--                android:padding="10dp"-->
-        <!--                android:clickable="true"-->
-        <!--                android:onClick="@{rightBtnClickListener}"-->
-        <!--                android:focusable="true"-->
-        <!--                android:text="@{rightBtnText}"-->
-        <!--                android:textSize="14dp"-->
-        <!--                android:textColor="@{(optionalType == OptionalTypeEnum.RIGHT)? ContextCompat.getColor(context, R.color.MAIN_WHITE):ContextCompat.getColor(context, R.color.COLOR_MAIN_500)}"-->
-        <!--                android:background="@{(optionalType == OptionalTypeEnum.RIGHT)?ContextCompat.getDrawable(context, R.drawable.border_all_rounded_main_blue):ContextCompat.getDrawable(context,R.drawable.border_15dp_blue_rounder)}"-->
-        <!--                tools:background="@drawable/border_15dp_blue_rounder"-->
-        <!--                tools:textColor="@color/COLOR_MAIN_500" />-->
-
-
-        <!--        </LinearLayout>-->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

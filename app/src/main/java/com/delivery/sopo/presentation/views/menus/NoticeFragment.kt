@@ -53,7 +53,7 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding, NoticeViewModel>(){
         vm.navigator.observe(this) { nav ->
             when(nav)
             {
-                NavigatorConst.TO_BACK_SCREEN ->
+                NavigatorConst.Event.BACK ->
                 {
                     FragmentManager.refreshMove(parentView, TabCode.MY_MENU_MAIN.apply {
                         FRAGMENT = MenuFragment.newInstance()

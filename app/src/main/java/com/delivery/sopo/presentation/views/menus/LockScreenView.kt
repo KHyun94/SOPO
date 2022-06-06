@@ -210,7 +210,7 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
                     setResult(Activity.RESULT_CANCELED)
                     finish()
                 }
-                NavigatorConst.TO_BACK_SCREEN ->
+                NavigatorConst.Event.BACK ->
                 {
                     setResult(RESULT_CANCELED)
                     finish()

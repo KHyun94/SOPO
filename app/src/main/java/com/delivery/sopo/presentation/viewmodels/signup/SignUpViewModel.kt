@@ -103,7 +103,7 @@ class SignUpViewModel(private val signUpUseCase: SignUpUseCase): BaseViewModel()
         {
             onStartLoading()
             signUpUseCase.invoke(joinInfo = joinInfo, userType = UserTypeConst.SELF)
-            postNavigator(NavigatorConst.TO_COMPLETE)
+            postNavigator(NavigatorConst.Event.COMPLETE)
         }
         finally
         {

@@ -2,17 +2,16 @@ package com.delivery.sopo.presentation.views.login
 
 import android.content.Intent
 import android.view.View
-import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.LoginViewBinding
 import com.delivery.sopo.extensions.moveToActivity
 import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.models.base.BaseView
-import com.delivery.sopo.util.ui_util.TextInputUtil
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.presentation.viewmodels.login.LoginViewModel
 import com.delivery.sopo.presentation.views.main.MainView
 import com.delivery.sopo.presentation.views.signup.RegisterNicknameView
+import com.delivery.sopo.util.ui_util.TextInputUtil
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginView: BaseView<LoginViewBinding, LoginViewModel>()
@@ -27,7 +26,6 @@ class LoginView: BaseView<LoginViewBinding, LoginViewModel>()
 
         vm.focus.observe(this) { focus ->
             TextInputUtil.changeFocusWithoutValidation(this@LoginView, focus)
-//            vm.validity[res.first] = res.second
         }
 
         vm.navigator.observe(this@LoginView) { navigator ->

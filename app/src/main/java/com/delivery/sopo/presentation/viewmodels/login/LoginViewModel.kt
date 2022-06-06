@@ -13,14 +13,13 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.domain.usecase.user.token.LoginUseCase
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
+import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 
 class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
 {
     val username = MutableLiveData<String>()
     var password = MutableLiveData<String>()
-
-//    val validity = mutableMapOf<InfoEnum, Boolean>()
 
     private var _navigator = MutableLiveData<String>()
     val navigator: LiveData<String> = _navigator
@@ -32,15 +31,10 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
         _focus.value = Triple(v, hasFocus, type)
     }
 
-/*    init
-    {
-        validity[InfoEnum.EMAIL] = false
-        validity[InfoEnum.PASSWORD] = false
-    }*/
 
     fun postNavigator(navigator: String)
     {
-        postNavigator(navigator)
+        _navigator.postValue(navigator)
     }
 
     fun onLoginClicked() = checkEventStatus(checkNetwork = true) {
@@ -49,6 +43,9 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
 
     fun onResetPasswordClicked()
     {
+        username.postValue("")
+        password.postValue("")
+
         postNavigator(NavigatorConst.Screen.RESET_PASSWORD)
     }
 
@@ -57,7 +54,7 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
         {
             onStartLoading()
 
-            val username =  username.value.toString()
+            val username = username.value.toString()
             val password = password.value.toString().toMD5()
 
             loginUseCase(username = username, password = password)
@@ -70,20 +67,22 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
         }
     }
 
-    val exceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-        when(throwable)
-        {
-            is SOPOApiException -> handlerAPIException(throwable)
-            is InternalServerException -> postErrorSnackBar(throwable.message)
-            else ->
+    val exceptionHandler: CoroutineExceptionHandler =
+        CoroutineExceptionHandler { coroutineContext, throwable ->
+            when(throwable)
             {
-                throwable.printStackTrace()
-                postErrorSnackBar(throwable.message?:"확인할 수 없는 에러입니다.")
+                is SOPOApiException -> handlerAPIException(throwable)
+                is InternalServerException -> postErrorSnackBar(throwable.message)
+                else ->
+                {
+                    throwable.printStackTrace()
+                    postErrorSnackBar(throwable.message ?: "확인할 수 없는 에러입니다.")
+                }
             }
         }
-    }
 
-    private fun handlerAPIException(exception: SOPOApiException){
+    private fun handlerAPIException(exception: SOPOApiException)
+    {
         when(exception.code)
         {
             ErrorCode.VALIDATION -> postErrorSnackBar(exception.message)

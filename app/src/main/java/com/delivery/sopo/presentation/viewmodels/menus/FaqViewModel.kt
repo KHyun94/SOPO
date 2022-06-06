@@ -18,6 +18,6 @@ class FaqViewModel: BaseViewModel()
 
     fun onBackClicked()
     {
-        postNavigator(NavigatorConst.TO_BACK_SCREEN)
+        postNavigator(NavigatorConst.Event.BACK)
     }
 }

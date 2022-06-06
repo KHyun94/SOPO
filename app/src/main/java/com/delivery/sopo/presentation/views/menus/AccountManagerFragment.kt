@@ -57,7 +57,7 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
         vm.navigator.observe(this) { navigator ->
             when(navigator)
             {
-                NavigatorConst.TO_BACK_SCREEN ->
+                NavigatorConst.Event.BACK ->
                 {
                     TabCode.MY_MENU_MAIN.FRAGMENT = MenuFragment.newInstance()
                     FragmentManager.move(requireActivity(), TabCode.MY_MENU_MAIN, MenuMainFragment.viewId)

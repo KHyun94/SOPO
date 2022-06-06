@@ -107,7 +107,7 @@ class MenuSubFragment: Fragment()
         vm.navigator.observe(this, Observer { navigator ->
             SopoLog.d("navigator[$navigator]")
 
-            if(navigator == NavigatorConst.TO_BACK_SCREEN)
+            if(navigator == NavigatorConst.Event.BACK)
             {
                 moveToBack()
                 return@Observer

@@ -47,7 +47,7 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
     }
 
     fun onBackClicked(){
-        postNavigator(NavigatorConst.TO_BACK_SCREEN)
+        postNavigator(NavigatorConst.Event.BACK)
     }
 
     // 1차 인증 번호 저장

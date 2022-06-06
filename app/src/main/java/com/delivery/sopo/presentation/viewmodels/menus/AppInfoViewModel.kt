@@ -16,6 +16,6 @@ class AppInfoViewModel : BaseViewModel() {
     }
 
     fun onBackClicked(){
-        _navigator.postValue(NavigatorConst.TO_BACK_SCREEN)
+        _navigator.postValue(NavigatorConst.Event.BACK)
     }
 }

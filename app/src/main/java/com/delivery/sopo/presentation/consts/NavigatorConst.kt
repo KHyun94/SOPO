@@ -8,6 +8,16 @@ object NavigatorConst {
         const val UPDATE_NICKNAME = "SCREEN_UPDATE_NICKNAME"
     }
 
+    object Event{
+        const val RESET_PROCESS = "EVENT_RESET_PROCESS"
+        const val BACK = "EVENT_BACK_SCREEN"
+        const val COMPLETE = "EVENT_COMPLETE"
+    }
+
+    object Error{
+        const val INVALID_JWT_TOKEN = "INVALID_JWT_TOKEN"
+    }
+
     const val CONFIRM_SIGN_OUT:String = "CONFIRM_SIGN_OUT"
     const val EXIT: String = "EXIT"
     const val DUPLICATE_LOGIN: String = "DUPLICATE_LOGIN"
@@ -33,10 +43,6 @@ object NavigatorConst {
 
     const val TO_LOGOUT = "TO_LOGOUT"
 
-    const val TO_FLOATING_DIALOG = "TO_FLOATING_DIALOG"
-    const val TO_BACK_SCREEN = "TO_BACK_SCREEN"
-
-    const val TO_COMPLETE = "TO_COMPLETE"
     const val TO_DELETE = "TO_DELETE"
 
     const val MAIN_BRIDGE_REGISTER = "MAIN_BRIDGE_REGISTER"

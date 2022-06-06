@@ -12,6 +12,6 @@ class MenuSubViewModel:ViewModel()
 
     fun  onClearClicked(){
         SopoLog.d("onClearClicked() 호출")
-        navigator.postValue(NavigatorConst.TO_BACK_SCREEN)
+        navigator.postValue(NavigatorConst.Event.BACK)
     }
 }

@@ -416,7 +416,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
 
             when(navigator)
             {
-                NavigatorConst.TO_BACK_SCREEN ->
+                NavigatorConst.Event.BACK ->
                 {
                     if(binding.slideMainSetting.panelState != SlidingUpPanelLayout.PanelState.COLLAPSED) return@observe
 

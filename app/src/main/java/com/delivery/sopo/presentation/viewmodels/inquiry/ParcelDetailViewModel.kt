@@ -83,13 +83,13 @@ class ParcelDetailViewModel(
 
     fun onBackClicked()
     {
-        postNavigator(NavigatorConst.TO_BACK_SCREEN)
+        postNavigator(NavigatorConst.Event.BACK)
     }
 
     fun onDownClicked(): View.OnClickListener
     {
         return View.OnClickListener() {
-            postNavigator(NavigatorConst.TO_BACK_SCREEN)
+            postNavigator(NavigatorConst.Event.BACK)
         }
     }
 

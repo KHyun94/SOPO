@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.annotation.ColorRes
+import androidx.annotation.DrawableRes
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -63,6 +64,10 @@ fun ViewPager2.reduceSensitive()
     {
         SopoLog.e("Fail to reduce ViewPager2 Sensitive [message:${ignore.toString()}]", ignore)
     }
+}
+
+fun View.convertBackground(@DrawableRes drawableRes: Int){
+    this.background = ContextCompat.getDrawable(this.context, drawableRes)
 }
 
 fun TextView.convertTextColor(@ColorRes colorRes: Int){

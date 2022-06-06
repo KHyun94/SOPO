@@ -1,23 +1,23 @@
 package com.delivery.sopo.presentation.views.login
 
 import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.consts.ResetPasswordConst
 import com.delivery.sopo.databinding.ResetPasswordViewBinding
 import com.delivery.sopo.enums.InfoEnum
+import com.delivery.sopo.enums.OptionalTypeEnum
+import com.delivery.sopo.extensions.convertBackground
 import com.delivery.sopo.extensions.convertTextColor
+import com.delivery.sopo.extensions.expanded
 import com.delivery.sopo.models.base.BaseView
-import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.TextInputUtil
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.presentation.viewmodels.login.ResetPasswordViewModel
+import com.delivery.sopo.presentation.views.dialog.OptionalDialog
+import com.delivery.sopo.util.ui_util.TextInputUtil
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.collections.set
 
@@ -25,11 +25,16 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 {
     override val layoutRes: Int = R.layout.reset_password_view
     override val vm: ResetPasswordViewModel by viewModel()
-    override val mainLayout: View by lazy { binding.layoutMainReset }
+    override val mainLayout: View by lazy { binding.slideMainResetPassword }
 
     var timer: CountDownTimer? = null
-
     private var isCountTimer = false
+
+    override fun onAfterBinding()
+    {
+        super.onAfterBinding()
+
+    }
 
     override fun setObserve()
     {
@@ -86,24 +91,24 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
         binding.etAuthCode.setOnFocusChangeListener { _, hasFocus ->
             if(hasFocus)
             {
-                binding.relativeMainAuthCode.background =
-                    ContextCompat.getDrawable(this@ResetPasswordView, R.drawable.border_all_round_10dp_blue_scale)
+                binding.relativeMainAuthCode.convertBackground(R.drawable.border_all_round_10dp_blue_scale)
                 binding.etAuthCode.convertTextColor(R.color.COLOR_GRAY_800)
             }
             else
             {
-                binding.relativeMainAuthCode.background =
-                    ContextCompat.getDrawable(this@ResetPasswordView, R.drawable.border_all_round_10dp)
+                binding.relativeMainAuthCode.convertBackground(R.drawable.border_all_round_10dp)
                 binding.etAuthCode.convertTextColor(R.color.COLOR_GRAY_400)
             }
         }
 
         vm.navigator.observe(this) { navigator ->
-
-            SopoLog.i("navigator Observe [data:${navigator}]")
-
             when(navigator)
             {
+                NavigatorConst.Error.INVALID_JWT_TOKEN ->
+                {
+                    binding.slideMainResetPassword.expanded()
+                    binding.slideMainResetPassword.isTouchEnabled = false
+                }
                 ResetPasswordConst.INPUT_AUTH_CODE ->
                 {
                     if(!isCountTimer) timer = countLimitTime()
@@ -114,7 +119,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
                     timer?.cancel()
                     timer = null
                 }
-                NavigatorConst.TO_COMPLETE, NavigatorConst.TO_BACK_SCREEN ->
+                NavigatorConst.Event.COMPLETE, NavigatorConst.Event.BACK ->
                 {
                     finish()
                 }
@@ -124,7 +129,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
     fun countLimitTime(): CountDownTimer
     {
-        return object: CountDownTimer(30000, 1000)
+        return object: CountDownTimer(180000, 1000)
         {
             override fun onTick(millisUntilFinished: Long)
             {
@@ -154,11 +159,13 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
                 binding.tvCountOfAuth.text = "인증시간 초과"
 
-                Handler(Looper.getMainLooper()).postDelayed({
+                val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.ONE_WAY, title = "인증시간이 만료되었습니다", content= "이메일 인증을 다시 진행해주세요.", leftHandler = Pair("확인") { dialog ->
                     binding.etEmail.requestFocus()
-                }, 100)
+                    isCountTimer = false
+                    dialog.dismiss()
+                })
 
-                isCountTimer = false
+                optionalDialog.show(supportFragmentManager, "")
             }
 
         }

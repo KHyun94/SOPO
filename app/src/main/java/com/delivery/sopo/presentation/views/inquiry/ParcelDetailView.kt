@@ -226,7 +226,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         vm.navigator.observe(this) { nav ->
             when(nav)
             {
-                NavigatorConst.TO_BACK_SCREEN ->
+                NavigatorConst.Event.BACK ->
                 {
                     if(binding.slidingMain.isCollapsed())
                     {

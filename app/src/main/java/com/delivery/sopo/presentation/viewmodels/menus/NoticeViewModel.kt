@@ -16,6 +16,6 @@ class NoticeViewModel : BaseViewModel()
     }
 
     fun onBackClicked(){
-        postNavigator(NavigatorConst.TO_BACK_SCREEN)
+        postNavigator(NavigatorConst.Event.BACK)
     }
 }

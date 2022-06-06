@@ -64,7 +64,7 @@ class SignOutView: BaseView<SignOutViewBinding, SignOutViewModel>()
 
                     exit()
                 }
-                NavigatorConst.TO_BACK_SCREEN ->
+                NavigatorConst.Event.BACK ->
                 {
                     finish()
                 }
