@@ -11,13 +11,13 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.LockStatusConst
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.LockScreenViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.makeGone
 import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.models.base.BaseView
-import com.delivery.sopo.presentation.const.IntentConst
+import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.presentation.viewmodels.menus.LockScreenViewModel
 import com.delivery.sopo.util.AnimationUtil
 import com.delivery.sopo.util.SopoLog

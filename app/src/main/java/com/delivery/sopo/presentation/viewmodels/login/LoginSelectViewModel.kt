@@ -2,7 +2,7 @@ package com.delivery.sopo.presentation.viewmodels.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.consts.UserTypeConst
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.extensions.toMD5
@@ -109,7 +109,7 @@ class LoginSelectViewModel(private val loginUseCase: LoginUseCase, private val s
     {
         SopoLog.i(msg = "requestLoginBySelf(...) 호출")
         loginUseCase.invoke(username = email, password = uId.toMD5())
-        return postNavigator(NavigatorConst.TO_MAIN)
+        return postNavigator(NavigatorConst.Screen.MAIN)
     }
 
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
@@ -148,7 +148,7 @@ class LoginSelectViewModel(private val loginUseCase: LoginUseCase, private val s
             {
                 ErrorCode.NICK_NAME_NOT_FOUND ->
                 {
-                    _navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
+                    _navigator.postValue(NavigatorConst.Screen.UPDATE_NICKNAME)
                 }
                 else ->
                 {

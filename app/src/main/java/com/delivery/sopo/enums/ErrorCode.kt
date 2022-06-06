@@ -9,20 +9,6 @@ enum class ErrorCode(val httpStatusCode: Int, val code: Int, val errorType: Erro
     UNKNOWN_ERROR(500, 199, ErrorType.UNKNOWN_ERROR, "정의되지 않은 에러", "현재 서비스를 이용할 수 없습니다. 다음에 다시 시도해주세요."),
     SYSTEM_ERROR(500, 999, ErrorType.SYSTEM, "서버 내부에서 처리 중 에러가 발생했습니다.", "현재 서비스를 이용할 수 없습니다. 다음에 다시 시도해주세요."),
 
-   /* OAUTH2_INVALID_CLIENT(401, 801, ErrorType.OAUTH2, "Client 인증이 실패했습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
-    OAUTH2_UNAUTHORIZED_CLIENT(400, 802, ErrorType.OAUTH2, "해당 client가 resource에 대한 접근권한이 존재하지 않습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
-    OAUTH2_INVALID_GRANT(400, 803, ErrorType.OAUTH2, "인가코드, refrehs token이 틀리거나, 유효(만료)하지 않았습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
-    OAUTH2_INVALID_SCOPE(403, 804, ErrorType.OAUTH2, "지정한 Scope 설정이 잘못되었습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
-    OAUTH2_INVALID_TOKEN(401, 805, ErrorType.OAUTH2, "토큰의 유효기간이 지났거나 잘못된 토큰입니다.", "인증에 실패했습니다. 다시 시도해주세요."),
-    OAUTH2_INVALID_REQUEST(400, 806, ErrorType.OAUTH2, "유효하지 않은 요청입니다.", "인증에 실패했습니다. 다시 시도해주세요."),
-    OAUTH2_REDIRECT_URI_MISMATCH(400, 807, ErrorType.OAUTH2, "등록된 Redirect URL과 일치하지 않습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
-    OAUTH2_UNSUPPORTED_GRANT_TYPE(400, 808, ErrorType.OAUTH2, "Grant Type 설정이 잘못되었습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
-    OAUTH2_UNSUPPORTED_RESPONSE_TYPE(400, 809, ErrorType.OAUTH2, "지원하지 않는 응답 타입입니다.", "인증에 실패했습니다. 다시 시도해주세요."),
-    OAUTH2_ACCOUNT_NOT_FOUND(403, 810, ErrorType.OAUTH2, "사용자의 계정을 찾을 수 없습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
-    OAUTH2_UNKNOWN(401, 811, ErrorType.OAUTH2, "이 외 정의된 사유로 에러가 발생했습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
-    OAUTH2_DELETE_TOKEN(400, 812, ErrorType.OAUTH2, "존재하지 않는 토큰입니다.(중복 로그인)", "다른 기기에 로그인되어있습니다. 다시 확인해주세요."),
-*/
-
     INVALID_JWT_TOKEN(401, 601, ErrorType.AUTHENTICATION, "비밀번호 초기화 API에서 JWT 토큰 검증에 실패했습니다.", ""),
     FAIL_TO_CREATE_JWT_TOKEN(500, 602, ErrorType.SYSTEM, "인증서버에서 인증토큰을 생성하는데 실패했습니다.", ""),
     FAIL_TO_CONNECT_INTERNAL_SERVICE(500, 603, ErrorType.SYSTEM, "서버간 서비스 연결에 실패했습니다.", "현재 서비스를 이용할 수 없습니다. 다음에 다시 시도해주세요."),
@@ -42,6 +28,21 @@ enum class ErrorCode(val httpStatusCode: Int, val code: Int, val errorType: Erro
     PARCEL_NOT_FOUND(404, 703, ErrorType.NO_RESOURCE, "해당하는 id에 부합하는 택배를 찾을 수 없습니다.", "해당하는 id에 부합하는 택배를 찾을 수 없습니다."),
     FAIL_TO_SEARCH_PARCEL(500, 704, ErrorType.DELIVERY, "택배 조회에 실패하였습니다.", "택배 조회에 실패하였습니다."),
     PARCEL_BAD_REQUEST(400, 705, ErrorType.VALIDATION, "송장 번호를 확인해주세요.", "송장 번호를 확인해주세요.");
+
+    /* OAUTH2_INVALID_CLIENT(401, 801, ErrorType.OAUTH2, "Client 인증이 실패했습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
+ OAUTH2_UNAUTHORIZED_CLIENT(400, 802, ErrorType.OAUTH2, "해당 client가 resource에 대한 접근권한이 존재하지 않습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
+ OAUTH2_INVALID_GRANT(400, 803, ErrorType.OAUTH2, "인가코드, refrehs token이 틀리거나, 유효(만료)하지 않았습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
+ OAUTH2_INVALID_SCOPE(403, 804, ErrorType.OAUTH2, "지정한 Scope 설정이 잘못되었습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
+ OAUTH2_INVALID_TOKEN(401, 805, ErrorType.OAUTH2, "토큰의 유효기간이 지났거나 잘못된 토큰입니다.", "인증에 실패했습니다. 다시 시도해주세요."),
+ OAUTH2_INVALID_REQUEST(400, 806, ErrorType.OAUTH2, "유효하지 않은 요청입니다.", "인증에 실패했습니다. 다시 시도해주세요."),
+ OAUTH2_REDIRECT_URI_MISMATCH(400, 807, ErrorType.OAUTH2, "등록된 Redirect URL과 일치하지 않습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
+ OAUTH2_UNSUPPORTED_GRANT_TYPE(400, 808, ErrorType.OAUTH2, "Grant Type 설정이 잘못되었습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
+ OAUTH2_UNSUPPORTED_RESPONSE_TYPE(400, 809, ErrorType.OAUTH2, "지원하지 않는 응답 타입입니다.", "인증에 실패했습니다. 다시 시도해주세요."),
+ OAUTH2_ACCOUNT_NOT_FOUND(403, 810, ErrorType.OAUTH2, "사용자의 계정을 찾을 수 없습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
+ OAUTH2_UNKNOWN(401, 811, ErrorType.OAUTH2, "이 외 정의된 사유로 에러가 발생했습니다.", "인증에 실패했습니다. 다시 시도해주세요."),
+ OAUTH2_DELETE_TOKEN(400, 812, ErrorType.OAUTH2, "존재하지 않는 토큰입니다.(중복 로그인)", "다른 기기에 로그인되어있습니다. 다시 확인해주세요."),
+*/
+
 
     companion object{
         fun getCode(code: Int): ErrorCode

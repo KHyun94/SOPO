@@ -30,7 +30,7 @@ import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.mapper.MenuMapper
-import com.delivery.sopo.presentation.const.IntentConst
+import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.presentation.viewmodels.inquiry.CompletedTypeViewModel
 import com.delivery.sopo.presentation.views.adapter.InquiryListAdapter
 import com.delivery.sopo.presentation.views.adapter.PopupMenuListAdapter

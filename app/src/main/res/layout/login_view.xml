@@ -54,7 +54,6 @@
                 android:background="@color/COLOR_GRAY_50"
                 android:hint="@string/EMAIL"
                 android:textColorHint="@color/COLOR_GRAY_400"
-                app:helperTextTextColor="@color/COLOR_MAIN_700"
                 app:boxBackgroundColor="@color/COLOR_GRAY_100"
                 app:boxBackgroundMode="outline"
                 app:boxCornerRadiusBottomEnd="10dp"
@@ -69,6 +68,7 @@
                 app:errorEnabled="true"
                 app:errorIconTint="@null"
                 app:errorTextColor="@color/COLOR_MAIN_700"
+                app:helperTextTextColor="@color/COLOR_MAIN_700"
                 app:hintEnabled="true"
                 app:hintTextColor="@color/COLOR_MAIN_700">
 
@@ -80,7 +80,7 @@
                     android:inputType="textEmailAddress"
                     android:maxEms="50"
                     android:singleLine="true"
-                    android:text="@={vm.email}"
+                    android:text="@={vm.username}"
                     app:focusChangeListener="@{vm.focusChangeCallback}"
                     app:type="@{InfoEnum.EMAIL}" />
 
@@ -95,7 +95,6 @@
                 android:background="@color/COLOR_GRAY_50"
                 android:hint="@string/PASSWORD"
                 android:textColorHint="@color/COLOR_GRAY_400"
-                app:helperTextTextColor="@color/COLOR_MAIN_700"
                 app:boxBackgroundColor="@color/COLOR_GRAY_100"
                 app:boxBackgroundMode="outline"
                 app:boxCornerRadiusBottomEnd="10dp"
@@ -110,6 +109,7 @@
                 app:errorEnabled="true"
                 app:errorIconTint="@null"
                 app:errorTextColor="@color/COLOR_MAIN_700"
+                app:helperTextTextColor="@color/COLOR_MAIN_700"
                 app:hintEnabled="true"
                 app:hintTextColor="@color/COLOR_MAIN_700">
 
@@ -150,6 +150,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="36dp"
             android:focusable="true"
+            android:clickable="true"
             android:onClick="@{()->vm.onLoginClicked()}"
             android:text="@string/DO_LOGIN"
             app:layout_constraintLeft_toLeftOf="parent"

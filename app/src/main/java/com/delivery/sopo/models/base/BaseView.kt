@@ -50,11 +50,13 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
      * Network Status Check
      */
     private val disconnectNetworkSnackBar: CustomSnackBar<Unit> by lazy {
-        CustomSnackBar.make(view = mainLayout, content = "네트워크 오류입니다.", data = Unit, duration = 600000, type = SnackBarEnum.ERROR)
+        val snackBar = CustomSnackBar.make(view = mainLayout, content = "네트워크 오류입니다.", data = Unit, type = SnackBarEnum.ERROR)
+        snackBar.setDuration(600000)
+        snackBar
     }
 
     private val reconnectNetworkSnackBar: CustomSnackBar<Unit> by lazy {
-        CustomSnackBar.make(view = mainLayout, content = "네트워크에 다시 연결되었어요.", data = Unit, duration = 3000, type = SnackBarEnum.COMMON)
+        CustomSnackBar.make(view = mainLayout, content = "네트워크에 다시 연결되었어요.", data = Unit, type = SnackBarEnum.COMMON)
     }
 
     val loadingBar: SopoLoadingBar by lazy {
@@ -173,9 +175,8 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         }
 
         vm.errorSnackBar.observe(this) {
-            val snackBar =
-                CustomSnackBar.make(view = mainLayout, content = it, data = Unit, duration = 3000, type = SnackBarEnum.ERROR, clickListener = vm.onSnackClickListener)
-            snackBar.show()
+
+            CustomSnackBar.make(view = mainLayout, content = it, data = Unit, type = SnackBarEnum.ERROR, clickListener = vm.onSnackClickListener).show()
         }
     }
 

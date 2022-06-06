@@ -3,7 +3,7 @@ package com.delivery.sopo.presentation.viewmodels.signup
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.bindings.FocusChangeCallback
+import com.delivery.sopo.presentation.bindings.FocusChangeCallback
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.NavigatorEnum

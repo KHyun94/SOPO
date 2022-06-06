@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.SignOutViewBinding
 import com.delivery.sopo.enums.OptionalTypeEnum
 import com.delivery.sopo.models.base.BaseView

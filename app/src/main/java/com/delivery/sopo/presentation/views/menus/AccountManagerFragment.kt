@@ -3,7 +3,7 @@ package com.delivery.sopo.presentation.views.menus
 import android.view.View
 import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentAccountManagerBinding
 import com.delivery.sopo.enums.OptionalTypeEnum
 import com.delivery.sopo.enums.TabCode
@@ -62,11 +62,11 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
                     TabCode.MY_MENU_MAIN.FRAGMENT = MenuFragment.newInstance()
                     FragmentManager.move(requireActivity(), TabCode.MY_MENU_MAIN, MenuMainFragment.viewId)
                 }
-                NavigatorConst.TO_UPDATE_NICKNAME ->
+                NavigatorConst.Screen.UPDATE_NICKNAME ->
                 {
                     requireActivity().moveToActivity(UpdateNicknameView::class.java)
                 }
-                NavigatorConst.TO_RESET_PASSWORD ->
+                NavigatorConst.Screen.RESET_PASSWORD ->
                 {
                     requireActivity().moveToActivity(ResetPasswordView::class.java)
                 }

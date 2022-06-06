@@ -8,7 +8,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.IntroViewBinding
 import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.interfaces.listener.OnIntroClickListener

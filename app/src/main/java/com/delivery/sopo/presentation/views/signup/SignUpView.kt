@@ -3,7 +3,7 @@ package com.delivery.sopo.presentation.views.signup
 import android.content.Intent
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.SignUpViewBinding
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.moveToActivityWithFinish
@@ -53,7 +53,7 @@ class SignUpView: BaseView<SignUpViewBinding, SignUpViewModel>()
                 else -> throw Exception("비정상 형식 에러 발생")
             }
 
-            CustomSnackBar.make(view = binding.constraintMainSignUp, content = message,data = Unit, duration = 3000).show()
+            CustomSnackBar.make(view = binding.constraintMainSignUp, content = message,data = Unit).show()
         })
 
         vm.navigator.observe(this) { navigator ->

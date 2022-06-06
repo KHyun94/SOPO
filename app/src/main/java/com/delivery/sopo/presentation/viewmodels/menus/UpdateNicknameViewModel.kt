@@ -3,8 +3,8 @@ package com.delivery.sopo.presentation.viewmodels.menus
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.bindings.FocusChangeCallback
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.bindings.FocusChangeCallback
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
 import com.delivery.sopo.data.repositories.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.ErrorCode
@@ -98,7 +98,7 @@ class UpdateNicknameViewModel(private val userLocalRepo: UserLocalRepository,
         {
             onStartLoading()
             updateNicknameUseCase.invoke(nickname = nickname)
-            _navigator.postValue(NavigatorConst.TO_MAIN)
+            _navigator.postValue(NavigatorConst.Screen.MAIN)
         }
         finally
         {

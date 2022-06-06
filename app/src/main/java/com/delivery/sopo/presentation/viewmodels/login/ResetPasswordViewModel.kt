@@ -5,8 +5,8 @@ import android.text.Html
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.bindings.FocusChangeCallback
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.bindings.FocusChangeCallback
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.consts.ResetPasswordConst
 import com.delivery.sopo.data.repositories.remote.user.UserRemoteRepository
 import com.delivery.sopo.enums.ErrorCode
@@ -32,8 +32,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         get() = _invalidity
 
     private val _navigator = MutableLiveData<String>()
-    val navigator: LiveData<String>
-        get() = _navigator
+    val navigator: LiveData<String> = _navigator
 
     val authCode = MutableLiveData<String>()
 
@@ -43,12 +42,10 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
     }
 
     private val _focus = MutableLiveData<Triple<View, Boolean, InfoEnum>>()
-    val focus: MutableLiveData<Triple<View, Boolean, InfoEnum>>
-        get() = _focus
+    val focus: MutableLiveData<Triple<View, Boolean, InfoEnum>> = _focus
 
     private val _focusOn = MutableLiveData<InfoEnum>()
-    val focusOn: MutableLiveData<InfoEnum>
-        get() = _focusOn
+    val focusOn: MutableLiveData<InfoEnum> = _focusOn
 
     var cnfOfFailureAuthCode: Int = 0
 

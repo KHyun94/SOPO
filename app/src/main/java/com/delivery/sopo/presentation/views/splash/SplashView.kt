@@ -1,9 +1,8 @@
 package com.delivery.sopo.presentation.views.splash
 
 import android.content.Intent
-import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.SplashViewBinding
 import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.interfaces.listener.OnPermissionResponseCallback
@@ -69,19 +68,15 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
                 {
                     PermissionUtil.requestPermission(this, onPermissionResponseCallback)
                 }
-                NavigatorConst.TO_UPDATE_NICKNAME ->
+                NavigatorConst.Screen.UPDATE_NICKNAME ->
                 {
                     moveToActivityWithFinish(RegisterNicknameView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     finish()
                 }
-                NavigatorConst.TO_MAIN ->
+                NavigatorConst.Screen.MAIN ->
                 {
                     moveToActivityWithFinish(MainView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     finish()
-                }
-                NavigatorConst.DUPLICATE_LOGIN ->
-                {
-
                 }
             }
         }

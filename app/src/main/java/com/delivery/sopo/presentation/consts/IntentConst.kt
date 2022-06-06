@@ -1,4 +1,4 @@
-package com.delivery.sopo.presentation.const
+package com.delivery.sopo.presentation.consts
 
 object IntentConst
 {

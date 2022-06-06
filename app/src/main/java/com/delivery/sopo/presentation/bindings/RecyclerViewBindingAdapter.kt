@@ -1,4 +1,4 @@
-package com.delivery.sopo.bindings
+package com.delivery.sopo.presentation.bindings
 
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.GridLayoutManager

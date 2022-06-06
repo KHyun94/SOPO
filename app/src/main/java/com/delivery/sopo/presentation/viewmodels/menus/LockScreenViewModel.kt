@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.consts.LockStatusConst
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.database.room.dto.AppPasswordDTO
 import com.delivery.sopo.data.repositories.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repositories.local.user.UserLocalRepository

@@ -25,7 +25,7 @@ object TextInputUtil
 
     fun changeFocus(context: Context, focus: Triple<View, Boolean, InfoEnum>): Pair<InfoEnum, Boolean>
     {
-        if (!focus.second)
+        if(!focus.second)
         {
             return focusOut(context, focus)
         }
@@ -37,12 +37,19 @@ object TextInputUtil
     {
         val textInputLayout = textInputEditText.parent.parent as TextInputLayout
 
-        return object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        return object: TextWatcher
+        {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+            {
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int)
+            {
+            }
+
             override fun afterTextChanged(p0: Editable?)
             {
-                textInputLayout.helperText = when (infoEnum)
+                textInputLayout.helperText = when(infoEnum)
                 {
                     InfoEnum.EMAIL ->
                     {
@@ -81,21 +88,20 @@ object TextInputUtil
         val hasFocus = focus.second
         val infoEnum = focus.third
 
-        textInputLayout.run {
-            // 힌트 홣성화
+        textInputLayout.run { // 힌트 홣성화
             isHintEnabled = true
             hint = focus.third.NAME
 
             // 내부 이너 박스 컬러 >>> GRAY_50
-            boxBackgroundColor = ContextCompat.getColor(context, R.color.COLOR_GRAY_50)
-            // endIcon >>> Visible, clear img
+            boxBackgroundColor =
+                ContextCompat.getColor(context, R.color.COLOR_GRAY_50) // endIcon >>> Visible, clear img
 
             error = null
             errorIconDrawable = null
 
             val inputText: String = textInputEditText.text.toString()
 
-            helperText = when (infoEnum)
+            helperText = when(infoEnum)
             {
                 InfoEnum.EMAIL ->
                 {
@@ -122,11 +128,10 @@ object TextInputUtil
 
             textInputEditText.addTextChangedListener(setTextInputLayoutTextWatcher(textInputEditText, infoEnum))
 
-//            setHelperTextColor(ContextCompat.getColorStateList(context, R.color.COLOR_MAIN_700))
-
             isEndIconVisible = true
             endIconMode = TextInputLayout.END_ICON_CUSTOM
-            endIconDrawable = ContextCompat.getDrawable(context, R.drawable.ic_textinput_status_clear)
+            endIconDrawable =
+                ContextCompat.getDrawable(context, R.drawable.ic_textinput_status_clear)
 
             setEndIconOnClickListener {
                 editText?.setText("")
@@ -143,7 +148,6 @@ object TextInputUtil
         val textInputEditText = (focus.first as TextInputEditText)
         val textInputLayout = textInputEditText.parent.parent as TextInputLayout
 
-        val hasFocus = focus.second
         val infoEnum = focus.third
 
         textInputLayout.setEndIconOnClickListener(null)
@@ -154,7 +158,7 @@ object TextInputUtil
 
         var isValidate: Boolean
 
-        when (infoEnum)
+        when(infoEnum)
         {
             InfoEnum.EMAIL ->
             {
@@ -237,7 +241,7 @@ object TextInputUtil
             return Pair(infoEnum, false)
         }
 
-        if (!isValidate)
+        if(!isValidate)
         {
             SopoLog.d("${infoEnum.NAME}'s validation is failed >>>${textInputEditText.text.toString()}")
 
@@ -250,7 +254,7 @@ object TextInputUtil
                     hint = "${focus.third.NAME}를 여기에 입력하세요."
                 }
 
-                boxBackgroundColor = resources.getColor(R.color.COLOR_GRAY_50)
+                boxBackgroundColor = ContextCompat.getColor(context, R.color.COLOR_GRAY_50)
 
                 boxStrokeWidth = SizeUtil.changeDpToPx(context, 2.0f)
                 boxStrokeColor = ContextCompat.getColor(context, R.color.COLOR_MAIN_700)
@@ -259,7 +263,8 @@ object TextInputUtil
                 endIconDrawable = null
 
                 error = errorMessage
-                errorIconDrawable = ContextCompat.getDrawable(context, R.drawable.ic_textinput_status_fail)
+                errorIconDrawable =
+                    ContextCompat.getDrawable(context, R.drawable.ic_textinput_status_fail)
             }
             return Pair(infoEnum, false)
         }
@@ -275,11 +280,12 @@ object TextInputUtil
             boxBackgroundColor = ContextCompat.getColor(context, R.color.COLOR_MAIN_BLUE_50)
 
             boxStrokeWidth = SizeUtil.changeDpToPx(context, 0.0f)
-            boxStrokeErrorColor = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
+            boxStrokeErrorColor =
+                ColorStateList.valueOf(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
 
             if(infoEnum == InfoEnum.WAYBILL_NUMBER)
             {
-                boxBackgroundColor = resources.getColor(R.color.COLOR_GRAY_100)
+                boxBackgroundColor = ContextCompat.getColor(context, R.color.COLOR_GRAY_100)
 
                 boxStrokeWidth = SizeUtil.changeDpToPx(context, 0.0f)
 
@@ -293,11 +299,132 @@ object TextInputUtil
             }
 
             isEndIconVisible = true
-            endIconDrawable = ContextCompat.getDrawable(context, R.drawable.ic_textinput_status_success)
+            endIconDrawable =
+                ContextCompat.getDrawable(context, R.drawable.ic_textinput_status_success)
 
             error = ""
             isErrorEnabled = true
-            errorIconDrawable = ContextCompat.getDrawable(context, R.drawable.ic_textinput_status_success)
+            errorIconDrawable =
+                ContextCompat.getDrawable(context, R.drawable.ic_textinput_status_success)
+
+        }
+
+        return Pair(infoEnum, true)
+    }
+
+    /** 유효성 검사 안하는 버전 */
+
+    fun changeFocusWithoutValidation(context: Context, focus: Triple<View, Boolean, InfoEnum>): Pair<InfoEnum, Boolean>
+    {
+        if(!focus.second)
+        {
+            return focusOutWithoutValidation(context, focus)
+        }
+
+        return focusInWithoutValidation(context, focus)
+    }
+
+
+    private fun focusInWithoutValidation(context: Context, focus: Triple<View, Boolean, InfoEnum>): Pair<InfoEnum, Boolean>
+    {
+        SopoLog.d("${focus.third.NAME}::focus in")
+
+        val textInputEditText = (focus.first as TextInputEditText)
+
+        (textInputEditText.parent.parent as TextInputLayout).run { // 힌트 홣성화
+            isHintEnabled = true
+            hint = focus.third.NAME
+
+            // 내부 이너 박스 컬러 >>> GRAY_50
+            boxBackgroundColor =
+                ContextCompat.getColor(context, R.color.COLOR_GRAY_50) // endIcon >>> Visible, clear img
+
+            error = null
+            errorIconDrawable = null
+
+            isEndIconVisible = true
+            endIconMode = TextInputLayout.END_ICON_CUSTOM
+            endIconDrawable =
+                ContextCompat.getDrawable(context, R.drawable.ic_textinput_status_clear)
+
+            setEndIconOnClickListener {
+                editText?.setText("")
+            }
+        }
+
+        val infoEnum = focus.third
+
+        return Pair(infoEnum, false)
+    }
+
+    private fun focusOutWithoutValidation(context: Context, focus: Triple<View, Boolean, InfoEnum>): Pair<InfoEnum, Boolean>
+    {
+        SopoLog.d("${focus.third.NAME}::focus out")
+
+        val textInputEditText = (focus.first as TextInputEditText)
+        val textInputLayout = textInputEditText.parent.parent as TextInputLayout
+
+        val infoEnum = focus.third
+
+        textInputLayout.setEndIconOnClickListener(null)
+
+        textInputLayout.helperText = null
+
+        if(textInputEditText.text.toString().isEmpty())
+        {
+            textInputLayout.run {
+                isHintEnabled = true
+                if(infoEnum == InfoEnum.WAYBILL_NUMBER)
+                {
+                    hint = "${focus.third.NAME}를 여기에 입력하세요."
+                }
+                if(infoEnum != InfoEnum.WAYBILL_NUMBER) hint = infoEnum.NAME
+                boxBackgroundColor = ContextCompat.getColor(context, R.color.COLOR_GRAY_100)
+
+                boxStrokeWidth = SizeUtil.changeDpToPx(context, 0.0f)
+                boxStrokeColor = ContextCompat.getColor(context, R.color.COLOR_MAIN_700)
+
+                error = null
+
+                endIconDrawable = null
+                errorIconDrawable = ContextCompat.getDrawable(context, R.color.COLOR_GRAY_100)
+            }
+            return Pair(infoEnum, false)
+        }
+
+        textInputLayout.run {
+            post {
+                hint = null
+                isHintEnabled = false
+            }
+
+            boxBackgroundColor = ContextCompat.getColor(context, R.color.COLOR_MAIN_BLUE_50)
+
+            boxStrokeWidth = SizeUtil.changeDpToPx(context, 0.0f)
+            boxStrokeErrorColor =
+                ColorStateList.valueOf(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
+
+            if(infoEnum == InfoEnum.WAYBILL_NUMBER)
+            {
+                boxBackgroundColor = ContextCompat.getColor(context, R.color.COLOR_GRAY_100)
+
+                boxStrokeWidth = SizeUtil.changeDpToPx(context, 0.0f)
+
+                isEndIconVisible = true
+                endIconDrawable = null
+
+                error = ""
+                isErrorEnabled = true
+                errorIconDrawable = null
+                return Pair(infoEnum, true)
+            }
+
+            isEndIconVisible = true
+            endIconDrawable = null
+
+            error = ""
+            isErrorEnabled = true
+            errorIconDrawable = null
 
         }
 

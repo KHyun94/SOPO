@@ -2,7 +2,7 @@ package com.delivery.sopo.presentation.views.signup
 
 import android.content.Intent
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.SignUpCompleteBinding
 import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.models.base.BaseView
@@ -24,8 +24,8 @@ class SignUpCompleteView : BaseView<SignUpCompleteBinding, SignUpCompleteViewMod
 
             val toActivity = when(navigator)
             {
-                NavigatorConst.TO_MAIN -> MainView::class.java
-                NavigatorConst.TO_UPDATE_NICKNAME -> RegisterNicknameView::class.java
+                NavigatorConst.Screen.MAIN -> MainView::class.java
+                NavigatorConst.Screen.UPDATE_NICKNAME -> RegisterNicknameView::class.java
                 else -> throw Exception("정상적인 접근이 아닙니다.")
             }
 

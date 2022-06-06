@@ -7,7 +7,7 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Toast
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentInputParcelBinding
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.TabCode
@@ -17,7 +17,7 @@ import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.presentation.const.IntentConst
+import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.presentation.models.enums.ReturnType
 import com.delivery.sopo.presentation.viewmodels.registesrs.InputParcelViewModel
 import com.delivery.sopo.presentation.views.main.MainView

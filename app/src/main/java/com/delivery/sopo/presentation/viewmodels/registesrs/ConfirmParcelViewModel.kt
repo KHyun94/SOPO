@@ -4,7 +4,7 @@ import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.domain.usecase.parcel.remote.RegisterParcelUseCase
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback

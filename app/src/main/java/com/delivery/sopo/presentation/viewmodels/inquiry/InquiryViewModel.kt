@@ -4,7 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize

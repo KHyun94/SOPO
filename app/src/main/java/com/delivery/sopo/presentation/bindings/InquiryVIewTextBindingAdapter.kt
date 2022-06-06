@@ -1,4 +1,4 @@
-package com.delivery.sopo.bindings
+package com.delivery.sopo.presentation.bindings
 
 import android.graphics.Color
 import android.widget.TextView

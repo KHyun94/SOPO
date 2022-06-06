@@ -13,16 +13,16 @@ import com.google.android.material.snackbar.Snackbar
 
 typealias OnSnackBarClickListener<T> = (data:T)->Unit
 
-class CustomSnackBar<T>(private val view: View, private val content: String, private val data:T,  private val clickListener: Pair<CharSequence, OnSnackBarClickListener<T>>? = null, private val duration: Int, private val type: SnackBarEnum? = null)
+class CustomSnackBar<T>(private val view: View, private val content: String, private val data:T,  private val clickListener: Pair<CharSequence, OnSnackBarClickListener<T>>? = null, private val type: SnackBarEnum? = null)
 {
     companion object
     {
-        fun<T> make(view: View, content: String, data: T, duration: Int, type: SnackBarEnum? = null, clickListener: Pair<CharSequence, OnSnackBarClickListener<T>>? = null) =
-            CustomSnackBar<T>(view = view, content = content, duration = duration, type = type, data = data, clickListener = clickListener)
+        fun<T> make(view: View, content: String, data: T, type: SnackBarEnum? = null, clickListener: Pair<CharSequence, OnSnackBarClickListener<T>>? = null) =
+            CustomSnackBar<T>(view = view, content = content, type = type, data = data, clickListener = clickListener)
     }
 
     private lateinit var binding: SnackBarCustomBinding
-    private val snackBar = Snackbar.make(view, content, duration)
+    private val snackBar = Snackbar.make(view, content, 3000)
     private val snackBarLayout = snackBar.view as Snackbar.SnackbarLayout
 
     init
@@ -30,6 +30,10 @@ class CustomSnackBar<T>(private val view: View, private val content: String, pri
         bindView()
         initUI(type = type)
         initData(content = content, data = data, clickListener = clickListener)
+    }
+
+    fun setDuration(duration: Int){
+        snackBar.duration = duration
     }
 
     private fun bindView()

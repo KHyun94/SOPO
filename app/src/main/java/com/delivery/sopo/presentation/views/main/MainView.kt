@@ -7,10 +7,9 @@ import androidx.activity.result.ActivityResult
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.OnCallbackListener
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.ItemMainTabBinding
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
@@ -20,10 +19,9 @@ import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.interfaces.OnPageSelectListener
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.models.base.OnActivityResultCallbackListener
-import com.delivery.sopo.presentation.const.IntentConst
+import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.presentation.models.TabIcon
 import com.delivery.sopo.presentation.services.PowerManager
-import com.delivery.sopo.presentation.services.receivers.ParcelManagementBroadcastReceiver
 import com.delivery.sopo.presentation.viewmodels.main.MainViewModel
 import com.delivery.sopo.presentation.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.presentation.views.adapter.ViewPagerAdapter

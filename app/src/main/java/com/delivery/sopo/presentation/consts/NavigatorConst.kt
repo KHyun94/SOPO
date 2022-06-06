@@ -1,9 +1,13 @@
-package com.delivery.sopo.consts
+package com.delivery.sopo.presentation.consts
 
 object NavigatorConst {
 
+    object Screen {
+        const val MAIN = "SCREEN_MAIN"
+        const val RESET_PASSWORD = "SCREEN_RESET_PASSWORD"
+        const val UPDATE_NICKNAME = "SCREEN_UPDATE_NICKNAME"
+    }
 
-    const val MOVE_TO_LOCK_SCREEN: String = "MOVE_TO_LOCK_SCREEN"
     const val CONFIRM_SIGN_OUT:String = "CONFIRM_SIGN_OUT"
     const val EXIT: String = "EXIT"
     const val DUPLICATE_LOGIN: String = "DUPLICATE_LOGIN"
@@ -12,12 +16,12 @@ object NavigatorConst {
     const val TO_LOGIN_SELECT = "TO_LOGIN_SELECT"
     const val TO_SIGN_UP = "TO_SIGN_UP"
     const val TO_KAKAO_LOGIN = "TO_KAKAO_LOGIN"
-    const val TO_UPDATE_NICKNAME = "TO_UPDATE_NICKNAME"
-    const val TO_RESET_PASSWORD = "TO_RESET_PASSWORD"
+
+
 
     const val TO_PERMISSION = "TO_PERMISSION"
     const val TO_INTRO = "TO_INTRO"
-    const val TO_MAIN = "TO_MAIN"
+
 
     const val REGISTER_TAB = 0
     const val INQUIRY_TAB = 1

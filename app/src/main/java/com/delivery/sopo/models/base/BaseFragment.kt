@@ -42,11 +42,13 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
      * Network Status Check
      */
     private val disconnectNetworkSnackBar: CustomSnackBar<Unit> by lazy {
-        CustomSnackBar.make<Unit>(view = mainLayout, content = "네트워크 오류입니다.", data = Unit, duration = 600000, type = SnackBarEnum.ERROR)
+        val snackBar = CustomSnackBar.make<Unit>(view = mainLayout, content = "네트워크 오류입니다.", data = Unit, type = SnackBarEnum.ERROR)
+        snackBar.setDuration(60000)
+        snackBar
     }
 
     private val reconnectNetworkSnackBar: CustomSnackBar<Unit> by lazy {
-        CustomSnackBar.make<Unit>(view = mainLayout, content = "네트워크에 다시 연결되었어요.", data = Unit, duration = 3000, type = SnackBarEnum.COMMON)
+        CustomSnackBar.make<Unit>(view = mainLayout, content = "네트워크에 다시 연결되었어요.", data = Unit, type = SnackBarEnum.COMMON)
     }
 
     private val progressBar: SopoLoadingBar by lazy {
@@ -219,8 +221,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
         }
 
         vm.errorSnackBar.observe(viewLifecycleOwner) {
-            val snackBar = CustomSnackBar.make(mainLayout, it, Unit,3000, SnackBarEnum.ERROR)
-            snackBar.show()
+            CustomSnackBar.make(mainLayout, it, Unit, SnackBarEnum.ERROR).show()
         }
 
         vm.toast.observe(viewLifecycleOwner) { toast ->

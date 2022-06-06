@@ -16,7 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
 import com.delivery.sopo.enums.DeliveryStatusEnum
@@ -24,7 +24,7 @@ import com.delivery.sopo.extensions.*
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseFragment
-import com.delivery.sopo.presentation.const.IntentConst
+import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.util.*
 import com.delivery.sopo.presentation.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.presentation.views.adapter.TimeLineRecyclerViewAdapter
@@ -33,8 +33,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.*
-import kotlin.properties.Delegates
 
 class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewModel>()
 {

@@ -1,4 +1,4 @@
-package com.delivery.sopo.bindings
+package com.delivery.sopo.presentation.bindings
 
 import android.view.View
 import androidx.databinding.BindingAdapter

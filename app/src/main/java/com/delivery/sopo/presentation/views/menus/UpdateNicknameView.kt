@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.UpdateNicknameViewBinding
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
@@ -101,7 +101,7 @@ class UpdateNicknameView: BaseView<UpdateNicknameViewBinding, UpdateNicknameView
         vm.navigator.observe(this@UpdateNicknameView, Observer { navigator ->
             when(navigator)
             {
-                NavigatorConst.TO_MAIN ->
+                NavigatorConst.Screen.MAIN ->
                 {
                     val builder = SpannableStringBuilder("변경된 닉네임은\n${vm.nickname.value?.toString()}입니다.")
                     builder.setSpan(ForegroundColorSpan(ContextCompat.getColor(this, R.color.COLOR_MAIN_700)), 8, builder.length - 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)

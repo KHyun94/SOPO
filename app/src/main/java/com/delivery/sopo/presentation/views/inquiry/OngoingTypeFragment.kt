@@ -14,7 +14,7 @@ import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentOngoingTypeBinding
 import com.delivery.sopo.enums.*
 import com.delivery.sopo.interfaces.OnPageSelectListener
@@ -36,8 +36,7 @@ import com.delivery.sopo.data.models.Result
 import com.delivery.sopo.extensions.makeGone
 import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.presentation.const.IntentConst
-import com.delivery.sopo.util.DateUtil
+import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.util.SopoLog
 
 class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeViewModel>()

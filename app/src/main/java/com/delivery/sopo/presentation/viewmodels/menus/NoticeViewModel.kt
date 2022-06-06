@@ -2,7 +2,7 @@ package com.delivery.sopo.presentation.viewmodels.menus
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.models.base.BaseViewModel
 
 class NoticeViewModel : BaseViewModel()

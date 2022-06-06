@@ -2,7 +2,7 @@ package com.delivery.sopo.presentation.viewmodels.signup
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.domain.usecase.user.token.LoginUseCase
 import com.delivery.sopo.enums.ErrorCode
@@ -31,7 +31,7 @@ class SignUpCompleteViewModel(private val loginUseCase: LoginUseCase, private va
       {
         ErrorCode.NICK_NAME_NOT_FOUND ->
         {
-          _navigator.postValue(NavigatorConst.TO_UPDATE_NICKNAME)
+          _navigator.postValue(NavigatorConst.Screen.UPDATE_NICKNAME)
         }
         ErrorCode.USER_NOT_FOUND ->
         {
@@ -76,7 +76,7 @@ class SignUpCompleteViewModel(private val loginUseCase: LoginUseCase, private va
 
             loginUseCase.invoke(userName, password)
 
-            postNavigator(NavigatorConst.TO_MAIN)
+            postNavigator(NavigatorConst.Screen.MAIN)
         }
         finally
         {

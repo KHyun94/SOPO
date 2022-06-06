@@ -2,7 +2,7 @@ package com.delivery.sopo.presentation.viewmodels.registesrs
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
 import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.models.Carrier

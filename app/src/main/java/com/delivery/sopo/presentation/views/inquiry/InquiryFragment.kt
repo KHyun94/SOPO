@@ -13,7 +13,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.viewpager2.widget.ViewPager2
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentInquiryBinding
 import com.delivery.sopo.databinding.ItemInquiryTabBinding
 import com.delivery.sopo.enums.InquiryStatusEnum
@@ -21,7 +21,7 @@ import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.reduceSensitive
 import com.delivery.sopo.models.base.BaseFragment
-import com.delivery.sopo.presentation.const.IntentConst
+import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.presentation.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.presentation.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.presentation.views.main.MainView
@@ -67,7 +67,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
                 {
                     binding.viewPagerInquiryType.currentItem = 0
                 }
-                IntentConst.Action.REGISTERED_COMPLETED_PARCEL->
+                IntentConst.Action.REGISTERED_COMPLETED_PARCEL ->
                 {
                     val data = intent.getStringExtra("REGISTERED_DATE")
                     SopoLog.d("DATE => $data")
@@ -81,6 +81,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
             }
         }
     }
+
     override fun onResume()
     {
         super.onResume()
@@ -130,7 +131,8 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
 
             vm.onUpdateParcels(parcelIds)
 
-            val snackBar = CustomSnackBar.make(view = binding.tabLayoutInquiryType, content = "방금 ${parcelIds.size}개의 배송정보가 업데이트 되었습니다.", data = Unit, duration = 3000, type = SnackBarEnum.COMMON)
+            val snackBar =
+                CustomSnackBar.make(view = binding.tabLayoutInquiryType, content = "방금 ${parcelIds.size}개의 배송정보가 업데이트 되었습니다.", data = Unit, type = SnackBarEnum.COMMON)
             snackBar.show()
         }
 
@@ -282,9 +284,9 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
 
                     vm.startDeleteCount()
 
-                    CustomSnackBar.make<Unit>(view = mainLayout, content = "${parcelStatuses.size}개 항목이 삭제되었습니다.", data = Unit, 5000, SnackBarEnum.CONFIRM_DELETE, Pair("실행취소") {
-                        vm.stopDeleteCount()
-                    }).show()
+                    val snackBar = CustomSnackBar.make<Unit>(view = mainLayout, content = "${parcelStatuses.size}개 항목이 삭제되었습니다.", data = Unit, SnackBarEnum.CONFIRM_DELETE, Pair("실행취소") { vm.stopDeleteCount() })
+                    snackBar.setDuration(5000)
+                    snackBar.show()
                 }
             }
 

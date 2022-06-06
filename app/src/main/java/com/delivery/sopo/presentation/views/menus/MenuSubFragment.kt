@@ -14,7 +14,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentMenuSubBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.util.CodeUtil

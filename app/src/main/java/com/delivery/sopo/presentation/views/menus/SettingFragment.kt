@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentSettingBinding
 import com.delivery.sopo.databinding.ItemTimeTabBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
@@ -20,7 +20,7 @@ import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.*
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.base.BaseFragment
-import com.delivery.sopo.presentation.const.IntentConst
+import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.presentation.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.presentation.viewmodels.menus.SettingViewModel
 import com.delivery.sopo.presentation.views.main.MainView

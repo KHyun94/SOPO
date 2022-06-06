@@ -3,8 +3,8 @@ package com.delivery.sopo.presentation.viewmodels.registesrs
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.bindings.FocusChangeCallback
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.bindings.FocusChangeCallback
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.models.Carrier

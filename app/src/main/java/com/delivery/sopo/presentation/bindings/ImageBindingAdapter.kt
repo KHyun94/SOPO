@@ -1,4 +1,4 @@
-package com.delivery.sopo.bindings
+package com.delivery.sopo.presentation.bindings
 
 import android.util.Log
 import android.view.View

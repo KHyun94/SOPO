@@ -4,7 +4,7 @@ import android.content.Intent
 import android.view.View
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.consts.PermissionConst
 import com.delivery.sopo.databinding.LoginSelectViewBinding
 import com.delivery.sopo.extensions.launchActivityWithAllClear
@@ -81,11 +81,11 @@ class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
                 {
                     startActivity(Intent(this, SignUpView::class.java))
                 }
-                NavigatorConst.TO_MAIN ->
+                NavigatorConst.Screen.MAIN ->
                 {
                     Intent(this, MainView::class.java).launchActivityWithAllClear(this@LoginSelectView)
                 }
-                NavigatorConst.TO_UPDATE_NICKNAME ->
+                NavigatorConst.Screen.UPDATE_NICKNAME ->
                 {
                     Intent(this, RegisterNicknameView::class.java).launchActivityWithAllClear(this@LoginSelectView)
                 }

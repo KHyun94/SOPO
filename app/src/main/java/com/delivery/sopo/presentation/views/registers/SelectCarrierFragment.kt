@@ -6,7 +6,7 @@ import android.os.Looper
 import android.view.View
 import androidx.recyclerview.widget.GridLayoutManager
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentSelectCarrierBinding
 import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.TabCode

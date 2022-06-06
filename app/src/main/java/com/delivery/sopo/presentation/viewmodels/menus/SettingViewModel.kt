@@ -3,7 +3,7 @@ package com.delivery.sopo.presentation.viewmodels.menus
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.repositories.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
 import com.delivery.sopo.enums.SettingEnum

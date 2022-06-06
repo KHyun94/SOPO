@@ -51,24 +51,20 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
 
     open lateinit var onSOPOErrorCallback: OnSOPOErrorCallback
 
-    protected val coroutineExceptionHandler: CoroutineExceptionHandler =
-        CoroutineExceptionHandler { _, exception ->
+    protected val coroutineExceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
 
             when(exception)
             {
                 is SOPOApiException ->
                 {
-                    val errorCode = ErrorCode.getCode(exception.error.code).apply {
-                        message = exception.error.message
-                    }
+                    SopoLog.e("SOPO API Error ${exception.code}", exception)
 
-                    SopoLog.e("SOPO API Error $errorCode", exception)
-
-                    when(errorCode)
+                    when(val code = exception.code)
                     {
-                        ErrorCode.ALREADY_REGISTERED_PARCEL, ErrorCode.OVER_REGISTERED_PARCEL, ErrorCode.PARCEL_BAD_REQUEST -> onSOPOErrorCallback.onRegisterParcelError(errorCode)
-                        ErrorCode.ALREADY_REGISTERED_USER -> onSOPOErrorCallback.onAlreadyRegisteredUser(errorCode)
-                        ErrorCode.PARCEL_NOT_FOUND -> onSOPOErrorCallback.onInquiryParcelError(errorCode)
+                        ErrorCode.VALIDATION -> _errorSnackBar.postValue(exception.message)
+                        ErrorCode.ALREADY_REGISTERED_PARCEL, ErrorCode.OVER_REGISTERED_PARCEL, ErrorCode.PARCEL_BAD_REQUEST -> onSOPOErrorCallback.onRegisterParcelError(code)
+                        ErrorCode.ALREADY_REGISTERED_USER -> onSOPOErrorCallback.onAlreadyRegisteredUser(code)
+                        ErrorCode.PARCEL_NOT_FOUND -> onSOPOErrorCallback.onInquiryParcelError(code)
                         ErrorCode.AUTHENTICATION_FAIL ->
                         { // 서버에 유저 토큰이 없거나, 내부에 저장된 토큰이 없는 경우
                         }
@@ -80,7 +76,7 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
                         }
                         ErrorCode.INVALID_USER ->
                         { // 아이디 or 패스워드가 틀렸을 때 And 탈퇴한 회원이 요청했을 때 ?
-                            onSOPOErrorCallback.onLoginError(errorCode)
+                            onSOPOErrorCallback.onLoginError(code)
                         }
                         ErrorCode.DUPLICATE_LOGIN ->
                         { // 중복 로그인
@@ -90,7 +86,7 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
                         ErrorCode.INVALID_TOKEN ->
                         { // access or refresh Token이 만료
                         }
-                        else -> onSOPOErrorCallback.onFailure(errorCode)
+                        else -> onSOPOErrorCallback.onFailure(code)
                     }
                 }
                 is InternalServerException ->
@@ -115,7 +111,7 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
             }
         }
 
-    protected val scope: CoroutineScope = (viewModelScope + job + coroutineExceptionHandler)
+    protected val scope: CoroutineScope = (viewModelScope + job)
 
     fun checkEventStatus(checkNetwork: Boolean = false, delayMillisecond: Long = 100, event: () -> Unit)
     {

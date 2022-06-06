@@ -1,9 +1,7 @@
-package com.delivery.sopo.bindings
+package com.delivery.sopo.presentation.bindings
 
 import android.view.View
 import androidx.databinding.BindingAdapter
-import androidx.databinding.InverseMethod
-import com.delivery.sopo.util.SopoLog
 
 object ViewBindingAdapter
 {

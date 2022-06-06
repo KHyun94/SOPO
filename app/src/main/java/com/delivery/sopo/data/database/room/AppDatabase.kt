@@ -9,15 +9,19 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.delivery.sopo.data.database.room.dao.*
 import com.delivery.sopo.data.database.room.entity.*
 import com.delivery.sopo.data.database.room.util.Converters
-import com.delivery.sopo.data.database.room.dao.AuthTokenDao
-import com.delivery.sopo.data.database.room.entity.AuthTokenEntity
+import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.koin.core.KoinComponent
+import org.koin.core.inject
 
 @TypeConverters(Converters::class)
 @Database(
     entities = [CarrierEntity::class, CarrierPatternEntity::class, ParcelEntity::class, ParcelStatusEntity::class, CompletedParcelHistoryEntity::class, AppPasswordEntity::class, AuthTokenEntity::class],
     version = 1
 )
-abstract class AppDatabase : RoomDatabase()
+abstract class AppDatabase : RoomDatabase(), KoinComponent
 {
     abstract fun carrierDao(): CarrierDao
     abstract fun carrierPatternDao(): CarrierPatternDao
@@ -26,6 +30,8 @@ abstract class AppDatabase : RoomDatabase()
     abstract fun completeParcelStatusDao(): CompleteParcelStatusDao
     abstract fun securityDao(): AppPasswordDao
     abstract fun authTok() : AuthTokenDao
+
+    val carrierRepository: CarrierRepository by inject()
 
     companion object
     {
@@ -51,6 +57,10 @@ abstract class AppDatabase : RoomDatabase()
                     override fun onCreate(db: SupportSQLiteDatabase)
                     {
                         super.onCreate(db)
+
+                        CoroutineScope(Dispatchers.Default).launch {
+                            getInstance(context).carrierRepository.initCarrierDB()
+                        }
                     }
                 }).build()
         }

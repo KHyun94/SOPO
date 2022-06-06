@@ -3,7 +3,7 @@ package com.delivery.sopo.presentation.viewmodels.inquiry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import com.delivery.sopo.consts.NavigatorConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.ErrorCode
@@ -14,7 +14,6 @@ import com.delivery.sopo.domain.usecase.parcel.remote.DeleteParcelsUseCase
 import com.delivery.sopo.domain.usecase.parcel.remote.UpdateParcelUseCase
 import com.delivery.sopo.domain.usecase.parcel.remote.SyncParcelsUseCase
 import com.delivery.sopo.domain.usecase.parcel.remote.UpdateParcelAliasUseCase
-import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
