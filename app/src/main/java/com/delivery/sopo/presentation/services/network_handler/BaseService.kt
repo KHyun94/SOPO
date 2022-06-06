@@ -1,4 +1,4 @@
-package com.delivery.sopo.services.network_handler
+package com.delivery.sopo.presentation.services.network_handler
 
 import com.delivery.sopo.enums.ErrorType
 import com.delivery.sopo.exceptions.InternalServerException

@@ -1,9 +1,14 @@
 package com.delivery.sopo.presentation.views.inquiry
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
 import androidx.viewpager2.widget.ViewPager2
@@ -11,19 +16,25 @@ import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentInquiryBinding
 import com.delivery.sopo.databinding.ItemInquiryTabBinding
-import com.delivery.sopo.enums.*
+import com.delivery.sopo.enums.InquiryStatusEnum
+import com.delivery.sopo.enums.SnackBarEnum
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.reduceSensitive
 import com.delivery.sopo.models.base.BaseFragment
+import com.delivery.sopo.presentation.const.IntentConst
+import com.delivery.sopo.presentation.viewmodels.inquiry.InquiryViewModel
+import com.delivery.sopo.presentation.views.adapter.ViewPagerAdapter
+import com.delivery.sopo.presentation.views.main.MainView
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.ZoomOutPageTransformer
-import com.delivery.sopo.presentation.viewmodels.inquiry.InquiryViewModel
-import com.delivery.sopo.presentation.views.adapter.ViewPagerAdapter
-import com.delivery.sopo.presentation.views.main.MainView
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
@@ -41,6 +52,54 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
     var returnType = 0
 
     var inquiryStatus: InquiryStatusEnum = InquiryStatusEnum.ONGOING
+
+    val broadcastReceiver: BroadcastReceiver = object: BroadcastReceiver()
+    {
+        override fun onReceive(context: Context?, intent: Intent?)
+        {
+            intent ?: return
+
+            SopoLog.d("Registered Action ${intent.action}")
+
+            when(intent.action)
+            {
+                IntentConst.Action.REGISTERED_ONGOING_PARCEL ->
+                {
+                    binding.viewPagerInquiryType.currentItem = 0
+                }
+                IntentConst.Action.REGISTERED_COMPLETED_PARCEL->
+                {
+                    val data = intent.getStringExtra("REGISTERED_DATE")
+                    SopoLog.d("DATE => $data")
+                    binding.viewPagerInquiryType.currentItem = 1
+                }
+                else ->
+                {
+                    SopoLog.d("NO ACTION")
+                    return
+                }
+            }
+        }
+    }
+    override fun onResume()
+    {
+        super.onResume()
+
+        val filter = IntentFilter().apply {
+            addAction(IntentConst.Action.REGISTERED_ONGOING_PARCEL)
+            addAction(IntentConst.Action.REGISTERED_COMPLETED_PARCEL)
+        }
+
+        parentView.registerReceiver(broadcastReceiver, filter)
+    }
+
+    override fun onPause()
+    {
+        super.onPause()
+
+        SopoLog.d("onPause")
+        parentView.unregisterReceiver(broadcastReceiver)
+    }
 
     override fun receiveData(bundle: Bundle)
     {
@@ -65,14 +124,13 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
         super.setObserve()
 
         vm.updatableParcelIds.observe(this) { parcelIds ->
-            if(parcelIds.isEmpty()) return@observe
-            // TODO 다중 택배 가져오기
+            if(parcelIds.isEmpty()) return@observe // TODO 다중 택배 가져오기
 
             SopoLog.d("업데이트 가능한 택배 아이디 ${parcelIds.joinToString()}")
 
             vm.onUpdateParcels(parcelIds)
 
-            val snackBar = CustomSnackBar(binding.tabLayoutInquiryType, "방금 ${parcelIds.size}개의 배송정보가 업데이트 되었습니다.", 3000, SnackBarEnum.COMMON)
+            val snackBar = CustomSnackBar.make(view = binding.tabLayoutInquiryType, content = "방금 ${parcelIds.size}개의 배송정보가 업데이트 되었습니다.", data = Unit, duration = 3000, type = SnackBarEnum.COMMON)
             snackBar.show()
         }
 
@@ -224,7 +282,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
 
                     vm.startDeleteCount()
 
-                    CustomSnackBar.make(mainLayout, "${parcelStatuses.size}개 항목이 삭제되었습니다.", 5000, SnackBarEnum.CONFIRM_DELETE, Pair("실행취소") {
+                    CustomSnackBar.make<Unit>(view = mainLayout, content = "${parcelStatuses.size}개 항목이 삭제되었습니다.", data = Unit, 5000, SnackBarEnum.CONFIRM_DELETE, Pair("실행취소") {
                         vm.stopDeleteCount()
                     }).show()
                 }

@@ -11,31 +11,32 @@ import com.delivery.sopo.databinding.SnackBarCustomBinding
 import com.delivery.sopo.enums.SnackBarEnum
 import com.google.android.material.snackbar.Snackbar
 
-typealias OnSnackBarClickListener = ()->Unit
-class CustomSnackBar(private val view: View, private val content: String, private val duration: Int, private val type: SnackBarEnum? = null, private val clickListener: Pair<CharSequence, OnSnackBarClickListener>? = null)
+typealias OnSnackBarClickListener<T> = (data:T)->Unit
+
+class CustomSnackBar<T>(private val view: View, private val content: String, private val data:T,  private val clickListener: Pair<CharSequence, OnSnackBarClickListener<T>>? = null, private val duration: Int, private val type: SnackBarEnum? = null)
 {
     companion object
     {
-        fun make(view: View, content: String, duration: Int, type: SnackBarEnum? = null, clickListener: Pair<CharSequence, OnSnackBarClickListener>? = null) =
-            CustomSnackBar(view = view, content = content, duration = duration, type = type, clickListener = clickListener)
+        fun<T> make(view: View, content: String, data: T, duration: Int, type: SnackBarEnum? = null, clickListener: Pair<CharSequence, OnSnackBarClickListener<T>>? = null) =
+            CustomSnackBar<T>(view = view, content = content, duration = duration, type = type, data = data, clickListener = clickListener)
     }
 
     private lateinit var binding: SnackBarCustomBinding
-    private val snackbar = Snackbar.make(view, content, duration)
-    private val snackbarLayout = snackbar.view as Snackbar.SnackbarLayout
+    private val snackBar = Snackbar.make(view, content, duration)
+    private val snackBarLayout = snackBar.view as Snackbar.SnackbarLayout
 
     init
     {
         bindView()
         initUI(type = type)
-        initData(content = content, clickListener = clickListener)
+        initData(content = content, data = data, clickListener = clickListener)
     }
 
     private fun bindView()
     {
         binding = DataBindingUtil.inflate(LayoutInflater.from(view.context), R.layout.snack_bar_custom, null, false)
 
-        with(snackbarLayout) {
+        with(snackBarLayout) {
             setPadding(0, 0, 0, 0)
             setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
             addView(binding.root, 0)
@@ -74,7 +75,7 @@ class CustomSnackBar(private val view: View, private val content: String, privat
 
     }
 
-    private fun initData(content: String, btnContent: String? = null, clickListener: Pair<CharSequence, OnSnackBarClickListener>? = null)
+    private fun initData(content: String, data: T, clickListener: Pair<CharSequence, OnSnackBarClickListener<T>>? = null)
     {
         binding.content = content
 
@@ -82,7 +83,7 @@ class CustomSnackBar(private val view: View, private val content: String, privat
 
             binding.btnContent = first
             binding.tvCancelDelete.setOnClickListener {
-                second.invoke()
+                second.invoke(data)
                 dismiss()
             }
         }
@@ -90,11 +91,11 @@ class CustomSnackBar(private val view: View, private val content: String, privat
 
     fun show()
     {
-        snackbar.show()
+        snackBar.show()
     }
 
     fun dismiss()
     {
-        snackbar.dismiss()
+        snackBar.dismiss()
     }
 }

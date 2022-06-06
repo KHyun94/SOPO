@@ -1,6 +1,7 @@
 package com.delivery.sopo.presentation.views.registers
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
 import android.view.View
@@ -8,9 +9,7 @@ import android.widget.Toast
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentInputParcelBinding
-import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.isGreaterThanOrEqual
 import com.delivery.sopo.interfaces.OnPageSelectListener
@@ -18,15 +17,15 @@ import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.presentation.const.IntentConst
 import com.delivery.sopo.presentation.models.enums.ReturnType
+import com.delivery.sopo.presentation.viewmodels.registesrs.InputParcelViewModel
+import com.delivery.sopo.presentation.views.main.MainView
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.TextInputUtil
-import com.delivery.sopo.presentation.viewmodels.registesrs.InputParcelViewModel
-import com.delivery.sopo.presentation.views.main.MainView
-import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -95,20 +94,27 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
     fun moveInquiryTap()
     {
         if(!::parcel.isInitialized) return
+        val intent = Intent()
 
         if(parcel.isDelivered())
         {
-            parcel.makeDeliveredAlarm(mainLayout) {
+            parcel.makeDeliveredAlarm(mainLayout) { date ->
                 motherView.onSetCurrentPage(1)
+
+                intent.action = IntentConst.Action.REGISTERED_COMPLETED_PARCEL
+                intent.putExtra(IntentConst.Extra.REGISTERED_DATE, date)
+                motherView.sendBroadcast(intent)
             }
         }
         else
         {
             parcel.makeOtherAlarm(mainLayout) {
                 motherView.onSetCurrentPage(1)
+
+                intent.action = IntentConst.Action.REGISTERED_ONGOING_PARCEL
+                motherView.sendBroadcast(intent)
             }
         }
-
     }
 
     override fun setAfterBinding()
@@ -204,15 +210,6 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
                     FragmentManager.move(motherView, TabCode.REGISTER_CONFIRM, RegisterMainFragment.viewId)
                 }
             }
-        }
-
-        when(returnType)
-        {
-            ReturnType.COMPLETE_REGISTER_PARCEL ->
-            {
-                CustomSnackBar(mainLayout, "네트워크 오류입니다.", 600000, SnackBarEnum.ERROR)
-            }
-            else -> return
         }
     }
 

@@ -1,4 +1,4 @@
-package com.delivery.sopo.services
+package com.delivery.sopo.presentation.services
 
 import android.content.Context
 import android.content.Intent

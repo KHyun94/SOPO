@@ -15,14 +15,13 @@ import com.delivery.sopo.interfaces.BaseDataSource
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.services.network_handler.BaseService
-import com.delivery.sopo.services.network_handler.NetworkResponse
+import com.delivery.sopo.presentation.services.network_handler.BaseService
+import com.delivery.sopo.presentation.services.network_handler.NetworkResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import com.delivery.sopo.data.models.Result
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 
@@ -87,14 +86,11 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
 
     fun getOngoingAllParcel() = flow<Result<List<InquiryListItem>>> {
 
-        SopoLog.d("TEST!!!! => Loading")
         emit(Result.Loading)
-        SopoLog.d("TEST!!!! => Loading")
         appDatabase.parcelDao().getFlowOngoingParcel().collect {
             if(it.isEmpty())
             {
                 emit(Result.Empty)
-                SopoLog.d("TEST!!!! => Empty")
             }
             else
             {
@@ -103,13 +99,10 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
                     InquiryListItem(parcel, false)
                 }
 
-                SopoLog.d("TEST!!!! => Success")
-
                 emit(Result.Success(parcels))
             }
         }
     }.catch { e ->
-        SopoLog.e("TEST!!!! => Error ${e.printStackTrace()}")
         emit(Result.Error(e)) }
 
 /*

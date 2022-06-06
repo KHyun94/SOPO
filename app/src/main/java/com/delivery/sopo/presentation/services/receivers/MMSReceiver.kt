@@ -1,4 +1,4 @@
-package com.delivery.sopo.services.receivers
+package com.delivery.sopo.presentation.services.receivers
 
 import android.content.BroadcastReceiver
 import android.content.ContentResolver
@@ -12,7 +12,7 @@ import android.text.TextUtils
 import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.services.workmanager.SOPOWorkManager
+import com.delivery.sopo.presentation.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent

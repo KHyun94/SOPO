@@ -8,6 +8,4 @@ object EmojiConst
     const val EMOJI_SPEECH_BALLOON: Int = (0x1F4AC)
     const val EMOJI_BLUE_HEART: Int = (0x1F499)
     const val EMOJI_CHEERING_MEGAPHONE: Int = (0x1F499)
-
-
 }

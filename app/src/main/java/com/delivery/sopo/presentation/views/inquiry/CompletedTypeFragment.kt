@@ -1,8 +1,13 @@
 package com.delivery.sopo.presentation.views.inquiry
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Typeface
+import android.os.Handler
+import android.os.Looper
 import android.view.*
 import android.widget.*
 import androidx.core.content.ContextCompat
@@ -25,14 +30,12 @@ import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.mapper.MenuMapper
-import com.delivery.sopo.util.AlertUtil
-import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.util.SizeUtil
-import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.presentation.const.IntentConst
 import com.delivery.sopo.presentation.viewmodels.inquiry.CompletedTypeViewModel
 import com.delivery.sopo.presentation.views.adapter.InquiryListAdapter
 import com.delivery.sopo.presentation.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.util.*
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -53,14 +56,56 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
 
     private var refreshDelay: Boolean = false
 
-
     private lateinit var onPageSelectListener: OnPageSelectListener
 
     private var scrollStatus: ScrollStatusEnum = ScrollStatusEnum.TOP
 
+    val broadcastReceiver: BroadcastReceiver = object: BroadcastReceiver()
+    {
+        override fun onReceive(context: Context?, intent: Intent?)
+        {
+            intent ?: return
+
+            SopoLog.d("Registered Action ${intent.action}")
+
+            when(intent.action)
+            {
+                IntentConst.Action.REGISTERED_COMPLETED_PARCEL ->
+                {
+                    val data = intent.getStringExtra("REGISTERED_DATE") ?: return
+
+                    val date = DateUtil.convertDate(data, DateUtil.DATE_TIME_TYPE_DEFAULT) ?: return
+                    val calendar = Calendar.getInstance()
+                    calendar.time = date
+
+                    val year = calendar.get(Calendar.YEAR).toString()
+                    val month = (calendar.get(Calendar.MONTH) + 1)
+
+                    vm.getActivateMonths()
+
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        vm.changeCompletedParcelHistoryDate(year = year)
+                        vm.onMonthClicked(month)
+                    }, 500)
+                }
+                else ->
+                {
+                    SopoLog.d("NO ACTION")
+                    return
+                }
+            }
+        }
+    }
+
     override fun onResume()
     {
         super.onResume()
+
+        val filter = IntentFilter().apply {
+            addAction(IntentConst.Action.REGISTERED_COMPLETED_PARCEL)
+        }
+
+        parentView.registerReceiver(broadcastReceiver, filter)
 
         if(scrollStatus != ScrollStatusEnum.TOP)
         {
@@ -79,6 +124,12 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
                 binding.nestSvMainCompleted.scrollTo(0, 0)
             }
         }
+    }
+
+    override fun onPause()
+    {
+        super.onPause()
+        parentView.unregisterReceiver(broadcastReceiver)
     }
 
     private fun setOnMainBridgeListener(context: Context)
@@ -259,6 +310,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         vm.selectedDate.observe(requireActivity()) { date ->
             if(date.isEmpty()) return@observe
             val searchDate = date.replace("년 ", "").replace("월", "")
+            SopoLog.d("DATE => $searchDate")
             vm.refreshCompleteParcelsByDate(searchDate)
         }
     }
@@ -448,7 +500,8 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
                 val isEndOfList = !recyclerView.canScrollVertically(1)
 
                 if(!hasNextPage || !isLastCompletelyVisibleItemPosition) return
-                val searchDate = vm.selectedDate.value?.replace("년 ", "")?.replace("월", "") ?: return
+                val searchDate =
+                    vm.selectedDate.value?.replace("년 ", "")?.replace("월", "") ?: return
                 vm.refreshCompleteParcelsByDate(searchDate)
             }
         }

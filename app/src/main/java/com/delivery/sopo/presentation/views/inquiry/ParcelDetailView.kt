@@ -1,6 +1,9 @@
 package com.delivery.sopo.presentation.views.inquiry
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +24,7 @@ import com.delivery.sopo.extensions.*
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseFragment
+import com.delivery.sopo.presentation.const.IntentConst
 import com.delivery.sopo.util.*
 import com.delivery.sopo.presentation.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.presentation.views.adapter.TimeLineRecyclerViewAdapter
@@ -29,6 +33,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.*
 import kotlin.properties.Delegates
 
 class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewModel>()
@@ -40,6 +45,39 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     override val vm: ParcelDetailViewModel by viewModel()
 
     var parcelId: Int = 0
+
+    val broadcastReceiver: BroadcastReceiver = object: BroadcastReceiver()
+    {
+        override fun onReceive(context: Context?, intent: Intent?)
+        {
+            when(intent?.action)
+            {
+                IntentConst.Action.REGISTERED_ONGOING_PARCEL, IntentConst.Action.REGISTERED_COMPLETED_PARCEL ->
+                {
+                    activity?.supportFragmentManager?.popBackStack()
+                }
+                else -> return
+            }
+        }
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+
+        val filter = IntentFilter().apply {
+            addAction(IntentConst.Action.REGISTERED_ONGOING_PARCEL)
+            addAction(IntentConst.Action.REGISTERED_COMPLETED_PARCEL)
+        }
+
+        motherView.registerReceiver(broadcastReceiver, filter)
+    }
+
+    override fun onPause()
+    {
+        super.onPause()
+        motherView.unregisterReceiver(broadcastReceiver)
+    }
 
     override fun receiveData(bundle: Bundle)
     {

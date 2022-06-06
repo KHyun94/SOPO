@@ -1,11 +1,5 @@
 package com.delivery.sopo
 
-import com.delivery.sopo.data.database.room.AppDatabase
-import com.delivery.sopo.services.workmanager.SOPOWorkManager
-import org.junit.Test
-import java.text.SimpleDateFormat
-import java.util.*
-
 /**
  * Example local unit test, which will execute on the development machine (host).
  *

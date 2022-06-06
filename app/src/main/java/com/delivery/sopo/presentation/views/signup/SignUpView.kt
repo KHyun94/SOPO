@@ -53,7 +53,7 @@ class SignUpView: BaseView<SignUpViewBinding, SignUpViewModel>()
                 else -> throw Exception("비정상 형식 에러 발생")
             }
 
-            CustomSnackBar(binding.constraintMainSignUp, message, 3000).show()
+            CustomSnackBar.make(view = binding.constraintMainSignUp, content = message,data = Unit, duration = 3000).show()
         })
 
         vm.navigator.observe(this) { navigator ->

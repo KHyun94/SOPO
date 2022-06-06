@@ -87,14 +87,11 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
                             Html.fromHtml("<u>${comment}</u>")
                         }
 
-                        postErrorSnackBar("인증 코드가 일치하지 않아요.", Pair(underlineComment, object:
-                                OnSnackBarClickListener
-                        {
-                            override fun invoke()
+                        postErrorSnackBar("인증 코드가 일치하지 않아요.", Pair(underlineComment, object: OnSnackBarClickListener<Unit> {
+                            override fun invoke(data: Unit)
                             {
                                 requestSendTokenToEmail(email = email.value?.toString() ?: "")
                             }
-
                         }))
                     }
                     else

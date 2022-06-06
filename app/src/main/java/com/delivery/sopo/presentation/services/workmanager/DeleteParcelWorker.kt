@@ -1,4 +1,4 @@
-package com.delivery.sopo.services.workmanager
+package com.delivery.sopo.presentation.services.workmanager
 
 import android.content.Context
 import androidx.work.CoroutineWorker

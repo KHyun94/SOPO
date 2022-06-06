@@ -11,7 +11,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentSettingBinding
 import com.delivery.sopo.databinding.ItemTimeTabBinding
@@ -21,11 +20,12 @@ import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.*
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.base.BaseFragment
-import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.presentation.const.IntentConst
 import com.delivery.sopo.presentation.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.presentation.viewmodels.menus.SettingViewModel
 import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SopoLog
 import com.google.android.material.tabs.TabLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -274,7 +274,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
             binding.slideMainSetting.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
 
             activity?.launchActivitiy<LockScreenView> {
-                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET_CONFIRM)
+                putExtra(IntentConst.Extra.LOCK_STATUS_TYPE, LockScreenStatusEnum.SET_CONFIRM)
             }
         }
 
@@ -293,7 +293,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
             }
 
             activity?.launchActivitiy<LockScreenView> {
-                putExtra(IntentConst.LOCK_SCREEN, LockScreenStatusEnum.SET_UPDATE)
+                putExtra(IntentConst.Extra.LOCK_STATUS_TYPE, LockScreenStatusEnum.SET_UPDATE)
             }
         }
     }

@@ -8,7 +8,7 @@ import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.models.api.Error
 import com.delivery.sopo.models.user.ResetAuthCode
 import com.delivery.sopo.models.user.ResetPassword
-import com.delivery.sopo.services.network_handler.BaseService
+import com.delivery.sopo.presentation.services.network_handler.BaseService
 import org.koin.core.KoinComponent
 
 class UserRemoteRepository: KoinComponent, BaseService()

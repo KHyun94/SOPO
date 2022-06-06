@@ -34,7 +34,7 @@
         <entry key="app/src/main/res/layout/fragment_account_manager.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_completed_type.xml" value="0.22266009852216748" />
         <entry key="app/src/main/res/layout/fragment_confirm_parcel.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/fragment_delete_parcel.xml" value="0.48333333333333334" />
+        <entry key="app/src/main/res/layout/fragment_delete_parcel.xml" value="0.33620689655172414" />
         <entry key="app/src/main/res/layout/fragment_faq.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_input_parcel.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_inquiry.xml" value="0.15" />

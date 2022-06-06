@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.IntentConst
 import com.delivery.sopo.consts.LockStatusConst
 import com.delivery.sopo.consts.NavigatorConst
 import com.delivery.sopo.databinding.LockScreenViewBinding
@@ -18,10 +17,11 @@ import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.makeGone
 import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.models.base.BaseView
+import com.delivery.sopo.presentation.const.IntentConst
+import com.delivery.sopo.presentation.viewmodels.menus.LockScreenViewModel
 import com.delivery.sopo.util.AnimationUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.VibrateUtil
-import com.delivery.sopo.presentation.viewmodels.menus.LockScreenViewModel
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -36,7 +36,7 @@ class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
 
     override fun receivedData(intent: Intent)
     {
-        val lockScreenStatus = intent.getSerializableExtra(IntentConst.LOCK_SCREEN) as LockScreenStatusEnum? ?: throw NullPointerException("'STATUS'가 존재하지 않습니다.")
+        val lockScreenStatus = intent.getSerializableExtra(IntentConst.Extra.LOCK_STATUS_TYPE) as LockScreenStatusEnum? ?: throw NullPointerException("'STATUS'가 존재하지 않습니다.")
         vm.setLockScreenStatus(lockScreenStatus)
     }
 

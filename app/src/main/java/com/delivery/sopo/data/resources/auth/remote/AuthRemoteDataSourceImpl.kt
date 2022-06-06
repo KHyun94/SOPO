@@ -5,7 +5,7 @@ import com.delivery.sopo.data.models.AuthToken
 import com.delivery.sopo.data.networks.NetworkManager
 import com.delivery.sopo.data.networks.serivces.UserService
 import com.delivery.sopo.enums.NetworkEnum
-import com.delivery.sopo.services.network_handler.BaseService
+import com.delivery.sopo.presentation.services.network_handler.BaseService
 import com.delivery.sopo.util.OtherUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken

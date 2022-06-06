@@ -1,4 +1,4 @@
-package com.delivery.sopo.services.network_handler
+package com.delivery.sopo.presentation.services.network_handler
 
 data class NetworkResponse<T>(
         val statusCode: Int,

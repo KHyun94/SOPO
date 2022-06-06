@@ -1,4 +1,4 @@
-package com.delivery.sopo.services
+package com.delivery.sopo.presentation.services
 
 import android.content.Intent
 import com.delivery.sopo.enums.DeliveryStatusEnum
@@ -9,7 +9,7 @@ import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepo
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.push.NotificationMessage
-import com.delivery.sopo.services.workmanager.SOPOWorkManager
+import com.delivery.sopo.presentation.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
 import com.google.firebase.messaging.FirebaseMessagingService

@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- WIFI 상태활용시 추가 -->
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name = "android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -27,7 +27,7 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name="com.delivery.sopo.presentation.views.splash.SplashView"
+            android:name=".presentation.views.splash.SplashView"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,44 +35,40 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
-            android:name="com.delivery.sopo.presentation.views.intro.IntroView"
+            android:name=".presentation.views.intro.IntroView"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.delivery.sopo.presentation.views.login.LoginView"
+            android:name=".presentation.views.login.LoginView"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.delivery.sopo.presentation.views.signup.SignUpView"
+            android:name=".presentation.views.signup.SignUpView"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name="com.delivery.sopo.presentation.views.menus.UpdateNicknameView"/>
+        <activity android:name=".presentation.views.menus.UpdateNicknameView" />
         <activity
-            android:name="com.delivery.sopo.presentation.views.login.ResetPasswordView"
+            android:name=".presentation.views.login.ResetPasswordView"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name="com.delivery.sopo.presentation.views.signup.RegisterNicknameView" />
+        <activity android:name=".presentation.views.signup.RegisterNicknameView" />
+        <activity android:name=".presentation.views.main.MainView" />
         <activity
-            android:name="com.delivery.sopo.presentation.views.main.MainView" />
-        <activity
-            android:name="com.delivery.sopo.presentation.views.signup.SignUpCompleteView"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
-            android:name="com.delivery.sopo.presentation.views.login.LoginSelectView"
+            android:name=".presentation.views.signup.SignUpCompleteView"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="com.delivery.sopo.presentation.views.menus.LockScreenView"
+            android:name=".presentation.views.login.LoginSelectView"
             android:windowSoftInputMode="adjustResize" />
-<!--        <activity-->
-<!--            android:name=".views.menus.NotDisturbTimeView"-->
-<!--            android:windowSoftInputMode="adjustPan" />-->
         <activity
-            android:name="com.delivery.sopo.presentation.views.menus.SignOutView"
+            android:name=".presentation.views.menus.LockScreenView"
+            android:windowSoftInputMode="adjustResize" /> <!-- <activity -->
+        <!-- android:name=".views.menus.NotDisturbTimeView" -->
+        <!-- android:windowSoftInputMode="adjustPan" /> -->
+        <activity
+            android:name=".presentation.views.menus.SignOutView"
             android:windowSoftInputMode="adjustPan" />
 
         <service
-            android:name=".services.FirebaseService"
+            android:name="com.delivery.sopo.presentation.services.FirebaseService"
             android:enabled="true"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
@@ -94,9 +90,8 @@
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/KAKAO_API_KEY" />
 
-
         <service
-            android:name=".services.SOPONotificationListenerService"
+            android:name="com.delivery.sopo.presentation.services.SOPONotificationListenerService"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
             <intent-filter>
                 <action android:name="android.service.notification.NotificationListenerService" />
@@ -104,23 +99,19 @@
 
             <meta-data
                 android:name="android.service.notification.default_filter_types"
-                android:value="conversations|alerting">
-            </meta-data>
+                android:value="conversations|alerting"></meta-data>
             <meta-data
                 android:name="android.service.notification.disabled_filter_types"
-                android:value="ongoing|silent">
-            </meta-data>
-
+                android:value="ongoing|silent"></meta-data>
         </service>
 
         <receiver
-            android:name=".services.receivers.ParcelManagementBroadcastReceiver"
+            android:name="com.delivery.sopo.presentation.services.receivers.ParcelManagementBroadcastReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.delivery.sopo.ACTION_COMPLETED_REGISTER_PARCEL" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>

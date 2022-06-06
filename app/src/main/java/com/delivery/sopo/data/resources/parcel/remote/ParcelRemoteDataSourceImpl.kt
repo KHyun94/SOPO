@@ -7,7 +7,7 @@ import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.extensions.wrapBodyAliasToHashMap
 import com.delivery.sopo.extensions.wrapBodyAliasToMap
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.services.network_handler.BaseService
+import com.delivery.sopo.presentation.services.network_handler.BaseService
 
 class ParcelRemoteDataSourceImpl(private val parcelService: ParcelService): ParcelRemoteDataSource,
         BaseService()

@@ -27,7 +27,7 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
 {
     private val logoutUseCase: LogoutUseCase by inject()
 
-    var onSnackClickListener: Pair<CharSequence, OnSnackBarClickListener>? = null
+    var onSnackClickListener: Pair<CharSequence, OnSnackBarClickListener<Unit>>? = null
 
     private val _isClickEvent = MutableLiveData<Boolean>()
     val isClickEvent: LiveData<Boolean> = _isClickEvent
@@ -187,7 +187,7 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
         _isCheckNetwork.postValue(false)
     }
 
-    fun postErrorSnackBar(msg: String, onSnackBarClickListener: Pair<CharSequence, OnSnackBarClickListener>? = null)
+    fun postErrorSnackBar(msg: String, onSnackBarClickListener: Pair<CharSequence, OnSnackBarClickListener<Unit>>? = null)
     {
         _errorSnackBar.postValue(msg)
         this.onSnackClickListener = onSnackBarClickListener

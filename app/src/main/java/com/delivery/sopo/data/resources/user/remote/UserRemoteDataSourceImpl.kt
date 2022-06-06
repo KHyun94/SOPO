@@ -10,7 +10,7 @@ import com.delivery.sopo.extensions.wrapBodyAliasToMap
 import com.delivery.sopo.models.api.Error
 import com.delivery.sopo.models.user.ResetAuthCode
 import com.delivery.sopo.models.user.ResetPassword
-import com.delivery.sopo.services.network_handler.BaseService
+import com.delivery.sopo.presentation.services.network_handler.BaseService
 import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineDispatcher
 

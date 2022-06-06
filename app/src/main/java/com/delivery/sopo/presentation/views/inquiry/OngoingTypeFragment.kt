@@ -1,6 +1,9 @@
 package com.delivery.sopo.presentation.views.inquiry
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Handler
 import android.os.Looper
 import android.view.View
@@ -30,7 +33,11 @@ import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 import com.delivery.sopo.data.models.Result
+import com.delivery.sopo.extensions.makeGone
+import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.models.inquiry.InquiryListItem
+import com.delivery.sopo.presentation.const.IntentConst
+import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 
 class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeViewModel>()
@@ -50,9 +57,38 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
 
     private var scrollStatus: ScrollStatusEnum = ScrollStatusEnum.TOP
 
+    val broadcastReceiver: BroadcastReceiver = object: BroadcastReceiver()
+    {
+        override fun onReceive(context: Context?, intent: Intent?)
+        {
+            intent ?: return
+
+            SopoLog.d("Registered Action ${intent.action}")
+
+            when(intent.action)
+            {
+                IntentConst.Action.REGISTERED_ONGOING_PARCEL ->
+                {
+
+                }
+                else ->
+                {
+                    SopoLog.d("NO ACTION")
+                    return
+                }
+            }
+        }
+    }
+
     override fun onResume()
     {
         super.onResume()
+
+        val filter = IntentFilter().apply {
+            addAction(IntentConst.Action.REGISTERED_ONGOING_PARCEL)
+        }
+
+        motherView.registerReceiver(broadcastReceiver, filter)
 
         if(scrollStatus != ScrollStatusEnum.TOP)
         {
@@ -73,7 +109,12 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         }
 
         vm.getOngoingParcels()
+    }
 
+    override fun onPause()
+    {
+        super.onPause()
+        motherView.unregisterReceiver(broadcastReceiver)
     }
 
     private fun setOnMainBridgeListener(context: Context)
@@ -128,19 +169,14 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
     {
         getAdapter(InquiryItemTypeEnum.Soon).let { adapter ->
             soonArrivalParcelAdapter = adapter
-            binding.recyclerviewSoonArrival.adapter =
-                soonArrivalParcelAdapter //            val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
-            //            animator.supportsChangeAnimations = false
+            binding.recyclerviewSoonArrival.adapter = soonArrivalParcelAdapter
         }
 
         getAdapter(InquiryItemTypeEnum.Registered).let { adapter ->
             registeredParcelAdapter = adapter
-            binding.recyclerviewRegisteredParcel.adapter =
-                registeredParcelAdapter //            val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
-            //            animator.supportsChangeAnimations = false
+            binding.recyclerviewRegisteredParcel.adapter = registeredParcelAdapter
         }
     }
-
 
     override fun setObserve()
     {
@@ -149,45 +185,46 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         activity ?: return
         motherView.getCurrentPage().observe(this) {
             if(it != 1) return@observe
+            vm.getOngoingParcels()
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
+
         vm.parcels.asLiveData(Dispatchers.Default).observe(this) {
 
-            if(vm.parcels.value is Result.Success<List<InquiryListItem>>)
+            when(vm.parcels.value)
             {
-                SopoLog.d("TEST!!!! => 시발 성공이라매")
+                is Result.Success<List<InquiryListItem>> ->
+                {
+                    val list = (vm.parcels.value as Result.Success<List<InquiryListItem>>).data
 
-                val list = (vm.parcels.value as Result.Success<List<InquiryListItem>>).data
+                    binding.linearNoItem.makeGone()
 
-                list.forEach {
-                    SopoLog.d("ongoingParcels => ${it.parcel.toString()}")
+                    soonArrivalParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
+                    registeredParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
+
+                    viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
+                    viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
                 }
+                is Result.Error ->
+                {
+                    val error = (vm.parcels.value as Result.Error)
 
-                if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
-                else binding.linearNoItem.visibility = View.GONE
+                    SopoLog.d("TEST!!!! => 시발 실패 왜냐 ${error.exception.printStackTrace()}")
+                    Toast.makeText(requireContext(), "아 시발 ", Toast.LENGTH_SHORT).show()
 
-                soonArrivalParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
-                registeredParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
-
-                viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
-                viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
-            }
-            else if(vm.parcels.value is Result.Error)
-            {
-                val error = (vm.parcels.value as Result.Error)
-
-                SopoLog.d("TEST!!!! => 시발 실패 왜냐 ${error.exception.printStackTrace()}")
-                Toast.makeText(requireContext(), "아 시발 ", Toast.LENGTH_SHORT).show()
-            }
-            else if(vm.parcels.value is Result.Loading)
-            {
-                SopoLog.d("TEST!!!! => 로딩이라고? 시발 ")
-
-            }
-            else
-            {
-                SopoLog.d("TEST!!!! => 로딩이라고? 시발  초기화잖아")
+                    binding.linearNoItem.makeVisible()
+                }
+                is Result.Loading ->
+                {
+                    SopoLog.d("TEST!!!! => 로딩이라고? 시발 ")
+                    binding.linearNoItem.makeVisible()
+                }
+                else ->
+                {
+                    SopoLog.d("TEST!!!! => 로딩이라고? 시발  초기화잖아")
+                    binding.linearNoItem.makeVisible()
+                }
             }
 
         }

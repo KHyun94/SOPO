@@ -34,18 +34,18 @@ class Parcel
             return deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
         }
 
-        fun makeOtherAlarm(view: View, onClickListener: OnSnackBarClickListener){
+        fun makeOtherAlarm(view: View, onClickListener: OnSnackBarClickListener<Unit>){
             val char : CharSequence = "바로가기"
             val listener = Pair(char, onClickListener)
-            val snackBar = CustomSnackBar(view = view, content = "택배가 등록되었습니다.", duration = 3000, type = SnackBarEnum.COMMON, listener)
+            val snackBar = CustomSnackBar(view = view, content = "택배가 등록되었습니다.", duration = 3000, data = Unit, type = SnackBarEnum.COMMON, clickListener = listener)
             snackBar.show()
         }
 
-        fun makeDeliveredAlarm(view: View, onClickListener: OnSnackBarClickListener){
+        fun makeDeliveredAlarm(view: View, onClickListener: OnSnackBarClickListener<String>){
             val char : CharSequence = "보기"
             val listener = Pair(char, onClickListener)
             val date = DateUtil.changeDateFormat(arrivalDte ?: "", oldPattern = DateUtil.DATE_TIME_TYPE_DEFAULT, newPattern = DateUtil.DATE_TYPE_KOREAN_SEMI)
-            val snackBar = CustomSnackBar(view = view, content = "${date}에 배송완료된 택배네요.", duration = 3000, type = SnackBarEnum.COMMON, listener)
+            val snackBar = CustomSnackBar.make(view = view, content = "${date}에 배송완료된 택배네요.", data = arrivalDte?:"", duration = 3000, type = SnackBarEnum.COMMON, clickListener = listener)
             snackBar.show()
         }
     }

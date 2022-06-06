@@ -1,12 +1,10 @@
-package com.delivery.sopo.services.workmanager
+package com.delivery.sopo.presentation.services.workmanager
 
 import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.domain.usecase.parcel.remote.RefreshParcelsUseCase
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.coroutineScope
 import org.koin.core.KoinComponent
 import org.koin.core.inject

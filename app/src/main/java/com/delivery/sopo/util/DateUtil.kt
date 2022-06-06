@@ -15,6 +15,8 @@ object DateUtil
 
     const val DATE_TYPE_KOREAN_SEMI = "yy년 MM월"
     const val DATE_TYPE_yyyyMM = "yyyyMM"
+    const val DATE_TYPE_yyyy = "yyyy"
+    const val DATE_TYPE_MM = "MM"
     const val DATE_TYPE_KOREAN_FULL = "yyyy년 MM월"
 
     fun getCurrentDate(pattern: String = DATE_TIME_TYPE_DEFAULT): String

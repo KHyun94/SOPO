@@ -62,7 +62,7 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
     }
 
     fun getActivateMonths() = scope.launch(coroutineExceptionHandler) {
-        getCompletedMonthUseCase.invoke()
+        getCompletedMonthUseCase()
     }
 
     fun updateCompletedParcelCalendar(year: String)
@@ -153,6 +153,8 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
 
     fun onMonthClicked(month: Int)
     {
+        SopoLog.d("onMonthClicked :: $month")
+
         if(!isMonthClickable) return SopoLog.d("$month 비활성화")
 
         pagingManagement = PagingManagement(0, "", true)
