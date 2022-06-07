@@ -63,14 +63,14 @@ class UserRepositoryImpl(
         userRemoteDataSource.updateFCMToken(fcmToken = fcmToken)
     }
 
-    override suspend fun requestAuthCodeEmail(email: String)
+    override suspend fun requestAuthCodeEmail(email: String): String
     {
-        userRemoteDataSource.requestAuthCodeEmail(email = email)
+        return userRemoteDataSource.requestAuthCodeEmail(email = email)
     }
 
     override suspend fun requestVerifyAuthToken(authCode: ResetAuthCode)
     {
-        userRemoteDataSource.requestVerifyAuthToken(authCode = authCode)
+        return userRemoteDataSource.requestVerifyAuthToken(authCode = authCode)
     }
 
     override suspend fun updatePassword(resetPassword: ResetPassword)
@@ -91,5 +91,9 @@ class UserRepositoryImpl(
         return DateUtil.isExpiredDateWithinAWeek(currentExpiredDate)
     }
 
+    override fun getUserDataSource(): UserDataSource
+    {
+        return userDataSource
+    }
 
 }

@@ -4,6 +4,9 @@ import com.delivery.sopo.data.repositories.user.UserRepository
 
 class UpdateNicknameUseCase(private val userRepository: UserRepository)
 {
+    val nickname: String
+    get() = userRepository.getUserDataSource().getNickname()
+
     suspend operator fun invoke(nickname: String)
     {
         userRepository.updateNickname(nickname = nickname)

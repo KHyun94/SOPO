@@ -1,7 +1,6 @@
 package com.delivery.sopo.presentation.views.signup
 
 import android.content.Intent
-import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.SignUpViewBinding
@@ -23,12 +22,12 @@ class SignUpView: BaseView<SignUpViewBinding, SignUpViewModel>()
     {
         super.setObserve()
 
-        vm.focus.observe(this, Observer { focus ->
+        vm.focus.observe(this) { focus ->
             val res = TextInputUtil.changeFocus(this@SignUpView, focus)
             vm.validity[res.first] = res.second
-        })
+        }
 
-        vm.invalidity.observe(this, Observer { target ->
+        vm.invalidity.observe(this) { target ->
             val message = when(target.first)
             {
                 InfoEnum.EMAIL ->
@@ -53,8 +52,9 @@ class SignUpView: BaseView<SignUpViewBinding, SignUpViewModel>()
                 else -> throw Exception("비정상 형식 에러 발생")
             }
 
-            CustomSnackBar.make(view = binding.constraintMainSignUp, content = message,data = Unit).show()
-        })
+            CustomSnackBar.make(view = binding.constraintMainSignUp, content = message, data = Unit)
+                .show()
+        }
 
         vm.navigator.observe(this) { navigator ->
             when(navigator)

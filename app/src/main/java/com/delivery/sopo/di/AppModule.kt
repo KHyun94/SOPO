@@ -11,7 +11,6 @@ import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
 import com.delivery.sopo.data.database.shared.UserSharedPrefHelper
 import com.delivery.sopo.data.networks.APIClient
 import com.delivery.sopo.data.repositories.parcels.ParcelRepositoryImpl
-import com.delivery.sopo.data.repositories.remote.user.UserRemoteRepository
 import com.delivery.sopo.data.repositories.user.SignupRepository
 import com.delivery.sopo.data.repositories.user.SignupRepositoryImpl
 import com.delivery.sopo.data.repositories.user.UserRepository
@@ -36,6 +35,9 @@ import com.delivery.sopo.domain.usecase.parcel.local.GetLocalParcelUseCase
 import com.delivery.sopo.domain.usecase.parcel.remote.*
 import com.delivery.sopo.domain.usecase.user.UpdateFCMTokenUseCase
 import com.delivery.sopo.domain.usecase.user.UpdateNicknameUseCase
+import com.delivery.sopo.domain.usecase.user.reset.ResetPasswordUseCase
+import com.delivery.sopo.domain.usecase.user.reset.SendAuthTokenUseCase
+import com.delivery.sopo.domain.usecase.user.reset.VerifyAuthTokenUseCase
 import com.delivery.sopo.domain.usecase.user.token.*
 import com.delivery.sopo.presentation.viewmodels.IntroViewModel
 import com.delivery.sopo.presentation.viewmodels.inquiry.*
@@ -107,7 +109,6 @@ val sourceModule = module {
     single { ParcelRepositoryImpl(parcelDataSource = get(), parcelStatusDataSource = get(), parcelRemoteDataSource = get()) as com.delivery.sopo.data.repositories.parcels.ParcelRepository }
 
     single { UserLocalRepository(appDatabase = get(), userShared = get()) }
-    single { UserRemoteRepository() }
     single { SignUpRemoteDataSourceImpl(Dispatchers.IO) }
     single { ParcelRepository(get()) }
 
@@ -123,6 +124,10 @@ val useCaseModule = module {
 
     factory { return@factory LoginUseCase(userRepository = get()) }
     factory { return@factory ForceLoginUseCase(userRepository = get()) }
+
+    factory { return@factory SendAuthTokenUseCase(userRepository = get(), dispatcher = Dispatchers.IO) }
+    factory { return@factory VerifyAuthTokenUseCase(userRepository = get(), dispatcher = Dispatchers.IO) }
+    factory { return@factory ResetPasswordUseCase(userRepository = get(), dispatcher = Dispatchers.IO) }
 
     factory { return@factory UpdateNicknameUseCase(userRepository = get()) }
     factory { return@factory UpdateFCMTokenUseCase(userRepository = get()) }
@@ -149,12 +154,15 @@ val viewModelModule = module {
 
     viewModel { IntroViewModel() }
 
-    viewModel { LoginViewModel(get()) }
-    viewModel { return@viewModel SignUpViewModel(signUpUseCase = get()) }
+    viewModel { LoginViewModel(loginUseCase = get()) }
+    viewModel { SignUpViewModel(signUpUseCase = get()) }
     viewModel { SignUpCompleteViewModel(get(), get()) }
-    viewModel { RegisterNicknameViewModel(get()) }
-    viewModel { return@viewModel LoginSelectViewModel(loginUseCase = get(), signUpUseCase = get()) }
-    viewModel { ResetPasswordViewModel(get()) }
+
+    viewModel { RegisterNicknameViewModel(updateNicknameUseCase = get()) }
+    viewModel { UpdateNicknameViewModel(updateNicknameUseCase = get()) }
+
+    viewModel { LoginSelectViewModel(loginUseCase = get(), signUpUseCase = get()) }
+    viewModel { ResetPasswordViewModel(sendAuthTokenUseCase = get(), verifyAuthTokenUseCase = get(), resetPasswordUseCase = get()) }
     viewModel { MainViewModel(get(), get(), get(), get()) }
     viewModel { MenuSubViewModel() }
     viewModel { LockScreenViewModel(get(), get()) }
@@ -167,7 +175,7 @@ val viewModelModule = module {
     viewModel { MenuViewModel(get()) }
     viewModel { AccountManagerViewModel(get()) }
     viewModel { SignOutViewModel(get()) }
-    viewModel { UpdateNicknameViewModel(get(), get(), get()) }
+
 
     viewModel { InquiryMainViewModel() }
     viewModel { OngoingTypeViewModel(get(), get(), get(), get(), get()) }

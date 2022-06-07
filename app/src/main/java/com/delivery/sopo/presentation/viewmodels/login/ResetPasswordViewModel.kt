@@ -7,8 +7,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.presentation.bindings.FocusChangeCallback
 import com.delivery.sopo.presentation.consts.NavigatorConst
-import com.delivery.sopo.consts.ResetPasswordConst
-import com.delivery.sopo.data.repositories.remote.user.UserRemoteRepository
+import com.delivery.sopo.domain.usecase.user.reset.ResetPasswordUseCase
+import com.delivery.sopo.domain.usecase.user.reset.SendAuthTokenUseCase
+import com.delivery.sopo.domain.usecase.user.reset.VerifyAuthTokenUseCase
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.exceptions.InternalServerException
@@ -23,7 +24,11 @@ import com.delivery.sopo.util.ui_util.OnSnackBarClickListener
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 
-class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): BaseViewModel()
+class ResetPasswordViewModel(
+        private val sendAuthTokenUseCase: SendAuthTokenUseCase,
+        private val verifyAuthTokenUseCase: VerifyAuthTokenUseCase,
+        private val resetPasswordUseCase: ResetPasswordUseCase
+): BaseViewModel()
 {
     val username = MutableLiveData<String>()
     val password = MutableLiveData<String>()
@@ -61,7 +66,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
     init
     {
         validity[InfoEnum.EMAIL] = false
-        postNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_SEND)
+        postNavigator(NavigatorConst.Event.INPUT_EMAIL_FOR_SEND)
     }
 
     fun onClearClicked()
@@ -97,7 +102,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
 
     fun onResetProcessClicked()
     {
-        postNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_SEND)
+        postNavigator(NavigatorConst.Event.INPUT_EMAIL_FOR_SEND)
 
         jwtToken = ""
         authCode.postValue("")
@@ -125,15 +130,13 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         postNavigator(NavigatorConst.Event.COMPLETE)
     }
 
-    private fun verifyAuthCode(email: String, authCode: String) = scope.launch(exceptionHandler) {
+    private fun requestSendTokenToEmail(email: String) = scope.launch(exceptionHandler) {
         try
         {
             onStartLoading()
-            userRemoteRepo.requestVerifyAuthToken(ResetAuthCode(jwtToken, authCode, email))
-            postNavigator(ResetPasswordConst.INPUT_PASSWORD_FOR_RESET)
-
-            validity.clear()
-            validity[InfoEnum.PASSWORD] = false
+            cnfOfFailureAuthCode = 0
+            jwtToken = sendAuthTokenUseCase(username = email)
+            postNavigator(NavigatorConst.Event.INPUT_AUTH_CODE)
         }
         finally
         {
@@ -141,13 +144,15 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         }
     }
 
-    private fun requestSendTokenToEmail(email: String) = scope.launch(exceptionHandler) {
+    private fun verifyAuthCode(email: String, authCode: String) = scope.launch(exceptionHandler) {
         try
         {
             onStartLoading()
-            cnfOfFailureAuthCode = 0
-            jwtToken = userRemoteRepo.requestSendTokenToEmail(email = email)
-            postNavigator(ResetPasswordConst.INPUT_AUTH_CODE)
+            verifyAuthTokenUseCase(ResetAuthCode(jwtToken, authCode, email))
+            postNavigator(NavigatorConst.Event.INPUT_PASSWORD_FOR_RESET)
+
+            validity.clear()
+            validity[InfoEnum.PASSWORD] = false
         }
         finally
         {
@@ -159,8 +164,8 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
         try
         {
             onStartLoading()
-            userRemoteRepo.requestResetPassword(resetPassword = resetPassword)
-            postNavigator(ResetPasswordConst.COMPLETED_RESET_PASSWORD)
+            resetPasswordUseCase(resetPassword = resetPassword)
+            postNavigator(NavigatorConst.Event.COMPLETED_RESET_PASSWORD)
         }
         finally
         {
@@ -279,7 +284,7 @@ class ResetPasswordViewModel(private val userRemoteRepo: UserRemoteRepository): 
                     authCode.postValue("")
 
                     postErrorSnackBar("일정시간이 지났기 때문에 다시 시도해주세요.")
-                    postNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_SEND)
+                    postNavigator(NavigatorConst.Event.INPUT_EMAIL_FOR_SEND)
                 }
                 else ->
                 {

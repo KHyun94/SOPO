@@ -14,8 +14,10 @@ import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.data.models.JoinInfo
 import com.delivery.sopo.domain.usecase.user.token.SignUpUseCase
+import com.delivery.sopo.exceptions.InternalServerException
+import com.delivery.sopo.exceptions.SOPOApiException
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
-
 
 class SignUpViewModel(private val signUpUseCase: SignUpUseCase): BaseViewModel()
 {
@@ -26,45 +28,20 @@ class SignUpViewModel(private val signUpUseCase: SignUpUseCase): BaseViewModel()
     val validity = mutableMapOf<InfoEnum, Boolean>()
 
     private var _invalidity = MutableLiveData<Pair<InfoEnum, Boolean>>()
-    val invalidity: LiveData<Pair<InfoEnum, Boolean>>
-        get() = _invalidity
+    val invalidity: LiveData<Pair<InfoEnum, Boolean>> = _invalidity
 
     private val _focus = MutableLiveData<Triple<View, Boolean, InfoEnum>>()
-    val focus: MutableLiveData<Triple<View, Boolean, InfoEnum>>
-        get() = _focus
+    val focus: MutableLiveData<Triple<View, Boolean, InfoEnum>> = _focus
 
     var focusChangeCallback: FocusChangeCallback = FocusChangeCallback@{ v, hasFocus, type ->
         _focus.value = (Triple(v, hasFocus, type))
     }
 
     private var _navigator = MutableLiveData<String>()
-    val navigator: LiveData<String>
-        get() = _navigator
+    val navigator: LiveData<String> = _navigator
 
-    fun postNavigator(navigator: String)
-    {
-        _navigator.postValue(navigator)
-    }
+    fun postNavigator(navigator: String) = _navigator.postValue(navigator)
 
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
-    {
-        override fun onFailure(error: ErrorCode)
-        {
-            postErrorSnackBar("로그인에 실패했습니다.")
-        }
-
-        override fun onAlreadyRegisteredUser(error: ErrorCode)
-        {
-            super.onAlreadyRegisteredUser(error)
-            postErrorSnackBar("이미 등록된 사용자입니다.")
-        }
-
-        override fun onInternalServerError(error: ErrorCode)
-        {
-            super.onInternalServerError(error)
-            postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
-        }
-    }
 
     init
     {
@@ -110,4 +87,56 @@ class SignUpViewModel(private val signUpUseCase: SignUpUseCase): BaseViewModel()
             onStopLoading()
         }
     }
+
+    val exceptionHandler: CoroutineExceptionHandler =
+        CoroutineExceptionHandler { coroutineContext, throwable ->
+            when(throwable)
+            {
+                is SOPOApiException -> handlerAPIException(throwable)
+                is InternalServerException -> postErrorSnackBar(throwable.message)
+                else ->
+                {
+                    throwable.printStackTrace()
+                    postErrorSnackBar(throwable.message ?: "확인할 수 없는 에러입니다.")
+                }
+            }
+        }
+
+    private fun handlerAPIException(exception: SOPOApiException)
+    {
+        when(exception.code)
+        {
+            ErrorCode.VALIDATION -> postErrorSnackBar(exception.message)
+            ErrorCode.ALREADY_REGISTERED_USER -> postErrorSnackBar("이미 등록된 사용자입니다.")
+            ErrorCode.INVALID_USER -> postErrorSnackBar("이메일 또는 비밀번호를 확인해주세요.")
+            ErrorCode.NICK_NAME_NOT_FOUND -> postNavigator(NavigatorConst.Screen.UPDATE_NICKNAME)
+            else ->
+            {
+                exception.printStackTrace()
+                postErrorSnackBar("[불명]${exception.message}")
+            }
+        }
+    }
+
+    /** 삭제 예정 */
+    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
+    {
+        override fun onFailure(error: ErrorCode)
+        {
+            postErrorSnackBar("로그인에 실패했습니다.")
+        }
+
+        override fun onAlreadyRegisteredUser(error: ErrorCode)
+        {
+            super.onAlreadyRegisteredUser(error)
+            postErrorSnackBar("이미 등록된 사용자입니다.")
+        }
+
+        override fun onInternalServerError(error: ErrorCode)
+        {
+            super.onInternalServerError(error)
+            postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+        }
+    }
+
 }

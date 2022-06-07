@@ -9,9 +9,14 @@ object NavigatorConst {
     }
 
     object Event{
-        const val RESET_PROCESS = "EVENT_RESET_PROCESS"
         const val BACK = "EVENT_BACK_SCREEN"
         const val COMPLETE = "EVENT_COMPLETE"
+
+        const val INPUT_EMAIL_FOR_SEND = "EVENT_INPUT_EMAIL_FOR_SEND"
+        const val INPUT_EMAIL_FOR_RESEND = "EVENT_INPUT_EMAIL_FOR_RESEND"
+        const val INPUT_AUTH_CODE = "EVENT_INPUT_AUTH_CODE"
+        const val INPUT_PASSWORD_FOR_RESET = "EVENT_INPUT_PASSWORD_FOR_RESET"
+        const val COMPLETED_RESET_PASSWORD = "EVENT_COMPLETED_RESET_PASSWORD"
     }
 
     object Error{

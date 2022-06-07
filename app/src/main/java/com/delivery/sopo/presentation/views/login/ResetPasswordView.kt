@@ -6,7 +6,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.consts.ResetPasswordConst
 import com.delivery.sopo.databinding.ResetPasswordViewBinding
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.OptionalTypeEnum
@@ -29,12 +28,6 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
     var timer: CountDownTimer? = null
     private var isCountTimer = false
-
-    override fun onAfterBinding()
-    {
-        super.onAfterBinding()
-
-    }
 
     override fun setObserve()
     {
@@ -109,12 +102,12 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
                     binding.slideMainResetPassword.expanded()
                     binding.slideMainResetPassword.isTouchEnabled = false
                 }
-                ResetPasswordConst.INPUT_AUTH_CODE ->
+                NavigatorConst.Event.INPUT_AUTH_CODE ->
                 {
                     if(!isCountTimer) timer = countLimitTime()
                     timer?.start()
                 }
-                ResetPasswordConst.INPUT_PASSWORD_FOR_RESET ->
+                NavigatorConst.Event.INPUT_PASSWORD_FOR_RESET ->
                 {
                     timer?.cancel()
                     timer = null
@@ -154,7 +147,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
             override fun onFinish()
             {
-                vm.postNavigator(ResetPasswordConst.INPUT_EMAIL_FOR_RESEND)
+                vm.postNavigator(NavigatorConst.Event.INPUT_EMAIL_FOR_RESEND)
                 vm.authCode.postValue("")
 
                 binding.tvCountOfAuth.text = "인증시간 초과"

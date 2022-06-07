@@ -16,6 +16,7 @@ import com.delivery.sopo.databinding.UpdateNicknameViewBinding
 import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.OptionalTypeEnum
+import com.delivery.sopo.extensions.convertTextColor
 import com.delivery.sopo.extensions.launchActivityWithAllClear
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.SopoLog
@@ -38,7 +39,7 @@ class UpdateNicknameView: BaseView<UpdateNicknameViewBinding, UpdateNicknameView
         super.onAfterBinding()
 
         binding.btnSndEmail.backgroundTintList = resources.getColorStateList(R.color.COLOR_GRAY_200, null)
-        binding.btnSndEmail.setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
+        binding.btnSndEmail.convertTextColor(R.color.COLOR_GRAY_400)
 
         binding.etNickname.addTextChangedListener { nickname ->
 
@@ -46,15 +47,13 @@ class UpdateNicknameView: BaseView<UpdateNicknameViewBinding, UpdateNicknameView
 
             if(isValidate)
             {
-                binding.btnSndEmail.backgroundTintList =
-                    resources.getColorStateList(R.color.COLOR_MAIN_700, null)
-                binding.btnSndEmail.setTextColor(ContextCompat.getColor(this, R.color.MAIN_WHITE))
+                binding.btnSndEmail.backgroundTintList = resources.getColorStateList(R.color.COLOR_MAIN_700, null)
+                binding.btnSndEmail.convertTextColor(R.color.MAIN_WHITE)
             }
             else
             {
-                binding.btnSndEmail.backgroundTintList =
-                    resources.getColorStateList(R.color.COLOR_GRAY_200, null)
-                binding.btnSndEmail.setTextColor(ContextCompat.getColor(this, R.color.COLOR_GRAY_400))
+                binding.btnSndEmail.backgroundTintList = resources.getColorStateList(R.color.COLOR_GRAY_200, null)
+                binding.btnSndEmail.convertTextColor(R.color.COLOR_GRAY_400)
             }
         }
     }
