@@ -30,11 +30,11 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="20sp">
+            android:layout_marginEnd="16dp">
 
             <ImageView
-                android:layout_width="37sp"
-                android:layout_height="37sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@{ContextCompat.getDrawable(context, permissionIcon)}"
                 tools:background="@drawable/ic_permission_save" />
@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:text="@{title}"
                 tools:text="저장 권한"
-                android:includeFontPadding="false"
+                android:layout_marginBottom="2dp"
                 android:fontFamily="@font/pretendard_bold"
                 android:textColor="@color/COLOR_GRAY_800" />
 
@@ -61,7 +61,6 @@
                 style="@style/kor_H5"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:includeFontPadding="false"
                 android:text="@{content}"
                 tools:text="수신한 문자에서 택배 정보를\n자동으로 등록합니다."
                 android:textColor="@color/COLOR_GRAY_500" />

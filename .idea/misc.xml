@@ -7,8 +7,10 @@
         <entry key="app/src/main/res/drawable/border_17dp_rounder.xml" value="0.289" />
         <entry key="app/src/main/res/drawable/border_all_round_10dp.xml" value="0.234" />
         <entry key="app/src/main/res/drawable/border_all_round_10dp_blue_scale.xml" value="0.206" />
+        <entry key="app/src/main/res/drawable/border_all_round_14dp.xml" value="0.1795" />
         <entry key="app/src/main/res/drawable/border_all_round_15dp.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/border_all_round_8dp.xml" value="0.2055" />
+        <entry key="app/src/main/res/drawable/border_all_rounded_11dp_blue.xml" value="0.219" />
         <entry key="app/src/main/res/drawable/border_non_click_img.xml" value="0.32" />
         <entry key="app/src/main/res/drawable/border_oval.xml" value="0.339" />
         <entry key="app/src/main/res/drawable/cursor_3dp_gray_800.xml" value="0.2595" />
@@ -30,6 +32,7 @@
         <entry key="app/src/main/res/layout/alert_update_dialog.xml" value="0.20116120218579234" />
         <entry key="app/src/main/res/layout/app_info_view.xml" value="0.1293918918918919" />
         <entry key="app/src/main/res/layout/confirm_delete_dialog.xml" value="0.2868972778320313" />
+        <entry key="app/src/main/res/layout/detail_permission_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/dialog_logout.xml" value="0.20116120218579234" />
         <entry key="app/src/main/res/layout/fragment_account_manager.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_completed_type.xml" value="0.22266009852216748" />
@@ -57,12 +60,14 @@
         <entry key="app/src/main/res/layout/inquiry_list_ongoing_item.xml" value="0.3215767634854772" />
         <entry key="app/src/main/res/layout/inquiry_main_frame.xml" value="0.11977438619774386" />
         <entry key="app/src/main/res/layout/intro_view.xml" value="0.17725409836065573" />
-        <entry key="app/src/main/res/layout/intro_view_3.xml" value="0.11977438619774386" />
+        <entry key="app/src/main/res/layout/intro_view_1.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/intro_view_2.xml" value="0.10675675675675676" />
+        <entry key="app/src/main/res/layout/intro_view_3.xml" value="0.22" />
         <entry key="app/src/main/res/layout/item_img.xml" value="0.33" />
         <entry key="app/src/main/res/layout/item_inquiry_tab.xml" value="0.20355191256830601" />
         <entry key="app/src/main/res/layout/item_time_tab.xml" value="0.5" />
         <entry key="app/src/main/res/layout/lock_screen_view.xml" value="0.30245666503906254" />
-        <entry key="app/src/main/res/layout/login_select_view.xml" value="0.17725409836065573" />
+        <entry key="app/src/main/res/layout/login_select_view.xml" value="0.25" />
         <entry key="app/src/main/res/layout/login_view.xml" value="0.18" />
         <entry key="app/src/main/res/layout/main_view.xml" value="0.1" />
         <entry key="app/src/main/res/layout/notification_register_expanded.xml" value="0.21653005464480873" />

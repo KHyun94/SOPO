@@ -11,10 +11,10 @@
             type="com.delivery.sopo.presentation.viewmodels.menus.NoticeViewModel" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraint_main_notice"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:background="@color/COLOR_GRAY_50"
         android:orientation="vertical">
 
@@ -22,13 +22,21 @@
             android:id="@+id/include_header"
             layout="@layout/include_header_center_title_with_left_button"
             app:title='@{"공지사항"}'
-            app:buttonIcon="@{R.drawable.ic_left_arrow}"
+            app:buttonIcon="@{ContextCompat.getDrawable(context, R.drawable.ic_left_arrow)}"
             app:onEventClickListener="@{()->vm.onBackClicked()}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
              />
 
-        <View
+        <WebView
+            android:id="@+id/web_view_notice"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/include_header"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+<!--        <View
             android:id="@+id/view_divisionLine"
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -41,7 +49,7 @@
             android:id="@+id/expandablelist_notice"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layoutDirection="rtl" />
+            android:layoutDirection="rtl" />-->
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

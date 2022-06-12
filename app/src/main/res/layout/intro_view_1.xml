@@ -6,32 +6,50 @@
     android:layout_height="match_parent"
     android:background="@color/COLOR_GRAY_50">
 
+    <View
+        android:id="@+id/guide_1st"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toTopOf="@id/iv_icon_logo"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4" />
+
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/pretendard_bold"
+        android:includeFontPadding="false"
+        android:letterSpacing="-0.03"
+        android:text="기다리는 택배가 있나요?"
+        android:textColor="@color/COLOR_GRAY_900"
+        android:textSize="24dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/tv_sub_title"
-        android:text="기다리는 택배가 있나요?"
-        android:textSize="23.66dp"
-        android:textColor="@color/COLOR_GRAY_900"
-        android:fontFamily="@font/pretendard_bold"
-        android:layout_marginBottom="16dp"
-        />
+        app:layout_constraintTop_toBottomOf="@id/guide_1st" />
 
     <TextView
         android:id="@+id/tv_sub_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/pretendard_medium"
+        android:letterSpacing="-0.03"
+        android:text="소포에서 한 눈에 확인 하세요"
+        android:textColor="@color/COLOR_GRAY_600"
+        android:textSize="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/iv_icon_logo"
-        android:text="소포에서 한 눈에 확인 하세요"
-        android:textSize="16dp"
-        android:textColor="@color/COLOR_GRAY_500"
-        android:fontFamily="@font/spoqa_han_sans_neo_regular"
-        android:layout_marginBottom="14dp"/>
+        app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/MAIN_BLACK"
+        app:layout_constraintBottom_toTopOf="@id/iv_icon_logo"/>
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/iv_icon_logo"
@@ -39,8 +57,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:adjustViewBounds="true"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"

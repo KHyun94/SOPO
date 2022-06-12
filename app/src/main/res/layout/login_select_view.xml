@@ -117,6 +117,8 @@
                 <TextView
                     android:id="@+id/btn_next"
                     style="@style/buttonBasicStyle"
+                    android:textSize="15dp"
+                    android:fontFamily="@font/pretendard_bold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="41dp"
@@ -141,12 +143,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="36dp"
                 android:layout_marginTop="24dp"
+                android:lineHeight="24dp"
                 android:layout_marginBottom="26.5dp"
                 android:fontFamily="@font/pretendard_bold"
                 android:includeFontPadding="false"
-                android:text="소포 앱이 일하기 위해\n권한이 필요합니다"
+                android:text="택배 정보를 기록하기 위해\n권한이 필요합니다"
                 android:textColor="@color/COLOR_GRAY_800" />
-
 
             <include
                 android:id="@+id/include_permission_save"
@@ -154,27 +156,26 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="36dp"
-                android:layout_marginBottom="33dp"
-                app:content='@{"계정 정보 및 택배 데이터 보관"}'
+                android:layout_marginBottom="36dp"
+                app:content='@{"고객님의 계정 및 택배 정보를 기록합니다."}'
                 app:permissionIcon="@{R.drawable.ic_permission_save}"
                 app:title='@{"저장 권한"}' />
-
 
             <TextView
                 android:id="@+id/tv_permission_check"
                 style="@style/buttonHalfStyle"
                 android:layout_width="135dp"
-                android:layout_height="wrap_content"
+                android:layout_height="43dp"
                 android:layout_gravity="center"
                 android:layout_marginBottom="25dp"
-                android:background="@drawable/border_all_round_15dp"
+                android:fontFamily="@font/pretendard_bold"
+                android:background="@drawable/border_all_round_14dp"
                 android:backgroundTint="@color/COLOR_MAIN_700"
                 android:gravity="center"
-                android:paddingVertical="10sp"
                 android:text="확인"
                 android:textColor="@color/MAIN_WHITE"
-                android:textSize="20dp"
-                android:textStyle="bold" />
+                android:textSize="15dp"
+                />
 
         </LinearLayout>
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>

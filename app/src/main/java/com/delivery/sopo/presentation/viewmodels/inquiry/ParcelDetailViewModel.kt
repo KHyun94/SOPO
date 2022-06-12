@@ -24,15 +24,13 @@ class ParcelDetailViewModel(
 {
     // 상세 화면에서 사용할 데이터 객체
     private var _parcelDetail = MutableLiveData<Parcel.Detail>()
-    val parcelDetail: LiveData<Parcel.Detail>
-        get() = _parcelDetail
+    val parcelDetail: LiveData<Parcel.Detail> = _parcelDetail
 
     // delivery status 리스트
     val statusList = MutableLiveData<MutableList<SelectItem<String>>?>()
 
     private var _navigator = MutableLiveData<String>()
-    val navigator: LiveData<String>
-        get() = _navigator
+    val navigator: LiveData<String> = _navigator
 
     fun postNavigator(navigator: String)
     {
@@ -62,7 +60,7 @@ class ParcelDetailViewModel(
         return deliveryStatuses
     }
 
-    fun requestParcelDetail(parcelId: Int) = scope.launch{
+    fun requestParcelDetail(parcelId: Int) = scope.launch(coroutineExceptionHandler){
 
         SopoLog.d("requestParcelDetail(...) parcel id = $parcelId")
 

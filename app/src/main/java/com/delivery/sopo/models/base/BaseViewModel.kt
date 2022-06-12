@@ -111,7 +111,7 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
             }
         }
 
-    protected val scope: CoroutineScope = (viewModelScope + job)
+    protected val scope: CoroutineScope = (viewModelScope + job + coroutineExceptionHandler)
 
     fun checkEventStatus(checkNetwork: Boolean = false, delayMillisecond: Long = 100, event: () -> Unit)
     {

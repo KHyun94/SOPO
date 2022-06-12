@@ -105,7 +105,6 @@ class UpdateNicknameView: BaseView<UpdateNicknameViewBinding, UpdateNicknameView
                     val builder = SpannableStringBuilder("변경된 닉네임은\n${vm.nickname.value?.toString()}입니다.")
                     builder.setSpan(ForegroundColorSpan(ContextCompat.getColor(this, R.color.COLOR_MAIN_700)), 8, builder.length - 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-
                     val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.ONE_WAY,
                                                         title = builder,
                                                         leftHandler = Pair("확인"){
@@ -121,30 +120,5 @@ class UpdateNicknameView: BaseView<UpdateNicknameViewBinding, UpdateNicknameView
                 }
             }
         })
-
-        vm.result.observe(this@UpdateNicknameView, Observer { result ->
-
-            if(!result.result)
-            {
-                SopoLog.d("실패 닉네임 업데이트 여부 확인 ${result.result}, ${result.code}, ${result.message}")
-
-                when(result.displayType)
-                {
-                    DisplayEnum.TOAST_MESSAGE ->
-                    {
-                        Toast.makeText(this@UpdateNicknameView, "정보 입력을 완료해주세요.", Toast.LENGTH_LONG)
-                            .apply {
-                                setGravity(Gravity.TOP, 0, 180)
-                            }
-                            .show()
-                    }
-                    DisplayEnum.DIALOG ->
-                    {
-                        GeneralDialog(this@UpdateNicknameView, "오류", "닉네임 등록이 실패했습니다.\n다시 시도해주세요.", null, Pair("네", null)).show(supportFragmentManager, "DIALOG")
-                    }
-                }
-            }
-        })
     }
-
 }

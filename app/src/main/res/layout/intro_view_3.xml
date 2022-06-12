@@ -7,49 +7,77 @@
     android:layout_height="match_parent"
     android:background="@color/COLOR_GRAY_50">
 
+    <View
+        android:id="@+id/guide_1st"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toTopOf="@id/v_empty"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4" />
+
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/pretendard_bold"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:letterSpacing="-0.03"
+        android:lineHeight="32dp"
+        android:text="다음 화면에서\n권한을 허용해주세요."
+        android:textColor="@color/COLOR_GRAY_900"
+        android:textSize="24dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/tv_sub_title"
-        android:text="소포 앱이 일할 수 있도록\n허용 버튼을 눌러주세요."
-        android:gravity="center"
-        android:textSize="23.66dp"
-        android:textColor="@color/COLOR_GRAY_900"
-        android:fontFamily="@font/pretendard_bold"
-        android:layout_marginBottom="16dp"
-        />
+        app:layout_constraintTop_toBottomOf="@id/guide_1st"
+        app:layout_constraintVertical_bias="0.4" />
 
     <TextView
         android:id="@+id/tv_sub_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="91dp"
+        android:fontFamily="@font/pretendard_medium"
+        android:letterSpacing="-0.03"
+        android:text="신규 택배를 대신 등록해드릴게요."
+        android:textColor="@color/COLOR_GRAY_600"
+        android:textSize="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/iv_icon_logo"
-        android:text="알림 내역 중 택배사와 송장번호가 있다면\n대신 등록해드릴게요."
-        android:gravity="center"
-        android:textSize="16dp"
-        android:textColor="@color/COLOR_GRAY_500"
-        android:fontFamily="@font/spoqa_han_sans_neo_regular"
-        android:layout_marginBottom="91dp"/>
+        app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/MAIN_BLACK"
+        app:layout_constraintBottom_toTopOf="@id/v_empty"/>
+
+    <View
+        android:id="@+id/v_empty"
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+        android:background="@color/COLOR_GRAY_500"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/iv_icon_logo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:layout_marginBottom="130dp"
         android:adjustViewBounds="true"
+        app:layout_constraintBottom_toTopOf="@id/tv_setting_now"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tv_setting_now"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        android:layout_marginBottom="130dp"
         app:lottie_rawRes="@raw/lottie_intro_step3"
-        tools:background="@raw/lottie_intro_step3"/>
+        tools:background="@raw/lottie_intro_step3" />
 
     <TextView
         android:id="@+id/tv_setting_now"
@@ -59,24 +87,28 @@
         android:layout_marginStart="41dp"
         android:layout_marginEnd="41dp"
         android:layout_marginBottom="16dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        android:textSize="15dp"
+        android:fontFamily="@font/pretendard_bold"
+        android:text="지금 설정할게요"
         app:layout_constraintBottom_toTopOf="@id/tv_setting_later"
-        android:text="지금 설정할게요" />
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
 
     <TextView
-        style="@style/buttonTranStyle"
         android:id="@+id/tv_setting_later"
+        style="@style/buttonTranStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="41dp"
-        android:layout_marginEnd="41dp"
-        android:text="나중에 할게요"
         android:layout_gravity="center"
-        android:gravity="center"
-        android:textColor="@color/COLOR_MAIN_700"
+        android:layout_marginStart="41dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="41dp"
         android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:text="나중에 할게요"
+        android:textSize="15dp"
+        android:fontFamily="@font/pretendard_bold"
+        android:textColor="@color/COLOR_MAIN_700"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />

@@ -2,6 +2,8 @@ package com.delivery.sopo.presentation.views.menus
 
 import android.os.Bundle
 import android.view.View
+import android.webkit.WebSettings
+import android.webkit.WebViewClient
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentNoticeBinding
@@ -67,7 +69,24 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding, NoticeViewModel>(){
     {
         super.onViewCreated(view, savedInstanceState)
 
-        val data = mutableListOf<NoticeItem>()
+        binding.webViewNotice.webViewClient = WebViewClient()
+        val webSettings = binding.webViewNotice.settings
+        webSettings.javaScriptEnabled = true // 웹페이지 자바스클비트 허용 여부
+        webSettings.setSupportMultipleWindows(false) // 새창 띄우기 허용 여부
+        webSettings.javaScriptCanOpenWindowsAutomatically = false // 자바스크립트 새창 띄우기(멀티뷰) 허용 여부
+        webSettings.loadWithOverviewMode = true // 메타태그 허용 여부
+        webSettings.useWideViewPort = true // 화면 사이즈 맞추기 허용 여부
+        webSettings.setSupportZoom(false) // 화면 줌 허용 여부
+        webSettings.builtInZoomControls = false // 화면 확대 축소 허용 여부
+        webSettings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN // 컨텐츠 사이즈 맞추기
+        webSettings.cacheMode = WebSettings.LOAD_NO_CACHE // 브라우저 캐시 허용 여부
+        webSettings.domStorageEnabled = true // 로컬저장소 허용 여부
+
+        binding.webViewNotice.loadUrl("https://spiny-foam-412.notion.site/Android-6d8b688d419048faa2c5b7e929a96404")
+
+
+
+       /* val data = mutableListOf<NoticeItem>()
 
         val notice1Content = mutableListOf<String>()
         notice1Content.add("안녕하세요. SOPO 사용자 여러분.\n SOPO 앱 버전 1.1.0으로 업데이트하면서 변화된 점에 대하여 공지드립니다.\n\n [업데이트]\n1. UI 개선\n2. 택배 예약 기능 추가.")
@@ -80,7 +99,7 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding, NoticeViewModel>(){
         data.add(notice2)
 
         val noticeExpandableAdapter = NoticeExpandableAdapter(requireContext() , data)
-        binding.expandablelistNotice.setAdapter(noticeExpandableAdapter)
+        binding.expandablelistNotice.setAdapter(noticeExpandableAdapter)*/
     }
 
     companion object{
