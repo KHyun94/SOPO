@@ -17,14 +17,15 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 import java.util.*
 
-class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false): KoinComponent, BaseObservable()
+class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false): KoinComponent,
+        BaseObservable()
 {
     private val parcelRepository: ParcelRepository by inject()
 
-    val iconResource: Int by lazy { getParcelStatusIcon() }
-    val backgroundColorResource: Int by lazy { getParcelStatusBackgroundColor() }
-    val statusText: String by lazy { getParcelStatus() }
-    val statusTextColorResource: Int by lazy { getParcelStatusColor() }
+    val iconResource: Int = getParcelStatusIcon()
+    val backgroundColorResource: Int = getParcelStatusBackgroundColor()
+    val statusText: String =getParcelStatus()
+    val statusTextColorResource: Int = getParcelStatusColor()
 
     val isUnidentified = ObservableField<Boolean>().apply {
         checkIsUnidentified {
@@ -42,24 +43,19 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
         calendar.time = completedArrivalDte ?: return "시간불명"
         return "${calendar.get(Calendar.YEAR)}/${calendar.get(Calendar.MONTH) + 1}"
     }
+
     fun getCompleteDateTime(): String
     {
         val now = System.currentTimeMillis()
-        val target = ongoingAuditDte?.time?: return "업데이트 일자 확인 불가"
+        val target = ongoingAuditDte?.time ?: return "업데이트 일자 확인 불가"
 
         val diffMillis = (now - target)
         val diffHour = diffMillis / (1000 * 60 * 60)
 
         return when
         {
-            diffHour < 1 ->
-            {
-                "최근 1시간 내 업데이트"
-            }
-            diffHour in 1..23 ->
-            {
-                "${diffHour}시간 전 업데이트"
-            }
+            diffHour < 1 -> "최근 1시간 내 업데이트"
+            diffHour in 1..23 -> "${diffHour}시간 전 업데이트"
             diffHour in 24..743 ->
             {
                 val diffDay = diffHour / 24
@@ -75,17 +71,14 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
                 val diffYear = diffHour / (24 * 31 * 12)
                 "${diffYear}년 전 업데이트"
             }
-            else ->
-            {
-                "업데이트 일자 확인 불가"
-            }
+            else -> "업데이트 일자 확인 불가"
         }
     }
 
     fun getOngoingDateTime(): String
     {
         val milliseconds = ongoingAuditDte?.time ?: return "시간불명"
-        return DateUtil.convertDate(milliseconds, DateUtil.DATE_TYPE_PROGRESSES)?:"시간불명"
+        return DateUtil.convertDate(milliseconds, DateUtil.DATE_TYPE_PROGRESSES) ?: "시간불명"
     }
 
     fun getDateOfMonth(): String
@@ -103,56 +96,26 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
 
         return when(calendar.get(Calendar.DAY_OF_WEEK))
         {
-            1 ->
-            {
-                "일요일"
-            }
-            2 ->
-            {
-                "월요일"
-            }
-            3 ->
-            {
-                "화요일"
-            }
-            4 ->
-            {
-                "수요일"
-            }
-            5 ->
-            {
-                "목요일"
-            }
-            6 ->
-            {
-                "금요일"
-            }
-            7 ->
-            {
-                "토요일"
-            }
-            else ->
-            {
-                ""
-            }
+            1 -> "일요일"
+            2 -> "월요일"
+            3 -> "화요일"
+            4 -> "수요일"
+            5 -> "목요일"
+            6 -> "금요일"
+            7 -> "토요일"
+            else -> ""
         }
     }
 
-    fun checkIsUnidentified(cb: (Boolean) -> Unit)
-    {
-        CoroutineScope(Dispatchers.Main).launch {
-            var update: LiveData<Int?>? = null
+    fun checkIsUnidentified(cb: (Boolean) -> Unit) = CoroutineScope(Dispatchers.Main).launch {
+        val update: LiveData<Int?> = withContext(Dispatchers.Default) { parcelRepository.getIsUnidentifiedAsLiveData(parcel.parcelId) }
 
-            withContext(Dispatchers.Default) {
-                update = parcelRepository.getIsUnidentifiedAsLiveData(parcel.parcelId)
-            }
-
-            // TODO 이렇게 옵저빙안하고도 변경 가능한지 테스트 필시 해야함
-            update?.observeForever {
-                cb.invoke(it != null && it == 1)
-            }
+        // TODO 이렇게 옵저빙안하고도 변경 가능한지 테스트 필시 해야함
+        update.observeForever {
+            cb.invoke(it != null && it == 1)
         }
     }
+
 
     private fun getParcelStatus(): String
     {
@@ -160,13 +123,9 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> "준비중"
             DeliveryStatusEnum.ORPHANED.CODE -> "조회불가"
-            //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> "준비중"
-            //상품 인수
             DeliveryStatusEnum.AT_PICKUP.CODE -> "상품인수"
-            //상품 이동 중
             DeliveryStatusEnum.IN_TRANSIT.CODE -> "배송중"
-            // 동네도착
             DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> "동네도착"
             else -> "에러"
         }
@@ -178,13 +137,9 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
         {
             DeliveryStatusEnum.NOT_REGISTERED.CODE -> R.color.COLOR_GRAY_300
             DeliveryStatusEnum.ORPHANED.CODE -> R.color.COLOR_MAIN_300
-            //상품 준비중
             DeliveryStatusEnum.INFORMATION_RECEIVED.CODE -> R.color.COLOR_GRAY_300
-            //상품 인수
             DeliveryStatusEnum.AT_PICKUP.CODE -> R.color.COLOR_MAIN_300
-            // 배송
             DeliveryStatusEnum.IN_TRANSIT.CODE -> R.color.MAIN_WHITE
-            // 동네도착
             DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE -> R.color.MAIN_WHITE
             else -> R.color.COLOR_GRAY_300
         }

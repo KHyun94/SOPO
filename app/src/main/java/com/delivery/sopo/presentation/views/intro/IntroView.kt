@@ -4,12 +4,18 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import android.view.View
+import android.view.ViewTreeObserver
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
+import androidx.core.view.get
 import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.IntroViewBinding
+import com.delivery.sopo.extensions.makeGone
+import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.interfaces.listener.OnIntroClickListener
 import com.delivery.sopo.models.base.BaseView
@@ -40,7 +46,7 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
 
             if(!isNow)
             {
-                return vm.postNavigator(NavigatorConst.TO_LOGIN_SELECT)
+                return vm.postNavigator(NavigatorConst.Screen.LOGIN_SELECT)
             }
 
             launchNotificationSetting()
@@ -60,7 +66,7 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
                     return
                 }
 
-                vm.postNavigator(NavigatorConst.TO_LOGIN_SELECT)
+                vm.postNavigator(NavigatorConst.Screen.LOGIN_SELECT)
             }
         })
 
@@ -84,7 +90,7 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
 
             when(navigator)
             {
-                NavigatorConst.TO_LOGIN_SELECT ->
+                NavigatorConst.Screen.LOGIN_SELECT ->
                 {
                     moveToActivityWithFinish(LoginSelectView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 }
@@ -100,6 +106,34 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
 
         setViewPager()
         setListener()
+
+        /*val onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener { // 'year spinner'높이 수치만큼 'month sector'의 상단 공백을 생성
+
+            val adapter = binding.viewPager.adapter as IntroPageAdapter
+            val height = adapter.bottomView.height
+
+            Toast.makeText(this@IntroView, "Height $height", Toast.LENGTH_SHORT).show()
+
+            *//*val yearSpinnerHeight: Int = binding.linearMainYearSpinner.height
+
+                        (binding.linearMainMonthSelector.layoutParams as FrameLayout.LayoutParams).apply {
+                            topMargin = yearSpinnerHeight
+                        }
+
+                        // 'year spinner'높이 수치만큼 'completed space'의 상단 공백을 생성
+                        // 'month sector'높이 수치만큼 'completed space'의 높이변경
+                        val monthSelectorHeight = binding.linearMainMonthSelector.height
+
+                        (binding.vInnerCompletedSpace.layoutParams as LinearLayout.LayoutParams).apply {
+                            this.topMargin = yearSpinnerHeight
+                            this.height = monthSelectorHeight
+                        }
+
+                        // 뷰 조절 후 옵저빙 리스너 제거
+                        binding.frameMainCompleteInquiry.viewTreeObserver.removeOnGlobalLayoutListener(this)*//*
+        }
+
+        binding.linearIntro.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)*/
     }
 
     private fun setViewPager()
@@ -121,18 +155,18 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
         {
             0 ->
             {
-                binding.ivPreviousPage.visibility = View.GONE
-                binding.ivNextPage.visibility = View.VISIBLE
+                binding.ivPreviousPage.makeGone()
+                binding.ivNextPage.makeVisible()
             }
             1 ->
             {
-                binding.ivPreviousPage.visibility = View.VISIBLE
-                binding.ivNextPage.visibility = View.VISIBLE
+                binding.ivPreviousPage.makeVisible()
+                binding.ivNextPage.makeVisible()
             }
             2 ->
             {
-                binding.ivPreviousPage.visibility = View.VISIBLE
-                binding.ivNextPage.visibility = View.GONE
+                binding.ivPreviousPage.makeVisible()
+                binding.ivNextPage.makeGone()
             }
         }
     }

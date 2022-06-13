@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,6 +19,8 @@ public class IntroPageAdapter extends PagerAdapter {
     private Context mContext = null ;
     private OnIntroClickListener introClickListener;
 
+    private ImageView ivIcon;
+
     public IntroPageAdapter()
     {
     }
@@ -28,6 +31,7 @@ public class IntroPageAdapter extends PagerAdapter {
         introClickListener = listener;
     }
 
+    @NonNull
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         View view = null ;
@@ -40,6 +44,7 @@ public class IntroPageAdapter extends PagerAdapter {
             {
                 case 0:
                     view = inflater.inflate(R.layout.intro_view_1, container, false);
+                    view.findViewById(R.id.iv_icon_logo);
                     break;
                 case 1:
                     view = inflater.inflate(R.layout.intro_view_2, container, false);
@@ -61,6 +66,10 @@ public class IntroPageAdapter extends PagerAdapter {
         container.addView(view) ;
 
         return view ;
+    }
+
+    public ImageView getBottomView(){
+        return ivIcon;
     }
 
     @Override

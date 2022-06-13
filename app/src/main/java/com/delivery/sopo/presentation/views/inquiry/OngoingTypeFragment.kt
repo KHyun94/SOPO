@@ -188,7 +188,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
-
         vm.parcels.asLiveData(Dispatchers.Default).observe(this) {
 
             when(vm.parcels.value)
@@ -216,8 +215,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                 }
                 is Result.Loading ->
                 {
-                    SopoLog.d("TEST!!!! => 로딩이라고? 시발 ")
-                    binding.linearNoItem.makeVisible()
+
                 }
                 else ->
                 {
@@ -227,55 +225,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             }
 
         }
-
-//        vm.ongoingParcels.asLiveData(Dispatchers.Default).observe(this@OngoingTypeFragment) { list ->
-//            list.forEach {
-//                SopoLog.d("ongoingParcels => ${it.parcel.toString()}")
-//            }
-//
-//            if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
-//            else binding.linearNoItem.visibility = View.GONE
-//
-//            soonArrivalParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
-//            registeredParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
-//
-//            viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
-//            viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
-//        }
-
-       /* vm.ongoingParcels.asLiveData(Dispatchers.Default).observe(this@OngoingTypeFragment) { list ->
-                list.forEach {
-                    SopoLog.d("ongoingParcels => ${it.parcel.toString()}")
-                }
-
-                if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
-                else binding.linearNoItem.visibility = View.GONE
-
-                soonArrivalParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
-                registeredParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
-
-                viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
-                viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
-            }*/
-
-
-/*
-                vm.ongoingParcels.observe(requireActivity()) { list ->
-
-                    list.forEach {
-                        SopoLog.d("ongoingParcels => ${it.parcel.toString()}")
-                    }
-
-                    if(list.size == 0) binding.linearNoItem.visibility = View.VISIBLE
-                    else binding.linearNoItem.visibility = View.GONE
-
-                    soonArrivalParcelAdapter.separateDeliveryListByStatus(list)
-                    registeredParcelAdapter.separateDeliveryListByStatus(list)
-
-                    viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
-                    viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
-                }
-*/
 
         vm.navigator.observe(this) { navigator ->
             when(navigator)

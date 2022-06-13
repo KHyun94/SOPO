@@ -33,7 +33,7 @@ object OtherUtil
 
         val split = tmp.split(".")
 
-        return if (split.size > 0)
+        return if (split.isNotEmpty())
         {
             split[split.size - 1]
         }

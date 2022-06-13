@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorRes
+import androidx.constraintlayout.widget.Placeholder
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.airbnb.lottie.LottieAnimationView
@@ -28,27 +29,27 @@ object ImageBindingAdapter
             {
                 view.setAnimation(R.raw.lottie_personal_message_welcome)
             }
-            PersonalMessageEnum.HELLO->
+            PersonalMessageEnum.HELLO ->
             {
                 view.setAnimation(R.raw.lottie_personal_message_hello)
             }
-            PersonalMessageEnum.SHOPPING_DETOX->
+            PersonalMessageEnum.SHOPPING_DETOX ->
             {
                 view.setAnimation(R.raw.lottie_personal_message_shopping_detox)
             }
-            PersonalMessageEnum.PRO_UNBOXING->
+            PersonalMessageEnum.PRO_UNBOXING ->
             {
                 view.setAnimation(R.raw.lottie_personal_message_pro_unboxing)
             }
-            PersonalMessageEnum.SOPO_CNT->
+            PersonalMessageEnum.SOPO_CNT ->
             {
                 view.setAnimation(R.raw.lottie_personal_message_sopo_cnt)
             }
-            PersonalMessageEnum.WAITING->
+            PersonalMessageEnum.WAITING ->
             {
                 view.setAnimation(R.raw.lottie_personal_message_waiting)
             }
-            PersonalMessageEnum.BE_QUIET->
+            PersonalMessageEnum.BE_QUIET ->
             {
                 view.setAnimation(R.raw.lottie_personal_message_be_quiet)
             }
@@ -63,11 +64,15 @@ object ImageBindingAdapter
     {
         when(enum)
         {
-            DeliveryStatusEnum.NOT_REGISTERED -> {
-                view.background = ContextCompat.getDrawable(view.context, R.drawable.ic_inquiry_2depth_not_registered)
+            DeliveryStatusEnum.NOT_REGISTERED ->
+            {
+                view.background =
+                    ContextCompat.getDrawable(view.context, R.drawable.ic_inquiry_2depth_not_registered)
             }
-            DeliveryStatusEnum.INFORMATION_RECEIVED -> {
-                view.background = ContextCompat.getDrawable(view.context, R.drawable.ic_inquiry_2depth_not_registered)
+            DeliveryStatusEnum.INFORMATION_RECEIVED ->
+            {
+                view.background =
+                    ContextCompat.getDrawable(view.context, R.drawable.ic_inquiry_2depth_not_registered)
 
             }
             DeliveryStatusEnum.AT_PICKUP ->
@@ -89,8 +94,12 @@ object ImageBindingAdapter
                 view.setAnimation(R.raw.inquiry_2depth_delivered)
 
             }
-            DeliveryStatusEnum.ERROR -> { }
-            else->  { }
+            DeliveryStatusEnum.ERROR ->
+            {
+            }
+            else ->
+            {
+            }
         }
         view.playAnimation()
     }
@@ -110,6 +119,40 @@ object ImageBindingAdapter
             view.setBackgroundResource(0)
         }
 
+    }
+
+    @JvmStatic
+    @BindingAdapter("setBackground")
+    fun bindImageViewIcon(view: ImageView, res: Int)
+    {
+        try
+        {
+            when(OtherUtil.getResourceExtension(res))
+            {
+                "gif" ->
+                {
+                    Glide.with(view)
+                        .asGif()
+                        .load(res)
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                        .into(view)
+                }
+                else ->
+                {
+                    Glide.with(view)
+                        .load(res)
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                        .into(view)
+                }
+            }
+        }
+        catch(e: Exception)
+        {
+            SopoLog.e("Glide Error!!!!!! ${e.printStackTrace()}")
+            Glide.with(view.context).load(res).into(view)
+        }
     }
 
     @JvmStatic

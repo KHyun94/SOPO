@@ -6,6 +6,7 @@ object NavigatorConst {
         const val MAIN = "SCREEN_MAIN"
         const val RESET_PASSWORD = "SCREEN_RESET_PASSWORD"
         const val UPDATE_NICKNAME = "SCREEN_UPDATE_NICKNAME"
+        const val LOGIN_SELECT = "SCREEN_LOGIN_SELECT"
     }
 
     object Event{
@@ -28,7 +29,7 @@ object NavigatorConst {
     const val DUPLICATE_LOGIN: String = "DUPLICATE_LOGIN"
     const val TO_SIGN_OUT = "TO_SIGN_OUT"
     const val TO_LOGIN = "TO_LOGIN"
-    const val TO_LOGIN_SELECT = "TO_LOGIN_SELECT"
+
     const val TO_SIGN_UP = "TO_SIGN_UP"
     const val TO_KAKAO_LOGIN = "TO_KAKAO_LOGIN"
 

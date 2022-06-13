@@ -30,10 +30,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class InquiryListAdapter(
-        private var parcels: MutableList<InquiryListItem> = mutableListOf(),
-        private val parcelType: InquiryItemTypeEnum,
-        private val cntOfSelectedItemForDelete: MutableLiveData<Int>? = null):
+class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mutableListOf(), private val parcelType: InquiryItemTypeEnum, private val cntOfSelectedItemForDelete: MutableLiveData<Int>? = null):
         RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
     private lateinit var parcelClickListener: OnParcelClickListener
@@ -44,29 +41,27 @@ class InquiryListAdapter(
         this.parcelClickListener = listener
     }
 
-    inner class OngoingViewHolder(private val binding: InquiryListOngoingItemBinding): RecyclerView.ViewHolder(binding.root)
+    inner class OngoingViewHolder(val binding: InquiryListOngoingItemBinding): RecyclerView.ViewHolder(binding.root)
     {
-        val ongoingBinding: InquiryListOngoingItemBinding = binding
-
         fun bind(item: InquiryListItem)
         {
-            ongoingBinding.setVariable(BR.ongoingInquiryData, item)
-            ongoingBinding.executePendingBindings()
+            binding.setVariable(BR.ongoingInquiryData, item)
+            binding.executePendingBindings()
         }
     }
 
-    inner class CompleteViewHolder(binding: InquiryListCompleteItemBinding): RecyclerView.ViewHolder(binding.root)
+    inner class CompleteViewHolder(val binding: InquiryListCompleteItemBinding): RecyclerView.ViewHolder(binding.root)
     {
-        val completeBinding: InquiryListCompleteItemBinding = binding
-
         fun bind(item: InquiryListItem)
         {
-            completeBinding.completeInquiryData = item
-            completeBinding.executePendingBindings()
+            binding.completeInquiryData = item
+            binding.executePendingBindings()
         }
     }
 
-    private fun <T: ViewDataBinding> bindView(inflater: LayoutInflater, @LayoutRes layoutRes: Int, parent: ViewGroup): T =  DataBindingUtil.inflate<T>(inflater, layoutRes, parent, false)
+    private fun <T: ViewDataBinding> bindView(inflater: LayoutInflater,
+                                              @LayoutRes layoutRes: Int, parent: ViewGroup): T =
+        DataBindingUtil.inflate<T>(inflater, layoutRes, parent, false)
 
     // onCreateViewHolder() - 아이템 뷰를 위한 뷰홀더 객체 생성하여 리턴.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
@@ -75,17 +70,20 @@ class InquiryListAdapter(
         {
             InquiryItemTypeEnum.Soon ->
             {
-                val binding = bindView<InquiryListOngoingItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent)
+                val binding =
+                    bindView<InquiryListOngoingItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent)
                 return OngoingViewHolder(binding)
             }
             InquiryItemTypeEnum.Registered ->
             {
-                val binding = bindView<InquiryListOngoingItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent)
+                val binding =
+                    bindView<InquiryListOngoingItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent)
                 return OngoingViewHolder(binding)
             }
             InquiryItemTypeEnum.Complete ->
             {
-                val binding = bindView<InquiryListCompleteItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_complete_item, parent)
+                val binding =
+                    bindView<InquiryListCompleteItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_complete_item, parent)
                 return CompleteViewHolder(binding)
             }
         }
@@ -97,51 +95,54 @@ class InquiryListAdapter(
 
         when(holder)
         {
-            is OngoingViewHolder -> {
+            is OngoingViewHolder ->
+            {
                 holder.bind(item)
                 holder.itemView.tag = item
 
-                CoroutineScope(Dispatchers.Main).launch {
-                    holder.ongoingBinding.tvDeliveryStatus.bringToFront()
-                    holder.ongoingBinding.tvRegisteredParcelName.text = item.parcel.alias.toEllipsis()
-                }
+                holder.binding.tvDeliveryStatus.bringToFront()
+                holder.binding.tvRegisteredParcelName.text = item.parcel.alias.toEllipsis()
 
                 if(item.isSelected)
                 {
-                    setOngoingParcelItemByDelete(holder.ongoingBinding)
+                    setOngoingParcelItemByDelete(holder.binding)
                 }
                 else
                 {
-                    setOngoingParcelItemByDefault(holder.ongoingBinding)
+                    setOngoingParcelItemByDefault(holder.binding)
                 }
 
-                holder.ongoingBinding.cvOngoingParent.setOnClickListener { v ->
+                holder.binding.cvOngoingParent.setOnClickListener { v ->
 
-                    // 삭제 모드 및 선택되지 않은 택배일 때
-                    if(isRemoveMode && !item.isSelected)
+                    when
                     {
-                        item.isSelected = true
-                        cntOfSelectedItemForDelete?.value = (cntOfSelectedItemForDelete?.value ?: 0) + 1
-                        setOngoingParcelItemByDelete(holder.ongoingBinding)
-                    }
-                    else if(isRemoveMode && item.isSelected)
-                    {
-                        item.isSelected = false
-                        cntOfSelectedItemForDelete?.value = (cntOfSelectedItemForDelete?.value ?: 0) - 1
-                        setOngoingParcelItemByDefault(holder.ongoingBinding)
-                    }
-                    else
-                    {
-                        if(item.parcel.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE)
+                        isRemoveMode && !item.isSelected ->
                         {
-                            return@setOnClickListener parcelClickListener.onEnterParcelDetailClicked(view = v, type = InquiryStatusEnum.ONGOING, parcelId = item.parcel.parcelId)
+                            item.isSelected = true
+                            cntOfSelectedItemForDelete?.value =
+                                (cntOfSelectedItemForDelete?.value ?: 0) + 1
+                            setOngoingParcelItemByDelete(holder.binding)
                         }
+                        isRemoveMode && item.isSelected ->
+                        {
+                            item.isSelected = false
+                            cntOfSelectedItemForDelete?.value =
+                                (cntOfSelectedItemForDelete?.value ?: 0) - 1
+                            setOngoingParcelItemByDefault(holder.binding)
+                        }
+                        else ->
+                        {
+                            if(item.parcel.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE)
+                            {
+                                return@setOnClickListener parcelClickListener.onEnterParcelDetailClicked(view = v, type = InquiryStatusEnum.ONGOING, parcelId = item.parcel.parcelId)
+                            }
 
-                        parcelClickListener.onMaintainParcelClicked(view = v, pos = position, parcelId = item.parcel.parcelId)
+                            parcelClickListener.onMaintainParcelClicked(view = v, pos = position, parcelId = item.parcel.parcelId)
+                        }
                     }
                 }
 
-                holder.ongoingBinding.cvOngoingParent.setOnLongClickListener {
+                holder.binding.cvOngoingParent.setOnLongClickListener {
                     if(isRemoveMode) return@setOnLongClickListener true
 
                     parcelClickListener.onUpdateParcelAliasClicked(view = it, type = InquiryStatusEnum.ONGOING, parcelId = item.parcel.parcelId)
@@ -156,32 +157,32 @@ class InquiryListAdapter(
 
                 if(item.isSelected)
                 {
-                    setCompleteParcelItemByDelete(holder.completeBinding)
+                    setCompleteParcelItemByDelete(holder.binding)
                 }
                 else
                 {
-                    setCompleteParcelItemByDefault(holder.completeBinding)
+                    setCompleteParcelItemByDefault(holder.binding)
                 }
 
                 CoroutineScope(Dispatchers.Main).launch {
-                    holder.completeBinding.tvCompleteParcelName.text =item.parcel.alias.toEllipsis()
+                    holder.binding.tvCompleteParcelName.text = item.parcel.alias.toEllipsis()
                 }
 
-                holder.completeBinding.cvCompleteParent.setOnClickListener { v ->
+                holder.binding.cvCompleteParent.setOnClickListener { v ->
 
                     if(isRemoveMode && !item.isSelected)
                     {
                         item.isSelected = true
                         cntOfSelectedItemForDelete?.value =
                             (cntOfSelectedItemForDelete?.value ?: 0) + 1
-                        setCompleteParcelItemByDelete(holder.completeBinding)
+                        setCompleteParcelItemByDelete(holder.binding)
                     }
                     else if(isRemoveMode && item.isSelected)
                     {
                         item.isSelected = false
                         cntOfSelectedItemForDelete?.value =
                             (cntOfSelectedItemForDelete?.value ?: 0) - 1
-                        setCompleteParcelItemByDefault(holder.completeBinding)
+                        setCompleteParcelItemByDefault(holder.binding)
                     }
                     else
                     {
@@ -189,7 +190,7 @@ class InquiryListAdapter(
                     }
                 }
 
-                holder.completeBinding.cvCompleteParent.setOnLongClickListener {
+                holder.binding.cvCompleteParent.setOnLongClickListener {
                     if(isRemoveMode) return@setOnLongClickListener true
                     parcelClickListener.onUpdateParcelAliasClicked(view = it, type = InquiryStatusEnum.COMPLETE, parcelId = item.parcel.parcelId)
                     return@setOnLongClickListener true
@@ -239,7 +240,8 @@ class InquiryListAdapter(
         binding.constraintDeliveryStatusBack.visibility = GONE
         binding.constraintDeliveryStatusFrontDelete.visibility = VISIBLE
         binding.constraintDeliveryStatusBackDelete.visibility = VISIBLE
-        binding.linearParentListItemRegister.background = ContextCompat.getDrawable(binding.root.context, R.drawable.border_all_rounded_11dp_blue)
+        binding.linearParentListItemRegister.background =
+            ContextCompat.getDrawable(binding.root.context, R.drawable.border_all_rounded_11dp_blue)
     }
 
     private fun setOngoingParcelItemByDefault(binding: InquiryListOngoingItemBinding)
@@ -268,7 +270,8 @@ class InquiryListAdapter(
         binding.vDividerLine.visibility = GONE
         binding.constraintDeliveryStatusFrontComplete.visibility = VISIBLE
         binding.constraintItemPartDeleteComplete.visibility = VISIBLE
-        binding.linearItemComplete.background = ContextCompat.getDrawable(binding.root.context, R.drawable.border_all_rounded_11dp_blue)
+        binding.linearItemComplete.background =
+            ContextCompat.getDrawable(binding.root.context, R.drawable.border_all_rounded_11dp_blue)
     }
 
     fun changeParcelDeleteMode(flag: Boolean)
@@ -331,7 +334,7 @@ class InquiryListAdapter(
             it.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
         }.toMutableList()
 
-        val diffCallback = DiffCallback(parcels,  newParcels)
+        val diffCallback = DiffCallback(parcels, newParcels)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
 
         parcels.clear()
@@ -375,7 +378,7 @@ class InquiryListAdapter(
         diffResult.dispatchUpdatesTo(this@InquiryListAdapter)
     }
 
-    override fun getItemCount(): Int =  parcels.size
+    override fun getItemCount(): Int = parcels.size
     fun getListSize(): Int = parcels.size
 
     fun getList(): MutableList<InquiryListItem> = parcels
