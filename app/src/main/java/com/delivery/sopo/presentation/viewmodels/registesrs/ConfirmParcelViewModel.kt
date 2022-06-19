@@ -4,14 +4,22 @@ import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.R
+import com.delivery.sopo.data.models.Result
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.domain.usecase.parcel.remote.RegisterParcelUseCase
 import com.delivery.sopo.enums.ErrorCode
+import com.delivery.sopo.exceptions.InternalServerException
+import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.base.BaseViewModel
+import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class ConfirmParcelViewModel(
@@ -28,6 +36,13 @@ class ConfirmParcelViewModel(
 
     private var _navigator = MutableLiveData<String>()
     val navigator: LiveData<String> = _navigator
+
+    private var _status: MutableStateFlow<Result<Parcel.Common>> = MutableStateFlow(Result.Uninitialized)
+    val status = _status.asStateFlow()
+
+    fun emitStatus(result: Result<Parcel.Common>) = scope.launch {
+        _status.emit(result)
+    }
 
     fun onMoveClicked(v: View) = checkEventStatus(checkNetwork = true) {
 
@@ -55,21 +70,58 @@ class ConfirmParcelViewModel(
     }
 
     // '등록하기' Button Click event
-    private fun requestParcelRegister(register: Parcel.Register) =
-        scope.launch(coroutineExceptionHandler) {
-            SopoLog.i("requestParcelRegister(...) 호출[${register.toString()}]")
+    private fun requestParcelRegister(register: Parcel.Register) = scope.launch(coroutineExceptionHandler) {
+        SopoLog.i("requestParcelRegister(...) 호출[${register.toString()}]")
 
-            try
+        emitStatus(Result.Loading)
+        parcel = registerParcelUseCase(register)
+
+        delay(2000)
+
+        emitStatus(Result.Success(parcel))
+    }
+
+    val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
+
+        emitStatus(Result.Error(throwable))
+
+        when(throwable)
+        {
+            is SOPOApiException -> handlerAPIException(throwable)
+            is InternalServerException -> handlerInternalServerException(throwable)
+            else ->
             {
-                onStartLoading()
-                parcel = registerParcelUseCase(register)
-                _navigator.postValue(NavigatorConst.REGISTER_SUCCESS)
-            }
-            finally
-            {
-                onStopLoading()
+                throwable.printStackTrace()
+                postErrorSnackBar(throwable.message ?: "확인할 수 없는 에러입니다.")
             }
         }
+    }
+
+    private fun handlerAPIException(exception: SOPOApiException)
+    {
+        when(exception.code)
+        {
+            ErrorCode.ALREADY_REGISTERED_PARCEL, ErrorCode.OVER_REGISTERED_PARCEL, ErrorCode.PARCEL_BAD_REQUEST -> postErrorSnackBar(exception.message)
+            else ->
+            {
+                exception.printStackTrace()
+                postErrorSnackBar("[불명]${exception.message}")
+            }
+        }
+    }
+
+    private fun handlerInternalServerException(exception: InternalServerException)
+    {
+        when(val code = ErrorCode.getCode(exception.getErrorResponse().code))
+        {
+            ErrorCode.FAIL_TO_SEARCH_PARCEL -> postErrorSnackBar("택배사가 이상한가봐요?")
+            else ->
+            {
+                exception.printStackTrace()
+                postErrorSnackBar(exception.message)
+            }
+        }
+    }
 
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {

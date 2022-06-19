@@ -3,6 +3,7 @@ package com.delivery.sopo.util
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
 import android.widget.EditText
@@ -10,8 +11,10 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.widget.addTextChangedListener
+import androidx.databinding.DataBindingUtil
 import com.delivery.sopo.R
 import com.delivery.sopo.data.database.room.AppDatabase
+import com.delivery.sopo.databinding.AlertUpdateDialogBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,19 +32,9 @@ object AlertUtil: KoinComponent
 
     fun updateValueDialog(context: Context, title: String, okListener: OnTextClickListener?, cancelListener: OnTextClickListener?, callback: Function<String, Unit>)
     {
-        val constraintLayout =
-            View.inflate(context, R.layout.alert_update_dialog, null) as ConstraintLayout
+        val binding = DataBindingUtil.inflate<AlertUpdateDialogBinding>(LayoutInflater.from(context), R.layout.alert_update_dialog, null, false)
 
-        val layoutMain: ConstraintLayout = constraintLayout.findViewById(R.id.layout_main)
-        val etInputText: EditText = constraintLayout.findViewById(R.id.et_input_text)
-        val vFocusStatus: View = constraintLayout.findViewById(R.id.v_focus_status)
-        val tvTitle: TextView = constraintLayout.findViewById(R.id.tv_title)
-        val tvCancelBtn: TextView = constraintLayout.findViewById(R.id.tv_cancel_btn)
-        val tvOkBtn: TextView = constraintLayout.findViewById(R.id.tv_ok_btn)
-
-        alert = AlertDialog.Builder(context).setView(constraintLayout).setCancelable(false).create()
-
-        layoutMain.layoutParams = ConstraintLayout.LayoutParams((SizeUtil.changePxToDp(context, 288.0f).toInt()), SizeUtil.changePxToDp(context, 288.0f).toInt())
+        alert = AlertDialog.Builder(context).setView(binding.constraintMainAlert).setCancelable(false).create()
 
         // 테두리 라운딩 처리
         alert?.window?.run {
@@ -49,53 +42,55 @@ object AlertUtil: KoinComponent
             requestFeature(Window.FEATURE_NO_TITLE)
         }
 
-        val param = alert?.window?.attributes
+/*        val param = alert?.window?.attributes
         param?.let { param ->
             param.width = SizeUtil.changePxToDp(context, 288.0f).toInt()
-            param.height = SizeUtil.changePxToDp(context, 138.0f).toInt()
+            param.height = SizeUtil.changePxToDp(context, 288.0f).toInt()
             alert?.window?.attributes = param
-        }
+        }*/
+
+        alert?.window?.setLayout((context.resources.displayMetrics.widthPixels * 0.9).toInt(), (context.resources.displayMetrics.heightPixels * 0.9).toInt())
 
         CoroutineScope(Dispatchers.Main).launch {
 
-            tvTitle.text = title
+            binding.tvTitle.text = title
 
-            tvOkBtn.text = okListener?.first ?: "확인"
-            if (okListener?.first != null) tvOkBtn.setOnClickListener(okListener.second)
+            binding.tvOkBtn.text = okListener?.first ?: "확인"
+            if (okListener?.first != null) binding.tvOkBtn.setOnClickListener(okListener.second)
             else
             {
-                tvCancelBtn.visibility = View.GONE
-                tvOkBtn.setOnClickListener { alert!!.dismiss() }
+                binding.tvCancelBtn.visibility = View.GONE
+                binding.tvOkBtn.setOnClickListener { alert!!.dismiss() }
             }
 
             if (cancelListener?.first != null)
             {
-                tvCancelBtn.text = cancelListener.first
+                binding.tvCancelBtn.text = cancelListener.first
 
-                if (cancelListener.second != null) tvCancelBtn.setOnClickListener(cancelListener.second)
-                else tvCancelBtn.setOnClickListener { alert!!.dismiss() }
+                if (cancelListener.second != null) binding.tvCancelBtn.setOnClickListener(cancelListener.second)
+                else binding.tvCancelBtn.setOnClickListener { alert!!.dismiss() }
             }
 
-            tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_GRAY_200))
-            etInputText.addTextChangedListener {
+            binding.tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_GRAY_200))
+            binding.etInputText.addTextChangedListener {
                 if (it.toString().length > 1)
                 {
-                    tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_MAIN_700))
+                    binding.tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_MAIN_700))
                 }
             }
 
-            tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_GRAY_200))
-            etInputText.addTextChangedListener {
+            binding.tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_GRAY_200))
+            binding.etInputText.addTextChangedListener {
                 if (it.toString().isNotEmpty())
                 {
-                    tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_MAIN_700))
-                    vFocusStatus.setBackgroundColor(context.resources.getColor(R.color.COLOR_MAIN_700))
+                    binding.tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_MAIN_700))
+                    binding.vFocusStatus.setBackgroundColor(context.resources.getColor(R.color.COLOR_MAIN_700))
                     callback.apply(it.toString())
                 }
                 else
                 {
-                    tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_GRAY_200))
-                    vFocusStatus.setBackgroundColor(context.resources.getColor(R.color.COLOR_GRAY_200))
+                    binding.tvOkBtn.setTextColor(context.resources.getColor(R.color.COLOR_GRAY_200))
+                    binding.vFocusStatus.setBackgroundColor(context.resources.getColor(R.color.COLOR_GRAY_200))
                 }
             }
         }

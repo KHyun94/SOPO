@@ -1,86 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:id="@+id/layout_main"
-    android:background="@drawable/border_14dp_rounder"
-    android:backgroundTint="@color/MAIN_WHITE">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/tv_title"
-        style="@style/kor_H4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
-        android:includeFontPadding="false"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:text="물품명을 입력해주세요." />
-
-    <LinearLayout
-        android:id="@+id/layout_body"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraint_main_alert"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="15dp"
-        android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_title">
+        android:background="@drawable/border_14dp_rounder"
+        android:backgroundTint="@color/MAIN_WHITE"
+        android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/et_input_text"
-            style="@style/kor_H3"
+        <TextView
+            android:id="@+id/tv_title"
+            style="@style/kor_H4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="20dp"
+            android:includeFontPadding="false"
+            android:text="물품명을 입력해주세요."
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/layout_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="3dp"
-            android:background="@android:color/transparent"
-            android:inputType="text"
-            android:hint="입력해주세요."/>
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="15dp"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title">
+
+            <EditText
+                android:id="@+id/et_input_text"
+                style="@style/kor_H3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:background="@android:color/transparent"
+                android:hint="입력해주세요."
+                android:inputType="text" />
+
+            <View
+                android:id="@+id/v_focus_status"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@color/COLOR_GRAY_200" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_cancel_btn"
+            style="@style/kor_H4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="19dp"
+            android:layout_marginEnd="39dp"
+            android:includeFontPadding="false"
+            android:text="취소"
+            android:textColor="@color/COLOR_MAIN_700"
+            app:layout_constraintRight_toLeftOf="@id/tv_ok_btn"
+            app:layout_constraintTop_toBottomOf="@+id/layout_body"
+            tools:text="취소" />
+
+        <TextView
+            android:id="@+id/tv_ok_btn"
+            style="@style/kor_H4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="19dp"
+            android:layout_marginEnd="16dp"
+            android:includeFontPadding="false"
+            android:text="확인"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layout_body"
+            tools:text="확인" />
 
         <View
-            android:id="@+id/v_focus_status"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/COLOR_GRAY_200" />
+            android:layout_height="1dp"
+            android:layout_marginTop="19dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_ok_btn" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/tv_cancel_btn"
-        style="@style/kor_H4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="19dp"
-        android:layout_marginEnd="39dp"
-        android:includeFontPadding="false"
-        android:text="취소"
-        android:textColor="@color/COLOR_MAIN_700"
-        app:layout_constraintRight_toLeftOf="@id/tv_ok_btn"
-        app:layout_constraintTop_toBottomOf="@+id/layout_body"
-        tools:text="취소" />
-
-    <TextView
-        android:id="@+id/tv_ok_btn"
-        style="@style/kor_H4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="19dp"
-        android:layout_marginEnd="16dp"
-        android:includeFontPadding="false"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_body"
-        android:text="확인"
-        tools:text="확인" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="19dp"
-        android:background="@android:color/transparent"
-        app:layout_constraintTop_toBottomOf="@id/tv_ok_btn"
-        app:layout_constraintBottom_toBottomOf="parent"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

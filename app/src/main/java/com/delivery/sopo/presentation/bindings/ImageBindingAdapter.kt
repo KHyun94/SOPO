@@ -150,7 +150,6 @@ object ImageBindingAdapter
         }
         catch(e: Exception)
         {
-            SopoLog.e("Glide Error!!!!!! ${e.printStackTrace()}")
             Glide.with(view.context).load(res).into(view)
         }
     }

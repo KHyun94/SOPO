@@ -21,14 +21,9 @@ import com.delivery.sopo.enums.InquiryStatusEnum
 import com.delivery.sopo.extensions.toEllipsis
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.setting.DiffCallback
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
-class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mutableListOf(), private val parcelType: InquiryItemTypeEnum, private val cntOfSelectedItemForDelete: MutableLiveData<Int>? = null):
-        RecyclerView.Adapter<RecyclerView.ViewHolder>()
+class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mutableListOf(), private val parcelType: InquiryItemTypeEnum, private val cntOfSelectedItemForDelete: MutableLiveData<Int>? = null): RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
     private lateinit var parcelClickListener: OnParcelClickListener
     private var isRemoveMode = false
@@ -56,11 +51,8 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
         }
     }
 
-    private fun <T: ViewDataBinding> bindView(inflater: LayoutInflater,
-                                              @LayoutRes layoutRes: Int, parent: ViewGroup): T =
-        DataBindingUtil.inflate<T>(inflater, layoutRes, parent, false)
+    private fun <T: ViewDataBinding> bindView(inflater: LayoutInflater, @LayoutRes layoutRes: Int, parent: ViewGroup): T = DataBindingUtil.inflate<T>(inflater, layoutRes, parent, false)
 
-    // onCreateViewHolder() - 아이템 뷰를 위한 뷰홀더 객체 생성하여 리턴.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
     {
         return when(parcelType)
@@ -80,14 +72,13 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int)
     {
-        val item: InquiryListItem = parcels[position]
+        val item = parcels[position]
 
         when(holder)
         {
             is OngoingViewHolder ->
             {
                 holder.bind(item)
-                holder.itemView.tag = item
 
                 holder.binding.tvDeliveryStatus.bringToFront()
                 holder.binding.tvRegisteredParcelName.text = item.parcel.alias.toEllipsis()
@@ -108,15 +99,13 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
                         isRemoveMode && !item.isSelected ->
                         {
                             item.isSelected = true
-                            cntOfSelectedItemForDelete?.value =
-                                (cntOfSelectedItemForDelete?.value ?: 0) + 1
+                            cntOfSelectedItemForDelete?.value = (cntOfSelectedItemForDelete?.value ?: 0) + 1
                             setOngoingParcelItemByDelete(holder.binding)
                         }
                         isRemoveMode && item.isSelected ->
                         {
                             item.isSelected = false
-                            cntOfSelectedItemForDelete?.value =
-                                (cntOfSelectedItemForDelete?.value ?: 0) - 1
+                            cntOfSelectedItemForDelete?.value = (cntOfSelectedItemForDelete?.value ?: 0) - 1
                             setOngoingParcelItemByDefault(holder.binding)
                         }
                         else ->
@@ -138,11 +127,11 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
 
                     return@setOnLongClickListener true
                 }
+
             }
             is CompleteViewHolder ->
             {
                 holder.bind(item)
-                holder.itemView.tag = item
 
                 if(item.isSelected)
                 {
@@ -153,24 +142,20 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
                     setCompleteParcelItemByDefault(holder.binding)
                 }
 
-                CoroutineScope(Dispatchers.Main).launch {
-                    holder.binding.tvCompleteParcelName.text = item.parcel.alias.toEllipsis()
-                }
+                holder.binding.tvCompleteParcelName.text = item.parcel.alias.toEllipsis()
 
                 holder.binding.cvCompleteParent.setOnClickListener { v ->
 
                     if(isRemoveMode && !item.isSelected)
                     {
                         item.isSelected = true
-                        cntOfSelectedItemForDelete?.value =
-                            (cntOfSelectedItemForDelete?.value ?: 0) + 1
+                        cntOfSelectedItemForDelete?.value = (cntOfSelectedItemForDelete?.value ?: 0) + 1
                         setCompleteParcelItemByDelete(holder.binding)
                     }
                     else if(isRemoveMode && item.isSelected)
                     {
                         item.isSelected = false
-                        cntOfSelectedItemForDelete?.value =
-                            (cntOfSelectedItemForDelete?.value ?: 0) - 1
+                        cntOfSelectedItemForDelete?.value = (cntOfSelectedItemForDelete?.value ?: 0) - 1
                         setCompleteParcelItemByDefault(holder.binding)
                     }
                     else
@@ -186,8 +171,8 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
                 }
             }
         }
-    }
 
+    }
 
     fun setSelectAll(flag: Boolean)
     {
@@ -280,40 +265,6 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
         notifyDataSetChanged()
     }
 
-    //현재는 '배송완료'에만 적용되어있음. 데이터를 무조건 notifyDataSetChanged()로 데이터를 리프레쉬하지 않고 진짜 변경된 데이터만 변경할 수 있도록함.
-    fun notifyChanged(updatedList: MutableList<InquiryListItem>)
-    {
-        updatedList.sortByDescending { it.parcel.arrivalDte }
-
-        if(parcels.size > updatedList.size)
-        {
-            parcels.removeIf { parcels.indexOf(it) > updatedList.lastIndex }
-            notifyDataSetChanged()
-        }
-
-        val notifyIndexList = mutableListOf<Int>()
-        for(index in 0..updatedList.lastIndex)
-        {
-            if(parcels.getOrNull(index) == null)
-            {
-                SopoLog.d("기존 리스트에 해당 index[$index]가 존재하지 않아 list[$index]에 ${updatedList[index].parcel.alias} 아이템을 추가합니다.")
-                parcels.add(updatedList[index])
-                notifyIndexList.add(index)
-            }
-            else if(updatedList[index].parcel.parcelId != parcels[index].parcel.parcelId)
-            {
-                SopoLog.d("index[$index]에 해당하는 ${parcels[index].parcel.alias}와 업데이트될 아이템(${updatedList[index].parcel.alias}) 일치하지 않아 기존 아이템에 업데이트될 아이템을 덮어씁니다.")
-                parcels[index] = updatedList[index]
-                notifyIndexList.add(index)
-            }
-        }
-
-        for(index in 0..notifyIndexList.lastIndex)
-        {
-            notifyItemChanged(notifyIndexList[index])
-        }
-    }
-
     // 택배 리스트를 상태에 따라 분류
     fun separateDelivered(list: MutableList<InquiryListItem>?)
     {
@@ -340,21 +291,18 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
         {
             InquiryItemTypeEnum.Soon ->
             {
-                list.filter {
-                    it.parcel.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
-                }.toMutableList()
+                list.filter { it.parcel.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE }
+                    .toMutableList()
             }
             InquiryItemTypeEnum.Registered ->
             {
-                list.filter {
-                    it.parcel.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE && it.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
-                }.toMutableList()
+                list.filter { it.parcel.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE && it.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE }
+                    .toMutableList()
             }
             InquiryItemTypeEnum.Complete ->
             {
-                list.filter {
-                    it.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
-                }.toMutableList()
+                list.filter { it.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE }
+                    .toMutableList()
             }
         }
 
@@ -371,5 +319,4 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
     fun getListSize(): Int = parcels.size
 
     fun getList(): MutableList<InquiryListItem> = parcels
-
 }

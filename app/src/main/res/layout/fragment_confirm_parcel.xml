@@ -16,6 +16,8 @@
 
         <import type="com.delivery.sopo.R" />
 
+        <import type="com.delivery.sopo.data.models.Result" />
+
         <variable
             name="vm"
             type="com.delivery.sopo.presentation.viewmodels.registesrs.ConfirmParcelViewModel" />
@@ -42,6 +44,8 @@
             android:layout_marginTop="17dp"
             android:layout_marginRight="24dp"
             android:background="@null"
+            android:clickable='@{vm.status instanceof Result.Loading ? false : true}'
+            android:focusable='@{vm.status instanceof Result.Loading ? false : true}'
             android:fontFamily="@font/pretendard_medium"
             android:hint="물품명"
             android:maxLength="15"
@@ -122,6 +126,7 @@
             android:layout_marginRight="24dp"
             android:onClick="@{() -> vm.onMoveClicked(ivRevise)}"
             android:src="@drawable/ic_revise_bttn"
+            android:visibility='@{vm.status instanceof Result.Loading ? View.GONE : View.VISIBLE}'
             app:layout_constraintBottom_toBottomOf="@id/iv_carrier"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="@id/iv_carrier" />
@@ -130,10 +135,11 @@
             android:id="@+id/linear_init"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="22dp"
             android:onClick="@{()->vm.onMoveClicked(tvInit)}"
             android:orientation="horizontal"
+            android:visibility='@{vm.status instanceof Result.Loading ? View.GONE : View.VISIBLE}'
             app:layout_constraintBottom_toTopOf="@+id/tv_register"
-            android:layout_marginBottom="22dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent">
 
@@ -164,6 +170,7 @@
             android:letterSpacing="0"
             android:onClick="@{()->vm.onMoveClicked(tvRegister)}"
             android:text="등록하기"
+            android:visibility='@{vm.status instanceof Result.Loading ? View.GONE : View.VISIBLE}'
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent" />
@@ -173,13 +180,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginBottom="36dp"
             android:adjustViewBounds="true"
+            android:visibility='@{vm.status instanceof Result.Loading ? View.VISIBLE : View.GONE}'
             app:layout_constraintBottom_toBottomOf="parent"
-            app:lottie_autoPlay="true"
-            app:lottie_loop="true"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginBottom="36dp"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
             app:lottie_rawRes="@raw/lottie_register_progress_bar" />
 
 

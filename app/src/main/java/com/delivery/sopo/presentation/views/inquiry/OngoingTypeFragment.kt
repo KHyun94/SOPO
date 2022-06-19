@@ -106,8 +106,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                 binding.nestedSvMainOngoingInquiry.scrollTo(0, 0)
             }
         }
-
-        vm.getOngoingParcels()
     }
 
     override fun onPause()
@@ -129,7 +127,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         {
             override fun onBackPressedInTime()
             {
-                Snackbar.make(motherView.binding.layoutMain, "온고잉 진행 한번 더 누르시면 앱이 종료됩니다.", 2000)
+                Snackbar.make(motherView.binding.layoutMain, "진행 한번 더 누르시면 앱이 종료됩니다.", 2000)
                     .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }
                     .show()
             }
@@ -198,32 +196,27 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
 
                     binding.linearNoItem.makeGone()
 
-                    soonArrivalParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
-                    registeredParcelAdapter.separateDeliveryListByStatus(list.toMutableList())
+                    val sortList = vm.sortByDeliveryStatus(list).toMutableList()
+
+                    soonArrivalParcelAdapter.separateDeliveryListByStatus(sortList.toMutableList())
+                    registeredParcelAdapter.separateDeliveryListByStatus(sortList.toMutableList())
 
                     viewSettingForSoonArrivalList(soonArrivalParcelAdapter.getListSize())
                     viewSettingForRegisteredList(registeredParcelAdapter.getListSize())
                 }
                 is Result.Error ->
                 {
-                    val error = (vm.parcels.value as Result.Error)
-
-                    SopoLog.d("TEST!!!! => 시발 실패 왜냐 ${error.exception.printStackTrace()}")
-                    Toast.makeText(requireContext(), "아 시발 ", Toast.LENGTH_SHORT).show()
-
                     binding.linearNoItem.makeVisible()
                 }
-                is Result.Loading ->
+                is Result.Loading, Result.Uninitialized ->
                 {
-
+                    binding.linearNoItem.makeGone()
                 }
                 else ->
                 {
-                    SopoLog.d("TEST!!!! => 로딩이라고? 시발  초기화잖아")
                     binding.linearNoItem.makeVisible()
                 }
             }
-
         }
 
         vm.navigator.observe(this) { navigator ->
@@ -233,7 +226,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                 {
                     onPageSelectListener.onSetCurrentPage(0)
                 }
-
             }
         }
     }
@@ -311,7 +303,6 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                     edit.value = it
                 }
             }
-
         }
     }
 
@@ -326,15 +317,14 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                 vm.syncOngoingParcels()
 
                 //5초후에 실행
-                Timer().schedule(object: TimerTask()
-                                 {
-                                     override fun run()
-                                     {
-                                         CoroutineScope(Dispatchers.Main).launch {
-                                             refreshDelay = false
-                                         }
-                                     }
-                                 }, 5000)
+                Timer().schedule(object: TimerTask() {
+                     override fun run()
+                     {
+                         CoroutineScope(Dispatchers.Main).launch {
+                             refreshDelay = false
+                         }
+                     }
+                 }, 5000)
 
                 binding.swipeLayoutMainOngoing.isRefreshing = false
 

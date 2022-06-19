@@ -17,4 +17,17 @@ object ViewBindingAdapter
             else -> View.GONE
         }
     }
+
+    @JvmStatic
+    @BindingAdapter("setFlowVisibility")
+    fun bindSetFlowVisibility(v: View, value: Int){
+
+        v.visibility = when (value)
+        {
+            View.VISIBLE -> View.VISIBLE
+            View.INVISIBLE -> View.INVISIBLE
+            View.GONE -> View.GONE
+            else -> View.GONE
+        }
+    }
 }

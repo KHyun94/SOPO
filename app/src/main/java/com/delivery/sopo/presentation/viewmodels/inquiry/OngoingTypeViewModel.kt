@@ -58,7 +58,7 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
         syncOngoingParcels()
     }
 
-    fun getOngoingParcels() = scope.launch {
+    fun getOngoingParcels() = scope.launch(Dispatchers.Default) {
         parcelRepo.getOngoingAllParcel().collect { _parcels.value = it }
     }
 
@@ -70,7 +70,6 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
     fun syncOngoingParcels() = scope.launch(coroutineExceptionHandler) {
         syncParcelsUseCase.invoke()
     }
-
 
     fun updateParcelAlias(parcelId: Int, parcelAlias: String) =
         checkEventStatus(checkNetwork = true) {
@@ -89,12 +88,10 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
         }
     }
 
-    private fun sortByDeliveryStatus(list: List<InquiryListItem>): List<InquiryListItem>
+    fun sortByDeliveryStatus(list: List<InquiryListItem>): List<InquiryListItem>
     {
-
         val sortedList = mutableListOf<InquiryListItem>()
-        val multiList =
-            listOf<MutableList<InquiryListItem>>(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
+        val multiList = listOf<MutableList<InquiryListItem>>(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
 
         val elseList = list.asSequence().filter { item ->
 
@@ -141,7 +138,7 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
             item.parcel.deliveryStatus != DeliveryStatusEnum.NOT_REGISTERED.CODE
         }.filter { item ->
             if(item.parcel.deliveryStatus == DeliveryStatusEnum.ORPHANED.CODE)
-            { //                SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
+            {
                 multiList[6].add(item)
             }
 

@@ -3,7 +3,9 @@ package com.delivery.sopo.presentation.views.registers
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.lifecycle.asLiveData
 import com.delivery.sopo.R
+import com.delivery.sopo.data.models.Result
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentConfirmParcelBinding
 import com.delivery.sopo.enums.TabCode
@@ -16,6 +18,7 @@ import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.KeyboardVisibilityUtil
 import com.delivery.sopo.presentation.viewmodels.registesrs.ConfirmParcelViewModel
 import com.delivery.sopo.presentation.views.main.MainView
+import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmParcelViewModel>()
@@ -116,6 +119,19 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
             }
 
             FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
+        }
+
+        vm.status.asLiveData(Dispatchers.Main).observe(this) { result ->
+
+            when(result)
+            {
+                is Result.Success ->
+                {
+                    TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(parcel = vm.parcel, returnType = ReturnType.COMPLETE_REGISTER_PARCEL)
+                    FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
+                }
+            }
+
         }
 
         vm.alias.observe(this) { alias ->
