@@ -11,6 +11,8 @@
         <entry key="app/src/main/res/drawable/border_all_round_15dp.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/border_all_round_8dp.xml" value="0.2055" />
         <entry key="app/src/main/res/drawable/border_all_rounded_11dp_blue.xml" value="0.219" />
+        <entry key="app/src/main/res/drawable/border_all_rounded_11dp_gray_50.xml" value="0.238" />
+        <entry key="app/src/main/res/drawable/border_all_rounded_color_gray_400.xml" value="0.238" />
         <entry key="app/src/main/res/drawable/border_non_click_img.xml" value="0.32" />
         <entry key="app/src/main/res/drawable/border_oval.xml" value="0.339" />
         <entry key="app/src/main/res/drawable/cursor_3dp_gray_800.xml" value="0.2595" />

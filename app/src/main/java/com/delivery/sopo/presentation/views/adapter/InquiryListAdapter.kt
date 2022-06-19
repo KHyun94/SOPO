@@ -1,8 +1,5 @@
 package com.delivery.sopo.presentation.views.adapter
 
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
 import android.view.LayoutInflater
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -66,25 +63,17 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
     // onCreateViewHolder() - 아이템 뷰를 위한 뷰홀더 객체 생성하여 리턴.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder
     {
-        when(parcelType)
+        return when(parcelType)
         {
-            InquiryItemTypeEnum.Soon ->
+            InquiryItemTypeEnum.Soon, InquiryItemTypeEnum.Registered ->
             {
-                val binding =
-                    bindView<InquiryListOngoingItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent)
-                return OngoingViewHolder(binding)
-            }
-            InquiryItemTypeEnum.Registered ->
-            {
-                val binding =
-                    bindView<InquiryListOngoingItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent)
-                return OngoingViewHolder(binding)
+                val binding = bindView<InquiryListOngoingItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent)
+                OngoingViewHolder(binding)
             }
             InquiryItemTypeEnum.Complete ->
             {
-                val binding =
-                    bindView<InquiryListCompleteItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_complete_item, parent)
-                return CompleteViewHolder(binding)
+                val binding = bindView<InquiryListCompleteItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_complete_item, parent)
+                CompleteViewHolder(binding)
             }
         }
     }

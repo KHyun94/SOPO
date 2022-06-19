@@ -27,8 +27,7 @@ class ConfirmParcelViewModel(
     lateinit var parcel: Parcel.Common
 
     private var _navigator = MutableLiveData<String>()
-    val navigator: LiveData<String>
-        get() = _navigator
+    val navigator: LiveData<String> = _navigator
 
     fun onMoveClicked(v: View) = checkEventStatus(checkNetwork = true) {
 
