@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="BasicAttrs">
+    <!--<declare-styleable name="BasicAttrs">
 
     </declare-styleable>
 
@@ -23,15 +23,15 @@
         <attr name="textColor" format="reference|integer"/>
         <attr name="buttonTextColor" format="reference|integer"/>
     </declare-styleable>
-
+-->
     <declare-styleable name="BottomNotificationBar" >
-        <attr name="text" format="string"/>
+        <attr name="android:text"/>
         <attr name="buttonText" format="string"/>
         <attr name="iconStart" format="reference|integer"/>
         <attr name="iconEnd" format="reference|integer"/>
-        <attr name="textColor" format="reference|integer"/>
+        <attr name="android:textColor" format="reference|integer"/>
         <attr name="buttonTextColor" format="reference|integer"/>
-        <attr name="background" format="reference|integer"/>
+        <attr name="android:background"/>
         <attr name="textFontFamily" format="reference|integer"/>
         <attr name="buttonTextFontFamily" format="reference|integer"/>
         <attr name="isUseEvent" format="string"/>

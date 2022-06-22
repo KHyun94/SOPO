@@ -1,3 +1,4 @@
+/*
 package com.delivery.sopo.presentation.views.widget
 
 import android.content.Context
@@ -177,4 +178,4 @@ class AlertMessageBar : RelativeLayout
     {
         layoutMain.visibility = View.GONE
     }
-}
+}*/

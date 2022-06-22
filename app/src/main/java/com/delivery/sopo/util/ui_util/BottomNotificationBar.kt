@@ -38,7 +38,7 @@ class BottomNotificationBar: ConstraintLayout
     private fun init()
     {
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val binding = BottomNotificationBarBinding.inflate(inflater, this, false)
+        binding = BottomNotificationBarBinding.inflate(inflater, this, false)
         addView(binding.root)
     }
 
@@ -56,19 +56,21 @@ class BottomNotificationBar: ConstraintLayout
 
     private fun setTypeArray(typedArray: TypedArray)
     {
-        binding.constraintMainBottonNotiBar.background = ContextCompat.getDrawable(context,typedArray.getInt(R.styleable.BottomNotificationBar_background, R.color.COLOR_GRAY_800))
+        binding.constraintMainBottonNotiBar.background = ContextCompat.getDrawable(context,typedArray.getInt(R.styleable.BottomNotificationBar_android_background, R.color.COLOR_GRAY_800))
 
-        binding.tvContent.text = typedArray.getString(R.styleable.BottomNotificationBar_text)
+        binding.tvContent.text = typedArray.getString(R.styleable.BottomNotificationBar_android_text)
         binding.tvEvent.text = typedArray.getString(R.styleable.BottomNotificationBar_buttonText)
 
-        binding.tvContent.setTextColor(ContextCompat.getColor(context, typedArray.getInt(R.styleable.BottomNotificationBar_textColor, R.color.MAIN_WHITE)))
-        binding.tvEvent.setTextColor(ContextCompat.getColor(context, typedArray.getInt(R.styleable.BottomNotificationBar_textColor, R.color.MAIN_WHITE)))
+        binding.tvContent.setTextColor(ContextCompat.getColor(context, typedArray.getInt(R.styleable.BottomNotificationBar_android_textColor, R.color.MAIN_WHITE)))
+        binding.tvEvent.setTextColor(ContextCompat.getColor(context, typedArray.getInt(R.styleable.BottomNotificationBar_buttonTextColor, R.color.MAIN_WHITE)))
 
         binding.tvContent.typeface = ResourcesCompat.getFont(context, typedArray.getInt(R.styleable.BottomNotificationBar_textFontFamily, R.font.pretendard_medium))
         binding.tvContent.typeface = ResourcesCompat.getFont(context, typedArray.getInt(R.styleable.BottomNotificationBar_textFontFamily, R.font.pretendard_medium))
 
         binding.ivIconStart.background = ContextCompat.getDrawable(context, typedArray.getInt(R.styleable.BottomNotificationBar_iconStart, R.drawable.ic_exclamation_mark_gray_scale))
-        binding.ivIconEnd.background = ContextCompat.getDrawable(context, typedArray.getInt(R.styleable.BottomNotificationBar_iconEnd, 0))
+
+        val iconEnd = typedArray.getInt(R.styleable.BottomNotificationBar_iconEnd, 0)
+        if(iconEnd != 0) binding.ivIconEnd.background = ContextCompat.getDrawable(context, iconEnd)
     }
 
     override fun setBackground(drawable: Drawable){
