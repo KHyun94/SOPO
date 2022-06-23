@@ -3,27 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-        <import type="android.view.View" />
-
-        <variable
-            name="content"
-            type="String" />
-
-        <variable
-            name="btnContent"
-            type="CharSequence" />
-
-    </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint_main_botton_noti_bar"
+        android:id="@+id/constraint_main_bottom_noti_bar"
         android:layout_width="match_parent"
         android:layout_height="54dp"
         android:background="@color/COLOR_GRAY_800"
         android:elevation="50dp"
-        android:visibility="gone"
+        android:visibility="visible"
         tools:visibility="visible">
 
         <ImageView
@@ -43,12 +29,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text='@{content}'
             android:textColor="@color/MAIN_WHITE"
             app:layout_constraintBottom_toBottomOf="@+id/iv_icon_start"
             app:layout_constraintStart_toEndOf="@+id/iv_icon_start"
             app:layout_constraintTop_toTopOf="@+id/iv_icon_start"
-            tools:text="이메일 또는 비밀번호를 확인해주세요." />
+            android:text="이메일 또는 비밀번호를 확인해주세요." />
 
         <TextView
             android:id="@+id/tv_event"
@@ -60,9 +45,7 @@
             android:paddingLeft="12dp"
             android:paddingTop="12dp"
             android:paddingBottom="12dp"
-            android:text="@{btnContent}"
             android:textColor="@color/MAIN_WHITE"
-            android:visibility='@{(btnContent == "" || btnContent == null)?View.GONE:View.VISIBLE}'
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"

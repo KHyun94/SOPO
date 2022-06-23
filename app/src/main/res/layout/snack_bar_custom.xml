@@ -18,13 +18,11 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraint_main_botton_noti_bar"
+        android:id="@+id/constraint_main_bottom_noti_bar"
         android:layout_width="match_parent"
         android:layout_height="54dp"
         android:background="@color/COLOR_GRAY_800"
-        android:elevation="50dp"
-        android:visibility="visible"
-        tools:visibility="visible">
+        android:elevation="50dp">
 
         <ImageView
             android:id="@+id/iv_icon_start"

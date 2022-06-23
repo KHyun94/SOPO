@@ -33,6 +33,7 @@
         <entry key="app/src/main/res/drawable/selector_time_tab.xml" value="0.206" />
         <entry key="app/src/main/res/layout/alert_update_dialog.xml" value="0.20116120218579234" />
         <entry key="app/src/main/res/layout/app_info_view.xml" value="0.1293918918918919" />
+        <entry key="app/src/main/res/layout/bottom_notification_bar.xml" value="0.1" />
         <entry key="app/src/main/res/layout/confirm_delete_dialog.xml" value="0.2868972778320313" />
         <entry key="app/src/main/res/layout/detail_permission_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/dialog_logout.xml" value="0.20116120218579234" />

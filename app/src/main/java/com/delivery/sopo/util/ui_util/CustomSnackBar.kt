@@ -56,26 +56,26 @@ class CustomSnackBar<T>(private val view: View, private val content: String, pri
             SnackBarEnum.COMMON ->
             {
                 binding.ivIconStart.background = ContextCompat.getDrawable(view.context, R.drawable.ic_exclamation_mark_blue)
-                binding.constraintMainBottonNotiBar.setBackgroundColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_700))
+                binding.constraintMainBottomNotiBar.setBackgroundColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_700))
             }
             SnackBarEnum.CONFIRM_DELETE ->
             {
                 binding.ivIconStart.background = ContextCompat.getDrawable(view.context, R.drawable.ic_checked_deep_blue_small)
-                binding.constraintMainBottonNotiBar.setBackgroundColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_100))
+                binding.constraintMainBottomNotiBar.setBackgroundColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_100))
                 binding.tvContent.setTextColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_700))
                 binding.tvEvent.setTextColor(ContextCompat.getColor(view.context, R.color.COLOR_MAIN_700))
             }
             SnackBarEnum.ERROR ->
             {
                 binding.ivIconStart.background = ContextCompat.getDrawable(view.context, R.drawable.ic_exclamation_mark_gray_scale)
-                binding.constraintMainBottonNotiBar.setBackgroundColor(ContextCompat.getColor(view.context, R.color.COLOR_GRAY_800))
+                binding.constraintMainBottomNotiBar.setBackgroundColor(ContextCompat.getColor(view.context, R.color.COLOR_GRAY_800))
             }
         }
 
         val slideUp: Animation = AnimationUtils.loadAnimation(view.context, R.anim.slide_up)
         val slideDown: Animation = AnimationUtils.loadAnimation(view.context, R.anim.slide_down)
 
-        binding.constraintMainBottonNotiBar.startAnimation(slideUp)
+        binding.constraintMainBottomNotiBar.startAnimation(slideUp)
 
     }
 

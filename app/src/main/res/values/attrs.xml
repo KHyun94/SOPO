@@ -1,40 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--<declare-styleable name="BasicAttrs">
-
-    </declare-styleable>
-
-    <declare-styleable name="CustomEditText">
-        <attr name="text" format="string"/>
-        <attr name="title" format="string"/>
-        <attr name="descriptionText" format="string"/>
-        <attr name="hint" format="string"/>
-        <attr name="android:inputType"/>
-        <attr name="nonFocusColor" format="color"/>
-        <attr name="focusColor" format="color"/>
-        <attr name="android:nextFocusDown" format="reference|integer"/>
-    </declare-styleable>
-
-    <declare-styleable name="AlertMessageBar" >
-        <attr name="msgtext" format="string"/>
-        <attr name="buttonText" format="string"/>
-        <attr name="markImage" format="reference|integer"/>
-        <attr name="customBgColor" format="reference|integer"/>
-        <attr name="textColor" format="reference|integer"/>
-        <attr name="buttonTextColor" format="reference|integer"/>
-    </declare-styleable>
--->
-    <declare-styleable name="BottomNotificationBar" >
-        <attr name="android:text"/>
-        <attr name="buttonText" format="string"/>
-        <attr name="iconStart" format="reference|integer"/>
-        <attr name="iconEnd" format="reference|integer"/>
-        <attr name="android:textColor" format="reference|integer"/>
-        <attr name="buttonTextColor" format="reference|integer"/>
-        <attr name="android:background"/>
-        <attr name="textFontFamily" format="reference|integer"/>
-        <attr name="buttonTextFontFamily" format="reference|integer"/>
-        <attr name="isUseEvent" format="string"/>
-
+    <declare-styleable name="BottomNotificationBar">
+        <attr name="contentText" format="string" />
+        <attr name="buttonText" format="reference|string" />
+        <attr name="iconStart" format="reference|integer" />
+        <attr name="iconEnd" format="reference|integer" />
+        <attr name="textColor" format="reference|color" />
+        <attr name="buttonTextColor" format="reference|color" />
+        <attr name="notificationBackground" format="reference|color" />
+        <attr name="textFontFamily" format="reference|integer" />
+        <attr name="buttonTextFontFamily" format="reference|integer" />
     </declare-styleable>
 </resources>

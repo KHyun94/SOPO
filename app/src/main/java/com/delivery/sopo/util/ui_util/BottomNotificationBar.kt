@@ -2,21 +2,22 @@ package com.delivery.sopo.util.ui_util
 
 import android.content.Context
 import android.content.res.TypedArray
-import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import androidx.databinding.DataBindingUtil
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.BottomNotificationBarBinding
+import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class BottomNotificationBar: ConstraintLayout
 {
-    lateinit var binding: BottomNotificationBarBinding
+    private lateinit var binding: BottomNotificationBarBinding
 
     constructor(context: Context): this(context, null)
     {
@@ -45,55 +46,56 @@ class BottomNotificationBar: ConstraintLayout
     private fun getAttrs(attrs: AttributeSet?)
     {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.BottomNotificationBar)
-        setTypeArray (typedArray)
+        setTypeArray(typedArray)
     }
 
     private fun getAttrs(attrs: AttributeSet?, defStyleAttr: Int)
     {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.BottomNotificationBar, defStyleAttr, 0)
-        setTypeArray (typedArray)
+
+        setTypeArray(typedArray)
     }
 
-    private fun setTypeArray(typedArray: TypedArray)
-    {
-        binding.constraintMainBottonNotiBar.background = ContextCompat.getDrawable(context,typedArray.getInt(R.styleable.BottomNotificationBar_android_background, R.color.COLOR_GRAY_800))
+    private fun setTypeArray(typedArray: TypedArray) {
+ /*       binding.constraintMainBottomNotiBar.setBackgroundResource(typedArray.getResourceId(R.styleable.BottomNotificationBar_notificationBackground,R.color.COLOR_GRAY_800) )
 
-        binding.tvContent.text = typedArray.getString(R.styleable.BottomNotificationBar_android_text)
+        binding.tvContent.text = typedArray.getString(R.styleable.BottomNotificationBar_contentText).apply {
+            SopoLog.d("BottomNavigator Text:$this")
+        }
         binding.tvEvent.text = typedArray.getString(R.styleable.BottomNotificationBar_buttonText)
 
-        binding.tvContent.setTextColor(ContextCompat.getColor(context, typedArray.getInt(R.styleable.BottomNotificationBar_android_textColor, R.color.MAIN_WHITE)))
+        binding.tvContent.setTextColor(ContextCompat.getColor(context, typedArray.getInt(R.styleable.BottomNotificationBar_textColor, R.color.COLOR_GRAY_800)))
         binding.tvEvent.setTextColor(ContextCompat.getColor(context, typedArray.getInt(R.styleable.BottomNotificationBar_buttonTextColor, R.color.MAIN_WHITE)))
 
-        binding.tvContent.typeface = ResourcesCompat.getFont(context, typedArray.getInt(R.styleable.BottomNotificationBar_textFontFamily, R.font.pretendard_medium))
-        binding.tvContent.typeface = ResourcesCompat.getFont(context, typedArray.getInt(R.styleable.BottomNotificationBar_textFontFamily, R.font.pretendard_medium))
+        binding.tvContent.typeface =
+            ResourcesCompat.getFont(context, typedArray.getInt(R.styleable.BottomNotificationBar_textFontFamily, R.font.pretendard_medium))
+        binding.tvContent.typeface =
+            ResourcesCompat.getFont(context, typedArray.getInt(R.styleable.BottomNotificationBar_textFontFamily, R.font.pretendard_medium))
 
-        binding.ivIconStart.background = ContextCompat.getDrawable(context, typedArray.getInt(R.styleable.BottomNotificationBar_iconStart, R.drawable.ic_exclamation_mark_gray_scale))
+        binding.ivIconStart.background =
+            ContextCompat.getDrawable(context, typedArray.getInt(R.styleable.BottomNotificationBar_iconStart, R.drawable.ic_exclamation_mark_gray_scale))
 
         val iconEnd = typedArray.getInt(R.styleable.BottomNotificationBar_iconEnd, 0)
-        if(iconEnd != 0) binding.ivIconEnd.background = ContextCompat.getDrawable(context, iconEnd)
+        if(iconEnd != 0) binding.ivIconEnd.background = ContextCompat.getDrawable(context, iconEnd)*/
     }
 
-    override fun setBackground(drawable: Drawable){
-        binding.constraintMainBottonNotiBar.background = drawable
-    }
+    /*    fun setIconStart(@DrawableRes resource: Int = R.drawable.ic_exclamation_mark_gray_scale){
 
-    fun setIconStart(@DrawableRes resource: Int = R.drawable.ic_exclamation_mark_gray_scale){
+            val iv = binding.ivIconStart
 
-        val iv = binding.ivIconStart
+            Glide.with(context)
+                .load(resource)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .into(iv)
+        }
 
-        Glide.with(context)
-            .load(resource)
-            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-            .into(iv)
-    }
+        fun setIconEnd(@DrawableRes resource: Int){
 
-    fun setIconEnd(@DrawableRes resource: Int){
+            val iv = binding.ivIconEnd
 
-        val iv = binding.ivIconEnd
-
-        Glide.with(context)
-            .load(resource)
-            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
-            .into(iv)
-    }
+            Glide.with(context)
+                .load(resource)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .into(iv)
+        }*/
 }

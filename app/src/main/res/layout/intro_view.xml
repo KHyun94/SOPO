@@ -55,6 +55,13 @@
 
         </RelativeLayout>
 
+        <com.delivery.sopo.util.ui_util.BottomNotificationBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:notificationBackground="@color/COLOR_GRAY_800"
+            app:contentText="테스트"/>
+
         <androidx.viewpager.widget.ViewPager
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
