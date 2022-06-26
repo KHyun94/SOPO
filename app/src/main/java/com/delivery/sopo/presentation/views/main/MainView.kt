@@ -13,6 +13,7 @@ import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.ItemMainTabBinding
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
+import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.makeGone
 import com.delivery.sopo.extensions.makeVisible
@@ -29,6 +30,7 @@ import com.delivery.sopo.presentation.views.inquiry.InquiryMainFragment
 import com.delivery.sopo.presentation.views.menus.LockScreenView
 import com.delivery.sopo.presentation.views.registers.RegisterMainFragment
 import com.delivery.sopo.util.ClipboardUtil
+import com.delivery.sopo.util.ui_util.BottomNotificationBar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.CoroutineScope
@@ -41,6 +43,8 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     override val layoutRes: Int = R.layout.main_view
     override val vm: MainViewModel by viewModel()
     override val mainLayout: View by lazy { binding.viewPagerMain }
+
+    private lateinit var snackBar: BottomNotificationBar
 
     var registerTabBinding: ItemMainTabBinding? = null
     var inquiryTabBinding: ItemMainTabBinding? = null
@@ -201,27 +205,22 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         }.attach()
     }
 
-
     private fun setTab(tab: TabLayout.Tab, pos: Int)
     {
         tab.setCustomView(R.layout.item_main_tab)
 
         when(pos)
         {
-            TabCode.firstTab -> registerTabBinding =
-                setTabIcon(tab, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
-            TabCode.secondTab -> inquiryTabBinding =
-                setTabIcon(tab, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
-            TabCode.thirdTab -> menuTabBinding =
-                setTabIcon(tab, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
+            TabCode.firstTab -> registerTabBinding = setTabIcon(tab, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
+            TabCode.secondTab -> inquiryTabBinding = setTabIcon(tab, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
+            TabCode.thirdTab -> menuTabBinding = setTabIcon(tab, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
         }
     }
 
     private fun setTabIcon(tab: TabLayout.Tab, @DrawableRes
     iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
     {
-        val tabBinding =
-            ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
+        val tabBinding = ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
 
         tabBinding.ivTab.setBackgroundResource(iconRes)
         tabBinding.tvTabName.text = tabName
@@ -275,5 +274,24 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     override fun onSetCurrentPage(page: Int)
     {
         binding.viewPagerMain.setCurrentItem(page, true)
+    }
+
+
+    override fun onActivateNetwork()
+    {
+        super.onActivateNetwork()
+
+        if(!::snackBar.isInitialized) return
+        snackBar.dismiss()
+        snackBar.make("네트워크가 다시 연결되었어요.", 3000, SnackBarEnum.CONNECT_NETWORK).show()
+        vm.stopToCheckNetworkStatus()
+    }
+
+    override fun onDeactivateNetwork()
+    {
+        super.onDeactivateNetwork()
+
+        if(!::snackBar.isInitialized) snackBar = binding.bottomNotificationBar
+        snackBar.make("네트워크 오류입니다.", 0, SnackBarEnum.DISCONNECT_NETWORK).show()
     }
 }

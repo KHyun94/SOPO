@@ -31,7 +31,8 @@ object AnimationUtil
         view.startAnimation(animate)
     }
 
-    fun shakeHorizon(view: View){
+    fun shakeHorizon(view: View)
+    {
         val animation = AnimationUtils.loadAnimation(view.context, R.anim.shake_horizon_cycles_3)
         view.startAnimation(animation)
     }

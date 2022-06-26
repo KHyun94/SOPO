@@ -13,6 +13,11 @@ import com.delivery.sopo.enums.NetworkStatus
 
 class NetworkStatusMonitor(private val activity: AppCompatActivity): ConnectivityManager.NetworkCallback()
 {
+    init
+    {
+        SopoLog.i("NetworkStatusMonitor init(...)")
+    }
+
     private val connectivityManager =
         activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 

@@ -22,6 +22,7 @@
         <entry key="app/src/main/res/drawable/ic_inquiry_cardview_not_registered.xml" value="0.3765" />
         <entry key="app/src/main/res/drawable/ic_lock_edittext_off.xml" value="0.1735" />
         <entry key="app/src/main/res/drawable/ic_lock_edittext_on.xml" value="0.1735" />
+        <entry key="app/src/main/res/drawable/ic_snack_bar_network_error.xml" value="0.162" />
         <entry key="app/src/main/res/drawable/ic_toggle_on.xml" value="0.1605" />
         <entry key="app/src/main/res/drawable/right_arrow_black_24dp.xml" value="0.1705" />
         <entry key="app/src/main/res/drawable/ripple_circle.xml" value="0.206" />
@@ -33,7 +34,7 @@
         <entry key="app/src/main/res/drawable/selector_time_tab.xml" value="0.206" />
         <entry key="app/src/main/res/layout/alert_update_dialog.xml" value="0.20116120218579234" />
         <entry key="app/src/main/res/layout/app_info_view.xml" value="0.1293918918918919" />
-        <entry key="app/src/main/res/layout/bottom_notification_bar.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/bottom_notification_bar.xml" value="0.25" />
         <entry key="app/src/main/res/layout/confirm_delete_dialog.xml" value="0.2868972778320313" />
         <entry key="app/src/main/res/layout/detail_permission_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/dialog_logout.xml" value="0.20116120218579234" />

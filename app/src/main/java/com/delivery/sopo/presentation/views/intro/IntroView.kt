@@ -14,6 +14,7 @@ import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.IntroViewBinding
+import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.extensions.makeGone
 import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.extensions.moveToActivityWithFinish
@@ -98,6 +99,8 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
 
         }
 
+
+
     }
 
     override fun onAfterBinding()
@@ -176,14 +179,9 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
 
         val onPageChangeListener = object: ViewPager.OnPageChangeListener
         {
-            override fun onPageScrollStateChanged(state: Int)
-            {
+            override fun onPageScrollStateChanged(state: Int) { }
 
-            }
-
-            override fun onPageScrolled(pos: Int, posOffset: Float, posOffsetPixels: Int)
-            {
-            }
+            override fun onPageScrolled(pos: Int, posOffset: Float, posOffsetPixels: Int) { }
 
             override fun onPageSelected(pos: Int)
             {

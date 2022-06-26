@@ -183,8 +183,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
 
     private fun setInnerObserve()
     {
-
-        SOPOApplication.networkStatus.observe(viewLifecycleOwner) { status ->
+        /*SOPOApplication.networkStatus.observe(viewLifecycleOwner) { status ->
 
             SopoLog.d("status [status:$status]")
 
@@ -204,7 +203,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
                     disconnectNetworkSnackBar.show()
                 }
             }
-        }
+        }*/
 
         vm.isClickEvent.observe(viewLifecycleOwner) {
 

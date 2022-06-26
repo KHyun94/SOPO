@@ -67,7 +67,6 @@ class SOPOApplication: Application()
         lateinit var firebaseAuth: FirebaseAuth
 
         val networkStatus: MutableLiveData<NetworkStatus> by lazy {  MutableLiveData<NetworkStatus>()  }
-
         var cntOfBeUpdate: MutableLiveData<Int> = MutableLiveData<Int>()
     }
 }

@@ -46,19 +46,6 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         this.onActivityResultCallbackListener = listener
     }
 
-    /**
-     * Network Status Check
-     */
-    private val disconnectNetworkSnackBar: CustomSnackBar<Unit> by lazy {
-        val snackBar = CustomSnackBar.make(view = mainLayout, content = "네트워크 오류입니다.", data = Unit, type = SnackBarEnum.ERROR)
-        snackBar.setDuration(600000)
-        snackBar
-    }
-
-    private val reconnectNetworkSnackBar: CustomSnackBar<Unit> by lazy {
-        CustomSnackBar.make(view = mainLayout, content = "네트워크에 다시 연결되었어요.", data = Unit, type = SnackBarEnum.COMMON)
-    }
-
     val loadingBar: SopoLoadingBar by lazy {
         SopoLoadingBar(this)
     }
@@ -134,25 +121,33 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         setInnerObserve()
     }
 
+    protected open fun onDeactivateNetwork()
+    {
+        vm.startToCheckNetworkStatus()
+    }
+
+    protected open fun onActivateNetwork()
+    {
+        vm.stopToCheckNetworkStatus()
+    }
+
     private fun setInnerObserve()
     {
         SOPOApplication.networkStatus.observe(this) { status ->
 
             SopoLog.d("status [status:$status]")
 
-            if(vm.isCheckNetwork.value != true) return@observe
+//            if(vm.isCheckNetwork.value != true) return@observe
 
             when(status)
             {
                 NetworkStatus.WIFI, NetworkStatus.CELLULAR ->
                 {
-                    disconnectNetworkSnackBar.dismiss()
-                    reconnectNetworkSnackBar.show()
-                    vm.stopToCheckNetworkStatus()
+                    onActivateNetwork()
                 }
                 NetworkStatus.NOT_CONNECT ->
                 {
-                    disconnectNetworkSnackBar.show()
+                    onDeactivateNetwork()/*disconnectNetworkSnackBar.show()*/
                 }
             }
         }
@@ -176,7 +171,8 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
         vm.errorSnackBar.observe(this) {
 
-            CustomSnackBar.make(view = mainLayout, content = it, data = Unit, type = SnackBarEnum.ERROR, clickListener = vm.onSnackClickListener).show()
+            CustomSnackBar.make(view = mainLayout, content = it, data = Unit, type = SnackBarEnum.ERROR, clickListener = vm.onSnackClickListener)
+                .show()
         }
     }
 

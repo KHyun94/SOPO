@@ -13,7 +13,8 @@
         android:id="@+id/layout_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:animateLayoutChanges="true">
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/view_pager_main"
@@ -36,13 +37,9 @@
             app:tabPaddingTop="6dp" />
 
         <com.delivery.sopo.util.ui_util.BottomNotificationBar
+            android:id="@+id/bottom_notification_bar"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:background="@color/COLOR_GRAY_800"
-            android:text="테스트!!@#!@#"
-            android:textColor="@color/MAIN_WHITE"
-            android:visibility="visible"
-            app:buttonText="asd"
+            android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@id/layout_main_tab" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
