@@ -22,18 +22,15 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository): Ba
     val clipboardText = MutableLiveData<String>()
 
     private val _navigator = MutableLiveData<String>()
-    val navigator: LiveData<String>
-        get() = _navigator
+    val navigator: LiveData<String> = _navigator
 
     val validity = mutableMapOf<InfoEnum, Boolean>()
 
     private val _invalidity = MutableLiveData<Pair<InfoEnum, Boolean>>()
-    val invalidity: LiveData<Pair<InfoEnum, Boolean>>
-        get() = _invalidity
+    val invalidity: LiveData<Pair<InfoEnum, Boolean>> = _invalidity
 
     private val _focus = MutableLiveData<Triple<View, Boolean, InfoEnum>>()
-    val focus: MutableLiveData<Triple<View, Boolean, InfoEnum>>
-        get() = _focus
+    val focus: MutableLiveData<Triple<View, Boolean, InfoEnum>> = _focus
 
     val focusChangeCallback: FocusChangeCallback = FocusChangeCallback@{ v, hasFocus, type ->
         _focus.value = (Triple(v, hasFocus, type))
@@ -55,6 +52,7 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository): Ba
 
     fun onMove3rdStepClicked(v: View) = checkEventStatus(checkNetwork = true) {
         SopoLog.i("onMove3rdStepClicked(...) 호출")
+
         validity.forEach { (k, v) ->
             if(!v)
             {

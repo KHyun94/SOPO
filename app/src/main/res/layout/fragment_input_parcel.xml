@@ -32,17 +32,6 @@
             app:layout_constraintBottom_toTopOf="@+id/layout_waybill_num"
             app:title='@{"운송장 등록"}' />
 
-        <!--     <TextView
-                 style="@style/kor_H2"
-                 android:id="@+id/tv_title"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:layout_marginTop="17dp"
-                 android:layout_marginHorizontal="24dp"
-                 android:text="운송장 등록"
-                 app:layout_constraintStart_toStartOf="parent"
-                 app:layout_constraintTop_toTopOf="parent" />-->
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layout_waybill_num"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -83,7 +72,6 @@
                 android:text='@={vm.waybillNum}'
                 app:focusChangeListener="@{vm.focusChangeCallback}"
                 app:type="@{InfoEnum.WAYBILL_NUMBER}" />
-
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -189,12 +177,12 @@
             style="@style/buttonBasicStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="68dp"
             android:focusable="true"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:onClick="@{()->vm.onMove3rdStepClicked(tvNext)}"
             android:text="다음으로"
             android:visibility="@{(vm.waybillNum.length() > 8) &amp;&amp; (vm.carrier.carrier.NAME.length() > 0)?View.VISIBLE:View.GONE}"
-            app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co"
             tools:visibility="visible" />
 
 

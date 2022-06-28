@@ -21,10 +21,7 @@ import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.presentation.models.enums.ReturnType
 import com.delivery.sopo.presentation.viewmodels.registesrs.InputParcelViewModel
 import com.delivery.sopo.presentation.views.main.MainView
-import com.delivery.sopo.util.ClipboardUtil
-import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.util.OtherUtil
-import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.*
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
@@ -192,25 +189,31 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
 
         vm.navigator.observe(this) { nav ->
 
-            val registerParcel =
-                Parcel.Register(vm.waybillNum.value, vm.carrier.value?.carrier, null)
+            val registerParcel = Parcel.Register(vm.waybillNum.value, vm.carrier.value?.carrier, null)
 
             when(nav)
             {
                 NavigatorConst.REGISTER_SELECT_CARRIER ->
                 {
-                    TabCode.REGISTER_SELECT.FRAGMENT =
-                        SelectCarrierFragment.newInstance(vm.waybillNum.value ?: "")
+                    TabCode.REGISTER_SELECT.FRAGMENT = SelectCarrierFragment.newInstance(vm.waybillNum.value ?: "")
                     FragmentManager.move(motherView, TabCode.REGISTER_SELECT, RegisterMainFragment.viewId)
                 }
                 NavigatorConst.REGISTER_CONFIRM_PARCEL ->
                 {
-                    TabCode.REGISTER_CONFIRM.FRAGMENT =
-                        ConfirmParcelFragment.newInstance(register = registerParcel, beforeStep = NavigatorConst.REGISTER_INPUT_INFO)
+                    TabCode.REGISTER_CONFIRM.FRAGMENT = ConfirmParcelFragment.newInstance(register = registerParcel, beforeStep = NavigatorConst.REGISTER_INPUT_INFO)
                     FragmentManager.move(motherView, TabCode.REGISTER_CONFIRM, RegisterMainFragment.viewId)
                 }
             }
         }
+    }
+
+    override fun onShowKeyboard()
+    {
+        motherView.hideTab()
+    }
+    override fun onHideKeyboard()
+    {
+        motherView.showTab()
     }
 
     override fun onResume()

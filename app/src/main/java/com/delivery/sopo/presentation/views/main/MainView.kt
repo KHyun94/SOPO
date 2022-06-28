@@ -74,6 +74,10 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         checkInitializedTab()
     }
 
+    fun setSnackBar(bottomNotificationBar: BottomNotificationBar){
+        snackBar = bottomNotificationBar
+    }
+
     override fun onDestroy()
     {
         super.onDestroy()

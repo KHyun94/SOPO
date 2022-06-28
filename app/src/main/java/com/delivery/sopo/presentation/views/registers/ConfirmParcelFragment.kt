@@ -32,8 +32,6 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
     private lateinit var registerInfo: Parcel.Register
     private lateinit var beforeStep: String
 
-    private lateinit var keyboardVisibilityUtil: KeyboardVisibilityUtil
-
     override fun receiveData(bundle: Bundle)
     {
         super.receiveData(bundle)
@@ -46,7 +44,9 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
         beforeStep = bundle.getString(RegisterMainFragment.BEFORE_STEP) ?: return
 
         this.registerInfo.waybillNum.let { waybillNum -> vm.waybillNum.value = waybillNum }
-        this.registerInfo.carrier?.let { carrier -> vm.carrier.value = CarrierMapper.enumToObject(carrier) }
+        this.registerInfo.carrier?.let { carrier ->
+            vm.carrier.value = CarrierMapper.enumToObject(carrier)
+        }
         this.registerInfo.alias?.let { alias -> vm.alias.value = alias }
     }
 
@@ -71,21 +71,12 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
                     }
                     NavigatorConst.REGISTER_SELECT_CARRIER ->
                     {
-                        TabCode.REGISTER_SELECT.FRAGMENT = SelectCarrierFragment.newInstance(registerInfo.waybillNum?:"")
+                        TabCode.REGISTER_SELECT.FRAGMENT = SelectCarrierFragment.newInstance(registerInfo.waybillNum ?: "")
                         FragmentManager.move(requireActivity(), TabCode.REGISTER_SELECT, RegisterMainFragment.viewId)
                     }
                 }
             }
         }
-
-        keyboardVisibilityUtil = KeyboardVisibilityUtil(requireActivity().window,
-                                                          onShowKeyboard = {
-                                                              motherView.hideTab()
-                                                          },
-                                                          onHideKeyboard = {
-                                                              motherView.showTab()
-                                                          }
-        )
     }
 
     override fun setObserve()
@@ -142,10 +133,13 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
         }
     }
 
-    override fun onDestroy()
+    override fun onShowKeyboard()
     {
-        keyboardVisibilityUtil.detachKeyboardListeners()
-        super.onDestroy()
+        motherView.hideTab()
+    }
+    override fun onHideKeyboard()
+    {
+        motherView.showTab()
     }
 
     companion object

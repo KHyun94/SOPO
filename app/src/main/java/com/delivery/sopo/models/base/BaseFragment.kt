@@ -22,6 +22,7 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.presentation.views.dialog.LogoutDialog
+import com.delivery.sopo.util.KeyboardVisibilityUtil
 import org.koin.core.KoinComponent
 import kotlin.system.exitProcess
 
@@ -36,20 +37,9 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
     lateinit var onBackPressedCallback: OnBackPressedCallback
     lateinit var onSOPOBackPressedListener: OnSOPOBackPressListener
 
+    private lateinit var keyboardVisibilityUtil: KeyboardVisibilityUtil
+
     protected var toast: Toast? = null
-
-    /**
-     * Network Status Check
-     */
-    private val disconnectNetworkSnackBar: CustomSnackBar<Unit> by lazy {
-        val snackBar = CustomSnackBar.make<Unit>(view = mainLayout, content = "네트워크 오류입니다.", data = Unit, type = SnackBarEnum.ERROR)
-        snackBar.setDuration(60000)
-        snackBar
-    }
-
-    private val reconnectNetworkSnackBar: CustomSnackBar<Unit> by lazy {
-        CustomSnackBar.make<Unit>(view = mainLayout, content = "네트워크에 다시 연결되었어요.", data = Unit, type = SnackBarEnum.COMMON)
-    }
 
     private val progressBar: SopoLoadingBar by lazy {
         SopoLoadingBar(this.requireActivity())
@@ -73,7 +63,6 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-
         arguments?.let { bundle -> receiveData(bundle) }
     }
 
@@ -110,11 +99,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
     {
         super.onDestroy()
         toast?.cancel()
-    }
-
-    override fun onDestroyView()
-    {
-        super.onDestroyView()
+        keyboardVisibilityUtil.detachKeyboardListeners()
     }
 
     private fun setOnBackPressedListener(owner: LifecycleOwner)
@@ -163,16 +148,19 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
      */
     protected open fun setBeforeBinding()
     {
+        keyboardVisibilityUtil = KeyboardVisibilityUtil(requireActivity().window, { onShowKeyboard() }, { onHideKeyboard() })
     }
+
+
+    protected open fun onShowKeyboard(){ }
+
+    protected open fun onHideKeyboard(){ }
 
     /**
      * UI 세팅 이후
      */
-    protected open fun setAfterBinding()
-    {
-    }
+    protected open fun setAfterBinding() { }
 
-    /*    */
     /**
      * Observe 로직
      */
@@ -183,28 +171,6 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
 
     private fun setInnerObserve()
     {
-        /*SOPOApplication.networkStatus.observe(viewLifecycleOwner) { status ->
-
-            SopoLog.d("status [status:$status]")
-
-            if(vm.isCheckNetwork.value != true) return@observe
-
-            when(status)
-            {
-
-                NetworkStatus.WIFI, NetworkStatus.CELLULAR ->
-                {
-                    disconnectNetworkSnackBar.dismiss()
-                    reconnectNetworkSnackBar.show()
-                    vm.stopToCheckNetworkStatus()
-                }
-                NetworkStatus.NOT_CONNECT ->
-                {
-                    disconnectNetworkSnackBar.show()
-                }
-            }
-        }*/
-
         vm.isClickEvent.observe(viewLifecycleOwner) {
 
             SopoLog.d("Base Click Event [data:$it]")
