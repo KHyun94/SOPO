@@ -3,7 +3,7 @@ package com.delivery.sopo.di
 import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.data.database.shared.SharedPref
 import com.delivery.sopo.data.repositories.local.app_password.AppPasswordRepository
-import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
+import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.data.repositories.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
@@ -112,7 +112,7 @@ val sourceModule = module {
     single { SignUpRemoteDataSourceImpl(Dispatchers.IO) }
     single { ParcelRepository(get()) }
 
-    single { CarrierRepository(get()) }
+    single { CarrierDataSource(carrierDao = get(), carrierPatternDao = get()) }
     single { ParcelManagementRepoImpl(get()) }
     single { CompletedParcelHistoryRepoImpl(get()) }
     single { AppPasswordRepository(get()) }

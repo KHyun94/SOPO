@@ -1,6 +1,7 @@
 package com.delivery.sopo.data.repositories.local.repository
 
-import com.delivery.sopo.data.database.room.AppDatabase
+import com.delivery.sopo.data.database.room.dao.CarrierDao
+import com.delivery.sopo.data.database.room.dao.CarrierPatternDao
 import com.delivery.sopo.data.database.room.dto.CarrierPattern
 import com.delivery.sopo.data.database.room.entity.CarrierEntity
 import com.delivery.sopo.data.database.room.entity.CarrierPatternEntity
@@ -10,9 +11,9 @@ import com.delivery.sopo.models.mapper.CarrierMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class CarrierRepository(private val appDB: AppDatabase)
+class CarrierDataSource(private val carrierDao: CarrierDao, private val carrierPatternDao: CarrierPatternDao)
 {
-    suspend fun initCarrierDB() = withContext(Dispatchers.Default) {
+    suspend fun initCarrierTable() = withContext(Dispatchers.Default) {
 
         if(getAllCnt() > 0) return@withContext
 
@@ -21,11 +22,9 @@ class CarrierRepository(private val appDB: AppDatabase)
         }.toTypedArray()
 
         insert(*carriers)
-
-        initCarrierPatternDB()
     }
 
-    suspend fun initCarrierPatternDB() = withContext(Dispatchers.Default) {
+    suspend fun initCarrierPatternTable() = withContext(Dispatchers.Default) {
 
         val carrierPatterns = arrayOf (
             CarrierPatternEntity(0, CarrierEnum.CHUNILPS.NO, 11, "1"),
@@ -72,34 +71,34 @@ class CarrierRepository(private val appDB: AppDatabase)
 
     suspend fun getByLength(waybillNum: String): List<CarrierPattern> = withContext(Dispatchers.Default)
     {
-        return@withContext appDB.carrierPatternDao().getByLength(length = waybillNum.length)
+        return@withContext carrierPatternDao.getByLength(length = waybillNum.length)
     }
 
     suspend fun getAll(): List<Carrier?> = withContext(Dispatchers.Default) {
-        return@withContext appDB.carrierDao().getAll().map(CarrierMapper::entityToObject).toList()
+        return@withContext carrierDao.getAll().map(CarrierMapper::entityToObject).toList()
     }
 
     suspend fun getAllCnt(): Int = withContext(Dispatchers.Default) {
-        return@withContext appDB.carrierDao().getAllCnt()
+        return@withContext carrierDao.getAllCnt()
     }
 
     suspend fun getByCode(code: String): Carrier = withContext(Dispatchers.Default) {
-        appDB.carrierDao().getWithCode(code = code)?.let { CarrierMapper.entityToObject(it) }
+        carrierDao.getWithCode(code = code)?.let { CarrierMapper.entityToObject(it) }
             ?: throw Exception("해당하는 택배사가 존재하지 않습니다.")
     }
 
     fun getCarrierEntityWithPartName(name: String): List<CarrierEntity?>
     {
-        return appDB.carrierDao().getWithPartName(name)
+        return carrierDao.getWithPartName(name)
     }
 
     fun insert(vararg carrier: CarrierEntity)
     {
-        return appDB.carrierDao().insert(carrier.toList())
+        return carrierDao.insert(carrier.toList())
     }
 
     fun insert(vararg carrierPattern: CarrierPatternEntity)
     {
-        return appDB.carrierPatternDao().insert(*carrierPattern)
+        return carrierPatternDao.insert(*carrierPattern)
     }
 }

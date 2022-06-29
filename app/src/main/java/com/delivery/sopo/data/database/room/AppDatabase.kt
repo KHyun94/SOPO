@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.delivery.sopo.data.database.room.dao.*
 import com.delivery.sopo.data.database.room.entity.*
 import com.delivery.sopo.data.database.room.util.Converters
-import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
+import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,7 +31,7 @@ abstract class AppDatabase : RoomDatabase(), KoinComponent
     abstract fun securityDao(): AppPasswordDao
     abstract fun authTok() : AuthTokenDao
 
-    val carrierRepository: CarrierRepository by inject()
+    val carrierDataSource: CarrierDataSource by inject()
 
     companion object
     {
@@ -59,7 +59,8 @@ abstract class AppDatabase : RoomDatabase(), KoinComponent
                         super.onCreate(db)
 
                         CoroutineScope(Dispatchers.Default).launch {
-                            getInstance(context).carrierRepository.initCarrierDB()
+                            getInstance(context).carrierDataSource.initCarrierTable()
+                            getInstance(context).carrierDataSource.initCarrierPatternTable()
                         }
                     }
                 }).build()

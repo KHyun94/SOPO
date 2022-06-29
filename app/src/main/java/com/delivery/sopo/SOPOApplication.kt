@@ -3,7 +3,7 @@ package com.delivery.sopo
 import android.app.Application
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
+import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.di.*
@@ -22,7 +22,7 @@ class SOPOApplication: Application()
 {
     val parcelStatusRepo: ParcelManagementRepoImpl by inject()
     val parcelRepository: ParcelRepository by inject()
-    val carrierRepository: CarrierRepository by inject()
+    val carrierDataSource: CarrierDataSource by inject()
 
     var kakaoSDKAdapter: KakaoSDKAdapter? = null
     var accessToken: AccessToken? = null

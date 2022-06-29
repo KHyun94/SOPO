@@ -13,7 +13,6 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.domain.usecase.user.token.LoginUseCase
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
-import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 
 class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
@@ -30,7 +29,6 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
     val focusChangeCallback: FocusChangeCallback = FocusChangeCallback@{ v, hasFocus, type ->
         _focus.value = Triple(v, hasFocus, type)
     }
-
 
     fun postNavigator(navigator: String)
     {

@@ -91,10 +91,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         menuTabBinding = null
     }
 
-    fun getCurrentPage(): LiveData<Int>
-    {
-        return vm.currentPage
-    }
+    fun getCurrentPage(): LiveData<Int> = vm.currentPage
 
     private fun checkInitializedTab() = CoroutineScope(Dispatchers.Default).launch {
 
@@ -173,7 +170,6 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
                     NavigatorConst.INQUIRY_TAB -> inquiryTabBinding?.let { activateTab(it, inquiryTabIcon) }
                     NavigatorConst.MY_MENU_TAB -> menuTabBinding?.let { activateTab(it, menuTabIcon) }
                 }
-
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?)
@@ -190,10 +186,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
             {
                 when(tab?.position ?: return)
                 {
-                    NavigatorConst.INQUIRY_TAB ->
-                    {
-                        onReselectedTapClickListener()
-                    }
+                    NavigatorConst.INQUIRY_TAB -> onReselectedTapClickListener()
                     else -> return
                 }
             }

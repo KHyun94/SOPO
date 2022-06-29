@@ -16,6 +16,7 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ui_util.BottomNotificationBar
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,6 +40,8 @@ class ConfirmParcelViewModel(
 
     private var _status: MutableStateFlow<Result<Parcel.Common>> = MutableStateFlow(Result.Uninitialized)
     val status = _status.asStateFlow()
+
+    private var _snackBar = MutableLiveData<BottomNotificationBar>()
 
     fun emitStatus(result: Result<Parcel.Common>) = scope.launch {
         _status.emit(result)
@@ -101,7 +104,8 @@ class ConfirmParcelViewModel(
     {
         when(exception.code)
         {
-            ErrorCode.ALREADY_REGISTERED_PARCEL, ErrorCode.OVER_REGISTERED_PARCEL, ErrorCode.PARCEL_BAD_REQUEST -> postErrorSnackBar(exception.message)
+            ErrorCode.ALREADY_REGISTERED_PARCEL, ErrorCode.OVER_REGISTERED_PARCEL, ErrorCode.PARCEL_BAD_REQUEST ->
+                postErrorSnackBar(exception.message)
             else ->
             {
                 exception.printStackTrace()
@@ -110,6 +114,9 @@ class ConfirmParcelViewModel(
         }
     }
 
+    /**
+     *
+     */
     private fun handlerInternalServerException(exception: InternalServerException)
     {
         when(val code = ErrorCode.getCode(exception.getErrorResponse().code))

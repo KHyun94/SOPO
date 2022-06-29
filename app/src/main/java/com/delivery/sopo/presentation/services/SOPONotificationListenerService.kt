@@ -4,7 +4,7 @@ import android.app.Notification
 import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
-import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
+import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.domain.usecase.parcel.remote.RegisterParcelUseCase
@@ -25,7 +25,7 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
 {
     private val userDataSource: UserDataSource by inject()
     private val parcelRepo: ParcelRepository by inject()
-    private val carrierRepo: CarrierRepository by inject()
+    private val carrierRepo: CarrierDataSource by inject()
     private val registerParcelUseCase: RegisterParcelUseCase by inject()
 
     override fun onNotificationPosted(sbn: StatusBarNotification?)

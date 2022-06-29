@@ -23,6 +23,7 @@ import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.presentation.views.dialog.LogoutDialog
 import com.delivery.sopo.util.KeyboardVisibilityUtil
+import com.delivery.sopo.util.ui_util.BottomNotificationBar
 import org.koin.core.KoinComponent
 import kotlin.system.exitProcess
 
@@ -37,6 +38,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
     lateinit var onBackPressedCallback: OnBackPressedCallback
     lateinit var onSOPOBackPressedListener: OnSOPOBackPressListener
 
+    protected lateinit var snackBar: BottomNotificationBar
     private lateinit var keyboardVisibilityUtil: KeyboardVisibilityUtil
 
     protected var toast: Toast? = null
@@ -171,6 +173,10 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
 
     private fun setInnerObserve()
     {
+        vm.snackBar.observe(viewLifecycleOwner) {
+
+        }
+
         vm.isClickEvent.observe(viewLifecycleOwner) {
 
             SopoLog.d("Base Click Event [data:$it]")

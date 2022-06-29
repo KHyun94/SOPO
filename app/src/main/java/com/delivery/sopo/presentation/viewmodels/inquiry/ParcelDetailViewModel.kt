@@ -4,7 +4,7 @@ import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.presentation.consts.NavigatorConst
-import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
+import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 class ParcelDetailViewModel(
                             private val updateParcelUseCase: UpdateParcelUseCase,
-                            private val carrierRepository: CarrierRepository):
+                            private val carrierDataSource: CarrierDataSource):
         BaseViewModel()
 {
     // 상세 화면에서 사용할 데이터 객체
@@ -40,7 +40,7 @@ class ParcelDetailViewModel(
     private suspend fun getParcelDetail(parcel: Parcel.Common): Parcel.Detail
     {
         val deliveryStatus = CodeUtil.getEnumValueOfName<DeliveryStatusEnum>(parcel.deliveryStatus)
-        val carrier = carrierRepository.getByCode(parcel.carrier)
+        val carrier = carrierDataSource.getByCode(parcel.carrier)
 
         val progresses = parcel.trackingInfo?.progresses?.map { progress ->
             TimeLineProgress(date = progress?.getDate(), location = progress?.location?.name, description = progress?.description, status = progress?.status)
@@ -53,7 +53,7 @@ class ParcelDetailViewModel(
     fun getDeliveryStatusIndicator(deliveryStatus: DeliveryStatusEnum?): MutableList<SelectItem<String>>
     {
         val deliveryStatuses = enumValues<DeliveryStatusEnum>().map { status ->
-            val isSelect = deliveryStatus == status
+            val isSelect = (deliveryStatus == status)
             SelectItem(item = status.TITLE, isSelect = isSelect)
         } as MutableList<SelectItem<String>>
 

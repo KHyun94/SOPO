@@ -167,7 +167,7 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
                 return@observe
             }
 
-            vm.recommendCarrierByWaybill(waybillNum)
+            vm.recommendCarrier(waybillNum)
         }
 
         vm.invalidity.observe(this) { target ->

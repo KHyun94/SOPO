@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.presentation.bindings.FocusChangeCallback
 import com.delivery.sopo.presentation.consts.NavigatorConst
-import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
+import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.base.BaseViewModel
@@ -13,7 +13,7 @@ import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 
-class InputParcelViewModel(private val carrierRepository: CarrierRepository): BaseViewModel()
+class InputParcelViewModel(private val carrierDataSource: CarrierDataSource): BaseViewModel()
 {
     val waybillNum = MutableLiveData<String>()
     val carrier = MutableLiveData<Carrier?>()
@@ -63,8 +63,8 @@ class InputParcelViewModel(private val carrierRepository: CarrierRepository): Ba
         postNavigator(NavigatorConst.REGISTER_CONFIRM_PARCEL)
     }
 
-    fun recommendCarrierByWaybill(waybillNum: String) = scope.launch(Dispatchers.Default) {
-        val carrier = carrierRepository.recommendCarrier(waybillNum)
+    fun recommendCarrier(waybillNum: String) = scope.launch(Dispatchers.Default) {
+        val carrier = carrierDataSource.recommendCarrier(waybillNum)
 
         SopoLog.d("추천 택배사 :: ${carrier?.toString()}")
 

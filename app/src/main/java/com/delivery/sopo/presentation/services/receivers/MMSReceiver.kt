@@ -9,7 +9,7 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
-import com.delivery.sopo.data.repositories.local.repository.CarrierRepository
+import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.presentation.services.workmanager.SOPOWorkManager
@@ -26,7 +26,7 @@ import java.lang.Runnable
 
 class MMSReceiver: BroadcastReceiver(), KoinComponent
 {
-    private val carrierRepo: CarrierRepository by inject()
+    private val carrierRepo: CarrierDataSource by inject()
 
     init
     {

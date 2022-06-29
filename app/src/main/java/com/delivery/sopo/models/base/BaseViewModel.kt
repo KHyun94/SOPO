@@ -18,6 +18,7 @@ import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.domain.usecase.user.token.LogoutUseCase
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ui_util.BottomNotificationBar
 import com.delivery.sopo.util.ui_util.OnSnackBarClickListener
 import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
@@ -37,6 +38,9 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _snackBar = MutableLiveData<BottomNotificationBar>()
+    val snackBar: LiveData<BottomNotificationBar> = _snackBar
 
     private val _errorSnackBar = MutableLiveData<String>()
     val errorSnackBar: LiveData<String> = _errorSnackBar
@@ -181,6 +185,11 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
     fun stopToCheckNetworkStatus()
     {
         _isCheckNetwork.postValue(false)
+    }
+
+    fun postSnackBar(bottomNotificationBar: BottomNotificationBar)
+    {
+        _snackBar.postValue(bottomNotificationBar)
     }
 
     fun postErrorSnackBar(msg: String, onSnackBarClickListener: Pair<CharSequence, OnSnackBarClickListener<Unit>>? = null)
