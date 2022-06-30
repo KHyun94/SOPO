@@ -14,6 +14,7 @@ import com.delivery.sopo.databinding.ItemMainTabBinding
 import com.delivery.sopo.databinding.MainViewBinding
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.enums.SnackBarEnum
+import com.delivery.sopo.enums.SnackBarType
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.makeGone
 import com.delivery.sopo.extensions.makeVisible
@@ -44,23 +45,23 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     override val vm: MainViewModel by viewModel()
     override val mainLayout: View by lazy { binding.viewPagerMain }
 
-    private lateinit var snackBar: BottomNotificationBar
-
     var registerTabBinding: ItemMainTabBinding? = null
     var inquiryTabBinding: ItemMainTabBinding? = null
     var menuTabBinding: ItemMainTabBinding? = null
 
-    private var registerTabIcon = TabIcon(R.drawable.ic_activate_register, R.drawable.ic_inactivate_register)
-    private var inquiryTabIcon = TabIcon(R.drawable.ic_activate_inquiry, R.drawable.ic_inactivate_inquiry)
+    private var registerTabIcon =
+        TabIcon(R.drawable.ic_activate_register, R.drawable.ic_inactivate_register)
+    private var inquiryTabIcon =
+        TabIcon(R.drawable.ic_activate_inquiry, R.drawable.ic_inactivate_inquiry)
     private var menuTabIcon = TabIcon(R.drawable.ic_activate_menu, R.drawable.ic_inactivate_menu)
 
-    private val baseFragments = arrayListOf(RegisterMainFragment(), InquiryMainFragment(), MenuMainFragment())
+    private val baseFragments =
+        arrayListOf(RegisterMainFragment(), InquiryMainFragment(), MenuMainFragment())
     lateinit var onReselectedTapClickListener: OnCallbackListener
 
     override fun onBeforeBinding()
     {
         super.onBeforeBinding()
-
         PowerManager.checkWhiteList(this)
     }
 
@@ -68,14 +69,12 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     {
         super.onAfterBinding()
 
+        snackBar = binding.bottomNotificationBar
+
         checkAppPassword()
         setViewPager()
         setTabLayout()
         checkInitializedTab()
-    }
-
-    fun setSnackBar(bottomNotificationBar: BottomNotificationBar){
-        snackBar = bottomNotificationBar
     }
 
     override fun onDestroy()
@@ -114,7 +113,6 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         }
     }
 
-
     fun checkAppPassword() = vm.hasAppPassword { hasAppPassword ->
 
         if(!hasAppPassword) return@hasAppPassword
@@ -126,7 +124,6 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
                 if(activityResult.resultCode != Activity.RESULT_CANCELED) return
                 exit()
             }
-
         }
 
         setOnActivityResultCallbackListener(onActivityResultCallbackListener)
@@ -153,6 +150,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     private fun setViewPager()
     {
         binding.viewPagerMain.isUserInputEnabled = false
+
         val adapter = ViewPagerAdapter(this, baseFragments)
 
         binding.viewPagerMain.adapter = adapter
@@ -208,16 +206,20 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
 
         when(pos)
         {
-            TabCode.firstTab -> registerTabBinding = setTabIcon(tab, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
-            TabCode.secondTab -> inquiryTabBinding = setTabIcon(tab, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
-            TabCode.thirdTab -> menuTabBinding = setTabIcon(tab, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
+            TabCode.firstTab -> registerTabBinding =
+                setTabIcon(tab, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
+            TabCode.secondTab -> inquiryTabBinding =
+                setTabIcon(tab, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
+            TabCode.thirdTab -> menuTabBinding =
+                setTabIcon(tab, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
         }
     }
 
     private fun setTabIcon(tab: TabLayout.Tab, @DrawableRes
     iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
     {
-        val tabBinding = ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
+        val tabBinding =
+            ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
 
         tabBinding.ivTab.setBackgroundResource(iconRes)
         tabBinding.tvTabName.text = tabName
@@ -260,11 +262,13 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
 
         if(vm.currentPage.value == TabCode.secondTab)
         {
-            inquiryTabBinding?.ivTab?.background = ContextCompat.getDrawable(this, inquiryTabIcon.activate)
+            inquiryTabBinding?.ivTab?.background =
+                ContextCompat.getDrawable(this, inquiryTabIcon.activate)
         }
         else
         {
-            inquiryTabBinding?.ivTab?.background = ContextCompat.getDrawable(this, inquiryTabIcon.inactivate)
+            inquiryTabBinding?.ivTab?.background =
+                ContextCompat.getDrawable(this, inquiryTabIcon.inactivate)
         }
     }
 
@@ -273,14 +277,13 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         binding.viewPagerMain.setCurrentItem(page, true)
     }
 
-
     override fun onActivateNetwork()
     {
         super.onActivateNetwork()
 
-        if(!::snackBar.isInitialized) return
-        snackBar.dismiss()
-        snackBar.make("네트워크가 다시 연결되었어요.", 3000, SnackBarEnum.CONNECT_NETWORK).show()
+        dismiss()
+        val connectNetwork = SnackBarType.ConnectNetwork("네트워크가 다시 연결되었어요.", 3000)
+        show(connectNetwork)
         vm.stopToCheckNetworkStatus()
     }
 
@@ -288,7 +291,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     {
         super.onDeactivateNetwork()
 
-        if(!::snackBar.isInitialized) snackBar = binding.bottomNotificationBar
-        snackBar.make("네트워크 오류입니다.", 0, SnackBarEnum.DISCONNECT_NETWORK).show()
+        val disconnectNetwork = SnackBarType.DisconnectNetwork("네트워크 오류입니다.", 0)
+        show(disconnectNetwork)
     }
 }

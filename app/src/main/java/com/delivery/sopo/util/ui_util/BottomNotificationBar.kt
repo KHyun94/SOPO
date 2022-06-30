@@ -11,6 +11,7 @@ import androidx.core.content.res.ResourcesCompat
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.BottomNotificationBarBinding
 import com.delivery.sopo.enums.SnackBarEnum
+import com.delivery.sopo.enums.SnackBarType
 import com.delivery.sopo.util.AnimationUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,60 +56,79 @@ class BottomNotificationBar: ConstraintLayout
 
     private fun getAttrs(attrs: AttributeSet?, defStyleAttr: Int)
     {
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.BottomNotificationBar, defStyleAttr, 0)
+        val typedArray =
+            context.obtainStyledAttributes(attrs, R.styleable.BottomNotificationBar, defStyleAttr, 0)
         setTypeArray(typedArray)
     }
 
-    fun make(content: String, duration: Long, snackBarEnum: SnackBarEnum): BottomNotificationBar
+    fun make(snackBarType: SnackBarType): BottomNotificationBar
     {
-        binding.tvContent.text = content
-        this.duration = duration
-
-        when(snackBarEnum)
+        when(snackBarType)
         {
-            SnackBarEnum.COMMON ->
+            is SnackBarType.Common ->
             {
                 binding.ivIconStart.setAnimation(R.raw.lottie_empty)
-                binding.ivIconStart.background = ContextCompat.getDrawable(context, R.drawable.ic_exclamation_mark_blue)
+                binding.ivIconStart.background =
+                    ContextCompat.getDrawable(context, R.drawable.ic_exclamation_mark_blue)
                 binding.constraintMainBottomNotiBar.setBackgroundColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
+
+                binding.tvContent.text = snackBarType.content
+                duration = snackBarType.duration
             }
-            SnackBarEnum.UPDATE ->
+            is SnackBarType.Update ->
             {
                 binding.ivIconStart.setAnimation(R.raw.lottie_empty)
                 binding.ivIconStart.background = ContextCompat.getDrawable(context, R.drawable.ic_checked_deep_blue_small)
                 binding.constraintMainBottomNotiBar.setBackgroundColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_100))
                 binding.tvContent.setTextColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
+
+                binding.tvContent.text = snackBarType.content
+                duration = snackBarType.duration
             }
-            SnackBarEnum.CONFIRM_DELETE ->
+            is SnackBarType.ConfirmDelete ->
             {
                 binding.ivIconStart.setAnimation(R.raw.lottie_empty)
-                binding.ivIconStart.background = ContextCompat.getDrawable(context, R.drawable.ic_checked_deep_blue_small)
+                binding.ivIconStart.background =
+                    ContextCompat.getDrawable(context, R.drawable.ic_checked_deep_blue_small)
                 binding.constraintMainBottomNotiBar.setBackgroundColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_100))
                 binding.tvContent.setTextColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
                 binding.tvEvent.setTextColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
                 binding.tvEvent.typeface = ResourcesCompat.getFont(context, R.font.pretendard_bold)
+
+                binding.tvContent.text = snackBarType.content
+                duration = snackBarType.duration
             }
-            SnackBarEnum.CONNECT_NETWORK ->
+            is SnackBarType.ConnectNetwork ->
             {
                 binding.ivIconStart.setAnimation(R.raw.lottie_empty)
                 binding.ivIconStart.background = ContextCompat.getDrawable(context, R.drawable.ic_checked_deep_blue_small)
                 binding.constraintMainBottomNotiBar.setBackgroundColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_100))
                 binding.tvContent.setTextColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
+
+                binding.tvContent.text = snackBarType.content
+                duration = snackBarType.duration
             }
-            SnackBarEnum.DISCONNECT_NETWORK ->
+            is SnackBarType.DisconnectNetwork ->
             {
                 binding.ivIconStart.setAnimation(R.raw.lottie_network_lost)
                 binding.ivIconStart.background = null
                 binding.constraintMainBottomNotiBar.setBackgroundColor(ContextCompat.getColor(context, R.color.COLOR_GRAY_700))
                 binding.tvContent.setTextColor(ContextCompat.getColor(context, R.color.COLOR_GRAY_100))
+
+                binding.tvContent.text = snackBarType.content
+                duration = snackBarType.duration
             }
-            SnackBarEnum.ERROR ->
+            is SnackBarType.Error ->
             {
                 binding.ivIconStart.setAnimation(R.raw.lottie_empty)
-                binding.ivIconStart.background = ContextCompat.getDrawable(context, R.drawable.ic_exclamation_mark_gray_scale)
+                binding.ivIconStart.background =
+                    ContextCompat.getDrawable(context, R.drawable.ic_exclamation_mark_gray_scale)
                 binding.constraintMainBottomNotiBar.setBackgroundColor(ContextCompat.getColor(context, R.color.COLOR_GRAY_800))
                 binding.tvContent.setTextColor(ContextCompat.getColor(context, R.color.MAIN_WHITE))
                 binding.tvEvent.setTextColor(ContextCompat.getColor(context, R.color.MAIN_WHITE))
+
+                binding.tvContent.text = snackBarType.content
+                duration = snackBarType.duration
             }
         }
 
@@ -151,10 +171,13 @@ class BottomNotificationBar: ConstraintLayout
         binding.tvContent.setTextColor(ContextCompat.getColor(context, typedArray.getInt(R.styleable.BottomNotificationBar_textColor, R.color.COLOR_GRAY_800)))
         binding.tvEvent.setTextColor(ContextCompat.getColor(context, typedArray.getInt(R.styleable.BottomNotificationBar_buttonTextColor, R.color.MAIN_WHITE)))
 
-        binding.tvContent.typeface = ResourcesCompat.getFont(context, typedArray.getInt(R.styleable.BottomNotificationBar_textFontFamily, R.font.pretendard_medium))
-        binding.tvContent.typeface = ResourcesCompat.getFont(context, typedArray.getInt(R.styleable.BottomNotificationBar_textFontFamily, R.font.pretendard_medium))
+        binding.tvContent.typeface =
+            ResourcesCompat.getFont(context, typedArray.getInt(R.styleable.BottomNotificationBar_textFontFamily, R.font.pretendard_medium))
+        binding.tvContent.typeface =
+            ResourcesCompat.getFont(context, typedArray.getInt(R.styleable.BottomNotificationBar_textFontFamily, R.font.pretendard_medium))
 
-        binding.ivIconStart.background = ContextCompat.getDrawable(context, typedArray.getInt(R.styleable.BottomNotificationBar_iconStart, R.drawable.ic_exclamation_mark_gray_scale))
+        binding.ivIconStart.background =
+            ContextCompat.getDrawable(context, typedArray.getInt(R.styleable.BottomNotificationBar_iconStart, R.drawable.ic_exclamation_mark_gray_scale))
 
         val iconEnd = typedArray.getInt(R.styleable.BottomNotificationBar_iconEnd, 0)
         if(iconEnd != 0) binding.ivIconEnd.background = ContextCompat.getDrawable(context, iconEnd)

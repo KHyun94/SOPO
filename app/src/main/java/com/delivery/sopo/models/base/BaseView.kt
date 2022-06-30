@@ -17,9 +17,11 @@ import com.delivery.sopo.BR
 import com.delivery.sopo.SOPOApplication
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.enums.SnackBarEnum
+import com.delivery.sopo.enums.SnackBarType
 import com.delivery.sopo.util.NetworkStatusMonitor
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ui_util.BottomNotificationBar
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import kotlin.system.exitProcess
@@ -41,6 +43,8 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
     private lateinit var onActivityResultCallbackListener: OnActivityResultCallbackListener
     lateinit var networkStatusMonitor: NetworkStatusMonitor
 
+    protected lateinit var snackBar: BottomNotificationBar
+
     fun setOnActivityResultCallbackListener(listener: OnActivityResultCallbackListener)
     {
         this.onActivityResultCallbackListener = listener
@@ -48,6 +52,19 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
     val loadingBar: SopoLoadingBar by lazy {
         SopoLoadingBar(this)
+    }
+
+    fun show(snackBarType: SnackBarType){
+        if(!::snackBar.isInitialized) return
+
+        snackBar.make(snackBarType)
+        snackBar.show()
+    }
+
+    fun dismiss(){
+        if(!::snackBar.isInitialized) return
+
+        snackBar.dismiss()
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
