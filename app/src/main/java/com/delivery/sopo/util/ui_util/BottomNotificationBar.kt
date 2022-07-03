@@ -56,8 +56,7 @@ class BottomNotificationBar: ConstraintLayout
 
     private fun getAttrs(attrs: AttributeSet?, defStyleAttr: Int)
     {
-        val typedArray =
-            context.obtainStyledAttributes(attrs, R.styleable.BottomNotificationBar, defStyleAttr, 0)
+        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.BottomNotificationBar, defStyleAttr, 0)
         setTypeArray(typedArray)
     }
 
@@ -68,8 +67,7 @@ class BottomNotificationBar: ConstraintLayout
             is SnackBarType.Common ->
             {
                 binding.ivIconStart.setAnimation(R.raw.lottie_empty)
-                binding.ivIconStart.background =
-                    ContextCompat.getDrawable(context, R.drawable.ic_exclamation_mark_blue)
+                binding.ivIconStart.background = ContextCompat.getDrawable(context, R.drawable.ic_exclamation_mark_blue)
                 binding.constraintMainBottomNotiBar.setBackgroundColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
 
                 binding.tvContent.text = snackBarType.content

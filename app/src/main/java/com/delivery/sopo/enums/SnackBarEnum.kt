@@ -21,6 +21,17 @@ enum class SnackBarEnum
 sealed class SnackBarType{
     data class Common(val content: String, val duration: Long): SnackBarType()
     data class Update(val content: String, val duration: Long): SnackBarType()
+    {
+        lateinit var buttonContent: String
+
+        fun setButton(buttonContent: String, listener: View.OnClickListener, icon: Int? = null){
+
+        }
+
+        fun getButton(){
+
+        }
+    }
     data class ConfirmDelete(val content: String, val duration: Long): SnackBarType()
     data class ConnectNetwork(val content: String, val duration: Long): SnackBarType()
     data class DisconnectNetwork(val content: String, val duration: Long): SnackBarType()

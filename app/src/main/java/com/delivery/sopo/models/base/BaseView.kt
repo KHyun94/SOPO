@@ -18,6 +18,7 @@ import com.delivery.sopo.SOPOApplication
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.enums.SnackBarType
+import com.delivery.sopo.interfaces.OnSnackBarController
 import com.delivery.sopo.util.NetworkStatusMonitor
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
@@ -31,7 +32,7 @@ interface OnActivityResultCallbackListener
     fun callback(activityResult: ActivityResult)
 }
 
-abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity()
+abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity(), OnSnackBarController
 {
     lateinit var binding: T
     abstract val layoutRes: Int
@@ -43,7 +44,7 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
     private lateinit var onActivityResultCallbackListener: OnActivityResultCallbackListener
     lateinit var networkStatusMonitor: NetworkStatusMonitor
 
-    protected lateinit var snackBar: BottomNotificationBar
+    private lateinit var snackBar: BottomNotificationBar
 
     fun setOnActivityResultCallbackListener(listener: OnActivityResultCallbackListener)
     {
@@ -54,16 +55,31 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         SopoLoadingBar(this)
     }
 
-    fun show(snackBarType: SnackBarType){
-        if(!::snackBar.isInitialized) return
+    override fun setSnackBar(bottomNotificationBar: BottomNotificationBar)
+    {
+        snackBar = bottomNotificationBar
+    }
 
+    override fun getSnackBar(): BottomNotificationBar
+    {
+        return snackBar
+    }
+
+    override fun onMake(snackBarType: SnackBarType)
+    {
+        if(!::snackBar.isInitialized) throw Exception()
         snackBar.make(snackBarType)
+    }
+
+    override fun onShow(hasDelay: Boolean)
+    {
+        if(!::snackBar.isInitialized) return
         snackBar.show()
     }
 
-    fun dismiss(){
+    override fun onDismiss()
+    {
         if(!::snackBar.isInitialized) return
-
         snackBar.dismiss()
     }
 

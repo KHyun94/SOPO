@@ -4,6 +4,7 @@ import android.view.View
 import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.SnackBarEnum
+import com.delivery.sopo.enums.SnackBarType
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
 import com.delivery.sopo.util.DateUtil
@@ -37,6 +38,7 @@ class Parcel
         fun makeOtherAlarm(view: View, onClickListener: OnSnackBarClickListener<Unit>){
             val char : CharSequence = "바로가기"
             val listener = Pair(char, onClickListener)
+            SnackBarType.Update("택배가 등록되었습니다.", 3000)
             val snackBar = CustomSnackBar(view = view, content = "택배가 등록되었습니다.", data = Unit, type = SnackBarEnum.COMMON, clickListener = listener)
             snackBar.show()
         }

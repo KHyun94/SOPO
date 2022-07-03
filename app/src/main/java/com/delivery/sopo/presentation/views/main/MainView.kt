@@ -69,7 +69,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     {
         super.onAfterBinding()
 
-        snackBar = binding.bottomNotificationBar
+        setSnackBar(binding.bottomNotificationBar)
 
         checkAppPassword()
         setViewPager()
@@ -218,8 +218,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     private fun setTabIcon(tab: TabLayout.Tab, @DrawableRes
     iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
     {
-        val tabBinding =
-            ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
+        val tabBinding = ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
 
         tabBinding.ivTab.setBackgroundResource(iconRes)
         tabBinding.tvTabName.text = tabName
@@ -281,9 +280,9 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     {
         super.onActivateNetwork()
 
-        dismiss()
-        val connectNetwork = SnackBarType.ConnectNetwork("네트워크가 다시 연결되었어요.", 3000)
-        show(connectNetwork)
+        onDismiss()
+        onMake(SnackBarType.ConnectNetwork("네트워크가 다시 연결되었어요.", 3000))
+        onShow()
         vm.stopToCheckNetworkStatus()
     }
 
@@ -291,7 +290,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     {
         super.onDeactivateNetwork()
 
-        val disconnectNetwork = SnackBarType.DisconnectNetwork("네트워크 오류입니다.", 0)
-        show(disconnectNetwork)
+        onMake(SnackBarType.DisconnectNetwork("네트워크 오류입니다.", 0))
+        onShow()
     }
 }
