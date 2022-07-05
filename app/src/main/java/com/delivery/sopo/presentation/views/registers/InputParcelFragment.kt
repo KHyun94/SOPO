@@ -10,6 +10,7 @@ import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentInputParcelBinding
 import com.delivery.sopo.enums.InfoEnum
+import com.delivery.sopo.enums.SnackBarType
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.isGreaterThanOrEqual
 import com.delivery.sopo.interfaces.OnPageSelectListener
@@ -95,7 +96,13 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
 
         if(parcel.isDelivered())
         {
-            parcel.makeDeliveredAlarm(mainLayout) { date ->
+            val date = parcel.getDeliveredAlarm()
+
+            motherView.onMake(SnackBarType.Common("${date}에 배송완료된 택배네요.", 3000))
+
+
+
+            (mainLayout) { date ->
                 motherView.onSetCurrentPage(1)
 
                 intent.action = IntentConst.Action.REGISTERED_COMPLETED_PARCEL

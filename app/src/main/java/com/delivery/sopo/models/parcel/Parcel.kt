@@ -43,12 +43,13 @@ class Parcel
             snackBar.show()
         }
 
-        fun makeDeliveredAlarm(view: View, onClickListener: OnSnackBarClickListener<String>){
-            val char : CharSequence = "보기"
-            val listener = Pair(char, onClickListener)
+        fun getDeliveredAlarm(): String?
+        {
+//            val char : CharSequence = "보기"
             val date = DateUtil.changeDateFormat(arrivalDte ?: "", oldPattern = DateUtil.DATE_TIME_TYPE_DEFAULT, newPattern = DateUtil.DATE_TYPE_KOREAN_SEMI)
-            val snackBar = CustomSnackBar.make(view = view, content = "${date}에 배송완료된 택배네요.", data = arrivalDte?:"", type = SnackBarEnum.COMMON, clickListener = listener)
-            snackBar.show()
+//            val snackBar = CustomSnackBar.make(view = view, content = "${date}에 배송완료된 택배네요.", data = arrivalDte?:"", type = SnackBarEnum.COMMON, clickListener = listener)
+//            snackBar.show()
+            return date
         }
     }
 

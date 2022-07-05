@@ -10,28 +10,14 @@ enum class SnackBarEnum
      * 네트워크 에러
      */
 
-    COMMON,
-    UPDATE,
-    CONFIRM_DELETE,
-    CONNECT_NETWORK,
-    DISCONNECT_NETWORK,
-    ERROR
+    COMMON, UPDATE, CONFIRM_DELETE, CONNECT_NETWORK, DISCONNECT_NETWORK, ERROR
 }
 
-sealed class SnackBarType{
-    data class Common(val content: String, val duration: Long): SnackBarType()
+sealed class SnackBarType
+{
+    data class Common(val content: String, val duration: Long, val buttonContent: String? = null, val iconRes: Int? = null, val clickListener: View.OnClickListener): SnackBarType()
+
     data class Update(val content: String, val duration: Long): SnackBarType()
-    {
-        lateinit var buttonContent: String
-
-        fun setButton(buttonContent: String, listener: View.OnClickListener, icon: Int? = null){
-
-        }
-
-        fun getButton(){
-
-        }
-    }
     data class ConfirmDelete(val content: String, val duration: Long): SnackBarType()
     data class ConnectNetwork(val content: String, val duration: Long): SnackBarType()
     data class DisconnectNetwork(val content: String, val duration: Long): SnackBarType()
