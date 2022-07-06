@@ -12,6 +12,8 @@ import com.delivery.sopo.R
 import com.delivery.sopo.databinding.BottomNotificationBarBinding
 import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.enums.SnackBarType
+import com.delivery.sopo.extensions.makeGone
+import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.util.AnimationUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -62,16 +64,21 @@ class BottomNotificationBar: ConstraintLayout
 
     fun make(snackBarType: SnackBarType): BottomNotificationBar
     {
+        setButton()
+
         when(snackBarType)
         {
             is SnackBarType.Common ->
             {
                 binding.ivIconStart.setAnimation(R.raw.lottie_empty)
-                binding.ivIconStart.background = ContextCompat.getDrawable(context, R.drawable.ic_exclamation_mark_blue)
+                binding.ivIconStart.background =
+                    ContextCompat.getDrawable(context, R.drawable.ic_exclamation_mark_blue)
                 binding.constraintMainBottomNotiBar.setBackgroundColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
 
                 binding.tvContent.text = snackBarType.content
                 duration = snackBarType.duration
+
+                setButton(snackBarType.buttonContent?:"", snackBarType.clickListener, snackBarType.iconRes)
             }
             is SnackBarType.Update ->
             {
@@ -82,6 +89,9 @@ class BottomNotificationBar: ConstraintLayout
 
                 binding.tvContent.text = snackBarType.content
                 duration = snackBarType.duration
+
+                binding.tvEvent.setTextColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
+                setButton(snackBarType.buttonContent?:"", snackBarType.clickListener, snackBarType.iconRes)
             }
             is SnackBarType.ConfirmDelete ->
             {
@@ -95,11 +105,13 @@ class BottomNotificationBar: ConstraintLayout
 
                 binding.tvContent.text = snackBarType.content
                 duration = snackBarType.duration
+
             }
             is SnackBarType.ConnectNetwork ->
             {
                 binding.ivIconStart.setAnimation(R.raw.lottie_empty)
-                binding.ivIconStart.background = ContextCompat.getDrawable(context, R.drawable.ic_checked_deep_blue_small)
+                binding.ivIconStart.background =
+                    ContextCompat.getDrawable(context, R.drawable.ic_checked_deep_blue_small)
                 binding.constraintMainBottomNotiBar.setBackgroundColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_100))
                 binding.tvContent.setTextColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
 
@@ -133,7 +145,7 @@ class BottomNotificationBar: ConstraintLayout
         return this
     }
 
-    fun setButton(btnContent: String, listener: OnClickListener, btnIcon: Int? = null)
+    fun setButton(btnContent: String= "", listener: OnClickListener? = null, btnIcon: Int? = null)
     {
         binding.tvEvent.text = btnContent
         binding.tvEvent.setOnClickListener(listener)
@@ -157,6 +169,8 @@ class BottomNotificationBar: ConstraintLayout
     fun dismiss() = CoroutineScope(Dispatchers.Main).launch {
         delay(duration)
         AnimationUtil.slideDown(binding.constraintMainBottomNotiBar)
+
+        binding.ivIconEnd.makeGone()
     }
 
     private fun setTypeArray(typedArray: TypedArray)

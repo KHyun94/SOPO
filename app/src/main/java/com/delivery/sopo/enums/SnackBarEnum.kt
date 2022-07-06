@@ -15,9 +15,8 @@ enum class SnackBarEnum
 
 sealed class SnackBarType
 {
-    data class Common(val content: String, val duration: Long, val buttonContent: String? = null, val iconRes: Int? = null, val clickListener: View.OnClickListener): SnackBarType()
-
-    data class Update(val content: String, val duration: Long): SnackBarType()
+    data class Common(val content: String, val duration: Long, val buttonContent: String? = null, val iconRes: Int? = null, val clickListener: View.OnClickListener?=null): SnackBarType()
+    data class Update(val content: String, val duration: Long, val buttonContent: String? = null, val iconRes: Int? = null, val clickListener: View.OnClickListener?=null): SnackBarType()
     data class ConfirmDelete(val content: String, val duration: Long): SnackBarType()
     data class ConnectNetwork(val content: String, val duration: Long): SnackBarType()
     data class DisconnectNetwork(val content: String, val duration: Long): SnackBarType()

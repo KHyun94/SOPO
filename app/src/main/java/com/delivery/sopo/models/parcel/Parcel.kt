@@ -35,14 +35,6 @@ class Parcel
             return deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
         }
 
-        fun makeOtherAlarm(view: View, onClickListener: OnSnackBarClickListener<Unit>){
-            val char : CharSequence = "바로가기"
-            val listener = Pair(char, onClickListener)
-            SnackBarType.Update("택배가 등록되었습니다.", 3000)
-            val snackBar = CustomSnackBar(view = view, content = "택배가 등록되었습니다.", data = Unit, type = SnackBarEnum.COMMON, clickListener = listener)
-            snackBar.show()
-        }
-
         fun getDeliveredAlarm(): String?
         {
 //            val char : CharSequence = "보기"

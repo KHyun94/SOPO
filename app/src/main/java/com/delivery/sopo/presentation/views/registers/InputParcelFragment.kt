@@ -98,27 +98,26 @@ class InputParcelFragment: BaseFragment<FragmentInputParcelBinding, InputParcelV
         {
             val date = parcel.getDeliveredAlarm()
 
-            motherView.onMake(SnackBarType.Common("${date}에 배송완료된 택배네요.", 3000))
-
-
-
-            (mainLayout) { date ->
+            motherView.onMake(SnackBarType.Update(content = "${date}에 배송완료된 택배네요.", duration = 3000, buttonContent = "보기", iconRes = R.drawable.ic_right_arrow_blue_scale){
                 motherView.onSetCurrentPage(1)
 
                 intent.action = IntentConst.Action.REGISTERED_COMPLETED_PARCEL
                 intent.putExtra(IntentConst.Extra.REGISTERED_DATE, date)
                 motherView.sendBroadcast(intent)
-            }
+            })
         }
         else
         {
-            parcel.makeOtherAlarm(mainLayout) {
+            motherView.onMake(SnackBarType.Update(content = "택배가 등록되었습니다.", duration = 3000, buttonContent = "보기", iconRes = R.drawable.ic_right_arrow_blue_scale){
+
                 motherView.onSetCurrentPage(1)
 
                 intent.action = IntentConst.Action.REGISTERED_ONGOING_PARCEL
                 motherView.sendBroadcast(intent)
-            }
+            })
         }
+
+        motherView.onShow()
     }
 
     override fun setAfterBinding()
