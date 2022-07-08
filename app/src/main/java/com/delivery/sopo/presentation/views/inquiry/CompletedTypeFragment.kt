@@ -36,6 +36,7 @@ import com.delivery.sopo.presentation.views.adapter.InquiryListAdapter
 import com.delivery.sopo.presentation.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.presentation.views.main.MainView
 import com.delivery.sopo.util.*
+import com.delivery.sopo.util.ui_util.UpdateValueDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -382,16 +383,10 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
             {
                 super.onUpdateParcelAliasClicked(view, type, parcelId)
 
-                val edit = MutableLiveData<String>()
-
-                AlertUtil.updateValueDialog(requireContext(), "물품명을 입력해주세요.", Pair("확인", View.OnClickListener {
-                    edit.observe(requireActivity()) { parcelAlias ->
-                        vm.updateParcelAlias(parcelId, parcelAlias)
-                        AlertUtil.onDismiss()
-                    }
-                }), Pair("취소", null)) {
-                    edit.value = it
-                }
+                UpdateValueDialog{ alias ->
+                    SopoLog.d("TEST INPUT DATA $alias")
+                    vm.updateParcelAlias(parcelId, alias)
+                }.show(childFragmentManager, "")
             }
 
         }

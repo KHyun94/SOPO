@@ -31,7 +31,9 @@ import com.delivery.sopo.presentation.views.inquiry.InquiryMainFragment
 import com.delivery.sopo.presentation.views.menus.LockScreenView
 import com.delivery.sopo.presentation.views.registers.RegisterMainFragment
 import com.delivery.sopo.util.ClipboardUtil
+import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.BottomNotificationBar
+import com.delivery.sopo.util.ui_util.UpdateValueDialog
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.CoroutineScope
@@ -218,7 +220,8 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     private fun setTabIcon(tab: TabLayout.Tab, @DrawableRes
     iconRes: Int, tabName: String, textColor: Int): ItemMainTabBinding
     {
-        val tabBinding = ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
+        val tabBinding =
+            ItemMainTabBinding.bind(tab.customView ?: throw NullPointerException("TAB is null"))
 
         tabBinding.ivTab.setBackgroundResource(iconRes)
         tabBinding.tvTabName.text = tabName

@@ -38,6 +38,7 @@ import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ui_util.UpdateValueDialog
 
 class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeViewModel>()
 {
@@ -292,16 +293,10 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             {
                 super.onUpdateParcelAliasClicked(view, type, parcelId)
 
-                val edit = MutableLiveData<String>()
-
-                AlertUtil.updateValueDialog(requireContext(), "물품명을 입력해주세요.", Pair("확인", View.OnClickListener {
-                    edit.observe(requireActivity()) { parcelAlias ->
-                        vm.updateParcelAlias(parcelId, parcelAlias)
-                        AlertUtil.onDismiss()
-                    }
-                }), Pair("취소", null)) {
-                    edit.value = it
-                }
+                UpdateValueDialog{ alias ->
+                    SopoLog.d("TEST INPUT DATA $alias")
+                    vm.updateParcelAlias(parcelId, alias)
+                }.show(childFragmentManager, "")
             }
         }
     }

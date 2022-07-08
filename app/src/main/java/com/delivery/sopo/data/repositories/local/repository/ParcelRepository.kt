@@ -21,9 +21,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import com.delivery.sopo.data.models.Result
+import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.models.inquiry.InquiryListItem
+import com.delivery.sopo.presentation.viewmodels.inquiry.OngoingTypeViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import java.util.*
 
 class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Parcel.Common>,
         ParcelDataSource,
@@ -84,7 +87,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
         }
     }
 
-    fun getOngoingAllParcel() = flow<Result<List<InquiryListItem>>> {
+    fun getOngoingParcels() = flow {
 
         emit(Result.Loading)
         appDatabase.parcelDao().getFlowOngoingParcel().collect {
@@ -99,21 +102,30 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
                     InquiryListItem(parcel, false)
                 }
 
-                emit(Result.Success(parcels))
+                emit(Result.Success(sortByDeliveryStatus(parcels)))
             }
         }
-    }.catch { e ->
-        emit(Result.Error(e)) }
+    }.catch { e -> emit(Result.Error(e)) }
 
-/*
-    fun getOngoingParcelAsFlow() = flow {
-        emit()
-    *//*    return appDatabase.parcelDao().getFlowOngoingParcel().map {
-            return@map it.map(ParcelMapper::parcelEntityToObject).map { InquiryListItem(it, false) }
-        }*//*
+    fun getCompletedParcels() = flow {
 
+        emit(Result.Loading)
+        appDatabase.parcelDao().getFlowCompletedParcels().collect {
+            if(it.isEmpty())
+            {
+                emit(Result.Empty)
+            }
+            else
+            {
+                val parcels = it.map{
+                    val parcel = ParcelMapper.parcelEntityToObject(it)
+                    InquiryListItem(parcel, false)
+                }
 
-    }*/
+                emit(Result.Success(sortByDeliveryStatus(parcels)))
+            }
+        }
+    }.catch { e -> emit(Result.Error(e)) }
 
     override fun getCompleteParcelsAsLiveData(): LiveData<List<Parcel.Common>>
     {
@@ -292,5 +304,71 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
             NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
                 .requestParcelsUpdate(parcelId = wrapBody)
         return apiCall { result }.data?.data ?: throw NullPointerException("택배 데이터가 조회되지 않습니다.")
+    }
+
+    fun sortByDeliveryStatus(list: List<InquiryListItem>): List<InquiryListItem>
+    {
+        val sortedList = mutableListOf<InquiryListItem>()
+        val multiList = listOf<MutableList<InquiryListItem>>(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
+
+        val elseList = list.asSequence().filter { item ->
+
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
+            {
+                multiList[0].add(item)
+            }
+
+            item.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
+        }.filter { item ->
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE)
+            {
+                multiList[1].add(item)
+            }
+
+            item.parcel.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
+        }.filter { item ->
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE)
+            {
+                multiList[2].add(item)
+            }
+
+            item.parcel.deliveryStatus != DeliveryStatusEnum.IN_TRANSIT.CODE
+        }.filter { item ->
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE)
+            {
+                multiList[3].add(item)
+            }
+
+            item.parcel.deliveryStatus != DeliveryStatusEnum.AT_PICKUP.CODE
+        }.filter { item ->
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE)
+            {
+                multiList[4].add(item)
+            }
+
+            item.parcel.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
+        }.filter { item ->
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.NOT_REGISTERED.CODE)
+            {
+                multiList[5].add(item)
+            }
+
+            item.parcel.deliveryStatus != DeliveryStatusEnum.NOT_REGISTERED.CODE
+        }.filter { item ->
+            if(item.parcel.deliveryStatus == DeliveryStatusEnum.ORPHANED.CODE)
+            {
+                multiList[6].add(item)
+            }
+
+            item.parcel.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE
+        }.toList()
+
+        multiList[7].addAll(elseList)
+
+        multiList.forEach {
+            Collections.sort(it, OngoingTypeViewModel.SortByDate())
+            sortedList.addAll(it)
+        }
+        return sortedList
     }
 }

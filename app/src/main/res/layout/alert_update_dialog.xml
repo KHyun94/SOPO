@@ -5,9 +5,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraint_main_alert"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/border_14dp_rounder"
+        android:background="@drawable/border_8dp_rounder"
         android:backgroundTint="@color/MAIN_WHITE"
         android:orientation="vertical">
 
@@ -16,8 +16,9 @@
             style="@style/kor_H4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:layout_marginTop="20dp"
+            android:layout_marginLeft="16dp"
+
             android:includeFontPadding="false"
             android:text="물품명을 입력해주세요."
             app:layout_constraintStart_toStartOf="parent"
@@ -28,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="16dp"
             android:orientation="vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_title">
@@ -57,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="19dp"
-            android:layout_marginEnd="39dp"
+            android:layout_marginRight="30dp"
             android:includeFontPadding="false"
             android:text="취소"
             android:textColor="@color/COLOR_MAIN_700"

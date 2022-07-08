@@ -71,8 +71,7 @@ class BottomNotificationBar: ConstraintLayout
             is SnackBarType.Common ->
             {
                 binding.ivIconStart.setAnimation(R.raw.lottie_empty)
-                binding.ivIconStart.background =
-                    ContextCompat.getDrawable(context, R.drawable.ic_exclamation_mark_blue)
+                binding.ivIconStart.background = ContextCompat.getDrawable(context, R.drawable.ic_exclamation_mark_blue)
                 binding.constraintMainBottomNotiBar.setBackgroundColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
 
                 binding.tvContent.text = snackBarType.content
@@ -96,8 +95,7 @@ class BottomNotificationBar: ConstraintLayout
             is SnackBarType.ConfirmDelete ->
             {
                 binding.ivIconStart.setAnimation(R.raw.lottie_empty)
-                binding.ivIconStart.background =
-                    ContextCompat.getDrawable(context, R.drawable.ic_checked_deep_blue_small)
+                binding.ivIconStart.background = ContextCompat.getDrawable(context, R.drawable.ic_checked_deep_blue_small)
                 binding.constraintMainBottomNotiBar.setBackgroundColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_100))
                 binding.tvContent.setTextColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
                 binding.tvEvent.setTextColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
@@ -105,7 +103,6 @@ class BottomNotificationBar: ConstraintLayout
 
                 binding.tvContent.text = snackBarType.content
                 duration = snackBarType.duration
-
             }
             is SnackBarType.ConnectNetwork ->
             {

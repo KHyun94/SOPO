@@ -29,6 +29,10 @@ interface ParcelDao
                    " FROM PARCEL as p LEFT JOIN PARCEL_STATUS as pm ON p.PARCEL_ID = pm.PARCEL_ID WHERE p.STATUS = 1 AND p.DELIVERY_STATUS <> 'DELIVERED' AND pm.isBeDelete =0")
     fun getFlowOngoingParcel(): Flow<List<ParcelEntity>>
 
+    @Query("SELECT p.PARCEL_ID, p.USER_ID, p.WAYBILL_NUM, p.CARRIER, p.ALIAS, p.INQUIRY_RESULT, p.INQUIRY_HASH, p.DELIVERY_STATUS, p.ARRIVAL_DTE, p.REG_DT, p.AUDIT_DTE, p.STATUS" +
+                   " FROM PARCEL as p LEFT JOIN PARCEL_STATUS as pm ON p.PARCEL_ID = pm.PARCEL_ID WHERE p.STATUS = 1 AND p.DELIVERY_STATUS = 'DELIVERED' AND pm.isNowVisible = 1")
+    fun getFlowCompletedParcels(): Flow<List<ParcelEntity>>
+
     @Query("SELECT * FROM PARCEL WHERE STATUS = 1 AND DELIVERY_STATUS <> 'DELIVERED'")
     fun getOngoingData(): List<ParcelEntity>
 

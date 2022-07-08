@@ -59,7 +59,7 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
     }
 
     fun getOngoingParcels() = scope.launch(Dispatchers.Default) {
-        parcelRepo.getOngoingAllParcel().collect { _parcels.value = it }
+        parcelRepo.getOngoingParcels().collect { _parcels.value = it }
     }
 
     /**

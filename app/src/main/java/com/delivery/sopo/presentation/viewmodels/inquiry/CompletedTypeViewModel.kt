@@ -3,6 +3,7 @@ package com.delivery.sopo.presentation.viewmodels.inquiry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
+import com.delivery.sopo.data.models.Result
 import com.delivery.sopo.data.repositories.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
@@ -17,6 +18,9 @@ import com.delivery.sopo.domain.usecase.parcel.remote.UpdateParcelAliasUseCase
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase, private val getCompletedMonthUseCase: GetCompletedMonthUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val historyRepo: CompletedParcelHistoryRepoImpl):
@@ -28,6 +32,13 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
     private var _completeList = MutableLiveData<MutableList<InquiryListItem>>()
     val completeList: LiveData<MutableList<InquiryListItem>>
         get() = _completeList
+
+    private val _parcels: MutableStateFlow<Result<List<InquiryListItem>>> = MutableStateFlow(Result.Uninitialized)
+    val parcels = _parcels.asStateFlow()
+
+    fun getCompletedParcels() = scope.launch(Dispatchers.Default) {
+        parcelRepo.getOngoingParcels().collect { _parcels.value = it }
+    }
 
     // 배송완료 조회 가능한 'Calendar'
     val histories: LiveData<List<DeliveredParcelHistory>>
@@ -168,13 +179,11 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
         monthsOfCalendar.postValue(list)
     }
 
-    fun updateParcelAlias(parcelId: Int, parcelAlias: String) =
-        checkEventStatus(checkNetwork = true) {
-            scope.launch(coroutineExceptionHandler) {
-                updateParcelAliasUseCase.invoke(parcelId = parcelId, parcelAlias = parcelAlias)
-
-            }
+    fun updateParcelAlias(parcelId: Int, parcelAlias: String) = checkEventStatus(checkNetwork = true) {
+        scope.launch(coroutineExceptionHandler) {
+            updateParcelAliasUseCase.invoke(parcelId = parcelId, parcelAlias = parcelAlias)
         }
+    }
 
     override var onSOPOErrorCallback = object: OnSOPOErrorCallback
     {
