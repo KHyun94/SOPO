@@ -45,4 +45,33 @@ class ParcelRepositoryImpl(private val parcelDataSource: ParcelDataSource, priva
 
         return parcel
     }
+
+    override suspend fun fetchCompletedParcel(page: Int, inquiryDate: String): List<Parcel.Common>
+    {
+        val parcels = parcelRemoteDataSource.fetchCompletedParcels(page = page, inquiryDate = inquiryDate)
+
+        insertParcels(parcels = parcels)
+        updateParcels(parcels = parcels)
+
+        return parcels
+    }
+
+    private fun insertParcels(parcels: List<Parcel.Common>)
+    {
+        val insertParcels = parcels.filterNot(parcelDataSource::hasLocalParcel)
+        val insertParcelStatuses = insertParcels.map(parcelStatusDataSource::makeParcelStatus)
+        parcelDataSource.insert(*insertParcels.toTypedArray())
+        parcelStatusDataSource.insert(*insertParcelStatuses.toTypedArray())
+    }
+
+    suspend fun updateParcels(parcels: List<Parcel.Common>)
+    {
+        val notExistParcelIds = parcelDataSource.getNotExistParcels(parcels = parcels).map { it.parcelId }
+        val notExistParcels = parcelRemoteDataSource.fetchParcelById(parcelIds = notExistParcelIds)
+
+        val updateParcels = parcels.filter(parcelDataSource::compareInquiryHash) + notExistParcels
+        val updateParcelStatuses = updateParcels.map(parcelStatusDataSource::makeParcelStatus)
+        parcelDataSource.update(*updateParcels.toTypedArray())
+        parcelStatusDataSource.updateParcelStatuses(updateParcelStatuses)
+    }
 }

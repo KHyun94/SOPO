@@ -234,9 +234,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     suspend fun reportParcelStatus(parcelIds: List<Int>)
     {
         val wrapParcelIds = parcelIds.wrapBodyAliasToHashMap<List<Int>>("parcelIds")
-        val reportParcelStatus =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
-                .reportParcelStatus(wrapParcelIds)
+        val reportParcelStatus = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java).reportParcelStatus(wrapParcelIds)
         apiCall { reportParcelStatus }
     }
 

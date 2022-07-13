@@ -5,6 +5,11 @@ data class PagingManagement(
     var inquiryDate: String,
     var hasNext: Boolean
 ){
+    fun isCheckDate(date: String): Boolean
+    {
+        return inquiryDate == date
+    }
+
     companion object{
         fun init():PagingManagement{
             return PagingManagement(0, "", true)

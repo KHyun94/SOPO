@@ -38,6 +38,12 @@ class ParcelRemoteDataSourceImpl(private val parcelService: ParcelService): Parc
         return result.data?.data ?: throw SOPOApiException.create(ErrorCode.PARCEL_NOT_FOUND)
     }
 
+    override suspend fun fetchCompletedParcels(page: Int, inquiryDate: String): List<Parcel.Common>
+    {
+        val result = apiCall { parcelService.fetchDeliveredParcelsByPaging(page = page, inquiryDate = inquiryDate) }
+        return result.data?.data ?: throw SOPOApiException.create(ErrorCode.PARCEL_NOT_FOUND)
+    }
+
     override suspend fun fetchDeliveredMonth(): List<DeliveredParcelHistory>
     {
         val result = apiCall { parcelService.fetchDeliveredMonth() }

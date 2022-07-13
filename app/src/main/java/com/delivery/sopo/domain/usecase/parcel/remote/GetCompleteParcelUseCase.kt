@@ -11,27 +11,25 @@ import kotlinx.coroutines.withContext
 
 class GetCompleteParcelUseCase(private val parcelRepo: ParcelRepository, private val parcelStatusRepo: ParcelManagementRepoImpl)
 {
-    suspend operator fun invoke(currentPagingManagement: PagingManagement): List<Parcel.Common> =
-        withContext(Dispatchers.IO) {
-            SopoLog.i("GetCompleteParcelUseCase(...)")
+    suspend operator fun invoke(currentPagingManagement: PagingManagement): List<Parcel.Common> = withContext(Dispatchers.IO) {
+        SopoLog.i("GetCompleteParcelUseCase(...)")
 
-            val completeParcels =
-                parcelRepo.getCompleteParcelsByRemote(page = currentPagingManagement.pagingNum, inquiryDate = currentPagingManagement.inquiryDate)
+        val completeParcels = parcelRepo.getCompleteParcelsByRemote(page = currentPagingManagement.pagingNum, inquiryDate = currentPagingManagement.inquiryDate)
 
-            insertParcels(completeParcels)
-            updateParcels(completeParcels)
+        insertParcels(completeParcels)
+        updateParcels(completeParcels)
 
-            val reportParcelIds = completeParcels.mapNotNull {
-                if(!it.reported) it.parcelId else null
-            }
-
-            launch {
-                if(reportParcelIds.isEmpty()) return@launch
-                parcelRepo.reportParcelStatus(reportParcelIds)
-            }
-
-            return@withContext completeParcels
+        val reportParcelIds = completeParcels.mapNotNull {
+            if(!it.reported) it.parcelId else null
         }
+
+        launch {
+            if(reportParcelIds.isEmpty()) return@launch
+            parcelRepo.reportParcelStatus(reportParcelIds)
+        }
+
+        return@withContext completeParcels
+    }
 
     private fun insertParcels(parcels: List<Parcel.Common>)
     {

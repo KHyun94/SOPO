@@ -36,10 +36,6 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
     private val _parcels: MutableStateFlow<Result<List<InquiryListItem>>> = MutableStateFlow(Result.Uninitialized)
     val parcels = _parcels.asStateFlow()
 
-    fun getCompletedParcels() = scope.launch(Dispatchers.Default) {
-        parcelRepo.getOngoingParcels().collect { _parcels.value = it }
-    }
-
     // 배송완료 조회 가능한 'Calendar'
     val histories: LiveData<List<DeliveredParcelHistory>>
         get() = historyRepo.getAllAsLiveData()
@@ -113,6 +109,23 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
 
         if(isUpdating) return@launch
 
+        val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map { parcel -> InquiryListItem(parcel, false) }.toMutableList()
+
+        if(pagingManagement.pagingNum <= 1)
+        {
+            _completeList.postValue(list)
+        }
+        else
+        {
+            val li = _completeList.value?.plus(list)?: emptyList<InquiryListItem>()
+            _completeList.postValue(li.toMutableList())
+        }
+    }
+
+/*    fun refreshCompleteParcelsByDate(inquiryDate: String) = scope.launch(coroutineExceptionHandler) {
+
+        if(isUpdating) return@launch
+
         val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map { parcel ->
             InquiryListItem(parcel, false)
         }.toMutableList()
@@ -120,9 +133,10 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
         if(pagingManagement.pagingNum <= 1) _completeList.postValue(list)
         else {
             val li = _completeList.value?.plus(list)?: emptyList<InquiryListItem>()
+
             _completeList.postValue(li.toMutableList())
         }
-    }
+    }*/
 
     // 배송완료 리스트를 가져온다.(페이징 포함)
     suspend fun getCompleteParcelsWithPaging(inquiryDate: String): List<Parcel.Common>
@@ -131,7 +145,7 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
 
         isUpdating = true
 
-        if(pagingManagement.inquiryDate != inquiryDate)
+        if(!pagingManagement.isCheckDate(inquiryDate))
         {
             SopoLog.d("페이징 초기화")
             pagingManagement = PagingManagement(0, inquiryDate, true)

@@ -101,7 +101,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
     {
         super.onDestroy()
         toast?.cancel()
-        keyboardVisibilityUtil.detachKeyboardListeners()
+        if(::keyboardVisibilityUtil.isInitialized) keyboardVisibilityUtil.detachKeyboardListeners()
     }
 
     private fun setOnBackPressedListener(owner: LifecycleOwner)

@@ -182,7 +182,6 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
 
         // 배송완료 리스트.
         vm.completeList.observe(requireActivity()) { list ->
-
             completedParcelAdapter.separateDelivered(list.toMutableList())
         }
 

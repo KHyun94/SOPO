@@ -9,6 +9,7 @@ interface ParcelRemoteDataSource
     suspend fun fetchParcelById(parcelId: Int): Parcel.Common
     suspend fun fetchParcelById(parcelIds: List<Int>): List<Parcel.Common>
     suspend fun fetchOngoingParcels(): List<Parcel.Common>
+    suspend fun fetchCompletedParcels(page: Int, inquiryDate: String): List<Parcel.Common>
 
     suspend fun fetchDeliveredMonth(): List<DeliveredParcelHistory>
     suspend fun fetchDeliveredParcelsByPaging(page: Int, inquiryDate: String): List<Parcel.Common>
