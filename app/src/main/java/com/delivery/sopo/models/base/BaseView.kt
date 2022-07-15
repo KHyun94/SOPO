@@ -94,12 +94,13 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
         binding = bindView(this)
 
+        vm.setCheckNetwork(true)
+
         networkStatusMonitor = NetworkStatusMonitor(this)
         networkStatusMonitor.enable()
         networkStatusMonitor.initNetworkCheck()
 
-        activityResultLauncher =
-            getActivityResultLauncher { onActivityResultCallbackListener.callback(it) }
+        activityResultLauncher = getActivityResultLauncher { onActivityResultCallbackListener.callback(it) }
 
         onAfterBinding()
         setObserve()
@@ -156,12 +157,12 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
     protected open fun onDeactivateNetwork()
     {
-        vm.startToCheckNetworkStatus()
+        vm.setCheckNetwork(true)
     }
 
     protected open fun onActivateNetwork()
     {
-        vm.stopToCheckNetworkStatus()
+        vm.setCheckNetwork(false)
     }
 
     private fun setInnerObserve()
@@ -170,19 +171,26 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
             SopoLog.d("status [status:$status]")
 
-//            if(vm.isCheckNetwork.value != true) return@observe
+            if(vm.currentNetworkState == NetworkStatus.DEFAULT)
+            {
+                vm.currentNetworkState = status
+                return@observe
+            }
 
             when(status)
             {
                 NetworkStatus.WIFI, NetworkStatus.CELLULAR ->
                 {
+                    if(vm.currentNetworkState != NetworkStatus.NOT_CONNECT) return@observe
                     onActivateNetwork()
                 }
                 NetworkStatus.NOT_CONNECT ->
                 {
-                    onDeactivateNetwork()/*disconnectNetworkSnackBar.show()*/
+                    onDeactivateNetwork()
                 }
             }
+
+            vm.currentNetworkState = status
         }
 
         vm.isClickEvent.observe(this) {

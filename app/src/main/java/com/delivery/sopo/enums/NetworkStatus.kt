@@ -2,7 +2,8 @@ package com.delivery.sopo.enums
 
 enum class NetworkStatus
 {
-    WIFI(),
+    DEFAULT,
+    WIFI,
     CELLULAR,
-    NOT_CONNECT()
+    NOT_CONNECT
 }

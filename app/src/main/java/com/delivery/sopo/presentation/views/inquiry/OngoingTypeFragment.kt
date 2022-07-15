@@ -9,36 +9,34 @@ import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.delivery.sopo.R
-import com.delivery.sopo.presentation.consts.NavigatorConst
+import com.delivery.sopo.data.models.Result
 import com.delivery.sopo.databinding.FragmentOngoingTypeBinding
 import com.delivery.sopo.enums.*
+import com.delivery.sopo.extensions.makeGone
+import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.interfaces.OnPageSelectListener
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
+import com.delivery.sopo.models.inquiry.InquiryListItem
+import com.delivery.sopo.presentation.consts.IntentConst
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.presentation.viewmodels.inquiry.OngoingTypeViewModel
 import com.delivery.sopo.presentation.views.adapter.InquiryListAdapter
 import com.delivery.sopo.presentation.views.dialog.OnOptionalClickListener
 import com.delivery.sopo.presentation.views.dialog.OptionalDialog
 import com.delivery.sopo.presentation.views.main.MainView
-import com.delivery.sopo.util.AlertUtil
 import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.ui_util.UpdateValueDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
-import com.delivery.sopo.data.models.Result
-import com.delivery.sopo.extensions.makeGone
-import com.delivery.sopo.extensions.makeVisible
-import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.presentation.consts.IntentConst
-import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.UpdateValueDialog
 
 class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeViewModel>()
 {
@@ -128,7 +126,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         {
             override fun onBackPressedInTime()
             {
-                Snackbar.make(motherView.binding.layoutMain, "진행 한번 더 누르시면 앱이 종료됩니다.", 2000)
+                Snackbar.make(mainLayout, "진행 한번 더 누르시면 앱이 종료됩니다.", 2000)
                     .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }
                     .show()
             }
@@ -181,6 +179,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         super.setObserve()
 
         activity ?: return
+
         motherView.getCurrentPage().observe(this) {
             if(it != 1) return@observe
             vm.getOngoingParcels()
@@ -188,6 +187,8 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         }
 
         vm.parcels.asLiveData(Dispatchers.Default).observe(this) {
+
+            SopoLog.d("Parcels [${it.toString()}]")
 
             when(vm.parcels.value)
             {

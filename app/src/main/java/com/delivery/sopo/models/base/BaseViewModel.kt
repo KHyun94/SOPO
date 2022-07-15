@@ -33,8 +33,9 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
     private val _isClickEvent = MutableLiveData<Boolean>()
     val isClickEvent: LiveData<Boolean> = _isClickEvent
 
-    private val _isCheckNetwork = MutableLiveData<Boolean>()
-    val isCheckNetwork: LiveData<Boolean> = _isCheckNetwork
+    private var isCheckNetwork: Boolean = false
+
+    var currentNetworkState: NetworkStatus = NetworkStatus.DEFAULT
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
@@ -166,25 +167,25 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
 
         if(networkStatus != NetworkStatus.NOT_CONNECT)
         {
-            stopToCheckNetworkStatus()
+            setCheckNetwork(false)
             return true
         }
 
-        startToCheckNetworkStatus()
+        setCheckNetwork(true)
 
         SOPOApplication.networkStatus.postValue(networkStatus)
 
         return false
     }
 
-    fun startToCheckNetworkStatus()
+    fun isCheckNetwork(): Boolean
     {
-        _isCheckNetwork.postValue(true)
+        return this.isCheckNetwork
     }
 
-    fun stopToCheckNetworkStatus()
+    fun setCheckNetwork(isCheckNetwork: Boolean)
     {
-        _isCheckNetwork.postValue(false)
+        this.isCheckNetwork = isCheckNetwork
     }
 
     fun postSnackBar(bottomNotificationBar: BottomNotificationBar)

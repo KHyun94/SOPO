@@ -46,7 +46,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility='@{((vm.parcels instanceof Result.Success) &amp;&amp; vm.cntOfPresentOngoingParcels > 0) ? View.GONE : View.VISIBLE, default=gone}'
+                    android:visibility="gone"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -80,7 +80,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="39.5dp"
                     android:orientation="horizontal"
-                    android:visibility='@{((vm.parcels instanceof Result.Success) &amp;&amp; vm.cntOfPresentOngoingParcels > 0) ? View.VISIBLE : View.GONE, default=gone}'
+                    android:visibility='@{((vm.parcels instanceof Result.Success || vm.parcels instanceof Result.Loading)) ? View.VISIBLE : View.GONE, default=gone}'
                     android:weightSum="10"
                     app:layout_constraintBottom_toTopOf="@+id/linear_ongoing_content_view"
                     app:layout_constraintLeft_toLeftOf="parent"

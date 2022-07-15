@@ -283,10 +283,11 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
     {
         super.onActivateNetwork()
 
+        SopoLog.d("onActivateNetwork(...)")
+
         onDismiss()
         onMake(SnackBarType.ConnectNetwork("네트워크가 다시 연결되었어요.", 3000))
         onShow()
-        vm.stopToCheckNetworkStatus()
     }
 
     override fun onDeactivateNetwork()
