@@ -69,13 +69,13 @@
             android:layout_marginTop="35dp"
             android:layout_marginRight="8dp"
             android:padding="5dp"
-            android:src='@{ContextCompat.getDrawable(context, vm.carrier.icons[0])}'
+            android:background='@{ContextCompat.getDrawable(context, vm.carrier.icons[0])}'
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@id/linear_carrier_info"
             app:layout_constraintTop_toBottomOf="@id/et_input_text"
-            tools:src="@drawable/ic_confirm_hanjin" />
+            tools:src="@drawable/ic_thumbnail_chunil" />
 
         <LinearLayout
             android:id="@+id/linear_carrier_info"

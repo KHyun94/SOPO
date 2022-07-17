@@ -10,6 +10,8 @@ import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.domain.usecase.user.token.SignOutUseCase
+import com.delivery.sopo.exceptions.InternalServerException
+import com.delivery.sopo.exceptions.SOPOApiException
 import kotlinx.coroutines.launch
 
 class SignOutViewModel(
@@ -71,7 +73,7 @@ class SignOutViewModel(
         postNavigator(NavigatorConst.CONFIRM_SIGN_OUT)
     }
 
-    fun requestSignOut(reason: String) = scope.launch(coroutineExceptionHandler){
+    fun requestSignOut(reason: String) = scope.launch{
         try
         {
             onStartLoading()
@@ -84,38 +86,22 @@ class SignOutViewModel(
         }
     }
 
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override fun handlerAPIException(exception: SOPOApiException)
     {
-        override fun onRegisterParcelError(error: ErrorCode)
-        {
-            super.onRegisterParcelError(error)
+        super.handlerAPIException(exception)
+        postErrorSnackBar("알 수 없는 이유로 탈퇴에 실패했습니다.[${exception.toString()}]")
+    }
 
-            postErrorSnackBar(error.message)
-        }
+    override fun handlerInternalServerException(exception: InternalServerException)
+    {
+        super.handlerInternalServerException(exception)
 
-        override fun onFailure(error: ErrorCode)
-        {
-            postErrorSnackBar("알 수 없는 이유로 탈퇴에 실패했습니다.[${error.toString()}]")
-        }
+        postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+    }
 
-        override fun onInternalServerError(error: ErrorCode)
-        {
-            super.onInternalServerError(error)
-
-            postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
-        }
-
-        override fun onAuthError(error: ErrorCode)
-        {
-            super.onAuthError(error)
-
-            postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
-        }
-
-        override fun onDuplicateError(error: ErrorCode)
-        {
-            super.onDuplicateError(error)
-            moveDuplicated()
-        }
+    override fun handlerException(exception: Exception)
+    {
+        super.handlerException(exception)
+        postErrorSnackBar("[불명] ${exception.toString()}")
     }
 }

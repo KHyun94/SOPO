@@ -223,6 +223,11 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
+        vm.bottomSnackBar.observe(this) { type ->
+            motherView.onMake(type)
+            motherView.onShow()
+        }
+
         vm.navigator.observe(this) { nav ->
             when(nav)
             {

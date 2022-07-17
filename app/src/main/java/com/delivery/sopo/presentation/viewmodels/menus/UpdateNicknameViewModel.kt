@@ -77,21 +77,9 @@ class UpdateNicknameViewModel(private val updateNicknameUseCase: UpdateNicknameU
         }
     }
 
-    val exceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-            when(throwable)
-            {
-                is SOPOApiException -> handlerAPIException(throwable)
-                is InternalServerException -> postErrorSnackBar(throwable.message)
-                else ->
-                {
-                    throwable.printStackTrace()
-                    postErrorSnackBar(throwable.message ?: "확인할 수 없는 에러입니다.")
-                }
-            }
-        }
-
-    private fun handlerAPIException(exception: SOPOApiException)
+    override fun handlerAPIException(exception: SOPOApiException)
     {
+        super.handlerAPIException(exception)
         when(exception.code)
         {
             ErrorCode.VALIDATION -> postErrorSnackBar(exception.message)
@@ -100,15 +88,6 @@ class UpdateNicknameViewModel(private val updateNicknameUseCase: UpdateNicknameU
                 exception.printStackTrace()
                 postErrorSnackBar("[불명]${exception.message}")
             }
-        }
-    }
-
-    /** 삭제 예정 코드 */
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
-    {
-        override fun onFailure(error: ErrorCode)
-        { // TODO 발생하는 에러가 있을까?
-            //            postErrorSnackBar("로그인에 실패했습니다.")
         }
     }
 }

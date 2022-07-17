@@ -3,11 +3,13 @@ package com.delivery.sopo.presentation.views.registers
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.asLiveData
 import com.delivery.sopo.R
 import com.delivery.sopo.data.models.Result
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentConfirmParcelBinding
+import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.base.BaseFragment
@@ -18,7 +20,9 @@ import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.KeyboardVisibilityUtil
 import com.delivery.sopo.presentation.viewmodels.registesrs.ConfirmParcelViewModel
 import com.delivery.sopo.presentation.views.main.MainView
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmParcelViewModel>()
@@ -77,6 +81,31 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
                 }
             }
         }
+    }
+
+    override fun setAfterBinding()
+    {
+        super.setAfterBinding()
+
+        CoroutineScope(Dispatchers.Main).launch {
+            when(registerInfo.carrier)
+            {
+                CarrierEnum.CHUNILPS ->
+                {
+                    binding.ivCarrier.setBackgroundResource(R.drawable.ic_thumbnail_chuil_2)
+                }
+                CarrierEnum.DAESIN ->
+                {
+                    binding.ivCarrier.setBackgroundResource(R.drawable.ic_thumbnail_daeshin_2)
+                }
+                CarrierEnum.LOTTE ->
+                {
+                    binding.ivCarrier.setBackgroundResource(R.drawable.ic_thumbnail_lotte_2)
+                }
+            }
+        }
+
+
     }
 
     override fun setObserve()

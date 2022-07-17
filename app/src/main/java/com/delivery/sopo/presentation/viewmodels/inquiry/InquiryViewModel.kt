@@ -12,6 +12,8 @@ import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.domain.usecase.parcel.remote.*
+import com.delivery.sopo.exceptions.InternalServerException
+import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
@@ -45,16 +47,16 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase, priva
         _navigator.postValue(navigator)
     }
 
-    fun onUpdateParcels(parcelIds: List<Int>) = scope.launch(coroutineExceptionHandler) {
+    fun onUpdateParcels(parcelIds: List<Int>) = scope.launch {
         updateParcelsUseCase.invoke(parcelIds)
         getCompletedMonthUseCase.invoke()
     }
 
-    fun onSyncParcels() = scope.launch(coroutineExceptionHandler) {
+    fun onSyncParcels() = scope.launch {
         syncParcelsUseCase.invoke()
     }
 
-    fun onRefreshParcelsClicked() = scope.launch(coroutineExceptionHandler) {
+    fun onRefreshParcelsClicked() = scope.launch {
         SopoLog.i("onRefreshParcelsClicked(...) 호출")
 
         _isAvailableRefresh.postValue(false)
@@ -92,7 +94,7 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase, priva
     }
 
     fun confirmDeleteParcels() = checkEventStatus(checkNetwork = true) {
-        scope.launch(coroutineExceptionHandler) {
+        scope.launch {
 
             val parcelStatuses = getDeletableParcelStatuses().apply {
                 if(isEmpty()) return@launch
@@ -112,36 +114,22 @@ class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase, priva
         parcelManagementRepo.updateParcelStatuses(parcelStatuses)
     }
 
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override fun handlerAPIException(exception: SOPOApiException)
     {
-        override fun onRegisterParcelError(error: ErrorCode)
-        {
-            super.onRegisterParcelError(error)
+        super.handlerAPIException(exception)
+        postErrorSnackBar(exception.toString())
+    }
 
-            postErrorSnackBar(error.message)
-        }
+    override fun handlerInternalServerException(exception: InternalServerException)
+    {
+        super.handlerInternalServerException(exception)
 
-        override fun onFailure(error: ErrorCode)
-        {
-            postErrorSnackBar("알 수 없는 이유로 등록에 실패했습니다.[${error.toString()}]")
-        }
+        postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+    }
 
-        override fun onInternalServerError(error: ErrorCode)
-        {
-            super.onInternalServerError(error)
-            postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
-        }
-
-        override fun onAuthError(error: ErrorCode)
-        {
-            super.onAuthError(error)
-            postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
-        }
-
-        override fun onDuplicateError(error: ErrorCode)
-        {
-            super.onDuplicateError(error)
-            moveDuplicated()
-        }
+    override fun handlerException(exception: Exception)
+    {
+        super.handlerException(exception)
+        postErrorSnackBar("[불명] ${exception.toString()}")
     }
 }

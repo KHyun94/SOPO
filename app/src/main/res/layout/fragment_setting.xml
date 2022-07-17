@@ -36,7 +36,7 @@
                 android:id="@+id/include_header"
                 layout="@layout/include_header_center_title_with_left_button"
                 app:title='@{"설정"}'
-                app:buttonIcon="@{R.drawable.ic_left_arrow}"
+                app:buttonIcon="@{ContextCompat.getDrawable(context, R.drawable.ic_left_arrow)}"
                 app:onEventClickListener="@{()->vm.onBackClicked()}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

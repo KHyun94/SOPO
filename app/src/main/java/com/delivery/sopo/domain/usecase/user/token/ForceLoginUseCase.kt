@@ -6,12 +6,12 @@ class ForceLoginUseCase(private val userRepository: UserRepository)
 {
     suspend operator fun invoke() {
 
-/*        val isExpired = userRepository.checkExpiredTokenWithInWeek()
+        val isExpired = userRepository.checkExpiredTokenWithInWeek()
 
         if(isExpired)
         {
             userRepository.login()
-        }*/
+        }
 
         userRepository.fetchUserInfo()
     }

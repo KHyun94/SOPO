@@ -82,7 +82,7 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding, NoticeViewModel>(){
         webSettings.cacheMode = WebSettings.LOAD_NO_CACHE // 브라우저 캐시 허용 여부
         webSettings.domStorageEnabled = true // 로컬저장소 허용 여부
 
-        binding.webViewNotice.loadUrl("https://spiny-foam-412.notion.site/Android-6d8b688d419048faa2c5b7e929a96404")
+        binding.webViewNotice.loadUrl("https://harsh-sing-e14.notion.site/SOPO-7b3a0de113714d7681fc2b77d2a91b8f")
 
 
 

@@ -65,22 +65,9 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
         }
     }
 
-    val exceptionHandler: CoroutineExceptionHandler =
-        CoroutineExceptionHandler { coroutineContext, throwable ->
-            when(throwable)
-            {
-                is SOPOApiException -> handlerAPIException(throwable)
-                is InternalServerException -> postErrorSnackBar(throwable.message)
-                else ->
-                {
-                    throwable.printStackTrace()
-                    postErrorSnackBar(throwable.message ?: "확인할 수 없는 에러입니다.")
-                }
-            }
-        }
-
-    private fun handlerAPIException(exception: SOPOApiException)
+    override fun handlerAPIException(exception: SOPOApiException)
     {
+        super.handlerAPIException(exception)
         when(exception.code)
         {
             ErrorCode.VALIDATION -> postErrorSnackBar(exception.message)
@@ -95,16 +82,16 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
         }
     }
 
-    /** 삭제 예정 코드 */
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override fun handlerInternalServerException(exception: InternalServerException)
     {
-        override fun onFailure(error: ErrorCode)
-        {
-            when(error)
-            {
-                ErrorCode.NICK_NAME_NOT_FOUND -> _navigator.postValue(NavigatorConst.Screen.UPDATE_NICKNAME)
-                else -> postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
-            }
-        }
+        super.handlerInternalServerException(exception)
+
+        postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+    }
+
+    override fun handlerException(exception: Exception)
+    {
+        super.handlerException(exception)
+        postErrorSnackBar("[불명] ${exception.toString()}")
     }
 }

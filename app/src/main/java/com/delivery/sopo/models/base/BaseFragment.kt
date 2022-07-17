@@ -2,6 +2,7 @@ package com.delivery.sopo.models.base
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import com.delivery.sopo.BR
 import com.delivery.sopo.SOPOApplication
+import com.delivery.sopo.domain.usecase.user.token.LogoutUseCase
 import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressListener
@@ -25,6 +27,7 @@ import com.delivery.sopo.presentation.views.dialog.LogoutDialog
 import com.delivery.sopo.util.KeyboardVisibilityUtil
 import com.delivery.sopo.util.ui_util.BottomNotificationBar
 import org.koin.core.KoinComponent
+import org.koin.core.inject
 import kotlin.system.exitProcess
 
 abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), KoinComponent
@@ -203,13 +206,16 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
             if(!it) return@observe
 
             LogoutDialog(requireActivity()) {
-                Handler().postDelayed(Runnable {
+                logoutUseCase()
+                Handler(Looper.getMainLooper()).postDelayed(Runnable {
                     exit()
-                }, 500)
+                }, 1000)
 
             }.show(this.parentFragmentManager, "")
         }
     }
+
+    val logoutUseCase: LogoutUseCase by inject()
 
     fun exit()
     {

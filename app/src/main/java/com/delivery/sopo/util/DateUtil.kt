@@ -1,7 +1,6 @@
 package com.delivery.sopo.util
 
 import java.text.SimpleDateFormat
-import java.time.ZoneId
 import java.util.*
 
 object DateUtil
@@ -12,12 +11,31 @@ object DateUtil
     const val DATE_TYPE_PROGRESSES = "yy/MM/dd"
     const val TIME_TYPE_PROGRESSES = "yy/MM/dd"
     const val TIMESTAMP_TYPE_AUTH_EXPIRED = "yyyy-MM-dd'T'HH:mm:ssX"
+    const val TIMESTAMP_TYPE_TIME = "HH:mm"
 
     const val DATE_TYPE_KOREAN_SEMI = "yy년 MM월"
     const val DATE_TYPE_yyyyMM = "yyyyMM"
     const val DATE_TYPE_yyyy = "yyyy"
     const val DATE_TYPE_MM = "MM"
     const val DATE_TYPE_KOREAN_FULL = "yyyy년 MM월"
+
+    fun getCurrentDateDay2(): String
+    {
+        val currentMillis = System.currentTimeMillis()
+        val date = Date(currentMillis)
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.KOREAN)
+        return sdf.format(date)
+    }
+
+
+    fun getCurrentDateDay(): Long
+    {
+        val currentMillis = System.currentTimeMillis()
+        val date = Date(currentMillis)
+        val sdf = SimpleDateFormat(DATE_TYPE_PROGRESSES, Locale.KOREAN)
+        val dateString = sdf.format(date)
+        return sdf.parse(dateString).time
+    }
 
     fun getCurrentDate(pattern: String = DATE_TIME_TYPE_DEFAULT): String
     {
@@ -106,16 +124,15 @@ object DateUtil
      */
     fun isExpiredDateWithinAWeek(expiredDateString: String): Boolean
     {
-        SopoLog.i("isExpiredDateWithinAWeek() 호출")
+//        SopoLog.i("isExpiredDateWithinAWeek() 호출")
 
         // 1. 현재 시간
         val currentMilliSeconds = System.currentTimeMillis() // 2. O-Auth 만료 기간
-        val sdf = SimpleDateFormat(DATE_TIME_TYPE_AUTH_EXPIRED, Locale.KOREAN)
+        val sdf = SimpleDateFormat(DATE_TIME_TYPE_DEFAULT, Locale.KOREAN)
         val expiredDate = sdf.parse(expiredDateString) ?: return false
 
-
-        SopoLog.d("현재시간 [$currentMilliSeconds]")
-        SopoLog.d("만료기한[${expiredDate.time}] [형태:$expiredDate]")
+//        SopoLog.d("현재시간 [$currentMilliSeconds]")
+//        SopoLog.d("만료기한[${expiredDate.time}] [형태:$expiredDate]")
 
         val weekMilliSeconds = 1000 * 60 * 60 * 24 * 7
 

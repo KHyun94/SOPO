@@ -11,10 +11,13 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.data.models.JoinInfo
 import com.delivery.sopo.domain.usecase.user.token.LoginUseCase
 import com.delivery.sopo.domain.usecase.user.token.SignUpUseCase
+import com.delivery.sopo.exceptions.InternalServerException
+import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.util.SopoLog
 import com.kakao.usermgmt.UserManagement
 import com.kakao.usermgmt.callback.MeV2ResponseCallback
 import com.kakao.usermgmt.response.MeV2Response
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import com.kakao.network.ErrorResult as KakaoErrorResult
 
@@ -86,12 +89,10 @@ class LoginSelectViewModel(private val loginUseCase: LoginUseCase, private val s
                 kakaoUserId = result.id.toString()
                 kakaoNickname = result.nickname
 
-                scope.launch(coroutineExceptionHandler) {
+                scope.launch {
                     onStartLoading()
-                    SopoLog.d("로딩")
                     requestJoinByKakao(email = email, uId = kakaoUserId, nickname = kakaoNickname)
                     requestLoginByKakao(email = email, uId = kakaoUserId)
-                    SopoLog.d("스탑")
                     onStopLoading()
                 }
             }
@@ -112,50 +113,38 @@ class LoginSelectViewModel(private val loginUseCase: LoginUseCase, private val s
         return postNavigator(NavigatorConst.Screen.MAIN)
     }
 
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override fun handlerAPIException(exception: SOPOApiException)
     {
-        override fun onAlreadyRegisteredUser(error: ErrorCode)
+        super.handlerAPIException(exception)
+        when(exception.code)
         {
-            super.onAlreadyRegisteredUser(error)
-
-            scope.launch(coroutineExceptionHandler) {
-                requestLoginByKakao(email = email, uId = kakaoUserId)
+            ErrorCode.VALIDATION -> postErrorSnackBar(exception.message)
+            ErrorCode.USER_NOT_FOUND -> postErrorSnackBar("계정 정보를 찾을 수 없습니다.")
+            ErrorCode.ALREADY_REGISTERED_USER -> {
+                scope.launch(exceptionHandler) {
+                    requestLoginByKakao(email = email, uId = kakaoUserId)
+                }
             }
-        }
-
-        override fun onLoginError(error: ErrorCode)
-        {
-            super.onLoginError(error)
-
-            postErrorSnackBar("유효한 이메일 또는 비밀번호가 아닙니다.")
-        }
-
-        override fun onInternalServerError(error: ErrorCode)
-        {
-            super.onInternalServerError(error)
-            postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.[${error.toString()}]")
-        }
-
-        override fun onAuthError(error: ErrorCode)
-        {
-            super.onAuthError(error)
-            postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
-        }
-
-        override fun onFailure(error: ErrorCode)
-        {
-            when(error)
+            ErrorCode.INVALID_USER -> postErrorSnackBar("이메일 또는 비밀번호를 확인해주세요.")
+            ErrorCode.NICK_NAME_NOT_FOUND -> postNavigator(NavigatorConst.Screen.UPDATE_NICKNAME)
+            else ->
             {
-                ErrorCode.NICK_NAME_NOT_FOUND ->
-                {
-                    _navigator.postValue(NavigatorConst.Screen.UPDATE_NICKNAME)
-                }
-                else ->
-                {
-                    postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
-                }
+                exception.printStackTrace()
+                postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.[${exception.toString()}]")
             }
         }
     }
 
+    override fun handlerInternalServerException(exception: InternalServerException)
+    {
+        super.handlerInternalServerException(exception)
+
+        postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+    }
+
+    override fun handlerException(exception: Exception)
+    {
+        super.handlerException(exception)
+        postErrorSnackBar("[불명] ${exception.toString()}")
+    }
 }

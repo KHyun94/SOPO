@@ -14,7 +14,7 @@ object ParcelMapper
     fun parcelEntityToObject(req: ParcelEntity): Parcel.Common
     {
         val fromJson = req.inquiryResult?.fromJson<TrackingInfo?>()
-        return with(req) { Parcel.Common(parcelId = parcelId, userId = userId, waybillNum = waybillNum, carrier = carrier, alias = alias, trackingInfo = fromJson, inquiryHash = inquiryHash, deliveryStatus = deliveryStatus, regDte = regDte, arrivalDte = arrivalDte, auditDte = auditDte, status = status, reported = true) }
+        return with(req) { Parcel.Common(parcelId = parcelId, userId = userId, waybillNum = waybillNum, carrier = carrier, alias = alias, trackingInfo = fromJson, inquiryHash = inquiryHash, deliveryStatus = deliveryStatus, regDte = regDte, arrivalDte = arrivalDte, auditDte = auditDte?:"", status = status, reported = true) }
     }
 
     fun parcelObjectToEntity(req: Parcel.Common): ParcelEntity
@@ -68,7 +68,7 @@ object ParcelMapper
     {
         val fromJson = parcelEntity.inquiryResult?.fromJson<TrackingInfo?>()
 
-        return Parcel.Common(parcelId = parcelEntity.parcelId, userId = parcelEntity.userId, waybillNum = parcelEntity.waybillNum, carrier = parcelEntity.carrier, alias = parcelEntity.alias, trackingInfo = fromJson, inquiryHash = parcelEntity.inquiryHash, deliveryStatus = parcelEntity.deliveryStatus, arrivalDte = parcelEntity.arrivalDte, auditDte = parcelEntity.auditDte, status = parcelEntity.status, regDte = parcelEntity.regDte, reported = true)
+        return Parcel.Common(parcelId = parcelEntity.parcelId, userId = parcelEntity.userId, waybillNum = parcelEntity.waybillNum, carrier = parcelEntity.carrier, alias = parcelEntity.alias, trackingInfo = fromJson, inquiryHash = parcelEntity.inquiryHash, deliveryStatus = parcelEntity.deliveryStatus, arrivalDte = parcelEntity.arrivalDte, auditDte = parcelEntity.auditDte?:"", status = parcelEntity.status, regDte = parcelEntity.regDte, reported = true)
     }
 
     fun parcelToParcelEntity(parcel: Parcel.Common): ParcelEntity

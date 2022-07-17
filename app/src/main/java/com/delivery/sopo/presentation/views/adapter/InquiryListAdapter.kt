@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
-import com.delivery.sopo.databinding.InquiryListCompleteItemBinding
-import com.delivery.sopo.databinding.InquiryListOngoingItemBinding
+import com.delivery.sopo.databinding.ItemCompletedParcelBinding
+import com.delivery.sopo.databinding.ItemOngoingParcelBinding
 import com.delivery.sopo.enums.DeliveryStatusEnum
 import com.delivery.sopo.enums.InquiryItemTypeEnum
 import com.delivery.sopo.enums.InquiryStatusEnum
@@ -33,7 +33,7 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
         this.parcelClickListener = listener
     }
 
-    inner class OngoingViewHolder(val binding: InquiryListOngoingItemBinding): RecyclerView.ViewHolder(binding.root)
+    inner class OngoingViewHolder(val binding: ItemOngoingParcelBinding): RecyclerView.ViewHolder(binding.root)
     {
         fun bind(item: InquiryListItem)
         {
@@ -42,7 +42,7 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
         }
     }
 
-    inner class CompleteViewHolder(val binding: InquiryListCompleteItemBinding): RecyclerView.ViewHolder(binding.root)
+    inner class CompleteViewHolder(val binding: ItemCompletedParcelBinding): RecyclerView.ViewHolder(binding.root)
     {
         fun bind(item: InquiryListItem)
         {
@@ -59,12 +59,12 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
         {
             InquiryItemTypeEnum.Soon, InquiryItemTypeEnum.Registered ->
             {
-                val binding = bindView<InquiryListOngoingItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_ongoing_item, parent)
+                val binding = bindView<ItemOngoingParcelBinding>(LayoutInflater.from(parent.context), R.layout.item_ongoing_parcel, parent)
                 OngoingViewHolder(binding)
             }
             InquiryItemTypeEnum.Complete ->
             {
-                val binding = bindView<InquiryListCompleteItemBinding>(LayoutInflater.from(parent.context), R.layout.inquiry_list_complete_item, parent)
+                val binding = bindView<ItemCompletedParcelBinding>(LayoutInflater.from(parent.context), R.layout.item_completed_parcel, parent)
                 CompleteViewHolder(binding)
             }
         }
@@ -208,7 +208,7 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
         }
     }
 
-    private fun setOngoingParcelItemByDelete(binding: InquiryListOngoingItemBinding)
+    private fun setOngoingParcelItemByDelete(binding: ItemOngoingParcelBinding)
     {
         binding.constraintDeliveryStatusFront.visibility = GONE
         binding.constraintDeliveryStatusBack.visibility = GONE
@@ -218,7 +218,7 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
             ContextCompat.getDrawable(binding.root.context, R.drawable.border_all_rounded_11dp_blue)
     }
 
-    private fun setOngoingParcelItemByDefault(binding: InquiryListOngoingItemBinding)
+    private fun setOngoingParcelItemByDefault(binding: ItemOngoingParcelBinding)
     {
         binding.constraintDeliveryStatusFront.visibility = VISIBLE
         binding.constraintDeliveryStatusBack.visibility = VISIBLE
@@ -227,7 +227,7 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
         binding.linearParentListItemRegister.background = null
     }
 
-    private fun setCompleteParcelItemByDefault(binding: InquiryListCompleteItemBinding)
+    private fun setCompleteParcelItemByDefault(binding: ItemCompletedParcelBinding)
     {
         binding.constraintItemPartComplete.visibility = VISIBLE
         binding.constraintDateComplete.visibility = VISIBLE
@@ -237,15 +237,14 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
         binding.linearItemComplete.background = null
     }
 
-    private fun setCompleteParcelItemByDelete(binding: InquiryListCompleteItemBinding)
+    private fun setCompleteParcelItemByDelete(binding: ItemCompletedParcelBinding)
     {
         binding.constraintDateComplete.visibility = GONE
         binding.constraintItemPartComplete.visibility = GONE
         binding.vDividerLine.visibility = GONE
         binding.constraintDeliveryStatusFrontComplete.visibility = VISIBLE
         binding.constraintItemPartDeleteComplete.visibility = VISIBLE
-        binding.linearItemComplete.background =
-            ContextCompat.getDrawable(binding.root.context, R.drawable.border_all_rounded_11dp_blue)
+        binding.linearItemComplete.background = ContextCompat.getDrawable(binding.root.context, R.drawable.border_all_rounded_11dp_blue)
     }
 
     fun changeParcelDeleteMode(flag: Boolean)

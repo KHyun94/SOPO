@@ -6,12 +6,16 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
+import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
 import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.domain.usecase.parcel.remote.RegisterParcelUseCase
+import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.enums.SettingEnum
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.push.NotificationMessage
 import com.delivery.sopo.notification.NotificationImpl
+import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
@@ -20,10 +24,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+import java.util.*
 
 class SOPONotificationListenerService: NotificationListenerService(), KoinComponent
 {
     private val userDataSource: UserDataSource by inject()
+    private val userLocalRepo: UserLocalRepository by inject()
     private val parcelRepo: ParcelRepository by inject()
     private val carrierRepo: CarrierDataSource by inject()
     private val registerParcelUseCase: RegisterParcelUseCase by inject()
@@ -93,6 +99,27 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
                 CoroutineScope(Dispatchers.IO).launch {
                     parcelRepo.reportParcelStatus(listOf(parcel.parcelId)) }
             }
+
+            when(userLocalRepo.getPushAlarmType())
+            {
+                SettingEnum.PushAlarmType.ARRIVE ->
+                {
+                    if(parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE) return
+                }
+                SettingEnum.PushAlarmType.REJECT ->
+                {
+                    return
+                }
+            }
+
+/*
+
+            val startDate = DateUtil.convertDate(userLocalRepo.getDisturbStartTime()?:"", DateUtil.TIMESTAMP_TYPE_TIME)?.time?:0
+            val endDate = DateUtil.convertDate(userLocalRepo.getDisturbEndTime()?:"", DateUtil.TIMESTAMP_TYPE_TIME)?.time?:0
+
+            val currentDate = DateUtil.getCurrentDate().time - DateUtil.getCurrentDateDay()
+            if(startDate <= currentDate || endDate >= currentDate) return
+*/
 
             val notificationMessage = NotificationMessage.getUpdatePusMessage(parcel)
             NotificationImpl.notifyRegisterParcel(context = applicationContext, notificationMessage = notificationMessage)
@@ -189,4 +216,31 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
         val index = indexOf(':')
         substring(index + 1).trim()
     }
+}
+
+fun main(){
+
+    val date = "2022-07-31 14:25:08"
+    val date2 = "2022-07-16 14:25:08"
+
+    println("여부 ${DateUtil.isExpiredDateWithinAWeek(date)}")
+    println("여부 ${DateUtil.isExpiredDateWithinAWeek(date2)}")
+
+    val startDate = DateUtil.convertDate("${DateUtil.getCurrentDateDay2()} 11:00:00", DateUtil.DATE_TIME_TYPE_DEFAULT)?.time?:0
+    val endDate = DateUtil.convertDate("${DateUtil.getCurrentDateDay2()} 13:00:00", DateUtil.DATE_TIME_TYPE_DEFAULT)?.time?:0
+
+    println("startDate $startDate ${DateUtil.convertDate(startDate, DateUtil.DATE_TIME_TYPE_DEFAULT)}")
+    println("endDate $endDate ${DateUtil.convertDate(endDate, DateUtil.DATE_TIME_TYPE_DEFAULT)}")
+
+    val currentDate = DateUtil.getCurrentDate().time
+
+    println("current $currentDate ${DateUtil.convertDate(currentDate, DateUtil.DATE_TIME_TYPE_DEFAULT)}")
+
+    if(startDate <= currentDate || endDate >= currentDate)
+    {
+        println("노티 X 시간 범위")
+        return
+    }
+
+    println("노티 O")
 }

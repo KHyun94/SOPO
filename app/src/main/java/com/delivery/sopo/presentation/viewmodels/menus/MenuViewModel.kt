@@ -11,6 +11,11 @@ import com.delivery.sopo.util.SopoLog
 
 class MenuViewModel(private val userLocalRepo: UserLocalRepository) : BaseViewModel()
 {
+    init
+    {
+
+    }
+
     val nickname = MutableLiveData<String>().apply {
         val _nickname = userLocalRepo.getNickname()
         SopoLog.d("닉네임 >>> $_nickname")

@@ -173,20 +173,9 @@ class ResetPasswordViewModel(
         }
     }
 
-    val exceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-        when(throwable)
-        {
-            is SOPOApiException -> handlerAPIException(throwable)
-            is InternalServerException -> postErrorSnackBar(throwable.message)
-            else ->
-            {
-                throwable.printStackTrace()
-                postErrorSnackBar(throwable.message?:"확인할 수 없는 에러입니다.")
-            }
-        }
-    }
-
-    private fun handlerAPIException(exception: SOPOApiException){
+    override fun handlerAPIException(exception: SOPOApiException)
+    {
+        super.handlerAPIException(exception)
         when(exception.code)
         {
             ErrorCode.VALIDATION -> postErrorSnackBar(exception.message)
@@ -234,69 +223,16 @@ class ResetPasswordViewModel(
         }
     }
 
-
-    /** 삭제 예정 */
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override fun handlerInternalServerException(exception: InternalServerException)
     {
-        override fun onFailure(error: ErrorCode)
-        {
-            when(error)
-            {
-                ErrorCode.INVALID_USER ->
-                {
-                    _focusOn.postValue(InfoEnum.EMAIL)
-                    postErrorSnackBar(error.message)
-                }
-                ErrorCode.INVALID_AUTH_CODE ->
-                {
-                    cnfOfFailureAuthCode += 1
+        super.handlerInternalServerException(exception)
 
-                    _focusOn.postValue(InfoEnum.AUTH_CODE)
+        postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+    }
 
-                    // TODO 실행되지 않음
-                    if(cnfOfFailureAuthCode >= 2)
-                    {
-                        val comment = "인증코드 재발송"
-                        val underlineComment = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                        {
-                            Html.fromHtml("<u>${comment}</u>", Html.FROM_HTML_MODE_LEGACY)
-                        }
-                        else
-                        {
-                            Html.fromHtml("<u>${comment}</u>")
-                        }
-
-                        postErrorSnackBar("인증 코드가 일치하지 않아요.", Pair(underlineComment, object: OnSnackBarClickListener<Unit> {
-                            override fun invoke(data: Unit)
-                            {
-                                requestSendTokenToEmail(email = username.value?.toString() ?: "")
-                            }
-                        }))
-                    }
-                    else
-                    {
-                        postErrorSnackBar("인증 코드가 일치하지 않아요.")
-                    }
-                }
-                ErrorCode.INVALID_JWT_TOKEN ->
-                {
-                    jwtToken = ""
-                    authCode.postValue("")
-
-                    postErrorSnackBar("일정시간이 지났기 때문에 다시 시도해주세요.")
-                    postNavigator(NavigatorConst.Event.INPUT_EMAIL_FOR_SEND)
-                }
-                else ->
-                {
-                    postErrorSnackBar(error.message)
-                }
-            }
-        }
-
-        override fun onInternalServerError(error: ErrorCode)
-        {
-            super.onInternalServerError(error)
-            postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
-        }
+    override fun handlerException(exception: Exception)
+    {
+        super.handlerException(exception)
+        postErrorSnackBar("[불명] ${exception.toString()}")
     }
 }

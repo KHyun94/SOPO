@@ -19,6 +19,8 @@ import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.domain.usecase.parcel.remote.*
+import com.delivery.sopo.exceptions.InternalServerException
+import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.*
 import java.util.*
@@ -104,7 +106,7 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
         return inquiryStatus.value
     }
 
-    fun getCompleteParcelMonth() = scope.launch(coroutineExceptionHandler) {
+    fun getCompleteParcelMonth() = scope.launch {
         getCompletedMonthUseCase.invoke()
     }
 
@@ -171,7 +173,7 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
         monthsOfCalendar.postValue(list)
     }
 
-    fun refreshCompleteParcelsByDate(inquiryDate: String) = scope.launch(coroutineExceptionHandler) {
+    fun refreshCompleteParcelsByDate(inquiryDate: String) = scope.launch {
         val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map { parcel ->
             InquiryListItem(parcel, false)
         }.toMutableList()
@@ -309,32 +311,22 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
         }
     }
 
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override fun handlerAPIException(exception: SOPOApiException)
     {
-        override fun onRegisterParcelError(error: ErrorCode)
-        {
-            super.onRegisterParcelError(error)
+        super.handlerAPIException(exception)
+        postErrorSnackBar(exception.toString())
+    }
 
-            postErrorSnackBar(error.message)
-        }
+    override fun handlerInternalServerException(exception: InternalServerException)
+    {
+        super.handlerInternalServerException(exception)
 
-        override fun onFailure(error: ErrorCode)
-        {
-            postErrorSnackBar("알 수 없는 이유로 등록에 실패했습니다.[${error.toString()}]")
-        }
+        postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+    }
 
-        override fun onInternalServerError(error: ErrorCode)
-        {
-            super.onInternalServerError(error)
-
-            postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
-        }
-
-        override fun onAuthError(error: ErrorCode)
-        {
-            super.onAuthError(error)
-
-            postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
-        }
+    override fun handlerException(exception: Exception)
+    {
+        super.handlerException(exception)
+        postErrorSnackBar("[불명] ${exception.toString()}")
     }
 }

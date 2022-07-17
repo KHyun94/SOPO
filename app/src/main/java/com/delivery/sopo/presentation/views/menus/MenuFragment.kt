@@ -30,7 +30,7 @@ class MenuFragment: BaseFragment<FragmentMenuBinding, MenuViewModel>()
         {
             override fun onBackPressedInTime()
             {
-                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }.show()
+                Snackbar.make(mainLayout, "한번 더 누르시면 앱이 종료됩니다.", 2000).apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }.show()
             }
 
             override fun onBackPressedOutTime()
@@ -56,18 +56,15 @@ class MenuFragment: BaseFragment<FragmentMenuBinding, MenuViewModel>()
             {
                 TabCode.MENU_NOTICE ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT =
-                        MenuSubFragment.newInstance(TabCode.MENU_NOTICE.NAME)
+                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_NOTICE.NAME)
                 }
                 TabCode.MENU_SETTING ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT =
-                        MenuSubFragment.newInstance(TabCode.MENU_SETTING.NAME)
+                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_SETTING.NAME)
                 }
                 TabCode.MENU_FAQ ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT =
-                        MenuSubFragment.newInstance(TabCode.MENU_FAQ.NAME)
+                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_FAQ.NAME)
                 }
                 TabCode.MENU_USE_TERMS ->
                 {
@@ -75,19 +72,24 @@ class MenuFragment: BaseFragment<FragmentMenuBinding, MenuViewModel>()
                 }
                 TabCode.MENU_APP_INFO ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT =
-                        MenuSubFragment.newInstance(TabCode.MENU_APP_INFO.NAME)
+                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_APP_INFO.NAME)
                 }
                 TabCode.MENU_ACCOUNT_MANAGEMENT ->
                 {
-                    TabCode.MY_MENU_SUB.FRAGMENT =
-                        MenuSubFragment.newInstance(TabCode.MENU_ACCOUNT_MANAGEMENT.NAME)
+                    TabCode.MY_MENU_SUB.FRAGMENT = MenuSubFragment.newInstance(TabCode.MENU_ACCOUNT_MANAGEMENT.NAME)
                 }
                 else -> throw Exception("Menu is null")
             }
 
             FragmentManager.move(parentView, TabCode.MY_MENU_SUB, MenuMainFragment.viewId)
         }
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+
+        SopoLog.d("MenuFragment onResume(...)")
     }
 
     companion object

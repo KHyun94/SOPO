@@ -26,8 +26,6 @@ import org.koin.core.inject
 
 abstract class BaseViewModel: ViewModel(), KoinComponent
 {
-    private val logoutUseCase: LogoutUseCase by inject()
-
     var onSnackClickListener: Pair<CharSequence, OnSnackBarClickListener<Unit>>? = null
 
     private val _isClickEvent = MutableLiveData<Boolean>()
@@ -54,69 +52,38 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
 
     private val job = SupervisorJob()
 
-    open lateinit var onSOPOErrorCallback: OnSOPOErrorCallback
-
-    protected val coroutineExceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
-
-            when(exception)
+    val exceptionHandler: CoroutineExceptionHandler =
+        CoroutineExceptionHandler { coroutineContext, throwable ->
+            when(throwable)
             {
-                is SOPOApiException ->
-                {
-                    SopoLog.e("SOPO API Error ${exception.code}", exception)
-
-                    when(val code = exception.code)
-                    {
-                        ErrorCode.VALIDATION -> _errorSnackBar.postValue(exception.message)
-                        ErrorCode.ALREADY_REGISTERED_PARCEL, ErrorCode.OVER_REGISTERED_PARCEL, ErrorCode.PARCEL_BAD_REQUEST -> onSOPOErrorCallback.onRegisterParcelError(code)
-                        ErrorCode.ALREADY_REGISTERED_USER -> onSOPOErrorCallback.onAlreadyRegisteredUser(code)
-                        ErrorCode.PARCEL_NOT_FOUND -> onSOPOErrorCallback.onInquiryParcelError(code)
-                        ErrorCode.AUTHENTICATION_FAIL ->
-                        { // 서버에 유저 토큰이 없거나, 내부에 저장된 토큰이 없는 경우
-                        }
-                        ErrorCode.INVALID_JWT_TOKEN ->
-                        { // Refresh Token이 잘못된 경우
-                        }
-                        ErrorCode.USER_NOT_FOUND ->
-                        { // 존재하지 않은 계정
-                        }
-                        ErrorCode.INVALID_USER ->
-                        { // 아이디 or 패스워드가 틀렸을 때 And 탈퇴한 회원이 요청했을 때 ?
-                            onSOPOErrorCallback.onLoginError(code)
-                        }
-                        ErrorCode.DUPLICATE_LOGIN ->
-                        { // 중복 로그인
-                            logoutUseCase.invoke()
-                            moveDuplicated()
-                        }
-                        ErrorCode.INVALID_TOKEN ->
-                        { // access or refresh Token이 만료
-                        }
-                        else -> onSOPOErrorCallback.onFailure(code)
-                    }
-                }
-                is InternalServerException ->
-                {
-                    val errorCode = ErrorCode.getCode(exception.getErrorResponse().code).apply {
-                        message = exception.getErrorResponse().message
-                    }
-
-                    SopoLog.e("InternalServerException API Error $errorCode", exception)
-
-                    if(errorCode == ErrorCode.FAIL_TO_SEARCH_PARCEL)
-                    {
-                        return@CoroutineExceptionHandler onSOPOErrorCallback.onInquiryParcelError(errorCode)
-                    }
-
-                    onSOPOErrorCallback.onInternalServerError(errorCode)
-                }
+                is SOPOApiException -> handlerAPIException(throwable)
+                is InternalServerException -> postErrorSnackBar(throwable.message)
                 else ->
                 {
-                    onSOPOErrorCallback.onFailure(ErrorCode.UNKNOWN_ERROR)
+                    throwable.printStackTrace()
+                    postErrorSnackBar(throwable.message ?: "확인할 수 없는 에러입니다.")
                 }
             }
         }
 
-    protected val scope: CoroutineScope = (viewModelScope + job + coroutineExceptionHandler)
+    protected open fun handlerAPIException(exception: SOPOApiException){
+        if(exception.code == ErrorCode.DUPLICATE_LOGIN)
+        {
+            _isDuplicated.postValue(true)
+            scope.cancel("중복 로그인으로 인한 모든 프로세스 종료")
+            return
+        }
+    }
+
+    protected open fun handlerInternalServerException(exception: InternalServerException){
+
+    }
+
+    protected open fun handlerException(exception: Exception){
+
+    }
+
+    protected val scope: CoroutineScope = (viewModelScope + job + exceptionHandler)
 
     fun checkEventStatus(checkNetwork: Boolean = false, delayMillisecond: Long = 100, event: () -> Unit)
     {
@@ -214,12 +181,6 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
         _isLoading.postValue(false)
     }
 
-    fun moveDuplicated()
-    {
-        _isDuplicated.postValue(true)
-        scope.cancel("중복 로그인으로 인한 모든 프로세스 종료")
-    }
-
     fun getConnectivityStatus(context: Context): NetworkStatus
     { // 네트워크 연결 상태 확인하기 위한 ConnectivityManager 객체 생성
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -266,4 +227,64 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
         _isClickEvent.value = false
         scope.cancel()
     }
+
+    /*protected val coroutineExceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler { _, exception ->
+
+            when(exception)
+            {
+                is SOPOApiException ->
+                {
+                    SopoLog.e("SOPO API Error ${exception.code}", exception)
+
+                    when(val code = exception.code)
+                    {
+                        ErrorCode.VALIDATION -> _errorSnackBar.postValue(exception.message)
+                        ErrorCode.ALREADY_REGISTERED_PARCEL, ErrorCode.OVER_REGISTERED_PARCEL, ErrorCode.PARCEL_BAD_REQUEST -> onSOPOErrorCallback.onRegisterParcelError(code)
+                        ErrorCode.ALREADY_REGISTERED_USER -> onSOPOErrorCallback.onAlreadyRegisteredUser(code)
+                        ErrorCode.PARCEL_NOT_FOUND -> onSOPOErrorCallback.onInquiryParcelError(code)
+                        ErrorCode.AUTHENTICATION_FAIL ->
+                        { // 서버에 유저 토큰이 없거나, 내부에 저장된 토큰이 없는 경우
+                        }
+                        ErrorCode.INVALID_JWT_TOKEN ->
+                        { // Refresh Token이 잘못된 경우
+                        }
+                        ErrorCode.USER_NOT_FOUND ->
+                        { // 존재하지 않은 계정
+                        }
+                        ErrorCode.INVALID_USER ->
+                        { // 아이디 or 패스워드가 틀렸을 때 And 탈퇴한 회원이 요청했을 때 ?
+                            onSOPOErrorCallback.onLoginError(code)
+                        }
+                        ErrorCode.DUPLICATE_LOGIN ->
+                        { // 중복 로그인
+                            logoutUseCase.invoke()
+                            moveDuplicated()
+                        }
+                        ErrorCode.INVALID_TOKEN ->
+                        { // access or refresh Token이 만료
+                        }
+                        else -> onSOPOErrorCallback.onFailure(code)
+                    }
+                }
+                is InternalServerException ->
+                {
+                    val errorCode = ErrorCode.getCode(exception.getErrorResponse().code).apply {
+                        message = exception.getErrorResponse().message
+                    }
+
+                    SopoLog.e("InternalServerException API Error $errorCode", exception)
+
+                    if(errorCode == ErrorCode.FAIL_TO_SEARCH_PARCEL)
+                    {
+                        return@CoroutineExceptionHandler onSOPOErrorCallback.onInquiryParcelError(errorCode)
+                    }
+
+                    onSOPOErrorCallback.onInternalServerError(errorCode)
+                }
+                else ->
+                {
+                    onSOPOErrorCallback.onFailure(ErrorCode.UNKNOWN_ERROR)
+                }
+            }
+        }*/
 }

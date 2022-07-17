@@ -73,7 +73,7 @@ class ConfirmParcelViewModel(
     }
 
     // '등록하기' Button Click event
-    private fun requestParcelRegister(register: Parcel.Register) = scope.launch(coroutineExceptionHandler) {
+    private fun requestParcelRegister(register: Parcel.Register) = scope.launch {
         SopoLog.i("requestParcelRegister(...) 호출[${register.toString()}]")
 
         emitStatus(Result.Loading)
@@ -84,28 +84,13 @@ class ConfirmParcelViewModel(
         emitStatus(Result.Success(parcel))
     }
 
-    val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-
-        emitStatus(Result.Error(throwable))
-
-        when(throwable)
-        {
-            is SOPOApiException -> handlerAPIException(throwable)
-            is InternalServerException -> handlerInternalServerException(throwable)
-            else ->
-            {
-                throwable.printStackTrace()
-                postErrorSnackBar(throwable.message ?: "확인할 수 없는 에러입니다.")
-            }
-        }
-    }
-
-    private fun handlerAPIException(exception: SOPOApiException)
+    override fun handlerAPIException(exception: SOPOApiException)
     {
+        super.handlerAPIException(exception)
         when(exception.code)
         {
-            ErrorCode.ALREADY_REGISTERED_PARCEL, ErrorCode.OVER_REGISTERED_PARCEL, ErrorCode.PARCEL_BAD_REQUEST ->
-                postErrorSnackBar(exception.message)
+            ErrorCode.ALREADY_REGISTERED_PARCEL, ErrorCode.OVER_REGISTERED_PARCEL, ErrorCode.PARCEL_BAD_REQUEST -> postErrorSnackBar(exception.message)
+            ErrorCode.VALIDATION -> postErrorSnackBar(exception.message)
             else ->
             {
                 exception.printStackTrace()
@@ -113,12 +98,10 @@ class ConfirmParcelViewModel(
             }
         }
     }
-
-    /**
-     *
-     */
-    private fun handlerInternalServerException(exception: InternalServerException)
+    override fun handlerInternalServerException(exception: InternalServerException)
     {
+        super.handlerInternalServerException(exception)
+
         when(val code = ErrorCode.getCode(exception.getErrorResponse().code))
         {
             ErrorCode.FAIL_TO_SEARCH_PARCEL -> postErrorSnackBar("택배사가 이상한가봐요?")
@@ -130,33 +113,10 @@ class ConfirmParcelViewModel(
         }
     }
 
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override fun handlerException(exception: Exception)
     {
-        override fun onRegisterParcelError(error: ErrorCode)
-        {
-            super.onRegisterParcelError(error)
-            postErrorSnackBar(error.message)
-        }
-
-        override fun onInquiryParcelError(error: ErrorCode)
-        {
-            super.onInquiryParcelError(error)
-        }
-
-        override fun onInternalServerError(error: ErrorCode)
-        {
-            super.onInternalServerError(error)
-            postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
-        }
-
-        override fun onAuthError(error: ErrorCode)
-        {
-            super.onAuthError(error)
-        }
-
-        override fun onFailure(error: ErrorCode)
-        {
-            postErrorSnackBar("알 수 없는 이유로 등록에 실패했습니다.[${error.toString()}]")
-        }
+        super.handlerException(exception)
+        postErrorSnackBar("[불명] ${exception.toString()}")
     }
+
 }

@@ -150,7 +150,7 @@ val useCaseModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { SplashViewModel(forceLoginUseCase = get(), userDataSource = get()) }
+    viewModel { SplashViewModel(forceLoginUseCase = get(), userDataSource = get(), carrierDataSource = get()) }
 
     viewModel { IntroViewModel() }
 

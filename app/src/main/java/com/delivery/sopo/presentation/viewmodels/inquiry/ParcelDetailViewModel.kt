@@ -13,6 +13,9 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.parcel.TimeLineProgress
 import com.delivery.sopo.domain.usecase.parcel.remote.UpdateParcelUseCase
+import com.delivery.sopo.enums.SnackBarType
+import com.delivery.sopo.exceptions.InternalServerException
+import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.launch
@@ -31,6 +34,9 @@ class ParcelDetailViewModel(
 
     private var _navigator = MutableLiveData<String>()
     val navigator: LiveData<String> = _navigator
+
+    private var _bottomSnackBar = MutableLiveData<SnackBarType>()
+    val bottomSnackBar: LiveData<SnackBarType> = _bottomSnackBar
 
     fun postNavigator(navigator: String)
     {
@@ -60,7 +66,7 @@ class ParcelDetailViewModel(
         return deliveryStatuses
     }
 
-    fun requestParcelDetail(parcelId: Int) = scope.launch(coroutineExceptionHandler){
+    fun requestParcelDetail(parcelId: Int) = scope.launch{
 
         SopoLog.d("requestParcelDetail(...) parcel id = $parcelId")
 
@@ -91,25 +97,26 @@ class ParcelDetailViewModel(
         }
     }
 
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override fun handlerAPIException(exception: SOPOApiException)
     {
-        override fun onFailure(error: ErrorCode)
-        {
-            postErrorSnackBar("알 수 없는 이유로 등록에 실패했습니다.[${error.toString()}]")
-        }
+        super.handlerAPIException(exception)
+        if(exception.code == ErrorCode.VALIDATION) return
 
-        override fun onInternalServerError(error: ErrorCode)
-        {
-            super.onInternalServerError(error)
-
-            postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
-        }
-
-        override fun onAuthError(error: ErrorCode)
-        {
-            super.onAuthError(error)
-
-            postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
-        }
+        _bottomSnackBar.postValue(SnackBarType.Error(exception.code.content, 3000))
+//        postErrorSnackBar(exception.code.content)
     }
+
+    override fun handlerInternalServerException(exception: InternalServerException)
+    {
+        super.handlerInternalServerException(exception)
+
+        postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+    }
+
+    override fun handlerException(exception: Exception)
+    {
+        super.handlerException(exception)
+        postErrorSnackBar("[불명] ${exception.toString()}")
+    }
+
 }

@@ -10,6 +10,7 @@ import com.delivery.sopo.data.database.room.dao.*
 import com.delivery.sopo.data.database.room.entity.*
 import com.delivery.sopo.data.database.room.util.Converters
 import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
+import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -59,6 +60,9 @@ abstract class AppDatabase : RoomDatabase(), KoinComponent
                         super.onCreate(db)
 
                         CoroutineScope(Dispatchers.Default).launch {
+
+                            SopoLog.d("DB 초기화 - 택배사")
+
                             getInstance(context).carrierDataSource.initCarrierTable()
                             getInstance(context).carrierDataSource.initCarrierPatternTable()
                         }

@@ -19,7 +19,7 @@ class AccountManagerViewModel(
     val navigator : LiveData<String>
     get() = _navigator
 
-    fun onLogout() = scope.launch(coroutineExceptionHandler){
+    fun onLogout() = scope.launch {
         logoutUseCase.invoke()
     }
 
@@ -35,10 +35,5 @@ class AccountManagerViewModel(
             R.id.layout_logout -> _navigator.value = NavigatorConst.TO_LOGOUT
             R.id.layout_sign_out -> _navigator.value = NavigatorConst.TO_SIGN_OUT
         }
-    }
-
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
-    {
-        override fun onFailure(error: ErrorCode) { }
     }
 }

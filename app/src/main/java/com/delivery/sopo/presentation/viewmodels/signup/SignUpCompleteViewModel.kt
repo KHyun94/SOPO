@@ -6,6 +6,8 @@ import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.domain.usecase.user.token.LoginUseCase
 import com.delivery.sopo.enums.ErrorCode
+import com.delivery.sopo.exceptions.InternalServerException
+import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import kotlinx.coroutines.launch
@@ -21,55 +23,48 @@ class SignUpCompleteViewModel(private val loginUseCase: LoginUseCase, private va
     val navigator: LiveData<String>
         get() = _navigator
 
-    fun postNavigator(navigator: String){ _navigator.postValue(navigator) }
-
-  override var onSOPOErrorCallback = object: OnSOPOErrorCallback
-  {
-    override fun onFailure(error: ErrorCode)
+    fun postNavigator(navigator: String)
     {
-      when(error)
-      {
-        ErrorCode.NICK_NAME_NOT_FOUND ->
+        _navigator.postValue(navigator)
+    }
+
+    override fun handlerAPIException(exception: SOPOApiException)
+    {
+        super.handlerAPIException(exception)
+        when(exception.code)
         {
-          _navigator.postValue(NavigatorConst.Screen.UPDATE_NICKNAME)
+            ErrorCode.NICK_NAME_NOT_FOUND -> postNavigator(NavigatorConst.Screen.UPDATE_NICKNAME)
+            ErrorCode.USER_NOT_FOUND ->
+            {
+                postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.")
+                postNavigator(NavigatorConst.TO_LOGIN)
+            }
+            else ->
+            {
+                postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.")
+            }
         }
-        ErrorCode.USER_NOT_FOUND ->
-        {
-          postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.")
-          _navigator.postValue(NavigatorConst.TO_LOGIN)
-        }
-        else ->
-        {
-          postErrorSnackBar("로그인이 실패했습니다. 다시 시도해주세요.")
-        }
-      }
     }
 
-    override fun onLoginError(error: ErrorCode)
+    override fun handlerInternalServerException(exception: InternalServerException)
     {
-      super.onLoginError(error)
-      postErrorSnackBar("유효한 이메일 또는 비밀번호가 아닙니다.")
+        super.handlerInternalServerException(exception)
+
+        postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
     }
 
-    override fun onAuthError(error: ErrorCode)
+    override fun handlerException(exception: Exception)
     {
-      super.onAuthError(error)
-      postErrorSnackBar("인증에 실패했습니다.")
+        super.handlerException(exception)
+        postErrorSnackBar("[불명] ${exception.toString()}")
     }
-
-    override fun onInternalServerError(error: ErrorCode)
-    {
-      super.onInternalServerError(error)
-      postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
-    }
-  }
 
     fun onCompleteClicked()
     {
         requestLogin(userDataSource.getUsername(), userDataSource.getUserPassword())
     }
 
-    private fun requestLogin(userName: String, password: String) = scope.launch(coroutineExceptionHandler) {
+    private fun requestLogin(userName: String, password: String) = scope.launch {
         try
         {
             onStartLoading()

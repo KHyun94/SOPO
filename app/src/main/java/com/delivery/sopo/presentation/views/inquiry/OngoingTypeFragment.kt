@@ -244,8 +244,12 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                 {
                     override fun invoke(dialog: DialogFragment)
                     {
-                        vm.deleteParcel()
-                        dialog.dismiss()
+                        CoroutineScope(Dispatchers.Main).launch {
+                            vm.deleteParcel(parcelId)
+                            delay(1000)
+                            vm.getOngoingParcels()
+                            dialog.dismiss()
+                        }
                     }
                 }
 
@@ -253,20 +257,13 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                 {
                     override fun invoke(dialog: DialogFragment)
                     {
-                        CoroutineScope(Dispatchers.Main).async {
+                        CoroutineScope(Dispatchers.IO).launch {
                             withContext(Dispatchers.IO) { vm.refreshParcel(parcelId) }
 
-                            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                            delay(1000)
 
-                                val updatedPos = registeredParcelAdapter.getList()
-                                    .indexOfFirst { it.parcel.parcelId == parcelId }
-
-                                binding.nestedSvMainOngoingInquiry.smoothScrollTo(0, updatedPos) //
-
-                            }, 300)
-
-
-                        }.start()
+                            vm.getOngoingParcels()
+                        }
 
                         dialog.dismiss()
                     }
@@ -294,7 +291,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             {
                 super.onUpdateParcelAliasClicked(view, type, parcelId)
 
-                UpdateValueDialog{ alias ->
+                UpdateValueDialog { alias ->
                     SopoLog.d("TEST INPUT DATA $alias")
                     vm.updateParcelAlias(parcelId, alias)
                 }.show(childFragmentManager, "")
@@ -313,14 +310,15 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                 vm.syncOngoingParcels()
 
                 //5초후에 실행
-                Timer().schedule(object: TimerTask() {
-                     override fun run()
-                     {
-                         CoroutineScope(Dispatchers.Main).launch {
-                             refreshDelay = false
-                         }
-                     }
-                 }, 5000)
+                Timer().schedule(object: TimerTask()
+                                 {
+                                     override fun run()
+                                     {
+                                         CoroutineScope(Dispatchers.Main).launch {
+                                             refreshDelay = false
+                                         }
+                                     }
+                                 }, 5000)
 
                 binding.swipeLayoutMainOngoing.isRefreshing = false
 

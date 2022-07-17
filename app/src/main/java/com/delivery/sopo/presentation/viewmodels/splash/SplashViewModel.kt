@@ -6,9 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.consts.StatusConst
+import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.domain.usecase.user.token.ForceLoginUseCase
 import com.delivery.sopo.enums.ErrorCode
+import com.delivery.sopo.exceptions.InternalServerException
+import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
@@ -16,8 +19,18 @@ import kotlinx.coroutines.*
 
 class SplashViewModel(
         private val forceLoginUseCase: ForceLoginUseCase,
-        private val userDataSource: UserDataSource): BaseViewModel()
+        private val userDataSource: UserDataSource,
+        private val carrierDataSource: CarrierDataSource): BaseViewModel()
 {
+    init
+    {
+        scope.launch(Dispatchers.Default) {
+            carrierDataSource.initCarrierTable()
+            carrierDataSource.initCarrierPatternTable()
+        }
+
+    }
+
     private var _navigator = MutableLiveData<String>()
     val navigator : LiveData<String> = _navigator
 
@@ -25,43 +38,29 @@ class SplashViewModel(
         _navigator.postValue(navigator)
     }
 
-    override var onSOPOErrorCallback = object : OnSOPOErrorCallback{
+    override fun handlerAPIException(exception: SOPOApiException)
+    {
+        super.handlerAPIException(exception)
 
-        override fun onFailure(error: ErrorCode)
+        when(exception.code)
         {
-            when(error)
-            {
-                ErrorCode.NICK_NAME_NOT_FOUND ->
-                {
-                    postNavigator(NavigatorConst.Screen.UPDATE_NICKNAME)
-                }
-                else ->
-                {
-                    postNavigator(NavigatorConst.TO_INTRO)
-                }
-            }
+            ErrorCode.NICK_NAME_NOT_FOUND -> postNavigator(NavigatorConst.Screen.UPDATE_NICKNAME)
+            else -> postNavigator(NavigatorConst.TO_INTRO)
         }
+    }
 
-        override fun onInternalServerError(error: ErrorCode)
-        {
-            super.onInternalServerError(error)
+    override fun handlerInternalServerException(exception: InternalServerException)
+    {
+        super.handlerInternalServerException(exception)
 
-            postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
-            postNavigator(NavigatorConst.TO_INTRO)
-        }
+        postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+        postNavigator(NavigatorConst.TO_INTRO)
+    }
 
-        override fun onAuthError(error: ErrorCode)
-        {
-            super.onAuthError(error)
-            postNavigator(NavigatorConst.TO_INTRO)
-        }
-
-        override fun onDuplicateError(error: ErrorCode)
-        {
-            super.onDuplicateError(error)
-
-            postNavigator(NavigatorConst.DUPLICATE_LOGIN)
-        }
+    override fun handlerException(exception: Exception)
+    {
+        super.handlerException(exception)
+        postErrorSnackBar("[불명] ${exception.toString()}")
     }
 
     init
@@ -82,10 +81,7 @@ class SplashViewModel(
     }
 
     fun requestUserInfo() = checkEventStatus(true) {
-
-
-
-        scope.launch(coroutineExceptionHandler) {
+        scope.launch {
                 forceLoginUseCase.invoke()
                 postNavigator(NavigatorConst.Screen.MAIN)
         }

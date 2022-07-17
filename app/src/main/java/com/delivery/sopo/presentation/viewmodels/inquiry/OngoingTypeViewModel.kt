@@ -19,6 +19,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.*
 import com.delivery.sopo.data.models.Result
+import com.delivery.sopo.exceptions.InternalServerException
+import com.delivery.sopo.exceptions.SOPOApiException
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 
@@ -58,7 +60,8 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
         syncOngoingParcels()
     }
 
-    fun getOngoingParcels() = scope.launch(Dispatchers.Default) {
+    fun getOngoingParcels() = CoroutineScope(Dispatchers.Default).launch {
+        SopoLog.d("getOngoingParcels(...)")
         parcelRepo.getOngoingParcels().collect { _parcels.value = it }
     }
 
@@ -67,24 +70,24 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
      */
 
     // 서버에서 DB 내 택배 정보를 가져와서 로컬 내 디비 정보를 갱신
-    fun syncOngoingParcels() = scope.launch(coroutineExceptionHandler) {
+    fun syncOngoingParcels() = scope.launch {
         syncParcelsUseCase.invoke()
     }
 
     fun updateParcelAlias(parcelId: Int, parcelAlias: String) =
         checkEventStatus(checkNetwork = true) {
-            scope.launch(coroutineExceptionHandler) {
+            scope.launch {
                 updateParcelAliasUseCase.invoke(parcelId = parcelId, parcelAlias = parcelAlias)
             }
         }
 
-    suspend fun refreshParcel(parcelId: Int) = withContext(coroutineExceptionHandler) {
+    suspend fun refreshParcel(parcelId: Int) = withContext(Dispatchers.IO) {
         updateParcelUseCase.invoke(parcelId = parcelId)
     }
 
-    fun deleteParcel() = checkEventStatus(checkNetwork = true) {
-        scope.launch(coroutineExceptionHandler) {
-            deleteParcelsUseCase.invoke()
+    fun deleteParcel(parcelId: Int) = checkEventStatus(checkNetwork = true) {
+        scope.launch {
+            deleteParcelsUseCase(parcelId = parcelId)
         }
     }
 
@@ -167,30 +170,22 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
             return p0.parcel.auditDte.compareTo(p1.parcel.auditDte)
         }
     }
-
-    override var onSOPOErrorCallback = object: OnSOPOErrorCallback
+    override fun handlerAPIException(exception: SOPOApiException)
     {
-        override fun onRegisterParcelError(error: ErrorCode)
-        {
-            super.onRegisterParcelError(error)
-            postErrorSnackBar(error.message)
-        }
+        super.handlerAPIException(exception)
+        postErrorSnackBar(exception.toString())
+    }
 
-        override fun onFailure(error: ErrorCode)
-        {
-            postErrorSnackBar("알 수 없는 이유로 등록에 실패했습니다.[${error.toString()}]")
-        }
+    override fun handlerInternalServerException(exception: InternalServerException)
+    {
+        super.handlerInternalServerException(exception)
 
-        override fun onInternalServerError(error: ErrorCode)
-        {
-            super.onInternalServerError(error)
-            postErrorSnackBar("일시적으로 서비스를 이용할 수 없습니다.[${error.toString()}]")
-        }
+        postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+    }
 
-        override fun onAuthError(error: ErrorCode)
-        {
-            super.onAuthError(error)
-            postErrorSnackBar("유저 인증에 실패했습니다. 다시 시도해주세요.[${error.toString()}]")
-        }
+    override fun handlerException(exception: Exception)
+    {
+        super.handlerException(exception)
+        postErrorSnackBar("[불명] ${exception.toString()}")
     }
 }

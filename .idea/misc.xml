@@ -70,6 +70,7 @@
         <entry key="app/src/main/res/layout/intro_view_3.xml" value="0.22" />
         <entry key="app/src/main/res/layout/item_img.xml" value="0.33" />
         <entry key="app/src/main/res/layout/item_inquiry_tab.xml" value="0.20355191256830601" />
+        <entry key="app/src/main/res/layout/item_ongoing_parcel.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_time_tab.xml" value="0.5" />
         <entry key="app/src/main/res/layout/lock_screen_view.xml" value="0.30245666503906254" />
         <entry key="app/src/main/res/layout/login_select_view.xml" value="0.25" />

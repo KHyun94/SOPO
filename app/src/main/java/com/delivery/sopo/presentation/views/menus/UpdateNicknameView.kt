@@ -17,6 +17,7 @@ import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.enums.OptionalTypeEnum
 import com.delivery.sopo.extensions.convertTextColor
+import com.delivery.sopo.extensions.launchActivity
 import com.delivery.sopo.extensions.launchActivityWithAllClear
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.SopoLog
@@ -108,7 +109,6 @@ class UpdateNicknameView: BaseView<UpdateNicknameViewBinding, UpdateNicknameView
                     val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.ONE_WAY,
                                                         title = builder,
                                                         leftHandler = Pair("확인"){
-                                                            Intent(this@UpdateNicknameView, MainView::class.java).launchActivityWithAllClear(this@UpdateNicknameView)
                                                             finish()
                                                         })
 
