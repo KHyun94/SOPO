@@ -6,8 +6,11 @@
     <data>
 
         <import type="android.view.View" />
+
         <import type="androidx.core.content.ContextCompat" />
+
         <import type="com.delivery.sopo.R" />
+
         <import type="com.delivery.sopo.enums.SettingEnum.PushAlarmType" />
 
         <variable
@@ -24,6 +27,7 @@
         app:umanoDragView="@+id/layout_drawer"
         app:umanoOverlay="true"
         app:umanoPanelHeight="0dp"
+        app:umanoFadeColor="#801E1E25"
         app:umanoShadowHeight="0dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,12 +39,12 @@
             <include
                 android:id="@+id/include_header"
                 layout="@layout/include_header_center_title_with_left_button"
-                app:title='@{"설정"}'
-                app:buttonIcon="@{ContextCompat.getDrawable(context, R.drawable.ic_left_arrow)}"
-                app:onEventClickListener="@{()->vm.onBackClicked()}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:buttonIcon="@{ContextCompat.getDrawable(context, R.drawable.ic_arrow_left_thin_b_24dp)}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:onEventClickListener="@{()->vm.onBackClicked()}"
+                app:title='@{"설정"}' />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_main_push_alarm"
@@ -48,8 +52,8 @@
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
-                app:layout_constraintTop_toBottomOf="@+id/include_header"
-                android:onClick="@{()->vm.onSetPushAlarmListener()}">
+                android:onClick="@{()->vm.onSetPushAlarmListener()}"
+                app:layout_constraintTop_toBottomOf="@+id/include_header">
 
                 <TextView
                     android:id="@+id/tv_sub_title_push_alarm"
@@ -60,40 +64,43 @@
                     android:layout_marginTop="18dp"
                     android:layout_marginBottom="18dp"
                     android:text="푸시 알림 설정"
-
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintHorizontal_chainStyle="packed"
                     app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/tv_setting_push_alarm"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <LinearLayout
-                    android:id="@+id/linear_push_alarm"
+                <TextView
+                    android:id="@+id/tv_setting_push_alarm"
+                    style="@style/kor_H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="22dp"
-                    android:gravity="center"
-                    android:padding="18dp"
+                    android:layout_marginRight="11dp"
+                    android:paddingTop="18dp"
+                    android:paddingBottom="18dp"
+                    android:text="@{vm.pushAlarmType.MESSAGE}"
+                    android:textColor='@{vm.pushAlarmType != PushAlarmType.REJECT ? ContextCompat.getColor(context, R.color.COLOR_MAIN_700) : ContextCompat.getColor(context, R.color.COLOR_GRAY_600)}'
+                    app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toBottomOf="@id/tv_sub_title_push_alarm"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintRight_toLeftOf="@id/iv_setting_push_alarm"
+                    app:layout_constraintTop_toTopOf="@id/tv_sub_title_push_alarm"
+                    tools:text="푸시 알림 설정" />
+
+                <ImageView
+                    android:id="@+id/iv_setting_push_alarm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="14dp"
+                    android:background="@drawable/ic_arrow_right_thin_b_24dp"
+                    android:backgroundTint="@color/COLOR_GRAY_800"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_sub_title_push_alarm"
+                    app:layout_constraintHorizontal_bias="1"
+                    app:layout_constraintHorizontal_chainStyle="packed"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/tv_sub_title_push_alarm">
-
-                    <TextView
-                        android:id="@+id/tv_setting_push_alarm"
-                        style="@style/kor_H4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="11dp"
-                        android:text="@{vm.pushAlarmType.MESSAGE}"
-                        tools:text="푸시 알림 설정"
-                        android:textColor="@color/COLOR_GRAY_400" />
-
-                    <ImageView
-                        android:id="@+id/iv_setting_push_alarm"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-
-                        android:background="@drawable/ic_black_arrow_right"
-                        android:backgroundTint="@color/COLOR_GRAY_800" />
-
-                </LinearLayout>
+                    app:layout_constraintTop_toTopOf="@id/tv_sub_title_push_alarm" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -101,18 +108,18 @@
                 android:id="@+id/v_divider_line1"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/COLOR_GRAY_200"
+                android:background="@color/COLOR_GRAY_100"
                 app:layout_constraintTop_toBottomOf="@id/constraint_main_push_alarm" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_main_not_disturb_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{()->vm.onSetNotDisturbTime()}"
-                app:layout_constraintLeft_toLeftOf="parent"
                 android:clickable="true"
                 android:focusable="true"
+                android:onClick="@{()->vm.onSetNotDisturbTime()}"
                 android:visibility="@{vm.pushAlarmType != PushAlarmType.REJECT ? View.VISIBLE : View.GONE}"
+                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/v_divider_line1">
 
                 <TextView
@@ -127,46 +134,38 @@
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/linear_not_disturb_time"
+
+                <TextView
+                    android:id="@+id/tv_setting_not_disturb_time"
+                    style="@style/kor_H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="18dp"
+                    android:layout_marginRight="11dp"
+                    android:paddingTop="18dp"
+                    android:paddingBottom="18dp"
+                    android:text='@{(vm.notDisturbTime.length > 0) ? vm.notDisturbTime : "설정 꺼짐" }'
+                    android:textColor='@{(vm.notDisturbTime.length > 0) ? ContextCompat.getColor(context, R.color.COLOR_MAIN_700) : ContextCompat.getColor(context, R.color.COLOR_GRAY_600)}'
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_sub_title_not_disturb_time"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintRight_toLeftOf="@+id/toggleBtn"
+                    app:layout_constraintTop_toTopOf="@id/tv_sub_title_not_disturb_time"
+                    tools:text="설정 꺼짐" />
 
+                <ToggleButton
+                    android:id="@+id/toggleBtn"
+                    android:layout_width="55dp"
+                    android:layout_height="30dp"
+                    android:layout_marginRight="22dp"
+                    android:background="@{(vm.notDisturbTime.length > 0) ? ContextCompat.getDrawable(context, R.drawable.ic_toggle_on):ContextCompat.getDrawable(context, R.drawable.ic_toggle_off)}"
+                    android:onClick="@{()->vm.setAppPassword()}"
+                    android:textOff=""
+                    android:textOn=""
                     app:layout_constraintBottom_toBottomOf="@id/tv_sub_title_not_disturb_time"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/tv_sub_title_not_disturb_time">
-
-                    <TextView
-                        android:id="@+id/tv_setting_not_disturb_time"
-                        style="@style/kor_H4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="11dp"
-                        tools:text="설정 꺼짐"
-                        android:text='@{(vm.notDisturbTime.length > 0) ? vm.notDisturbTime : "설정 꺼짐" }'
-                        android:textColor="@color/COLOR_GRAY_400"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintRight_toLeftOf="@+id/toggleBtn"
-                        app:layout_constraintTop_toTopOf="parent" />
-
-
-                    <ToggleButton
-                        android:id="@+id/toggleBtn"
-                        android:layout_width="55dp"
-                        android:layout_height="30dp"
-                        android:background="@{(vm.notDisturbTime.length > 0) ? ContextCompat.getDrawable(context, R.drawable.ic_toggle_on):ContextCompat.getDrawable(context, R.drawable.ic_toggle_off)}"
-                        android:onClick="@{()->vm.setAppPassword()}"
-                        android:textOff=""
-                        android:textOn=""
-                        android:layout_marginRight="24dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:background="@drawable/ic_toggle_off" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    app:layout_constraintTop_toTopOf="@id/tv_sub_title_not_disturb_time"
+                    tools:background="@drawable/ic_toggle_off" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -175,16 +174,16 @@
                 android:id="@+id/v_divider_line2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/COLOR_GRAY_200"
+                android:background="@color/COLOR_GRAY_100"
                 app:layout_constraintTop_toBottomOf="@id/constraint_main_not_disturb_time" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_main_lock_app"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="@{()->vm.onSetLockPassword()}"
                 android:clickable="true"
                 android:focusable="true"
+                android:onClick="@{()->vm.onSetLockPassword()}"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/v_divider_line2">
 
@@ -200,36 +199,35 @@
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <LinearLayout
-                    android:id="@+id/linear_lock_app"
+                <TextView
+                    android:id="@+id/tv_setting_lock_app"
+                    style="@style/kor_H4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="22dp"
-                    android:gravity="center"
-                    android:padding="18dp"
+                    android:layout_marginRight="11dp"
+                    android:paddingTop="18dp"
+                    android:paddingBottom="18dp"
+                    android:text='@{vm.isSetOfSecurity() > 0 ? "잠금번호 있음" : "잠금번호 없음"}'
+                    android:textColor='@{vm.isSetOfSecurity() > 0 ? ContextCompat.getColor(context, R.color.COLOR_MAIN_700) : ContextCompat.getColor(context, R.color.COLOR_GRAY_600)}'
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_sub_title_lock_app"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintRight_toLeftOf="@id/iv_setting_lock_app"
+                    app:layout_constraintTop_toTopOf="@id/tv_sub_title_lock_app"
+                    tools:text="잠금 설정"
+                    tools:textColor="@color/COLOR_GRAY_600" />
+
+                <ImageView
+                    android:id="@+id/iv_setting_lock_app"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="14dp"
+                    android:background="@drawable/ic_arrow_right_thin_b_24dp"
+                    android:backgroundTint="@color/COLOR_GRAY_800"
                     app:layout_constraintBottom_toBottomOf="@id/tv_sub_title_lock_app"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/tv_sub_title_lock_app">
-
-                    <TextView
-                        android:id="@+id/tv_setting_lock_app"
-                        style="@style/kor_H4"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="11dp"
-                        android:text='@{vm.isSetOfSecurity() > 0 ? "잠금번호 있음" : "잠금번호 없음"}'
-                        android:textColor='@{vm.isSetOfSecurity() > 0 ? ContextCompat.getColor(context, R.color.COLOR_MAIN_700) : ContextCompat.getColor(context, R.color.COLOR_GRAY_400)}'
-                        tools:text="잠금 설정"
-                        tools:textColor="@color/COLOR_GRAY_400"/>
-
-                    <ImageView
-                        android:id="@+id/iv_setting_lock_app"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/ic_black_arrow_right"
-                        android:backgroundTint="@color/COLOR_GRAY_800" />
-
-                </LinearLayout>
+                    app:layout_constraintTop_toTopOf="@id/tv_sub_title_lock_app" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -247,21 +245,21 @@
                 layout="@layout/include_not_disturb_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <include
                 android:id="@+id/include_push_alarm"
                 layout="@layout/include_push_alarm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <include
                 android:id="@+id/include_lock_app"
                 layout="@layout/include_lock_app"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
         </LinearLayout>
 

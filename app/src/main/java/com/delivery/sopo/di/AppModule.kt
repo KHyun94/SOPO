@@ -53,6 +53,7 @@ import com.delivery.sopo.presentation.viewmodels.signup.RegisterNicknameViewMode
 import com.delivery.sopo.presentation.viewmodels.signup.SignUpCompleteViewModel
 import com.delivery.sopo.presentation.viewmodels.signup.SignUpViewModel
 import com.delivery.sopo.presentation.viewmodels.splash.SplashViewModel
+import com.delivery.sopo.thirdpartyapi.KakaoOath
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -173,7 +174,7 @@ val viewModelModule = module {
     viewModel { InquiryViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { DeleteParcelViewModel(get(), get(), get(), get(), get()) }
     viewModel { MenuViewModel(get()) }
-    viewModel { AccountManagerViewModel(get()) }
+    viewModel { AccountManagerViewModel(get(), get()) }
     viewModel { SignOutViewModel(get()) }
 
 

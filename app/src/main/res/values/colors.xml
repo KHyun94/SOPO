@@ -65,5 +65,6 @@
     <color name="STATUS_ING">#DDE9FA</color>
 
     <color name="NOTIFICATION_TITLE_COLOR">#5D96FF</color>
+    <color name="SLIDE_BACKGROUND_COLOR">#801E1E25</color>
 
 </resources>

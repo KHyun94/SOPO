@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
@@ -217,6 +218,12 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         }
     }
 
+    fun showKeyboard(target: EditText)
+    {
+        target.requestFocus()
+        OtherUtil.showKeyboardSoft(this, target)
+    }
+
     fun hideKeyboard()
     {
         mainLayout.requestFocus()
@@ -237,3 +244,4 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         exitProcess(0)
     }
 }
+

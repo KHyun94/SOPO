@@ -22,7 +22,7 @@ class InquiryListItem(var parcel: Parcel.Common, var isSelected: Boolean = false
 {
     private val parcelRepository: ParcelRepository by inject()
 
-    val iconResource: Int = getParcelStatusIcon()
+    var iconResource: Int = getParcelStatusIcon()
     val backgroundColorResource: Int = getParcelStatusBackgroundColor()
     val statusText: String =getParcelStatus()
     val statusTextColorResource: Int = getParcelStatusColor()

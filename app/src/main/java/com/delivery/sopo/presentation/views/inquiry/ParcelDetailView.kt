@@ -132,8 +132,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
                     }
                     else
                     {
-                        binding.includeSemi.constraintSubCardview.elevation =
-                            elevation - ((elevation / 3) * slideOffset * 10)
+                        binding.includeSemi.constraintSubCardview.elevation = elevation - ((elevation / 3) * slideOffset * 10)
                     }
 
 
@@ -185,6 +184,8 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         }
 
         binding.slidingMain.addPanelSlideListener(onPanelSlideListener)
+
+        binding.includeSemi.tvAlias.isSelected = true
     }
 
     override fun onDestroyView()
@@ -198,8 +199,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
     {
         val copyText = tv.text.toString()
         ClipboardUtil.copyTextToClipboard(requireContext(), copyText)
-        Toast.makeText(requireContext(), "운송장 번호 [$copyText]가 복사되었습니다!!!", Toast.LENGTH_SHORT)
-            .show()
+        Toast.makeText(requireContext(), "운송장 번호가 복사되었습니다.", Toast.LENGTH_SHORT).show()
     }
 
     private fun setListener()

@@ -5,11 +5,14 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.*
-import android.view.View.*
-import android.widget.*
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -26,18 +29,19 @@ import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.mapper.MenuMapper
-import com.delivery.sopo.util.*
 import com.delivery.sopo.presentation.viewmodels.inquiry.DeleteParcelViewModel
 import com.delivery.sopo.presentation.views.adapter.InquiryListAdapter
 import com.delivery.sopo.presentation.views.adapter.PopupMenuListAdapter
-import com.delivery.sopo.presentation.views.dialog.OnOptionalClickListener
-import com.delivery.sopo.presentation.views.dialog.OptionalDialog
+import com.delivery.sopo.presentation.views.dialog.CommonDialog
 import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.util.AnimationUtil
+import com.delivery.sopo.util.FragmentManager
+import com.delivery.sopo.util.SizeUtil
+import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.*
 
 class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParcelViewModel>()
 {
@@ -132,14 +136,14 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
     {
         super.setObserve()
 
-//        if(activity == null) return
-//
-//        parentView.getCurrentPage().observe(parentView) {
-//            if(it != null && it == TabCode.secondTab)
-//            {
-//                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
-//            }
-//        }
+        //        if(activity == null) return
+        //
+        //        parentView.getCurrentPage().observe(parentView) {
+        //            if(it != null && it == TabCode.secondTab)
+        //            {
+        //                parentView.onBackPressedDispatcher.addCallback(parentView, onBackPressedCallback)
+        //            }
+        //        }
 
         vm.inquiryStatus.observe(parentView) {
             if(it == InquiryStatusEnum.COMPLETE) vm.getCompleteParcelMonth()
@@ -158,27 +162,20 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
                 {
                     val deleteParcelIds = soonArrivalParcelAdapter.getSelectedListData() + registeredParcelAdapter.getSelectedListData() + completedParcelAdapter.getSelectedListData()
 
-                    OptionalDialog(optionalType = OptionalTypeEnum.TWO_WAY_LEFT,  title = "정말로 삭제할까요?", content = """
+                    CommonDialog(dialogType = DialogType.FocusLeftButton("삭제할게요", "다시 생각할게요"), title = "정말로 삭제할까요?", content = """
                     · 배송완료된 물품은 [배송완료]탭에 보관되요
                     · 삭제하신 내역은 복구할 수 없어요
-                                """.trimIndent(), leftHandler = Pair("삭제할게요", object: OnOptionalClickListener {
-                        override fun invoke(dialog: DialogFragment)
-                        {
-                            CoroutineScope(Dispatchers.Main).launch {
-                                vm.updateParcelToDeleteParcels(deleteParcelIds)
+                                """.trimIndent(), { dialog ->
+                        CoroutineScope(Dispatchers.Main).launch {
+                            vm.updateParcelToDeleteParcels(deleteParcelIds)
 
-                                TabCode.INQUIRY.FRAGMENT = InquiryFragment.newInstance(returnType = 2)
-                                FragmentManager.move(parentView, TabCode.INQUIRY, InquiryMainFragment.viewId)
-                            }
-                            dialog.dismiss()
+                            TabCode.INQUIRY.FRAGMENT = InquiryFragment.newInstance(returnType = 2)
+                            FragmentManager.move(parentView, TabCode.INQUIRY, InquiryMainFragment.viewId)
                         }
-                    }), rightHandler = Pair("다시 생각할게요", object: OnOptionalClickListener
-                    {
-                        override fun invoke(dialog: DialogFragment)
-                        {
-                            dialog.dismiss()
-                        }
-                    })).show(requireActivity().supportFragmentManager, "")
+                        dialog.dismiss()
+                    }, { dialog ->
+                                     dialog.dismiss()
+                                 }).show(requireActivity().supportFragmentManager, "")
 
 
                 }
@@ -571,8 +568,7 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
         val onGlobalLayoutListener = object: ViewTreeObserver.OnGlobalLayoutListener
         {
             override fun onGlobalLayout()
-            {
-                // 'year spinner'높이 수치만큼 'month sector'의 상단 공백을 생성
+            { // 'year spinner'높이 수치만큼 'month sector'의 상단 공백을 생성
                 val yearSpinnerHeight: Int = binding.linearMainYearSpinner.height
 
                 (binding.linearMainMonthSelector.layoutParams as FrameLayout.LayoutParams).apply {

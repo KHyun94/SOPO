@@ -43,7 +43,7 @@
                 <include
                     android:id="@+id/include_header"
                     layout="@layout/include_header_center_title_with_left_button"
-                    app:buttonIcon="@{ContextCompat.getDrawable(context, R.drawable.ic_left_arrow)}"
+                    app:buttonIcon="@{ContextCompat.getDrawable(context, R.drawable.ic_arrow_left_thin_b_24dp)}"
                     app:onEventClickListener="@{()->vm.onBackClicked()}"
                     app:title='@{"상세 조회"}' />
 
@@ -107,7 +107,7 @@
                     android:id="@+id/include_full"
                     layout="@layout/parcel_full_detail_item"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:visibility="gone"
                     app:OnDownClicked="@{vm.onDownClicked()}"
                     app:adapter="@{timeLineAdapter}"

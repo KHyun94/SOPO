@@ -1,6 +1,5 @@
 package com.delivery.sopo.presentation.views.menus
 
-import android.content.Intent
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
@@ -13,20 +12,14 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.UpdateNicknameViewBinding
-import com.delivery.sopo.enums.DisplayEnum
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.enums.OptionalTypeEnum
+import com.delivery.sopo.enums.DialogType
 import com.delivery.sopo.extensions.convertTextColor
-import com.delivery.sopo.extensions.launchActivity
-import com.delivery.sopo.extensions.launchActivityWithAllClear
 import com.delivery.sopo.models.base.BaseView
-import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.presentation.viewmodels.menus.UpdateNicknameViewModel
-import com.delivery.sopo.presentation.views.dialog.GeneralDialog
-import com.delivery.sopo.presentation.views.dialog.OptionalDialog
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.dialog.CommonDialog
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class UpdateNicknameView: BaseView<UpdateNicknameViewBinding, UpdateNicknameViewModel>()
@@ -103,16 +96,16 @@ class UpdateNicknameView: BaseView<UpdateNicknameViewBinding, UpdateNicknameView
             {
                 NavigatorConst.Screen.MAIN ->
                 {
-                    val builder = SpannableStringBuilder("변경된 닉네임은\n${vm.nickname.value?.toString()}입니다.")
+                   /* val builder = SpannableStringBuilder("변경된 닉네임은\n${vm.nickname.value?.toString()}입니다.")
                     builder.setSpan(ForegroundColorSpan(ContextCompat.getColor(this, R.color.COLOR_MAIN_700)), 8, builder.length - 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-                    val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.ONE_WAY,
-                                                        title = builder,
-                                                        leftHandler = Pair("확인"){
+                    val optionalDialog = CommonDialog(optionalType = DialogType.ONE_WAY,
+                                                      title = builder,
+                                                      leftHandler = Pair("확인"){
                                                             finish()
                                                         })
 
-                    optionalDialog.show(supportFragmentManager, "")
+                    optionalDialog.show(supportFragmentManager, "")*/
                 }
                 NavigatorConst.Event.BACK ->
                 {

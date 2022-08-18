@@ -25,7 +25,8 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/sv_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -115,14 +116,21 @@
                         style="@style/kor_H3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="28dp"
-                        android:layout_marginTop="6dp"
+                        android:layout_marginLeft="28dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="28dp"
                         android:includeFontPadding="false"
                         android:letterSpacing="-0.01"
+                        android:maxLines="2"
+                        android:lineHeight="24dp"
                         android:text="@{item.alias}"
+                        app:layout_constrainedWidth="true"
+                        app:layout_constraintHorizontal_bias="0"
+                        app:layout_constraintHorizontal_chainStyle="packed"
                         app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tv_registered_date"
-                        tools:text="알림용" />
+                        tools:text="아이폰 8 화이트 [배송착불] 미계산입니다 계산해주세요." />
 
 
                     <LinearLayout
@@ -146,11 +154,11 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:textSize="14dp"
-                            android:textColor="@color/COLOR_GRAY_600"
                             android:layout_toLeftOf="@+id/tv_waybill_num"
                             android:includeFontPadding="false"
                             android:text="@{item.carrier.carrier.NAME}"
+                            android:textColor="@color/COLOR_GRAY_600"
+                            android:textSize="14dp"
                             tools:text="한진택배" />
 
                         <TextView
@@ -164,9 +172,9 @@
                             android:layout_marginRight="14dp"
                             android:layout_marginBottom="21.5dp"
                             android:includeFontPadding="false"
-                            android:letterSpacing="0.01"
+                            android:letterSpacing="-0.02"
                             android:text="@{item.waybillNum}"
-                            android:textColor="@color/COLOR_GRAY_500"
+                            android:textColor="@color/COLOR_GRAY_600"
                             tools:text="1234567890" />
 
                         <ImageView
@@ -261,16 +269,47 @@
                     android:background="@android:color/transparent"
                     app:layout_constraintTop_toBottomOf="@id/constraint_parcel_info" />
 
-                <TextView
-                    style="@style/kor_H4"
+                <View
+                    android:id="@+id/v_empty3"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/transparent"
+                    app:layout_constraintTop_toBottomOf="@id/constraint_parcel_info" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraint_main_no_item"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/IS_NOT_REGISTERED_PARCEL_PROGRESS_DATA"
-                    android:textColor="@color/COLOR_GRAY_400"
-                    android:visibility="@{(item.timeLineProgresses != null &amp;&amp; item.timeLineProgresses.size() > 0) ? View.GONE : View.VISIBLE}"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/v_empty2" />
+                    app:layout_constraintTop_toBottomOf="@+id/v_empty3"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:visibility="@{(item.timeLineProgresses != null &amp;&amp; item.timeLineProgresses.size() > 0) ? View.GONE : View.VISIBLE}">
+
+                    <ImageView
+                        android:id="@+id/iv_no_item"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/exclamation_mark_icon"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/tv_no_item"/>
+
+                    <TextView
+                        style="@style/kor_H4"
+                        android:id="@+id/tv_no_item"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@id/iv_no_item"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        android:layout_marginTop="13.28dp"
+                        android:text="@string/IS_NOT_REGISTERED_PARCEL_PROGRESS_DATA"
+                        android:textColor="@color/COLOR_GRAY_400"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_time_line"
@@ -286,7 +325,6 @@
                     app:linearRvAdapter="@{adapter}" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-
 
         </LinearLayout>
 

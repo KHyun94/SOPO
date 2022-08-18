@@ -4,14 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="androidx.core.content.ContextCompat" />
+
         <import type="com.delivery.sopo.R" />
+
         <variable
             name="vm"
             type="com.delivery.sopo.presentation.viewmodels.menus.AccountManagerViewModel" />
     </data>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linear_main_account_manager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -21,9 +24,11 @@
         <include
             android:id="@+id/include_header"
             layout="@layout/include_header_center_title_with_left_button"
-            app:title='@{"계정 관리"}'
-            app:buttonIcon="@{ContextCompat.getDrawable(context, R.drawable.ic_left_arrow_black_24dp)}"
-            app:onEventClickListener='@{()->vm.onBackClicked()}'/>
+            app:buttonIcon="@{ContextCompat.getDrawable(context, R.drawable.ic_arrow_left_thin_b_24dp)}"
+            app:layout_constraintBottom_toTopOf="@id/layout_update_nickname"
+            app:layout_constraintTop_toTopOf="parent"
+            app:onEventClickListener='@{()->vm.onBackClicked()}'
+            app:title='@{"계정 관리"}' />
 
         <RelativeLayout
             android:id="@+id/layout_update_nickname"
@@ -31,9 +36,8 @@
             android:layout_height="71dp"
             android:onClick="@{()->vm.onMoveClicked(layoutUpdateNickname)}"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintBottom_toTopOf="@id/v_divider_line1"
+            app:layout_constraintTop_toBottomOf="@id/include_header">
 
             <TextView
                 style="@style/kor_H3"
@@ -45,20 +49,28 @@
                 android:text="닉네임 변경"
                 android:textColor="@color/COLOR_GRAY_800" />
 
-            <ImageView
+            <TextView
+                style="@style/kor_H4"
+                android:id="@+id/tv_nickname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ic_right_arrow_black_24dp"
                 android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="22.5dp"
+                android:text="@{vm.nickname}"
+                tools:text="판교돼지병아리"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="14dp"/>
+                android:textColor="@color/COLOR_MAIN_700" />
 
         </RelativeLayout>
 
         <View
+            android:id="@+id/v_divider_line1"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/COLOR_GRAY_100" />
+            android:background="@color/COLOR_GRAY_100"
+            app:layout_constraintBottom_toTopOf="@id/layout_reset_password"
+            app:layout_constraintTop_toBottomOf="@id/layout_update_nickname" />
 
         <RelativeLayout
             android:id="@+id/layout_reset_password"
@@ -66,34 +78,36 @@
             android:layout_height="71dp"
             android:onClick="@{()->vm.onMoveClicked(layoutResetPassword)}"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintBottom_toTopOf="@id/v_divider_line2"
+            app:layout_constraintTop_toBottomOf="@id/v_divider_line1">
 
             <TextView
                 style="@style/kor_H3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="32dp"
                 android:text="계정 비밀번호 재설정"
-                android:textColor="@color/COLOR_GRAY_800"
-                android:layout_centerVertical="true"/>
+                android:textColor="@color/COLOR_GRAY_800" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ic_right_arrow_black_24dp"
-                android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="14dp"/>
+                android:layout_centerVertical="true"
+                android:layout_marginRight="14dp"
+                android:background="@drawable/ic_right_arrow_black_24dp" />
 
         </RelativeLayout>
 
         <View
+            android:id="@+id/v_divider_line2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/COLOR_GRAY_100" />
+            android:background="@color/COLOR_GRAY_100"
+            app:layout_constraintBottom_toTopOf="@id/layout_logout"
+            app:layout_constraintTop_toBottomOf="@id/layout_reset_password" />
 
         <RelativeLayout
             android:id="@+id/layout_logout"
@@ -101,34 +115,36 @@
             android:layout_height="71dp"
             android:onClick="@{()->vm.onMoveClicked(layoutLogout)}"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintBottom_toTopOf="@id/v_divider_line3"
+            app:layout_constraintTop_toBottomOf="@id/v_divider_line2">
 
             <TextView
                 style="@style/kor_H3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="32dp"
                 android:text="로그아웃"
-                android:layout_centerVertical="true"
                 android:textColor="@color/COLOR_GRAY_800" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ic_right_arrow_black_24dp"
-                android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="14dp"/>
+                android:layout_centerVertical="true"
+                android:layout_marginRight="14dp"
+                android:background="@drawable/ic_right_arrow_black_24dp" />
 
         </RelativeLayout>
 
         <View
+            android:id="@+id/v_divider_line3"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/COLOR_GRAY_100" />
+            android:background="@color/COLOR_GRAY_100"
+            app:layout_constraintBottom_toTopOf="@id/layout_sign_out"
+            app:layout_constraintTop_toBottomOf="@id/layout_logout" />
 
         <RelativeLayout
             android:id="@+id/layout_sign_out"
@@ -136,36 +152,46 @@
             android:layout_height="71dp"
             android:onClick="@{()->vm.onMoveClicked(layoutSignOut)}"
             android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintBottom_toTopOf="@id/v_divider_line4"
+            app:layout_constraintTop_toBottomOf="@id/v_divider_line3">
 
             <TextView
                 style="@style/kor_H3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="32dp"
                 android:text="계정 탈퇴"
-                android:textColor="@color/COLOR_GRAY_800"
-                android:layout_centerVertical="true"/>
+                android:textColor="@color/COLOR_GRAY_800" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/ic_right_arrow_black_24dp"
-                android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
-                android:layout_marginRight="14dp"/>
+                android:layout_centerVertical="true"
+                android:layout_marginRight="14dp"
+                android:background="@drawable/ic_right_arrow_black_24dp" />
 
         </RelativeLayout>
 
         <View
+            android:id="@+id/v_divider_line4"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/COLOR_GRAY_100" />
+            android:background="@color/COLOR_GRAY_100"
+            app:layout_constraintTop_toBottomOf="@id/layout_sign_out" />
 
-    </LinearLayout>
+        <include
+            android:id="@+id/include_bottom_input_layout"
+            layout="@layout/include_bottom_input_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:hint='@{"영문 또는 한글 12자 이내"}'
+            android:visibility="gone"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
 

@@ -8,16 +8,14 @@ import android.view.Gravity
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
-import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.SignOutViewBinding
-import com.delivery.sopo.enums.OptionalTypeEnum
+import com.delivery.sopo.enums.DialogType
 import com.delivery.sopo.models.base.BaseView
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.presentation.viewmodels.menus.SignOutViewModel
-import com.delivery.sopo.presentation.views.dialog.OnOptionalClickListener
-import com.delivery.sopo.presentation.views.dialog.OptionalDialog
+import com.delivery.sopo.presentation.views.dialog.CommonDialog
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SignOutView: BaseView<SignOutViewBinding, SignOutViewModel>()
@@ -39,22 +37,18 @@ class SignOutView: BaseView<SignOutViewBinding, SignOutViewModel>()
                     val builder = SpannableStringBuilder("고객의 정보가 삭제되어\n영구히 복구 불가능합니다.")
                     builder.setSpan(ForegroundColorSpan(ContextCompat.getColor(this, R.color.COLOR_MAIN_700)), 12, 23, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
-                    OptionalDialog(optionalType = OptionalTypeEnum.TWO_WAY_RIGHT,  title = "잠깐만요!", subtitle = builder, content = """
+                    CommonDialog(dialogType = DialogType.FocusRightButton("잠깐만요!", "삭제할게요"), title = "잠깐만요!", content = """
                     * 계정 개인정보(이메일, 비밀번호)
                     * 등록하신 모든 택배 추적 정보
-                    """.trimIndent(), leftHandler = Pair("삭제할게요", object: OnOptionalClickListener {
-                        override fun invoke(dialog: DialogFragment)
-                        {
+                    """.trimIndent(), onLeftClickListener =
+                        {dialog ->
                             vm.requestSignOut(vm.message.value.toString())
                             dialog.dismiss()
-                        }
-                    }), rightHandler = Pair("다시 생각할게요", object: OnOptionalClickListener
-                    {
-                        override fun invoke(dialog: DialogFragment)
-                        {
+                        }, onRightClickListener = {dialog ->
+
                             dialog.dismiss()
                         }
-                    })).show(supportFragmentManager, "")
+                    ).show(supportFragmentManager, "")
                 }
                 NavigatorConst.EXIT ->
                 {
@@ -76,8 +70,8 @@ class SignOutView: BaseView<SignOutViewBinding, SignOutViewModel>()
             {
                 binding.tvBtn.run {
                     setBackgroundResource(R.drawable.border_15dp_blue_rounder)
-                    backgroundTintList = null
-                    setTextColor(resources.getColor(R.color.COLOR_MAIN_700))
+                    backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignOutView, R.color.COLOR_MAIN_BLUE_50))
+                    setTextColor(ContextCompat.getColor(context, R.color.COLOR_MAIN_700))
                     isEnabled = true
                 }
                 return@Observer
@@ -85,18 +79,14 @@ class SignOutView: BaseView<SignOutViewBinding, SignOutViewModel>()
 
             binding.tvBtn.run {
                 setBackgroundResource(R.drawable.border_15dp_blue_rounder)
-                backgroundTintList =
-                    ColorStateList.valueOf(ContextCompat.getColor(this@SignOutView, R.color.COLOR_GRAY_200))
-                setTextColor(resources.getColor(R.color.COLOR_GRAY_400))
+                backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this@SignOutView, R.color.COLOR_MAIN_50))
+                setTextColor(ContextCompat.getColor(context, R.color.COLOR_GRAY_400))
                 isEnabled = false
             }
 
-            vm.otherReason.observe(this, Observer {
-                if(it.isNotEmpty())
-                {
-                    binding.vm!!.message.postValue(it)
-                }
-            })
+            vm.otherReason.observe(this) {
+                if(it.isNotEmpty()) vm.message.postValue(it)
+            }
 
         })
     }

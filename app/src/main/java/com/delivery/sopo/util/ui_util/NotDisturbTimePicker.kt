@@ -24,6 +24,13 @@ class NotDisturbTimePicker(context: Context, attrs: AttributeSet? = null): TimeP
         {
             val childLinearLayout = linearLayout.getChildAt(index) as LinearLayout? ?: continue
 
+      /*      val param = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            param.topMargin = SizeUtil.changeDpToPx(childLinearLayout.context, 10.0f)
+            param.bottomMargin = SizeUtil.changeDpToPx(childLinearLayout.context, 10.0f)
+            param.gravity = Gravity.CENTER
+            childLinearLayout.layoutParams = param
+
+*/
             for(childIndex in 0..childLinearLayout.childCount)
             {
                 val view = childLinearLayout.getChildAt(childIndex)

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="androidx.lifecycle.LiveData"/>
+
+        <variable
+            name="hint"
+            type="CharSequence" />
+
+        <variable
+            name="onClickListener"
+            type="android.view.View.OnClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_top_15dp">
+
+        <EditText
+            style="@style/kor_H4"
+            android:id="@+id/et_input_text"
+            android:layout_width="0dp"
+            android:background="@null"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginLeft="24dp"
+            android:includeFontPadding="false"
+            android:layout_marginTop="20dp"
+            app:layout_constrainedWidth="true"
+            android:hint='@{hint}'
+            app:layout_constraintRight_toLeftOf="@id/iv_confirm"
+            android:layout_marginBottom="20dp"
+            android:textCursorDrawable="@drawable/cursor_3dp_gray_800"
+            tools:hint="영문 또는 한글 12자 이내"/>
+
+        <ImageView
+            android:id="@+id/iv_confirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_top_blue_700"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginRight="18dp"
+            android:layout_marginLeft="18dp"
+            android:layout_marginTop="18dp"
+            app:layout_constraintLeft_toRightOf="@id/et_input_text"
+            android:layout_marginBottom="18dp"
+            android:focusable="true"
+            android:clickable="true"
+            android:onClick='@{onClickListener}'/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
+

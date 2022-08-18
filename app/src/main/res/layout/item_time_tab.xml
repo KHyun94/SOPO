@@ -15,8 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="시작"
-            android:textColor="@color/COLOR_GRAY_400"
-            android:textStyle="bold" />
+            android:textColor="@color/COLOR_GRAY_400" />
 
         <TextView
             android:id="@+id/tv_time"
@@ -31,7 +30,7 @@
 
         <View
             android:layout_width="wrap_content"
-            android:layout_height="8dp"/>
+            android:layout_height="12dp" />
 
     </LinearLayout>
 </layout>

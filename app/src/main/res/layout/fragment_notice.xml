@@ -22,7 +22,7 @@
             android:id="@+id/include_header"
             layout="@layout/include_header_center_title_with_left_button"
             app:title='@{"공지사항"}'
-            app:buttonIcon="@{ContextCompat.getDrawable(context, R.drawable.ic_left_arrow)}"
+            app:buttonIcon="@{ContextCompat.getDrawable(context, R.drawable.ic_arrow_left_thin_b_24dp)}"
             app:onEventClickListener="@{()->vm.onBackClicked()}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -6,8 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
-import com.delivery.sopo.enums.ErrorCode
-import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.domain.usecase.user.token.SignOutUseCase
 import com.delivery.sopo.exceptions.InternalServerException
@@ -27,8 +25,7 @@ class SignOutViewModel(
     var isOtherReasonEt = MutableLiveData<Boolean>()
 
     private val _navigator = MutableLiveData<String>()
-    val navigator: LiveData<String>
-        get() = _navigator
+    val navigator: LiveData<String> = _navigator
 
     fun postNavigator(navigator: String){ _navigator.postValue(navigator) }
 

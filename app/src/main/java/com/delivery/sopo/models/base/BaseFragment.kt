@@ -6,6 +6,7 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
@@ -221,6 +222,12 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
     {
         ActivityCompat.finishAffinity(requireActivity())
         exitProcess(0)
+    }
+
+    fun showKeyboard(target: EditText)
+    {
+        target.requestFocus()
+        OtherUtil.showKeyboardSoft(requireActivity(), target)
     }
 
     fun hideKeyboard()

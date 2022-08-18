@@ -2,6 +2,7 @@ package com.delivery.sopo.domain.usecase.user.token
 
 import com.delivery.sopo.data.models.JoinInfo
 import com.delivery.sopo.data.repositories.user.SignupRepository
+import com.delivery.sopo.thirdpartyapi.KakaoOath
 
 class SignUpUseCase(private val signupRepository: SignupRepository)
 {

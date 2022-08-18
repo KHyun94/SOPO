@@ -8,14 +8,14 @@ import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ResetPasswordViewBinding
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.enums.OptionalTypeEnum
+import com.delivery.sopo.enums.DialogType
 import com.delivery.sopo.extensions.convertBackground
 import com.delivery.sopo.extensions.convertTextColor
 import com.delivery.sopo.extensions.expanded
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.presentation.viewmodels.login.ResetPasswordViewModel
-import com.delivery.sopo.presentation.views.dialog.OptionalDialog
+import com.delivery.sopo.presentation.views.dialog.CommonDialog
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.collections.set
@@ -152,7 +152,7 @@ class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewMod
 
                 binding.tvCountOfAuth.text = "인증시간 초과"
 
-                val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.ONE_WAY, title = "인증시간이 만료되었습니다", content= "이메일 인증을 다시 진행해주세요.", leftHandler = Pair("확인") { dialog ->
+                val optionalDialog = CommonDialog(dialogType = DialogType.FocusOneButton("확인"), title = "인증시간이 만료되었습니다", content= "이메일 인증을 다시 진행해주세요.", onLeftClickListener = { dialog ->
                     binding.etEmail.requestFocus()
                     isCountTimer = false
                     dialog.dismiss()

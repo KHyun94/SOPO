@@ -11,25 +11,18 @@
         android:background="@drawable/border_top_rounded"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_time_title"
-            style="@style/kor_H3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp"
-            android:text="설정한 시간동안은\n모든 알림이 가지 않아요." />
-
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tab_layout_time"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
             android:layout_marginHorizontal="60dp"
+            android:layout_weight="1"
             android:background="@color/MAIN_WHITE"
             app:tabBackground="@drawable/selector_tab_indicator_white_scale"
-            app:tabIndicatorColor="@color/COLOR_GRAY_700"
-            app:tabIndicatorHeight="3dp"
+            app:tabIndicatorColor="@color/COLOR_GRAY_900"
+            app:tabIndicatorHeight="2dp"
             app:tabRippleColor="@null"
+            android:layout_marginTop="36dp"
             app:tabTextColor="@color/COLOR_GRAY_700" />
 
         <FrameLayout
@@ -47,7 +40,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-
             <com.delivery.sopo.util.ui_util.NotDisturbTimePicker
                 android:id="@+id/time_picker_end"
                 android:layout_width="wrap_content"
@@ -63,17 +55,28 @@
 
         </FrameLayout>
 
+        <TextView
+            android:id="@+id/tv_time_title"
+            style="@style/kor_H4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textColor="@color/COLOR_GRAY_500"
+            android:layout_marginTop="10dp"
+            android:text="설정한 시간동안 알림이 가지 않습니다" />
 
         <TextView
             android:id="@+id/tv_ok"
-            style="@style/buttonHalfStyle"
-            android:layout_width="135dp"
-            android:layout_height="43dp"
+            style="@style/buttonBasicStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginLeft="36dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="36dp"
+            android:layout_marginBottom="20dp"
             android:gravity="center"
-            android:text="확인"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="24dp"/>
+            android:text="확인" />
 
 
     </LinearLayout>

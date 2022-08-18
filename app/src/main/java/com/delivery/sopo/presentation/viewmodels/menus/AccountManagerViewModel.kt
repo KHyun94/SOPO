@@ -4,20 +4,42 @@ import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.R
+import com.delivery.sopo.domain.usecase.user.UpdateNicknameUseCase
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.domain.usecase.user.token.LogoutUseCase
+import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.launch
 
 class AccountManagerViewModel(
+        private val updateNicknameUseCase: UpdateNicknameUseCase,
         private val logoutUseCase: LogoutUseCase
 ): BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
-    val navigator : LiveData<String>
-    get() = _navigator
+    val navigator : LiveData<String> = _navigator
+
+    private val _nickname = MutableLiveData<String>()
+    val nickname : LiveData<String> = _nickname
+
+    init
+    {
+        updateNickname()
+    }
+
+    fun updateNickname(){
+        _nickname.postValue(updateNicknameUseCase.nickname)
+    }
+
+    fun onUpdateNickname(nickname: String) = scope.launch {
+        onStartLoading()
+        updateNicknameUseCase(nickname = nickname)
+        updateNickname()
+        _navigator.postValue("UPDATE_COMPLETED")
+        onStopLoading()
+    }
 
     fun onLogout() = scope.launch {
         logoutUseCase.invoke()

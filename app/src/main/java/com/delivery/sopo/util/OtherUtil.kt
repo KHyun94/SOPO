@@ -5,6 +5,7 @@ import android.content.Context
 import android.provider.Settings
 import android.util.TypedValue
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.annotation.DrawableRes
 import com.delivery.sopo.SOPOApplication
 import java.io.File
@@ -12,6 +13,12 @@ import java.io.File
 
 object OtherUtil
 {
+    fun showKeyboardSoft(act: Activity, et: EditText)
+    {
+        val inputMethodManager = act.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.showSoftInput(et, 0)
+    }
+
     fun hideKeyboardSoft(act: Activity)
     {
         val inputMethodManager = act.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

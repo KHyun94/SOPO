@@ -5,18 +5,20 @@ import androidx.fragment.app.DialogFragment
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentAccountManagerBinding
-import com.delivery.sopo.enums.OptionalTypeEnum
+import com.delivery.sopo.enums.DialogType
 import com.delivery.sopo.enums.TabCode
+import com.delivery.sopo.extensions.makeGone
+import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.extensions.moveToActivity
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.presentation.viewmodels.menus.AccountManagerViewModel
 import com.delivery.sopo.presentation.viewmodels.menus.MenuMainFragment
-import com.delivery.sopo.presentation.views.dialog.OnOptionalClickListener
-import com.delivery.sopo.presentation.views.dialog.OptionalDialog
+import com.delivery.sopo.presentation.views.dialog.CommonDialog
 import com.delivery.sopo.presentation.views.login.ResetPasswordView
 import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.util.SopoLog
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, AccountManagerViewModel>()
@@ -54,6 +56,10 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
+        vm.nickname.observe(this) {
+            SopoLog.d("nickname $it")
+        }
+
         vm.navigator.observe(this) { navigator ->
             when(navigator)
             {
@@ -64,7 +70,12 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
                 }
                 NavigatorConst.Screen.UPDATE_NICKNAME ->
                 {
-                    requireActivity().moveToActivity(UpdateNicknameView::class.java)
+                    showKeyboard(binding.includeBottomInputLayout.etInputText)
+                    binding.includeBottomInputLayout.root.makeVisible()
+                    binding.includeBottomInputLayout.onClickListener = View.OnClickListener {
+                        val nickname: String = binding.includeBottomInputLayout.etInputText.text.toString()
+                        vm.onUpdateNickname(nickname)
+                    }
                 }
                 NavigatorConst.Screen.RESET_PASSWORD ->
                 {
@@ -72,26 +83,15 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
                 }
                 NavigatorConst.TO_LOGOUT ->
                 {
-                    val leftOptionalClickListener = object: OnOptionalClickListener {
-                        override fun invoke(dialog: DialogFragment)
-                        {
-                            vm.onLogout()
-                            exit()
-                            dialog.dismiss()
-                        }
-                    }
-
-                    val rightOptionalClickListener = object: OnOptionalClickListener
-                    {
-                        override fun invoke(dialog: DialogFragment)
-                        {
-                            dialog.dismiss()
-                        }
-                    }
-
-                    val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.TWO_WAY_RIGHT, title = "로그아웃 하시겠어요?", content = "이계정에 등록된 택배 정보는 로그아웃하셔도\n아이템 별로 90일까지 보관됩니다.",
-                                                        leftHandler = Pair("로그아웃", second = leftOptionalClickListener),
-                                                        rightHandler = Pair(first = "취소", second = rightOptionalClickListener))
+                    val optionalDialog = CommonDialog(dialogType = DialogType.FocusRightButton("로그아웃", "취소"), title = "로그아웃 하시겠어요?", content = "이계정에 등록된 택배 정보는 로그아웃하셔도\n아이템 별로 90일까지 보관됩니다.",
+                                                      onLeftClickListener = { dialog ->
+                                                          vm.onLogout()
+                                                          exit()
+                                                          dialog.dismiss()
+                                                      },
+                                                      onRightClickListener = { dialog ->
+                                                          dialog.dismiss()
+                                                      })
 
                     optionalDialog.show(requireActivity().supportFragmentManager, "")
                 }
@@ -99,8 +99,25 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
                 {
                     requireActivity().moveToActivity(SignOutView::class.java)
                 }
+                "UPDATE_COMPLETED" ->
+                {
+                    binding.includeBottomInputLayout.etInputText.setText("")
+                    hideKeyboard()
+                }
             }
         }
+    }
+
+    override fun onShowKeyboard()
+    {
+        super.onShowKeyboard()
+    }
+
+    override fun onHideKeyboard()
+    {
+        super.onHideKeyboard()
+
+        binding.includeBottomInputLayout.root.makeGone()
     }
 
     companion object

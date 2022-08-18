@@ -26,7 +26,6 @@ enum class CarrierEnum(
     {
         fun getCarrierByCode(code: String): CarrierEnum
         {
-            SopoLog.d("TEST CARREIR ENUM $code")
             val carrier = values().findLast { it.CODE == code }
             carrier ?: throw NullPointerException("not defined enum")
             return carrier

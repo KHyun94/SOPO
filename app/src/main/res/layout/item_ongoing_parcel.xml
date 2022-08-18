@@ -100,7 +100,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_checked_deep_blue"
+                    android:src="@drawable/ic_checked_blue_700"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -197,7 +197,7 @@
                         style="@style/kor_H6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@{ongoingInquiryData.ongoingDateTime}"
+                        android:text="@{ongoingInquiryData.toCarrierName()}"
                         android:textColor="@color/COLOR_MAIN_700"
                         android:textSize="11dp"
                         tools:text="2020/08/31" />

@@ -5,7 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="androidx.core.content.ContextCompat" />
+
         <import type="com.delivery.sopo.R" />
 
         <variable
@@ -17,226 +19,259 @@
         android:id="@+id/constraint_main_sign_out"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/COLOR_GRAY_50">
+        android:background="@color/COLOR_GRAY_50"
+        tools:ignore="RtlHardcoded">
 
         <include
             android:id="@+id/include_header"
             layout="@layout/include_header_center_title_with_right_button"
-            app:title='@{"계정 탈퇴"}'
             app:buttonIcon='@{ContextCompat.getDrawable(context, R.drawable.ic_clear_btn)}'
-            app:onEventClickListener='@{()->vm.onBackClicked()}'/>
+            app:layout_constraintBottom_toTopOf="@id/tv_title_reason"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:onEventClickListener='@{()->vm.onBackClicked()}'
+            app:title='@{"계정 탈퇴"}' />
 
         <TextView
             android:id="@+id/tv_title_reason"
             style="@style/kor_H3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="31.5dp"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="18dp"
             android:includeFontPadding="false"
-            android:text="탈퇴하시는 이유를 알려주세요."
+            android:text="어떤 점이 불편하셨나요?"
             android:textColor="@color/COLOR_GRAY_800"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/cb_reason1"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/include_header" />
 
-        <LinearLayout
-            android:id="@+id/layout_checkbox"
-            android:layout_width="match_parent"
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/cb_reason1"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/checkbox_blue_square"
+            android:button="@android:color/transparent"
+            android:gravity="center"
+            android:onClick="@{(cbReason1)->vm.onCheckClicked(cbReason1, @string/SIGN_OUT_REASON1)}"
+            android:tag="@string/SIGN_OUT_REASON1"
+            app:layout_constraintBottom_toTopOf="@id/cb_reason2"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/tv_reason1"
+            app:layout_constraintTop_toBottomOf="@id/tv_title_reason"
+            tools:ignore="RtlHardcoded" />
+
+        <TextView
+            android:id="@+id/tv_reason1"
+            style="@style/kor_H4"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="32dp"
+            android:layout_marginLeft="8dp"
+            android:includeFontPadding="false"
+            android:text="@string/SIGN_OUT_REASON1"
+            android:textColor='@color/COLOR_GRAY_600'
+            app:layout_constraintBottom_toBottomOf="@id/cb_reason1"
+            app:layout_constraintLeft_toRightOf="@id/cb_reason1"
+            app:layout_constraintTop_toTopOf="@id/cb_reason1" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/cb_reason2"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="32dp"
             android:layout_marginTop="24dp"
-            android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title_reason">
+            android:background="@drawable/checkbox_blue_square"
+            android:button="@android:color/transparent"
+            android:gravity="center"
+            android:onClick="@{(cbReason2)->vm.onCheckClicked(cbReason2, cbReason2.tag.toString())}"
+            android:tag="@string/SIGN_OUT_REASON2"
+            app:layout_constraintBottom_toTopOf="@id/cb_reason3"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/tv_reason2"
+            app:layout_constraintTop_toBottomOf="@id/cb_reason1" />
 
-            <LinearLayout
+        <TextView
+            android:id="@+id/tv_reason2"
+            style="@style/kor_H4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:includeFontPadding="false"
+            android:text="@string/SIGN_OUT_REASON2"
+            android:textColor='@color/COLOR_GRAY_600'
+            app:layout_constraintBottom_toBottomOf="@id/cb_reason2"
+            app:layout_constraintLeft_toRightOf="@id/cb_reason2"
+            app:layout_constraintTop_toTopOf="@id/cb_reason2" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/cb_reason3"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/checkbox_blue_square"
+            android:button="@android:color/transparent"
+            android:gravity="center"
+            android:onClick="@{(cbReason3)->vm.onCheckClicked(cbReason3, cbReason3.tag.toString())}"
+            android:tag="@string/SIGN_OUT_REASON3"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/tv_reason3"
+            app:layout_constraintTop_toBottomOf="@id/cb_reason2" />
+
+        <TextView
+            android:id="@+id/tv_reason3"
+            style="@style/kor_H4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:includeFontPadding="false"
+            android:text="@string/SIGN_OUT_REASON3"
+            android:textColor="@color/COLOR_GRAY_600"
+            app:layout_constraintBottom_toBottomOf="@id/cb_reason3"
+            app:layout_constraintLeft_toRightOf="@id/cb_reason3"
+            app:layout_constraintTop_toTopOf="@id/cb_reason3" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/cb_reason4"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/checkbox_blue_square"
+            android:button="@android:color/transparent"
+            android:gravity="center"
+            android:onClick="@{(cbReason4)->vm.onCheckClicked(cbReason4, cbReason4.tag.toString())}"
+            android:tag="@string/SIGN_OUT_REASON4"
+            app:layout_constraintBottom_toTopOf="@id/cb_reason5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/tv_reason4"
+            app:layout_constraintTop_toBottomOf="@id/cb_reason3" />
+
+        <TextView
+            android:id="@+id/tv_reason4"
+            style="@style/kor_H4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:includeFontPadding="false"
+            android:text="@string/SIGN_OUT_REASON4"
+            android:textColor="@color/COLOR_GRAY_600"
+            app:layout_constraintBottom_toBottomOf="@id/cb_reason4"
+            app:layout_constraintLeft_toRightOf="@id/cb_reason4"
+            app:layout_constraintTop_toTopOf="@id/cb_reason4" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/cb_reason5"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/checkbox_blue_square"
+            android:button="@android:color/transparent"
+            android:onClick="@{(cbReason5)->vm.onCheckClicked(cbReason5, cbReason5.tag.toString())}"
+            android:tag="@string/SIGN_OUT_REASON5"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/tv_reason5"
+            app:layout_constraintTop_toBottomOf="@id/cb_reason4" />
+
+        <TextView
+            android:id="@+id/tv_reason5"
+            style="@style/kor_H4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:includeFontPadding="false"
+            android:text="@string/SIGN_OUT_REASON5"
+            android:textColor="@color/COLOR_GRAY_600"
+            app:layout_constraintBottom_toBottomOf="@id/cb_reason5"
+            app:layout_constraintLeft_toRightOf="@id/cb_reason5"
+            app:layout_constraintTop_toTopOf="@id/cb_reason5" />
+
+        <androidx.appcompat.widget.AppCompatCheckBox
+            android:id="@+id/cb_reason6"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/checkbox_blue_square"
+            android:button="@android:color/transparent"
+            android:onClick="@{(cbReason6)->vm.onCheckClicked(cbReason6, cbReason6.tag.toString())}"
+            android:tag="@string/SIGN_OUT_REASON6"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/tv_reason6"
+            app:layout_constraintTop_toBottomOf="@id/cb_reason5"
+            app:layout_constraintBottom_toTopOf="@id/tv_btn"
+            app:layout_constraintVertical_chainStyle="packed"
+            app:layout_constraintVertical_bias="0"/>
+
+        <TextView
+            android:id="@+id/tv_reason6"
+            style="@style/kor_H4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:text="@string/SIGN_OUT_REASON6"
+            android:textColor="@color/COLOR_GRAY_600"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/cb_reason6"
+            app:layout_constraintLeft_toRightOf="@id/cb_reason6"
+            app:layout_constraintTop_toTopOf="@id/cb_reason6"/>
+
+       <!-- <LinearLayout
+            android:id="@+id/linear_reason"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="@drawable/border_white_gray"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cb_reason6">
+
+            <EditText
+                android:id="@+id/et_reason"
+                style="@style/kor_H4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <androidx.appcompat.widget.AppCompatCheckBox
-                    android:id="@+id/cb_reason1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:button="@drawable/checkbox_blue_square"
-                    android:onClick="@{(cbReason1)->vm.onCheckClicked(cbReason1, @string/SIGN_OUT_REASON1)}"
-                    android:tag="@string/SIGN_OUT_REASON1" />
-
-                <TextView
-                    style="@style/kor_H4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:includeFontPadding="false"
-                    android:text="@string/SIGN_OUT_REASON1"
-                    android:textColor="@color/COLOR_GRAY_800" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <androidx.appcompat.widget.AppCompatCheckBox
-                    android:id="@+id/cb_reason2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:button="@drawable/checkbox_blue_square"
-                    android:onClick="@{(cbReason2)->vm.onCheckClicked(cbReason2, cbReason2.tag.toString())}"
-                    android:tag="@string/SIGN_OUT_REASON2" />
-
-                <TextView
-                    style="@style/kor_H4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:includeFontPadding="false"
-                    android:text="@string/SIGN_OUT_REASON2"
-                    android:textColor="@color/COLOR_GRAY_800" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <androidx.appcompat.widget.AppCompatCheckBox
-                    android:id="@+id/cb_reason3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:button="@drawable/checkbox_blue_square"
-                    android:onClick="@{(cbReason3)->vm.onCheckClicked(cbReason3, cbReason3.tag.toString())}"
-                    android:tag="@string/SIGN_OUT_REASON3" />
-
-                <TextView
-                    style="@style/kor_H4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:includeFontPadding="false"
-                    android:text="@string/SIGN_OUT_REASON3"
-                    android:textColor="@color/COLOR_GRAY_800" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <androidx.appcompat.widget.AppCompatCheckBox
-                    android:id="@+id/cb_reason4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:button="@drawable/checkbox_blue_square"
-                    android:onClick="@{(cbReason4)->vm.onCheckClicked(cbReason4, cbReason4.tag.toString())}"
-                    android:tag="@string/SIGN_OUT_REASON4" />
-
-                <TextView
-                    style="@style/kor_H4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:includeFontPadding="false"
-                    android:text="@string/SIGN_OUT_REASON4"
-                    android:textColor="@color/COLOR_GRAY_800" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <androidx.appcompat.widget.AppCompatCheckBox
-                    android:id="@+id/cb_reason5"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:button="@drawable/checkbox_blue_square"
-                    android:onClick="@{(cbReason5)->vm.onCheckClicked(cbReason5, cbReason5.tag.toString())}"
-                    android:tag="@string/SIGN_OUT_REASON5" />
-
-                <TextView
-                    style="@style/kor_H4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:includeFontPadding="false"
-                    android:text="@string/SIGN_OUT_REASON5"
-                    android:textColor="@color/COLOR_GRAY_800" />
-
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="0dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <androidx.appcompat.widget.AppCompatCheckBox
-                    android:id="@+id/cb_reason6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:button="@drawable/checkbox_blue_square"
-                    android:onClick="@{(cbReason6)->vm.onCheckClicked(cbReason6, etReason.getText().toString())}"
-                    android:tag="@string/SIGN_OUT_REASON6" />
-
-                <TextView
-                    style="@style/kor_H4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:includeFontPadding="false"
-                    android:text="@string/SIGN_OUT_REASON6"
-                    android:textColor="@color/COLOR_GRAY_800" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:layout_marginStart="1dp"
-                android:background="@drawable/border_white_gray">
-
-                <EditText
-                    android:id="@+id/et_reason"
-                    style="@style/kor_H4"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@android:color/transparent"
-                    android:enabled="@{vm.isOtherReasonEt()}"
-                    android:gravity="top"
-                    android:includeFontPadding="false"
-                    android:letterSpacing="-0.05"
-                    android:lines="2"
-                    android:maxLines="2"
-                    android:padding="8dp"
-                    android:text="@={vm.otherReason}"
-                    tools:text="반짝반짝 작은 별 아름답게 비치네 반짝반짝 작은 별" />
-
-            </LinearLayout>
+                android:layout_gravity="center"
+                android:background="@android:color/transparent"
+                android:enabled="@{vm.isOtherReasonEt()}"
+                android:gravity="top"
+                android:includeFontPadding="false"
+                android:letterSpacing="-0.05"
+                android:lines="2"
+                android:maxLines="2"
+                android:padding="8dp"
+                android:text="@={vm.otherReason}"
+                tools:text="반짝반짝 작은 별 아름답게 비치네 반짝반짝 작은 별" />
 
         </LinearLayout>
-
+-->
         <TextView
             android:id="@+id/tv_btn"
             style="@style/buttonBasicStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="130dp"
-            android:layout_marginBottom="192dp"
+            android:layout_marginLeft="36dp"
+            android:layout_marginRight="36dp"
+            android:layout_marginBottom="36dp"
+            android:layout_marginTop="36dp"
             android:background="@drawable/border_15dp_blue_rounder"
             android:backgroundTint="@color/COLOR_GRAY_200"
             android:onClick="@{()->vm.onSignOutClicked()}"
-            android:text="탈퇴하기"
+            android:text="탈퇴"
+            app:layout_constraintVertical_bias="1"
+            app:layout_constraintTop_toTopOf="@id/cb_reason6"
             android:textColor="@color/COLOR_GRAY_400"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layout_checkbox"
             tools:background="@drawable/border_15dp_blue_rounder" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

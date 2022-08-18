@@ -1,5 +1,6 @@
 package com.delivery.sopo.data.models
 
+import com.delivery.sopo.models.inquiry.InquiryListItem
 import java.io.IOException
 
 sealed class Result<out T> {

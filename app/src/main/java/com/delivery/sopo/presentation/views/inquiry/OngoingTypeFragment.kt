@@ -4,8 +4,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
@@ -27,12 +25,10 @@ import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.presentation.viewmodels.inquiry.OngoingTypeViewModel
 import com.delivery.sopo.presentation.views.adapter.InquiryListAdapter
-import com.delivery.sopo.presentation.views.dialog.OnOptionalClickListener
-import com.delivery.sopo.presentation.views.dialog.OptionalDialog
+import com.delivery.sopo.presentation.views.dialog.CommonDialog
 import com.delivery.sopo.presentation.views.main.MainView
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.UpdateValueDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -44,7 +40,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
 
     override val layoutRes: Int = R.layout.fragment_ongoing_type
     override val vm: OngoingTypeViewModel by viewModel()
-    override val mainLayout: View by lazy { binding.swipeLayoutMainOngoing }
+    override val mainLayout: View by lazy { binding.linearMainOngoing }
 
     private lateinit var soonArrivalParcelAdapter: InquiryListAdapter
     private lateinit var registeredParcelAdapter: InquiryListAdapter
@@ -188,17 +184,13 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
 
         vm.parcels.asLiveData(Dispatchers.Default).observe(this) {
 
-            SopoLog.d("Parcels [${it.toString()}]")
-
-            when(vm.parcels.value)
+            when(it)
             {
                 is Result.Success<List<InquiryListItem>> ->
                 {
-                    val list = (vm.parcels.value as Result.Success<List<InquiryListItem>>).data
-
                     binding.linearNoItem.makeGone()
 
-                    val sortList = vm.sortByDeliveryStatus(list).toMutableList()
+                    val sortList = vm.sortByDeliveryStatus(it.data).toMutableList()
 
                     soonArrivalParcelAdapter.separateDeliveryListByStatus(sortList.toMutableList())
                     registeredParcelAdapter.separateDeliveryListByStatus(sortList.toMutableList())
@@ -240,23 +232,18 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             {
                 super.onMaintainParcelClicked(view, pos, parcelId)
 
-                val leftOptionalClickListener = object: OnOptionalClickListener
-                {
-                    override fun invoke(dialog: DialogFragment)
-                    {
+                val optionalDialog =
+                    CommonDialog(dialogType = DialogType.FocusRightButton("지울게요", "유지할게요"), title = "이 아이템을 제거할까요?", content = """
+                    배송 상태가 2주간 확인되지 않고 있어요.
+                    등록된 송장번호가 유효하지 않을지도 몰라요.
+                                """.trimIndent(), onLeftClickListener = { dialog: DialogFragment ->
                         CoroutineScope(Dispatchers.Main).launch {
                             vm.deleteParcel(parcelId)
                             delay(1000)
                             vm.getOngoingParcels()
                             dialog.dismiss()
                         }
-                    }
-                }
-
-                val rightOptionalClickListener = object: OnOptionalClickListener
-                {
-                    override fun invoke(dialog: DialogFragment)
-                    {
+                    }, onRightClickListener = { dialog: DialogFragment ->
                         CoroutineScope(Dispatchers.IO).launch {
                             withContext(Dispatchers.IO) { vm.refreshParcel(parcelId) }
 
@@ -266,13 +253,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                         }
 
                         dialog.dismiss()
-                    }
-                }
-                val optionalDialog =
-                    OptionalDialog(optionalType = OptionalTypeEnum.TWO_WAY_LEFT, title = "이 아이템을 제거할까요?", content = """
-                    배송 상태가 2주간 확인되지 않고 있어요.
-                    등록된 송장번호가 유효하지 않을지도 몰라요.
-                                """.trimIndent(), leftHandler = Pair("지울게요", second = leftOptionalClickListener), rightHandler = Pair(first = "유지할게요", second = rightOptionalClickListener))
+                    })
 
                 optionalDialog.show(requireActivity().supportFragmentManager, "")
             }
@@ -291,12 +272,26 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
             {
                 super.onUpdateParcelAliasClicked(view, type, parcelId)
 
-                UpdateValueDialog { alias ->
-                    SopoLog.d("TEST INPUT DATA $alias")
+                showKeyboard(binding.includeBottomInputLayout.etInputText)
+                binding.includeBottomInputLayout.root.makeVisible()
+                binding.includeBottomInputLayout.onClickListener = View.OnClickListener {
+                    val alias: String = binding.includeBottomInputLayout.etInputText.text.toString()
                     vm.updateParcelAlias(parcelId, alias)
-                }.show(childFragmentManager, "")
+                }
             }
         }
+    }
+
+    override fun onShowKeyboard()
+    {
+        super.onShowKeyboard()
+    }
+
+    override fun onHideKeyboard()
+    {
+        super.onHideKeyboard()
+
+        binding.includeBottomInputLayout.root.makeGone()
     }
 
     private fun setListener()

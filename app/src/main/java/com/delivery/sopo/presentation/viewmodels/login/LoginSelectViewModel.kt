@@ -2,24 +2,19 @@ package com.delivery.sopo.presentation.viewmodels.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.consts.UserTypeConst
-import com.delivery.sopo.enums.ErrorCode
-import com.delivery.sopo.extensions.toMD5
-import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
-import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.data.models.JoinInfo
 import com.delivery.sopo.domain.usecase.user.token.LoginUseCase
 import com.delivery.sopo.domain.usecase.user.token.SignUpUseCase
+import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
+import com.delivery.sopo.extensions.toMD5
+import com.delivery.sopo.models.base.BaseViewModel
+import com.delivery.sopo.presentation.consts.NavigatorConst
+import com.delivery.sopo.thirdpartyapi.KakaoOath
 import com.delivery.sopo.util.SopoLog
-import com.kakao.usermgmt.UserManagement
-import com.kakao.usermgmt.callback.MeV2ResponseCallback
-import com.kakao.usermgmt.response.MeV2Response
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
-import com.kakao.network.ErrorResult as KakaoErrorResult
 
 class LoginSelectViewModel(private val loginUseCase: LoginUseCase, private val signUpUseCase: SignUpUseCase): BaseViewModel()
 {
@@ -53,49 +48,24 @@ class LoginSelectViewModel(private val loginUseCase: LoginUseCase, private val s
     }
 
     // 카카오톡 로그인을 통해 사용자에 대한 정보를 가져온다
-    fun requestKakaoLogin()
+    fun requestKakaoLogin(kakaoOath: KakaoOath)
     {
         SopoLog.i(msg = "requestKakaoLogin(...) 호출")
 
-        val keys: MutableList<String> = ArrayList()
-        keys.add("kakao_account.email")
-        keys.add("properties.nickname")
+        kakaoOath.signIn(onSuccess = { user ->
+            email = user.kakaoAccount?.email.toString()
+            kakaoUserId = user.id.toString()
+            kakaoNickname = user.kakaoAccount?.name.toString()
 
-        UserManagement.getInstance().me(keys, object: MeV2ResponseCallback()
-        {
-            override fun onFailureForUiThread(errorResult: KakaoErrorResult)
-            {
-                super.onFailureForUiThread(errorResult)
-                SopoLog.e(msg = "onFailureForUiThread message : " + errorResult.errorMessage, e = null)
-                postErrorSnackBar("카카오 로그인에 실패했습니다. 다시 시도해주세요.")
+            scope.launch {
+                onStartLoading()
+                requestJoinByKakao(email = email, uId = kakaoUserId, nickname = kakaoNickname)
+                requestLoginByKakao(email = email, uId = kakaoUserId)
+                onStopLoading()
             }
-
-            override fun onSessionClosed(errorResult: KakaoErrorResult)
-            {
-                SopoLog.e(msg = "onSessionClosed message : " + errorResult.errorMessage, e = errorResult.exception)
-                postErrorSnackBar("세션 종료로 인해, 카카오 로그인에 실패했습니다.")
-            }
-
-            override fun onFailure(errorResult: KakaoErrorResult)
-            {
-                super.onFailure(errorResult)
-                SopoLog.e(msg = "onFailure message : " + errorResult.errorMessage, e = errorResult.exception)
-                postErrorSnackBar("카카오 로그인에 실패했습니다.")
-            }
-
-            override fun onSuccess(result: MeV2Response)
-            {
-                email = result.kakaoAccount.email
-                kakaoUserId = result.id.toString()
-                kakaoNickname = result.nickname
-
-                scope.launch {
-                    onStartLoading()
-                    requestJoinByKakao(email = email, uId = kakaoUserId, nickname = kakaoNickname)
-                    requestLoginByKakao(email = email, uId = kakaoUserId)
-                    onStopLoading()
-                }
-            }
+        }, onFailure = {
+            postErrorSnackBar("${it.message}")
+            it.printStackTrace()
         })
     }
 

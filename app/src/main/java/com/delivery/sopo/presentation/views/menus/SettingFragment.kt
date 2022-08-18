@@ -26,6 +26,7 @@ import com.delivery.sopo.presentation.viewmodels.menus.SettingViewModel
 import com.delivery.sopo.presentation.views.main.MainView
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
+import com.delivery.sopo.util.WindowUtil
 import com.google.android.material.tabs.TabLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -75,7 +76,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
     fun setSelectItemView(vararg selectedItem: Pair<TextView, ImageView>)
     {
         selectedItem.forEach { item ->
-            item.first.convertTextColor(R.color.COLOR_GRAY_800)
+            item.first.convertTextColor(R.color.COLOR_MAIN_700)
             item.second.makeVisible()
         }
     }
@@ -84,7 +85,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
     {
         unselectedItem.forEach { item ->
             item.first.convertTextColor(R.color.COLOR_GRAY_500)
-            item.second.makeGone()
+            item.second.makeInvisible()
         }
     }
 
@@ -374,6 +375,17 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                                                        {
                                                            override fun onPanelSlide(panel: View?, slideOffset: Float)
                                                            {
+                                                               when(slideOffset < 0.3f)
+                                                               {
+                                                                   true ->
+                                                                   {
+                                                                       WindowUtil.setWindowStatusBarColor(requireActivity(), R.color.COLOR_GRAY_50)
+                                                                   }
+                                                                   false ->
+                                                                   {
+                                                                       WindowUtil.setWindowStatusBarColor(requireActivity(), R.color.SLIDE_BACKGROUND_COLOR)
+                                                                   }
+                                                               }
                                                            }
 
                                                            override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?)
@@ -389,7 +401,6 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                                                                    SlidingUpPanelLayout.PanelState.COLLAPSED ->
                                                                    {
                                                                        parentView.showTab()
-
                                                                        SopoLog.d("상태 -> $newState")
                                                                        setEnableView()
                                                                    }
@@ -447,7 +458,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                     binding.includeLockApp.root.makeGone()
                     binding.includePushAlarm.root.makeVisible()
 
-                    setUnselectItemView(Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways), Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive), Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways))
+                    setUnselectItemView(Pair(binding.includePushAlarm.tvAlways, binding.includePushAlarm.ivAlways), Pair(binding.includePushAlarm.tvArrive, binding.includePushAlarm.ivArrive), Pair(binding.includePushAlarm.tvReject, binding.includePushAlarm.ivReject))
 
                     when(vm.pushAlarmType.value)
                     {

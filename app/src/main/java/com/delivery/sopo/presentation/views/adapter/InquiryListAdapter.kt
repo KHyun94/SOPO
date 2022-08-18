@@ -1,8 +1,7 @@
 package com.delivery.sopo.presentation.views.adapter
 
 import android.view.LayoutInflater
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.core.content.ContextCompat
@@ -11,6 +10,8 @@ import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ItemCompletedParcelBinding
@@ -22,6 +23,9 @@ import com.delivery.sopo.extensions.toEllipsis
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.util.setting.DiffCallback
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mutableListOf(), private val parcelType: InquiryItemTypeEnum, private val cntOfSelectedItemForDelete: MutableLiveData<Int>? = null): RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
@@ -39,6 +43,20 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
         {
             binding.setVariable(BR.ongoingInquiryData, item)
             binding.executePendingBindings()
+        }
+
+        fun setModifying(){
+            Glide.with(binding.ivDeliveryStatus)
+                .asGif()
+                .load(R.drawable.ic_inquiry_cardview_modifying)
+                .skipMemoryCache(true)
+                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                .into(binding.ivDeliveryStatus)
+
+            binding.tvDeliveryStatus.text = "편집중"
+            binding.tvDeliveryStatus.setTextColor(ContextCompat.getColor(binding.tvDeliveryStatus.context, R.color.COLOR_MAIN_700))
+
+            binding.constraintDeliveryStatusFront.setBackgroundResource(R.color.COLOR_MAIN_BLUE_50)
         }
     }
 
@@ -122,6 +140,8 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
 
                 holder.binding.cvOngoingParent.setOnLongClickListener {
                     if(isRemoveMode) return@setOnLongClickListener true
+
+                    CoroutineScope(Dispatchers.Main).launch { holder.setModifying() }
 
                     parcelClickListener.onUpdateParcelAliasClicked(view = it, type = InquiryStatusEnum.ONGOING, parcelId = item.parcel.parcelId)
 
@@ -241,7 +261,7 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
     {
         binding.constraintDateComplete.visibility = GONE
         binding.constraintItemPartComplete.visibility = GONE
-        binding.vDividerLine.visibility = GONE
+        binding.vDividerLine.visibility = INVISIBLE
         binding.constraintDeliveryStatusFrontComplete.visibility = VISIBLE
         binding.constraintItemPartDeleteComplete.visibility = VISIBLE
         binding.linearItemComplete.background = ContextCompat.getDrawable(binding.root.context, R.drawable.border_all_rounded_11dp_blue)

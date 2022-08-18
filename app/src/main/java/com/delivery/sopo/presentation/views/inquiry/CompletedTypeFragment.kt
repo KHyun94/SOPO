@@ -14,20 +14,25 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.delivery.sopo.R
 import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
+import com.delivery.sopo.data.models.Result
 import com.delivery.sopo.databinding.FragmentCompletedTypeBinding
 import com.delivery.sopo.databinding.PopupMenuViewBinding
 import com.delivery.sopo.enums.*
+import com.delivery.sopo.extensions.makeGone
+import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.interfaces.OnPageSelectListener
 import com.delivery.sopo.interfaces.OnTapReselectListener
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
+import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.InquiryMenuItem
 import com.delivery.sopo.models.mapper.MenuMapper
 import com.delivery.sopo.presentation.consts.IntentConst
@@ -39,6 +44,7 @@ import com.delivery.sopo.util.*
 import com.delivery.sopo.util.ui_util.UpdateValueDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.*
 
@@ -180,11 +186,39 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
-        // 배송완료 리스트.
+        // 배송완료 리스트
+        vm.completedParcels.asLiveData(Dispatchers.Default).observe(this) {
+
+            SopoLog.d("Parcels [${it.toString()}]")
+            when(it)
+            {
+                is Result.Success<List<InquiryListItem>> ->
+                {
+
+                    SopoLog.d("Parcels 2차 [${it.data.map { it.parcel }.joinToString()}]")
+
+                    completedParcelAdapter.separateDelivered(it.data.toMutableList())
+                }
+                is Result.Error ->
+                {
+                    SopoLog.d("Parcels 2차 [Error]")
+//                    binding.linearNoItem.makeVisible()
+                }
+                is Result.Loading, Result.Uninitialized ->
+                {
+                    SopoLog.d("Parcels 2차 [Loading / Uninitialized]")
+//                    binding.linearNoItem.makeGone()
+                }
+                else ->
+                {
+                    SopoLog.d("Parcels 2차 [else]")
+//                    binding.linearNoItem.makeVisible()
+                }
+            }
+        }
         vm.completeList.observe(requireActivity()) { list ->
             completedParcelAdapter.separateDelivered(list.toMutableList())
         }
-
         // 배송완료 화면에서 표출 가능한 년월 리스트
         vm.histories.observe(requireActivity()) { dates ->
 

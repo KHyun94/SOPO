@@ -79,7 +79,6 @@
                 android:layout_height="match_parent"
                 android:background="@color/COLOR_GRAY_100" />
 
-
             <!--  삭제 아이템 -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraint_delivery_status_front_complete"
@@ -91,10 +90,10 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_checked_deep_blue"
+                    android:src="@drawable/ic_checked_blue_700"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -116,26 +115,27 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-
                     <TextView
                         android:id="@+id/tv_complete_parcel_name"
+                        style="@style/kor_H4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="6dp"
-                        android:fontFamily="@font/roboto_medium"
-                        android:letterSpacing="0"
+                        android:letterSpacing="-0.01"
+                        android:maxLines="1"
                         android:text="@{completeInquiryData.parcel.alias}"
-                        android:textSize="14.5dp"
+                        android:textColor="@color/COLOR_GRAY_500"
+                        android:textSize="15.5dp"
                         tools:text="갤럭시 버즈 플러스 화이트777갤1234ABCabc" />
 
                     <TextView
                         android:id="@+id/tv_complete_parcel_date"
+                        style="@style/kor_H6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_regular"
                         android:text="@{completeInquiryData.toCarrierName()}"
                         android:textColor="@color/COLOR_GRAY_500"
-                        android:textSize="13dp"
+                        android:textSize="11dp"
                         tools:text="2020/08/31" />
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -159,25 +159,25 @@
 
                     <TextView
                         android:id="@+id/tv_complete_parcel_name_delete_complete"
-
+                        style="@style/kor_H4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="6dp"
-                        android:fontFamily="@font/roboto_medium"
-                        android:letterSpacing="0"
+                        android:letterSpacing="-0.01"
+                        android:maxLines="1"
                         android:text="@{completeInquiryData.parcel.alias}"
-                        android:textSize="14.5dp"
                         android:textColor="@color/COLOR_MAIN_700"
+                        android:textSize="15.5dp"
                         tools:text="갤럭시 버즈 플러스 화이트777갤1234ABCabc" />
 
                     <TextView
                         android:id="@+id/tv_complete_parcel_date_delete_complete"
+                        style="@style/kor_H6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_regular"
-                        android:text="@{completeInquiryData.completeDateTime}"
+                        android:text="@{completeInquiryData.toCarrierName()}"
                         android:textColor="@color/COLOR_MAIN_700"
-                        android:textSize="13dp"
+                        android:textSize="11dp"
                         tools:text="2020/08/31" />
 
                 </LinearLayout>

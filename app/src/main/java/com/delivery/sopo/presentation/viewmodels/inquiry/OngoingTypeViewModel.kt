@@ -6,8 +6,6 @@ import androidx.lifecycle.Transformations
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
-import com.delivery.sopo.enums.ErrorCode
-import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.domain.usecase.parcel.remote.DeleteParcelsUseCase
@@ -31,23 +29,12 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
                            private val parcelRepo: ParcelRepository): BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
-    val navigator: LiveData<String>
-        get() = _navigator
+    val navigator: LiveData<String> = _navigator
 
     fun postNavigator(navigator: String)
     {
         _navigator.postValue(navigator)
     }
-
-    private val _ongoingParcels = Transformations.map(parcelRepo.getOngoingParcelAsLiveData()) { parcelList ->
-        val list = parcelList.map { parcel ->
-            SopoLog.d("UPDATE ${parcel.toString()}")
-            return@map InquiryListItem(parcel, false)
-        }
-        sortByDeliveryStatus(list).toMutableList()
-    }
-    val ongoingParcels: LiveData<MutableList<InquiryListItem>>
-        get() = _ongoingParcels
 
     private val _parcels: MutableStateFlow<Result<List<InquiryListItem>>> = MutableStateFlow(Result.Uninitialized)
     val parcels = _parcels.asStateFlow()

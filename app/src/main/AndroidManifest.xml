@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.delivery.sopo">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -31,7 +32,6 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -48,8 +48,12 @@
         <activity
             android:name=".presentation.views.login.ResetPasswordView"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".presentation.views.signup.RegisterNicknameView" />
-        <activity android:name=".presentation.views.main.MainView" />
+
+        <activity
+            android:name=".presentation.views.signup.RegisterNicknameView"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".presentation.views.main.MainView"
+            android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".presentation.views.signup.SignUpCompleteView"
             android:windowSoftInputMode="adjustResize" />
@@ -58,12 +62,29 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".presentation.views.menus.LockScreenView"
-            android:windowSoftInputMode="adjustResize" /> <!-- <activity -->
-        <!-- android:name=".views.menus.NotDisturbTimeView" -->
-        <!-- android:windowSoftInputMode="adjustPan" /> -->
+            android:windowSoftInputMode="adjustResize" />
+
         <activity
             android:name=".presentation.views.menus.SignOutView"
             android:windowSoftInputMode="adjustPan" />
+
+        <activity
+            android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Redirect URI: "kakao${NATIVE_APP_KEY}://oauth" -->
+                <data
+                    android:host="oauth"
+                    android:scheme="kakaob85793a61d3c1f1ab6f0e2dbca83921b" />
+            </intent-filter>
+
+        </activity>
 
         <service
             android:name="com.delivery.sopo.presentation.services.FirebaseService"
@@ -79,6 +100,30 @@
                 <action android:name="com.parse.push.intent.OPEN" />
             </intent-filter>
         </service>
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+
+            <meta-data
+                android:name="com.delivery.sopo.intializer.KoinInitializer"
+                android:value="androidx.startup" />
+
+            <meta-data
+                android:name="com.delivery.sopo.intializer.LoggerInitializer"
+                android:value="androidx.startup" />
+
+            <meta-data
+                android:name="com.delivery.sopo.intializer.KakaoInitializer"
+                android:value="androidx.startup" />
+
+            <meta-data
+                android:name="com.delivery.sopo.intializer.FirebaseInitializer"
+                android:value="androidx.startup" />
+
+        </provider>
 
         <meta-data
             android:name="firebase_messaging_auto_init_enabled"

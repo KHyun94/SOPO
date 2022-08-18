@@ -96,7 +96,6 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
             checkNetworkStatus().also { value ->
                 if(!value)
                 {
-                    SopoLog.e("인터넷 오류")
                     _isClickEvent.postValue(false)
                     return
                 }
@@ -106,8 +105,6 @@ abstract class BaseViewModel: ViewModel(), KoinComponent
         {
             _isClickEvent.postValue(false)
         }
-
-        SopoLog.d("인터넷 체크 후")
 
         if(_isClickEvent.value == true) return
 

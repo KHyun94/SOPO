@@ -9,12 +9,16 @@ import com.delivery.sopo.data.resources.auth.local.AuthDataSource
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.GsonBuilder
+import com.ihsanbal.logging.Level
+import com.ihsanbal.logging.LoggingInterceptor
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.orhanobut.logger.Logger.VERBOSE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.json.JSONException
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import retrofit2.Retrofit
@@ -22,7 +26,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-object NetworkManager : KoinComponent
+object NetworkManager: KoinComponent
 {
     private val authDataSource: AuthDataSource by inject()
     private val userRepository: UserRepository by inject()
@@ -35,13 +39,14 @@ object NetworkManager : KoinComponent
     var INTERCEPTOR_TYPE = 0
     var isAuthenticator = true
 
-    fun<T> setLoginMethod(method : NetworkEnum, clz : Class<T>) : T
+    fun <T> setLoginMethod(method: NetworkEnum, clz: Class<T>): T
     {
         return when(method)
         {
             NetworkEnum.O_AUTH_TOKEN_LOGIN ->
             {
-                val authToken : AuthToken.Info = runBlocking(Dispatchers.Default) { authDataSource.get() }
+                val authToken: AuthToken.Info =
+                    runBlocking(Dispatchers.Default) { authDataSource.get() }
                 retro(authToken.accessToken).create(clz)
             }
             NetworkEnum.PUBLIC_LOGIN ->
@@ -59,26 +64,23 @@ object NetworkManager : KoinComponent
         }
     }
 
-    fun retro(vararg params : String? = emptyArray()) : Retrofit
+    fun retro(vararg params: String? = emptyArray()): Retrofit
     {
         INTERCEPTOR_TYPE = params.size
 
-        SopoLog.d( msg = "네트워크 인증 타입 => $INTERCEPTOR_TYPE ${params.joinToString()}")
-        val interceptor : Interceptor? = when(INTERCEPTOR_TYPE)
+        SopoLog.d(msg = "네트워크 인증 타입 => $INTERCEPTOR_TYPE ${params.joinToString()}")
+        val interceptor: Interceptor? = when(INTERCEPTOR_TYPE)
         {
             1 -> AuthInterceptor(authDataSource)   // 파라미터 갯수 1일 때 OAuthInterceptor(Token)
             2 -> BasicAuthInterceptor(params[0]!!, params[1]!!)   // 파라미터 갯수 2일 때 BasicAuthInterceptor (userId or userPassword)
             else -> null
         }
 
-        val httpLoggingInterceptor = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger{
-            override fun log(message: String)
-            {
-                SopoLog.api(message)
-            }
-        })
-
-        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        val httpLoggingInterceptor = LoggingInterceptor.Builder()
+            .setLevel(Level.BASIC)
+            .tag("SOPO_NETWORK")
+            .log(VERBOSE)
+            .build()
 
         mOKHttpClient = OkHttpClient().newBuilder().apply {
             addInterceptor(httpLoggingInterceptor)

@@ -137,7 +137,6 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
         }
 
         vm.cntOfBeDelivered.observe(this) { cnt ->
-            SopoLog.d("테스트 도착 상태 갯수 $cnt")
             completedTabBinding.updateCount = cnt
         }
 
