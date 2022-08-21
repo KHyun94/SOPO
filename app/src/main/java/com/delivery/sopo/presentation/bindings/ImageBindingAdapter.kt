@@ -134,7 +134,8 @@ object ImageBindingAdapter
                     Glide.with(view)
                         .asGif()
                         .load(res)
-                        .skipMemoryCache(true)
+//                        .skipMemoryCache(true)
+                        .override(200, 200)
                         .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                         .into(view)
                 }
@@ -142,7 +143,8 @@ object ImageBindingAdapter
                 {
                     Glide.with(view)
                         .load(res)
-                        .skipMemoryCache(true)
+//                        .skipMemoryCache(true)
+                        .override(200, 200)
                         .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                         .into(view)
                 }
@@ -170,6 +172,7 @@ object ImageBindingAdapter
                         .asGif()
                         .load(res)
                         .placeholder(defaultRes)
+                        .override(200, 200)
                         .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                         .into(view)
                 }
@@ -178,6 +181,7 @@ object ImageBindingAdapter
                     Glide.with(view.context)
                         .load(res)
                         .placeholder(0)
+                        .override(200, 200)
                         .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                         .into(view)
                 }

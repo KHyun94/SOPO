@@ -9,6 +9,11 @@
             type="com.delivery.sopo.presentation.viewmodels.inquiry.CompletedTypeViewModel" />
     </data>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearMainCompleted"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_layout_main_completed"
         android:layout_width="match_parent"
@@ -310,4 +315,15 @@
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-</layout>
+    <include
+        android:id="@+id/include_bottom_input_layout"
+        layout="@layout/include_bottom_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:hint='@{"물품명을 설정해주세요 ･ 최대 25자"}'
+        android:visibility="gone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+    </layout>

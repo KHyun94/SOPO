@@ -8,6 +8,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.delivery.sopo.R
@@ -237,14 +238,14 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                     배송 상태가 2주간 확인되지 않고 있어요.
                     등록된 송장번호가 유효하지 않을지도 몰라요.
                                 """.trimIndent(), onLeftClickListener = { dialog: DialogFragment ->
-                        CoroutineScope(Dispatchers.Main).launch {
+                        lifecycleScope.launch(Dispatchers.Main) {
                             vm.deleteParcel(parcelId)
                             delay(1000)
                             vm.getOngoingParcels()
                             dialog.dismiss()
                         }
                     }, onRightClickListener = { dialog: DialogFragment ->
-                        CoroutineScope(Dispatchers.IO).launch {
+                        lifecycleScope.launch(Dispatchers.Main) {
                             withContext(Dispatchers.IO) { vm.refreshParcel(parcelId) }
 
                             delay(1000)
@@ -285,12 +286,13 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
     override fun onShowKeyboard()
     {
         super.onShowKeyboard()
+
     }
 
     override fun onHideKeyboard()
     {
         super.onHideKeyboard()
-
+        vm.syncOngoingParcels()
         binding.includeBottomInputLayout.root.makeGone()
     }
 
@@ -309,7 +311,7 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
                                  {
                                      override fun run()
                                      {
-                                         CoroutineScope(Dispatchers.Main).launch {
+                                         lifecycleScope.launch(Dispatchers.Main) {
                                              refreshDelay = false
                                          }
                                      }
@@ -345,11 +347,11 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
     {
         if(listSize > 0)
         {
-            binding.constraintSoonArrival.visibility = View.VISIBLE
+            binding.constraintSoonArrival.makeVisible()
             return
         }
 
-        binding.constraintSoonArrival.visibility = View.GONE
+        binding.constraintSoonArrival.makeGone()
     }
 
     // TODO : 데이터 바인딩으로 처리할 수 있으면 수정
@@ -359,11 +361,11 @@ class OngoingTypeFragment: BaseFragment<FragmentOngoingTypeBinding, OngoingTypeV
         {
             0 ->
             {
-                binding.constraintRegisteredArrival.visibility = View.GONE
+                binding.constraintRegisteredArrival.makeGone()
             }
             else ->
             {
-                binding.constraintRegisteredArrival.visibility = View.VISIBLE
+                binding.constraintRegisteredArrival.makeVisible()
             }
         }
     }

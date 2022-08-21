@@ -5,37 +5,32 @@ import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.data.models.Result
 import com.delivery.sopo.data.repositories.local.repository.CompletedParcelHistoryRepoImpl
+import com.delivery.sopo.domain.usecase.parcel.remote.GetCompleteParcelUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.GetCompletedMonthUseCase
+import com.delivery.sopo.domain.usecase.parcel.remote.UpdateParcelAliasUseCase
 import com.delivery.sopo.enums.ErrorCode
-import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
+import com.delivery.sopo.exceptions.InternalServerException
+import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.domain.usecase.parcel.remote.GetCompleteParcelUseCase
-import com.delivery.sopo.domain.usecase.parcel.remote.GetCompletedMonthUseCase
-import com.delivery.sopo.domain.usecase.parcel.remote.UpdateParcelAliasUseCase
-import com.delivery.sopo.exceptions.InternalServerException
-import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase, private val getCompletedMonthUseCase: GetCompletedMonthUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val historyRepo: CompletedParcelHistoryRepoImpl):
         BaseViewModel()
 {
-    /**
-     * 완료된 택배 페이지
-     */
     private var _completeList = MutableLiveData<MutableList<InquiryListItem>>()
     val completeList: LiveData<MutableList<InquiryListItem>> = _completeList
 
-    /*val completeList = mutableListOf<InquiryListItem>()*/
-
-    private val _completedParcels: MutableStateFlow<Result<List<InquiryListItem>>> = MutableStateFlow(Result.Uninitialized)
+    private val _completedParcels: MutableStateFlow<Result<List<InquiryListItem>>> =
+        MutableStateFlow(Result.Uninitialized)
     val completedParcels = _completedParcels.asStateFlow()
 
     // 배송완료 조회 가능한 'Calendar'
@@ -70,7 +65,7 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
         updateMonthsSelector(year)
     }
 
-    fun getActivateMonths() = scope.launch {
+    fun getActivateMonths() = scope.launch(Dispatchers.IO) {
         getCompletedMonthUseCase()
     }
 
@@ -107,51 +102,22 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
         monthsOfCalendar.postValue(histories)
     }
 
-/*    fun refreshCompleteParcelsByDate(inquiryDate: String) = CoroutineScope(Dispatchers.IO).launch {
+    fun refreshCompleteParcelsByDate(inquiryDate: String) = scope.launch(Dispatchers.IO) {
 
         if(isUpdating) return@launch
 
-        flow<Result<List<InquiryListItem>>> {
-            val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map { parcel -> InquiryListItem(parcel, false) }.toMutableList()
+        val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map { parcel ->
+            InquiryListItem(parcel, false)
+        }.toMutableList()
 
-            if(pagingManagement.pagingNum <= 1)
-            {
-                completeList.clear()
-                completeList.addAll(list) //            _completeList.postValue(list)
-            }
-            else
-            {*//*val li = _completeList.value?.plus(list)?: emptyList<InquiryListItem>()
-                _completeList.postValue(li.toMutableList())*//*
+        if(pagingManagement.pagingNum <= 1) _completeList.postValue(list)
+        else
+        {
+            val li = _completeList.value?.plus(list) ?: emptyList<InquiryListItem>()
 
-                completeList.addAll(list) //            _completeList.postValue(li.toMutableList())
-            }
-
-            SopoLog.d("Parcels 1차(${completeList.size}) ${completeList.map { it.parcel }.joinToString()}")
-
-            emit(Result.Success(completeList))
-
-        }.catch { e -> emit(Result.Error(e)) }.collect {
-
-            _completedParcels.value = it
-            SopoLog.d("1.5차 ${it.toString()}")
+            _completeList.postValue(li.toMutableList())
         }
-    }*/
-
-        fun refreshCompleteParcelsByDate(inquiryDate: String) = scope.launch {
-
-            if(isUpdating) return@launch
-
-            val list = getCompleteParcelsWithPaging(inquiryDate = inquiryDate).map { parcel ->
-                InquiryListItem(parcel, false)
-            }.toMutableList()
-
-            if(pagingManagement.pagingNum <= 1) _completeList.postValue(list)
-            else {
-                val li = _completeList.value?.plus(list)?: emptyList<InquiryListItem>()
-
-                _completeList.postValue(li.toMutableList())
-            }
-        }
+    }
 
     // 배송완료 리스트를 가져온다.(페이징 포함)
     suspend fun getCompleteParcelsWithPaging(inquiryDate: String): List<Parcel.Common>
@@ -210,7 +176,7 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
 
     fun updateParcelAlias(parcelId: Int, parcelAlias: String) =
         checkEventStatus(checkNetwork = true) {
-            scope.launch {
+            scope.launch(Dispatchers.IO) {
                 updateParcelAliasUseCase.invoke(parcelId = parcelId, parcelAlias = parcelAlias)
             }
         }

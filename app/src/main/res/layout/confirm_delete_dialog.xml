@@ -129,7 +129,7 @@
             android:text="@{rightBtnText}"
             android:textColor="@{(dialogType instanceof DialogType.FocusRightButton)? ContextCompat.getColor(context, R.color.MAIN_WHITE):ContextCompat.getColor(context, R.color.COLOR_MAIN_500)}"
             android:textSize="14dp"
-            android:visibility='@{(dialogType instanceof DialogType.FocusOneButton) ? View.VISIBLE : View.GONE}'
+            android:visibility='@{(dialogType instanceof DialogType.FocusOneButton) || (dialogType instanceof DialogType.FocusRightButton) ? View.VISIBLE : View.GONE}'
             app:layout_constraintBottom_toBottomOf="@id/tv_left_btn"
             app:layout_constraintLeft_toRightOf="@id/tv_left_btn"
             app:layout_constraintRight_toRightOf="parent"

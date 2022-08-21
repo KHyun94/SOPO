@@ -32,6 +32,8 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
     private lateinit var parcelClickListener: OnParcelClickListener
     private var isRemoveMode = false
 
+    var updateParcel: String = ""
+
     fun setOnParcelClickListener(listener: OnParcelClickListener)
     {
         this.parcelClickListener = listener
@@ -62,8 +64,7 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
 
     inner class CompleteViewHolder(val binding: ItemCompletedParcelBinding): RecyclerView.ViewHolder(binding.root)
     {
-        fun bind(item: InquiryListItem)
-        {
+        fun bind(item: InquiryListItem) = CoroutineScope(Dispatchers.Main).launch{
             binding.completeInquiryData = item
             binding.executePendingBindings()
         }
@@ -338,4 +339,5 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
     fun getListSize(): Int = parcels.size
 
     fun getList(): MutableList<InquiryListItem> = parcels
+
 }

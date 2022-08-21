@@ -13,8 +13,8 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -53,7 +53,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
 {
     override val layoutRes: Int = R.layout.fragment_completed_type
     override val vm: CompletedTypeViewModel by viewModel()
-    override val mainLayout: View by lazy { binding.swipeLayoutMainCompleted }
+    override val mainLayout: View by lazy { binding.linearMainCompleted }
 
     private val parentView: MainView by lazy { activity as MainView }
 
@@ -72,8 +72,6 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         override fun onReceive(context: Context?, intent: Intent?)
         {
             intent ?: return
-
-            SopoLog.d("Registered Action ${intent.action}")
 
             when(intent.action)
             {
@@ -416,10 +414,17 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
             {
                 super.onUpdateParcelAliasClicked(view, type, parcelId)
 
-                UpdateValueDialog{ alias ->
+                /*UpdateValueDialog{ alias ->
                     SopoLog.d("TEST INPUT DATA $alias")
                     vm.updateParcelAlias(parcelId, alias)
-                }.show(childFragmentManager, "")
+                }.show(childFragmentManager, "")*/
+
+                showKeyboard(binding.includeBottomInputLayout.etInputText)
+                binding.includeBottomInputLayout.root.makeVisible()
+                binding.includeBottomInputLayout.onClickListener = View.OnClickListener {
+                    val alias: String = binding.includeBottomInputLayout.etInputText.text.toString()
+                    vm.updateParcelAlias(parcelId, alias)
+                }
             }
 
         }
@@ -461,7 +466,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         historyPopUpWindow = if(histories.size > 2)
         {
             PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F), SizeUtil.changeDpToPx(binding.root.context, 35 * 6F), true).apply {
-                CoroutineScope(Dispatchers.Main).launch {
+                lifecycleScope.launch(Dispatchers.Main) {
                     showAsDropDown(anchorView, -80, 0, Gravity.CENTER)
                 }
             }
@@ -470,7 +475,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         {
             PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
 
-                CoroutineScope(Dispatchers.Main).launch {
+                lifecycleScope.launch(Dispatchers.Main) {
                     showAsDropDown(anchorView, -80, 0, Gravity.CENTER)
                 }
 
@@ -492,7 +497,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
                                  {
                                      override fun run()
                                      {
-                                         CoroutineScope(Dispatchers.Main).launch {
+                                         lifecycleScope.launch(Dispatchers.Main) {
                                              refreshDelay = false
                                          }
                                      }
@@ -578,7 +583,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
     }
 
     private fun setMonthItem(tv: TextView, font: Typeface?, textColor: Int, clickable: Boolean, isSelected: Boolean = false) =
-        CoroutineScope(Dispatchers.Main).launch {
+        lifecycleScope.launch(Dispatchers.Main) {
             tv.apply {
                 setTextColor(textColor)
                 typeface = font
@@ -591,5 +596,21 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
     override fun onReselect()
     {
         Toast.makeText(requireContext(), "테스트 !!", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onShowKeyboard()
+    {
+        super.onShowKeyboard()
+
+    }
+
+    override fun onHideKeyboard()
+    {
+        super.onHideKeyboard()
+        lifecycleScope.launch {
+            vm.refreshCompleteParcelsByDate(vm.selectedDate.value.toString())
+        }
+
+        binding.includeBottomInputLayout.root.makeGone()
     }
 }

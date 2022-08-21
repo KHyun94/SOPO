@@ -70,7 +70,7 @@ class ParcelDetailViewModel(
 
         SopoLog.d("requestParcelDetail(...) parcel id = $parcelId")
 
-        val localParcel = updateParcelUseCase.getLocalParcel(parcelId = parcelId)?: throw Exception("이 시발 여기냐 섭라")
+        val localParcel = updateParcelUseCase.getLocalParcel(parcelId = parcelId)?: throw Exception("해당 택배를 찾을 수 없습니다.")
         SopoLog.d("Local Parcel $localParcel")
         val localParcelDetail = getParcelDetail(localParcel)
         _parcelDetail.postValue(localParcelDetail)

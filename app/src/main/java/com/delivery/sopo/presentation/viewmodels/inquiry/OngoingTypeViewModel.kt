@@ -3,6 +3,7 @@ package com.delivery.sopo.presentation.viewmodels.inquiry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.enums.DeliveryStatusEnum
@@ -22,11 +23,8 @@ import com.delivery.sopo.exceptions.SOPOApiException
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 
-class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
-                           private val syncParcelsUseCase: SyncParcelsUseCase,
-                           private val updateParcelAliasUseCase: UpdateParcelAliasUseCase,
-                           private val deleteParcelsUseCase: DeleteParcelsUseCase,
-                           private val parcelRepo: ParcelRepository): BaseViewModel()
+class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase, private val syncParcelsUseCase: SyncParcelsUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val deleteParcelsUseCase: DeleteParcelsUseCase, private val parcelRepo: ParcelRepository):
+        BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
     val navigator: LiveData<String> = _navigator
@@ -36,7 +34,8 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
         _navigator.postValue(navigator)
     }
 
-    private val _parcels: MutableStateFlow<Result<List<InquiryListItem>>> = MutableStateFlow(Result.Uninitialized)
+    private val _parcels: MutableStateFlow<Result<List<InquiryListItem>>> =
+        MutableStateFlow(Result.Uninitialized)
     val parcels = _parcels.asStateFlow()
 
     val cntOfPresentOngoingParcels: LiveData<Int> =
@@ -47,9 +46,10 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
         syncOngoingParcels()
     }
 
-    fun getOngoingParcels() = CoroutineScope(Dispatchers.Default).launch {
-        SopoLog.d("getOngoingParcels(...)")
-        parcelRepo.getOngoingParcels().collect { _parcels.value = it }
+    fun getOngoingParcels() = scope.launch(Dispatchers.Default) {
+        viewModelScope.launch(Dispatchers.Default) {
+            parcelRepo.getOngoingParcels().collect { _parcels.value = it }
+        }
     }
 
     /**
@@ -57,13 +57,13 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
      */
 
     // 서버에서 DB 내 택배 정보를 가져와서 로컬 내 디비 정보를 갱신
-    fun syncOngoingParcels() = scope.launch {
-        syncParcelsUseCase.invoke()
+    fun syncOngoingParcels() = scope.launch(Dispatchers.IO) {
+        syncParcelsUseCase()
     }
 
     fun updateParcelAlias(parcelId: Int, parcelAlias: String) =
         checkEventStatus(checkNetwork = true) {
-            scope.launch {
+            scope.launch(Dispatchers.IO) {
                 updateParcelAliasUseCase.invoke(parcelId = parcelId, parcelAlias = parcelAlias)
             }
         }
@@ -73,7 +73,7 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
     }
 
     fun deleteParcel(parcelId: Int) = checkEventStatus(checkNetwork = true) {
-        scope.launch {
+        scope.launch(Dispatchers.IO) {
             deleteParcelsUseCase(parcelId = parcelId)
         }
     }
@@ -81,7 +81,8 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
     fun sortByDeliveryStatus(list: List<InquiryListItem>): List<InquiryListItem>
     {
         val sortedList = mutableListOf<InquiryListItem>()
-        val multiList = listOf<MutableList<InquiryListItem>>(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
+        val multiList =
+            listOf<MutableList<InquiryListItem>>(mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf(), mutableListOf())
 
         val elseList = list.asSequence().filter { item ->
 
@@ -157,6 +158,7 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
             return p0.parcel.auditDte.compareTo(p1.parcel.auditDte)
         }
     }
+
     override fun handlerAPIException(exception: SOPOApiException)
     {
         super.handlerAPIException(exception)

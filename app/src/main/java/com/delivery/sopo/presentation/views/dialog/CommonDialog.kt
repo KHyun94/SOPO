@@ -24,7 +24,6 @@ class CommonDialog(private val dialogType: DialogType = DialogType.FocusLeftButt
         binding = ConfirmDeleteDialogBinding.inflate(LayoutInflater.from(context))
         binding.lifecycleOwner = activity
 
-
         setWindowSetting()
 
         return binding.root
