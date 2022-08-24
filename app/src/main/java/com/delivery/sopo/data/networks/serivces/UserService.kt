@@ -12,7 +12,6 @@ import retrofit2.http.*
 
 interface UserService
 {
-
     /**
      * 신규 토큰 발행
      *

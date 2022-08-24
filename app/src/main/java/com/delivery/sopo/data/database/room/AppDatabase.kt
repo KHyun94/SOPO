@@ -30,7 +30,7 @@ abstract class AppDatabase : RoomDatabase(), KoinComponent
     abstract fun parcelManagementDao(): ParcelStatusDAO
     abstract fun completeParcelStatusDao(): CompleteParcelStatusDao
     abstract fun securityDao(): AppPasswordDao
-    abstract fun authTok() : AuthTokenDao
+    abstract fun authTokenDao() : AuthTokenDao
 
     val carrierDataSource: CarrierDataSource by inject()
 

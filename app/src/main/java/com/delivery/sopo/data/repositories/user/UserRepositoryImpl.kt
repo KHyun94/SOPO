@@ -11,8 +11,9 @@ import com.delivery.sopo.models.api.Error
 import com.delivery.sopo.models.user.ResetAuthCode
 import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.util.DateUtil
+import javax.inject.Inject
 
-class UserRepositoryImpl(
+class UserRepositoryImpl @Inject constructor(
         private val authDataSource: AuthDataSource, private val authRemoteDataSource: AuthRemoteDataSource,
         private val userDataSource: UserDataSource, private val userRemoteDataSource: UserRemoteDataSource): UserRepository
 {

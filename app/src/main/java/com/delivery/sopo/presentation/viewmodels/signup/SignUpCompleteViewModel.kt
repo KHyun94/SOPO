@@ -8,11 +8,13 @@ import com.delivery.sopo.domain.usecase.user.token.LoginUseCase
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
-import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SignUpCompleteViewModel(private val loginUseCase: LoginUseCase, private val userDataSource: UserDataSource):
+@HiltViewModel
+class SignUpCompleteViewModel @Inject constructor(private val loginUseCase: LoginUseCase, private val userDataSource: UserDataSource):
         BaseViewModel()
 {
     val email = MutableLiveData<String>().also {

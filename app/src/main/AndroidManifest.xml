@@ -28,7 +28,7 @@
         android:usesCleartextTraffic="true">
 
         <activity
-            android:name=".presentation.views.splash.SplashView"
+            android:name=".presentation.splash.SplashView"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +39,7 @@
             android:name=".presentation.views.intro.IntroView"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".presentation.views.login.LoginView"
+            android:name=".presentation.login.LoginView"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".presentation.views.signup.SignUpView"
@@ -58,7 +58,7 @@
             android:name=".presentation.views.signup.SignUpCompleteView"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".presentation.views.login.LoginSelectView"
+            android:name=".presentation.login.LoginSelectView"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".presentation.views.menus.LockScreenView"

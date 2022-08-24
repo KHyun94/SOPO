@@ -1,6 +1,7 @@
 package com.delivery.sopo.presentation.views.signup
 
 import android.content.Intent
+import androidx.activity.viewModels
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.SignUpViewBinding
@@ -10,12 +11,14 @@ import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.presentation.viewmodels.signup.SignUpViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class SignUpView: BaseView<SignUpViewBinding, SignUpViewModel>()
 {
     override val layoutRes: Int = R.layout.sign_up_view
-    override val vm: SignUpViewModel by viewModel()
+    override val vm: SignUpViewModel by viewModels()
     override val mainLayout by lazy { binding.constraintMainSignUp }
 
     override fun setObserve()

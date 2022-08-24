@@ -16,10 +16,13 @@ import com.delivery.sopo.data.models.JoinInfo
 import com.delivery.sopo.domain.usecase.user.token.SignUpUseCase
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SignUpViewModel(private val signUpUseCase: SignUpUseCase): BaseViewModel()
+@HiltViewModel
+class SignUpViewModel @Inject constructor(private val signUpUseCase: SignUpUseCase): BaseViewModel()
 {
     val email = MutableLiveData<String>()
     val password = MutableLiveData<String>()

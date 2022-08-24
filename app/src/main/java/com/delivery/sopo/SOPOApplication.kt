@@ -4,7 +4,9 @@ import android.app.Application
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.enums.NetworkStatus
+import dagger.hilt.android.HiltAndroidApp
 
+@HiltAndroidApp
 class SOPOApplication: Application()
 {
     override fun onCreate()

@@ -40,6 +40,7 @@
         <entry key="app/src/main/res/drawable/ic_lock_edittext_off.xml" value="0.1735" />
         <entry key="app/src/main/res/drawable/ic_lock_edittext_on.xml" value="0.1735" />
         <entry key="app/src/main/res/drawable/ic_snack_bar_network_error.xml" value="0.162" />
+        <entry key="app/src/main/res/drawable/ic_splash_text_logo.xml" value="0.285" />
         <entry key="app/src/main/res/drawable/ic_toggle_on.xml" value="0.1605" />
         <entry key="app/src/main/res/drawable/right_arrow_black_24dp.xml" value="0.1705" />
         <entry key="app/src/main/res/drawable/ripple_circle.xml" value="0.206" />
@@ -107,6 +108,7 @@
         <entry key="app/src/main/res/layout/sign_up_complete.xml" value="0.12641008626410086" />
         <entry key="app/src/main/res/layout/sign_up_view.xml" value="0.12641008626410086" />
         <entry key="app/src/main/res/layout/snack_bar_custom.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/splash_view.xml" value="0.1796448087431694" />
         <entry key="app/src/main/res/layout/status_display.xml" value="0.1293918918918919" />
         <entry key="app/src/main/res/layout/time_line_item.xml" value="0.5" />
         <entry key="app/src/main/res/layout/toast_custom.xml" value="0.1" />

@@ -6,6 +6,7 @@ import com.delivery.sopo.data.networks.interceptors.AuthInterceptor
 import com.delivery.sopo.data.networks.serivces.ParcelService
 import com.delivery.sopo.data.repositories.user.UserRepository
 import com.delivery.sopo.data.resources.auth.local.AuthDataSource
+import com.delivery.sopo.data.resources.auth.remote.AuthRemoteDataSource
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -71,16 +72,11 @@ object APIClient
 
     fun getHttpLoggingInterceptor(): HttpLoggingInterceptor
     {
-        val httpLoggingInterceptor = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger{
-            override fun log(message: String)
-            {
-                SopoLog.api(message)
-            }
-        })
+        val httpLoggingInterceptor = HttpLoggingInterceptor { message -> SopoLog.api(message) }
 
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         return httpLoggingInterceptor
     }
     fun getAuthInterceptor(authDataSource: AuthDataSource) = AuthInterceptor(authDataSource)
-    fun getTokenAuthenticator(authDataSource: AuthDataSource, userRepository: UserRepository) = TokenAuthenticator(authDataSource, userRepository)
+    fun getTokenAuthenticator(authDataSource: AuthDataSource, authRemoteDataSource: AuthRemoteDataSource) = TokenAuthenticator(authDataSource, authRemoteDataSource)
 }

@@ -1,26 +1,27 @@
-package com.delivery.sopo.presentation.views.splash
+package com.delivery.sopo.presentation.splash
 
 import android.content.Intent
+import androidx.activity.viewModels
 import com.delivery.sopo.R
-import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.SplashViewBinding
 import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.interfaces.listener.OnPermissionResponseCallback
 import com.delivery.sopo.models.base.BaseView
-import com.delivery.sopo.util.PermissionUtil
-import com.delivery.sopo.util.WindowUtil
-import com.delivery.sopo.presentation.viewmodels.splash.SplashViewModel
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.presentation.views.dialog.GeneralDialog
 import com.delivery.sopo.presentation.views.intro.IntroView
 import com.delivery.sopo.presentation.views.main.MainView
 import com.delivery.sopo.presentation.views.signup.RegisterNicknameView
+import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.util.SopoLog
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.delivery.sopo.util.WindowUtil
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
 {
     override val layoutRes: Int = R.layout.splash_view
-    override val vm: SplashViewModel by viewModel()
+    override val vm: SplashViewModel by viewModels()
     override val mainLayout by lazy { binding.constraintMainSplash }
 
     private val onPermissionResponseCallback = object: OnPermissionResponseCallback {

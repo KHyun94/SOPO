@@ -1,36 +1,26 @@
 package com.delivery.sopo.di
 
 import com.delivery.sopo.data.database.room.AppDatabase
-import com.delivery.sopo.data.database.shared.SharedPref
 import com.delivery.sopo.data.repositories.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.data.repositories.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
-import com.delivery.sopo.data.database.shared.UserSharedPrefHelper
 import com.delivery.sopo.data.networks.APIClient
 import com.delivery.sopo.data.repositories.parcels.ParcelRepositoryImpl
 import com.delivery.sopo.data.repositories.user.SignupRepository
 import com.delivery.sopo.data.repositories.user.SignupRepositoryImpl
 import com.delivery.sopo.data.repositories.user.UserRepository
 import com.delivery.sopo.data.repositories.user.UserRepositoryImpl
-import com.delivery.sopo.data.resources.auth.local.AuthDataSource
-import com.delivery.sopo.data.resources.auth.local.AuthDataSourceImpl
-import com.delivery.sopo.data.resources.auth.remote.AuthRemoteDataSource
-import com.delivery.sopo.data.resources.auth.remote.AuthRemoteDataSourceImpl
 import com.delivery.sopo.data.resources.parcel.local.ParcelDataSource
 import com.delivery.sopo.data.resources.parcel.local.ParcelDataSourceImpl
 import com.delivery.sopo.data.resources.parcel.local.ParcelStatusDataSource
 import com.delivery.sopo.data.resources.parcel.local.ParcelStatusDataSourceImpl
 import com.delivery.sopo.data.resources.parcel.remote.ParcelRemoteDataSource
 import com.delivery.sopo.data.resources.parcel.remote.ParcelRemoteDataSourceImpl
-import com.delivery.sopo.data.resources.user.local.UserDataSource
-import com.delivery.sopo.data.resources.user.local.UserDataSourceImpl
 import com.delivery.sopo.data.resources.user.remote.SignUpRemoteDataSource
 import com.delivery.sopo.data.resources.user.remote.SignUpRemoteDataSourceImpl
-import com.delivery.sopo.data.resources.user.remote.UserRemoteDataSource
-import com.delivery.sopo.data.resources.user.remote.UserRemoteDataSourceImpl
 import com.delivery.sopo.domain.usecase.parcel.local.GetLocalParcelUseCase
 import com.delivery.sopo.domain.usecase.parcel.remote.*
 import com.delivery.sopo.domain.usecase.user.UpdateFCMTokenUseCase
@@ -41,8 +31,8 @@ import com.delivery.sopo.domain.usecase.user.reset.VerifyAuthTokenUseCase
 import com.delivery.sopo.domain.usecase.user.token.*
 import com.delivery.sopo.presentation.viewmodels.IntroViewModel
 import com.delivery.sopo.presentation.viewmodels.inquiry.*
-import com.delivery.sopo.presentation.viewmodels.login.LoginSelectViewModel
-import com.delivery.sopo.presentation.viewmodels.login.LoginViewModel
+import com.delivery.sopo.presentation.login.LoginSelectViewModel
+import com.delivery.sopo.presentation.login.LoginViewModel
 import com.delivery.sopo.presentation.viewmodels.login.ResetPasswordViewModel
 import com.delivery.sopo.presentation.viewmodels.main.MainViewModel
 import com.delivery.sopo.presentation.viewmodels.menus.*
@@ -52,8 +42,7 @@ import com.delivery.sopo.presentation.viewmodels.registesrs.SelectCarrierViewMod
 import com.delivery.sopo.presentation.viewmodels.signup.RegisterNicknameViewModel
 import com.delivery.sopo.presentation.viewmodels.signup.SignUpCompleteViewModel
 import com.delivery.sopo.presentation.viewmodels.signup.SignUpViewModel
-import com.delivery.sopo.presentation.viewmodels.splash.SplashViewModel
-import com.delivery.sopo.thirdpartyapi.KakaoOath
+import com.delivery.sopo.presentation.splash.SplashViewModel
 import kotlinx.coroutines.Dispatchers
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -61,21 +50,21 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val dbModule = module {
-    single { SharedPref(androidApplication()) }
-    single { UserSharedPrefHelper(sharedPref = get(), context = androidApplication()) }
+//    single { SharedPref(androidApplication()) }
+//    single { UserSharedPrefHelper(sharedPref = get(), context = androidApplication()) }
 
-    single { AppDatabase.getInstance(context = get()) }
-    single { AppDatabase.getInstance(context = get()).authTok() }
+/*    single { AppDatabase.getInstance(context = get()) }
+    single { AppDatabase.getInstance(context = get()).authTokenDao() }
     single { AppDatabase.getInstance(context = get()).carrierDao() }
     single { AppDatabase.getInstance(context = get()).carrierPatternDao() }
     single { AppDatabase.getInstance(context = get()).parcelDao() }
     single { AppDatabase.getInstance(context = get()).completeParcelStatusDao() }
     single { AppDatabase.getInstance(context = get()).parcelManagementDao() }
-    single { AppDatabase.getInstance(context = get()).securityDao() }
+    single { AppDatabase.getInstance(context = get()).securityDao() }*/
 }
 
 val apiModule = module {
-    single { APIClient.provideCache(application = androidApplication()) }
+    /*single { APIClient.provideCache(application = androidApplication()) }
     single { APIClient.getHttpLoggingInterceptor() }
     single { APIClient.getTokenAuthenticator(get(), get()) }
 
@@ -83,7 +72,7 @@ val apiModule = module {
     single(named("PrivateOkHttpClient")) { APIClient.providePrivateOkHttpClient(cache = get(), loggingInterceptor = get(), authDataSource = get(), authenticator = get()) }
 
     single(named("PublicAccess")) { APIClient.provideRetrofit(get(named("PublicOkHttpClient"))) }
-    single(named("PrivateAccess")) { APIClient.provideRetrofit(get(named("PrivateOkHttpClient"))) }
+    single(named("PrivateAccess")) { APIClient.provideRetrofit(get(named("PrivateOkHttpClient"))) }*/
 }
 
 val serviceModule = module {
@@ -91,16 +80,16 @@ val serviceModule = module {
 }
 
 val sourceModule = module {
-    single { UserDataSourceImpl(userShared = get()) as UserDataSource }
-    single { UserRemoteDataSourceImpl(dispatcher = Dispatchers.IO) as UserRemoteDataSource }
+//    single { UserDataSourceImpl(userShared = get()) as UserDataSource }
+//    single { UserRemoteDataSourceImpl(dispatcher = Dispatchers.IO) as UserRemoteDataSource }
 
-    single { AuthDataSourceImpl(authTokenDao = get(), Dispatchers.Default) as AuthDataSource }
-    single { AuthRemoteDataSourceImpl(context = androidApplication(),dispatcher = Dispatchers.IO) as AuthRemoteDataSource }
+//    single { AuthDataSourceImpl(authTokenDao = get(), Dispatchers.Default) as AuthDataSource }
+//    single { AuthRemoteDataSourceImpl(context = androidApplication(),dispatcher = Dispatchers.IO) as AuthRemoteDataSource }
 
-    single { SignUpRemoteDataSourceImpl(Dispatchers.IO) as SignUpRemoteDataSource }
+//    single { SignUpRemoteDataSourceImpl(Dispatchers.IO) as SignUpRemoteDataSource }
 
-    single { UserRepositoryImpl(userDataSource = get(), userRemoteDataSource = get(), authDataSource = get(), authRemoteDataSource = get()) as UserRepository }
-    single { SignupRepositoryImpl(userDataSource = get(), signUpRemoteDataSource = get()) as SignupRepository}
+//    single { UserRepositoryImpl(userDataSource = get(), userRemoteDataSource = get(), authDataSource = get(), authRemoteDataSource = get()) as UserRepository }
+//    single { SignupRepositoryImpl(userDataSource = get(), signUpRemoteDataSource = get()) as SignupRepository}
 
     single { ParcelDataSourceImpl(parcelDao = get()) as ParcelDataSource }
     single { ParcelRemoteDataSourceImpl(parcelService = get()) as ParcelRemoteDataSource }
@@ -110,7 +99,7 @@ val sourceModule = module {
     single { ParcelRepositoryImpl(parcelDataSource = get(), parcelStatusDataSource = get(), parcelRemoteDataSource = get()) as com.delivery.sopo.data.repositories.parcels.ParcelRepository }
 
     single { UserLocalRepository(appDatabase = get(), userShared = get()) }
-    single { SignUpRemoteDataSourceImpl(Dispatchers.IO) }
+//    single { SignUpRemoteDataSourceImpl(Dispatchers.IO) }
     single { ParcelRepository(get()) }
 
     single { CarrierDataSource(carrierDao = get(), carrierPatternDao = get()) }
@@ -121,10 +110,10 @@ val sourceModule = module {
 
 val useCaseModule = module {
 
-    factory { return@factory SignUpUseCase(signupRepository = get()) }
+//    factory { return@factory SignUpUseCase(signupRepository = get()) }
 
-    factory { return@factory LoginUseCase(userRepository = get()) }
-    factory { return@factory ForceLoginUseCase(userRepository = get()) }
+//    factory { return@factory LoginUseCase(userRepository = get()) }
+//    factory { return@factory ForceLoginUseCase(userRepository = get()) }
 
     factory { return@factory SendAuthTokenUseCase(userRepository = get(), dispatcher = Dispatchers.IO) }
     factory { return@factory VerifyAuthTokenUseCase(userRepository = get(), dispatcher = Dispatchers.IO) }

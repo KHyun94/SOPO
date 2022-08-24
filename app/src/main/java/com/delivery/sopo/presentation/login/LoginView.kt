@@ -1,4 +1,4 @@
-package com.delivery.sopo.presentation.views.login
+package com.delivery.sopo.presentation.login
 
 import android.content.Intent
 import android.view.View
@@ -8,7 +8,7 @@ import com.delivery.sopo.extensions.moveToActivity
 import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.presentation.consts.NavigatorConst
-import com.delivery.sopo.presentation.viewmodels.login.LoginViewModel
+import com.delivery.sopo.presentation.views.login.ResetPasswordView
 import com.delivery.sopo.presentation.views.main.MainView
 import com.delivery.sopo.presentation.views.signup.RegisterNicknameView
 import com.delivery.sopo.util.ui_util.TextInputUtil

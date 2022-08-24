@@ -4,17 +4,12 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import android.view.View
-import android.view.ViewTreeObserver
-import android.widget.FrameLayout
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
-import androidx.core.view.get
 import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.IntroViewBinding
-import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.extensions.makeGone
 import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.extensions.moveToActivityWithFinish
@@ -25,7 +20,7 @@ import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.presentation.viewmodels.IntroViewModel
 import com.delivery.sopo.presentation.views.adapter.IntroPageAdapter
-import com.delivery.sopo.presentation.views.login.LoginSelectView
+import com.delivery.sopo.presentation.login.LoginSelectView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class IntroView: BaseView<IntroViewBinding, IntroViewModel>()

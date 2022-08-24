@@ -6,6 +6,7 @@ import com.delivery.sopo.data.networks.interceptors.BasicAuthInterceptor
 import com.delivery.sopo.data.networks.interceptors.AuthInterceptor
 import com.delivery.sopo.data.repositories.user.UserRepository
 import com.delivery.sopo.data.resources.auth.local.AuthDataSource
+import com.delivery.sopo.data.resources.auth.remote.AuthRemoteDataSource
 import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.util.SopoLog
 import com.google.gson.GsonBuilder
@@ -29,7 +30,7 @@ import java.util.concurrent.TimeUnit
 object NetworkManager: KoinComponent
 {
     private val authDataSource: AuthDataSource by inject()
-    private val userRepository: UserRepository by inject()
+    private val authRemoteDataSource: AuthRemoteDataSource by inject()
     private const val CONNECT_TIMEOUT: Long = 15
     private const val WRITE_TIMEOUT: Long = 15
     private const val READ_TIMEOUT: Long = 15
@@ -89,7 +90,7 @@ object NetworkManager: KoinComponent
             followRedirects(false)
             writeTimeout(WRITE_TIMEOUT, TimeUnit.SECONDS)
             readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
-            if(INTERCEPTOR_TYPE == 1 && isAuthenticator) authenticator(TokenAuthenticator(authDataSource, userRepository))
+            if(INTERCEPTOR_TYPE == 1 && isAuthenticator) authenticator(TokenAuthenticator(authDataSource, authRemoteDataSource))
         }.build()
 
         val gson = GsonBuilder().apply {

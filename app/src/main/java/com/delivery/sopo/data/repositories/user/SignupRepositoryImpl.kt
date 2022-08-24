@@ -6,8 +6,9 @@ import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.data.resources.user.remote.SignUpRemoteDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class SignupRepositoryImpl(private val userDataSource: UserDataSource, private val signUpRemoteDataSource: SignUpRemoteDataSource): SignupRepository
+class SignupRepositoryImpl @Inject constructor(private val userDataSource: UserDataSource, private val signUpRemoteDataSource: SignUpRemoteDataSource): SignupRepository
 {
     override suspend fun signup(userType: String, joinInfo: JoinInfo)
     {

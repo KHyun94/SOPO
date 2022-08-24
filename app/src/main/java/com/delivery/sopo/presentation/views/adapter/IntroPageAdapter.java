@@ -44,7 +44,7 @@ public class IntroPageAdapter extends PagerAdapter {
             {
                 case 0:
                     view = inflater.inflate(R.layout.intro_view_1, container, false);
-                    view.findViewById(R.id.iv_icon_logo);
+                    view.findViewById(R.id.lottieLogo);
                     break;
                 case 1:
                     view = inflater.inflate(R.layout.intro_view_2, container, false);

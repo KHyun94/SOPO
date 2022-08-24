@@ -10,8 +10,9 @@ import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.mapper.CarrierMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class CarrierDataSource(private val carrierDao: CarrierDao, private val carrierPatternDao: CarrierPatternDao)
+class CarrierDataSource @Inject constructor(private val carrierDao: CarrierDao, private val carrierPatternDao: CarrierPatternDao)
 {
     suspend fun initCarrierTable() = withContext(Dispatchers.Default) {
 

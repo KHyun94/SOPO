@@ -1,8 +1,8 @@
-package com.delivery.sopo.presentation.views.login
+package com.delivery.sopo.presentation.login
 
 import android.content.Intent
 import android.view.View
-import androidx.lifecycle.Observer
+import androidx.activity.viewModels
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.PermissionConst
 import com.delivery.sopo.databinding.LoginSelectViewBinding
@@ -10,21 +10,21 @@ import com.delivery.sopo.extensions.launchActivityWithAllClear
 import com.delivery.sopo.interfaces.listener.OnPermissionResponseCallback
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.presentation.consts.NavigatorConst
-import com.delivery.sopo.presentation.viewmodels.login.LoginSelectViewModel
 import com.delivery.sopo.presentation.views.dialog.GeneralDialog
 import com.delivery.sopo.presentation.views.main.MainView
 import com.delivery.sopo.presentation.views.signup.RegisterNicknameView
 import com.delivery.sopo.presentation.views.signup.SignUpView
-import com.delivery.sopo.thirdpartyapi.KakaoOath
+import com.delivery.sopo.presentation.login.oath.KakaoOath
 import com.delivery.sopo.util.PermissionUtil
-import com.delivery.sopo.util.SopoLog
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
 {
     override val layoutRes: Int=R.layout.login_select_view
-    override val vm : LoginSelectViewModel by viewModel()
+    override val vm : LoginSelectViewModel by viewModels()
     override val mainLayout: View by lazy { binding.constraintMainLoginSelect }
 
     private val onPermissionResponseCallback = object: OnPermissionResponseCallback

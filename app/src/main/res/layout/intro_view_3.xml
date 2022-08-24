@@ -61,7 +61,7 @@
         app:lottie_rawRes="@raw/lottie_intro_step2" />
 
     <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/iv_icon_logo"
+        android:id="@+id/lottieLogo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

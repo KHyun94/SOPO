@@ -1,10 +1,9 @@
-package com.delivery.sopo.presentation.viewmodels.splash
+package com.delivery.sopo.presentation.splash
 
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.data.resources.user.local.UserDataSource
@@ -12,12 +11,17 @@ import com.delivery.sopo.domain.usecase.user.token.ForceLoginUseCase
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
-import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.*
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SplashViewModel(
+@HiltViewModel
+class SplashViewModel @Inject constructor(
         private val forceLoginUseCase: ForceLoginUseCase,
         private val userDataSource: UserDataSource,
         private val carrierDataSource: CarrierDataSource): BaseViewModel()
@@ -28,7 +32,6 @@ class SplashViewModel(
             carrierDataSource.initCarrierTable()
             carrierDataSource.initCarrierPatternTable()
         }
-
     }
 
     private var _navigator = MutableLiveData<String>()

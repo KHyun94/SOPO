@@ -3,8 +3,9 @@ package com.delivery.sopo.data.database.shared
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import javax.inject.Inject
 
-class SharedPref(context: Context) {
+class SharedPref @Inject constructor(context: Context) {
 
     private var pref: SharedPreferences? = null
     private var editor: SharedPreferences.Editor? = null

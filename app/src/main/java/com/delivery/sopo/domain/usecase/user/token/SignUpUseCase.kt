@@ -2,9 +2,9 @@ package com.delivery.sopo.domain.usecase.user.token
 
 import com.delivery.sopo.data.models.JoinInfo
 import com.delivery.sopo.data.repositories.user.SignupRepository
-import com.delivery.sopo.thirdpartyapi.KakaoOath
+import javax.inject.Inject
 
-class SignUpUseCase(private val signupRepository: SignupRepository)
+class SignUpUseCase @Inject constructor(private val signupRepository: SignupRepository)
 {
     suspend operator fun invoke(joinInfo: JoinInfo, userType: String)
     {

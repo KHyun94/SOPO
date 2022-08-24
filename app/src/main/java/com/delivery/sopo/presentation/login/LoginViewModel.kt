@@ -1,4 +1,4 @@
-package com.delivery.sopo.presentation.viewmodels.login
+package com.delivery.sopo.presentation.login
 
 import android.view.View
 import androidx.lifecycle.LiveData
@@ -8,7 +8,6 @@ import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.enums.InfoEnum
 import com.delivery.sopo.extensions.toMD5
-import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.domain.usecase.user.token.LoginUseCase
 import com.delivery.sopo.exceptions.InternalServerException

@@ -1,4 +1,4 @@
-package com.delivery.sopo.presentation.viewmodels.login
+package com.delivery.sopo.presentation.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,11 +12,14 @@ import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.extensions.toMD5
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.presentation.consts.NavigatorConst
-import com.delivery.sopo.thirdpartyapi.KakaoOath
+import com.delivery.sopo.presentation.login.oath.KakaoOath
 import com.delivery.sopo.util.SopoLog
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginSelectViewModel(private val loginUseCase: LoginUseCase, private val signUpUseCase: SignUpUseCase): BaseViewModel()
+@HiltViewModel
+class LoginSelectViewModel @Inject constructor(private val loginUseCase: LoginUseCase, private val signUpUseCase: SignUpUseCase): BaseViewModel()
 {
     private var email = ""
     private var kakaoUserId = ""

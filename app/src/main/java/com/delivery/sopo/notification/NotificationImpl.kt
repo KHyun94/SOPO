@@ -19,7 +19,7 @@ import com.delivery.sopo.interfaces.notification.Notification
 import com.delivery.sopo.models.push.NotificationMessage
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.TimeUtil
-import com.delivery.sopo.presentation.views.splash.SplashView
+import com.delivery.sopo.presentation.splash.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import org.koin.core.KoinComponent

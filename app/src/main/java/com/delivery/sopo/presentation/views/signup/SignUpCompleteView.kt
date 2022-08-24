@@ -1,6 +1,7 @@
 package com.delivery.sopo.presentation.views.signup
 
 import android.content.Intent
+import androidx.activity.viewModels
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.SignUpCompleteBinding
@@ -8,12 +9,14 @@ import com.delivery.sopo.extensions.moveToActivityWithFinish
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.presentation.viewmodels.signup.SignUpCompleteViewModel
 import com.delivery.sopo.presentation.views.main.MainView
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class SignUpCompleteView : BaseView<SignUpCompleteBinding, SignUpCompleteViewModel>()
 {
     override val layoutRes: Int = R.layout.sign_up_complete
-    override val vm: SignUpCompleteViewModel by viewModel()
+    override val vm: SignUpCompleteViewModel by viewModels()
     override val mainLayout by lazy { binding.constraintMainSignUpComplete }
 
     override fun setObserve()

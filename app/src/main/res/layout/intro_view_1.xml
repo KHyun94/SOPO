@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@android:color/transparent"
-        app:layout_constraintBottom_toTopOf="@id/iv_icon_logo"
+        app:layout_constraintBottom_toTopOf="@id/lottieLogo"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -46,7 +46,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
     <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/iv_icon_logo"
+        android:id="@+id/lottieLogo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"

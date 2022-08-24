@@ -1,4 +1,4 @@
-package com.delivery.sopo.thirdpartyapi
+package com.delivery.sopo.presentation.login.oath
 
 import android.content.Context
 import com.kakao.sdk.user.UserApiClient

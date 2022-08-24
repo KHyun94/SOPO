@@ -3,9 +3,9 @@ package com.delivery.sopo.data.resources.user.local
 import com.delivery.sopo.data.database.shared.UserSharedPrefHelper
 import com.delivery.sopo.enums.SettingEnum
 import com.delivery.sopo.models.PersonalMessage
+import javax.inject.Inject
 
-class UserDataSourceImpl(private val userShared: UserSharedPrefHelper):
-        UserDataSource
+class UserDataSourceImpl @Inject constructor(private val userShared: UserSharedPrefHelper): UserDataSource
 {
     override fun insertUserAccount(userToken: String, username: String, password: String, status: Int){
         setUserToken(userToken)

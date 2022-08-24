@@ -1,14 +1,12 @@
 package com.delivery.sopo.data.database.shared
 
-import android.content.Context
 import com.delivery.sopo.consts.InfoConst
-import com.delivery.sopo.data.database.shared.SharedPref
 import com.delivery.sopo.enums.SettingEnum
 import com.delivery.sopo.util.CodeUtil
+import javax.inject.Inject
 
-class UserSharedPrefHelper(private val sharedPref: SharedPref, private val context: Context)
+class UserSharedPrefHelper @Inject constructor(private val sharedPref: SharedPref)
 {
-
     fun getNickname(): String?
     {
         return sharedPref.getString(InfoConst.USER_NICKNAME, "")
