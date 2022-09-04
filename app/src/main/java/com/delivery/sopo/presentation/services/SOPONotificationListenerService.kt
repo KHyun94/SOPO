@@ -38,7 +38,7 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
     {
         super.onNotificationPosted(sbn)
 
-        if(userDataSource.getStatus() != 1) return
+//        if(userDataSource.getStatus() != 1) return
         if(!PermissionUtil.checkNotificationListenerPermission(context = applicationContext, packageName)) return
 
         val notification: Notification = sbn?.notification?:return

@@ -1,6 +1,7 @@
 package com.delivery.sopo.di
 
 import android.content.Context
+import com.delivery.sopo.data.database.datastore.DataStoreManager
 import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.data.database.room.dao.*
 import com.delivery.sopo.data.database.shared.SharedPref
@@ -16,6 +17,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class DBModule
 {
+/*
     @Provides
     @Singleton
     fun provideSharedPref(@ApplicationContext context: Context): SharedPref
@@ -28,6 +30,14 @@ class DBModule
     fun provideUserSharedPrefHelper(sharedPref: SharedPref): UserSharedPrefHelper
     {
         return UserSharedPrefHelper(sharedPref)
+    }
+*/
+
+    @Provides
+    @Singleton
+    fun provideDataStore(@ApplicationContext context: Context): DataStoreManager
+    {
+        return DataStoreManager(context)
     }
 
     @Provides

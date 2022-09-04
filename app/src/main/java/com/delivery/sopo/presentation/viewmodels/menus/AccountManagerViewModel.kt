@@ -3,6 +3,7 @@ package com.delivery.sopo.presentation.viewmodels.menus
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.R
 import com.delivery.sopo.domain.usecase.user.UpdateNicknameUseCase
 import com.delivery.sopo.presentation.consts.NavigatorConst
@@ -11,6 +12,7 @@ import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.domain.usecase.user.token.LogoutUseCase
 import com.delivery.sopo.util.SopoLog
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class AccountManagerViewModel(
@@ -29,8 +31,8 @@ class AccountManagerViewModel(
         updateNickname()
     }
 
-    fun updateNickname(){
-        _nickname.postValue(updateNicknameUseCase.nickname)
+    fun updateNickname() = viewModelScope.launch(Dispatchers.Default){
+        _nickname.postValue(updateNicknameUseCase.getUserNickname())
     }
 
     fun onUpdateNickname(nickname: String) = scope.launch {

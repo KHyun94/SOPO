@@ -6,6 +6,7 @@ import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
+import androidx.activity.viewModels
 import androidx.viewpager.widget.ViewPager
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
@@ -21,12 +22,14 @@ import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.presentation.viewmodels.IntroViewModel
 import com.delivery.sopo.presentation.views.adapter.IntroPageAdapter
 import com.delivery.sopo.presentation.login.LoginSelectView
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
 {
     override val layoutRes: Int = R.layout.intro_view
-    override val vm: IntroViewModel by viewModel()
+    override val vm: IntroViewModel by viewModels()
     override val mainLayout: View by lazy { binding.linearIntro }
 
     var numOfPage = 0

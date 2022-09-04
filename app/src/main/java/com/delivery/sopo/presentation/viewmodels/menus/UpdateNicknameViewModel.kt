@@ -3,6 +3,7 @@ package com.delivery.sopo.presentation.viewmodels.menus
 import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
 import com.delivery.sopo.domain.usecase.user.UpdateNicknameUseCase
 import com.delivery.sopo.enums.ErrorCode
@@ -16,13 +17,16 @@ import com.delivery.sopo.presentation.bindings.FocusChangeCallback
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class UpdateNicknameViewModel(private val updateNicknameUseCase: UpdateNicknameUseCase):
         BaseViewModel()
 {
-    val currentNickname = MutableLiveData<String>().apply {
-        postValue(updateNicknameUseCase.nickname)
+    val currentNickname = MutableLiveData<String>()
+
+    fun postNickname() = viewModelScope.launch(Dispatchers.Default){
+        currentNickname.postValue(updateNicknameUseCase.getUserNickname())
     }
 
     val nickname = MutableLiveData<String>()

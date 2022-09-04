@@ -24,7 +24,7 @@ class UserRepositoryImpl @Inject constructor(
 
         val authToken = authRemoteDataSource.issueToken(username = username, password = password)
 
-        userDataSource.insertUserAccount(userToke = authToken.userToken, username = username, password = password, status = StatusConst.ACTIVATE)
+//        userDataSource.insertUserAccount(userToke = authToken.userToken, username = username, password = password, status = StatusConst.ACTIVATE)
         authDataSource.insert(token = authToken)
     }
 
@@ -32,7 +32,7 @@ class UserRepositoryImpl @Inject constructor(
     {
         val authToken = authRemoteDataSource.issueToken(username = username, password = password)
 
-        userDataSource.insertUserAccount(userToke = authToken.userToken, username = username, password = password, status = StatusConst.ACTIVATE)
+//        userDataSource.insertUserAccount(userToke = authToken.userToken, username = username, password = password, status = StatusConst.ACTIVATE)
         authDataSource.insert(token = authToken)
     }
 
@@ -51,7 +51,7 @@ class UserRepositoryImpl @Inject constructor(
     {
         val userInfo = userRemoteDataSource.fetchUserInfo()
         val nickname = userInfo.nickname ?: throw SOPOApiException(404, Error(609, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
-        userDataSource.insertUserInfo(nickname, userInfo.personalMessage)
+//        userDataSource.insertUserInfo(nickname, userInfo.personalMessage)
     }
 
     override suspend fun updateNickname(nickname: String)
@@ -83,7 +83,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun deleteUser(reason: String)
     {
         userRemoteDataSource.deleteUser(reason = reason)
-        userDataSource.clearUserDataBase()
+//        userDataSource.clearUserDataBase()
     }
 
     override suspend fun checkExpiredTokenWithInWeek():Boolean{
@@ -92,7 +92,7 @@ class UserRepositoryImpl @Inject constructor(
         return DateUtil.isExpiredDateWithinAWeek(currentExpiredDate)
     }
 
-    override fun getUserDataSource(): UserDataSource
+    override suspend fun getUserDataSource(): UserDataSource
     {
         return userDataSource
     }

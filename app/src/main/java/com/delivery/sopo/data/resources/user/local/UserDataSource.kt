@@ -1,57 +1,55 @@
 package com.delivery.sopo.data.resources.user.local
 
 import com.delivery.sopo.models.PersonalMessage
+import kotlinx.coroutines.flow.Flow
 
 interface UserDataSource
 {
-    fun insertUserAccount(userToke: String, username: String, password: String, status: Int)
-    fun insertUserInfo(nickname: String, personalMessage: PersonalMessage)
+    suspend fun getNickname() : String
+    suspend fun setNickname(nickname : String)
 
-    fun getNickname() :String
-    fun setNickname(nickname : String)
+    suspend fun getUsername(): String
+    suspend fun setUsername(username: String)
 
-    fun getUsername(): String
-    fun setUsername(username: String)
+    suspend fun getUserToken(): String
+    suspend fun setUserToken(userToken: String)
 
-    fun getUserToken(): String
-    fun setUserToken(userToken: String)
+    suspend fun getUserPassword(): String
+    suspend fun setUserPassword(password: String)
 
-    fun getUserPassword(): String
-    fun setUserPassword(password: String)
+    suspend fun getDeviceInfo(): String
+    suspend fun setDeviceInfo(info: String)
 
-    fun getDeviceInfo(): String
-    fun setDeviceInfo(info: String)
+    suspend fun getRegisterDate(): String
+    suspend fun setRegisterDate(regDt: String)
 
-    fun getRegisterDate(): String
-    fun setRegisterDate(regDt: String)
+    suspend fun getStatus(): Int
+    suspend fun setStatus(status: Int)
 
-    fun getStatus(): Int
-    fun setStatus(status: Int)
+    suspend fun getJoinType(): String
+    suspend fun setJoinType(joinType: String)
 
-    fun getJoinType(): String
-    fun setJoinType(joinType: String)
+    suspend fun getSNSUId(): String
+    suspend fun setSNSUId(uid: String)
 
-    fun getSNSUId(): String?
-    fun setSNSUId(uid: String)
+    suspend fun getPersonalStatusType(): Int
+    suspend fun setPersonalStatusType(type: Int)
 
-    fun getPersonalStatusType(): Int
-    fun setPersonalStatusType(type: Int)
+    suspend fun getPersonalStatusMessage(): String
+    suspend fun setPersonalStatusMessage(message: String)
 
-    fun getPersonalStatusMessage(): String
-    fun setPersonalStatusMessage(message: String)
+    suspend fun getAppPassword(): String
+    suspend fun setAppPassword(password: String)
 
-    fun getAppPassword(): String
-    fun setAppPassword(password: String)
+    suspend fun getTopic(): String
+    suspend fun setTopic(topic: String)
 
-    fun getTopic(): String
-    fun setTopic(topic: String)
+    suspend fun getDisturbStartTime(): String
+    suspend fun setDisturbStartTime(startTime: String)
 
-    fun getDisturbStartTime(): String?
-    fun setDisturbStartTime(startTime: String)
+    suspend fun getDisturbEndTime(): String
+    suspend fun setDisturbEndTime(endTime: String)
 
-    fun getDisturbEndTime(): String?
-    fun setDisturbEndTime(startTime: String)
-
-    fun clearUserDataBase()
+//    fun clearUserDataBase()
 
 }

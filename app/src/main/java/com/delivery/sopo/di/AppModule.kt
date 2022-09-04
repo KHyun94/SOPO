@@ -140,13 +140,13 @@ val useCaseModule = module {
 }
 
 val viewModelModule = module {
-    viewModel { SplashViewModel(forceLoginUseCase = get(), userDataSource = get(), carrierDataSource = get()) }
+//    viewModel { SplashViewModel(forceLoginUseCase = get(), userDataSource = get(), carrierDataSource = get()) }
 
-    viewModel { IntroViewModel() }
+//    viewModel { IntroViewModel() }
 
-    viewModel { LoginViewModel(loginUseCase = get()) }
-    viewModel { SignUpViewModel(signUpUseCase = get()) }
-    viewModel { SignUpCompleteViewModel(get(), get()) }
+//    viewModel { LoginViewModel(loginUseCase = get()) }
+//    viewModel { SignUpViewModel(signUpUseCase = get()) }
+//    viewModel { SignUpCompleteViewModel(get(), get()) }
 
     viewModel { RegisterNicknameViewModel(updateNicknameUseCase = get()) }
     viewModel { UpdateNicknameViewModel(updateNicknameUseCase = get()) }

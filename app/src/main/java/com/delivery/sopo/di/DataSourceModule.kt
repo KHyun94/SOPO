@@ -1,6 +1,7 @@
 package com.delivery.sopo.di
 
 import android.content.Context
+import com.delivery.sopo.data.database.datastore.DataStoreManager
 import com.delivery.sopo.data.database.room.dao.AuthTokenDao
 import com.delivery.sopo.data.database.shared.UserSharedPrefHelper
 import com.delivery.sopo.data.networks.serivces.SignUpService
@@ -60,9 +61,9 @@ object DataSourceModule
 
     @Provides
     @Singleton
-    fun provideUserDataSource(userSharedPrefHelper: UserSharedPrefHelper): UserDataSource
+    fun provideUserDataSource(dataStoreManager: DataStoreManager): UserDataSource
     {
-        return UserDataSourceImpl(userSharedPrefHelper)
+        return UserDataSourceImpl(dataStoreManager = dataStoreManager)
     }
 
     @Provides

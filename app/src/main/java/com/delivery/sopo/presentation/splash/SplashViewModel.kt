@@ -4,6 +4,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.data.resources.user.local.UserDataSource
@@ -71,13 +72,12 @@ class SplashViewModel @Inject constructor(
         Handler(Looper.getMainLooper()).postDelayed(Runnable { checkUserStatus() }, 1500)
     }
 
-    private fun checkUserStatus()
-    {
+    private fun checkUserStatus() = viewModelScope.launch(Dispatchers.Default){
         SopoLog.i(msg = "checkUserStatus(...) 호출 [로그인 상태:${userDataSource.getStatus()}]")
 
         if(userDataSource.getStatus() == StatusConst.ACTIVATE)
         {
-            return postNavigator(NavigatorConst.TO_PERMISSION)
+            return@launch postNavigator(NavigatorConst.TO_PERMISSION)
         }
 
         postNavigator(NavigatorConst.TO_INTRO)

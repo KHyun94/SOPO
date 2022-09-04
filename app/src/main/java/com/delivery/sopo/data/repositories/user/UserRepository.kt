@@ -17,6 +17,5 @@ interface UserRepository
     suspend fun requestVerifyAuthToken(authCode: ResetAuthCode)
     suspend fun updatePassword(resetPassword: ResetPassword)
     suspend fun deleteUser(reason: String)
-
-    fun getUserDataSource(): UserDataSource
+    suspend fun getUserDataSource(): UserDataSource
 }

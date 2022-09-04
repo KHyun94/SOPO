@@ -1,179 +1,185 @@
 package com.delivery.sopo.data.resources.user.local
 
+import com.delivery.sopo.data.database.datastore.DataStoreKey.APP_PASSWORD
+import com.delivery.sopo.data.database.datastore.DataStoreKey.DEVICE_INFO
+import com.delivery.sopo.data.database.datastore.DataStoreKey.DISTURB_END_TIME
+import com.delivery.sopo.data.database.datastore.DataStoreKey.DISTURB_START_TIME
+import com.delivery.sopo.data.database.datastore.DataStoreKey.FCM_TOPIC
+import com.delivery.sopo.data.database.datastore.DataStoreKey.JOIN_TYPE
+import com.delivery.sopo.data.database.datastore.DataStoreKey.PERSONAL_STATUS_MESSAGE
+import com.delivery.sopo.data.database.datastore.DataStoreKey.PERSONAL_STATUS_TYPE
+import com.delivery.sopo.data.database.datastore.DataStoreKey.PUSH_ALARM_TYPE
+import com.delivery.sopo.data.database.datastore.DataStoreKey.REGISTER_DATE
+import com.delivery.sopo.data.database.datastore.DataStoreKey.SNS_UID
+import com.delivery.sopo.data.database.datastore.DataStoreKey.STATUS
+import com.delivery.sopo.data.database.datastore.DataStoreKey.USER_NAME
+import com.delivery.sopo.data.database.datastore.DataStoreKey.USER_NICKNAME
+import com.delivery.sopo.data.database.datastore.DataStoreKey.USER_PASSWORD
+import com.delivery.sopo.data.database.datastore.DataStoreKey.USER_TOKEN
+import com.delivery.sopo.data.database.datastore.DataStoreManager
 import com.delivery.sopo.data.database.shared.UserSharedPrefHelper
 import com.delivery.sopo.enums.SettingEnum
-import com.delivery.sopo.models.PersonalMessage
 import javax.inject.Inject
 
-class UserDataSourceImpl @Inject constructor(private val userShared: UserSharedPrefHelper): UserDataSource
+class UserDataSourceImpl @Inject constructor(private val dataStoreManager: DataStoreManager): UserDataSource
 {
-    override fun insertUserAccount(userToken: String, username: String, password: String, status: Int){
-        setUserToken(userToken)
-        setUsername(username)
-        setUserPassword(password)
-        setStatus(status)
+    override suspend fun getNickname(): String
+    {
+        return dataStoreManager.readValue(USER_NICKNAME) ?: ""
     }
 
-    override fun insertUserInfo(nickname: String, personalMessage: PersonalMessage)
+    override suspend fun setNickname(nickname: String)
     {
-        setNickname(nickname = nickname)
-        setPersonalStatusType(type = personalMessage.type)
-        setPersonalStatusMessage(message = personalMessage.message)
+        dataStoreManager.storeValue(USER_NICKNAME, nickname)
     }
 
-    override fun getNickname(): String
+    override suspend fun getUsername(): String
     {
-        return userShared.getNickname() ?: ""
+        return dataStoreManager.readValue(USER_NAME) ?: ""
     }
 
-    override fun setNickname(nickname: String)
+    override suspend fun setUsername(username: String)
     {
-        userShared.setNickname(nickname)
+        dataStoreManager.storeValue(USER_NAME, username)
     }
 
-    override fun getUsername(): String
+    override suspend fun getUserToken(): String
     {
-        return userShared.getUsername() ?: ""
+        return dataStoreManager.readValue(USER_TOKEN)?: ""
     }
 
-    override fun setUsername(username: String)
+    override suspend fun setUserToken(userToken: String)
     {
-        userShared.setUsername(username = username)
+        dataStoreManager.storeValue(USER_TOKEN, userToken)
     }
 
-    override fun getUserToken(): String
+    override suspend fun getUserPassword(): String
     {
-        return userShared.getUserToken() ?: ""
+        return dataStoreManager.readValue(USER_PASSWORD)?: ""
     }
 
-    override fun setUserToken(userToken: String)
+    override suspend fun setUserPassword(password: String)
     {
-        userShared.setUserToken(userToken = userToken)
+        return dataStoreManager.storeValue(USER_PASSWORD, password)
     }
 
-    override fun getUserPassword(): String
+    override suspend fun getDeviceInfo(): String
     {
-        return userShared.getUserPassword() ?: ""
+        return dataStoreManager.readValue(DEVICE_INFO)?: ""
     }
 
-    override fun setUserPassword(password: String)
+    override suspend fun setDeviceInfo(info: String)
     {
-        return userShared.setUserPassword(password)
+        return dataStoreManager.storeValue(DEVICE_INFO, info)
     }
 
-    override fun getDeviceInfo(): String
+    override suspend fun getRegisterDate(): String
     {
-        return userShared.getDeviceInfo() ?: ""
+        return dataStoreManager.readValue(REGISTER_DATE)?: ""
     }
 
-    override fun setDeviceInfo(info: String)
+    override suspend fun setRegisterDate(regDt: String)
     {
-        return userShared.setDeviceInfo(info)
+        dataStoreManager.storeValue(REGISTER_DATE, regDt)
     }
 
-    override fun getRegisterDate(): String
+    override suspend fun getStatus(): Int
     {
-        return userShared.getRegisterDate() ?: ""
+        return dataStoreManager.readValue(STATUS)?: 0
     }
 
-    override fun setRegisterDate(regDt: String)
+    override suspend fun setStatus(status: Int)
     {
-        userShared.setRegisterDate(regDt)
+        dataStoreManager.storeValue(STATUS, status)
     }
 
-    override fun getStatus(): Int
+    override suspend fun getJoinType(): String
     {
-        return userShared.getStatus() ?: 0
+        return dataStoreManager.readValue(JOIN_TYPE)?: ""
     }
 
-    override fun setStatus(status: Int)
+    override suspend fun setJoinType(joinType: String)
     {
-        userShared.setStatus(status)
+        dataStoreManager.storeValue(JOIN_TYPE, joinType)
     }
 
-    override fun getJoinType(): String
+    override suspend fun getSNSUId(): String
     {
-        return userShared.getJoinType() ?: ""
+        return dataStoreManager.readValue(SNS_UID)?: ""
     }
 
-    override fun setJoinType(joinType: String)
+    override suspend fun setSNSUId(uid: String)
     {
-        userShared.setJoinType(joinType)
+        dataStoreManager.storeValue(SNS_UID, uid)
     }
 
-    override fun getSNSUId(): String?
+    override suspend fun getPersonalStatusType(): Int
     {
-        return userShared.getSNSUId()
+        return dataStoreManager.readValue(PERSONAL_STATUS_TYPE)?: 0
     }
 
-    override fun setSNSUId(uid: String)
+    override suspend fun setPersonalStatusType(type: Int)
     {
-        userShared.setSNSUId(uid)
+        dataStoreManager.storeValue(PERSONAL_STATUS_TYPE, type)
     }
 
-    override fun getPersonalStatusType(): Int
+    override suspend fun getPersonalStatusMessage(): String
     {
-        return userShared.getPersonalStatusType()
+        return dataStoreManager.readValue(PERSONAL_STATUS_MESSAGE)?: ""
     }
 
-    override fun setPersonalStatusType(type: Int)
+    override suspend fun setPersonalStatusMessage(message: String)
     {
-        userShared.setPersonalStatusType(type)
+        dataStoreManager.storeValue(PERSONAL_STATUS_MESSAGE, message)
     }
 
-    override fun getPersonalStatusMessage(): String
+    override suspend fun getAppPassword(): String
     {
-        return userShared.getPersonalStatusMessage()
+        return dataStoreManager.readValue(APP_PASSWORD)?: ""
     }
 
-    override fun setPersonalStatusMessage(message: String)
+    override suspend fun setAppPassword(password: String)
     {
-        userShared.setPersonalStatusMessage(message)
+        dataStoreManager.storeValue(APP_PASSWORD, password)
     }
 
-    override fun getAppPassword(): String
+    override suspend fun getTopic(): String
     {
-        return userShared.getAppPassword() ?: ""
+        return dataStoreManager.readValue(FCM_TOPIC)?: ""
     }
 
-    override fun setAppPassword(password: String)
+    override suspend fun setTopic(topic: String)
     {
-        userShared.setAppPassword(password)
+        dataStoreManager.storeValue(FCM_TOPIC, topic)
     }
 
-    override fun getTopic() = userShared.getTopic() ?: ""
-
-    override fun setTopic(topic: String)
+    override suspend fun getDisturbStartTime(): String
     {
-        userShared.setTopic(topic)
+        return dataStoreManager.readValue(DISTURB_START_TIME)?: ""
     }
 
-    override fun getDisturbStartTime() = userShared.getDisturbStartTime()
-
-    override fun setDisturbStartTime(startTime: String)
+    override suspend fun setDisturbStartTime(startTime: String)
     {
-        userShared.setDisturbStartTime(startTime)
+        dataStoreManager.storeValue(DISTURB_START_TIME, startTime)
     }
 
-    override fun getDisturbEndTime() = userShared.getDisturbEndTime()
-
-    override fun setDisturbEndTime(endTime: String)
+    override suspend fun getDisturbEndTime(): String
     {
-        userShared.setDisturbEndTime(endTime)
+        return dataStoreManager.readValue(DISTURB_END_TIME)?: ""
     }
 
-    fun getPushAlarmType(): SettingEnum.PushAlarmType
+    override suspend fun setDisturbEndTime(endTime: String)
     {
-        return userShared.getPushAlarmType()
+        dataStoreManager.storeValue(DISTURB_END_TIME, endTime)
     }
 
-    fun setPushAlarmType(pushAlarmType: SettingEnum.PushAlarmType)
+    suspend fun getPushAlarmType(): String
     {
-        userShared.setPushAlarmType(pushAlarmType)
+        return dataStoreManager.readValue(PUSH_ALARM_TYPE)?:""
     }
 
-    override fun clearUserDataBase()
+    suspend fun setPushAlarmType(pushAlarmType: SettingEnum.PushAlarmType)
     {
-        userShared.clear()
+        dataStoreManager.storeValue(PUSH_ALARM_TYPE, pushAlarmType.name)
     }
 }
