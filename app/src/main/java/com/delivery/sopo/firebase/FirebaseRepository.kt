@@ -1,6 +1,6 @@
 package com.delivery.sopo.firebase
 
-import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
+import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.SopoLog
 import com.google.firebase.messaging.FirebaseMessaging
@@ -13,11 +13,11 @@ import java.util.*
 
 object FirebaseRepository: KoinComponent
 {
-    private val userLocalRepo: UserLocalRepository by inject()
+    private val userDataSource: UserDataSource by inject()
 
     fun subscribedTopic(isForce: Boolean= false, hour: Int? = null, minutes: Int? = null) = CoroutineScope(Dispatchers.Default).launch {
 
-        val savedTopic = userLocalRepo.getTopic()
+        val savedTopic = userDataSource.getTopic()
 
         // 기존 토픽이 존재, 강제 업데이트 X
         if(!isForce && savedTopic.isNotEmpty())
@@ -29,7 +29,10 @@ object FirebaseRepository: KoinComponent
         {
             isUnsubscribedToTopic(topic = savedTopic) { isSuccess ->
                 if(!isSuccess) return@isUnsubscribedToTopic
-                userLocalRepo.setTopic("")
+                CoroutineScope(Dispatchers.Default).launch {
+                    userDataSource.setTopic("")
+                }
+
                 SopoLog.d("기존 토픽 해지 완료 [$savedTopic]")
             }
         }
@@ -38,7 +41,9 @@ object FirebaseRepository: KoinComponent
 
         isSubscribedToTopic(topic = newTopic) { isSuccess ->
             if(!isSuccess) return@isSubscribedToTopic
-            userLocalRepo.setTopic(newTopic)
+            CoroutineScope(Dispatchers.Default).launch {
+                userDataSource.setTopic(newTopic)
+            }
             SopoLog.d("신규 토픽 등록 완료 [$newTopic]")
         }
     }
@@ -150,7 +155,11 @@ object FirebaseRepository: KoinComponent
                 return@addOnCompleteListener
             }
             SopoLog.d("success to subscribe topic at $topic")
-            userLocalRepo.setTopic(topic)
+
+            CoroutineScope(Dispatchers.Default).launch {
+                userDataSource.setTopic(topic)
+            }
+
         }
     }
 
@@ -158,14 +167,13 @@ object FirebaseRepository: KoinComponent
      * FCM 구독 요청
      * 등록 시 또는 앱 재설치 시 진행 중인 택배가 있을 시 구독 요청
      */
-    fun unsubscribedToTopicInFCM()
-    {
-        val topic = userLocalRepo.getTopic()
+    fun unsubscribedToTopicInFCM() = CoroutineScope(Dispatchers.Default).launch{
+        val topic = userDataSource.getTopic()
 
         if(topic == "")
         {
             SopoLog.e("fail to unsubscribe topic", Exception("Topic is null or empty"))
-            return
+            return@launch
         }
 
         FirebaseMessaging.getInstance().unsubscribeFromTopic(topic).addOnCompleteListener { task ->
@@ -176,7 +184,9 @@ object FirebaseRepository: KoinComponent
             }
 
             SopoLog.d("success to unsubscribe topic")
-            userLocalRepo.setTopic("")
+            CoroutineScope(Dispatchers.Default).launch {
+                userDataSource.setTopic("")
+            }
         }
     }
 

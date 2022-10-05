@@ -46,9 +46,8 @@ object NetworkManager: KoinComponent
         {
             NetworkEnum.O_AUTH_TOKEN_LOGIN ->
             {
-                val authToken: AuthToken.Info =
-                    runBlocking(Dispatchers.Default) { authDataSource.get() }
-                retro(authToken.accessToken).create(clz)
+                val accessToken = runBlocking(Dispatchers.Default) { authDataSource.getAccessToken() }
+                retro(accessToken).create(clz)
             }
             NetworkEnum.PUBLIC_LOGIN ->
             {

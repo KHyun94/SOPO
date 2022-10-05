@@ -6,13 +6,12 @@ import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.SignUpViewBinding
 import com.delivery.sopo.enums.InfoEnum
-import com.delivery.sopo.extensions.moveToActivityWithFinish
+import com.delivery.sopo.extensions.moveActivity
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.TextInputUtil
 import com.delivery.sopo.presentation.viewmodels.signup.SignUpViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @AndroidEntryPoint
 class SignUpView: BaseView<SignUpViewBinding, SignUpViewModel>()
@@ -64,7 +63,9 @@ class SignUpView: BaseView<SignUpViewBinding, SignUpViewModel>()
             {
                 NavigatorConst.Event.COMPLETE ->
                 {
-                    moveToActivityWithFinish(SignUpCompleteView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    moveActivity(SignUpCompleteView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TOP){
+                        finish()
+                    }
                 }
             }
         }

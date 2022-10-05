@@ -1,329 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
+        <import type="android.view.View"/>
+
         <variable
             name="vm"
             type="com.delivery.sopo.presentation.viewmodels.inquiry.CompletedTypeViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/linearMainCompleted"
+        android:id="@+id/constraintMainCompletedParcel"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_layout_main_completed"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible">
-
-        <FrameLayout
-            android:id="@+id/frame_main_complete_inquiry"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintCompletedType"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            android:paddingTop="25dp"
+            app:layout_constraintBottom_toTopOf="@+id/rvCompletedParcel">
 
-            <!-- 월 spinner ! 촤하단 뷰 -->
-            <LinearLayout
-                android:id="@+id/linear_main_month_selector"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvCompletedParcelMonth"
+                style="@style/kor_H4"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:orientation="vertical"
-                android:paddingBottom="20dp">
-
-                <LinearLayout
-                    android:id="@+id/linear_inner_first_half"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@color/COLOR_GRAY_50"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:paddingVertical="12dp">
-
-                    <TextView
-                        android:id="@+id/tv_jan"
-                        style="@style/kor_H4"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginRight="8dp"
-                        android:background="@drawable/selector_month"
-                        android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(1)}"
-                        android:text="1"
-                        android:textColor="@color/COLOR_GRAY_300" />
-
-                    <TextView
-                        android:id="@+id/tv_feb"
-                        style="@style/kor_H4"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginHorizontal="16dp"
-                        android:background="@drawable/selector_month"
-                        android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(2)}"
-                        android:text="2"
-                        android:textColor="@color/COLOR_GRAY_300" />
-
-                    <TextView
-                        android:id="@+id/tv_mar"
-                        style="@style/kor_H4"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginHorizontal="16dp"
-                        android:background="@drawable/selector_month"
-                        android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(3)}"
-                        android:text="3"
-                        android:textColor="@color/COLOR_GRAY_300" />
-
-                    <TextView
-                        android:id="@+id/tv_apr"
-                        style="@style/kor_H4"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginHorizontal="16dp"
-                        android:background="@drawable/selector_month"
-                        android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(4)}"
-                        android:text="4"
-                        android:textColor="@color/COLOR_GRAY_300" />
-
-                    <TextView
-                        android:id="@+id/tv_may"
-                        style="@style/kor_H4"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginHorizontal="16dp"
-                        android:background="@drawable/selector_month"
-                        android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(5)}"
-                        android:text="5"
-                        android:textColor="@color/COLOR_GRAY_300" />
-
-                    <TextView
-                        android:id="@+id/tv_jun"
-                        style="@style/kor_H4"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginLeft="8dp"
-                        android:background="@drawable/selector_month"
-                        android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(6)}"
-                        android:text="6"
-                        android:textColor="@color/COLOR_GRAY_300" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/linear_inner_second_half"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:background="@color/COLOR_GRAY_50"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:paddingVertical="12dp"
-                    app:layout_constraintBottom_toBottomOf="parent">
-
-                    <TextView
-                        android:id="@+id/tv_jul"
-                        style="@style/kor_H4"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginRight="8dp"
-                        android:background="@drawable/selector_month"
-                        android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(7)}"
-                        android:text="7"
-                        android:textColor="@color/COLOR_GRAY_300" />
-
-                    <TextView
-                        android:id="@+id/tv_aug"
-                        style="@style/kor_H4"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginHorizontal="16dp"
-                        android:background="@drawable/selector_month"
-                        android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(8)}"
-                        android:text="8"
-                        android:textColor="@color/COLOR_GRAY_300" />
-
-                    <TextView
-                        android:id="@+id/tv_sep"
-                        style="@style/kor_H4"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginHorizontal="16dp"
-                        android:background="@drawable/selector_month"
-                        android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(9)}"
-                        android:text="9"
-                        android:textColor="@color/COLOR_GRAY_300" />
-
-                    <TextView
-                        android:id="@+id/tv_oct"
-                        style="@style/kor_H4"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginHorizontal="16dp"
-                        android:background="@drawable/selector_month"
-                        android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(10)}"
-                        android:text="10"
-                        android:textColor="@color/COLOR_GRAY_300" />
-
-                    <TextView
-                        android:id="@+id/tv_nov"
-                        style="@style/kor_H4"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginHorizontal="16dp"
-                        android:background="@drawable/selector_month"
-                        android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(11)}"
-                        android:text="11"
-                        android:textColor="@color/COLOR_GRAY_300" />
-
-                    <TextView
-                        android:id="@+id/tv_dec"
-                        style="@style/kor_H4"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginLeft="8dp"
-                        android:background="@drawable/selector_month"
-                        android:gravity="center"
-                        android:onClick="@{()->vm.onMonthClicked(12)}"
-                        android:text="12"
-                        android:textColor="@color/COLOR_GRAY_300" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- 택배 완료 recycler view -->
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/nest_sv_main_completed"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:id="@+id/linear_complete"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:descendantFocusability="blocksDescendants">
-
-                    <View
-                        android:id="@+id/v_inner_completed_space"
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp" />
-
-                    <include
-                        android:id="@+id/include_complete_no_item"
-                        layout="@layout/include_no_item"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="100dp"
-                        android:visibility="gone"
-                        app:content='@{"배송 완료된 택배가 없습니다."}'
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:visibility="visible" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/COLOR_GRAY_50">
-
-                        <TextView
-                            style="@style/kor_H4"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="22dp"
-                            android:text="@{vm.selectedDate}"
-                            android:textColor="@color/COLOR_GRAY_400"
-                            tools:text="2021년 8월" />
-                    </LinearLayout>
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerview_complete_parcel"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="15dp"
-                        android:layout_marginRight="15dp"
-                        android:background="@color/COLOR_GRAY_50"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:itemCount="5"
-                        tools:listitem="@layout/item_completed_parcel" />
-
-
-                </LinearLayout>
-
-
-            </androidx.core.widget.NestedScrollView>
-
-            <LinearLayout
-                android:id="@+id/linear_main_year_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:background="@drawable/bg_rounded_border_bottom_45dp"
-                android:backgroundTint="@color/COLOR_GRAY_50"
-                android:gravity="center_horizontal"
-                android:paddingHorizontal="10dp"
-                android:paddingTop="24dp"
-                android:paddingBottom="29dp"
+                android:layout_marginTop="26.81dp"
+                android:text="@{vm.dateSelector.displayCursorDate}"
+                android:textColor="@color/COLOR_GRAY_700"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraint_select">
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="2022년5월" />
 
-                <!-- 연도 spinner ! 최상단 뷰 -->
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/constraint_inner_year_spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:clickable="true"
-                    android:focusable="true">
-                    <TextView
-                        android:id="@+id/tv_year_spinner"
-                        style="@style/kor_H3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text='@{vm.yearOfCalendar + "년"}'
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:text="2021년" />
+            <ImageView
+                android:id="@+id/ivPreviousArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="22dp"
+                android:src="@drawable/ic_previous_thin_arrow_white_24"
+                android:visibility="@{vm.dateSelector.hasNext ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="@id/tvCompletedParcelMonth"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/tvCompletedParcelMonth"
+                app:layout_constraintTop_toTopOf="@id/tvCompletedParcelMonth"
+                android:onClick='@{()->vm.onPreviousDate()}'
+                tools:visibility="visible" />
 
-                    <ImageView
-                        android:id="@+id/iv_drop_down"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_arrow_down_gray_scale"
-                        app:layout_constraintBottom_toBottomOf="@+id/tv_year_spinner"
-                        app:layout_constraintLeft_toRightOf="@+id/tv_year_spinner"
-                        app:layout_constraintTop_toTopOf="@+id/tv_year_spinner" />
+            <ImageView
+                android:id="@+id/ivNextArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="22dp"
+                android:src="@drawable/ic_next_thin_arrow_white_24"
+                android:visibility="@{vm.dateSelector.hasPrevious ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="@id/tvCompletedParcelMonth"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintLeft_toRightOf="@id/tvCompletedParcelMonth"
+                app:layout_constraintRight_toRightOf="parent"
+                android:onClick='@{()->vm.onNextDate()}'
+                app:layout_constraintTop_toTopOf="@id/tvCompletedParcelMonth" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </LinearLayout>
-        </FrameLayout>
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <include
-        android:id="@+id/include_bottom_input_layout"
-        layout="@layout/include_bottom_input_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:hint='@{"물품명을 설정해주세요 ･ 최대 25자"}'
-        android:visibility="gone" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCompletedParcel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="15dp"
+            android:background="@color/COLOR_GRAY_50"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/constraintCompletedType"
+            tools:itemCount="5"
+            tools:listitem="@layout/item_completed_parcel" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:id="@+id/linear_recently_parcel_viewer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            android:background="@drawable/border_15dp_blue_rounder"
+            android:backgroundTint="@color/COLOR_MAIN_700"
+            android:orientation="horizontal"
+            android:paddingLeft="12.78dp"
+            android:paddingTop="5.85dp"
+            android:paddingRight="15.57dp"
+            android:paddingBottom="6.68dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
 
-    </layout>
+            <ImageView
+                android:id="@+id/ivRecentlyParcelViewer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/ic_recycle_white_24" />
+
+            <TextView
+                android:id="@+id/tvRecentlyParcelViewer"
+                style="@style/kor_H5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="최근 업데이트된 택배만 보기"
+                android:textColor="@color/MAIN_WHITE" />
+
+        </LinearLayout>
+
+
+        <include
+            android:id="@+id/include_bottom_input_layout"
+            layout="@layout/include_bottom_input_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:hint='@{"물품명을 설정해주세요 ･ 최대 25자"}'
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

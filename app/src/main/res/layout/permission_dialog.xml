@@ -17,7 +17,7 @@
             android:layout_marginTop="34sp">
 
             <TextView
-                android:id="@+id/tv_title"
+                android:id="@+id/tvTitle"
                 style="@style/kor_H3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

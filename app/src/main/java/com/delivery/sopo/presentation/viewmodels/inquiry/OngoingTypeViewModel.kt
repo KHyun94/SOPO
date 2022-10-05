@@ -6,7 +6,7 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
-import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.enums.DeliveryStatus
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.domain.usecase.parcel.remote.DeleteParcelsUseCase
@@ -20,10 +20,12 @@ import java.util.*
 import com.delivery.sopo.data.models.Result
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
+import javax.inject.Inject
 
-class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase, private val syncParcelsUseCase: SyncParcelsUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val deleteParcelsUseCase: DeleteParcelsUseCase, private val parcelRepo: ParcelRepository):
+@HiltViewModel
+class OngoingTypeViewModel @Inject constructor(private val updateParcelUseCase: UpdateParcelUseCase, private val syncParcelsUseCase: SyncParcelsUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val deleteParcelsUseCase: DeleteParcelsUseCase, private val parcelRepo: ParcelRepository):
         BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
@@ -86,54 +88,54 @@ class OngoingTypeViewModel(private val updateParcelUseCase: UpdateParcelUseCase,
 
         val elseList = list.asSequence().filter { item ->
 
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.DELIVERED.CODE)
             {
                 multiList[0].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.DELIVERED.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.OUT_FOR_DELIVERY.CODE)
             {
                 multiList[1].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.OUT_FOR_DELIVERY.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.IN_TRANSIT.CODE)
             {
                 multiList[2].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.IN_TRANSIT.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.IN_TRANSIT.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.AT_PICKUP.CODE)
             {
                 multiList[3].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.AT_PICKUP.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.AT_PICKUP.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.INFORMATION_RECEIVED.CODE)
             {
                 multiList[4].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.INFORMATION_RECEIVED.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.NOT_REGISTERED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.NOT_REGISTERED.CODE)
             {
                 multiList[5].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.NOT_REGISTERED.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.NOT_REGISTERED.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.ORPHANED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.ORPHANED.CODE)
             {
                 multiList[6].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.ORPHANED.CODE
         }.toList()
 
         multiList[7].addAll(elseList)

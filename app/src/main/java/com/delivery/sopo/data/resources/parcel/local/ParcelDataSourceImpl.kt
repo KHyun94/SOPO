@@ -8,8 +8,9 @@ import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class ParcelDataSourceImpl(private val parcelDao:ParcelDao):ParcelDataSource
+class ParcelDataSourceImpl @Inject constructor(private val parcelDao:ParcelDao):ParcelDataSource
 {
     override fun get(): List<Parcel.Common>
     {

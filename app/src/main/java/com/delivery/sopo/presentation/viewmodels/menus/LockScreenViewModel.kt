@@ -7,17 +7,20 @@ import com.delivery.sopo.consts.LockStatusConst
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.database.room.dto.AppPasswordDTO
 import com.delivery.sopo.data.repositories.local.app_password.AppPasswordRepository
-import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
+import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.enums.LockScreenStatusEnum
 import com.delivery.sopo.extensions.asSHA256
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.TimeUtil
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, private val appPasswordRepo: AppPasswordRepository):
+@HiltViewModel
+class LockScreenViewModel @Inject constructor(private val userDataSource: UserDataSource, private val appPasswordRepo: AppPasswordRepository):
         BaseViewModel()
 {
     var title = MutableLiveData<String>()
@@ -131,7 +134,7 @@ class LockScreenViewModel(private val userLocalRepo: UserLocalRepository, privat
 
         viewModelScope.launch(Dispatchers.Default) {
             val dto =
-                AppPasswordDTO(userId = userLocalRepo.getUserId(), appPassword = lockNum.asSHA256, auditDte = TimeUtil.getDateTime())
+                AppPasswordDTO(userId = userDataSource.getUsername(), appPassword = lockNum.asSHA256, auditDte = TimeUtil.getDateTime())
             appPasswordRepo.insert(dto)
         }
     }

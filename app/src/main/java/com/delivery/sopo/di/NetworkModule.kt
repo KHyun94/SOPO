@@ -8,7 +8,6 @@ import com.delivery.sopo.data.networks.interceptors.BasicAuthInterceptor
 import com.delivery.sopo.data.networks.serivces.ParcelService
 import com.delivery.sopo.data.networks.serivces.SignUpService
 import com.delivery.sopo.data.networks.serivces.UserService
-import com.delivery.sopo.data.repositories.user.UserRepository
 import com.delivery.sopo.data.resources.auth.local.AuthDataSource
 import com.delivery.sopo.data.resources.auth.remote.AuthRemoteDataSource
 import com.google.gson.Gson
@@ -58,6 +57,12 @@ object NetworkModule
     @Singleton
     @PrivateAccess
     fun provideUserPrivateService(@PrivateAccess retrofit: Retrofit): UserService = retrofit.create(UserService::class.java)
+
+    @Provides
+    @Singleton
+    @PrivateAccess
+    fun provideParcelService(@PrivateAccess retrofit: Retrofit): ParcelService = retrofit.create(ParcelService::class.java)
+
 
     @Provides
     @Singleton

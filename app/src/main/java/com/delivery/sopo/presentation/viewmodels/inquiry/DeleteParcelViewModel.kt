@@ -7,12 +7,10 @@ import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.data.repositories.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepoImpl
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
-import com.delivery.sopo.enums.DeliveryStatusEnum
-import com.delivery.sopo.enums.ErrorCode
+import com.delivery.sopo.enums.DeliveryStatus
 import com.delivery.sopo.enums.InquiryStatusEnum
 import com.delivery.sopo.enums.NavigatorEnum
 import com.delivery.sopo.extensions.MutableLiveDataExtension.initialize
-import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
@@ -22,10 +20,13 @@ import com.delivery.sopo.domain.usecase.parcel.remote.*
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.util.SopoLog
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import java.util.*
+import javax.inject.Inject
 
-class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase, private val getCompletedMonthUseCase: GetCompletedMonthUseCase, private val parcelRepo: ParcelRepository, private val parcelManagementRepo: ParcelManagementRepoImpl, private val historyRepo: CompletedParcelHistoryRepoImpl):
+@HiltViewModel
+class DeleteParcelViewModel @Inject constructor(private val getCompleteParcelUseCase: GetCompleteParcelUseCase, private val getCompletedMonthUseCase: GetCompletedMonthUseCase, private val parcelRepo: ParcelRepository, private val parcelManagementRepo: ParcelManagementRepoImpl, private val historyRepo: CompletedParcelHistoryRepoImpl):
         BaseViewModel()
 {
     /**
@@ -221,54 +222,54 @@ class DeleteParcelViewModel(private val getCompleteParcelUseCase: GetCompletePar
 
         val elseList = list.asSequence().filter { item ->
 
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.DELIVERED.CODE)
             {
                 multiList[0].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.DELIVERED.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.OUT_FOR_DELIVERY.CODE)
             {
                 multiList[1].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.OUT_FOR_DELIVERY.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.IN_TRANSIT.CODE)
             {
                 multiList[2].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.IN_TRANSIT.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.IN_TRANSIT.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.AT_PICKUP.CODE)
             {
                 multiList[3].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.AT_PICKUP.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.AT_PICKUP.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.INFORMATION_RECEIVED.CODE)
             {
                 multiList[4].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.INFORMATION_RECEIVED.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.NOT_REGISTERED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.NOT_REGISTERED.CODE)
             { //                SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
                 multiList[5].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.NOT_REGISTERED.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.NOT_REGISTERED.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.ORPHANED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.ORPHANED.CODE)
             { //                SopoLog.d("미등록(not_register)[${item.parcelDTO.alias}]")
                 multiList[6].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.ORPHANED.CODE
         }.toList()
 
         multiList[7].addAll(elseList)

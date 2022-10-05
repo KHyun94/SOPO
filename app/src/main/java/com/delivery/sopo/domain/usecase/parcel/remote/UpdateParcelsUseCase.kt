@@ -7,8 +7,9 @@ import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class UpdateParcelsUseCase(private val parcelRepo: ParcelRepository, private val parcelStatusRepo: ParcelManagementRepoImpl)
+class UpdateParcelsUseCase @Inject constructor(private val parcelRepo: ParcelRepository, private val parcelStatusRepo: ParcelManagementRepoImpl)
 {
     suspend operator fun invoke(parcelIds: List<Int>) = withContext(Dispatchers.IO) {
         SopoLog.i("호출 [data:${parcelIds.joinToString(", ")}")

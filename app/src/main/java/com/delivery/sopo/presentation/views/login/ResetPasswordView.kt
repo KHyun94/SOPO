@@ -4,6 +4,7 @@ import android.os.CountDownTimer
 import android.view.Gravity
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ResetPasswordViewBinding
@@ -17,13 +18,16 @@ import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.presentation.viewmodels.login.ResetPasswordViewModel
 import com.delivery.sopo.presentation.views.dialog.CommonDialog
 import com.delivery.sopo.util.ui_util.TextInputUtil
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.collections.set
 
+@AndroidEntryPoint
 class ResetPasswordView: BaseView<ResetPasswordViewBinding, ResetPasswordViewModel>()
 {
     override val layoutRes: Int = R.layout.reset_password_view
-    override val vm: ResetPasswordViewModel by viewModel()
+    override val vm: ResetPasswordViewModel by viewModels()
     override val mainLayout: View by lazy { binding.slideMainResetPassword }
 
     var timer: CountDownTimer? = null

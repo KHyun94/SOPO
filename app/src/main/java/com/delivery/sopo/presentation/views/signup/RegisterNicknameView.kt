@@ -2,21 +2,24 @@ package com.delivery.sopo.presentation.views.signup
 
 import android.content.Intent
 import android.view.View
+import androidx.activity.viewModels
 import androidx.core.widget.addTextChangedListener
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.RegisterNicknameViewBinding
 import com.delivery.sopo.extensions.convertTextColor
-import com.delivery.sopo.extensions.moveToActivityWithFinish
+import com.delivery.sopo.extensions.moveActivity
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.util.ValidateUtil
 import com.delivery.sopo.presentation.viewmodels.signup.RegisterNicknameViewModel
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.main.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class RegisterNicknameView: BaseView<RegisterNicknameViewBinding, RegisterNicknameViewModel>()
 {
-    override val vm: RegisterNicknameViewModel by viewModel()
+    override val vm: RegisterNicknameViewModel by viewModels()
     override val layoutRes: Int = R.layout.register_nickname_view
     override val mainLayout: View by lazy { binding.constraintMainUpdateNickname }
 
@@ -53,18 +56,9 @@ class RegisterNicknameView: BaseView<RegisterNicknameViewBinding, RegisterNickna
             {
                 NavigatorConst.Screen.MAIN ->
                 {
-                    /*val builder = SpannableStringBuilder("등록된 닉네임은\n${vm.nickname.value?.toString()}입니다.")
-                    builder.setSpan(ForegroundColorSpan(ContextCompat.getColor(this, R.color.COLOR_MAIN_700)), 8, builder.length - 4, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-                    val optionalClickListener: OnOptionalClickListener = { dialog ->
-                        moveToActivityWithFinish(MainView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        dialog.dismiss()
+                    moveActivity(MainActivity::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK){
+                        finish()
                     }
-
-                    val optionalDialog = OptionalDialog(optionalType = OptionalTypeEnum.ONE_WAY, title = builder, leftHandler = Pair("확인", optionalClickListener))
-
-                    optionalDialog.show(supportFragmentManager, "")*/
-                    moveToActivityWithFinish(MainView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 }
             }
 

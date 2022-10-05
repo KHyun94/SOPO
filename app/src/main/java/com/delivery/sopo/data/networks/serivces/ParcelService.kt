@@ -1,5 +1,6 @@
 package com.delivery.sopo.data.networks.serivces
 
+import com.delivery.sopo.DateSelector
 import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 
 import com.delivery.sopo.models.api.APIResult
@@ -43,11 +44,6 @@ interface ParcelService
     @Headers("Accept: application/json")
     suspend fun fetchOngoingParcels(): Response<APIResult<List<Parcel.Common>>>
 
-    // '배송완료' 리스트 가져오는 api
-    @GET("api/v1/sopo-parcel/delivery/parcels/complete")
-    @Headers("Accept: application/json")
-    suspend fun fetchDeliveredParcelsByPaging(@Query("page") page: Int,  @Query("inquiryDate") inquiryDate: String, @Query("itemCnt") itemCnt: Int = 50): Response<APIResult<List<Parcel.Common>>>
-
     @HTTP(method = "DELETE", path = "api/v1/sopo-parcel/delivery/parcels", hasBody = true)
     @Headers("Accept: application/json")
     suspend fun deleteParcels(@Body parcelIds: HashMap<String, List<Int>>): Response<Unit>
@@ -65,6 +61,21 @@ interface ParcelService
     @POST("/api/v1/sopo-parcel/delivery/parcels/refresh")
     @Headers("Accept: application/json")
     suspend fun requestParcelsRefresh(): Response<APIResult<String>>
+
+    /**
+     * 택배 리스트 전체 업데이트 요청
+     * 서버에서 해당 통신 이외로 업데이트 데이터를 FCM을 통해 던진다.
+     * @return
+     */
+    @GET("/api/v1/sopo-parcel/delivery/parcels/complete/monthly-page-info")
+    @Headers("Accept: application/json")
+    suspend fun fetchCompletedDateInfo(@Query("cursorDate") cursorDate: String? = null): Response<APIResult<DateSelector>>
+
+    // '배송완료' 리스트 가져오는 api
+    @GET("api/v1/sopo-parcel/delivery/parcels/complete")
+    @Headers("Accept: application/json")
+    suspend fun fetchDeliveredParcelsByPaging(@Query("page") page: Int,  @Query("inquiryDate") inquiryDate: String, @Query("itemCnt") itemCnt: Int = 20): Response<APIResult<List<Parcel.Common>>>
+
 
     /**
      * 택배 리스트 단일 업데이트 요청

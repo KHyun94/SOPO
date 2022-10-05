@@ -13,7 +13,7 @@ import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.IntroViewBinding
 import com.delivery.sopo.extensions.makeGone
 import com.delivery.sopo.extensions.makeVisible
-import com.delivery.sopo.extensions.moveToActivityWithFinish
+import com.delivery.sopo.extensions.moveActivity
 import com.delivery.sopo.interfaces.listener.OnIntroClickListener
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.models.base.OnActivityResultCallbackListener
@@ -23,7 +23,6 @@ import com.delivery.sopo.presentation.viewmodels.IntroViewModel
 import com.delivery.sopo.presentation.views.adapter.IntroPageAdapter
 import com.delivery.sopo.presentation.login.LoginSelectView
 import dagger.hilt.android.AndroidEntryPoint
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @AndroidEntryPoint
 class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
@@ -91,13 +90,12 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
             {
                 NavigatorConst.Screen.LOGIN_SELECT ->
                 {
-                    moveToActivityWithFinish(LoginSelectView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    moveActivity(LoginSelectView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK){
+                        finish()
+                    }
                 }
             }
-
         }
-
-
 
     }
 
@@ -108,33 +106,6 @@ class IntroView: BaseView<IntroViewBinding, IntroViewModel>()
         setViewPager()
         setListener()
 
-        /*val onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener { // 'year spinner'높이 수치만큼 'month sector'의 상단 공백을 생성
-
-            val adapter = binding.viewPager.adapter as IntroPageAdapter
-            val height = adapter.bottomView.height
-
-            Toast.makeText(this@IntroView, "Height $height", Toast.LENGTH_SHORT).show()
-
-            *//*val yearSpinnerHeight: Int = binding.linearMainYearSpinner.height
-
-                        (binding.linearMainMonthSelector.layoutParams as FrameLayout.LayoutParams).apply {
-                            topMargin = yearSpinnerHeight
-                        }
-
-                        // 'year spinner'높이 수치만큼 'completed space'의 상단 공백을 생성
-                        // 'month sector'높이 수치만큼 'completed space'의 높이변경
-                        val monthSelectorHeight = binding.linearMainMonthSelector.height
-
-                        (binding.vInnerCompletedSpace.layoutParams as LinearLayout.LayoutParams).apply {
-                            this.topMargin = yearSpinnerHeight
-                            this.height = monthSelectorHeight
-                        }
-
-                        // 뷰 조절 후 옵저빙 리스너 제거
-                        binding.frameMainCompleteInquiry.viewTreeObserver.removeOnGlobalLayoutListener(this)*//*
-        }
-
-        binding.linearIntro.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)*/
     }
 
     private fun setViewPager()

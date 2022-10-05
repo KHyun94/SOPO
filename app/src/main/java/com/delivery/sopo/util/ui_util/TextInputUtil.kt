@@ -208,6 +208,8 @@ object TextInputUtil
             {
                 isValidate = textInputEditText.text.toString().isNotEmpty()
 
+                SopoLog.d("TEST $isValidate")
+
                 if(!isValidate)
                 {
                     errorMessage = "운송장 번호를 확인해주세요."
@@ -316,11 +318,7 @@ object TextInputUtil
 
     fun changeFocusWithoutValidation(context: Context, focus: Triple<View, Boolean, InfoEnum>): Pair<InfoEnum, Boolean>
     {
-        if(!focus.second)
-        {
-            return focusOutWithoutValidation(context, focus)
-        }
-
+        if(!focus.second) return focusOutWithoutValidation(context, focus)
         return focusInWithoutValidation(context, focus)
     }
 

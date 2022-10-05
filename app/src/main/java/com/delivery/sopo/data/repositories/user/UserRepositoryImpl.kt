@@ -1,6 +1,5 @@
 package com.delivery.sopo.data.repositories.user
 
-import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.resources.auth.local.AuthDataSource
 import com.delivery.sopo.data.resources.auth.remote.AuthRemoteDataSource
 import com.delivery.sopo.data.resources.user.local.UserDataSource
@@ -13,33 +12,30 @@ import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.util.DateUtil
 import javax.inject.Inject
 
-class UserRepositoryImpl @Inject constructor(
-        private val authDataSource: AuthDataSource, private val authRemoteDataSource: AuthRemoteDataSource,
-        private val userDataSource: UserDataSource, private val userRemoteDataSource: UserRemoteDataSource): UserRepository
+class UserRepositoryImpl @Inject constructor(private val authDataSource: AuthDataSource, private val authRemoteDataSource: AuthRemoteDataSource, private val userDataSource: UserDataSource, private val userRemoteDataSource: UserRemoteDataSource):
+        UserRepository
 {
     override suspend fun login()
     {
         val username = userDataSource.getUsername()
-        val password = userDataSource.getUserPassword()
+        val userPassword = userDataSource.getUserPassword()
 
-        val authToken = authRemoteDataSource.issueToken(username = username, password = password)
+        val authToken = authRemoteDataSource.issueToken(username = username, password = userPassword)
 
-//        userDataSource.insertUserAccount(userToke = authToken.userToken, username = username, password = password, status = StatusConst.ACTIVATE)
+        userDataSource.insertUserAccount(username = username, userPassword = userPassword)
         authDataSource.insert(token = authToken)
     }
 
-    override suspend fun login(username: String, password: String)
+    override suspend fun login(username: String, userPassword: String)
     {
-        val authToken = authRemoteDataSource.issueToken(username = username, password = password)
-
-//        userDataSource.insertUserAccount(userToke = authToken.userToken, username = username, password = password, status = StatusConst.ACTIVATE)
+        val authToken = authRemoteDataSource.issueToken(username = username, password = userPassword)
+        userDataSource.insertUserAccount(username = username, userPassword = userPassword)
         authDataSource.insert(token = authToken)
     }
 
     override suspend fun refreshToken(): String
     {
-        val userName = userDataSource.getUsername()
-        val refreshToken = authDataSource.get().refreshToken
+        val refreshToken = authDataSource.getRefreshToken()
         val tokenInfo = authRemoteDataSource.refreshToken(refreshToken = refreshToken)
 
         authDataSource.insert(token = tokenInfo)
@@ -50,8 +46,8 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun fetchUserInfo()
     {
         val userInfo = userRemoteDataSource.fetchUserInfo()
-        val nickname = userInfo.nickname ?: throw SOPOApiException(404, Error(609, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
-//        userDataSource.insertUserInfo(nickname, userInfo.personalMessage)
+        val nickname = userInfo.nickname
+            ?: throw SOPOApiException(404, Error(609, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", "")) //        userDataSource.insertUserInfo(nickname, userInfo.personalMessage)
     }
 
     override suspend fun updateNickname(nickname: String)
@@ -82,13 +78,13 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun deleteUser(reason: String)
     {
-        userRemoteDataSource.deleteUser(reason = reason)
-//        userDataSource.clearUserDataBase()
+        userRemoteDataSource.deleteUser(reason = reason) //        userDataSource.clearUserDataBase()
     }
 
-    override suspend fun checkExpiredTokenWithInWeek():Boolean{
+    override suspend fun checkExpiredTokenWithInWeek(): Boolean
+    {
         val userName = userDataSource.getUsername()
-        val currentExpiredDate: String = authDataSource.get().expireAt
+        val currentExpiredDate: String = authDataSource.getExpireAt()
         return DateUtil.isExpiredDateWithinAWeek(currentExpiredDate)
     }
 

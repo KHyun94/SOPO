@@ -2,75 +2,80 @@ package com.delivery.sopo.models
 
 import androidx.annotation.RawRes
 import com.delivery.sopo.R
-import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
+import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.enums.PersonalMessageEnum
 import com.delivery.sopo.util.TimeUtil
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 data class PersonalMessage(var message: String, val type: Int): KoinComponent
 {
-    private val userLocalRepo: UserLocalRepository by inject()
-
     @RawRes var emojiIconRes: Int = 0
 
-    lateinit var personalMessageEnum: PersonalMessageEnum
+//    lateinit var personalMessageEnum: PersonalMessageEnum
+     var personalMessageEnum: PersonalMessageEnum =  PersonalMessageEnum.NEW
 
-    init
+    /*init
     {
-        val disturbStartTime = userLocalRepo.getDisturbStartTime()
-        val disturbEndTime = userLocalRepo.getDisturbEndTime()
+        CoroutineScope(Dispatchers.Default).launch {
+            val disturbStartTime = userDataSource.getDisturbStartTime()
+            val disturbEndTime = userDataSource.getDisturbEndTime()
 
-        emojiIconRes = when(type)
-        {
-            1 ->
+            emojiIconRes = when(type)
             {
-                personalMessageEnum = PersonalMessageEnum.NEW
-                R.raw.lottie_personal_status_2
+                1 ->
+                {
+                    personalMessageEnum = PersonalMessageEnum.NEW
+                    R.raw.lottie_personal_status_2
+                }
+                2 ->
+                {
+                    personalMessageEnum = PersonalMessageEnum.HELLO
+                    R.raw.lottie_personal_status_2
+                }
+                3 ->
+                {
+                    personalMessageEnum = PersonalMessageEnum.SHOPPING_DETOX
+                    R.raw.lottie_personal_status_3
+                }
+                4 ->
+                {
+                    personalMessageEnum = PersonalMessageEnum.PRO_UNBOXING
+                    R.raw.lottie_personal_status_4
+                }
+                5 ->
+                {
+                    personalMessageEnum = PersonalMessageEnum.SOPO_CNT
+                    R.raw.lottie_personal_status_4
+                }
+                6 ->
+                {
+                    personalMessageEnum = PersonalMessageEnum.WAITING
+                    R.raw.lottie_personal_status_4
+                }
+                else -> 0
             }
-            2 ->
+
+            if(disturbStartTime != "" && disturbEndTime != "")
             {
-                personalMessageEnum = PersonalMessageEnum.HELLO
-                R.raw.lottie_personal_status_2
+                val startTime = userDataSource.getDisturbStartTime()?.replace(":", "")?.toInt() ?: 0
+                val endTime = userDataSource.getDisturbEndTime()?.replace(":", "")?.toInt() ?: 0
+
+                val currentTime = TimeUtil.getTime().toInt()
+
+                if(currentTime in startTime..endTime)
+                {
+                    message = "쉿, \n" + "지금은 조용한 집중이 필요한 시간"
+                    personalMessageEnum = PersonalMessageEnum.BE_QUIET
+                    emojiIconRes = R.raw.lottie_personal_status_7
+                }
             }
-            3 ->
-            {
-                personalMessageEnum = PersonalMessageEnum.SHOPPING_DETOX
-                R.raw.lottie_personal_status_3
-            }
-            4 ->
-            {
-                personalMessageEnum = PersonalMessageEnum.PRO_UNBOXING
-                R.raw.lottie_personal_status_4
-            }
-            5 ->
-            {
-                personalMessageEnum = PersonalMessageEnum.SOPO_CNT
-                R.raw.lottie_personal_status_4
-            }
-            6 ->
-            {
-                personalMessageEnum = PersonalMessageEnum.WAITING
-                R.raw.lottie_personal_status_4
-            }
-            else -> 0
         }
 
-        if(disturbStartTime != "" && disturbEndTime != "")
-        {
-            val startTime = userLocalRepo.getDisturbStartTime()?.replace(":", "")?.toInt() ?: 0
-            val endTime = userLocalRepo.getDisturbEndTime()?.replace(":", "")?.toInt() ?: 0
-
-            val currentTime = TimeUtil.getTime().toInt()
-
-            if(currentTime in startTime..endTime)
-            {
-                message = "쉿, \n" + "지금은 조용한 집중이 필요한 시간"
-                personalMessageEnum = PersonalMessageEnum.BE_QUIET
-                emojiIconRes = R.raw.lottie_personal_status_7
-            }
-        }
-    }
+    }*/
 
     fun getEmojiByUnicode(unicode: Int): String
     {

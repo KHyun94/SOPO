@@ -7,8 +7,9 @@ import com.delivery.sopo.models.mapper.CompletedParcelHistoryMapper
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class GetCompletedMonthUseCase(private val parcelRepo: ParcelRepository, private val historyRepo: CompletedParcelHistoryRepoImpl)
+class GetCompletedMonthUseCase @Inject constructor(private val parcelRepo: ParcelRepository, private val historyRepo: CompletedParcelHistoryRepoImpl)
 {
     suspend operator fun invoke(): List<DeliveredParcelHistory> = withContext(Dispatchers.IO) {
             SopoLog.i("호출")

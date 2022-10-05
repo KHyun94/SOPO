@@ -15,11 +15,14 @@ import com.delivery.sopo.domain.usecase.parcel.remote.*
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.util.SopoLog
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class InquiryViewModel(private val syncParcelsUseCase: SyncParcelsUseCase, private val updateParcelsUseCase: UpdateParcelsUseCase, private val getCompletedMonthUseCase: GetCompletedMonthUseCase, private val refreshParcelsUseCase: RefreshParcelsUseCase, private val deleteParcelsUseCase: DeleteParcelsUseCase, private val parcelManagementRepo: ParcelManagementRepoImpl):
+@HiltViewModel
+class InquiryViewModel @Inject constructor(private val syncParcelsUseCase: SyncParcelsUseCase, private val updateParcelsUseCase: UpdateParcelsUseCase, private val getCompletedMonthUseCase: GetCompletedMonthUseCase, private val refreshParcelsUseCase: RefreshParcelsUseCase, private val deleteParcelsUseCase: DeleteParcelsUseCase, private val parcelManagementRepo: ParcelManagementRepoImpl):
         BaseViewModel()
 {
     // '배송중' => '배송완료' 개수

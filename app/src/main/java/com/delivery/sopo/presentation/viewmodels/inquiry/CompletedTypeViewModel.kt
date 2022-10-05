@@ -2,30 +2,37 @@ package com.delivery.sopo.presentation.viewmodels.inquiry
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
+import com.delivery.sopo.DateSelector
 import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.data.models.Result
 import com.delivery.sopo.data.repositories.local.repository.CompletedParcelHistoryRepoImpl
+import com.delivery.sopo.data.repositories.parcels.ParcelRepository
 import com.delivery.sopo.domain.usecase.parcel.remote.GetCompleteParcelUseCase
 import com.delivery.sopo.domain.usecase.parcel.remote.GetCompletedMonthUseCase
 import com.delivery.sopo.domain.usecase.parcel.remote.UpdateParcelAliasUseCase
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
-import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.inquiry.PagingManagement
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.util.DateUtil
-import com.delivery.sopo.util.SopoLog
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+import javax.inject.Inject
 
-class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompleteParcelUseCase, private val getCompletedMonthUseCase: GetCompletedMonthUseCase, private val updateParcelAliasUseCase: UpdateParcelAliasUseCase, private val historyRepo: CompletedParcelHistoryRepoImpl):
-        BaseViewModel()
-{
+@HiltViewModel
+class CompletedTypeViewModel @Inject constructor(
+    private val parcelRepo: ParcelRepository,
+    private val getCompleteParcelUseCase: GetCompleteParcelUseCase,
+    private val getCompletedMonthUseCase: GetCompletedMonthUseCase,
+    private val updateParcelAliasUseCase: UpdateParcelAliasUseCase,
+    private val historyRepo: CompletedParcelHistoryRepoImpl
+) :
+    BaseViewModel() {
     private var _completeList = MutableLiveData<MutableList<InquiryListItem>>()
     val completeList: LiveData<MutableList<InquiryListItem>> = _completeList
 
@@ -37,71 +44,107 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
     val histories: LiveData<List<DeliveredParcelHistory>>
         get() = historyRepo.getAllAsLiveData()
 
-    var isMonthClickable: Boolean = true
+    private var isMonthClickable: Boolean = false
 
-    val yearOfCalendar = MutableLiveData<String>().apply { postValue(DateUtil.getCurrentYear()) }
-    val monthsOfCalendar = MutableLiveData<List<SelectItem<DeliveredParcelHistory>>>()
-    val selectedDate = MutableLiveData<String>()
-
-    private lateinit var pagingManagement: PagingManagement
+    //    val dateSelector = stateFlowOf<DateSelector>()
+    val dateSelector: MutableStateFlow<DateSelector> = MutableStateFlow(DateSelector())
+//    var dateSelector: DateSelector? = null
 
     private var isUpdating: Boolean = false
 
-    init
-    {
-        initPage()
-        getActivateMonths()
+    init {
+        fetchCompletedParcelByMonth()
     }
 
-    fun initPage()
-    {
-        pagingManagement = PagingManagement.init()
+    suspend fun fetchCompletedMonthInfo(cursorDate: String? = null): DateSelector {
+        return parcelRepo.fetchCompletedDateInfo(cursorDate = cursorDate)
     }
 
-    fun changeCompletedParcelHistoryDate(year: String)
-    {
-        initPage()
-        updateYearSpinner(year)
-        updateMonthsSelector(year)
+    fun fetchCompletedParcelByMonth(cursorDate: String? = null) = scope.launch(Dispatchers.IO) {
+        dateSelector.value = fetchCompletedMonthInfo(cursorDate)
+        _completeList.postValue(fetchCompletedParcels(dateSelector.value.cursorDate?:return@launch).toMutableList())
     }
 
-    fun getActivateMonths() = scope.launch(Dispatchers.IO) {
-        getCompletedMonthUseCase()
+    fun onPreviousDate() = scope.launch {
+        fetchCompletedParcelByMonth(dateSelector.value.nextDate)
     }
 
-    fun updateCompletedParcelCalendar(year: String)
-    {
-        updateYearSpinner(year = year)
-        updateMonthsSelector(year = year)
+    fun onNextDate() = scope.launch {
+        fetchCompletedParcelByMonth(dateSelector.value.previousDate)
     }
 
-    private fun updateYearSpinner(year: String)
-    {
-        yearOfCalendar.postValue(year)
-    }
+    suspend fun fetchCompletedParcels(cursorDate: String): List<InquiryListItem> = viewModelScope.async(Dispatchers.IO) {
+        return@async parcelRepo.fetchCompletedParcel(0, cursorDate).map { parcel ->
+            InquiryListItem(parcel, false)
+        }.toMutableList()
+    }.await()
 
-    // UI를 통해 사용자가 배송완료에서 조회하고 싶은 년월을 바꾼다.
-    private fun updateMonthsSelector(year: String) = scope.launch(Dispatchers.Default) {
-
-        var isLastMonth = false
-
-        val histories = historyRepo.findById("${year}%").map {
-
-            val isSelected = if(it.count > 0 && !isLastMonth)
-            {
-                isLastMonth = true
-                true
+    fun updateParcelAlias(parcelId: Int, parcelAlias: String) =
+        checkEventStatus(checkNetwork = true) {
+            scope.launch(Dispatchers.IO) {
+                updateParcelAliasUseCase.invoke(parcelId = parcelId, parcelAlias = parcelAlias)
             }
-            else
-            {
-                false
-            }
-
-            SelectItem(item = it, isSelect = isSelected)
         }
-        monthsOfCalendar.postValue(histories)
+
+    override fun handlerAPIException(exception: SOPOApiException) {
+        super.handlerAPIException(exception)
+        when (exception.code) {
+            ErrorCode.VALIDATION -> postErrorSnackBar(exception.message)
+            ErrorCode.ALREADY_REGISTERED_PARCEL, ErrorCode.OVER_REGISTERED_PARCEL, ErrorCode.PARCEL_BAD_REQUEST -> postErrorSnackBar(
+                exception.message
+            )
+            else -> {
+                exception.printStackTrace()
+                postErrorSnackBar("[불명]${exception.message}")
+            }
+        }
     }
 
+    override fun handlerInternalServerException(exception: InternalServerException) {
+        super.handlerInternalServerException(exception)
+
+        postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
+    }
+
+    override fun handlerException(exception: Exception) {
+        super.handlerException(exception)
+        postErrorSnackBar("[불명] ${exception.toString()}")
+    }
+
+/* fun updateCompletedParcelCalendar(year: String)
+ {
+     updateYearSpinner(year = year)
+     updateMonthsSelector(year = year)
+ }*/
+
+//    private fun updateYearSpinner(year: String)
+//    {
+//        yearOfCalendar.postValue(year)
+//    }
+
+//    // UI를 통해 사용자가 배송완료에서 조회하고 싶은 년월을 바꾼다.
+//    private fun updateMonthsSelector(year: String) = scope.launch(Dispatchers.Default) {
+//
+//        var isLastMonth = false
+//
+//        val histories = historyRepo.findById("${year}%").map {
+//
+//            val isSelected = if(it.count > 0 && !isLastMonth)
+//            {
+//                isLastMonth = true
+//                true
+//            }
+//            else
+//            {
+//                false
+//            }
+//
+//            SelectItem(item = it, isSelect = isSelected)
+//        }
+//        monthsOfCalendar.postValue(histories)
+//    }
+
+/*
     fun refreshCompleteParcelsByDate(inquiryDate: String) = scope.launch(Dispatchers.IO) {
 
         if(isUpdating) return@launch
@@ -156,56 +199,26 @@ class CompletedTypeViewModel(private val getCompleteParcelUseCase: GetCompletePa
 
         return nextPageParcels
     }
+*/
 
-    fun onMonthClicked(month: Int)
-    {
-        SopoLog.d("onMonthClicked :: $month")
+/*fun onMonthClicked(month: Int)
+{
+    SopoLog.d("onMonthClicked :: $month")
 
-        if(!isMonthClickable) return SopoLog.d("$month 비활성화")
+    if(!isMonthClickable) return SopoLog.d("$month 비활성화")
 
-        pagingManagement = PagingManagement(0, "", true)
+    pagingManagement = PagingManagement(0, "", true)
 
-        val list = monthsOfCalendar.value?.map {
-            val selectMonth = month.toString().padStart(2, '0')
-            it.isSelect = (selectMonth == it.item.month)
-            it
-        } ?: return
+    val list = monthsOfCalendar.value?.map {
+        val selectMonth = month.toString().padStart(2, '0')
+        it.isSelect = (selectMonth == it.item.month)
+        it
+    } ?: return
 
-        monthsOfCalendar.postValue(list)
-    }
+    monthsOfCalendar.postValue(list)
+}
+*/
 
-    fun updateParcelAlias(parcelId: Int, parcelAlias: String) =
-        checkEventStatus(checkNetwork = true) {
-            scope.launch(Dispatchers.IO) {
-                updateParcelAliasUseCase.invoke(parcelId = parcelId, parcelAlias = parcelAlias)
-            }
-        }
 
-    override fun handlerAPIException(exception: SOPOApiException)
-    {
-        super.handlerAPIException(exception)
-        when(exception.code)
-        {
-            ErrorCode.VALIDATION -> postErrorSnackBar(exception.message)
-            ErrorCode.ALREADY_REGISTERED_PARCEL, ErrorCode.OVER_REGISTERED_PARCEL, ErrorCode.PARCEL_BAD_REQUEST -> postErrorSnackBar(exception.message)
-            else ->
-            {
-                exception.printStackTrace()
-                postErrorSnackBar("[불명]${exception.message}")
-            }
-        }
-    }
 
-    override fun handlerInternalServerException(exception: InternalServerException)
-    {
-        super.handlerInternalServerException(exception)
-
-        postErrorSnackBar("서버 오류로 인해 정상적인 처리가 되지 않았습니다.")
-    }
-
-    override fun handlerException(exception: Exception)
-    {
-        super.handlerException(exception)
-        postErrorSnackBar("[불명] ${exception.toString()}")
-    }
 }

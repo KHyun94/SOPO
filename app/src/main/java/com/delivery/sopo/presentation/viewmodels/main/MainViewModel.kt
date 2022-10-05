@@ -5,17 +5,22 @@ import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.OnDataCallbackListener
 import com.delivery.sopo.data.repositories.local.app_password.AppPasswordRepository
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
-import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
+import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.domain.usecase.user.UpdateFCMTokenUseCase
 import com.delivery.sopo.firebase.FirebaseRepository
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
-class MainViewModel(private val userRepo: UserLocalRepository,
+@HiltViewModel
+class MainViewModel @Inject constructor(
+        /*private val userDataSource: UserDataSource,
                     private val parcelRepo: ParcelRepository,
                     private val updateFCMTokenUseCase: UpdateFCMTokenUseCase,
-                    private val appPasswordRepo: AppPasswordRepository):
+                    private val appPasswordRepo: AppPasswordRepository*/
+                    ):
         BaseViewModel()
 {
     // 유효성 및 통신 등의 결과 객체
@@ -27,11 +32,11 @@ class MainViewModel(private val userRepo: UserLocalRepository,
     val currentPage: LiveData<Int>
         get() = _currentPage
 
-    init
+/*    init
     {
         updateFCMToken()
         updateTopic()
-    }
+    }*/
 
     fun postNavigator(navigator: String){
         _navigator.postValue(navigator)
@@ -41,7 +46,7 @@ class MainViewModel(private val userRepo: UserLocalRepository,
         _currentPage.postValue(page)
     }
 
-    fun hasAppPassword(callback: OnDataCallbackListener<Boolean>) = runBlocking(Dispatchers.Default) {
+ /*   fun hasAppPassword(callback: OnDataCallbackListener<Boolean>) = runBlocking(Dispatchers.Default) {
         val hasAppPassword = appPasswordRepo.get() != null
         callback.invoke(hasAppPassword)
     }
@@ -50,7 +55,7 @@ class MainViewModel(private val userRepo: UserLocalRepository,
         return parcelRepo.getOnGoingDataCnt() > 0
     }
 
-    /** Update FCM Token  **/
+    *//** Update FCM Token  **//*
     private fun updateFCMToken() = scope.launch{
         updateFCMTokenUseCase.invoke()
     }
@@ -67,7 +72,7 @@ class MainViewModel(private val userRepo: UserLocalRepository,
 
         SopoLog.d("현재 진행 중인 택배 갯수 [data:$ongoingParcelCnt(개)]")
 
-        val subscribedTopic = userRepo.getTopic()
+        val subscribedTopic = userDataSource.getTopic()
 
         SopoLog.d("구독 중인 시간 [data:$subscribedTopic]")
 
@@ -76,5 +81,5 @@ class MainViewModel(private val userRepo: UserLocalRepository,
             SopoLog.d("구독 중인 시간이 없고, 현재 진행 중인 택배가 있는 상태")
             FirebaseRepository.subscribedToTopicInFCM()
         }
-    }
+    }*/
 }

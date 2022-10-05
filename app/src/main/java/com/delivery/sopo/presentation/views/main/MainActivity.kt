@@ -1,9 +1,7 @@
 package com.delivery.sopo.presentation.views.main
 
-import android.app.Activity
-import android.content.Intent
 import android.view.View
-import androidx.activity.result.ActivityResult
+import androidx.activity.viewModels
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
@@ -12,53 +10,46 @@ import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.ItemMainTabBinding
 import com.delivery.sopo.databinding.MainViewBinding
-import com.delivery.sopo.enums.LockScreenStatusEnum
-import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.enums.SnackBarType
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.makeGone
 import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.interfaces.OnPageSelectListener
 import com.delivery.sopo.models.base.BaseView
-import com.delivery.sopo.models.base.OnActivityResultCallbackListener
-import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.presentation.models.TabIcon
+import com.delivery.sopo.presentation.register.view.RegisterParcelFragment
 import com.delivery.sopo.presentation.services.PowerManager
 import com.delivery.sopo.presentation.viewmodels.main.MainViewModel
 import com.delivery.sopo.presentation.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.presentation.views.adapter.ViewPagerAdapter
 import com.delivery.sopo.presentation.views.inquiry.InquiryMainFragment
-import com.delivery.sopo.presentation.views.menus.LockScreenView
-import com.delivery.sopo.presentation.views.registers.RegisterMainFragment
 import com.delivery.sopo.util.ClipboardUtil
 import com.delivery.sopo.util.SopoLog
-import com.delivery.sopo.util.ui_util.BottomNotificationBar
-import com.delivery.sopo.util.ui_util.UpdateValueDialog
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
+@AndroidEntryPoint
+class MainActivity: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
 {
     override val layoutRes: Int = R.layout.main_view
-    override val vm: MainViewModel by viewModel()
+    override val vm: MainViewModel by viewModels()
     override val mainLayout: View by lazy { binding.viewPagerMain }
 
     var registerTabBinding: ItemMainTabBinding? = null
     var inquiryTabBinding: ItemMainTabBinding? = null
     var menuTabBinding: ItemMainTabBinding? = null
 
-    private var registerTabIcon =
-        TabIcon(R.drawable.ic_activate_register, R.drawable.ic_inactivate_register)
-    private var inquiryTabIcon =
-        TabIcon(R.drawable.ic_activate_inquiry, R.drawable.ic_inactivate_inquiry)
+    private var registerTabIcon = TabIcon(R.drawable.ic_activate_register, R.drawable.ic_inactivate_register)
+    private var inquiryTabIcon = TabIcon(R.drawable.ic_activate_inquiry, R.drawable.ic_inactivate_inquiry)
     private var menuTabIcon = TabIcon(R.drawable.ic_activate_menu, R.drawable.ic_inactivate_menu)
 
     private val baseFragments =
-        arrayListOf(RegisterMainFragment(), InquiryMainFragment(), MenuMainFragment())
+        arrayListOf(RegisterParcelFragment(), InquiryMainFragment(), MenuMainFragment())
+//        arrayListOf<Fragment>(RegisterNavHostFragment())
     lateinit var onReselectedTapClickListener: OnCallbackListener
 
     override fun onBeforeBinding()
@@ -73,7 +64,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
 
         setSnackBar(binding.bottomNotificationBar)
 
-        checkAppPassword()
+//        checkAppPassword()
         setViewPager()
         setTabLayout()
         checkInitializedTab()
@@ -96,26 +87,26 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
 
     private fun checkInitializedTab() = CoroutineScope(Dispatchers.Default).launch {
 
-        val clipBoardData = ClipboardUtil.pasteClipboardText(context = this@MainView)
+        val clipBoardData = ClipboardUtil.pasteClipboardText(context = this@MainActivity)
 
         clipBoardData?.let {
             binding.viewPagerMain.currentItem = 0
             return@launch
         }
 
-        val isExistParcel = vm.checkIsExistParcels()
-
-        if(isExistParcel)
-        {
-            binding.viewPagerMain.currentItem = 1
-        }
-        else
-        {
-            binding.viewPagerMain.currentItem = 0
-        }
+//        val isExistParcel = vm.checkIsExistParcels()
+//
+//        if(isExistParcel)
+//        {
+//            binding.viewPagerMain.currentItem = 1
+//        }
+//        else
+//        {
+//            binding.viewPagerMain.currentItem = 0
+//        }
     }
 
-    fun checkAppPassword() = vm.hasAppPassword { hasAppPassword ->
+    /*fun checkAppPassword() = vm.hasAppPassword { hasAppPassword ->
 
         if(!hasAppPassword) return@hasAppPassword
 
@@ -135,18 +126,18 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
         }
 
         launchActivityResult(intent)
-    }
+    }*/
 
     fun activateTab(binding: ItemMainTabBinding, tabIcon: TabIcon)
     {
         binding.ivTab.setBackgroundResource(tabIcon.activate)
-        binding.tvTabName.setTextColor(ContextCompat.getColor(this@MainView, R.color.COLOR_MAIN_700))
+        binding.tvTabName.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.COLOR_MAIN_700))
     }
 
     fun inactivateTab(binding: ItemMainTabBinding, tabIcon: TabIcon)
     {
         binding.ivTab.setBackgroundResource(tabIcon.inactivate)
-        binding.tvTabName.setTextColor(ContextCompat.getColor(this@MainView, R.color.COLOR_GRAY_400))
+        binding.tvTabName.setTextColor(ContextCompat.getColor(this@MainActivity, R.color.COLOR_GRAY_400))
     }
 
     private fun setViewPager()
@@ -208,11 +199,11 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
 
         when(pos)
         {
-            TabCode.firstTab -> registerTabBinding =
+            TabCode.REGISTER_TAB -> registerTabBinding =
                 setTabIcon(tab, R.drawable.ic_activate_register, "등록", R.color.COLOR_MAIN_700)
-            TabCode.secondTab -> inquiryTabBinding =
+            TabCode.INQUIRY_TAB -> inquiryTabBinding =
                 setTabIcon(tab, R.drawable.ic_inactivate_inquiry, "조회", R.color.COLOR_GRAY_400)
-            TabCode.thirdTab -> menuTabBinding =
+            TabCode.MENU_TAB -> menuTabBinding =
                 setTabIcon(tab, R.drawable.ic_inactivate_menu, "메뉴", R.color.COLOR_GRAY_400)
         }
     }
@@ -225,7 +216,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
 
         tabBinding.ivTab.setBackgroundResource(iconRes)
         tabBinding.tvTabName.text = tabName
-        tabBinding.tvTabName.setTextColor(ContextCompat.getColor(this@MainView, textColor))
+        tabBinding.tvTabName.setTextColor(ContextCompat.getColor(this@MainActivity, textColor))
 
         return tabBinding
     }
@@ -262,7 +253,7 @@ class MainView: BaseView<MainViewBinding, MainViewModel>(), OnPageSelectListener
             TabIcon(R.drawable.ic_activate_inquiry, R.drawable.ic_inactivate_inquiry)
         }
 
-        if(vm.currentPage.value == TabCode.secondTab)
+        if(vm.currentPage.value == TabCode.INQUIRY_TAB)
         {
             inquiryTabBinding?.ivTab?.background =
                 ContextCompat.getDrawable(this, inquiryTabIcon.activate)

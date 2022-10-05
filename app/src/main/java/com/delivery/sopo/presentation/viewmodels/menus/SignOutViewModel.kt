@@ -10,9 +10,12 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.domain.usecase.user.token.SignOutUseCase
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SignOutViewModel(
+@HiltViewModel
+class SignOutViewModel @Inject constructor(
         private val signOutUseCase: SignOutUseCase,
 ): BaseViewModel()
 {

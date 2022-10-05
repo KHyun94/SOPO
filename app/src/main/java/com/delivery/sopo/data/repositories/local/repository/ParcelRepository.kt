@@ -5,10 +5,8 @@ import androidx.lifecycle.Transformations
 import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.data.database.room.entity.ParcelEntity
-import com.delivery.sopo.data.networks.NetworkManager
 import com.delivery.sopo.data.networks.serivces.ParcelService
 import com.delivery.sopo.data.repositories.local.datasource.ParcelDataSource
-import com.delivery.sopo.enums.NetworkEnum
 import com.delivery.sopo.extensions.wrapBodyAliasToHashMap
 import com.delivery.sopo.extensions.wrapBodyAliasToMap
 import com.delivery.sopo.interfaces.BaseDataSource
@@ -21,14 +19,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import com.delivery.sopo.data.models.Result
-import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.enums.DeliveryStatus
 import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.presentation.viewmodels.inquiry.OngoingTypeViewModel
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import java.util.*
+import javax.inject.Inject
 
-class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Parcel.Common>,
+class ParcelRepository @Inject constructor(private val appDatabase: AppDatabase, private val parcelService: ParcelService): BaseDataSource<Parcel.Common>,
         ParcelDataSource,
         BaseService()
 {
@@ -183,7 +181,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
 
     suspend fun registerParcel(parcel: Parcel.Register): Int
     {
-        val registerParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java).registerParcel(parcelRegister = parcel)
+        val registerParcel = parcelService.registerParcel(parcelRegister = parcel)
         val result = apiCall { registerParcel }
         return result.data?.data ?: throw NullPointerException()
     }
@@ -191,7 +189,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     suspend fun getRemoteParcelById(parcelId: Int): Parcel.Common
     {
         val getRemoteParcel =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java).fetchParcelById(parcelId = parcelId)
+            parcelService.fetchParcelById(parcelId = parcelId)
         val result = apiCall { getRemoteParcel }
         return result.data?.data ?: throw NullPointerException()
     }
@@ -199,7 +197,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     suspend fun getRemoteParcelById(parcelIds: List<Int>): List<Parcel.Common>
     {
         if(parcelIds.isEmpty()) return emptyList()
-        val getRemoteParcel = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java).fetchParcelById(parcelId = parcelIds.joinToString(", "))
+        val getRemoteParcel = parcelService.fetchParcelById(parcelId = parcelIds.joinToString(", "))
         val result = apiCall { getRemoteParcel }
         return result.data?.data ?: emptyList()
     }
@@ -207,7 +205,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     override suspend fun getOngoingParcelsFromRemote(): List<Parcel.Common>
     {
         val getOngoingParcelsFromRemote =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
+            parcelService
                 .fetchOngoingParcels()
         val result = apiCall { getOngoingParcelsFromRemote }
         return result.data?.data ?: emptyList()
@@ -216,7 +214,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     override suspend fun getRemoteMonths(): List<DeliveredParcelHistory>
     {
         val getRemoteMonths =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
+            parcelService
                 .fetchDeliveredMonth()
         val result = apiCall { getRemoteMonths }
         return result.data?.data ?: emptyList()
@@ -225,7 +223,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     override suspend fun getCompleteParcelsByRemote(page: Int, inquiryDate: String): List<Parcel.Common>
     {
         val getCompleteParcelsByRemote =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
+            parcelService
                 .fetchDeliveredParcelsByPaging(page = page, inquiryDate = inquiryDate)
         val result = apiCall { getCompleteParcelsByRemote }
         return result.data?.data ?: emptyList()
@@ -234,7 +232,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     suspend fun reportParcelStatus(parcelIds: List<Int>)
     {
         val wrapParcelIds = parcelIds.wrapBodyAliasToHashMap<List<Int>>("parcelIds")
-        val reportParcelStatus = NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java).reportParcelStatus(wrapParcelIds)
+        val reportParcelStatus = parcelService.reportParcelStatus(wrapParcelIds)
         apiCall { reportParcelStatus }
     }
 
@@ -246,7 +244,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
         val wrapParcelAlias = mapOf<String, String>(Pair("alias", parcelAlias))
 
         val updateParcelAlias =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
+            parcelService
                 .updateParcelAlias(parcelId, wrapParcelAlias)
         apiCall { updateParcelAlias }
     }
@@ -278,7 +276,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     {
         val wrapBody = parcelIds.wrapBodyAliasToHashMap("parcelIds")
         val deleteParcels =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
+            parcelService
                 .deleteParcels(parcelIds = wrapBody)
         apiCall { deleteParcels }
     }
@@ -290,7 +288,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     suspend fun requestParcelsForRefresh(): NetworkResponse<APIResult<String>>
     {
         val result =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
+            parcelService
                 .requestParcelsRefresh()
         return apiCall { result }
     }
@@ -299,7 +297,7 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
     {
         val wrapBody = parcelId.wrapBodyAliasToMap("parcelId")
         val result =
-            NetworkManager.setLoginMethod(NetworkEnum.O_AUTH_TOKEN_LOGIN, ParcelService::class.java)
+            parcelService
                 .requestParcelsUpdate(parcelId = wrapBody)
         return apiCall { result }.data?.data ?: throw NullPointerException("택배 데이터가 조회되지 않습니다.")
     }
@@ -311,54 +309,54 @@ class ParcelRepository(private val appDatabase: AppDatabase): BaseDataSource<Par
 
         val elseList = list.asSequence().filter { item ->
 
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.DELIVERED.CODE)
             {
                 multiList[0].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.DELIVERED.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.OUT_FOR_DELIVERY.CODE)
             {
                 multiList[1].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.OUT_FOR_DELIVERY.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.IN_TRANSIT.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.IN_TRANSIT.CODE)
             {
                 multiList[2].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.IN_TRANSIT.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.IN_TRANSIT.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.AT_PICKUP.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.AT_PICKUP.CODE)
             {
                 multiList[3].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.AT_PICKUP.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.AT_PICKUP.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.INFORMATION_RECEIVED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.INFORMATION_RECEIVED.CODE)
             {
                 multiList[4].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.INFORMATION_RECEIVED.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.INFORMATION_RECEIVED.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.NOT_REGISTERED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.NOT_REGISTERED.CODE)
             {
                 multiList[5].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.NOT_REGISTERED.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.NOT_REGISTERED.CODE
         }.filter { item ->
-            if(item.parcel.deliveryStatus == DeliveryStatusEnum.ORPHANED.CODE)
+            if(item.parcel.deliveryStatus == DeliveryStatus.ORPHANED.CODE)
             {
                 multiList[6].add(item)
             }
 
-            item.parcel.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE
+            item.parcel.deliveryStatus != DeliveryStatus.ORPHANED.CODE
         }.toList()
 
         multiList[7].addAll(elseList)

@@ -8,17 +8,17 @@ import androidx.fragment.app.Fragment
 import com.delivery.sopo.databinding.FragmentMenuMainFrameBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.util.FragmentManager
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.main.MainActivity
 
 class MenuMainFragment : Fragment()
 {
     lateinit var binding: FragmentMenuMainFrameBinding
-    lateinit var parentView: MainView
+    lateinit var parentActivity: MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        parentView = activity as MainView
+        parentActivity = activity as MainActivity
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View?
@@ -27,7 +27,7 @@ class MenuMainFragment : Fragment()
         binding.lifecycleOwner = this
         viewId = binding.layoutMainMenuFrame.id
 
-        FragmentManager.add(parentView, TabCode.MY_MENU_MAIN, viewId)
+        FragmentManager.add(parentActivity, TabCode.MY_MENU_MAIN, viewId)
 
         return binding.root
     }

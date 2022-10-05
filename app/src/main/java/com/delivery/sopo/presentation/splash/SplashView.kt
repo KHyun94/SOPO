@@ -4,13 +4,13 @@ import android.content.Intent
 import androidx.activity.viewModels
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.SplashViewBinding
-import com.delivery.sopo.extensions.moveToActivityWithFinish
+import com.delivery.sopo.extensions.moveActivity
 import com.delivery.sopo.interfaces.listener.OnPermissionResponseCallback
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.presentation.views.dialog.GeneralDialog
 import com.delivery.sopo.presentation.views.intro.IntroView
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.main.MainActivity
 import com.delivery.sopo.presentation.views.signup.RegisterNicknameView
 import com.delivery.sopo.util.PermissionUtil
 import com.delivery.sopo.util.SopoLog
@@ -62,8 +62,9 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
             {
                 NavigatorConst.TO_INTRO ->
                 {
-                    moveToActivityWithFinish(IntroView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    finish()
+                    moveActivity(IntroView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK){
+                        finish()
+                    }
                 }
                 NavigatorConst.TO_PERMISSION ->
                 {
@@ -71,13 +72,15 @@ class SplashView: BaseView<SplashViewBinding, SplashViewModel>()
                 }
                 NavigatorConst.Screen.UPDATE_NICKNAME ->
                 {
-                    moveToActivityWithFinish(RegisterNicknameView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    finish()
+                    moveActivity(RegisterNicknameView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK){
+                        finish()
+                    }
                 }
                 NavigatorConst.Screen.MAIN ->
                 {
-                    moveToActivityWithFinish(MainView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    finish()
+                    moveActivity(MainActivity::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK){
+                        finish()
+                    }
                 }
             }
         }

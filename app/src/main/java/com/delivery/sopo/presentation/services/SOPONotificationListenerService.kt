@@ -6,10 +6,9 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
-import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
 import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.domain.usecase.parcel.remote.RegisterParcelUseCase
-import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.enums.DeliveryStatus
 import com.delivery.sopo.enums.SettingEnum
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.Parcel
@@ -24,12 +23,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import java.util.*
 
 class SOPONotificationListenerService: NotificationListenerService(), KoinComponent
 {
     private val userDataSource: UserDataSource by inject()
-    private val userLocalRepo: UserLocalRepository by inject()
     private val parcelRepo: ParcelRepository by inject()
     private val carrierRepo: CarrierDataSource by inject()
     private val registerParcelUseCase: RegisterParcelUseCase by inject()
@@ -100,13 +97,13 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
                     parcelRepo.reportParcelStatus(listOf(parcel.parcelId)) }
             }
 
-            when(userLocalRepo.getPushAlarmType())
+            when(userDataSource.getPushAlarmType())
             {
-                SettingEnum.PushAlarmType.ARRIVE ->
+                SettingEnum.PushAlarmType.ARRIVE.name ->
                 {
-                    if(parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE) return
+                    if(parcel.deliveryStatus != DeliveryStatus.DELIVERED.CODE) return
                 }
-                SettingEnum.PushAlarmType.REJECT ->
+                SettingEnum.PushAlarmType.REJECT.name ->
                 {
                     return
                 }

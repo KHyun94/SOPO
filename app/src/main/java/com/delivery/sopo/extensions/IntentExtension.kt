@@ -9,23 +9,15 @@ fun Intent.launchActivity(context : Context){
     context.startActivity(this)
 }
 
-fun Activity.moveToActivity(clz: Class<*>, vararg flags:Int)
+fun Activity.moveActivity(clz: Class<*>, vararg flags:Int, callback: (() -> Unit)? = null)
 {
     val intent = Intent(this, clz).apply {
         flags.forEach { flag -> addFlags(flag) }
     }
 
     this.startActivity(intent)
-}
 
-fun Activity.moveToActivityWithFinish(clz: Class<*>, vararg flags:Int)
-{
-    val intent = Intent(this, clz).apply {
-        flags.forEach { flag -> addFlags(flag) }
-    }
-
-    this.startActivity(intent)
-    this.finish()
+    callback?.run { invoke() }
 }
 
 fun Intent.launchActivityWithAllClear(context: Context){

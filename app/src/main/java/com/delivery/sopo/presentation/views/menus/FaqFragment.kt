@@ -4,28 +4,28 @@ import android.os.Bundle
 import android.view.View
 import android.webkit.WebSettings
 import android.webkit.WebViewClient
+import androidx.fragment.app.viewModels
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentFaqBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.base.BaseFragment
-import com.delivery.sopo.models.menu.FaqItem
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.presentation.viewmodels.menus.FaqViewModel
 import com.delivery.sopo.presentation.viewmodels.menus.MenuMainFragment
-import com.delivery.sopo.presentation.views.adapter.FaqExpandableAdapter
-import com.delivery.sopo.presentation.views.dialog.OtherFaqDialog
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.main.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class FaqFragment: BaseFragment<FragmentFaqBinding, FaqViewModel>(){
 
-    override val vm: FaqViewModel by viewModel()
+    override val vm: FaqViewModel by viewModels()
     override val layoutRes: Int = R.layout.fragment_faq
     override val mainLayout: View by lazy{ binding.linearMainFaq }
-    private val parentView: MainView by lazy { activity as MainView }
+    private val parentActivity: MainActivity by lazy { activity as MainActivity }
 
     override fun setBeforeBinding()
     {
@@ -51,7 +51,7 @@ class FaqFragment: BaseFragment<FragmentFaqBinding, FaqViewModel>(){
         super.setObserve()
 
         activity ?: return
-        parentView.getCurrentPage().observe(this) {
+        parentActivity.getCurrentPage().observe(this) {
             if(it != 2) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
@@ -61,7 +61,7 @@ class FaqFragment: BaseFragment<FragmentFaqBinding, FaqViewModel>(){
             {
                 NavigatorConst.Event.BACK ->
                 {
-                    FragmentManager.refreshMove(parentView, TabCode.MY_MENU_MAIN.apply {
+                    FragmentManager.refreshMove(parentActivity, TabCode.MY_MENU_MAIN.apply {
                         FRAGMENT = MenuFragment.newInstance()
                     }, MenuMainFragment.viewId)
                 }

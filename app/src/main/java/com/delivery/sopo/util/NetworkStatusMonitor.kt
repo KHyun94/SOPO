@@ -6,20 +6,22 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import com.delivery.sopo.SOPOApplication
 import com.delivery.sopo.enums.NetworkStatus
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 
-class NetworkStatusMonitor(private val activity: AppCompatActivity): ConnectivityManager.NetworkCallback()
+class NetworkStatusMonitor(private val context: Context, private val networkStatus: MutableStateFlow<NetworkStatus>): ConnectivityManager.NetworkCallback()
 {
+
     init
     {
         SopoLog.i("NetworkStatusMonitor init(...)")
     }
 
-    private val connectivityManager =
-        activity.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
     /** Network를 감지할 Capabilities 선언 **/
     private val networkRequest: NetworkRequest = NetworkRequest.Builder()
@@ -31,17 +33,9 @@ class NetworkStatusMonitor(private val activity: AppCompatActivity): Connectivit
     fun initNetworkCheck()
     {
         val activeNetwork = connectivityManager.activeNetwork
-
-        if(activeNetwork != null)
-        {
-            SopoLog.d("네트워크 연결되어있음 + ${getConnectivityStatus(context = activity)}")
-            SOPOApplication.networkStatus.postValue(getConnectivityStatus(context = activity))
-        }
-        else
-        {
-            SopoLog.d("네트워크 연결되어 있지않음 + ${getConnectivityStatus(context = activity)}")
-            SOPOApplication.networkStatus.postValue(getConnectivityStatus(context = activity))
-        }
+        val connectivityStatus = getConnectivityStatus(context = context)
+        SopoLog.d("Init Network Status[${connectivityStatus}]")
+        networkStatus.value = connectivityStatus
     }
 
     /** Network 모니터링 서비스 시작 **/
@@ -59,15 +53,19 @@ class NetworkStatusMonitor(private val activity: AppCompatActivity): Connectivit
     override fun onAvailable(network: Network)
     {
         super.onAvailable(network)
-        SopoLog.d("networkAvailable() + ${getConnectivityStatus(context = activity)}")
-        SOPOApplication.networkStatus.postValue(getConnectivityStatus(context = activity))
+
+        val connectivityStatus = getConnectivityStatus(context = context)
+        SopoLog.d("Network onAvailable Status[${connectivityStatus}]")
+        networkStatus.value = connectivityStatus
     }
 
     override fun onLost(network: Network)
     {
         super.onLost(network)
-        SopoLog.d("networkUnavailable() + ${getConnectivityStatus(context = activity)}")
-        SOPOApplication.networkStatus.postValue(getConnectivityStatus(context = activity))
+
+        val connectivityStatus = getConnectivityStatus(context = context)
+        SopoLog.d("Network onLost Status[${connectivityStatus}]")
+        networkStatus.value = connectivityStatus
     }
 
 
@@ -78,35 +76,35 @@ class NetworkStatusMonitor(private val activity: AppCompatActivity): Connectivit
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
             // 활성화된 네트워크의 상태를 표현하는 객체
-            val nc = cm.getNetworkCapabilities(cm.activeNetwork) ?: return NetworkStatus.NOT_CONNECT
+            val nc = cm.getNetworkCapabilities(cm.activeNetwork) ?: return NetworkStatus.NotConnect
 
             return when
             {
                 nc.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ->
                 {
-                    NetworkStatus.WIFI
+                    NetworkStatus.Wifi
                 }
                 nc.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ->
                 {
-                    NetworkStatus.CELLULAR
+                    NetworkStatus.Cellular
                 }
-                else -> NetworkStatus.NOT_CONNECT
+                else -> NetworkStatus.NotConnect
             }
         }
 
-        val activeNetwork = cm.activeNetworkInfo ?: return NetworkStatus.NOT_CONNECT
+        val activeNetwork = cm.activeNetworkInfo ?: return NetworkStatus.NotConnect
 
         return when(activeNetwork.type)
         {
             ConnectivityManager.TYPE_WIFI ->
             {
-                NetworkStatus.WIFI
+                NetworkStatus.Wifi
             }
             ConnectivityManager.TYPE_MOBILE ->
             {
-                NetworkStatus.CELLULAR
+                NetworkStatus.Cellular
             }
-            else -> NetworkStatus.NOT_CONNECT
+            else -> NetworkStatus.NotConnect
         }
     }
 }

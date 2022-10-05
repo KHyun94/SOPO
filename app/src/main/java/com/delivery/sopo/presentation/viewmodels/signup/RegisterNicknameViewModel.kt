@@ -13,10 +13,15 @@ import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.util.SopoLog
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RegisterNicknameViewModel(private val updateNicknameUseCase: UpdateNicknameUseCase): BaseViewModel()
+@HiltViewModel
+class RegisterNicknameViewModel @Inject constructor(
+        private val updateNicknameUseCase: UpdateNicknameUseCase
+        ): BaseViewModel()
 {
     val nickname = MutableLiveData<String>()
 

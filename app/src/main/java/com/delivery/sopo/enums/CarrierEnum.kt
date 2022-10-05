@@ -1,6 +1,5 @@
 package com.delivery.sopo.enums
 
-import com.delivery.sopo.util.SopoLog
 import com.google.gson.annotations.SerializedName
 import java.lang.NullPointerException
 

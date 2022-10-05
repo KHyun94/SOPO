@@ -4,11 +4,12 @@ import com.delivery.sopo.data.resources.auth.local.AuthDataSource
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
+import javax.inject.Inject
 
-class AuthInterceptor(private val authDataSource: AuthDataSource): Interceptor
+class AuthInterceptor @Inject constructor(private val authDataSource: AuthDataSource): Interceptor
 {
     fun getAccessToken() = runBlocking {
-        return@runBlocking authDataSource.get().accessToken
+        return@runBlocking authDataSource.getAccessToken()
     }
 
     override fun intercept(chain: Interceptor.Chain): Response

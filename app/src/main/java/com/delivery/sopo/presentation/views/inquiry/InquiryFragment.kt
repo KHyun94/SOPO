@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
@@ -24,26 +25,28 @@ import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.presentation.viewmodels.inquiry.InquiryViewModel
 import com.delivery.sopo.presentation.views.adapter.ViewPagerAdapter
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.main.MainActivity
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.ZoomOutPageTransformer
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
+
+@AndroidEntryPoint
 class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
 {
     override val layoutRes: Int = R.layout.fragment_inquiry
-    override val vm: InquiryViewModel by viewModel()
+    override val vm: InquiryViewModel by viewModels()
     override val mainLayout: View by lazy { binding.constraintMainInquiry }
 
-    private val parentView: MainView by lazy { activity as MainView }
+    private val parentActivity: MainActivity by lazy { activity as MainActivity }
 
     lateinit var ongoingTabBinding: ItemInquiryTabBinding
     lateinit var completedTabBinding: ItemInquiryTabBinding
@@ -91,7 +94,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
             addAction(IntentConst.Action.REGISTERED_COMPLETED_PARCEL)
         }
 
-        parentView.registerReceiver(broadcastReceiver, filter)
+        parentActivity.registerReceiver(broadcastReceiver, filter)
     }
 
     override fun onPause()
@@ -99,7 +102,7 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
         super.onPause()
 
         SopoLog.d("onPause")
-        parentView.unregisterReceiver(broadcastReceiver)
+        parentActivity.unregisterReceiver(broadcastReceiver)
     }
 
     override fun receiveData(bundle: Bundle)
@@ -269,11 +272,11 @@ class InquiryFragment: BaseFragment<FragmentInquiryBinding, InquiryViewModel>()
         {
             1 ->
             {
-                parentView.showTab()
+                parentActivity.showTab()
             }
             2 ->
             {
-                parentView.showTab()
+                parentActivity.showTab()
 
                 CoroutineScope(Dispatchers.Main).launch {
 

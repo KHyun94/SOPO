@@ -1,5 +1,6 @@
 package com.delivery.sopo.data.repositories.parcels
 
+import com.delivery.sopo.DateSelector
 import com.delivery.sopo.data.resources.parcel.local.ParcelDataSource
 import com.delivery.sopo.data.resources.parcel.local.ParcelStatusDataSource
 import com.delivery.sopo.data.resources.parcel.remote.ParcelRemoteDataSource
@@ -73,5 +74,9 @@ class ParcelRepositoryImpl(private val parcelDataSource: ParcelDataSource, priva
         val updateParcelStatuses = updateParcels.map(parcelStatusDataSource::makeParcelStatus)
         parcelDataSource.update(*updateParcels.toTypedArray())
         parcelStatusDataSource.updateParcelStatuses(updateParcelStatuses)
+    }
+
+    override suspend fun fetchCompletedDateInfo(cursorDate: String?): DateSelector {
+        return parcelRemoteDataSource.fetchCompletedDateInfo(cursorDate)
     }
 }

@@ -6,8 +6,11 @@ import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class RegisterParcelUseCase(private val parcelRepository: ParcelRepository)
+class RegisterParcelUseCase @Inject constructor(
+        private val parcelRepository: ParcelRepository
+        )
 {
     suspend operator fun invoke(parcelRegister: Parcel.Register) = withContext(Dispatchers.IO) {
         SopoLog.i("호출")

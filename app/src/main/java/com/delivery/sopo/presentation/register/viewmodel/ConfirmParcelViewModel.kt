@@ -1,4 +1,4 @@
-package com.delivery.sopo.presentation.viewmodels.registesrs
+package com.delivery.sopo.presentation.register.viewmodel
 
 import android.view.View
 import androidx.lifecycle.LiveData
@@ -10,20 +10,20 @@ import com.delivery.sopo.domain.usecase.parcel.remote.RegisterParcelUseCase
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
-import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.models.inquiry.InquiryListItem
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.BottomNotificationBar
-import kotlinx.coroutines.CoroutineExceptionHandler
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ConfirmParcelViewModel(
+@HiltViewModel
+class ConfirmParcelViewModel @Inject constructor(
         private val registerParcelUseCase: RegisterParcelUseCase
         ): BaseViewModel()
 {

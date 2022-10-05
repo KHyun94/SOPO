@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.delivery.sopo.R" />
+
+        <import type="android.view.View" />
+
+        <import type="androidx.core.content.ContextCompat" />
+
+        <import type="com.delivery.sopo.enums.InquiryStatus" />
+
+        <variable
+            name="inquiryStatus"
+            type="com.delivery.sopo.enums.InquiryStatus" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="16dp"
+            android:background="@color/COLOR_GRAY_50">
+
+            <TextView
+                android:id="@+id/tv_soon_arrival"
+                style="@style/InquiryTypeLabel"
+                android:layout_marginStart="16dp"
+                android:text='@{inquiryStatus == InquiryStatus.Soon ? "곧 도착":"진행 중 택배"}'
+                android:textColor='@{inquiryStatus == InquiryStatus.Soon ? ContextCompat.getColor(context, R.color.COLOR_MAIN_700):ContextCompat.getColor(context, R.color.COLOR_GRAY_500)}'
+                android:backgroundTint='@{inquiryStatus == InquiryStatus.Soon ? ContextCompat.getColor(context, R.color.COLOR_MAIN_100):ContextCompat.getColor(context, R.color.COLOR_GRAY_200)}'
+                tools:text="@string/INQUIRY_VIEW_SOON_ARRIVAL"
+                tools:textColor="@color/COLOR_MAIN_700"
+                tools:backgroundTint="@color/COLOR_MAIN_100"/>
+
+        </LinearLayout>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

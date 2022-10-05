@@ -21,10 +21,13 @@ import com.delivery.sopo.models.user.ResetAuthCode
 import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.OnSnackBarClickListener
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ResetPasswordViewModel(
+@HiltViewModel
+class ResetPasswordViewModel @Inject constructor(
         private val sendAuthTokenUseCase: SendAuthTokenUseCase,
         private val verifyAuthTokenUseCase: VerifyAuthTokenUseCase,
         private val resetPasswordUseCase: ResetPasswordUseCase
@@ -130,7 +133,7 @@ class ResetPasswordViewModel(
         postNavigator(NavigatorConst.Event.COMPLETE)
     }
 
-    private fun requestSendTokenToEmail(email: String) = scope.launch(exceptionHandler) {
+    private fun requestSendTokenToEmail(email: String) = scope.launch {
         try
         {
             onStartLoading()
@@ -144,7 +147,7 @@ class ResetPasswordViewModel(
         }
     }
 
-    private fun verifyAuthCode(email: String, authCode: String) = scope.launch(exceptionHandler) {
+    private fun verifyAuthCode(email: String, authCode: String) = scope.launch {
         try
         {
             onStartLoading()
@@ -160,7 +163,7 @@ class ResetPasswordViewModel(
         }
     }
 
-    private fun requestResetPassword(resetPassword: ResetPassword) = scope.launch(exceptionHandler) {
+    private fun requestResetPassword(resetPassword: ResetPassword) = scope.launch {
         try
         {
             onStartLoading()

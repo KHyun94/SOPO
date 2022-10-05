@@ -83,6 +83,7 @@ class LoginSelectViewModel @Inject constructor(private val loginUseCase: LoginUs
     {
         SopoLog.i(msg = "requestLoginBySelf(...) 호출")
         loginUseCase.invoke(username = email, password = uId.toMD5())
+        SopoLog.i(msg = "id $email pwd ${uId.toMD5()}")
         return postNavigator(NavigatorConst.Screen.MAIN)
     }
 
@@ -94,7 +95,7 @@ class LoginSelectViewModel @Inject constructor(private val loginUseCase: LoginUs
             ErrorCode.VALIDATION -> postErrorSnackBar(exception.message)
             ErrorCode.USER_NOT_FOUND -> postErrorSnackBar("계정 정보를 찾을 수 없습니다.")
             ErrorCode.ALREADY_REGISTERED_USER -> {
-                scope.launch(exceptionHandler) {
+                scope.launch {
                     requestLoginByKakao(email = email, uId = kakaoUserId)
                 }
             }

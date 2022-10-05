@@ -34,196 +34,139 @@
             android:layout_height="match_parent"
             android:background="@color/COLOR_GRAY_50">
 
-            <!-- 택배[진행 중] -->
-            <androidx.core.widget.NestedScrollView
-                android:id="@+id/nested_sv_main_ongoing_inquiry"
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/linear_ongoing_parent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/linear_ongoing_parent"
+                <LinearLayout
+                    android:id="@+id/linear_no_item"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:descendantFocusability="blocksDescendants">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:visibility="gone">
 
-                    <LinearLayout
-                        android:id="@+id/linear_no_item"
+                    <include
+                        android:id="@+id/include_ongoing_no_item"
+                        layout="@layout/include_no_item"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:visibility="gone"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:visibility="gone">
+                        android:layout_marginTop="92dp"
+                        app:content='@{"등록된 택배가 없습니다.\n새로운 택배를 등록해주세요."}' />
 
-                        <include
-                            android:id="@+id/include_ongoing_no_item"
-                            layout="@layout/include_no_item"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="92dp"
-                            app:content='@{"등록된 택배가 없습니다.\n새로운 택배를 등록해주세요."}' />
-
-                        <TextView
-                            android:id="@+id/tv_move_to_register"
-                            style="@style/buttonBasicStyle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="96dp"
-                            android:focusable="true"
-                            android:onClick="@{()->vm.onMoveToRegister()}"
-                            android:text="운송장 등록하기"
-                            tools:visibility="visible" />
-
-                    </LinearLayout>
-
-                    <!-- 현재 진행 중인 택배 갯수 -->
-                    <LinearLayout
-                        android:id="@+id/layout_present_ongoing"
+                    <TextView
+                        android:id="@+id/tv_move_to_register"
+                        style="@style/buttonBasicStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="39.5dp"
-                        android:orientation="horizontal"
-                        android:visibility='@{((vm.parcels instanceof Result.Success || vm.parcels instanceof Result.Loading)) ? View.VISIBLE : View.GONE, default=gone}'
-                        android:weightSum="10"
-                        app:layout_constraintBottom_toTopOf="@+id/linear_ongoing_content_view"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        tools:visibility="visible">
+                        android:layout_marginTop="96dp"
+                        android:focusable="true"
+                        android:onClick="@{()->vm.onMoveToRegister()}"
+                        android:text="운송장 등록하기"
+                        tools:visibility="visible" />
 
-                        <LinearLayout
-                            android:id="@+id/layout_present_ongoing_text"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_weight="5"
-                            android:gravity="center"
-                            android:orientation="vertical"
-                            app:layout_constrainedWidth="true"
-                            app:layout_constraintBottom_toTopOf="parent"
-                            app:layout_constraintRight_toLeftOf="@+id/guide_1st"
-                            app:layout_constraintTop_toBottomOf="parent"
-                            tools:visibility="visible">
+                </LinearLayout>
 
-                            <TextView
-                                android:id="@+id/tv_present_parcel_cnt"
-                                style="@style/kor_H2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text='@{"택배 "+vm.cntOfPresentOngoingParcels + "개"}'
-                                android:textColor="@color/COLOR_GRAY_700"
-                                tools:text="택배 2개" />
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerview_registered_parcel"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginLeft="10.5dp"
+                    android:layout_marginTop="9dp"
+                    android:layout_marginRight="10.5dp"
+                    android:nestedScrollingEnabled="true"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    tools:itemCount="3"
+                    tools:layout_editor_absoluteX="0dp"
+                    tools:listitem="@layout/item_ongoing_parcel" />
 
-                            <TextView
-                                style="@style/kor_H4"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="현재 진행 중"
-                                android:textColor="@color/COLOR_GRAY_700" />
 
-                        </LinearLayout>
+                <!--                    &lt;!&ndash; 진행 중인 택배 전체 리스트 &ndash;&gt;
+                                    <LinearLayout
+                                        android:id="@+id/linear_ongoing_content_view"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical"
+                                        android:visibility="@{vm.cntOfPresentOngoingParcels > 0 ? View.VISIBLE : View.GONE}"
+                                        app:layout_constraintLeft_toLeftOf="parent"
+                                        app:layout_constraintRight_toRightOf="parent"
+                                        app:layout_constraintTop_toBottomOf="@+id/layout_present_ongoing">
 
-                        <ImageView
-                            android:id="@+id/iv_present_parcel"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="3.4"
-                            android:adjustViewBounds="true"
-                            app:layout_constrainedWidth="true"
-                            app:layout_constraintBottom_toTopOf="parent"
-                            app:layout_constraintLeft_toLeftOf="@+id/guide_1st"
-                            app:layout_constraintRight_toRightOf="parent"
-                            app:layout_constraintTop_toBottomOf="parent"
-                            app:layout_constraintWidth_percent="0.33"
-                            app:setBackground="@{R.drawable.ic_inquiry_top_section_present_parcel}"
-                            tools:src="@drawable/ic_inquiry_top_section_present_parcel"
-                            tools:visibility="visible" />
+                                        <androidx.constraintlayout.widget.ConstraintLayout
+                                            android:id="@+id/constraint_soon_arrival"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="40dp">
 
-                    </LinearLayout>
+                                            <TextView
+                                                android:id="@+id/tv_soon_arrival"
+                                                style="@style/InquiryTypeLabel"
+                                                android:layout_marginStart="16dp"
+                                                android:backgroundTint="@color/COLOR_MAIN_100"
+                                                android:text="@string/INQUIRY_VIEW_SOON_ARRIVAL"
+                                                android:textColor="@color/COLOR_MAIN_700"
+                                                app:layout_constraintStart_toStartOf="parent"
+                                                app:layout_constraintTop_toTopOf="parent" />
 
-                    <!-- 진행 중인 택배 전체 리스트 -->
-                    <LinearLayout
-                        android:id="@+id/linear_ongoing_content_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:visibility="@{vm.cntOfPresentOngoingParcels > 0 ? View.VISIBLE : View.GONE}"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/layout_present_ongoing">
+                                            <androidx.recyclerview.widget.RecyclerView
+                                                android:id="@+id/recyclerview_soon_arrival"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginLeft="10.5dp"
+                                                android:layout_marginTop="9dp"
+                                                android:layout_marginRight="10.5dp"
+                                                android:layout_marginBottom="15dp"
+                                                android:nestedScrollingEnabled="false"
+                                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                                                app:layout_constraintTop_toBottomOf="@+id/tv_soon_arrival"
+                                                tools:itemCount="2"
+                                                tools:layout_editor_absoluteX="0dp"
+                                                tools:listitem="@layout/item_ongoing_parcel" />
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/constraint_soon_arrival"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="40dp">
+                                        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                            <TextView
-                                android:id="@+id/tv_soon_arrival"
-                                style="@style/InquiryTypeLabel"
-                                android:layout_marginStart="16dp"
-                                android:backgroundTint="@color/COLOR_MAIN_100"
-                                android:text="@string/INQUIRY_VIEW_SOON_ARRIVAL"
-                                android:textColor="@color/COLOR_MAIN_700"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                        <androidx.constraintlayout.widget.ConstraintLayout
+                                            android:id="@+id/constraint_registered_arrival"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginTop="40dp">
 
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/recyclerview_soon_arrival"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="10.5dp"
-                                android:layout_marginTop="9dp"
-                                android:layout_marginRight="10.5dp"
-                                android:layout_marginBottom="15dp"
-                                android:nestedScrollingEnabled="false"
-                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                                app:layout_constraintTop_toBottomOf="@+id/tv_soon_arrival"
-                                tools:itemCount="2"
-                                tools:layout_editor_absoluteX="0dp"
-                                tools:listitem="@layout/item_ongoing_parcel" />
+                                            <TextView
+                                                android:id="@+id/tv_registered_arrival"
+                                                style="@style/InquiryTypeLabel"
+                                                android:layout_marginStart="16dp"
+                                                android:backgroundTint="@color/COLOR_GRAY_200"
+                                                android:letterSpacing="0"
+                                                android:text="진행 중 택배"
+                                                android:textColor="@color/COLOR_GRAY_500"
+                                                app:layout_constraintStart_toStartOf="parent"
+                                                app:layout_constraintTop_toTopOf="parent" />
 
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+                                            <androidx.recyclerview.widget.RecyclerView
+                                                android:id="@+id/recyclerview_registered_parcel"
+                                                android:layout_width="match_parent"
+                                                android:layout_height="wrap_content"
+                                                android:layout_marginLeft="10.5dp"
+                                                android:layout_marginTop="9dp"
+                                                android:layout_marginRight="10.5dp"
+                                                android:nestedScrollingEnabled="false"
+                                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                                                app:layout_constraintTop_toBottomOf="@+id/tv_registered_arrival"
+                                                tools:itemCount="3"
+                                                tools:layout_editor_absoluteX="0dp"
+                                                tools:listitem="@layout/item_ongoing_parcel" />
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
-                            android:id="@+id/constraint_registered_arrival"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="40dp">
+                                        </androidx.constraintlayout.widget.ConstraintLayout>
+                                    </LinearLayout>-->
 
-                            <TextView
-                                android:id="@+id/tv_registered_arrival"
-                                style="@style/InquiryTypeLabel"
-                                android:layout_marginStart="16dp"
-                                android:backgroundTint="@color/COLOR_GRAY_200"
-                                android:letterSpacing="0"
-                                android:text="진행 중 택배"
-                                android:textColor="@color/COLOR_GRAY_500"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
-
-                            <androidx.recyclerview.widget.RecyclerView
-                                android:id="@+id/recyclerview_registered_parcel"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginLeft="10.5dp"
-                                android:layout_marginTop="9dp"
-                                android:layout_marginRight="10.5dp"
-                                android:nestedScrollingEnabled="false"
-                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                                app:layout_constraintTop_toBottomOf="@+id/tv_registered_arrival"
-                                tools:itemCount="3"
-                                tools:layout_editor_absoluteX="0dp"
-                                tools:listitem="@layout/item_ongoing_parcel" />
-
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-                    </LinearLayout>
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-            </androidx.core.widget.NestedScrollView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
@@ -233,9 +176,9 @@
             layout="@layout/include_bottom_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:visibility="gone"
             app:hint='@{"물품명을 설정해주세요 ･ 최대 25자"}'
-            android:visibility="gone" />
+            app:layout_constraintBottom_toBottomOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

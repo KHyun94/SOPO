@@ -11,136 +11,137 @@ import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class ParcelManagementRepoImpl(private val appDatabase: AppDatabase): ParcelManagementRepository, BaseDataSource<Parcel.Status>
+class ParcelManagementRepoImpl @Inject constructor(private val appDatabase: AppDatabase): ParcelManagementRepository, BaseDataSource<Parcel.Status>
 {
     override fun get(): List<Parcel.Status>
     {
-        return appDatabase.parcelManagementDao().get().map(ParcelMapper::parcelStatusEntityToObject)
+        return appDatabase.parcelStatusDAO().get().map(ParcelMapper::parcelStatusEntityToObject)
     }
 
     override fun insert(vararg data: Parcel.Status)
     {
         val entities = data.map(ParcelMapper::parcelStatusObjectToEntity)
-        appDatabase.parcelManagementDao().insert(entities)
+        appDatabase.parcelStatusDAO().insert(entities)
     }
 
     override fun update(vararg data: Parcel.Status)
     {
         val entities = data.map(ParcelMapper::parcelStatusObjectToEntity)
-        appDatabase.parcelManagementDao().update(entities)
+        appDatabase.parcelStatusDAO().update(entities)
     }
 
     override fun delete(vararg data: Parcel.Status)
     {
         val entities = data.map(ParcelMapper::parcelStatusObjectToEntity)
-        appDatabase.parcelManagementDao().delete(entities)
+        appDatabase.parcelStatusDAO().delete(entities)
     }
 
     override fun getParcelStatusById(parcelId:Int): Parcel.Status
     {
-        val entity = appDatabase.parcelManagementDao().getById(parcelId)?:ParcelMapper.parcelStatusObjectToEntity(Parcel.Status(parcelId = parcelId))
+        val entity = appDatabase.parcelStatusDAO().getById(parcelId)?:ParcelMapper.parcelStatusObjectToEntity(Parcel.Status(parcelId = parcelId))
         return ParcelMapper.parcelStatusEntityToObject(entity)
     }
 
     fun getUpdatableParcelIds(): List<Int>{
-        return appDatabase.parcelManagementDao().getUpdatableParcelIds()
+        return appDatabase.parcelStatusDAO().getUpdatableParcelIds()
     }
 
     fun getUpdatableParcelIdsAsLiveData(): LiveData<List<Int>>{
-        return appDatabase.parcelManagementDao().getUpdatableParcelIdsAsLiveData()
+        return appDatabase.parcelStatusDAO().getUpdatableParcelIdsAsLiveData()
     }
 
     override fun getIsDeleteCntLiveData(): LiveData<Int> {
-        return appDatabase.parcelManagementDao().getIsDeleteCntLiveData()
+        return appDatabase.parcelStatusDAO().getIsDeleteCntLiveData()
     }
 
     override fun getIsUpdateCntLiveData(): LiveData<Int>
     {
-        return appDatabase.parcelManagementDao().getIsUpdateCntLiveData()
+        return appDatabase.parcelStatusDAO().getIsUpdateCntLiveData()
     }
 
     override fun getIsDeliveredCntLiveData(): LiveData<Int> {
-        return appDatabase.parcelManagementDao().getIsDeliveredCntLiveData()
+        return appDatabase.parcelStatusDAO().getIsDeliveredCntLiveData()
     }
 
     override suspend fun getCountForUpdatableParcel(): Int {
-        return appDatabase.parcelManagementDao().getCountForUpdatableParcel()
+        return appDatabase.parcelStatusDAO().getCountForUpdatableParcel()
     }
 
     override suspend fun getIsDeleteCnt(): Int {
-        return appDatabase.parcelManagementDao().getIsDeleteCnt()
+        return appDatabase.parcelStatusDAO().getIsDeleteCnt()
     }
 
     override suspend fun getIsDeliveredCnt(): Int {
-        return appDatabase.parcelManagementDao().getIsDeliveredCnt()
+        return appDatabase.parcelStatusDAO().getIsDeliveredCnt()
     }
 
     override suspend fun getCancelIsBeDelete(): List<ParcelStatusEntity>? {
-        return appDatabase.parcelManagementDao().getCancelIsBeDelete()
+        return appDatabase.parcelStatusDAO().getCancelIsBeDelete()
     }
 
     // 업데이트 미확인 체크용도
     override suspend fun getUnidentifiedStatusByParcelId(parcelId:Int): Int = withContext(Dispatchers.Default) {
-        appDatabase.parcelManagementDao().getUnidentifiedStatus(parcelId = parcelId)
+        appDatabase.parcelStatusDAO().getUnidentifiedStatus(parcelId = parcelId)
     }
 
     suspend fun getDeletableParcelStatuses():List<Parcel.Status> = withContext(Dispatchers.Default){
-        return@withContext appDatabase.parcelManagementDao().getDeletableParcelStatuses().map(ParcelMapper::parcelStatusEntityToObject)
+        return@withContext appDatabase.parcelStatusDAO().getDeletableParcelStatuses().map(ParcelMapper::parcelStatusEntityToObject)
     }
 
 
     override fun insertParcelStatus(parcelStatus: Parcel.Status){
-        appDatabase.parcelManagementDao().insert(ParcelMapper.parcelStatusObjectToEntity(parcelStatus))
+        appDatabase.parcelStatusDAO().insert(ParcelMapper.parcelStatusObjectToEntity(parcelStatus))
     }
 
     override fun insertParcelStatuses(parcelStatuses: List<Parcel.Status>){
         val entities = parcelStatuses.map{
             ParcelMapper.parcelStatusObjectToEntity(it)
         }
-        appDatabase.parcelManagementDao().insert(entities)
+        appDatabase.parcelStatusDAO().insert(entities)
     }
 
     suspend fun update(parcelStatus: Parcel.Status)= withContext(Dispatchers.Default){
-        appDatabase.parcelManagementDao().update(ParcelMapper.parcelStatusObjectToEntity(parcelStatus))
+        appDatabase.parcelStatusDAO().update(ParcelMapper.parcelStatusObjectToEntity(parcelStatus))
     }
 
     override suspend fun update(parcelStatusEntity: ParcelStatusEntity)= withContext(Dispatchers.Default){
         parcelStatusEntity.auditDte = TimeUtil.getDateTime()
-        appDatabase.parcelManagementDao().update(parcelStatusEntity)
+        appDatabase.parcelStatusDAO().update(parcelStatusEntity)
     }
 
     override suspend fun updateParcelStatuses(parcelStatus: List<Parcel.Status>){
         val entities = parcelStatus.map(ParcelMapper::parcelStatusObjectToEntity)
-        appDatabase.parcelManagementDao().update(entities)
+        appDatabase.parcelStatusDAO().update(entities)
     }
 
-    override suspend fun updateUpdatableStatus(parcelId:Int, status : Int) = appDatabase.parcelManagementDao().updateIsBeUpdate(parcelId, status)
+    override suspend fun updateUpdatableStatus(parcelId:Int, status : Int) = appDatabase.parcelStatusDAO().updateIsBeUpdate(parcelId, status)
 
     override suspend fun updateTotalIsBeDeliveredToZero(){
-        appDatabase.parcelManagementDao().updateTotalIsBeDeliveredToZero()
+        appDatabase.parcelStatusDAO().updateTotalIsBeDeliveredToZero()
     }
 
     override suspend fun updateIsBeDeleteToOneByParcelIdList(parcelIdList: List<Int>){
         for (parcelId in parcelIdList){
-            appDatabase.parcelManagementDao().updateIsBeDeleteToOne(parcelId, TimeUtil.getDateTime())
+            appDatabase.parcelStatusDAO().updateIsBeDeleteToOne(parcelId, TimeUtil.getDateTime())
         }
     }
 
     override suspend fun updateUnidentifiedStatusById(parcelId:Int, value: Int) = withContext(Dispatchers.Default){
-        appDatabase.parcelManagementDao().updateIsUnidentified(parcelId, value)
+        appDatabase.parcelStatusDAO().updateIsUnidentified(parcelId, value)
     }
 
     suspend fun delete(parcelId: Int) = withContext(Dispatchers.Default){
         val entity = ParcelMapper.parcelStatusObjectToEntity(getParcelStatusById(parcelId))
-        appDatabase.parcelManagementDao().delete(entity)
+        appDatabase.parcelStatusDAO().delete(entity)
     }
 
     suspend fun delete(parcelIds: List<Int>) = withContext(Dispatchers.Default){
         val entities = parcelIds.map {
             ParcelMapper.parcelStatusObjectToEntity(getParcelStatusById(it))
         }
-        appDatabase.parcelManagementDao().delete(entities)
+        appDatabase.parcelStatusDAO().delete(entities)
     }
 
     override suspend fun updateUnidentifiedStatus(parcels: List<Parcel.Common>)

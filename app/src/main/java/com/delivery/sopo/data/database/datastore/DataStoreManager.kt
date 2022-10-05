@@ -34,5 +34,12 @@ class DataStoreManager @Inject constructor(private val context: Context)
             preferences[key]
         }.first()
 
+    suspend fun clear()
+    {
+        context.sopoDataStore.edit {
+            it.clear()
+        }
+    }
+
 
 }

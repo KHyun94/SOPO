@@ -9,17 +9,15 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.delivery.sopo.data.database.room.dao.*
 import com.delivery.sopo.data.database.room.entity.*
 import com.delivery.sopo.data.database.room.util.Converters
-import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
-import org.koin.core.inject
 
 @TypeConverters(Converters::class)
 @Database(
-    entities = [CarrierEntity::class, CarrierPatternEntity::class, ParcelEntity::class, ParcelStatusEntity::class, CompletedParcelHistoryEntity::class, AppPasswordEntity::class, AuthTokenEntity::class],
+    entities = [CarrierEntity::class, CarrierPatternEntity::class, ParcelEntity::class, ParcelStatusEntity::class, CompletedParcelHistoryEntity::class, AppPasswordEntity::class],
     version = 1
 )
 abstract class AppDatabase : RoomDatabase(), KoinComponent
@@ -27,12 +25,11 @@ abstract class AppDatabase : RoomDatabase(), KoinComponent
     abstract fun carrierDao(): CarrierDao
     abstract fun carrierPatternDao(): CarrierPatternDao
     abstract fun parcelDao(): ParcelDao
-    abstract fun parcelManagementDao(): ParcelStatusDAO
+    abstract fun parcelStatusDAO(): ParcelStatusDao
     abstract fun completeParcelStatusDao(): CompleteParcelStatusDao
     abstract fun securityDao(): AppPasswordDao
-    abstract fun authTokenDao() : AuthTokenDao
 
-    val carrierDataSource: CarrierDataSource by inject()
+//    val carrierDataSource: CarrierDataSource by inject()
 
     companion object
     {
@@ -63,8 +60,8 @@ abstract class AppDatabase : RoomDatabase(), KoinComponent
 
                             SopoLog.d("DB 초기화 - 택배사")
 
-                            getInstance(context).carrierDataSource.initCarrierTable()
-                            getInstance(context).carrierDataSource.initCarrierPatternTable()
+//                            getInstance(context).carrierDataSource.initCarrierTable()
+//                            getInstance(context).carrierDataSource.initCarrierPatternTable()
                         }
                     }
                 }).build()

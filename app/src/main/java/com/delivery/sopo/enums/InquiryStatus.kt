@@ -1,6 +1,5 @@
 package com.delivery.sopo.enums
 
-enum class InquiryItemTypeEnum
-{
+enum class InquiryStatus {
     Soon, Registered, Complete
 }

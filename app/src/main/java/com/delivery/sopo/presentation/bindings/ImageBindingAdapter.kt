@@ -4,14 +4,13 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.annotation.ColorRes
-import androidx.constraintlayout.widget.Placeholder
 import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import com.airbnb.lottie.LottieAnimationView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.delivery.sopo.R
-import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.enums.DeliveryStatus
 import com.delivery.sopo.enums.PersonalMessageEnum
 import com.delivery.sopo.util.OtherUtil
 import com.delivery.sopo.util.SopoLog
@@ -60,41 +59,41 @@ object ImageBindingAdapter
 
     @JvmStatic
     @BindingAdapter("setDeliveryStatusInLottie")
-    fun bindLottieBackgroundSetter(view: LottieAnimationView, enum: DeliveryStatusEnum?)
+    fun bindLottieBackgroundSetter(view: LottieAnimationView, anEnum: DeliveryStatus?)
     {
-        when(enum)
+        when(anEnum)
         {
-            DeliveryStatusEnum.NOT_REGISTERED ->
+            DeliveryStatus.NOT_REGISTERED ->
             {
                 view.background =
                     ContextCompat.getDrawable(view.context, R.drawable.ic_inquiry_2depth_not_registered)
             }
-            DeliveryStatusEnum.INFORMATION_RECEIVED ->
+            DeliveryStatus.INFORMATION_RECEIVED ->
             {
                 view.background =
                     ContextCompat.getDrawable(view.context, R.drawable.ic_inquiry_2depth_not_registered)
 
             }
-            DeliveryStatusEnum.AT_PICKUP ->
+            DeliveryStatus.AT_PICKUP ->
             {
                 view.setAnimation(R.raw.inquiry_2depth_at_pickup)
 
             }
-            DeliveryStatusEnum.IN_TRANSIT ->
+            DeliveryStatus.IN_TRANSIT ->
             {
                 view.setAnimation(R.raw.inquiry_2depth_in_transit)
 
             }
-            DeliveryStatusEnum.OUT_FOR_DELIVERY ->
+            DeliveryStatus.OUT_FOR_DELIVERY ->
             {
                 view.setAnimation(R.raw.inquiry_2depth_out_for_delivery)
             }
-            DeliveryStatusEnum.DELIVERED ->
+            DeliveryStatus.DELIVERED ->
             {
                 view.setAnimation(R.raw.inquiry_2depth_delivered)
 
             }
-            DeliveryStatusEnum.ERROR ->
+            DeliveryStatus.ERROR ->
             {
             }
             else ->

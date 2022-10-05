@@ -12,10 +12,13 @@ import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.domain.usecase.user.token.LogoutUseCase
 import com.delivery.sopo.util.SopoLog
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AccountManagerViewModel(
+@HiltViewModel
+class AccountManagerViewModel @Inject constructor(
         private val updateNicknameUseCase: UpdateNicknameUseCase,
         private val logoutUseCase: LogoutUseCase
 ): BaseViewModel()

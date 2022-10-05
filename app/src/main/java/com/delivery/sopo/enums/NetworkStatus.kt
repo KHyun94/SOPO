@@ -1,9 +1,9 @@
 package com.delivery.sopo.enums
 
-enum class NetworkStatus
+sealed class NetworkStatus
 {
-    DEFAULT,
-    WIFI,
-    CELLULAR,
-    NOT_CONNECT
+    object Default: NetworkStatus()
+    object Wifi: NetworkStatus()
+    object Cellular: NetworkStatus()
+    object NotConnect: NetworkStatus()
 }

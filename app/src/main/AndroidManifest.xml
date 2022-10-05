@@ -52,7 +52,7 @@
         <activity
             android:name=".presentation.views.signup.RegisterNicknameView"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".presentation.views.main.MainView"
+        <activity android:name=".presentation.views.main.MainActivity"
             android:windowSoftInputMode="adjustResize"/>
         <activity
             android:name=".presentation.views.signup.SignUpCompleteView"

@@ -5,8 +5,9 @@ import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class UpdateParcelUseCase(private val parcelRepository: ParcelRepository)
+class UpdateParcelUseCase @Inject constructor(private val parcelRepository: ParcelRepository)
 {
     suspend fun getLocalParcel(parcelId: Int): Parcel.Common?
     {

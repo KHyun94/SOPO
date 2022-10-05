@@ -1,12 +1,12 @@
-package com.delivery.sopo.presentation.views.registers
+package com.delivery.sopo.presentation.register.view
 
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.delivery.sopo.R
-import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentSelectCarrierBinding
 import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.TabCode
@@ -14,37 +14,41 @@ import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseFragment
+import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.models.parcel.Parcel
-import com.delivery.sopo.presentation.models.enums.ReturnType
+import com.delivery.sopo.presentation.consts.NavigatorConst
+import com.delivery.sopo.presentation.models.enums.RegisterNavigation
+import com.delivery.sopo.presentation.register.viewmodel.SelectCarrierViewModel
+import com.delivery.sopo.presentation.views.adapter.GridTypedRecyclerViewAdapter
+import com.delivery.sopo.presentation.views.main.MainActivity
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.setting.GridSpacingItemDecoration
-import com.delivery.sopo.presentation.viewmodels.registesrs.SelectCarrierViewModel
-import com.delivery.sopo.presentation.views.adapter.GridTypedRecyclerViewAdapter
-import com.delivery.sopo.presentation.views.main.MainView
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCarrierViewModel>()
 {
     override val layoutRes: Int = R.layout.fragment_select_carrier
-    override val vm: SelectCarrierViewModel by viewModel()
+    override val vm: SelectCarrierViewModel by viewModels()
     override val mainLayout: View by lazy { binding.constraintMainSelectCarrier }
 
-    private val parentView: MainView by lazy { activity as MainView }
+    private val parentActivity: MainActivity by lazy { activity as MainActivity }
 
     lateinit var adapter: GridTypedRecyclerViewAdapter
-    var waybillNum: String? = null
+    lateinit var waybillNum: String
     var carrier: CarrierEnum? = null
+
+    private lateinit var registerNavigation: RegisterNavigation
 
     override fun receiveData(bundle: Bundle)
     {
         super.receiveData(bundle)
 
-        waybillNum = bundle.getString(RegisterMainFragment.WAYBILL_NO) ?: ""
-        SopoLog.d("운송장 번호 $waybillNum")
+        registerNavigation = bundle.getSerializable(RegisterParcelFragment.RETURN_TYPE) as RegisterNavigation
     }
 
     override fun setBeforeBinding()
@@ -59,10 +63,10 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
             {
                 super.onBackPressed()
 
-                val parcelRegister = Parcel.Register(waybillNum = waybillNum, carrier = carrier, alias = null)
-
-                TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(register = parcelRegister, returnType = ReturnType.REVISE_PARCEL)
-                FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
+                val parcel = Parcel.Register(waybillNum = waybillNum, carrier = carrier, alias = null)
+                val fm = parentFragmentManager.beginTransaction()
+                fm.replace(RegisterParcelFragment.viewId, InputParcelFragment.newInstance(registerNavigation = RegisterNavigation.Init), "inputParcel")
+                fm.commit()
             }
         }
     }
@@ -70,7 +74,22 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
     override fun setAfterBinding()
     {
         super.setAfterBinding()
-        hideKeyboard()
+//        hideKeyboard()
+
+        when (registerNavigation) {
+            is RegisterNavigation.Init -> {
+            }
+            is RegisterNavigation.Next -> {
+//                vm.parcel = (registerNavigation as RegisterNavigation.Next).parcel.apply {
+//                    vm.waybillNum.postValue(waybillNum)
+//                    vm.carrier.postValue(carrier?.let(CarrierMapper::enumToObject))
+//                }
+            }
+            is RegisterNavigation.Complete -> {
+//                notifyRegisteredParcel((registerNavigation as RegisterNavigation.Complete).parcel)
+            }
+        }
+
         setRecyclerViewAdapter()
         setRecyclerViewItem()
     }
@@ -80,8 +99,8 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
         super.setObserve()
 
         activity ?: return
-        parentView.getCurrentPage().observe(this) {
-            if(it != TabCode.firstTab) return@observe
+        parentActivity.getCurrentPage().observe(this) {
+            if(it != TabCode.REGISTER_TAB) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
@@ -95,25 +114,25 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
             {
                 NavigatorConst.REGISTER_INPUT_INFO ->
                 {
-                    val parcelRegister = Parcel.Register(waybillNum = waybillNum, carrier = carrier, alias = null)
-                    TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(register = parcelRegister, returnType = ReturnType.REVISE_PARCEL)
-                    FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
+//                    val parcelRegister = Parcel.Register(waybillNum = waybillNum, carrier = carrier, alias = null)
+//                    TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(register = parcelRegister, registerNavigation = RegisterNavigation.Next)
+//                    FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterParcelFragment.viewId)
                 }
                 NavigatorConst.REGISTER_CONFIRM_PARCEL ->
                 {
-                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                    /*Handler(Looper.getMainLooper()).postDelayed(Runnable {
 
                         if(waybillNum == "")
                         {
-                            TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(register = parcelRegister, returnType = ReturnType.REVISE_PARCEL)
-                            FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterMainFragment.viewId)
+                            TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(register = parcelRegister, registerNavigation = RegisterNavigation.Next)
+                            FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterParcelFragment.viewId)
                             return@Runnable
                         }
 
                         TabCode.REGISTER_CONFIRM.FRAGMENT = ConfirmParcelFragment.newInstance(register = parcelRegister,beforeStep = NavigatorConst.REGISTER_SELECT_CARRIER)
-                        FragmentManager.move(requireActivity(), TabCode.REGISTER_CONFIRM, RegisterMainFragment.viewId)
+                        FragmentManager.move(requireActivity(), TabCode.REGISTER_CONFIRM, RegisterParcelFragment.viewId)
 
-                    }, 300) // 0.5초후
+                    }, 300) // 0.5초후*/
                 }
             }
         }
@@ -155,10 +174,10 @@ class SelectCarrierFragment: BaseFragment<FragmentSelectCarrierBinding, SelectCa
 
     companion object
     {
-        fun newInstance(waybillNum: String): SelectCarrierFragment
+        fun newInstance(registerNavigation: RegisterNavigation): SelectCarrierFragment
         {
             val args = Bundle().apply {
-                putSerializable(RegisterMainFragment.WAYBILL_NO, waybillNum)
+                putSerializable(RegisterParcelFragment.RETURN_TYPE, registerNavigation)
             }
 
             return SelectCarrierFragment().apply {

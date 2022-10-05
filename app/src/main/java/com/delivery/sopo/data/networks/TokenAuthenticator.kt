@@ -1,12 +1,10 @@
 package com.delivery.sopo.data.networks
 
-import com.delivery.sopo.data.repositories.user.UserRepository
 import com.delivery.sopo.data.resources.auth.local.AuthDataSource
 import com.delivery.sopo.data.resources.auth.remote.AuthRemoteDataSource
 import com.delivery.sopo.util.SopoLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import okhttp3.Authenticator
 import okhttp3.Request
 import okhttp3.Response
@@ -16,8 +14,6 @@ import org.koin.core.KoinComponent
 // TODO 401 에러 발생 이슈 있음
 class TokenAuthenticator(private val authDataSource: AuthDataSource, private val authRemoteDataSource: AuthRemoteDataSource): Authenticator, KoinComponent
 {
-    var retryCnt: Int = 0
-
     override fun authenticate(route: Route?, response: Response): Request?
     {
         SopoLog.i("TokenAuthenticator(...) 호출")
@@ -33,13 +29,11 @@ class TokenAuthenticator(private val authDataSource: AuthDataSource, private val
         return try
         {
             val accessToken = runBlocking(Dispatchers.IO) {
-                val refreshToken = authDataSource.get().refreshToken
+                val refreshToken = authDataSource.getRefreshToken() ?: return@runBlocking null
                 val tokenInfo = authRemoteDataSource.refreshToken(refreshToken = refreshToken)
-
-                withContext(Dispatchers.Default) { authDataSource.insert(token = tokenInfo) }
-
-                return@runBlocking tokenInfo.accessToken
-            }
+                authDataSource.insert(token = tokenInfo)
+                return@runBlocking authDataSource.getAccessToken()
+            } ?: ""
 
             getRetrofitWithoutAuthenticator(response, accessToken)
         }

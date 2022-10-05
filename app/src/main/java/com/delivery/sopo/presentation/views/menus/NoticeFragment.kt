@@ -4,26 +4,27 @@ import android.os.Bundle
 import android.view.View
 import android.webkit.WebSettings
 import android.webkit.WebViewClient
+import androidx.fragment.app.viewModels
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentNoticeBinding
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.base.BaseFragment
-import com.delivery.sopo.models.menu.NoticeItem
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.presentation.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.presentation.viewmodels.menus.NoticeViewModel
-import com.delivery.sopo.presentation.views.adapter.NoticeExpandableAdapter
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.main.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class NoticeFragment : BaseFragment<FragmentNoticeBinding, NoticeViewModel>(){
 
-    override val vm: NoticeViewModel by viewModel()
+    override val vm: NoticeViewModel by viewModels()
     override val layoutRes: Int = R.layout.fragment_notice
     override val mainLayout: View by lazy{ binding.constraintMainNotice }
-    private val parentView: MainView by lazy { activity as MainView }
+    private val parentActivity: MainActivity by lazy { activity as MainActivity }
 
     override fun setBeforeBinding()
     {
@@ -47,7 +48,7 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding, NoticeViewModel>(){
         super.setObserve()
 
         activity ?: return
-        parentView.getCurrentPage().observe(this) {
+        parentActivity.getCurrentPage().observe(this) {
             if(it != 2) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
@@ -57,7 +58,7 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding, NoticeViewModel>(){
             {
                 NavigatorConst.Event.BACK ->
                 {
-                    FragmentManager.refreshMove(parentView, TabCode.MY_MENU_MAIN.apply {
+                    FragmentManager.refreshMove(parentActivity, TabCode.MY_MENU_MAIN.apply {
                         FRAGMENT = MenuFragment.newInstance()
                     }, MenuMainFragment.viewId)
                 }

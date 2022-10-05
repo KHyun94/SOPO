@@ -6,19 +6,18 @@ import androidx.activity.viewModels
 import com.delivery.sopo.R
 import com.delivery.sopo.consts.PermissionConst
 import com.delivery.sopo.databinding.LoginSelectViewBinding
-import com.delivery.sopo.extensions.launchActivityWithAllClear
+import com.delivery.sopo.extensions.moveActivity
 import com.delivery.sopo.interfaces.listener.OnPermissionResponseCallback
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.presentation.views.dialog.GeneralDialog
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.main.MainActivity
 import com.delivery.sopo.presentation.views.signup.RegisterNicknameView
 import com.delivery.sopo.presentation.views.signup.SignUpView
 import com.delivery.sopo.presentation.login.oath.KakaoOath
 import com.delivery.sopo.util.PermissionUtil
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import dagger.hilt.android.AndroidEntryPoint
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @AndroidEntryPoint
 class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
@@ -69,19 +68,23 @@ class LoginSelectView : BaseView<LoginSelectViewBinding, LoginSelectViewModel>()
             {
                 NavigatorConst.TO_LOGIN ->
                 {
-                    startActivity(Intent(this, LoginView::class.java))
+                    moveActivity(LoginView::class.java)
                 }
                 NavigatorConst.TO_SIGN_UP ->
                 {
-                    startActivity(Intent(this, SignUpView::class.java))
+                    moveActivity(SignUpView::class.java)
                 }
                 NavigatorConst.Screen.MAIN ->
                 {
-                    Intent(this, MainView::class.java).launchActivityWithAllClear(this@LoginSelectView)
+                    moveActivity(MainActivity::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK) {
+                        finish()
+                    }
                 }
                 NavigatorConst.Screen.UPDATE_NICKNAME ->
                 {
-                    Intent(this, RegisterNicknameView::class.java).launchActivityWithAllClear(this@LoginSelectView)
+                    moveActivity(RegisterNicknameView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK) {
+                        finish()
+                    }
                 }
                 NavigatorConst.TO_KAKAO_LOGIN ->
                 {

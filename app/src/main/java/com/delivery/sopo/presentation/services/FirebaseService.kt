@@ -1,7 +1,6 @@
 package com.delivery.sopo.presentation.services
 
-import android.content.Intent
-import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.enums.DeliveryStatus
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.data.models.FcmPushDTO
 import com.delivery.sopo.notification.NotificationImpl
@@ -121,7 +120,7 @@ class FirebaseService: FirebaseMessagingService()
             status.updatableStatus = 1
             status.auditDte = TimeUtil.getDateTime()
 
-            if(parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE) return@map status
+            if(parcel.deliveryStatus != DeliveryStatus.DELIVERED.CODE) return@map status
 
             status.deliveredStatus = 1
 

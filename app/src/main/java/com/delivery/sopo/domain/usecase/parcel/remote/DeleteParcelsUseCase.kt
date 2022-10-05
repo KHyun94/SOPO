@@ -4,8 +4,9 @@ import com.delivery.sopo.data.repositories.local.repository.ParcelManagementRepo
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class DeleteParcelsUseCase(private val parcelRepo: ParcelRepository, private val parcelStatusRepo:ParcelManagementRepoImpl)
+class DeleteParcelsUseCase @Inject constructor(private val parcelRepo: ParcelRepository, private val parcelStatusRepo:ParcelManagementRepoImpl)
 {
     suspend operator fun invoke() = withContext(Dispatchers.IO) {
         val parcelIds = parcelStatusRepo.getDeletableParcelStatuses().map { it.parcelId }

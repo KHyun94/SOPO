@@ -5,9 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
-import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.enums.DeliveryStatus
 import com.delivery.sopo.enums.ErrorCode
-import com.delivery.sopo.interfaces.listener.OnSOPOErrorCallback
 import com.delivery.sopo.models.SelectItem
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.parcel.Parcel
@@ -18,9 +17,12 @@ import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
 import com.delivery.sopo.util.CodeUtil
 import com.delivery.sopo.util.SopoLog
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ParcelDetailViewModel(
+@HiltViewModel
+class ParcelDetailViewModel @Inject constructor(
                             private val updateParcelUseCase: UpdateParcelUseCase,
                             private val carrierDataSource: CarrierDataSource):
         BaseViewModel()
@@ -45,7 +47,7 @@ class ParcelDetailViewModel(
 
     private suspend fun getParcelDetail(parcel: Parcel.Common): Parcel.Detail
     {
-        val deliveryStatus = CodeUtil.getEnumValueOfName<DeliveryStatusEnum>(parcel.deliveryStatus)
+        val deliveryStatus = CodeUtil.getEnumValueOfName<DeliveryStatus>(parcel.deliveryStatus)
         val carrier = carrierDataSource.getByCode(parcel.carrier)
 
         val progresses = parcel.trackingInfo?.progresses?.map { progress ->
@@ -56,9 +58,9 @@ class ParcelDetailViewModel(
     }
 
     // 택배의 이동 상태(indicator)의 값을 리스트 형식으로 반환 / true => 현재 상태
-    fun getDeliveryStatusIndicator(deliveryStatus: DeliveryStatusEnum?): MutableList<SelectItem<String>>
+    fun getDeliveryStatusIndicator(deliveryStatus: DeliveryStatus?): MutableList<SelectItem<String>>
     {
-        val deliveryStatuses = enumValues<DeliveryStatusEnum>().map { status ->
+        val deliveryStatuses = enumValues<DeliveryStatus>().map { status ->
             val isSelect = (deliveryStatus == status)
             SelectItem(item = status.TITLE, isSelect = isSelect)
         } as MutableList<SelectItem<String>>
@@ -75,7 +77,7 @@ class ParcelDetailViewModel(
         val localParcelDetail = getParcelDetail(localParcel)
         _parcelDetail.postValue(localParcelDetail)
 
-        if(localParcelDetail.deliverStatus == DeliveryStatusEnum.DELIVERED) return@launch
+        if(localParcelDetail.deliverStatus == DeliveryStatus.DELIVERED) return@launch
 
         val remoteParcel = updateParcelUseCase(parcelId = parcelId)
         SopoLog.d("Remote Parcel $remoteParcel")

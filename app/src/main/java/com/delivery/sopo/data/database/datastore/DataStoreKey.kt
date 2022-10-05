@@ -8,7 +8,13 @@ object DataStoreKey
 {
     const val DATASTORE_NAME: String = "sopo_data_store"
 
-    val USER_TOKEN:  Preferences.Key<String> = stringPreferencesKey("USER_TOKEN")
+    val USER_TOKEN: Preferences.Key<String> = stringPreferencesKey("USER_TOKEN")
+    val ACCESS_TOKEN: Preferences.Key<String> = stringPreferencesKey("ACCESS_TOKEN")
+    val REFRESH_TOKEN: Preferences.Key<String> = stringPreferencesKey("REFRESH_TOKEN")
+    val GRANT_TYPE: Preferences.Key<String> = stringPreferencesKey("GRANT_TYPE")
+    val EXPIRE_AT: Preferences.Key<String> = stringPreferencesKey("EXPIRE_AT")
+
+
     val USER_NAME:  Preferences.Key<String> = stringPreferencesKey("USER_NAME")
     val USER_PASSWORD:  Preferences.Key<String> = stringPreferencesKey("USER_PASSWORD")
 

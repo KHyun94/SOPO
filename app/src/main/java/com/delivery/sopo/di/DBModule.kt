@@ -4,8 +4,6 @@ import android.content.Context
 import com.delivery.sopo.data.database.datastore.DataStoreManager
 import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.data.database.room.dao.*
-import com.delivery.sopo.data.database.shared.SharedPref
-import com.delivery.sopo.data.database.shared.UserSharedPrefHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -69,9 +67,9 @@ class DBModule
     }
     @Provides
     @Singleton
-    fun provideParcelManagementDao(appDatabase: AppDatabase): ParcelStatusDAO
+    fun provideParcelStatusDao(appDatabase: AppDatabase): ParcelStatusDao
     {
-        return appDatabase.parcelManagementDao()
+        return appDatabase.parcelStatusDAO()
     }
     @Provides
     @Singleton
@@ -85,11 +83,4 @@ class DBModule
     {
         return appDatabase.securityDao()
     }
-    @Provides
-    @Singleton
-    fun provideAuthTokenDao(appDatabase: AppDatabase) : AuthTokenDao
-    {
-        return appDatabase.authTokenDao()
-    }
-
 }

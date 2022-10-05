@@ -8,8 +8,9 @@ import com.delivery.sopo.data.database.room.entity.CompletedParcelHistoryEntity
 import com.delivery.sopo.data.repositories.local.datasource.CompleteParcelStatusRepository
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.util.TimeUtil
+import javax.inject.Inject
 
-class CompletedParcelHistoryRepoImpl(private val appDatabase: AppDatabase): CompleteParcelStatusRepository
+class CompletedParcelHistoryRepoImpl @Inject constructor(private val appDatabase: AppDatabase): CompleteParcelStatusRepository
 {
     override fun findById(year: String): List<DeliveredParcelHistory>
     {

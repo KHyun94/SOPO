@@ -1,7 +1,7 @@
 package com.delivery.sopo.presentation.views.menus
 
 import android.view.View
-import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentAccountManagerBinding
@@ -9,7 +9,7 @@ import com.delivery.sopo.enums.DialogType
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.makeGone
 import com.delivery.sopo.extensions.makeVisible
-import com.delivery.sopo.extensions.moveToActivity
+import com.delivery.sopo.extensions.moveActivity
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.util.FragmentManager
@@ -17,17 +17,19 @@ import com.delivery.sopo.presentation.viewmodels.menus.AccountManagerViewModel
 import com.delivery.sopo.presentation.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.presentation.views.dialog.CommonDialog
 import com.delivery.sopo.presentation.views.login.ResetPasswordView
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.main.MainActivity
 import com.delivery.sopo.util.SopoLog
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, AccountManagerViewModel>()
 {
     override val layoutRes: Int = R.layout.fragment_account_manager
-    override val vm: AccountManagerViewModel by viewModel()
+    override val vm: AccountManagerViewModel by viewModels()
     override val mainLayout: View by lazy { binding.linearMainAccountManager }
 
-    private  val parentView: MainView by lazy { (requireActivity() as MainView) }
+    private  val parentActivity: MainActivity by lazy { (requireActivity() as MainActivity) }
 
     override fun setBeforeBinding()
     {
@@ -51,7 +53,7 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
         super.setObserve()
 
         activity ?: return
-        parentView.getCurrentPage().observe(this) {
+        parentActivity.getCurrentPage().observe(this) {
             if(it != 2) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
@@ -79,7 +81,7 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
                 }
                 NavigatorConst.Screen.RESET_PASSWORD ->
                 {
-                    requireActivity().moveToActivity(ResetPasswordView::class.java)
+                    requireActivity().moveActivity(ResetPasswordView::class.java)
                 }
                 NavigatorConst.TO_LOGOUT ->
                 {
@@ -97,7 +99,7 @@ class AccountManagerFragment: BaseFragment<FragmentAccountManagerBinding, Accoun
                 }
                 NavigatorConst.TO_SIGN_OUT ->
                 {
-                    requireActivity().moveToActivity(SignOutView::class.java)
+                    requireActivity().moveActivity(SignOutView::class.java)
                 }
                 "UPDATE_COMPLETED" ->
                 {

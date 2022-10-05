@@ -22,12 +22,12 @@ import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.presentation.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.presentation.viewmodels.menus.MenuSubViewModel
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.main.MainActivity
 import org.koin.android.ext.android.inject
 
 class MenuSubFragment: Fragment()
 {
-    lateinit var parentView: MainView
+    lateinit var parentActivity: MainActivity
     lateinit var binding: FragmentMenuSubBinding
     private val vm: MenuSubViewModel by inject()
 
@@ -53,7 +53,7 @@ class MenuSubFragment: Fragment()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        parentView = activity as MainView
+        parentActivity = activity as MainActivity
 
         receiveBundleData()
     }
@@ -84,7 +84,7 @@ class MenuSubFragment: Fragment()
                 moveToBack()
             }
         }
-        parentView.onBackPressedDispatcher.addCallback(parentView, callback)
+        parentActivity.onBackPressedDispatcher.addCallback(parentActivity, callback)
     }
 
     private fun setObserve()
@@ -126,7 +126,7 @@ class MenuSubFragment: Fragment()
             }
 
             vm.title.postValue(enumData.TITLE)
-            FragmentManager.move(parentView, enumData, binding.layoutSubMenuFrame.id)
+            FragmentManager.move(parentActivity, enumData, binding.layoutSubMenuFrame.id)
         })
 
     }
@@ -147,8 +147,8 @@ class MenuSubFragment: Fragment()
 
     fun moveToBack(){
         FragmentManager.run {
-            remove(parentView)
-            move(parentView, TabCode.MY_MENU_MAIN.apply { FRAGMENT = MenuFragment.newInstance() }, MenuMainFragment.viewId)
+            remove(parentActivity)
+            move(parentActivity, TabCode.MY_MENU_MAIN.apply { FRAGMENT = MenuFragment.newInstance() }, MenuMainFragment.viewId)
         }
     }
 

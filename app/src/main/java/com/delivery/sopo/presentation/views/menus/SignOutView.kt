@@ -7,6 +7,7 @@ import android.text.style.ForegroundColorSpan
 import android.view.Gravity
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
@@ -16,12 +17,14 @@ import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.presentation.viewmodels.menus.SignOutViewModel
 import com.delivery.sopo.presentation.views.dialog.CommonDialog
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class SignOutView: BaseView<SignOutViewBinding, SignOutViewModel>()
 {
     override val layoutRes: Int = R.layout.sign_out_view
-    override val vm: SignOutViewModel by viewModel()
+    override val vm: SignOutViewModel by viewModels()
     override val mainLayout: View by lazy { binding.constraintMainSignOut }
 
     override fun setObserve()

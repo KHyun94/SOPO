@@ -5,8 +5,9 @@ import com.delivery.sopo.data.database.room.AppDatabase
 import com.delivery.sopo.data.database.room.dto.AppPasswordDTO
 import com.delivery.sopo.models.mapper.AppPasswordMapper
 import com.delivery.sopo.util.TimeUtil
+import javax.inject.Inject
 
-class AppPasswordRepository(private val appDatabase: AppDatabase): AppPasswordDataSource
+class AppPasswordRepository @Inject constructor(private val appDatabase: AppDatabase): AppPasswordDataSource
 {
     override fun get(): AppPasswordDTO?
     {

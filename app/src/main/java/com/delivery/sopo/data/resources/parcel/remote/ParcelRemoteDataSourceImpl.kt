@@ -1,5 +1,6 @@
 package com.delivery.sopo.data.resources.parcel.remote
 
+import com.delivery.sopo.DateSelector
 import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
 import com.delivery.sopo.data.networks.serivces.ParcelService
 import com.delivery.sopo.enums.ErrorCode
@@ -8,6 +9,8 @@ import com.delivery.sopo.extensions.wrapBodyAliasToHashMap
 import com.delivery.sopo.extensions.wrapBodyAliasToMap
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.presentation.services.network_handler.BaseService
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 class ParcelRemoteDataSourceImpl(private val parcelService: ParcelService): ParcelRemoteDataSource,
         BaseService()
@@ -72,6 +75,11 @@ class ParcelRemoteDataSourceImpl(private val parcelService: ParcelService): Parc
     override suspend fun requestParcelsRefresh()
     {
         apiCall { parcelService.requestParcelsRefresh() }
+    }
+
+    override suspend fun fetchCompletedDateInfo(cursorDate: String?): DateSelector {
+        val result = apiCall { parcelService.fetchCompletedDateInfo(cursorDate = cursorDate) }
+        return result.data?.data ?: throw SOPOApiException.create(ErrorCode.PARCEL_NOT_FOUND)
     }
 
     override suspend fun requestParcelUpdate(parcelId: Int): Parcel.Updatable

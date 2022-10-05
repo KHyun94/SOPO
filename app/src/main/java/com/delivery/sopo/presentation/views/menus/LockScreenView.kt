@@ -7,6 +7,7 @@ import android.os.Looper
 import android.view.View
 import android.view.View.INVISIBLE
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
@@ -22,13 +23,15 @@ import com.delivery.sopo.presentation.viewmodels.menus.LockScreenViewModel
 import com.delivery.sopo.util.AnimationUtil
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.VibrateUtil
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class LockScreenView: BaseView<LockScreenViewBinding, LockScreenViewModel>()
 {
     override val layoutRes: Int = R.layout.lock_screen_view
-    override val vm: LockScreenViewModel by viewModel()
+    override val vm: LockScreenViewModel by viewModels()
     override val mainLayout: View by lazy { binding.constraintMainLockScreen }
 
     private var firstCheck = false

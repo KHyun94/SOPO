@@ -15,14 +15,11 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.FragmentActivity
 import com.delivery.sopo.BR
-import com.delivery.sopo.SOPOApplication
-import com.delivery.sopo.enums.NetworkStatus
 import com.delivery.sopo.enums.SnackBarEnum
 import com.delivery.sopo.enums.SnackBarType
 import com.delivery.sopo.interfaces.OnSnackBarController
 import com.delivery.sopo.util.NetworkStatusMonitor
 import com.delivery.sopo.util.OtherUtil
-import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.BottomNotificationBar
 import com.delivery.sopo.util.ui_util.CustomSnackBar
 import com.delivery.sopo.util.ui_util.SopoLoadingBar
@@ -95,9 +92,9 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
 
         binding = bindView(this)
 
-        vm.setCheckNetwork(true)
 
-        networkStatusMonitor = NetworkStatusMonitor(this)
+        networkStatusMonitor = NetworkStatusMonitor(this, vm.networkStatus)
+
         networkStatusMonitor.enable()
         networkStatusMonitor.initNetworkCheck()
 
@@ -125,7 +122,6 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
     {
         activityResultLauncher.launch(intent)
     }
-
 
     /**
      * 데이터 전달
@@ -156,46 +152,21 @@ abstract class BaseView<T: ViewDataBinding, R: BaseViewModel>: AppCompatActivity
         setInnerObserve()
     }
 
-    protected open fun onDeactivateNetwork()
-    {
-        vm.setCheckNetwork(true)
-    }
-
-    protected open fun onActivateNetwork()
-    {
-        vm.setCheckNetwork(false)
-    }
+    /**
+     * Network Check
+     *
+     */
+    protected open fun onActivateNetwork() {}
+    protected open fun onDeactivateNetwork() {}
 
     private fun setInnerObserve()
     {
-        SOPOApplication.networkStatus.observe(this) { status ->
-
-            SopoLog.d("status [status:$status]")
-
-            if(vm.currentNetworkState == NetworkStatus.DEFAULT)
-            {
-                vm.currentNetworkState = status
-                return@observe
-            }
-
-            when(status)
-            {
-                NetworkStatus.WIFI, NetworkStatus.CELLULAR ->
-                {
-                    if(vm.currentNetworkState != NetworkStatus.NOT_CONNECT) return@observe
-                    onActivateNetwork()
-                }
-                NetworkStatus.NOT_CONNECT ->
-                {
-                    onDeactivateNetwork()
-                }
-            }
-
-            vm.currentNetworkState = status
+        vm.checkNetworkStatus {
+            if(!it) return@checkNetworkStatus onDeactivateNetwork()
+            onActivateNetwork()
         }
 
         vm.isClickEvent.observe(this) {
-            SopoLog.d("Base Click Event [data:$it]")
             if(!it) return@observe
             hideKeyboard()
         }

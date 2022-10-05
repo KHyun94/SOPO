@@ -12,12 +12,15 @@ import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.domain.usecase.user.token.LoginUseCase
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
-class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
+@HiltViewModel
+class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase): BaseViewModel()
 {
-    val username = MutableLiveData<String>()
-    var password = MutableLiveData<String>()
+    val username= MutableLiveData<String>()
+    val password= MutableLiveData<String>()
 
     private var _navigator = MutableLiveData<String>()
     val navigator: LiveData<String> = _navigator
@@ -29,11 +32,6 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
         _focus.value = Triple(v, hasFocus, type)
     }
 
-    fun postNavigator(navigator: String)
-    {
-        _navigator.postValue(navigator)
-    }
-
     fun onLoginClicked() = checkEventStatus(checkNetwork = true) {
         requestLoginBySelf()
     }
@@ -42,11 +40,10 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
     {
         username.postValue("")
         password.postValue("")
-
-        postNavigator(NavigatorConst.Screen.RESET_PASSWORD)
+        _navigator.postValue(NavigatorConst.Screen.RESET_PASSWORD)
     }
 
-    private fun requestLoginBySelf() = scope.launch(exceptionHandler) {
+    private fun requestLoginBySelf() = scope.launch {
         try
         {
             onStartLoading()
@@ -56,7 +53,7 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
 
             loginUseCase(username = username, password = password)
 
-            postNavigator(NavigatorConst.Screen.MAIN)
+            _navigator.postValue(NavigatorConst.Screen.MAIN)
         }
         finally
         {
@@ -72,7 +69,7 @@ class LoginViewModel(private val loginUseCase: LoginUseCase): BaseViewModel()
             ErrorCode.VALIDATION -> postErrorSnackBar(exception.message)
             ErrorCode.USER_NOT_FOUND -> postErrorSnackBar("계정 정보를 찾을 수 없습니다.")
             ErrorCode.INVALID_USER -> postErrorSnackBar("이메일 또는 비밀번호를 확인해주세요.")
-            ErrorCode.NICK_NAME_NOT_FOUND -> postNavigator(NavigatorConst.Screen.UPDATE_NICKNAME)
+            ErrorCode.NICK_NAME_NOT_FOUND -> _navigator.postValue(NavigatorConst.Screen.UPDATE_NICKNAME)
             else ->
             {
                 exception.printStackTrace()

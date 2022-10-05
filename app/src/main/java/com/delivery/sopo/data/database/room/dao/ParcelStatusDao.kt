@@ -7,7 +7,7 @@ import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.database.room.entity.ParcelStatusEntity
 
 @Dao
-interface ParcelStatusDAO
+interface ParcelStatusDao
 {
     @Query("SELECT * FROM PARCEL_STATUS")
     fun get() : List<ParcelStatusEntity>

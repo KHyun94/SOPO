@@ -20,7 +20,7 @@ class SOPOApplication: Application()
     {
         lateinit var INSTANCE: Context
 
-        val networkStatus: MutableLiveData<NetworkStatus> by lazy {  MutableLiveData<NetworkStatus>()  }
+//        val networkStatus: MutableLiveData<NetworkStatus> by lazy {  MutableLiveData<NetworkStatus>()  }
         var cntOfBeUpdate: MutableLiveData<Int> = MutableLiveData<Int>()
     }
 }

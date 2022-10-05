@@ -1,5 +1,6 @@
 package com.delivery.sopo.data.resources.user.local
 
+import com.delivery.sopo.consts.StatusConst
 import com.delivery.sopo.data.database.datastore.DataStoreKey.APP_PASSWORD
 import com.delivery.sopo.data.database.datastore.DataStoreKey.DEVICE_INFO
 import com.delivery.sopo.data.database.datastore.DataStoreKey.DISTURB_END_TIME
@@ -19,10 +20,18 @@ import com.delivery.sopo.data.database.datastore.DataStoreKey.USER_TOKEN
 import com.delivery.sopo.data.database.datastore.DataStoreManager
 import com.delivery.sopo.data.database.shared.UserSharedPrefHelper
 import com.delivery.sopo.enums.SettingEnum
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class UserDataSourceImpl @Inject constructor(private val dataStoreManager: DataStoreManager): UserDataSource
+class UserDataSourceImpl @Inject constructor(private val dataStoreManager: DataStoreManager, private val dispatcher: CoroutineDispatcher): UserDataSource
 {
+    override suspend fun insertUserAccount(username: String, userPassword: String) = withContext(dispatcher){
+        setUsername(username)
+        setUserPassword(userPassword)
+        setStatus(StatusConst.ACTIVATE)
+    }
+
     override suspend fun getNickname(): String
     {
         return dataStoreManager.readValue(USER_NICKNAME) ?: ""
@@ -173,12 +182,12 @@ class UserDataSourceImpl @Inject constructor(private val dataStoreManager: DataS
         dataStoreManager.storeValue(DISTURB_END_TIME, endTime)
     }
 
-    suspend fun getPushAlarmType(): String
+    override suspend fun getPushAlarmType(): String
     {
         return dataStoreManager.readValue(PUSH_ALARM_TYPE)?:""
     }
 
-    suspend fun setPushAlarmType(pushAlarmType: SettingEnum.PushAlarmType)
+    override suspend fun setPushAlarmType(pushAlarmType: SettingEnum.PushAlarmType)
     {
         dataStoreManager.storeValue(PUSH_ALARM_TYPE, pushAlarmType.name)
     }

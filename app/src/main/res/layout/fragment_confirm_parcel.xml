@@ -20,7 +20,7 @@
 
         <variable
             name="vm"
-            type="com.delivery.sopo.presentation.viewmodels.registesrs.ConfirmParcelViewModel" />
+            type="com.delivery.sopo.presentation.register.viewmodel.ConfirmParcelViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+
+        <import type="com.delivery.sopo.R" />
+
+        <variable
+            name="parcelCount"
+            type="int" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- 현재 진행 중인 택배 갯수 -->
+        <LinearLayout
+            android:id="@+id/layout_present_ongoing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="39.5dp"
+            android:orientation="horizontal"
+            android:weightSum="10"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
+
+            <LinearLayout
+                android:id="@+id/layout_present_ongoing_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="5"
+                android:gravity="center"
+                android:orientation="vertical"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintBottom_toTopOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/guide_1st"
+                app:layout_constraintTop_toBottomOf="parent"
+                tools:visibility="visible">
+
+                <TextView
+                    android:id="@+id/tv_present_parcel_cnt"
+                    style="@style/kor_H2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text='@{"택배 "+ parcelCount + "개"}'
+                    android:textColor="@color/COLOR_GRAY_700"
+                    tools:text="택배 2개" />
+
+                <TextView
+                    style="@style/kor_H4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="현재 진행 중"
+                    android:textColor="@color/COLOR_GRAY_700" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/iv_present_parcel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3.4"
+                android:adjustViewBounds="true"
+                app:layout_constrainedWidth="true"
+                app:layout_constraintBottom_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="@+id/guide_1st"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="parent"
+                app:layout_constraintWidth_percent="0.33"
+                app:setBackground="@{R.drawable.ic_inquiry_top_section_present_parcel}"
+                tools:src="@drawable/ic_inquiry_top_section_present_parcel"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

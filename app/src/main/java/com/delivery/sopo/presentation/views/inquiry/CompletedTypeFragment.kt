@@ -1,65 +1,47 @@
 package com.delivery.sopo.presentation.views.inquiry
 
-import android.annotation.SuppressLint
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Typeface
-import android.os.Handler
-import android.os.Looper
-import android.view.*
-import android.widget.*
-import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.ViewCompat
-import androidx.lifecycle.asLiveData
+import android.view.View
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
 import com.delivery.sopo.R
-import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
-import com.delivery.sopo.data.models.Result
-import com.delivery.sopo.databinding.FragmentCompletedTypeBinding
-import com.delivery.sopo.databinding.PopupMenuViewBinding
-import com.delivery.sopo.enums.*
+import com.delivery.sopo.databinding.FragmentCompletedTypeParcelBinding
+import com.delivery.sopo.enums.InquiryStatus
+import com.delivery.sopo.enums.ScrollStatusEnum
+import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.makeGone
-import com.delivery.sopo.extensions.makeVisible
 import com.delivery.sopo.interfaces.OnPageSelectListener
 import com.delivery.sopo.interfaces.OnTapReselectListener
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.interfaces.listener.ParcelEventListener
 import com.delivery.sopo.models.base.BaseFragment
-import com.delivery.sopo.models.inquiry.InquiryListItem
-import com.delivery.sopo.models.inquiry.InquiryMenuItem
-import com.delivery.sopo.models.mapper.MenuMapper
 import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.presentation.viewmodels.inquiry.CompletedTypeViewModel
 import com.delivery.sopo.presentation.views.adapter.InquiryListAdapter
-import com.delivery.sopo.presentation.views.adapter.PopupMenuListAdapter
-import com.delivery.sopo.presentation.views.main.MainView
-import com.delivery.sopo.util.*
-import com.delivery.sopo.util.ui_util.UpdateValueDialog
+import com.delivery.sopo.presentation.views.main.MainActivity
+import com.delivery.sopo.util.DateUtil
+import com.delivery.sopo.util.SopoLog
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.collect
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import com.orhanobut.logger.Logger
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.util.*
 
-class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, CompletedTypeViewModel>(),
-        OnTapReselectListener
-{
-    override val layoutRes: Int = R.layout.fragment_completed_type
-    override val vm: CompletedTypeViewModel by viewModel()
-    override val mainLayout: View by lazy { binding.linearMainCompleted }
+@AndroidEntryPoint
+class CompletedTypeFragment :
+    BaseFragment<FragmentCompletedTypeParcelBinding, CompletedTypeViewModel>(),
+    OnTapReselectListener {
+    override val layoutRes: Int = R.layout.fragment_completed_type_parcel
+    override val vm: CompletedTypeViewModel by viewModels()
+    override val mainLayout: View by lazy { binding.constraintMainCompletedParcel }
 
-    private val parentView: MainView by lazy { activity as MainView }
+    private val parentActivity: MainActivity by lazy { activity as MainActivity }
 
     private lateinit var completedParcelAdapter: InquiryListAdapter
-
-    private var historyPopUpWindow: PopupWindow? = null
 
     private var refreshDelay: Boolean = false
 
@@ -67,16 +49,12 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
 
     private var scrollStatus: ScrollStatusEnum = ScrollStatusEnum.TOP
 
-    val broadcastReceiver: BroadcastReceiver = object: BroadcastReceiver()
-    {
-        override fun onReceive(context: Context?, intent: Intent?)
-        {
+    val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
             intent ?: return
 
-            when(intent.action)
-            {
-                IntentConst.Action.REGISTERED_COMPLETED_PARCEL ->
-                {
+            when (intent.action) {
+                IntentConst.Action.REGISTERED_COMPLETED_PARCEL -> {
                     val data = intent.getStringExtra("REGISTERED_DATE") ?: return
 
                     val date = DateUtil.convertDate(data, DateUtil.DATE_TIME_TYPE_DEFAULT) ?: return
@@ -86,15 +64,9 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
                     val year = calendar.get(Calendar.YEAR).toString()
                     val month = (calendar.get(Calendar.MONTH) + 1)
 
-                    vm.getActivateMonths()
-
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        vm.changeCompletedParcelHistoryDate(year = year)
-                        vm.onMonthClicked(month)
-                    }, 500)
+//                    vm.getActivateMonths()
                 }
-                else ->
-                {
+                else -> {
                     SopoLog.d("NO ACTION")
                     return
                 }
@@ -102,61 +74,49 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         }
     }
 
-    override fun onResume()
-    {
+    override fun onResume() {
         super.onResume()
 
         val filter = IntentFilter().apply {
             addAction(IntentConst.Action.REGISTERED_COMPLETED_PARCEL)
         }
 
-        parentView.registerReceiver(broadcastReceiver, filter)
+        parentActivity.registerReceiver(broadcastReceiver, filter)
 
-        if(scrollStatus != ScrollStatusEnum.TOP)
-        {
+        if (scrollStatus != ScrollStatusEnum.TOP) {
             onPageSelectListener.onChangeTab(TabCode.INQUIRY_COMPLETE)
-        }
-        else
-        {
+        } else {
             onPageSelectListener.onChangeTab(null)
         }
 
-        parentView.onReselectedTapClickListener = object: () -> Unit
-        {
-            override fun invoke()
-            {
-                if(scrollStatus == ScrollStatusEnum.TOP) return
-                binding.nestSvMainCompleted.scrollTo(0, 0)
+        parentActivity.onReselectedTapClickListener = object : () -> Unit {
+            override fun invoke() {
+                if (scrollStatus == ScrollStatusEnum.TOP) return
+//                binding.nestSvMainCompleted.scrollTo(0, 0)
             }
         }
     }
 
-    override fun onPause()
-    {
+    override fun onPause() {
         super.onPause()
-        parentView.unregisterReceiver(broadcastReceiver)
+        parentActivity.unregisterReceiver(broadcastReceiver)
     }
 
-    private fun setOnMainBridgeListener(context: Context)
-    {
-        onPageSelectListener = context as OnPageSelectListener
+    private fun setOnMainBridgeListener(context: Context) {
+        onPageSelectListener = requireActivity() as OnPageSelectListener
     }
 
-    override fun setBeforeBinding()
-    {
+    override fun setBeforeBinding() {
         super.setBeforeBinding()
 
-        onSOPOBackPressedListener = object: OnSOPOBackPressEvent()
-        {
-            override fun onBackPressedInTime()
-            {
-                Snackbar.make(parentView.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
+        onSOPOBackPressedListener = object : OnSOPOBackPressEvent() {
+            override fun onBackPressedInTime() {
+                Snackbar.make(parentActivity.binding.layoutMain, "한번 더 누르시면 앱이 종료됩니다.", 2000)
                     .apply { animationMode = Snackbar.ANIMATION_MODE_SLIDE }
                     .show()
             }
 
-            override fun onBackPressedOutTime()
-            {
+            override fun onBackPressedOutTime() {
                 exit()
             }
         }
@@ -164,260 +124,348 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         setOnMainBridgeListener(context = requireContext())
     }
 
-    override fun setAfterBinding()
-    {
-        setActivateMonthCalendar()
-
+    override fun setAfterBinding() {
         setAdapters()
-        setListener()
     }
 
+    override fun onReselect() {
 
-    override fun setObserve()
-    {
-        super.setObserve()
+    }
 
-        activity ?: return
+    override fun onShowKeyboard() {
+        super.onShowKeyboard()
 
-        parentView.getCurrentPage().observe(this) {
-            if(it != 1) return@observe
-            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-        }
+    }
 
-        // 배송완료 리스트
-        vm.completedParcels.asLiveData(Dispatchers.Default).observe(this) {
+    override fun onHideKeyboard() {
+        super.onHideKeyboard()
+//        lifecycleScope.launch {
+//            vm.refreshCompleteParcelsByDate(vm.selectedDate.value.toString())
+//        }
 
-            SopoLog.d("Parcels [${it.toString()}]")
-            when(it)
-            {
-                is Result.Success<List<InquiryListItem>> ->
-                {
+        binding.includeBottomInputLayout.root.makeGone()
+    }
 
-                    SopoLog.d("Parcels 2차 [${it.data.map { it.parcel }.joinToString()}]")
+    private fun setAdapters() {
+        getAdapter(InquiryStatus.Complete).let { adapter ->
+            completedParcelAdapter = adapter
+            binding.rvCompletedParcel.adapter = completedParcelAdapter
+            val animator = binding.rvCompletedParcel.itemAnimator as SimpleItemAnimator
+            animator.supportsChangeAnimations = false
 
-                    completedParcelAdapter.separateDelivered(it.data.toMutableList())
-                }
-                is Result.Error ->
-                {
-                    SopoLog.d("Parcels 2차 [Error]")
-//                    binding.linearNoItem.makeVisible()
-                }
-                is Result.Loading, Result.Uninitialized ->
-                {
-                    SopoLog.d("Parcels 2차 [Loading / Uninitialized]")
-//                    binding.linearNoItem.makeGone()
-                }
-                else ->
-                {
-                    SopoLog.d("Parcels 2차 [else]")
-//                    binding.linearNoItem.makeVisible()
-                }
-            }
-        }
-        vm.completeList.observe(requireActivity()) { list ->
-            completedParcelAdapter.separateDelivered(list.toMutableList())
-        }
-        // 배송완료 화면에서 표출 가능한 년월 리스트
-        vm.histories.observe(requireActivity()) { dates ->
-
-            vm.initPage()
-
-            if(dates.isEmpty())
-            {
-                binding.includeCompleteNoItem.visible = View.VISIBLE
-                return@observe
-            }
-
-            SopoLog.d("Completed Parcel [size:${dates.size}]")
-
-            binding.includeCompleteNoItem.visible = View.GONE
-
-            val latestDate = try
-            {
-                dates.first { date -> date.count > 0 }
-            }
-            catch(e: NoSuchElementException)
-            {
-                dates.first()
-            }
-
-            vm.updateCompletedParcelCalendar(latestDate.year)
-
-            // TODO 다른 곳으로 빼야할듯
-            binding.constraintInnerYearSpinner.setOnClickListener { v ->
-                drawCompletedParcelHistoryPopMenu(v, dates)
-            }
-        }
-
-        vm.monthsOfCalendar.observe(requireActivity()) { list ->
-
-            setDefaultMonthSelector()
-            vm.selectedDate.postValue("")
-
-            val reversedList = list.reversed()
-
-            reversedList.forEach { historySelectItem ->
-
-                val item = historySelectItem.item
-                val isSelect = historySelectItem.isSelect
-
-                if(item.count > 0 && isSelect)
-                {
-                    val selectedDate = with(item) { "${year}년 ${month}월" }
-                    vm.selectedDate.postValue(selectedDate)
-                }
-
-                val (clickable, textColor, font) = if(item.count > 0)
-                {
-                    val textColor =
-                        if(isSelect) ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE)
-                        else ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800)
-
-                    val font = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
-
-                    Triple(first = true, second = textColor, third = font)
-                }
-                else
-                {
-                    val textColor = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300)
-                    val font = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium)
-
-                    Triple(first = false, second = textColor, third = font)
-                }
-
-                when(item.month)
-                {
-                    "01" ->
-                    {
-                        setMonthItem(tv = binding.tvJan, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
-                    }
-                    "02" ->
-                    {
-                        setMonthItem(tv = binding.tvFeb, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
-                    }
-                    "03" ->
-                    {
-                        setMonthItem(tv = binding.tvMar, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
-                    }
-                    "04" ->
-                    {
-                        setMonthItem(tv = binding.tvApr, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
-                    }
-                    "05" ->
-                    {
-                        setMonthItem(tv = binding.tvMay, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
-                    }
-                    "06" ->
-                    {
-                        setMonthItem(tv = binding.tvJun, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
-                    }
-                    "07" ->
-                    {
-                        setMonthItem(tv = binding.tvJul, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
-                    }
-                    "08" ->
-                    {
-                        setMonthItem(tv = binding.tvAug, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
-                    }
-                    "09" ->
-                    {
-                        setMonthItem(tv = binding.tvSep, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
-                    }
-                    "10" ->
-                    {
-                        setMonthItem(tv = binding.tvOct, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
-                    }
-                    "11" ->
-                    {
-                        setMonthItem(tv = binding.tvNov, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
-                    }
-                    "12" ->
-                    {
-                        setMonthItem(tv = binding.tvDec, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
-                    }
-                }
-            }
-        }
-
-        vm.selectedDate.observe(requireActivity()) { date ->
-            if(date.isEmpty()) return@observe
-            val searchDate = date.replace("년 ", "").replace("월", "")
-            SopoLog.d("DATE => $searchDate")
-            vm.refreshCompleteParcelsByDate(searchDate)
+//            binding.rvCompletedParcel.addItemDecoration(DateStickyHeaderItemDecoration(getSectionCallback()))
         }
     }
 
-    private fun getAdapter(inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter
-    {
-        return InquiryListAdapter(parcelType = inquiryItemTypeEnum).apply {
+    /*   private fun getSectionCallback(): DateStickyHeaderItemDecoration.SectionCallback {
+           return object : DateStickyHeaderItemDecoration.SectionCallback {
+               override fun isHeader(position: Int): Boolean {
+                   return completedParcelAdapter.isHeader(position)
+               }
+
+               override fun getHeaderLayoutView(list: RecyclerView, position: Int): View? {
+                   return completedParcelAdapter.getHeaderView(list, position)
+               }
+           }
+       }*/
+
+    private fun getAdapter(inquiryStatus: InquiryStatus): InquiryListAdapter {
+        return InquiryListAdapter(parcelType = inquiryStatus).apply {
             this.setOnParcelClickListener(getParcelClicked())
         }
     }
 
-    private fun setAdapters()
-    {
-        getAdapter(InquiryItemTypeEnum.Complete).let { adapter ->
-            completedParcelAdapter = adapter
-            binding.recyclerviewCompleteParcel.adapter = completedParcelAdapter
-            val animator = binding.recyclerviewCompleteParcel.itemAnimator as SimpleItemAnimator
-            animator.supportsChangeAnimations = false
+    private fun getParcelClicked(): ParcelEventListener {
+        return object : ParcelEventListener() {
+            /* override fun onEnterParcelDetailClicked(view: View, type: InquiryStatusEnum, parcelId: Int)
+             {
+                 super.onEnterParcelDetailClicked(view, type, parcelId)
+
+                 TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelId)
+                 FragmentManager.add(requireActivity(), TabCode.INQUIRY_DETAIL, InquiryMainFragment.viewId)
+             }
+
+             override fun onUpdateParcelAliasClicked(view: View, type: InquiryStatusEnum, parcelId: Int)
+             {
+                 super.onUpdateParcelAliasClicked(view, type, parcelId)
+
+                 UpdateValueDialog{ alias ->
+                 SopoLog.d("TEST INPUT DATA $alias")
+                 vm.updateParcelAlias(parcelId, alias)
+             }.show(childFragmentManager, "")
+
+             showKeyboard(binding.includeBottomInputLayout.etInputText)
+             binding.includeBottomInputLayout.root.makeVisible()
+             binding.includeBottomInputLayout.onClickListener = View.OnClickListener {
+             val alias: String = binding.includeBottomInputLayout.etInputText.text.toString()
+             vm.updateParcelAlias(parcelId, alias)*/
         }
 
-        ViewCompat.setNestedScrollingEnabled(binding.recyclerviewCompleteParcel, false)
+
     }
 
-    // 활성화된 월 선택 세팅 setActivateMonthCalendar
-    private fun setActivateMonthCalendar()
-    {
-        SopoLog.d("호출")
+    override fun setObserve() {
+        super.setObserve()
 
-        val onGlobalLayoutListener = object: ViewTreeObserver.OnGlobalLayoutListener
-        {
-            override fun onGlobalLayout()
-            { // 'year spinner'높이 수치만큼 'month sector'의 상단 공백을 생성
-                val yearSpinnerHeight: Int = binding.linearMainYearSpinner.height
+        activity ?: return
 
-                (binding.linearMainMonthSelector.layoutParams as FrameLayout.LayoutParams).apply {
-                    topMargin = yearSpinnerHeight
-                }
-
-                // 'year spinner'높이 수치만큼 'completed space'의 상단 공백을 생성
-                // 'month sector'높이 수치만큼 'completed space'의 높이변경
-                val monthSelectorHeight = binding.linearMainMonthSelector.height
-
-                (binding.vInnerCompletedSpace.layoutParams as LinearLayout.LayoutParams).apply {
-                    this.topMargin = yearSpinnerHeight
-                    this.height = monthSelectorHeight
-                }
-
-                // 뷰 조절 후 옵저빙 리스너 제거
-                binding.frameMainCompleteInquiry.viewTreeObserver.removeOnGlobalLayoutListener(this)
-            }
+        parentActivity.getCurrentPage().observe(this) {
+            if (it != 1) return@observe
+            requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
-        binding.frameMainCompleteInquiry.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
+        vm.completeList.observe(requireActivity()) { list ->
+            Logger.d("completed list ${list.joinToString()}")
+            completedParcelAdapter.separateDelivered(list.toMutableList())
+        }
     }
+}
 
-    private fun getParcelClicked(): ParcelEventListener
-    {
-        return object: ParcelEventListener()
-        {
-            override fun onEnterParcelDetailClicked(view: View, type: InquiryStatusEnum, parcelId: Int)
-            {
-                super.onEnterParcelDetailClicked(view, type, parcelId)
+/*  override fun setObserve()
+  {
+      super.setObserve()
 
-                TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelId)
-                FragmentManager.add(requireActivity(), TabCode.INQUIRY_DETAIL, InquiryMainFragment.viewId)
-            }
+      activity ?: return
 
-            override fun onUpdateParcelAliasClicked(view: View, type: InquiryStatusEnum, parcelId: Int)
-            {
-                super.onUpdateParcelAliasClicked(view, type, parcelId)
+      parentActivity.getCurrentPage().observe(this) {
+          if(it != 1) return@observe
+          requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+      }
 
-                /*UpdateValueDialog{ alias ->
+      // 배송완료 리스트
+      vm.completedParcels.asLiveData(Dispatchers.Default).observe(this) {
+
+          SopoLog.d("Parcels [${it.toString()}]")
+          when(it)
+          {
+              is Result.Success<List<InquiryListItem>> ->
+              {
+
+                  SopoLog.d("Parcels 2차 [${it.data.map { it.parcel }.joinToString()}]")
+
+                  completedParcelAdapter.separateDelivered(it.data.toMutableList())
+              }
+              is Result.Error ->
+              {
+                  SopoLog.d("Parcels 2차 [Error]")
+//                    binding.linearNoItem.makeVisible()
+              }
+              is Result.Loading, Result.Uninitialized ->
+              {
+                  SopoLog.d("Parcels 2차 [Loading / Uninitialized]")
+//                    binding.linearNoItem.makeGone()
+              }
+              else ->
+              {
+                  SopoLog.d("Parcels 2차 [else]")
+//                    binding.linearNoItem.makeVisible()
+              }
+          }
+      }
+      vm.completeList.observe(requireActivity()) { list ->
+          completedParcelAdapter.separateDelivered(list.toMutableList())
+      }
+      // 배송완료 화면에서 표출 가능한 년월 리스트
+      vm.histories.observe(requireActivity()) { dates ->
+
+          vm.initPage()
+
+          if(dates.isEmpty())
+          {
+              binding.includeCompleteNoItem.visible = View.VISIBLE
+              return@observe
+          }
+
+          SopoLog.d("Completed Parcel [size:${dates.size}]")
+
+          binding.includeCompleteNoItem.visible = View.GONE
+
+          val latestDate = try
+          {
+              dates.first { date -> date.count > 0 }
+          }
+          catch(e: NoSuchElementException)
+          {
+              dates.first()
+          }
+
+          vm.updateCompletedParcelCalendar(latestDate.year)
+
+          // TODO 다른 곳으로 빼야할듯
+          binding.constraintInnerYearSpinner.setOnClickListener { v ->
+              drawCompletedParcelHistoryPopMenu(v, dates)
+          }
+      }
+
+      vm.monthsOfCalendar.observe(requireActivity()) { list ->
+
+          setDefaultMonthSelector()
+          vm.selectedDate.postValue("")
+
+          val reversedList = list.reversed()
+
+          reversedList.forEach { historySelectItem ->
+
+              val item = historySelectItem.item
+              val isSelect = historySelectItem.isSelect
+
+              if(item.count > 0 && isSelect)
+              {
+                  val selectedDate = with(item) { "${year}년 ${month}월" }
+                  vm.selectedDate.postValue(selectedDate)
+              }
+
+              val (clickable, textColor, font) = if(item.count > 0)
+              {
+                  val textColor =
+                      if(isSelect) ContextCompat.getColor(requireContext(), R.color.MAIN_WHITE)
+                      else ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_800)
+
+                  val font = ResourcesCompat.getFont(requireContext(), R.font.pretendard_bold)
+
+                  Triple(first = true, second = textColor, third = font)
+              }
+              else
+              {
+                  val textColor = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300)
+                  val font = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium)
+
+                  Triple(first = false, second = textColor, third = font)
+              }
+
+              when(item.month)
+              {
+                  "01" ->
+                  {
+                      setMonthItem(tv = binding.tvJan, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
+                  }
+                  "02" ->
+                  {
+                      setMonthItem(tv = binding.tvFeb, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
+                  }
+                  "03" ->
+                  {
+                      setMonthItem(tv = binding.tvMar, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
+                  }
+                  "04" ->
+                  {
+                      setMonthItem(tv = binding.tvApr, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
+                  }
+                  "05" ->
+                  {
+                      setMonthItem(tv = binding.tvMay, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
+                  }
+                  "06" ->
+                  {
+                      setMonthItem(tv = binding.tvJun, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
+                  }
+                  "07" ->
+                  {
+                      setMonthItem(tv = binding.tvJul, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
+                  }
+                  "08" ->
+                  {
+                      setMonthItem(tv = binding.tvAug, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
+                  }
+                  "09" ->
+                  {
+                      setMonthItem(tv = binding.tvSep, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
+                  }
+                  "10" ->
+                  {
+                      setMonthItem(tv = binding.tvOct, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
+                  }
+                  "11" ->
+                  {
+                      setMonthItem(tv = binding.tvNov, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
+                  }
+                  "12" ->
+                  {
+                      setMonthItem(tv = binding.tvDec, font = font, textColor = textColor, clickable = clickable, isSelected = isSelect)
+                  }
+              }
+          }
+      }
+
+      vm.selectedDate.observe(requireActivity()) { date ->
+          if(date.isEmpty()) return@observe
+          val searchDate = date.replace("년 ", "").replace("월", "")
+          SopoLog.d("DATE => $searchDate")
+          vm.refreshCompleteParcelsByDate(searchDate)
+      }
+  }
+
+  private fun getAdapter(inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter
+  {
+      return InquiryListAdapter(parcelType = inquiryItemTypeEnum).apply {
+          this.setOnParcelClickListener(getParcelClicked())
+      }
+  }
+
+  private fun setAdapters()
+  {
+      getAdapter(InquiryItemTypeEnum.Complete).let { adapter ->
+          completedParcelAdapter = adapter
+          binding.recyclerviewCompleteParcel.adapter = completedParcelAdapter
+          val animator = binding.recyclerviewCompleteParcel.itemAnimator as SimpleItemAnimator
+          animator.supportsChangeAnimations = false
+      }
+
+      ViewCompat.setNestedScrollingEnabled(binding.recyclerviewCompleteParcel, false)
+  }
+
+  // 활성화된 월 선택 세팅 setActivateMonthCalendar
+  private fun setActivateMonthCalendar()
+  {
+      SopoLog.d("호출")
+
+      val onGlobalLayoutListener = object: ViewTreeObserver.OnGlobalLayoutListener
+      {
+          override fun onGlobalLayout()
+          { // 'year spinner'높이 수치만큼 'month sector'의 상단 공백을 생성
+              val yearSpinnerHeight: Int = binding.linearMainYearSpinner.height
+
+              (binding.linearMainMonthSelector.layoutParams as FrameLayout.LayoutParams).apply {
+                  topMargin = yearSpinnerHeight
+              }
+
+              // 'year spinner'높이 수치만큼 'completed space'의 상단 공백을 생성
+              // 'month sector'높이 수치만큼 'completed space'의 높이변경
+              val monthSelectorHeight = binding.linearMainMonthSelector.height
+
+              (binding.vInnerCompletedSpace.layoutParams as LinearLayout.LayoutParams).apply {
+                  this.topMargin = yearSpinnerHeight
+                  this.height = monthSelectorHeight
+              }
+
+              // 뷰 조절 후 옵저빙 리스너 제거
+              binding.frameMainCompleteInquiry.viewTreeObserver.removeOnGlobalLayoutListener(this)
+          }
+      }
+
+      binding.frameMainCompleteInquiry.viewTreeObserver.addOnGlobalLayoutListener(onGlobalLayoutListener)
+  }
+
+  private fun getParcelClicked(): ParcelEventListener
+  {
+      return object: ParcelEventListener()
+      {
+          override fun onEnterParcelDetailClicked(view: View, type: InquiryStatusEnum, parcelId: Int)
+          {
+              super.onEnterParcelDetailClicked(view, type, parcelId)
+
+              TabCode.INQUIRY_DETAIL.FRAGMENT = ParcelDetailView.newInstance(parcelId)
+              FragmentManager.add(requireActivity(), TabCode.INQUIRY_DETAIL, InquiryMainFragment.viewId)
+          }
+
+          override fun onUpdateParcelAliasClicked(view: View, type: InquiryStatusEnum, parcelId: Int)
+          {
+              super.onUpdateParcelAliasClicked(view, type, parcelId)
+
+              *//*UpdateValueDialog{ alias ->
                     SopoLog.d("TEST INPUT DATA $alias")
                     vm.updateParcelAlias(parcelId, alias)
-                }.show(childFragmentManager, "")*/
+                }.show(childFragmentManager, "")*//*
 
                 showKeyboard(binding.includeBottomInputLayout.etInputText)
                 binding.includeBottomInputLayout.root.makeVisible()
@@ -430,57 +478,24 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
         }
     }
 
-    // 배송완료 화면에서 년/월을 눌렀을 시 팝업 메뉴가 나온다.
-    @SuppressLint("UseCompatLoadingForDrawables")
-    private fun drawCompletedParcelHistoryPopMenu(anchorView: View, histories: List<DeliveredParcelHistory>)
+
+
+    private fun setDefaultMonthSelector()
     {
-        val historyPopUpView: PopupMenuViewBinding =
-            PopupMenuViewBinding.inflate(LayoutInflater.from(context))
+        val (clickable, textColor, font) = Triple(first = false, second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300), third = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium))
 
-        val inquiryMenuItems =
-            MenuMapper.completeParcelStatusDTOToMenuItem(histories) as MutableList<InquiryMenuItem>
-
-        val popupMenuListAdapter = PopupMenuListAdapter(inquiryMenuItems)
-
-        historyPopUpView.recyclerviewInquiryPopupMenu.also {
-            it.adapter = popupMenuListAdapter
-            val dividerItemDecoration =
-                DividerItemDecoration(requireContext(), LinearLayoutManager.VERTICAL)
-            dividerItemDecoration.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.line_divider)!!)
-            it.addItemDecoration(dividerItemDecoration)
-
-            val historyPopUpItemOnClick = object: PopupMenuListAdapter.HistoryPopUpItemOnclick
-            {
-                override fun changeTimeCount(v: View, year: String)
-                {
-                    vm.changeCompletedParcelHistoryDate(year = year)
-                    historyPopUpWindow?.dismiss()
-                }
-            }
-
-            popupMenuListAdapter.setHistoryPopUpItemOnclick(historyPopUpItemOnClick)
-
-            it.scrollBarFadeDuration = 800
-        }
-
-        historyPopUpWindow = if(histories.size > 2)
-        {
-            PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F), SizeUtil.changeDpToPx(binding.root.context, 35 * 6F), true).apply {
-                lifecycleScope.launch(Dispatchers.Main) {
-                    showAsDropDown(anchorView, -80, 0, Gravity.CENTER)
-                }
-            }
-        }
-        else
-        {
-            PopupWindow(historyPopUpView.root, SizeUtil.changeDpToPx(binding.root.context, 160F), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
-
-                lifecycleScope.launch(Dispatchers.Main) {
-                    showAsDropDown(anchorView, -80, 0, Gravity.CENTER)
-                }
-
-            }
-        }
+        setMonthItem(tv = binding.tvJan, font = font, textColor = textColor, clickable = clickable)
+        setMonthItem(tv = binding.tvFeb, font = font, textColor = textColor, clickable = clickable)
+        setMonthItem(tv = binding.tvMar, font = font, textColor = textColor, clickable = clickable)
+        setMonthItem(tv = binding.tvApr, font = font, textColor = textColor, clickable = clickable)
+        setMonthItem(tv = binding.tvMay, font = font, textColor = textColor, clickable = clickable)
+        setMonthItem(tv = binding.tvJun, font = font, textColor = textColor, clickable = clickable)
+        setMonthItem(tv = binding.tvJul, font = font, textColor = textColor, clickable = clickable)
+        setMonthItem(tv = binding.tvAug, font = font, textColor = textColor, clickable = clickable)
+        setMonthItem(tv = binding.tvSep, font = font, textColor = textColor, clickable = clickable)
+        setMonthItem(tv = binding.tvOct, font = font, textColor = textColor, clickable = clickable)
+        setMonthItem(tv = binding.tvNov, font = font, textColor = textColor, clickable = clickable)
+        setMonthItem(tv = binding.tvDec, font = font, textColor = textColor, clickable = clickable)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -564,24 +579,6 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
 
     }
 
-    private fun setDefaultMonthSelector()
-    {
-        val (clickable, textColor, font) = Triple(first = false, second = ContextCompat.getColor(requireContext(), R.color.COLOR_GRAY_300), third = ResourcesCompat.getFont(requireContext(), R.font.pretendard_medium))
-
-        setMonthItem(tv = binding.tvJan, font = font, textColor = textColor, clickable = clickable)
-        setMonthItem(tv = binding.tvFeb, font = font, textColor = textColor, clickable = clickable)
-        setMonthItem(tv = binding.tvMar, font = font, textColor = textColor, clickable = clickable)
-        setMonthItem(tv = binding.tvApr, font = font, textColor = textColor, clickable = clickable)
-        setMonthItem(tv = binding.tvMay, font = font, textColor = textColor, clickable = clickable)
-        setMonthItem(tv = binding.tvJun, font = font, textColor = textColor, clickable = clickable)
-        setMonthItem(tv = binding.tvJul, font = font, textColor = textColor, clickable = clickable)
-        setMonthItem(tv = binding.tvAug, font = font, textColor = textColor, clickable = clickable)
-        setMonthItem(tv = binding.tvSep, font = font, textColor = textColor, clickable = clickable)
-        setMonthItem(tv = binding.tvOct, font = font, textColor = textColor, clickable = clickable)
-        setMonthItem(tv = binding.tvNov, font = font, textColor = textColor, clickable = clickable)
-        setMonthItem(tv = binding.tvDec, font = font, textColor = textColor, clickable = clickable)
-    }
-
     private fun setMonthItem(tv: TextView, font: Typeface?, textColor: Int, clickable: Boolean, isSelected: Boolean = false) =
         lifecycleScope.launch(Dispatchers.Main) {
             tv.apply {
@@ -591,26 +588,7 @@ class CompletedTypeFragment: BaseFragment<FragmentCompletedTypeBinding, Complete
                 isFocusable = clickable
                 this.isSelected = isSelected
             }
-        }
+        }*/
 
-    override fun onReselect()
-    {
-        Toast.makeText(requireContext(), "테스트 !!", Toast.LENGTH_LONG).show()
-    }
 
-    override fun onShowKeyboard()
-    {
-        super.onShowKeyboard()
-
-    }
-
-    override fun onHideKeyboard()
-    {
-        super.onHideKeyboard()
-        lifecycleScope.launch {
-            vm.refreshCompleteParcelsByDate(vm.selectedDate.value.toString())
-        }
-
-        binding.includeBottomInputLayout.root.makeGone()
-    }
-}
+//}

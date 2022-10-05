@@ -14,12 +14,13 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.viewModels
 import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.ParcelDetailViewBinding
 import com.delivery.sopo.databinding.StatusDisplayBinding
-import com.delivery.sopo.enums.DeliveryStatusEnum
+import com.delivery.sopo.enums.DeliveryStatus
 import com.delivery.sopo.extensions.*
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.SelectItem
@@ -28,19 +29,20 @@ import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.util.*
 import com.delivery.sopo.presentation.viewmodels.inquiry.ParcelDetailViewModel
 import com.delivery.sopo.presentation.views.adapter.TimeLineRecyclerViewAdapter
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.main.MainActivity
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewModel>()
 {
-    private val motherView: MainView by lazy { activity as MainView }
+    private val motherActivity: MainActivity by lazy { activity as MainActivity }
 
     override val layoutRes: Int = R.layout.parcel_detail_view
     override val mainLayout: View by lazy { binding.relativeMainInquiryDetail }
-    override val vm: ParcelDetailViewModel by viewModel()
+    override val vm: ParcelDetailViewModel by viewModels()
 
     var parcelId: Int = 0
 
@@ -68,13 +70,13 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
             addAction(IntentConst.Action.REGISTERED_COMPLETED_PARCEL)
         }
 
-        motherView.registerReceiver(broadcastReceiver, filter)
+        motherActivity.registerReceiver(broadcastReceiver, filter)
     }
 
     override fun onPause()
     {
         super.onPause()
-        motherView.unregisterReceiver(broadcastReceiver)
+        motherActivity.unregisterReceiver(broadcastReceiver)
     }
 
     override fun receiveData(bundle: Bundle)
@@ -218,14 +220,14 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         super.setObserve()
 
         activity ?: return
-        motherView.getCurrentPage().observe(this) {
+        motherActivity.getCurrentPage().observe(this) {
             if(it != 1) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
 
         vm.bottomSnackBar.observe(this) { type ->
-            motherView.onMake(type)
-            motherView.onShow()
+            motherActivity.onMake(type)
+            motherActivity.onShow()
         }
 
         vm.navigator.observe(this) { nav ->
@@ -279,7 +281,7 @@ class ParcelDetailView: BaseFragment<ParcelDetailViewBinding, ParcelDetailViewMo
         for(item in list)
         { // 해당 xml binding
 
-            if(item.item == DeliveryStatusEnum.NOT_REGISTERED.TITLE || item.item == DeliveryStatusEnum.ORPHANED.TITLE || item.item == DeliveryStatusEnum.ERROR.TITLE || item.item == DeliveryStatusEnum.INFORMATION_RECEIVED.TITLE)
+            if(item.item == DeliveryStatus.NOT_REGISTERED.TITLE || item.item == DeliveryStatus.ORPHANED.TITLE || item.item == DeliveryStatus.ERROR.TITLE || item.item == DeliveryStatus.INFORMATION_RECEIVED.TITLE)
             {
                 continue
             }

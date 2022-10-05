@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="vm"
+            type="com.delivery.sopo.presentation.viewmodels.inquiry.CompletedTypeViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintMainCompletedParcel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintCompletedType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="25dp"
+            app:layout_constraintBottom_toTopOf="@+id/rvCompletedParcel"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvCompletedParcelMonth"
+                style="@style/kor_H4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="26.81dp"
+                android:text="@{vm.dateSelector.displayCursorDate}"
+                android:textColor="@color/COLOR_GRAY_700"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="2022년5월" />
+
+            <ImageView
+                android:id="@+id/ivPreviousArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="22dp"
+                android:onClick='@{()->vm.onPreviousDate()}'
+                android:src="@drawable/ic_previous_thin_arrow_white_24"
+                android:visibility="@{vm.dateSelector.hasNext ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="@id/tvCompletedParcelMonth"
+                app:layout_constraintHorizontal_bias="1"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/tvCompletedParcelMonth"
+                app:layout_constraintTop_toTopOf="@id/tvCompletedParcelMonth"
+                tools:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/ivNextArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="22dp"
+                android:onClick='@{()->vm.onNextDate()}'
+                android:src="@drawable/ic_next_thin_arrow_white_24"
+                android:visibility="@{vm.dateSelector.hasPrevious ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="@id/tvCompletedParcelMonth"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintLeft_toRightOf="@id/tvCompletedParcelMonth"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvCompletedParcelMonth" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCompletedParcel"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="15dp"
+            android:background="@color/COLOR_GRAY_50"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/constraintCompletedType"
+            tools:itemCount="5"
+            tools:listitem="@layout/item_completed_parcel" />
+
+        <LinearLayout
+            android:id="@+id/linear_recently_parcel_viewer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="18dp"
+            android:background="@drawable/border_15dp_blue_rounder"
+            android:backgroundTint="@color/COLOR_MAIN_700"
+            android:orientation="horizontal"
+            android:paddingLeft="12.78dp"
+            android:paddingTop="5.85dp"
+            android:paddingRight="15.57dp"
+            android:paddingBottom="6.68dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+
+            <ImageView
+                android:id="@+id/ivRecentlyParcelViewer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/ic_recycle_white_24" />
+
+            <TextView
+                android:id="@+id/tvRecentlyParcelViewer"
+                style="@style/kor_H5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="최근 업데이트된 택배만 보기"
+                android:textColor="@color/MAIN_WHITE" />
+
+        </LinearLayout>
+
+
+        <include
+            android:id="@+id/include_bottom_input_layout"
+            layout="@layout/include_bottom_input_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:hint='@{"물품명을 설정해주세요 ･ 최대 25자"}'
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

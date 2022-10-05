@@ -2,22 +2,23 @@ package com.delivery.sopo.presentation.login
 
 import android.content.Intent
 import android.view.View
+import androidx.activity.viewModels
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.LoginViewBinding
-import com.delivery.sopo.extensions.moveToActivity
-import com.delivery.sopo.extensions.moveToActivityWithFinish
+import com.delivery.sopo.extensions.moveActivity
 import com.delivery.sopo.models.base.BaseView
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.presentation.views.login.ResetPasswordView
-import com.delivery.sopo.presentation.views.main.MainView
-import com.delivery.sopo.presentation.views.signup.RegisterNicknameView
+import com.delivery.sopo.presentation.views.main.MainActivity
 import com.delivery.sopo.util.ui_util.TextInputUtil
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class LoginView: BaseView<LoginViewBinding, LoginViewModel>()
 {
     override val layoutRes: Int = R.layout.login_view
-    override val vm: LoginViewModel by viewModel()
+    override val vm: LoginViewModel by viewModels()
     override val mainLayout: View by lazy { binding.constraintMainLogin }
 
     override fun setObserve()
@@ -33,17 +34,19 @@ class LoginView: BaseView<LoginViewBinding, LoginViewModel>()
             {
                 NavigatorConst.Screen.RESET_PASSWORD ->
                 {
-                    moveToActivity(ResetPasswordView::class.java)
+                    moveActivity(ResetPasswordView::class.java)
                 }
                 NavigatorConst.Screen.UPDATE_NICKNAME ->
                 {
-                    moveToActivityWithFinish(RegisterNicknameView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    finish()
+                    moveActivity(ResetPasswordView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK) {
+                        finish()
+                    }
                 }
                 NavigatorConst.Screen.MAIN ->
                 {
-                    moveToActivityWithFinish(MainView::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                    finish()
+                    moveActivity(MainActivity::class.java, Intent.FLAG_ACTIVITY_CLEAR_TASK) {
+                        finish()
+                    }
                 }
             }
         }

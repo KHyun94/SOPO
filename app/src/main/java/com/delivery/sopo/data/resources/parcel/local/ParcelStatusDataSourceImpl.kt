@@ -2,7 +2,7 @@ package com.delivery.sopo.data.resources.parcel.local
 
 import androidx.lifecycle.LiveData
 import com.delivery.sopo.consts.StatusConst
-import com.delivery.sopo.data.database.room.dao.ParcelStatusDAO
+import com.delivery.sopo.data.database.room.dao.ParcelStatusDao
 import com.delivery.sopo.data.database.room.entity.ParcelStatusEntity
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
@@ -10,7 +10,7 @@ import com.delivery.sopo.util.TimeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class ParcelStatusDataSourceImpl(private val parcelStatusDao: ParcelStatusDAO): ParcelStatusDataSource
+class ParcelStatusDataSourceImpl(private val parcelStatusDao: ParcelStatusDao): ParcelStatusDataSource
 {
     override fun get(): List<Parcel.Status>
     {

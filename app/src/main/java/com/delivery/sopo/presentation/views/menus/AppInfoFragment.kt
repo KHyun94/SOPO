@@ -1,6 +1,7 @@
 package com.delivery.sopo.presentation.views.menus
 
 import android.view.View
+import androidx.fragment.app.viewModels
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.AppInfoViewBinding
@@ -10,16 +11,18 @@ import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.presentation.viewmodels.menus.AppInfoViewModel
 import com.delivery.sopo.presentation.viewmodels.menus.MenuMainFragment
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.main.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class AppInfoFragment: BaseFragment<AppInfoViewBinding, AppInfoViewModel>()
 {
     override val layoutRes: Int = R.layout.app_info_view
-    override val vm: AppInfoViewModel by viewModel()
+    override val vm: AppInfoViewModel by viewModels()
     override val mainLayout: View by lazy { binding.constraintMainAppInfo }
 
-    private val parentView: MainView by lazy { activity as MainView }
+    private val parentActivity: MainActivity by lazy { activity as MainActivity }
 
     override fun setBeforeBinding()
     {
@@ -43,7 +46,7 @@ class AppInfoFragment: BaseFragment<AppInfoViewBinding, AppInfoViewModel>()
         super.setObserve()
 
         activity ?: return
-        parentView.getCurrentPage().observe(this) {
+        parentActivity.getCurrentPage().observe(this) {
             if(it != 2) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
@@ -53,7 +56,7 @@ class AppInfoFragment: BaseFragment<AppInfoViewBinding, AppInfoViewModel>()
             {
                 NavigatorConst.Event.BACK ->
                 {
-                    FragmentManager.refreshMove(parentView, TabCode.MY_MENU_MAIN.apply {
+                    FragmentManager.refreshMove(parentActivity, TabCode.MY_MENU_MAIN.apply {
                         FRAGMENT = MenuFragment.newInstance()
                     }, MenuMainFragment.viewId)
                 }

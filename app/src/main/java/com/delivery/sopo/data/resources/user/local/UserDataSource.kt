@@ -1,7 +1,6 @@
 package com.delivery.sopo.data.resources.user.local
 
-import com.delivery.sopo.models.PersonalMessage
-import kotlinx.coroutines.flow.Flow
+import com.delivery.sopo.enums.SettingEnum
 
 interface UserDataSource
 {
@@ -50,6 +49,8 @@ interface UserDataSource
     suspend fun getDisturbEndTime(): String
     suspend fun setDisturbEndTime(endTime: String)
 
-//    fun clearUserDataBase()
+    suspend fun getPushAlarmType(): String
+    suspend fun setPushAlarmType(pushAlarmType: SettingEnum.PushAlarmType)
 
+    suspend fun insertUserAccount(username: String, userPassword: String)
 }

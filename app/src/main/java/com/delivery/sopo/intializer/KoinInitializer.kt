@@ -21,7 +21,7 @@ class KoinInitializer : Initializer<KoinApplication>
     {
         return startKoin {
             androidContext(context)
-            modules(listOf(apiModule, serviceModule, viewModelModule, useCaseModule, sourceModule, dbModule))
+//            modules(listOf(apiModule, serviceModule, viewModelModule, useCaseModule, sourceModule, dbModule))
         }
     }
 

@@ -1,16 +1,11 @@
 package com.delivery.sopo.models.parcel
 
-import android.view.View
 import com.delivery.sopo.enums.CarrierEnum
-import com.delivery.sopo.enums.DeliveryStatusEnum
-import com.delivery.sopo.enums.SnackBarEnum
-import com.delivery.sopo.enums.SnackBarType
+import com.delivery.sopo.enums.DeliveryStatus
 import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.TimeUtil
-import com.delivery.sopo.util.ui_util.CustomSnackBar
-import com.delivery.sopo.util.ui_util.OnSnackBarClickListener
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
@@ -32,7 +27,7 @@ class Parcel
             @SerializedName("reported") var reported: Boolean): Serializable
     {
         fun isDelivered(): Boolean {
-            return deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
+            return deliveryStatus == DeliveryStatus.DELIVERED.CODE
         }
 
         fun getDeliveredAlarm(): String?
@@ -45,7 +40,7 @@ class Parcel
         }
     }
 
-    data class Detail(val regDt: String, val alias: String, val carrier: Carrier, val waybillNum: String, val deliverStatus: DeliveryStatusEnum?, val timeLineProgresses: MutableList<TimeLineProgress>)
+    data class Detail(val regDt: String, val alias: String, val carrier: Carrier, val waybillNum: String, val deliverStatus: DeliveryStatus?, val timeLineProgresses: MutableList<TimeLineProgress>)
     {
         fun changeRegDtFormat(): String
         {
@@ -61,15 +56,8 @@ class Parcel
             @SerializedName("updated") val updated: Boolean)
 
     data class Register(
-            @SerializedName("waybillNum") var waybillNum: String?,
-            @SerializedName("carrier") var carrier: CarrierEnum?,
-            @SerializedName("alias") var alias: String?): Serializable
-    {
-        fun setParcelAlias(alias: String)
-        {
-            this.alias = alias
-        }
-    }
-
+            @SerializedName("waybillNum") val waybillNum: String,
+            @SerializedName("carrier") val carrier: CarrierEnum? = null,
+            @SerializedName("alias") val alias: String? = null): Serializable
 }
 

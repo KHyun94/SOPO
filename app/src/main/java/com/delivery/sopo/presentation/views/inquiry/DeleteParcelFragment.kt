@@ -13,6 +13,7 @@ import android.widget.PopupWindow
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -33,23 +34,24 @@ import com.delivery.sopo.presentation.viewmodels.inquiry.DeleteParcelViewModel
 import com.delivery.sopo.presentation.views.adapter.InquiryListAdapter
 import com.delivery.sopo.presentation.views.adapter.PopupMenuListAdapter
 import com.delivery.sopo.presentation.views.dialog.CommonDialog
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.main.MainActivity
 import com.delivery.sopo.util.AnimationUtil
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SizeUtil
 import com.delivery.sopo.util.SopoLog
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParcelViewModel>()
 {
     override val layoutRes: Int = R.layout.fragment_delete_parcel
-    override val vm: DeleteParcelViewModel by viewModel()
+    override val vm: DeleteParcelViewModel by viewModels()
     override val mainLayout: View by lazy { binding.constraintMainInquiry }
 
-    private val parentView: MainView by lazy { activity as MainView }
+    private val parentActivity: MainActivity by lazy { activity as MainActivity }
 
     // 곧 도착 택배 리스트 adapter, 등록된 택배(진행 중) 리스트 adapter, 도착 완료된 택배 리스트 adapter
     private lateinit var soonArrivalParcelAdapter: InquiryListAdapter
@@ -68,7 +70,7 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
 
     override fun setBeforeBinding()
     {
-        parentView.hideTab()
+        parentActivity.hideTab()
 
         useCommonBackPressListener(isUseCommon = true)
 
@@ -79,7 +81,7 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
                 super.onBackPressed()
 
                 TabCode.INQUIRY.FRAGMENT = InquiryFragment.newInstance(returnType = 1)
-                FragmentManager.move(parentView, TabCode.INQUIRY, InquiryMainFragment.viewId)
+                FragmentManager.move(parentActivity, TabCode.INQUIRY, InquiryMainFragment.viewId)
             }
         }
     }
@@ -101,9 +103,9 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
         updateCompletedDateSector()
     }
 
-    private fun getAdapter(cntOfSelectedForDelete: MutableLiveData<Int>, inquiryItemTypeEnum: InquiryItemTypeEnum): InquiryListAdapter
+    private fun getAdapter(cntOfSelectedForDelete: MutableLiveData<Int>, inquiryStatus: InquiryStatus): InquiryListAdapter
     {
-        return InquiryListAdapter(cntOfSelectedItemForDelete = cntOfSelectedForDelete, parcelType = inquiryItemTypeEnum).apply {
+        return InquiryListAdapter(cntOfSelectedItemForDelete = cntOfSelectedForDelete, parcelType = inquiryStatus).apply {
             this.setOnParcelClickListener(getParcelClicked())
             changeParcelDeleteMode(true)
         }
@@ -111,20 +113,20 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
 
     private fun setAdapters()
     {
-        getAdapter(vm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Soon).let { adapter ->
+        getAdapter(vm.cntOfSelectedItemForDelete, InquiryStatus.Soon).let { adapter ->
             soonArrivalParcelAdapter = adapter
             binding.recyclerviewSoonArrival.adapter = soonArrivalParcelAdapter
             val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
             animator.supportsChangeAnimations = false
         }
 
-        getAdapter(vm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Registered).let { adapter ->
+        getAdapter(vm.cntOfSelectedItemForDelete, InquiryStatus.Registered).let { adapter ->
             registeredParcelAdapter = adapter
             binding.recyclerviewRegisteredParcel.adapter = registeredParcelAdapter
             val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
             animator.supportsChangeAnimations = false
         }
-        getAdapter(vm.cntOfSelectedItemForDelete, InquiryItemTypeEnum.Complete).let { adapter ->
+        getAdapter(vm.cntOfSelectedItemForDelete, InquiryStatus.Complete).let { adapter ->
             completedParcelAdapter = adapter
             binding.recyclerviewCompleteParcel.adapter = completedParcelAdapter
             val animator = binding.recyclerviewSoonArrival.itemAnimator as SimpleItemAnimator
@@ -145,7 +147,7 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
         //            }
         //        }
 
-        vm.inquiryStatus.observe(parentView) {
+        vm.inquiryStatus.observe(parentActivity) {
             if(it == InquiryStatusEnum.COMPLETE) vm.getCompleteParcelMonth()
         }
 
@@ -156,7 +158,7 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
                 NavigatorEnum.INQUIRY_PARCEL ->
                 {
                     TabCode.INQUIRY.FRAGMENT = InquiryFragment.newInstance(returnType = 1)
-                    FragmentManager.move(parentView, TabCode.INQUIRY, InquiryMainFragment.viewId)
+                    FragmentManager.move(parentActivity, TabCode.INQUIRY, InquiryMainFragment.viewId)
                 }
                 NavigatorEnum.DELETE_PARCEL ->
                 {
@@ -170,7 +172,7 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
                             vm.updateParcelToDeleteParcels(deleteParcelIds)
 
                             TabCode.INQUIRY.FRAGMENT = InquiryFragment.newInstance(returnType = 2)
-                            FragmentManager.move(parentView, TabCode.INQUIRY, InquiryMainFragment.viewId)
+                            FragmentManager.move(parentActivity, TabCode.INQUIRY, InquiryMainFragment.viewId)
                         }
                         dialog.dismiss()
                     }, { dialog ->
@@ -184,7 +186,7 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
 
         }
 
-        vm.isSelectAllItems.observe(parentView) { isSelect ->
+        vm.isSelectAllItems.observe(parentActivity) { isSelect ->
             if(vm.getCurrentScreenStatus() == InquiryStatusEnum.ONGOING)
             {
                 soonArrivalParcelAdapter.setSelectAll(isSelect)
@@ -198,7 +200,7 @@ class DeleteParcelFragment: BaseFragment<FragmentDeleteParcelBinding, DeleteParc
 
         var isShowDeleteSnackBar = false
 
-        vm.cntOfSelectedItemForDelete.observe(parentView) { cnt ->
+        vm.cntOfSelectedItemForDelete.observe(parentActivity) { cnt ->
 
             SopoLog.d("삭제 예정 카운트 $cnt")
 

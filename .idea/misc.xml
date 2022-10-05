@@ -46,6 +46,7 @@
         <entry key="app/src/main/res/drawable/ripple_circle.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/selector_inquiry_tab.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/selector_inquiry_tab_gray_scale.xml" value="0.206" />
+        <entry key="app/src/main/res/drawable/selector_main_tab_color.xml" value="0.2795" />
         <entry key="app/src/main/res/drawable/selector_tab_indicator.xml" value="0.1135" />
         <entry key="app/src/main/res/drawable/selector_tab_indicator_gray_scale.xml" value="0.206" />
         <entry key="app/src/main/res/drawable/selector_tab_indicator_white_scale.xml" value="0.2165" />
@@ -59,6 +60,7 @@
         <entry key="app/src/main/res/layout/dialog_logout.xml" value="0.20116120218579234" />
         <entry key="app/src/main/res/layout/fragment_account_manager.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_completed_type.xml" value="0.22266009852216748" />
+        <entry key="app/src/main/res/layout/fragment_completed_type_parcel.xml" value="0.16" />
         <entry key="app/src/main/res/layout/fragment_confirm_parcel.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_delete_parcel.xml" value="0.19834710743801653" />
         <entry key="app/src/main/res/layout/fragment_faq.xml" value="0.1" />
@@ -90,8 +92,13 @@
         <entry key="app/src/main/res/layout/item_completed_parcel.xml" value="0.24391891891891893" />
         <entry key="app/src/main/res/layout/item_img.xml" value="0.33" />
         <entry key="app/src/main/res/layout/item_inquiry_tab.xml" value="0.20355191256830601" />
-        <entry key="app/src/main/res/layout/item_ongoing_parcel.xml" value="0.4601806640625" />
+        <entry key="app/src/main/res/layout/item_label.xml" value="0.22814207650273224" />
+        <entry key="app/src/main/res/layout/item_main_tab.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/item_ongoing_parcel.xml" value="0.6329935125115848" />
+        <entry key="app/src/main/res/layout/item_parcel_cnt.xml" value="0.22814207650273224" />
+        <entry key="app/src/main/res/layout/item_selector_date.xml" value="0.22814207650273224" />
         <entry key="app/src/main/res/layout/item_time_tab.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/item_title.xml" value="0.25" />
         <entry key="app/src/main/res/layout/lock_screen_view.xml" value="0.30245666503906254" />
         <entry key="app/src/main/res/layout/login_select_view.xml" value="0.25" />
         <entry key="app/src/main/res/layout/login_view.xml" value="0.18" />
@@ -100,6 +107,7 @@
         <entry key="app/src/main/res/layout/parcel_detail_view.xml" value="0.17725409836065573" />
         <entry key="app/src/main/res/layout/parcel_full_detail_item.xml" value="0.14822235107421877" />
         <entry key="app/src/main/res/layout/parcel_semi_detail_item.xml" value="0.39156626506024095" />
+        <entry key="app/src/main/res/layout/register_main_frame.xml" value="0.11977438619774386" />
         <entry key="app/src/main/res/layout/register_nickname_view.xml" value="0.23325316215473446" />
         <entry key="app/src/main/res/layout/reset_password_view.xml" value="0.1" />
         <entry key="app/src/main/res/layout/set_not_disturb_time_dialog.xml" value="0.25" />

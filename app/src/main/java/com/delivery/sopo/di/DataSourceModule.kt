@@ -2,14 +2,21 @@ package com.delivery.sopo.di
 
 import android.content.Context
 import com.delivery.sopo.data.database.datastore.DataStoreManager
-import com.delivery.sopo.data.database.room.dao.AuthTokenDao
-import com.delivery.sopo.data.database.shared.UserSharedPrefHelper
+import com.delivery.sopo.data.database.room.dao.ParcelDao
+import com.delivery.sopo.data.database.room.dao.ParcelStatusDao
+import com.delivery.sopo.data.networks.serivces.ParcelService
 import com.delivery.sopo.data.networks.serivces.SignUpService
 import com.delivery.sopo.data.networks.serivces.UserService
 import com.delivery.sopo.data.resources.auth.local.AuthDataSource
 import com.delivery.sopo.data.resources.auth.local.AuthDataSourceImpl
 import com.delivery.sopo.data.resources.auth.remote.AuthRemoteDataSource
 import com.delivery.sopo.data.resources.auth.remote.AuthRemoteDataSourceImpl
+import com.delivery.sopo.data.resources.parcel.local.ParcelDataSource
+import com.delivery.sopo.data.resources.parcel.local.ParcelDataSourceImpl
+import com.delivery.sopo.data.resources.parcel.local.ParcelStatusDataSource
+import com.delivery.sopo.data.resources.parcel.local.ParcelStatusDataSourceImpl
+import com.delivery.sopo.data.resources.parcel.remote.ParcelRemoteDataSource
+import com.delivery.sopo.data.resources.parcel.remote.ParcelRemoteDataSourceImpl
 import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.data.resources.user.local.UserDataSourceImpl
 import com.delivery.sopo.data.resources.user.remote.SignUpRemoteDataSource
@@ -41,11 +48,11 @@ object DataSourceModule
     @Provides
     @Singleton
     fun provideAuthDataSource(
-        authTokenDao: AuthTokenDao,
+        dataStoreManager: DataStoreManager,
         @DefaultDispatcher dispatcher: CoroutineDispatcher
     ): AuthDataSource
     {
-        return AuthDataSourceImpl(authTokenDao, dispatcher)
+        return AuthDataSourceImpl(dataStoreManager, dispatcher)
     }
 
     @Provides
@@ -61,9 +68,9 @@ object DataSourceModule
 
     @Provides
     @Singleton
-    fun provideUserDataSource(dataStoreManager: DataStoreManager): UserDataSource
+    fun provideUserDataSource(dataStoreManager: DataStoreManager, @DefaultDispatcher dispatcher: CoroutineDispatcher): UserDataSource
     {
-        return UserDataSourceImpl(dataStoreManager = dataStoreManager)
+        return UserDataSourceImpl(dataStoreManager = dataStoreManager, dispatcher = dispatcher)
     }
 
     @Provides
@@ -75,4 +82,27 @@ object DataSourceModule
         return UserRemoteDataSourceImpl(userPubService = userPubService, userPriService = userPriService)
     }
 
+
+    @Provides
+    @Singleton
+    fun provideParcelDataSource(parcelDao: ParcelDao): ParcelDataSource
+    {
+        return ParcelDataSourceImpl(parcelDao)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideParcelRemoteDataSource(@PrivateAccess parcelService: ParcelService): ParcelRemoteDataSource
+    {
+        return ParcelRemoteDataSourceImpl(parcelService)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideParcelStatusDataSource(parcelStatusDao: ParcelStatusDao): ParcelStatusDataSource
+    {
+        return ParcelStatusDataSourceImpl(parcelStatusDao)
+    }
 }

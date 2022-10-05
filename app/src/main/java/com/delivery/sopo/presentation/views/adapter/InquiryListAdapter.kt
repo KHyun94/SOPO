@@ -16,8 +16,8 @@ import com.delivery.sopo.BR
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.ItemCompletedParcelBinding
 import com.delivery.sopo.databinding.ItemOngoingParcelBinding
-import com.delivery.sopo.enums.DeliveryStatusEnum
-import com.delivery.sopo.enums.InquiryItemTypeEnum
+import com.delivery.sopo.enums.DeliveryStatus
+import com.delivery.sopo.enums.InquiryStatus
 import com.delivery.sopo.enums.InquiryStatusEnum
 import com.delivery.sopo.extensions.toEllipsis
 import com.delivery.sopo.interfaces.listener.OnParcelClickListener
@@ -27,7 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mutableListOf(), private val parcelType: InquiryItemTypeEnum, private val cntOfSelectedItemForDelete: MutableLiveData<Int>? = null): RecyclerView.Adapter<RecyclerView.ViewHolder>()
+class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mutableListOf(), private val parcelType: InquiryStatus, private val cntOfSelectedItemForDelete: MutableLiveData<Int>? = null): RecyclerView.Adapter<RecyclerView.ViewHolder>()
 {
     private lateinit var parcelClickListener: OnParcelClickListener
     private var isRemoveMode = false
@@ -76,12 +76,12 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
     {
         return when(parcelType)
         {
-            InquiryItemTypeEnum.Soon, InquiryItemTypeEnum.Registered ->
+            InquiryStatus.Soon, InquiryStatus.Registered ->
             {
                 val binding = bindView<ItemOngoingParcelBinding>(LayoutInflater.from(parent.context), R.layout.item_ongoing_parcel, parent)
                 OngoingViewHolder(binding)
             }
-            InquiryItemTypeEnum.Complete ->
+            InquiryStatus.Complete ->
             {
                 val binding = bindView<ItemCompletedParcelBinding>(LayoutInflater.from(parent.context), R.layout.item_completed_parcel, parent)
                 CompleteViewHolder(binding)
@@ -129,7 +129,7 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
                         }
                         else ->
                         {
-                            if(item.parcel.deliveryStatus != DeliveryStatusEnum.ORPHANED.CODE)
+                            if(item.parcel.deliveryStatus != DeliveryStatus.ORPHANED.CODE)
                             {
                                 return@setOnClickListener parcelClickListener.onEnterParcelDetailClicked(view = v, type = InquiryStatusEnum.ONGOING, parcelId = item.parcel.parcelId)
                             }
@@ -235,8 +235,7 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
         binding.constraintDeliveryStatusBack.visibility = GONE
         binding.constraintDeliveryStatusFrontDelete.visibility = VISIBLE
         binding.constraintDeliveryStatusBackDelete.visibility = VISIBLE
-        binding.linearParentListItemRegister.background =
-            ContextCompat.getDrawable(binding.root.context, R.drawable.border_all_rounded_11dp_blue)
+        binding.linearParentListItemRegister.background = ContextCompat.getDrawable(binding.root.context, R.drawable.border_all_rounded_11dp_blue)
     }
 
     private fun setOngoingParcelItemByDefault(binding: ItemOngoingParcelBinding)
@@ -291,7 +290,7 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
         if(list == null) return
 
         val newParcels = list.filter {
-            it.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE
+            it.parcel.deliveryStatus == DeliveryStatus.DELIVERED.CODE
         }.toMutableList()
 
         val diffCallback = DiffCallback(parcels, newParcels)
@@ -309,19 +308,19 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
 
         val newParcels = when(parcelType)
         {
-            InquiryItemTypeEnum.Soon ->
+            InquiryStatus.Soon ->
             {
-                list.filter { it.parcel.deliveryStatus == DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE }
+                list.filter { it.parcel.deliveryStatus == DeliveryStatus.OUT_FOR_DELIVERY.CODE }
                     .toMutableList()
             }
-            InquiryItemTypeEnum.Registered ->
+            InquiryStatus.Registered ->
             {
-                list.filter { it.parcel.deliveryStatus != DeliveryStatusEnum.OUT_FOR_DELIVERY.CODE && it.parcel.deliveryStatus != DeliveryStatusEnum.DELIVERED.CODE }
+                list.filter { it.parcel.deliveryStatus != DeliveryStatus.OUT_FOR_DELIVERY.CODE && it.parcel.deliveryStatus != DeliveryStatus.DELIVERED.CODE }
                     .toMutableList()
             }
-            InquiryItemTypeEnum.Complete ->
+            InquiryStatus.Complete ->
             {
-                list.filter { it.parcel.deliveryStatus == DeliveryStatusEnum.DELIVERED.CODE }
+                list.filter { it.parcel.deliveryStatus == DeliveryStatus.DELIVERED.CODE }
                     .toMutableList()
             }
         }
@@ -339,5 +338,15 @@ class InquiryListAdapter(private var parcels: MutableList<InquiryListItem> = mut
     fun getListSize(): Int = parcels.size
 
     fun getList(): MutableList<InquiryListItem> = parcels
+
+  /*  fun isHeader(position: Int) = parcels[position].isHeader
+
+    fun getHeaderView(list: RecyclerView, position: Int): View? {
+        val item = items[position]
+
+        val binding = Item2Binding.inflate(LayoutInflater.from(list.context), list, false)
+        binding.date.text = "${item.date}월"
+        return binding.root
+    }*/
 
 }

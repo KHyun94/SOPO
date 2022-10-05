@@ -27,6 +27,7 @@ import com.delivery.sopo.util.ui_util.SopoLoadingBar
 import com.delivery.sopo.presentation.views.dialog.LogoutDialog
 import com.delivery.sopo.util.KeyboardVisibilityUtil
 import com.delivery.sopo.util.ui_util.BottomNotificationBar
+import com.orhanobut.logger.Logger
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 import kotlin.system.exitProcess
@@ -196,6 +197,7 @@ abstract class BaseFragment<T: ViewDataBinding, R: BaseViewModel>: Fragment(), K
         }
 
         vm.errorSnackBar.observe(viewLifecycleOwner) {
+            Logger.e("SnackBar $it")
             CustomSnackBar.make(mainLayout, it, Unit, SnackBarEnum.ERROR).show()
         }
 

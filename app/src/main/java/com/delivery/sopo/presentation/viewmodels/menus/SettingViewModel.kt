@@ -5,15 +5,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.data.repositories.local.app_password.AppPasswordRepository
-import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
+import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.enums.SettingEnum
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.util.SopoLog
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SettingViewModel(
-        private val userLocalRepo: UserLocalRepository,
+@HiltViewModel
+class SettingViewModel @Inject constructor(
+        private val userDataSource: UserDataSource,
         private val appPasswordRepo: AppPasswordRepository) : BaseViewModel()
 {
     private val _navigator = MutableLiveData<String>()
@@ -39,18 +42,21 @@ class SettingViewModel(
 
     init
     {
-        setPushAlarmType(userLocalRepo.getPushAlarmType())
+        viewModelScope.launch {
+            val alarmType = SettingEnum.PushAlarmType.valueOf(userDataSource.getPushAlarmType())
+            setPushAlarmType(alarmType)
 
-        notDisturbStartTime.postValue(userLocalRepo.getDisturbStartTime())
-        notDisturbEndTime.postValue(userLocalRepo.getDisturbEndTime())
+            notDisturbStartTime.postValue(userDataSource.getDisturbStartTime())
+            notDisturbEndTime.postValue(userDataSource.getDisturbEndTime())
 
-        if(userLocalRepo.getDisturbStartTime() != "" && userLocalRepo.getDisturbEndTime() != "")
-        {
-            setNotDisturbTime("${userLocalRepo.getDisturbStartTime()} ~ ${userLocalRepo.getDisturbEndTime()}" )
-        }
-        else
-        {
-            setNotDisturbTime("")
+            if(userDataSource.getDisturbStartTime() != "" && userDataSource.getDisturbEndTime() != "")
+            {
+                setNotDisturbTime("${userDataSource.getDisturbStartTime()} ~ ${userDataSource.getDisturbEndTime()}" )
+            }
+            else
+            {
+                setNotDisturbTime("")
+            }
         }
     }
 
@@ -58,16 +64,14 @@ class SettingViewModel(
         _navigator.postValue(navigator)
     }
 
-    fun setNotDisturbStartTime(notDisturbStartTime: String)
-    {
-        this.notDisturbStartTime.postValue(notDisturbStartTime)
-        userLocalRepo.setDisturbStartTime(notDisturbStartTime)
+    fun setNotDisturbStartTime(notDisturbStartTime: String) = viewModelScope.launch{
+        this@SettingViewModel.notDisturbStartTime.postValue(notDisturbStartTime)
+        userDataSource.setDisturbStartTime(notDisturbStartTime)
     }
 
-    fun setNotDisturbEndTime(notDisturbEndTime: String)
-    {
-        this.notDisturbEndTime.postValue(notDisturbEndTime)
-        userLocalRepo.setDisturbEndTime(notDisturbEndTime)
+    fun setNotDisturbEndTime(notDisturbEndTime: String) = viewModelScope.launch{
+        this@SettingViewModel.notDisturbEndTime.postValue(notDisturbEndTime)
+        userDataSource.setDisturbEndTime(notDisturbEndTime)
     }
 
     fun setNotDisturbTime(notDisturbTime: String)
@@ -75,10 +79,9 @@ class SettingViewModel(
         _notDisturbTime.postValue(notDisturbTime)
     }
 
-    fun setPushAlarmType(pushAlarmType: SettingEnum.PushAlarmType)
-    {
+    fun setPushAlarmType(pushAlarmType: SettingEnum.PushAlarmType) = viewModelScope.launch{
         _pushAlarmType.postValue(pushAlarmType)
-        userLocalRepo.setPushAlarmType(pushAlarmType)
+        userDataSource.setPushAlarmType(pushAlarmType)
     }
 
     fun setAppPassword(){

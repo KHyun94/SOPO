@@ -19,7 +19,7 @@
             android:paddingHorizontal="10sp">
 
             <TextView
-                android:id="@+id/tv_title"
+                android:id="@+id/tvTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"

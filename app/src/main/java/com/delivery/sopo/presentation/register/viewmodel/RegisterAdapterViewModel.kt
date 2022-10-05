@@ -1,4 +1,4 @@
-package com.delivery.sopo.presentation.viewmodels.registesrs
+package com.delivery.sopo.presentation.register.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.delivery.sopo.models.Carrier

@@ -1,12 +1,10 @@
 package com.delivery.sopo.data.networks.serivces
 
 import com.delivery.sopo.data.models.AuthToken
-import com.delivery.sopo.data.networks.NetworkManager
-import com.delivery.sopo.enums.NetworkEnum
-import com.delivery.sopo.models.user.ResetPassword
 import com.delivery.sopo.models.UserDetail
 import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.user.ResetAuthCode
+import com.delivery.sopo.models.user.ResetPassword
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -93,10 +91,5 @@ interface UserService
     @Headers("Accept: application/json")
     suspend fun deleteUser(@Body reason: Map<String, String>) : Response<Unit>
 
-    companion object{
-        fun create(networkType: NetworkEnum): UserService
-        {
-            return NetworkManager.setLoginMethod(networkType, UserService::class.java)
-        }
-    }
+
 }

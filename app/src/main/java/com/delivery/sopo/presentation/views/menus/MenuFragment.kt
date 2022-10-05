@@ -1,6 +1,7 @@
 package com.delivery.sopo.presentation.views.menus
 
 import android.view.View
+import androidx.fragment.app.viewModels
 import com.delivery.sopo.R
 import com.delivery.sopo.databinding.FragmentMenuBinding
 import com.delivery.sopo.enums.TabCode
@@ -10,17 +11,19 @@ import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.presentation.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.presentation.viewmodels.menus.MenuViewModel
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.main.MainActivity
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@AndroidEntryPoint
 class MenuFragment: BaseFragment<FragmentMenuBinding, MenuViewModel>()
 {
-    override val vm: MenuViewModel by viewModel()
+    override val vm: MenuViewModel by viewModels()
     override val layoutRes: Int = R.layout.fragment_menu
     override val mainLayout: View by lazy { binding.constraintMainMenu }
 
-    private  val parentView: MainView by lazy { (requireActivity() as MainView) }
+    private  val parentActivity: MainActivity by lazy { (requireActivity() as MainActivity) }
 
     override fun setBeforeBinding()
     {
@@ -45,7 +48,7 @@ class MenuFragment: BaseFragment<FragmentMenuBinding, MenuViewModel>()
         super.setObserve()
 
         activity ?: return
-        parentView.getCurrentPage().observe(this) {
+        parentActivity.getCurrentPage().observe(this) {
             if(it != 2) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
@@ -81,7 +84,7 @@ class MenuFragment: BaseFragment<FragmentMenuBinding, MenuViewModel>()
                 else -> throw Exception("Menu is null")
             }
 
-            FragmentManager.move(parentView, TabCode.MY_MENU_SUB, MenuMainFragment.viewId)
+            FragmentManager.move(parentActivity, TabCode.MY_MENU_SUB, MenuMainFragment.viewId)
         }
     }
 

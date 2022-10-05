@@ -9,6 +9,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.delivery.sopo.R
 import com.delivery.sopo.presentation.consts.NavigatorConst
@@ -23,22 +24,23 @@ import com.delivery.sopo.models.base.BaseFragment
 import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.presentation.viewmodels.menus.MenuMainFragment
 import com.delivery.sopo.presentation.viewmodels.menus.SettingViewModel
-import com.delivery.sopo.presentation.views.main.MainView
+import com.delivery.sopo.presentation.views.main.MainActivity
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.WindowUtil
 import com.google.android.material.tabs.TabLayout
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
+import dagger.hilt.android.AndroidEntryPoint
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import kotlin.math.abs
 
-
+@AndroidEntryPoint
 class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
 {
-    override val vm: SettingViewModel by viewModel()
+    override val vm: SettingViewModel by viewModels()
     override val layoutRes: Int = R.layout.fragment_setting
     override val mainLayout: View by lazy { binding.constraintMainSetting }
-    private val parentView: MainView by lazy { activity as MainView }
+    private val parentActivity: MainActivity by lazy { activity as MainActivity }
 
     lateinit var startTabBinding: ItemTimeTabBinding
     lateinit var endTabBinding: ItemTimeTabBinding
@@ -366,7 +368,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
 
         activity ?: return
 
-        parentView.getCurrentPage().observe(this) {
+        parentActivity.getCurrentPage().observe(this) {
             if(it != 2) return@observe
             requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         }
@@ -400,7 +402,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                                                                    }
                                                                    SlidingUpPanelLayout.PanelState.COLLAPSED ->
                                                                    {
-                                                                       parentView.showTab()
+                                                                       parentActivity.showTab()
                                                                        SopoLog.d("상태 -> $newState")
                                                                        setEnableView()
                                                                    }
@@ -431,13 +433,13 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                 {
                     if(binding.slideMainSetting.panelState != SlidingUpPanelLayout.PanelState.COLLAPSED) return@observe
 
-                    FragmentManager.refreshMove(parentView, TabCode.MY_MENU_MAIN.apply {
+                    FragmentManager.refreshMove(parentActivity, TabCode.MY_MENU_MAIN.apply {
                         FRAGMENT = MenuFragment.newInstance()
                     }, MenuMainFragment.viewId)
                 }
                 NavigatorConst.TO_NOT_DISTURB ->
                 {
-                    parentView.hideTab()
+                    parentActivity.hideTab()
 
                     binding.includeLockApp.root.makeGone()
                     binding.includePushAlarm.root.makeGone()
@@ -452,7 +454,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                 }
                 NavigatorConst.TO_SET_NOTIFY_OPTION ->
                 {
-                    parentView.hideTab()
+                    parentActivity.hideTab()
 
                     binding.includeNotDisturbTime.root.makeGone()
                     binding.includeLockApp.root.makeGone()
@@ -473,7 +475,7 @@ class SettingFragment: BaseFragment<FragmentSettingBinding, SettingViewModel>()
                 }
                 NavigatorConst.TO_UPDATE_APP_PASSWORD ->
                 {
-                    parentView.hideTab()
+                    parentActivity.hideTab()
 
                     binding.includeLockApp.root.makeVisible()
                     binding.includeNotDisturbTime.root.makeGone()

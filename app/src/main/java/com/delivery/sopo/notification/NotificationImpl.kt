@@ -13,7 +13,7 @@ import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.delivery.sopo.R
-import com.delivery.sopo.data.repositories.local.user.UserLocalRepository
+import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.enums.NotificationEnum
 import com.delivery.sopo.interfaces.notification.Notification
 import com.delivery.sopo.models.push.NotificationMessage
@@ -22,15 +22,17 @@ import com.delivery.sopo.util.TimeUtil
 import com.delivery.sopo.presentation.splash.SplashView
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 object NotificationImpl: Notification, KoinComponent
 {
-    val userRepo: UserLocalRepository by inject()
+    val userRepo: UserDataSource by inject()
 
-    fun notifyLogout(context: Context)
-    {
+    fun notifyLogout(context: Context) = CoroutineScope(Dispatchers.Default).launch{
         val channelId = "${context.packageName}SOPO"
 
         val intent = Intent(context, SplashView::class.java)
