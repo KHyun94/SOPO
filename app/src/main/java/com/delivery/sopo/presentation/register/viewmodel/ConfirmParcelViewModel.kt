@@ -4,15 +4,15 @@ import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.delivery.sopo.R
+import com.delivery.sopo.data.models.Carrier
 import com.delivery.sopo.data.models.Result
-import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.domain.usecase.parcel.remote.RegisterParcelUseCase
 import com.delivery.sopo.enums.ErrorCode
 import com.delivery.sopo.exceptions.InternalServerException
 import com.delivery.sopo.exceptions.SOPOApiException
-import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.base.BaseViewModel
 import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.util.SopoLog
 import com.delivery.sopo.util.ui_util.BottomNotificationBar
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,7 +30,7 @@ class ConfirmParcelViewModel @Inject constructor(
     lateinit var registerInfo: Parcel.Register
 
     val waybillNum = MutableLiveData<String>()
-    val carrier = MutableLiveData<Carrier>()
+    val carrier = MutableLiveData<Carrier.Info>()
     val alias = MutableLiveData<String>()
 
     lateinit var parcel: Parcel.Common
@@ -40,8 +40,6 @@ class ConfirmParcelViewModel @Inject constructor(
 
     private var _status: MutableStateFlow<Result<Parcel.Common>> = MutableStateFlow(Result.Uninitialized)
     val status = _status.asStateFlow()
-
-    private var _snackBar = MutableLiveData<BottomNotificationBar>()
 
     fun emitStatus(result: Result<Parcel.Common>) = scope.launch {
         _status.emit(result)
@@ -64,7 +62,7 @@ class ConfirmParcelViewModel @Inject constructor(
 
                 if(alias.value.toString() == "null") alias.value = ""
 
-                val registerDTO = Parcel.Register(carrier = carrier.value?.carrier
+                val registerDTO = Parcel.Register(carrier = carrier.value
                     ?: throw Exception("Carrier must be not null"), waybillNum = waybillNum.value.toString(), alias = alias.value.toString())
 
                 requestParcelRegister(register = registerDTO)

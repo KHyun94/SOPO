@@ -9,8 +9,8 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
+import com.delivery.sopo.data.models.Carrier
 import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
-import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.presentation.services.workmanager.SOPOWorkManager
 import com.delivery.sopo.util.SopoLog
@@ -22,7 +22,6 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.lang.Runnable
-
 
 class MMSReceiver: BroadcastReceiver(), KoinComponent
 {
@@ -166,15 +165,15 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
      * 문자 내용 중 해당하는 택배사가 존재하는지 확인
      * 없을 시 throw Exception
      */
-    private suspend fun getReceivedCarrier(content: String) = withContext(Dispatchers.Default) {
+    private suspend fun getReceivedCarrier(content: String): Carrier.Info = withContext(Dispatchers.Default) {
 
             val carriers = carrierRepo.getAll().filterNotNull()
 
-            var receivedCarrier: Carrier? = null
+            var receivedCarrier: Carrier.Info? = null
 
             for(carrier in carriers)
             {
-                if(content.contains(carrier.carrier.NAME))
+                if(content.contains(carrier.carrier))
                 {
                     receivedCarrier = carrier
                     break
@@ -235,9 +234,9 @@ class MMSReceiver: BroadcastReceiver(), KoinComponent
         {
             val receivedAlias: String = getReceivedAlias(content = mms)
             val receivedWaybillsNum: String = getReceivedWaybillNum(content = mms)
-            val receivedCarrier: Carrier = getReceivedCarrier(content = mms)
+            val receivedCarrier: Carrier.Info = getReceivedCarrier(content = mms)
 
-            return Parcel.Register(receivedWaybillsNum, receivedCarrier.carrier, receivedAlias)
+            return Parcel.Register(receivedWaybillsNum, receivedCarrier, receivedAlias)
         }
         catch(e: Exception)
         {

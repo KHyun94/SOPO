@@ -19,7 +19,7 @@ class UserRemoteDataSourceImpl @Inject constructor(
     override suspend fun requestAuthCodeEmail(email: String): String
     {
         val result = apiCall { userPubService.requestAuthCodeEmail(email = email) }
-        return result.data?.data
+        return result.data
             ?: throw SOPOApiException(404, Error(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
     }
 
@@ -36,7 +36,7 @@ class UserRemoteDataSourceImpl @Inject constructor(
     override suspend fun fetchUserInfo(): UserDetail
     {
         val result = apiCall { userPriService.fetchUserInfo() }
-        return result.data?.data
+        return result.data
             ?: throw SOPOApiException(404, Error(404, ErrorType.NO_RESOURCE, "조회한 데이터가 존재하지 않습니다.", ""))
     }
 

@@ -209,7 +209,7 @@
                         style="@style/kor_H6"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@{ongoingInquiryData.toCarrierName()}"
+                        android:text="@{ongoingInquiryData.parcel.carrier}"
                         android:textColor="@color/COLOR_MAIN_700"
                         android:textSize="11dp"
                         tools:text="2020/08/31" />

@@ -15,7 +15,6 @@ data class DateSelector(
     fun getDisplayCursorDate(): String {
         return if (cursorDate != null) {
             cursorDate.substring(0,4) +"년 " + cursorDate.substring(4,6) + "월"
-//            cursorDate.replace("-", "년 ") + "월"
         } else ""
     }
 }

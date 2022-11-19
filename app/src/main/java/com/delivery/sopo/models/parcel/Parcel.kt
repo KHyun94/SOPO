@@ -1,8 +1,8 @@
 package com.delivery.sopo.models.parcel
 
-import com.delivery.sopo.enums.CarrierEnum
+import com.delivery.sopo.data.database.room.entity.CarrierEntity
+import com.delivery.sopo.data.models.Carrier
 import com.delivery.sopo.enums.DeliveryStatus
-import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.tracking_info.TrackingInfo
 import com.delivery.sopo.util.DateUtil
 import com.delivery.sopo.util.TimeUtil
@@ -40,7 +40,7 @@ class Parcel
         }
     }
 
-    data class Detail(val regDt: String, val alias: String, val carrier: Carrier, val waybillNum: String, val deliverStatus: DeliveryStatus?, val timeLineProgresses: MutableList<TimeLineProgress>)
+    data class Detail(val regDt: String, val alias: String, val carrier: CarrierEntity, val waybillNum: String, val deliverStatus: DeliveryStatus?, val timeLineProgresses: MutableList<TimeLineProgress>)
     {
         fun changeRegDtFormat(): String
         {
@@ -56,8 +56,8 @@ class Parcel
             @SerializedName("updated") val updated: Boolean)
 
     data class Register(
-            @SerializedName("waybillNum") val waybillNum: String,
-            @SerializedName("carrier") val carrier: CarrierEnum? = null,
-            @SerializedName("alias") val alias: String? = null): Serializable
+        @SerializedName("waybillNum") val waybillNum: String,
+        @SerializedName("carrier") val carrier: Carrier.Info? = null,
+        @SerializedName("alias") val alias: String? = null): Serializable
 }
 

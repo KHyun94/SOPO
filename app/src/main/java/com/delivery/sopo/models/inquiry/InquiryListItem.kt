@@ -1,7 +1,6 @@
 package com.delivery.sopo.models.inquiry
 
 import androidx.databinding.ObservableField
-import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.ParcelDepth
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.util.DateUtil
@@ -87,8 +86,6 @@ class InquiryListItem (val parcel: Parcel.Common, var isSelected: Boolean = fals
             else -> ""
         }
     }
-
-    fun toCarrierName() = CarrierEnum.getCarrierByCode(parcel.carrier).NAME
 
     val isUnidentified = ObservableField<Boolean>().apply {
         checkIsUnidentified {

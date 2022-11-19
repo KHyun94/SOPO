@@ -9,8 +9,6 @@
 
         <import type="com.delivery.sopo.enums.InfoEnum" />
 
-        <import type="com.delivery.sopo.models.Carrier" />
-
         <variable
             name="vm"
             type="com.delivery.sopo.presentation.register.viewmodel.InputParcelViewModel" />
@@ -97,7 +95,7 @@
                 android:includeFontPadding="false"
                 android:text="배송사"
                 android:textColor="@color/COLOR_GRAY_400"
-                android:visibility="@{(vm.carrier.carrier.NAME.length() > 0) ? View.GONE : View.VISIBLE, default=visible}" />
+                android:visibility="@{(vm.carrier.name.length() > 0) ? View.GONE : View.VISIBLE, default=visible}" />
 
             <ImageView
                 android:id="@+id/iv_carrier"
@@ -109,9 +107,9 @@
                 android:layout_marginTop="14dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="11dp"
-                android:visibility="@{(vm.carrier.carrier.NAME.length() > 0)?View.VISIBLE:View.GONE}"
+                android:visibility="@{(vm.carrier.name.length() > 0)?View.VISIBLE:View.GONE}"
                 app:setDefaultImage="@{0}"
-                app:setImage="@{vm.carrier.icons[0]}"
+                app:setImage="@{vm.carrier.thumbnail}"
                 tools:visibility="visible" />
 
             <TextView
@@ -124,9 +122,9 @@
                 android:layout_toEndOf="@+id/iv_carrier"
                 android:background="@null"
                 android:includeFontPadding="false"
-                android:text="@{vm.carrier.carrier.NAME}"
+                android:text="@{vm.carrier.name}"
                 android:textColorHint="@color/COLOR_GRAY_300"
-                android:visibility="@{(vm.carrier.carrier.NAME.length() > 0)?View.VISIBLE:View.GONE}" />
+                android:visibility="@{(vm.carrier.name.length() > 0)?View.VISIBLE:View.GONE}" />
 
         </RelativeLayout>
 
@@ -140,7 +138,7 @@
             android:gravity="center"
             android:onClick="@{()->vm.onPasteWaybillClicked()}"
             android:orientation="horizontal"
-            android:visibility="@{(vm.clipboardText.length() > 0) &amp;&amp; (vm.carrier.carrier.NAME.length() == 0)?View.VISIBLE:View.GONE}"
+            android:visibility="@{(vm.clipboardText.length() > 0) &amp;&amp; (vm.carrier.name.length() == 0)?View.VISIBLE:View.GONE}"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/custom_et_delivery_co"
@@ -182,7 +180,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:onClick="@{()->vm.onConfirmParcelClicked()}"
             android:text="다음으로"
-            android:visibility="@{(vm.waybillNum.length() > 8) &amp;&amp; (vm.carrier.carrier.NAME.length() > 0)?View.VISIBLE:View.GONE}"
+            android:visibility="@{(vm.waybillNum.length() > 8) &amp;&amp; (vm.carrier.name.length() > 0)?View.VISIBLE:View.GONE}"
             tools:visibility="visible" />
 
 

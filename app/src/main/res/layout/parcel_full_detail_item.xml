@@ -156,7 +156,7 @@
                             android:layout_centerVertical="true"
                             android:layout_toLeftOf="@+id/tv_waybill_num"
                             android:includeFontPadding="false"
-                            android:text="@{item.carrier.carrier.NAME}"
+                            android:text="@{item.carrier.name}"
                             android:textColor="@color/COLOR_GRAY_600"
                             android:textSize="14dp"
                             tools:text="한진택배" />

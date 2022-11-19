@@ -4,13 +4,13 @@ import android.app.Notification
 import android.os.Bundle
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import com.delivery.sopo.data.models.Carrier
 import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
 import com.delivery.sopo.data.resources.user.local.UserDataSource
 import com.delivery.sopo.domain.usecase.parcel.remote.RegisterParcelUseCase
 import com.delivery.sopo.enums.DeliveryStatus
 import com.delivery.sopo.enums.SettingEnum
-import com.delivery.sopo.models.Carrier
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.models.push.NotificationMessage
 import com.delivery.sopo.notification.NotificationImpl
@@ -133,13 +133,13 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
      */
     private suspend fun getReceivedCarrier(content: String) = withContext(Dispatchers.Default) {
 
-        val carriers = carrierRepo.getAll().filterNotNull()
+        val carriers = carrierRepo.getAll()
 
-        var receivedCarrier: Carrier? = null
+        var receivedCarrier: Carrier.Info? = null
 
         for(carrier in carriers)
         {
-            if(content.contains(carrier.carrier.NAME))
+            if(content.contains(""))
             {
                 receivedCarrier = carrier
                 break
@@ -198,9 +198,9 @@ class SOPONotificationListenerService: NotificationListenerService(), KoinCompon
         {
             val receivedAlias: String? = getReceivedAlias(content = mms)
             val receivedWaybillsNum: String = getReceivedWaybillNum(content = mms)
-            val receivedCarrier: Carrier = getReceivedCarrier(content = mms)
+            val receivedCarrier: Carrier.Info = getReceivedCarrier(content = mms)
 
-            return Parcel.Register(receivedWaybillsNum, receivedCarrier.carrier, receivedAlias)
+            return Parcel.Register(receivedWaybillsNum, receivedCarrier, receivedAlias)
         }
         catch(e: Exception)
         {

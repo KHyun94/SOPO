@@ -5,23 +5,21 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.lifecycleScope
 import com.delivery.sopo.R
 import com.delivery.sopo.data.models.Result
 import com.delivery.sopo.presentation.consts.NavigatorConst
 import com.delivery.sopo.databinding.FragmentConfirmParcelBinding
-import com.delivery.sopo.enums.CarrierEnum
 import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.base.BaseFragment
-import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.models.parcel.Parcel
+import com.delivery.sopo.presentation.models.enums.RegisterNavigation
 import com.delivery.sopo.util.FragmentManager
 import com.delivery.sopo.presentation.register.viewmodel.ConfirmParcelViewModel
 import com.delivery.sopo.presentation.views.main.MainActivity
+import com.delivery.sopo.util.SopoLog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmParcelViewModel>()
@@ -32,25 +30,28 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
 
     private val motherActivity: MainActivity by lazy { activity as MainActivity }
 
-    private lateinit var registerInfo: Parcel.Register
-    private lateinit var beforeStep: String
+    private lateinit var registerNavigation: RegisterNavigation
 
-    override fun receiveData(bundle: Bundle)
-    {
+    override fun receiveData(bundle: Bundle) {
         super.receiveData(bundle)
 
-        val registerInfo = bundle.getSerializable(RegisterParcelFragment.REGISTER_INFO)
+        registerNavigation = bundle.getSerializable(RegisterParcelFragment.RETURN_TYPE) as RegisterNavigation
 
-        if(registerInfo !is Parcel.Register) throw IllegalArgumentException("등록 데이터가 정상적으로 오지 않았습니다.")
+        when (registerNavigation) {
+            is RegisterNavigation.Init, is RegisterNavigation.Complete -> {
+            }
+            is RegisterNavigation.Next -> {
+                (registerNavigation as RegisterNavigation.Next).parcel.apply {
 
-        this.registerInfo = registerInfo
-        beforeStep = bundle.getString(RegisterParcelFragment.BEFORE_STEP) ?: return
+                    SopoLog.d("parcel => ${this.toString()}")
 
-        this.registerInfo.waybillNum.let { waybillNum -> vm.waybillNum.value = waybillNum }
-        this.registerInfo.carrier?.let { carrier ->
-            vm.carrier.value = CarrierMapper.enumToObject(carrier)
+                    vm.waybillNum.postValue(waybillNum)
+                    vm.carrier.postValue(carrier)
+                    vm.alias.postValue(alias)
+                }
+
+            }
         }
-        this.registerInfo.alias?.let { alias -> vm.alias.value = alias }
     }
 
     override fun setBeforeBinding()
@@ -65,19 +66,19 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
             {
                 super.onBackPressed()
 
-                when(beforeStep)
-                {
-                    NavigatorConst.REGISTER_INPUT_INFO ->
-                    {
-//                        TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(register = registerInfo, registerNavigation = RegisterNavigation.Next)
-//                        FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterParcelFragment.viewId)
-                    }
-                    NavigatorConst.REGISTER_SELECT_CARRIER ->
-                    {
-//                        TabCode.REGISTER_SELECT.FRAGMENT = SelectCarrierFragment.newInstance(registerInfo.waybillNum ?: "")
-//                        FragmentManager.move(requireActivity(), TabCode.REGISTER_SELECT, RegisterParcelFragment.viewId)
-                    }
-                }
+//                when(beforeStep)
+//                {
+//                    NavigatorConst.REGISTER_INPUT_INFO ->
+//                    {
+////                        TabCode.REGISTER_INPUT.FRAGMENT = InputParcelFragment.newInstance(register = registerInfo, registerNavigation = RegisterNavigation.Next)
+////                        FragmentManager.move(requireActivity(), TabCode.REGISTER_INPUT, RegisterParcelFragment.viewId)
+//                    }
+//                    NavigatorConst.REGISTER_SELECT_CARRIER ->
+//                    {
+////                        TabCode.REGISTER_SELECT.FRAGMENT = SelectCarrierFragment.newInstance(registerInfo.waybillNum ?: "")
+////                        FragmentManager.move(requireActivity(), TabCode.REGISTER_SELECT, RegisterParcelFragment.viewId)
+//                    }
+//                }
             }
         }
     }
@@ -86,23 +87,27 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
     {
         super.setAfterBinding()
 
-        lifecycleScope.launch(Dispatchers.Main) {
-            when(registerInfo.carrier)
-            {
-                CarrierEnum.CHUNILPS ->
-                {
-                    binding.ivCarrier.setBackgroundResource(R.drawable.ic_thumbnail_chuil_2)
-                }
-                CarrierEnum.DAESIN ->
-                {
-                    binding.ivCarrier.setBackgroundResource(R.drawable.ic_thumbnail_daeshin_2)
-                }
-                CarrierEnum.LOTTE ->
-                {
-                    binding.ivCarrier.setBackgroundResource(R.drawable.ic_thumbnail_lotte_2)
-                }
-            }
+        vm.carrier.observe(this) {
+            binding.ivCarrier.setBackgroundResource(it.getThumbnail())
         }
+
+//        lifecycleScope.launch(Dispatchers.Main) {
+//            when(registerInfo.carrier)
+//            {
+//                CarrierEnum.CHUNILPS ->
+//                {
+//                    binding.ivCarrier.setBackgroundResource(R.drawable.ic_thumbnail_chuil_2)
+//                }
+//                CarrierEnum.DAESIN ->
+//                {
+//                    binding.ivCarrier.setBackgroundResource(R.drawable.ic_thumbnail_daeshin_2)
+//                }
+//                CarrierEnum.LOTTE ->
+//                {
+//                    binding.ivCarrier.setBackgroundResource(R.drawable.ic_thumbnail_lotte_2)
+//                }
+//            }
+//        }
 
 
     }
@@ -172,11 +177,10 @@ class ConfirmParcelFragment: BaseFragment<FragmentConfirmParcelBinding, ConfirmP
 
     companion object
     {
-        fun newInstance(register: Parcel.Register?, beforeStep: String): ConfirmParcelFragment
+        fun newInstance(registerNavigation: RegisterNavigation): ConfirmParcelFragment
         {
             val args = Bundle().apply {
-                putSerializable(RegisterParcelFragment.REGISTER_INFO, register)
-                putString(RegisterParcelFragment.BEFORE_STEP, beforeStep)
+                putSerializable(RegisterParcelFragment.RETURN_TYPE, registerNavigation)
             }
 
             return ConfirmParcelFragment().apply {

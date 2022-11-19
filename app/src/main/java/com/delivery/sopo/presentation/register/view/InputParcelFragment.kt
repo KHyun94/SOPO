@@ -14,7 +14,6 @@ import com.delivery.sopo.enums.TabCode
 import com.delivery.sopo.extensions.isGreaterThanOrEqual
 import com.delivery.sopo.interfaces.listener.OnSOPOBackPressEvent
 import com.delivery.sopo.models.base.BaseFragment
-import com.delivery.sopo.models.mapper.CarrierMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.presentation.consts.IntentConst
 import com.delivery.sopo.presentation.models.enums.RegisterNavigation
@@ -36,16 +35,6 @@ class InputParcelFragment : BaseFragment<FragmentInputParcelBinding, InputParcel
 
     private val motherActivity: MainActivity by lazy { activity as MainActivity }
 
-    /*
-    private lateinit var onPageSelectListener: OnPageSelectListener
-
-    private fun setOnMotherViewBridgeListener(context: Context)
-    {
-        onPageSelectListener = context as OnPageSelectListener
-    }
-    */
-
-    private lateinit var registerInfo: Parcel.Register
     private lateinit var registerNavigation: RegisterNavigation
 
     override fun receiveData(bundle: Bundle) {
@@ -68,7 +57,6 @@ class InputParcelFragment : BaseFragment<FragmentInputParcelBinding, InputParcel
                 exit()
             }
         }
-//        setOnMotherViewBridgeListener(requireActivity())
     }
 
     override fun setAfterBinding() {
@@ -85,7 +73,7 @@ class InputParcelFragment : BaseFragment<FragmentInputParcelBinding, InputParcel
             is RegisterNavigation.Next -> {
                 vm.parcel = (registerNavigation as RegisterNavigation.Next).parcel.apply {
                     vm.waybillNum.postValue(waybillNum)
-                    vm.carrier.postValue(carrier?.let(CarrierMapper::enumToObject))
+                    vm.carrier.postValue(carrier)
                 }
             }
             is RegisterNavigation.Complete -> {
@@ -114,19 +102,16 @@ class InputParcelFragment : BaseFragment<FragmentInputParcelBinding, InputParcel
             vm.clipboardText.value = ""
 
             if (!binding.layoutWaybillNum.hasFocus()) binding.layoutWaybillNum.requestFocus()
-            if (registerNavigation == RegisterNavigation.Init && ::registerInfo.isInitialized && registerInfo.carrier != null) return@observe
 
-            if (!waybillNum.isGreaterThanOrEqual(9)) {
+            if (!waybillNum.isGreaterThanOrEqual(8)) {
                 vm.carrier.value = null
                 return@observe
             }
 
-            vm.recommendCarrier(waybillNum)
+//            vm.recommendCarrier(waybillNum)
         }
 
         vm.invalidity.observe(this) { target ->
-
-            SopoLog.d("${target.toString()}")
 
             val message = when (target.first) {
                 InfoEnum.WAYBILL_NUMBER -> {

@@ -86,7 +86,7 @@
                 android:layout_marginTop="8dp"
                 android:fontFamily="@font/spoqa_han_sans_neo_regular"
                 android:includeFontPadding="false"
-                android:text="@{item.carrier.carrier.NAME}"
+                android:text="@{item.carrier.name}"
                 android:textColor="@color/COLOR_GRAY_600"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_alias"

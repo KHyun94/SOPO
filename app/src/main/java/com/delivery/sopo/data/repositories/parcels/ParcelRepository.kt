@@ -11,4 +11,5 @@ interface ParcelRepository
     suspend fun getParcel(parcelId: Int): Parcel.Common?
     suspend fun fetchCompletedParcel(page: Int, inquiryDate: String): List<Parcel.Common>
     suspend fun fetchCompletedDateInfo(cursorDate: String? = null): DateSelector
+    suspend fun updateCarrierInfo()
 }

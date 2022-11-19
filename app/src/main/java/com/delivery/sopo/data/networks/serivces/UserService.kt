@@ -2,7 +2,6 @@ package com.delivery.sopo.data.networks.serivces
 
 import com.delivery.sopo.data.models.AuthToken
 import com.delivery.sopo.models.UserDetail
-import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.user.ResetAuthCode
 import com.delivery.sopo.models.user.ResetPassword
 import retrofit2.Response
@@ -38,7 +37,7 @@ interface UserService
      */
     @GET("/api/v1/sopo-user/detail")
     @Headers("Accept: application/json")
-    suspend fun fetchUserInfo() : Response<APIResult<UserDetail>>
+    suspend fun fetchUserInfo() : Response<UserDetail>
 
     /**
      * FCM Token UPDATE
@@ -65,7 +64,7 @@ interface UserService
     @Headers("Accept: application/json")
     suspend fun requestAuthCodeEmail(
         @Query("email") email: String
-    ) : Response<APIResult<String>>
+    ) : Response<String>
 
 
     @POST("/api/v1/sopo-user/password/auth-info/verify")
@@ -81,7 +80,7 @@ interface UserService
      */
     @POST("/api/v1/sopo-user/password/reset")
     @Headers("Accept: application/json")
-    suspend fun updatePassword(@Body resetPassword: ResetPassword) : Response<APIResult<String?>>
+    suspend fun updatePassword(@Body resetPassword: ResetPassword) : Response<String>
 
     /**
      * @param reason

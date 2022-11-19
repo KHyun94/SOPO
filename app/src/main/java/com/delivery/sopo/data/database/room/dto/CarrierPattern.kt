@@ -1,6 +1,5 @@
 package com.delivery.sopo.data.database.room.dto
 
-import com.delivery.sopo.enums.CarrierEnum
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 

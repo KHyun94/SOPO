@@ -10,7 +10,6 @@ import com.delivery.sopo.data.repositories.local.datasource.ParcelDataSource
 import com.delivery.sopo.extensions.wrapBodyAliasToHashMap
 import com.delivery.sopo.extensions.wrapBodyAliasToMap
 import com.delivery.sopo.interfaces.BaseDataSource
-import com.delivery.sopo.models.api.APIResult
 import com.delivery.sopo.models.mapper.ParcelMapper
 import com.delivery.sopo.models.parcel.Parcel
 import com.delivery.sopo.presentation.services.network_handler.BaseService
@@ -183,7 +182,7 @@ class ParcelRepository @Inject constructor(private val appDatabase: AppDatabase,
     {
         val registerParcel = parcelService.registerParcel(parcelRegister = parcel)
         val result = apiCall { registerParcel }
-        return result.data?.data ?: throw NullPointerException()
+        return result.data ?: throw NullPointerException()
     }
 
     suspend fun getRemoteParcelById(parcelId: Int): Parcel.Common
@@ -191,7 +190,7 @@ class ParcelRepository @Inject constructor(private val appDatabase: AppDatabase,
         val getRemoteParcel =
             parcelService.fetchParcelById(parcelId = parcelId)
         val result = apiCall { getRemoteParcel }
-        return result.data?.data ?: throw NullPointerException()
+        return result.data ?: throw NullPointerException()
     }
 
     suspend fun getRemoteParcelById(parcelIds: List<Int>): List<Parcel.Common>
@@ -199,7 +198,7 @@ class ParcelRepository @Inject constructor(private val appDatabase: AppDatabase,
         if(parcelIds.isEmpty()) return emptyList()
         val getRemoteParcel = parcelService.fetchParcelById(parcelId = parcelIds.joinToString(", "))
         val result = apiCall { getRemoteParcel }
-        return result.data?.data ?: emptyList()
+        return result.data ?: emptyList()
     }
 
     override suspend fun getOngoingParcelsFromRemote(): List<Parcel.Common>
@@ -208,7 +207,7 @@ class ParcelRepository @Inject constructor(private val appDatabase: AppDatabase,
             parcelService
                 .fetchOngoingParcels()
         val result = apiCall { getOngoingParcelsFromRemote }
-        return result.data?.data ?: emptyList()
+        return result.data ?: emptyList()
     }
 
     override suspend fun getRemoteMonths(): List<DeliveredParcelHistory>
@@ -217,7 +216,7 @@ class ParcelRepository @Inject constructor(private val appDatabase: AppDatabase,
             parcelService
                 .fetchDeliveredMonth()
         val result = apiCall { getRemoteMonths }
-        return result.data?.data ?: emptyList()
+        return result.data ?: emptyList()
     }
 
     override suspend fun getCompleteParcelsByRemote(page: Int, inquiryDate: String): List<Parcel.Common>
@@ -226,7 +225,7 @@ class ParcelRepository @Inject constructor(private val appDatabase: AppDatabase,
             parcelService
                 .fetchDeliveredParcelsByPaging(page = page, inquiryDate = inquiryDate)
         val result = apiCall { getCompleteParcelsByRemote }
-        return result.data?.data ?: emptyList()
+        return result.data ?: emptyList()
     }
 
     suspend fun reportParcelStatus(parcelIds: List<Int>)
@@ -285,7 +284,7 @@ class ParcelRepository @Inject constructor(private val appDatabase: AppDatabase,
      * 택배 업데이트 관련
      * 'Tracking Server'로 업데이트 요청
      */
-    suspend fun requestParcelsForRefresh(): NetworkResponse<APIResult<String>>
+    suspend fun requestParcelsForRefresh(): NetworkResponse<String>
     {
         val result =
             parcelService
@@ -299,7 +298,7 @@ class ParcelRepository @Inject constructor(private val appDatabase: AppDatabase,
         val result =
             parcelService
                 .requestParcelsUpdate(parcelId = wrapBody)
-        return apiCall { result }.data?.data ?: throw NullPointerException("택배 데이터가 조회되지 않습니다.")
+        return apiCall { result }.data ?: throw NullPointerException("택배 데이터가 조회되지 않습니다.")
     }
 
     fun sortByDeliveryStatus(list: List<InquiryListItem>): List<InquiryListItem>

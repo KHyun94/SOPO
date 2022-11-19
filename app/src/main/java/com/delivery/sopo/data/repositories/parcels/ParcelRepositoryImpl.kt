@@ -1,12 +1,14 @@
 package com.delivery.sopo.data.repositories.parcels
 
 import com.delivery.sopo.DateSelector
+import com.delivery.sopo.data.database.room.entity.CarrierEntity
+import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.data.resources.parcel.local.ParcelDataSource
 import com.delivery.sopo.data.resources.parcel.local.ParcelStatusDataSource
 import com.delivery.sopo.data.resources.parcel.remote.ParcelRemoteDataSource
 import com.delivery.sopo.models.parcel.Parcel
 
-class ParcelRepositoryImpl(private val parcelDataSource: ParcelDataSource, private val parcelStatusDataSource: ParcelStatusDataSource,private val parcelRemoteDataSource: ParcelRemoteDataSource): ParcelRepository
+class ParcelRepositoryImpl(private val carrierDataSource: CarrierDataSource, private val parcelDataSource: ParcelDataSource, private val parcelStatusDataSource: ParcelStatusDataSource,private val parcelRemoteDataSource: ParcelRemoteDataSource): ParcelRepository
 {
     override suspend fun registerParcel(parcelRegister: Parcel.Register): Parcel.Common
     {
@@ -78,5 +80,13 @@ class ParcelRepositoryImpl(private val parcelDataSource: ParcelDataSource, priva
 
     override suspend fun fetchCompletedDateInfo(cursorDate: String?): DateSelector {
         return parcelRemoteDataSource.fetchCompletedDateInfo(cursorDate)
+    }
+
+    override suspend fun updateCarrierInfo(){
+        val data = parcelRemoteDataSource.fetchCarrierInfo().map {
+            CarrierEntity(name = it.name, code = it.carrier, available = it.isAvailable)
+        }
+
+        carrierDataSource.insert(*data.toTypedArray())
     }
 }

@@ -2,11 +2,9 @@ package com.delivery.sopo.data.networks.serivces
 
 import com.delivery.sopo.DateSelector
 import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
-
-import com.delivery.sopo.models.api.APIResult
+import com.delivery.sopo.data.models.Carrier
 import com.delivery.sopo.models.parcel.Parcel
 import retrofit2.Response
-import retrofit2.Retrofit
 import retrofit2.http.*
 
 interface ParcelService
@@ -20,7 +18,7 @@ interface ParcelService
      */
     @POST("api/v1/sopo-parcel/delivery/parcel")
     @Headers("Accept: application/json")
-    suspend fun registerParcel(@Body parcelRegister: Parcel.Register): Response<APIResult<Int>>
+    suspend fun registerParcel(@Body parcelRegister: Parcel.Register): Response<Int>
 
     /**
      * 단일 택배 정보 요청
@@ -29,20 +27,20 @@ interface ParcelService
      */
     @GET("/api/v1/sopo-parcel/delivery/parcel/{parcelId}")
     @Headers("Accept: application/json")
-    suspend fun fetchParcelById(@Path("parcelId") parcelId: Int): Response<APIResult<Parcel.Common>>
+    suspend fun fetchParcelById(@Path("parcelId") parcelId: Int): Response<Parcel.Common>
 
     @GET("/api/v1/sopo-parcel/delivery/parcels")
     @Headers("Accept: application/json")
-    suspend fun fetchParcelById(@Query("parcel") parcelId: String): Response<APIResult<List<Parcel.Common>>>
+    suspend fun fetchParcelById(@Query("parcel") parcelId: String): Response<List<Parcel.Common>>
 
     @GET("api/v1/sopo-parcel/delivery/parcels/months")
     @Headers("Accept: application/json")
-    suspend fun fetchDeliveredMonth(): Response<APIResult<List<DeliveredParcelHistory>>>
+    suspend fun fetchDeliveredMonth(): Response<List<DeliveredParcelHistory>>
 
     // 배송중 & 곧 도착 리스트 가져오는 api
     @GET("api/v1/sopo-parcel/delivery/parcels/ongoing")
     @Headers("Accept: application/json")
-    suspend fun fetchOngoingParcels(): Response<APIResult<List<Parcel.Common>>>
+    suspend fun fetchOngoingParcels(): Response<List<Parcel.Common>>
 
     @HTTP(method = "DELETE", path = "api/v1/sopo-parcel/delivery/parcels", hasBody = true)
     @Headers("Accept: application/json")
@@ -60,7 +58,7 @@ interface ParcelService
      */
     @POST("/api/v1/sopo-parcel/delivery/parcels/refresh")
     @Headers("Accept: application/json")
-    suspend fun requestParcelsRefresh(): Response<APIResult<String>>
+    suspend fun requestParcelsRefresh(): Response<String>
 
     /**
      * 택배 리스트 전체 업데이트 요청
@@ -69,12 +67,12 @@ interface ParcelService
      */
     @GET("/api/v1/sopo-parcel/delivery/parcels/complete/monthly-page-info")
     @Headers("Accept: application/json")
-    suspend fun fetchCompletedDateInfo(@Query("cursorDate") cursorDate: String? = null): Response<APIResult<DateSelector>>
+    suspend fun fetchCompletedDateInfo(@Query("cursorDate") cursorDate: String? = null): Response<DateSelector>
 
     // '배송완료' 리스트 가져오는 api
     @GET("api/v1/sopo-parcel/delivery/parcels/complete")
     @Headers("Accept: application/json")
-    suspend fun fetchDeliveredParcelsByPaging(@Query("page") page: Int,  @Query("inquiryDate") inquiryDate: String, @Query("itemCnt") itemCnt: Int = 20): Response<APIResult<List<Parcel.Common>>>
+    suspend fun fetchDeliveredParcelsByPaging(@Query("page") page: Int,  @Query("inquiryDate") inquiryDate: String, @Query("itemCnt") itemCnt: Int = 20): Response<List<Parcel.Common>>
 
 
     /**
@@ -88,10 +86,13 @@ interface ParcelService
      */
     @POST("/api/v1/sopo-parcel/delivery/parcel/refresh")
     @Headers("Accept: application/json")
-    suspend fun requestParcelsUpdate(@Body parcelId: Map<String, Int>): Response<APIResult<Parcel.Updatable>>
+    suspend fun requestParcelsUpdate(@Body parcelId: Map<String, Int>): Response<Parcel.Updatable>
 
     @POST("/api/v1/sopo-parcel/delivery/parcel/reporting")
     @Headers("Accept: application/json")
     suspend fun reportParcelStatus(@Body parcelIds: HashMap<String, List<Int>>): Response<Unit>
 
+    @GET("api/v1/sopo-parcel/delivery/carriers/status")
+    @Headers("Accept: application/json")
+    suspend fun fetchCarrierStatus(): Response<List<Carrier.Info>>
 }

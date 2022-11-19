@@ -6,6 +6,7 @@ import com.delivery.sopo.data.database.shared.UserSharedPrefHelper
 import com.delivery.sopo.data.networks.serivces.ParcelService
 import com.delivery.sopo.data.networks.serivces.UserService
 import com.delivery.sopo.data.repositories.local.datasource.CompleteParcelStatusRepository
+import com.delivery.sopo.data.repositories.local.repository.CarrierDataSource
 import com.delivery.sopo.data.repositories.local.repository.CompletedParcelHistoryRepoImpl
 import com.delivery.sopo.data.repositories.parcels.ParcelRepository
 import com.delivery.sopo.data.repositories.parcels.ParcelRepositoryImpl
@@ -52,9 +53,9 @@ class RepositoryModule
 
     @Provides
     @Singleton
-    fun provideParcelRepository(parcelDataSource: ParcelDataSource, parcelRemoteDataSource: ParcelRemoteDataSource, parcelStatusDataSource: ParcelStatusDataSource): ParcelRepository
+    fun provideParcelRepository(carrierDataSource: CarrierDataSource, parcelDataSource: ParcelDataSource, parcelRemoteDataSource: ParcelRemoteDataSource, parcelStatusDataSource: ParcelStatusDataSource): ParcelRepository
     {
-        return ParcelRepositoryImpl(parcelDataSource, parcelStatusDataSource, parcelRemoteDataSource)
+        return ParcelRepositoryImpl(carrierDataSource, parcelDataSource, parcelStatusDataSource, parcelRemoteDataSource)
     }
 
     @Provides

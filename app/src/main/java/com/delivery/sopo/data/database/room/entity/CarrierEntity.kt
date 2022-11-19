@@ -3,26 +3,27 @@ package com.delivery.sopo.data.database.room.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.delivery.sopo.R
 
 @Entity(
     tableName = "CARRIER",
     inheritSuperIndices = true
 )
 data class CarrierEntity(
-        @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @ColumnInfo(
-        name = "carrierNo",
-        typeAffinity = ColumnInfo.INTEGER
+        name = "code",
+        typeAffinity = ColumnInfo.TEXT
     )
-    val carrierNo: Int = 1,
-        @ColumnInfo(
+    val code: String,
+    @ColumnInfo(
         name = "name",
         typeAffinity = ColumnInfo.TEXT
     )
     val name: String,
-        @ColumnInfo(
-        name = "code",
-        typeAffinity = ColumnInfo.TEXT
+    @ColumnInfo(
+        name = "available",
+        typeAffinity = ColumnInfo.INTEGER
     )
-    val code: String
+    val available: Boolean
 )

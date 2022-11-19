@@ -3,12 +3,16 @@ package com.delivery.sopo.data.database.room.dao
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import com.delivery.sopo.data.database.room.entity.CarrierEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CarrierDao
 {
     @Query("SELECT * FROM CARRIER")
-    fun getAll() : List<CarrierEntity>
+    fun get() : List<CarrierEntity>
+
+    @Query("SELECT * FROM CARRIER")
+    fun getFlow() : Flow<List<CarrierEntity>>
 
     @Query("SELECT COUNT(*) FROM CARRIER")
     fun getAllCnt() : Int

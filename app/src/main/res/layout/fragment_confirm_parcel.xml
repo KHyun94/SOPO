@@ -10,8 +10,6 @@
 
         <import type="com.delivery.sopo.consts.InfoConst" />
 
-        <import type="com.delivery.sopo.models.Carrier" />
-
         <import type="androidx.core.content.ContextCompat" />
 
         <import type="com.delivery.sopo.R" />
@@ -69,7 +67,6 @@
             android:layout_marginTop="35dp"
             android:layout_marginRight="8dp"
             android:padding="5dp"
-            android:background='@{ContextCompat.getDrawable(context, vm.carrier.icons[0])}'
             app:layout_constraintHorizontal_bias="0"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -99,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
                 android:includeFontPadding="false"
-                android:text="@{vm.carrier.carrier.NAME}"
+                android:text="@{vm.carrier.name}"
                 android:textColor="@color/COLOR_GRAY_400"
                 tools:text="대한통운" />
 

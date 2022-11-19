@@ -2,24 +2,16 @@ package com.delivery.sopo.presentation.viewmodels.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.delivery.sopo.OnDataCallbackListener
-import com.delivery.sopo.data.repositories.local.app_password.AppPasswordRepository
-import com.delivery.sopo.data.repositories.local.repository.ParcelRepository
-import com.delivery.sopo.data.resources.user.local.UserDataSource
-import com.delivery.sopo.domain.usecase.user.UpdateFCMTokenUseCase
-import com.delivery.sopo.firebase.FirebaseRepository
+import androidx.lifecycle.viewModelScope
+import com.delivery.sopo.data.repositories.parcels.ParcelRepository
 import com.delivery.sopo.models.base.BaseViewModel
-import com.delivery.sopo.util.SopoLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-        /*private val userDataSource: UserDataSource,
-                    private val parcelRepo: ParcelRepository,
-                    private val updateFCMTokenUseCase: UpdateFCMTokenUseCase,
-                    private val appPasswordRepo: AppPasswordRepository*/
+        private val parcelRepo: ParcelRepository
                     ):
         BaseViewModel()
 {
@@ -32,11 +24,15 @@ class MainViewModel @Inject constructor(
     val currentPage: LiveData<Int>
         get() = _currentPage
 
-/*    init
+    init
     {
-        updateFCMToken()
-        updateTopic()
-    }*/
+        /*updateTopic()
+        updateFCMToken()*/
+        viewModelScope.launch(Dispatchers.IO) {
+            parcelRepo.updateCarrierInfo()
+        }
+
+    }
 
     fun postNavigator(navigator: String){
         _navigator.postValue(navigator)

@@ -3,13 +3,10 @@ package com.delivery.sopo.data.resources.auth.remote
 import android.content.Context
 import com.delivery.sopo.data.models.AuthToken
 import com.delivery.sopo.data.networks.serivces.UserService
-import com.delivery.sopo.di.IoDispatcher
-import com.delivery.sopo.di.PublicAccess
 import com.delivery.sopo.presentation.services.network_handler.BaseService
 import com.delivery.sopo.util.OtherUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

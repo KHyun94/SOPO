@@ -2,6 +2,7 @@ package com.delivery.sopo.data.resources.parcel.remote
 
 import com.delivery.sopo.DateSelector
 import com.delivery.sopo.data.database.room.dto.DeliveredParcelHistory
+import com.delivery.sopo.data.models.Carrier
 import com.delivery.sopo.models.parcel.Parcel
 import kotlinx.coroutines.flow.Flow
 
@@ -18,6 +19,8 @@ interface ParcelRemoteDataSource
     suspend fun fetchCompletedDateInfo(cursorDate: String?=null): DateSelector
 
     suspend fun updateParcelAlias(parcelId: Int, alias: String)
+
+    suspend fun fetchCarrierInfo(): List<Carrier.Info>
 
     suspend fun deleteParcels(parcelIds: List<Int>)
 

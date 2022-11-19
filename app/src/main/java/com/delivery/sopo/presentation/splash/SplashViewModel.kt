@@ -29,10 +29,10 @@ class SplashViewModel @Inject constructor(
 {
     init
     {
-        scope.launch(Dispatchers.Default) {
-            carrierDataSource.initCarrierTable()
-            carrierDataSource.initCarrierPatternTable()
-        }
+//        scope.launch(Dispatchers.Default) {
+//            carrierDataSource.initCarrierTable()
+//            carrierDataSource.initCarrierPatternTable()
+//        }
     }
 
     private var _navigator = MutableLiveData<String>()

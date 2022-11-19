@@ -21,9 +21,9 @@ interface CarrierPatternDao
     @Delete
     fun delete(carrierPatternEntity: CarrierPatternEntity)
 
-    @Query("SELECT c.code, cp.length, cp.header FROM CARRIER as c LEFT JOIN CARRIER_PATTERN as cp ON c.carrierNo = cp.carrierNo WHERE cp.length = :length")
+  /*  @Query("SELECT c.code, cp.length, cp.header FROM CARRIER as c LEFT JOIN CARRIER_PATTERN as cp ON c.`no` = cp.carrierNo WHERE cp.length = :length")
     fun getByLength(length: Int) : List<CarrierPattern>
-
+*/
 //    @Query("SELECT c.code, cp.length, cp.header, cp.priority FROM CARRIER as c LEFT JOIN CARRIER_PATTERN as cp ON c.carrierNo = cp.carrierNo order by cp.priority DESC LIMIT :cnt")
 //    fun getOrderByPriority(cnt: Int) : List<CarrierPattern>
 }
